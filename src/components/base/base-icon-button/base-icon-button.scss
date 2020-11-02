@@ -1,0 +1,22 @@
+$margin: 5px;
+$border-radius: 4px;
+.base-icon-button {
+  margin-top: 2 * $margin;
+  width: 32px;
+  height: 32px;
+  background-color: black;
+  border: solid 1px white;
+  border-radius: $border-radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  :hover {
+    cursor: pointer;
+    background-color: black;
+    opacity: 0.8;
+  }
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}

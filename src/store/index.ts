@@ -1,8 +1,12 @@
 import { createStore } from "vuex";
-
+import AppModule from "./app";
+import ClassModule from "./class";
 export default createStore({
   state: {},
   mutations: {},
   actions: {},
-  modules: {}
+  modules: {
+    app: AppModule,
+    class: ClassModule,
+  },
 });

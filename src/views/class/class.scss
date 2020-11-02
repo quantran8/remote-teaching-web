@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .teacher-full {
+      flex: 1;
+      .teacher-card {
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    .activity-content {
+      flex: 1;
+      margin: 10px;
+    }
+    .audio-bar {
+      margin: 10px;
+    }
+    .view-controls {
+      margin: 10px;
+      background: lightgray;
+      border: solid 1px gray;
+      border-radius: 4px;
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+      grid-gap: 10px;
+      padding: 10px;
+      align-self: baseline;
+
+      .view-item {
+        background: white;
+        display: flex;
+        align-items: center;
+        max-width: 240px;
+        border: solid 1px white;
+        .icon {
+          width: 32px;
+          height: 32px;
+          margin: 16px;
+          display: inline-block;
+          background-color: gray;
+        }
+        .item-name {
+          flex: 1;
+          font-size: 16px;
+          padding-right: 16px;
+        }
+      }
+      .view-item:hover {
+        cursor: pointer;
+        background: lightgray;
+        border: solid 1px blue;
+      }
+      .item-active {
+        background: gray;
+        border: solid 1px blue;
+        .icon {
+          background-color: white;
+        }
+        .item-name {
+          color: white;
+        }
+      }
+    }
+  }
+  .lesson-plan {
+    flex-basis: 20%;
+    background-color: lightgray;
+    margin: 10px;
+  }
+  .gallery {
+    margin: 10px;
+    flex-basis: 50%;
+  }
+  
+}
