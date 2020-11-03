@@ -1,0 +1,22 @@
+.base-button {
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.base-button:hover {
+  cursor: pointer;
+}
+
+.button-fill {
+  background-color: black;
+  border: solid 1px white;
+  border-radius: 4px;
+}
+
+.button-outline {
+  background: none;
+  border: solid 1px;
+  border-radius: 4px;
+}

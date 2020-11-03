@@ -1,8 +1,12 @@
 <template>
   <div class="sound">
-    <BaseIconButton class="icon" icon="icon-audio-on"/>
+    <BaseButton class="icon">
+      <BaseIcon name="icon-audio-on"></BaseIcon>
+    </BaseButton>
     <div class="content"></div>
-    <div class="close">x</div>
+    <BaseButton mode="clear">
+      <BaseIcon class="close" name="icon-close"></BaseIcon>
+    </BaseButton>
   </div>
 </template>
 <style lang="scss" scoped src="./global-audio-bar.scss"></style>

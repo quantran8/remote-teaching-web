@@ -8,6 +8,9 @@
           :name="teacher.name"
           :audioEnabled="teacher.audioEnabled"
           :videoEnabled="teacher.videoEnabled"
+          @hide-all="onClickHideAll"
+          @mute-all="onClickMuteAll"
+          @end="onClickEnd"
         />
       </div>
       <div v-if="isGalleryView" class="activity-content">

@@ -9,8 +9,12 @@
       <div class="name">{{ name }}</div>
       <div class="info">
         <BaseTag :tag="`${index + 1}`" @click="toggleContextMenu" />
-        <BaseIconButton :icon="audioIcon" @click="toggleAudio" />
-        <BaseIconButton :icon="videoIcon" @click="toggleVideo" />
+        <BaseButton class="media-button" @click="toggleAudio">
+          <BaseIcon :name="audioIcon"></BaseIcon>
+        </BaseButton>
+        <BaseButton class="media-button" @click="toggleVideo">
+          <BaseIcon :name="videoIcon"></BaseIcon>
+        </BaseButton>
       </div>
       <StudentBadge class="badge" :badge="badge" @click="addABadge" />
       <div v-if="isContextMenuVisible" class="context-menu">

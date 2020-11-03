@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g id="icon-close" transform="translate(3 1.999)">
+    <rect id="Rectangle_57" data-name="Rectangle 57" width="64" height="64" transform="translate(-3 -1.999)" fill="none"/>
+    <path id="Path_9" data-name="Path 9" d="M28.245,24,47.12,5.125A3,3,0,0,0,42.876.881L24,19.756,5.124.881A3,3,0,0,0,.88,5.125L19.756,24,.88,42.876a3,3,0,1,0,4.245,4.244L24,28.244,42.876,47.119a3,3,0,0,0,4.245-4.245Z" transform="translate(5 6)"/>
+  </g>
+</svg>

@@ -13,8 +13,10 @@
     flex: 1;
   }
   .close {
-    padding: 4px 16px;
-    font-size: 20px;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  .close::before {
     color: black;
   }
 }

@@ -42,6 +42,12 @@ const mutations: MutationTree<ClassState> = {
     if (state.teacher.id === payload.teacherId)
       state.teacher.videoEnabled = payload.videoEnabled;
   },
+  hideAllStudents(state: ClassState) {
+    state.students.forEach((student) => (student.videoEnabled = false));
+  },
+  muteAllStudents(state: ClassState) {
+    state.students.forEach((student) => (student.videoEnabled = false));
+  },
 };
 
 export default mutations;

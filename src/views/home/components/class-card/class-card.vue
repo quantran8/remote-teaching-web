@@ -1,9 +1,9 @@
 <template>
   <BaseCard>
     <div class="container">
-      <h3>Class 1</h3>
-      <p>Class Description</p>
-      <router-link to="/class/id1">Start</router-link>
+      <h3>{{ title }}</h3>
+      <p>{{ description }}</p>
+      <router-link :to="'/class/' + id">Start</router-link>
     </div>
   </BaseCard>
 </template>

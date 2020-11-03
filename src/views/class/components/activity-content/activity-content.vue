@@ -8,7 +8,7 @@
       :class="{ flipped: isFlipped }"
       @click="toggleView"
     >
-      <BaseIcon name="icon-change" />
+      <BaseIcon name="icon-change" class="icon-change"/>
     </div>
   </div>
 </template>

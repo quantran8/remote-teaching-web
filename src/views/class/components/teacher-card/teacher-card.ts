@@ -1,5 +1,5 @@
 import { useFakeVideoUrl } from "@/fake/video.fake";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
@@ -16,10 +16,13 @@ export default defineComponent({
     },
   },
 
-  setup(props) {
+  setup(props, { emit }) {
     const video = useFakeVideoUrl(0);
     const store = useStore();
-
+    const contextMenuVisibility = ref(false);
+    const toggleContextMenu = () => {
+      contextMenuVisibility.value = !contextMenuVisibility.value;
+    };
     const audioIcon = computed(() =>
       props.audioEnabled ? "icon-audio-on" : "icon-audio-off"
     );
@@ -41,12 +44,26 @@ export default defineComponent({
       });
     };
 
+    const onClickHideAll = () => {
+      emit("hide-all");
+    };
+    const onClickMuteAll = () => {
+      emit("mute-all");
+    };
+    const onClickEnd = () => {
+      emit("end");
+    };
     return {
       video,
       audioIcon,
       videoIcon,
       toggleAudio,
       toggleVideo,
+      contextMenuVisibility,
+      toggleContextMenu,
+      onClickHideAll,
+      onClickMuteAll,
+      onClickEnd,
     };
   },
 });

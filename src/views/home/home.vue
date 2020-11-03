@@ -6,17 +6,14 @@
     <hr />
     <p></p>
     <div>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
-      <ClassCard class="card-margin"/>
+      <ClassCard
+        v-for="cl in classes"
+        :key="cl.id"
+        class="card-margin"
+        :id="cl.id"
+        :title="cl.title"
+        :description="cl.description"
+      />
     </div>
   </div>
 </template>

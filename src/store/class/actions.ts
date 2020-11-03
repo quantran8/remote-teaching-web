@@ -34,6 +34,12 @@ const actions: ActionTree<ClassState, any> = {
   ) {
     store.commit("setTeacherVideo", payload);
   },
+  hideAllStudents(store) {
+    store.commit("hideAllStudents", {});
+  },
+  muteAllStudents(store) {
+    store.commit("muteAllStudents", {});
+  },
 };
 
 export default actions;

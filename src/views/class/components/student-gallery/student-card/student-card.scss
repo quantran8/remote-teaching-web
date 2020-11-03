@@ -34,25 +34,8 @@ $border-radius: 4px;
       position: absolute;
       top: $padding;
       right: $padding;
-      .icon {
+      .media-button {
         margin-top: 2 * $margin;
-        width: 32px;
-        height: 32px;
-        background-color: black;
-        border: solid 1px white;
-        border-radius: $border-radius;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        :hover {
-          cursor: pointer;
-          background-color: black;
-          opacity: 0.8;
-        }
-        img {
-          width: 20px;
-          height: 20px;
-        }
       }
     }
     .badge {
@@ -62,7 +45,7 @@ $border-radius: 4px;
       margin: $margin;
     }
 
-    .context-menu{
+    .context-menu {
       position: absolute;
       right: 10px;
       top: 40px;
@@ -74,7 +57,7 @@ $border-radius: 4px;
     }
   }
 
-  .masked{
+  .masked {
     background-color: black !important;
   }
 }

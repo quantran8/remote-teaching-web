@@ -1,4 +1,5 @@
 import { computed, defineComponent } from "vue";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
   TeacherCard,
@@ -17,6 +18,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
     const teacher = store.getters["class/teacher"];
 
     const views = [
@@ -37,6 +39,24 @@ export default defineComponent({
       store.dispatch("class/setClassView", { view: newView });
     };
 
-    return { currentView, isGalleryView, setClassView, views, teacher };
+    const onClickHideAll = () => {
+      store.dispatch("class/hideAllStudents");
+    };
+    const onClickMuteAll = () => {
+      store.dispatch("class/muteAllStudents");
+    };
+    const onClickEnd = () => {
+      router.back();
+    };
+    return {
+      onClickHideAll,
+      onClickMuteAll,
+      onClickEnd,
+      currentView,
+      isGalleryView,
+      setClassView,
+      views,
+      teacher,
+    };
   },
 });
