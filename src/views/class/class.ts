@@ -1,5 +1,5 @@
-import { computed, defineComponent } from "vue";
-import { useRouter } from "vue-router";
+import { computed, defineComponent, ref } from "vue";
+import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
   TeacherCard,
@@ -7,6 +7,7 @@ import {
   ActivityContent,
   StudentGallery,
   GlobalAudioBar,
+  LeaveModal,
 } from "./components";
 export default defineComponent({
   components: {
@@ -15,11 +16,15 @@ export default defineComponent({
     ActivityContent,
     GlobalAudioBar,
     StudentGallery,
+    LeaveModal,
   },
+
   setup() {
     const store = useStore();
     const router = useRouter();
     const teacher = store.getters["class/teacher"];
+    const showModal = ref(false);
+    const hasConfirmed = ref(false);
 
     const views = [
       { id: 1, name: "Gallery", icon: "" },
@@ -31,6 +36,7 @@ export default defineComponent({
     const currentView = computed(() => {
       return store.getters["class/view"];
     });
+
     const isGalleryView = computed(() => {
       return store.getters["class/isGalleryView"];
     });
@@ -42,13 +48,34 @@ export default defineComponent({
     const onClickHideAll = () => {
       store.dispatch("class/hideAllStudents");
     };
+
     const onClickMuteAll = () => {
       store.dispatch("class/muteAllStudents");
     };
+
     const onClickEnd = () => {
+      showModal.value = true;
+    };
+
+    const onClickLeave = () => {
+      hasConfirmed.value = true;
       router.back();
     };
+
+    const onClickCloseModal = () => {
+      showModal.value = false;
+    };
+
+    // onBeforeRouteLeave((to, from, next) => {
+    //   if (!hasConfirmed.value) {
+    //     showModal.value = true;
+    //     return;
+    //   }
+    //   next();
+    // });
+
     return {
+      showModal,
       onClickHideAll,
       onClickMuteAll,
       onClickEnd,
@@ -57,6 +84,8 @@ export default defineComponent({
       setClassView,
       views,
       teacher,
+      onClickLeave,
+      onClickCloseModal,
     };
   },
 });

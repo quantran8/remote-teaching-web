@@ -1,5 +1,32 @@
 import { randomUUID } from "@/utils/utils";
 
+export enum StudentInClassStatus {
+  /**Student is not join the class yet */
+  DEFAULT = 0,
+  /**
+   * Student send a request to Join the class, it depends on the setting of the class. If student can join class at any time without any restrictions then this value is not in use.
+   */
+  REQUESTING = 1,
+  /**
+   * Student is now in the class
+   */
+  JOINED = 2,
+  /**
+   * Student is about to leave the class
+   */
+  LEAVING = 3,
+  /**
+   * Student has left the class
+   */
+  LEFT = 4,
+}
+export enum StreamingStatus {
+  WAITING = 0,
+  CONNECTING = 1,
+  CONNECTED = 2,
+  DISCONNECTED = 3,
+}
+
 export interface StudentState {
   id: string;
   index: number;
@@ -9,6 +36,7 @@ export interface StudentState {
   hasJoinned: boolean;
   audioEnabled: boolean;
   videoEnabled: boolean;
+  status: StudentInClassStatus;
 }
 export interface TeacherState {
   id: string;
@@ -43,6 +71,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -53,6 +82,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -63,6 +93,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -73,6 +104,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -83,6 +115,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -93,6 +126,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -103,6 +137,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -113,6 +148,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -123,6 +159,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -133,6 +170,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -143,6 +181,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
     {
       id: randomUUID(),
@@ -153,6 +192,7 @@ const state: ClassState = {
       hasJoinned: false,
       audioEnabled: false,
       videoEnabled: true,
+      status: 0,
     },
   ],
 };

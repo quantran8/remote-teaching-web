@@ -1,11 +1,10 @@
 import { MutationTree } from "vuex";
-import { ClassState } from "./state";
+import { ClassState, StudentInClassStatus } from "./state";
 
 const mutations: MutationTree<ClassState> = {
   setClassView(state: ClassState, payload: { view: number }) {
     state.view = payload.view;
   },
-
   setStudentAudio(
     state: ClassState,
     payload: { studentId: string; audioEnabled: boolean }
@@ -27,7 +26,6 @@ const mutations: MutationTree<ClassState> = {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.badge = payload.badge;
   },
-
   setTeacherAudio(
     state: ClassState,
     payload: { teacherId: string; audioEnabled: boolean }
@@ -42,11 +40,30 @@ const mutations: MutationTree<ClassState> = {
     if (state.teacher.id === payload.teacherId)
       state.teacher.videoEnabled = payload.videoEnabled;
   },
+
   hideAllStudents(state: ClassState) {
     state.students.forEach((student) => (student.videoEnabled = false));
   },
   muteAllStudents(state: ClassState) {
-    state.students.forEach((student) => (student.videoEnabled = false));
+    state.students.forEach((student) => (student.audioEnabled = false));
+  },
+  studentJoinned(state: ClassState, payload: { studentId: string }) {
+    const student = state.students.find(
+      (student) => student.id === payload.studentId
+    );
+    if (student) student.status = StudentInClassStatus.JOINED;
+  },
+  studentLeftClass(state: ClassState, payload: { studentId: string }) {
+    const student = state.students.find(
+      (student) => student.id === payload.studentId
+    );
+    if (student) student.status = StudentInClassStatus.LEFT;
+  },
+  studentLeaving(state: ClassState, payload: { studentId: string }) {
+    const student = state.students.find(
+      (student) => student.id === payload.studentId
+    );
+    if (student) student.status = StudentInClassStatus.LEAVING;
   },
 };
 

@@ -40,6 +40,15 @@ const actions: ActionTree<ClassState, any> = {
   muteAllStudents(store) {
     store.commit("muteAllStudents", {});
   },
+  studentJoinned(store, payload: { studentId: string }) {
+    store.commit("studentJoinned", payload);
+  },
+  studentLeftClass(store, payload: { studentId: string }) {
+    store.commit("studentJoinned", payload);
+  },
+  studentLeaving(store, payload: { studentId: string }) {
+    store.commit("studentJoinned", payload);
+  },
 };
 
 export default actions;

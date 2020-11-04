@@ -38,6 +38,11 @@
     <div class="gallery" :class="{ 'gallery-lg': !isGalleryView }">
       <StudentGallery />
     </div>
+    <LeaveModal
+      v-if="showModal"
+      @dismiss="onClickCloseModal"
+      @leave="onClickLeave"
+    ></LeaveModal>
   </div>
 </template>
 <style lang="scss" scoped src="./class.scss"></style>

@@ -1,5 +1,11 @@
 import { GetterTree } from "vuex";
-import { ClassState, StudentState, TeacherState } from "./state";
+import state from "../app/state";
+import {
+  ClassState,
+  StudentInClassStatus,
+  StudentState,
+  TeacherState,
+} from "./state";
 
 const getters: GetterTree<ClassState, any> = {
   students(state: ClassState): Array<StudentState> {

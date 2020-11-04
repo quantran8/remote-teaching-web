@@ -13,7 +13,6 @@
             <BaseButton class="media-button" @click="toggleVideo">
               <BaseIcon :name="videoIcon"></BaseIcon>
             </BaseButton>
-          
           </div>
         </div>
       </div>
