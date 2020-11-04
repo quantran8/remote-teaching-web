@@ -9,15 +9,20 @@
     "build:dev": "vue-cli-service build --mode dev",
     "build:prod": "vue-cli-service build --mode prod",
     "build:test": "vue-cli-service build --mode test",
-    "start": "vue-cli-service serve --host 127.0.0.1 --port 8091 --open --mode local"
+    "start": "vue-cli-service serve --port 8091 --open --mode local"
   },
   "dependencies": {
+    "@types/superagent": "^4.1.10",
     "@types/uuid": "^8.3.0",
     "ant-design-vue": "^1.7.1",
     "core-js": "^3.6.5",
+    "oidc-client": "^1.10.1",
+    "reflect-metadata": "^0.1.13",
     "register-service-worker": "^1.7.1",
+    "superagent": "^6.1.0",
     "uuid": "^8.3.1",
     "vue": "^3.0.0",
+    "vue-i18n": "^8.22.1",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
   },
