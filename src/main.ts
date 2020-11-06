@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import App from "./app/app.vue";
 import "./registerServiceWorker";
-import store from "./store";
 import router from "./router";
 import {
   BaseButton,
@@ -10,7 +9,7 @@ import {
   BaseModal,
   BaseTag,
 } from "./components/base";
-import { LayoutGuard } from "./router/guard";
+import { store } from "./store";
 
 const app = createApp(App);
 app.component("BaseIcon", BaseIcon);
@@ -21,7 +20,3 @@ app.component("BaseModal", BaseModal);
 app.use(router);
 app.use(store);
 app.mount("#app");
-
-router.beforeEach((from, to, next) => {
-  LayoutGuard(store, router, from, to, next);
-});

@@ -5,6 +5,7 @@
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
       </a>
     </slot>
+    <div class="h-spacer"></div>
     <div class="content">
       <slot name="title">
         <div class="title">{{ title }}</div>

@@ -1,13 +1,13 @@
-import VueI18n, { LocaleMessages } from "vue-i18n";
+import { createI18n } from "vue-i18n";
 
-function loadLocaleMessages(): LocaleMessages {
+function loadLocaleMessages() {
   //#TODO make generic path
   const locales = require.context(
     "../../locales",
     true,
     /[A-Za-z0-9-_,\s]+\.json$/i
   );
-  const messages: LocaleMessages = {};
+  const messages: any = {};
   locales.keys().forEach((key) => {
     const matched = key.match(/([A-Za-z0-9-_]+)\./i);
     if (matched && matched.length > 1) {
@@ -18,7 +18,7 @@ function loadLocaleMessages(): LocaleMessages {
   return messages;
 }
 
-export default new VueI18n({
+export default createI18n({
   locale: process.env.VUE_APP_I18N_LOCALE || "en",
   fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
   messages: loadLocaleMessages(),

@@ -13,11 +13,9 @@ import {
   GLGlobal,
   Permission,
 } from "../utils";
-// import { LocationDescriptor } from "history";
-// import { OidcLogin } from "../store/modules";
-// import { getModule } from "vuex-module-decorators";
+import { LocationDescriptor } from "history";
 import { PermissionService } from "./permission-service";
-// import { AccountService } from "@/services/account-service";
+import { store } from "@/store";
 
 class RedirectNavigator {
   prepare() {
@@ -166,7 +164,7 @@ class ClientStorage {
 class AuthServiceClass {
   private userManager: UserManager;
   public accessToken: string | null = null;
-  //private oidcModule = getModule(OidcLogin) as OidcLogin;
+  // private oidcModule = getModule(OidcLogin) as OidcLogin;
   private settings: UserManagerSettings = {};
 
   constructor() {
@@ -268,7 +266,7 @@ class AuthServiceClass {
     return this.userManager.signoutRedirectCallback();
   }
 
-  private storePageAfterSignin(pageAfterSignin?: any) {
+  private storePageAfterSignin(pageAfterSignin?: LocationDescriptor) {
     sessionStorage.setItem(
       OidcStorageKeys.pageaftersignin,
       JSON.stringify({
@@ -290,7 +288,7 @@ class AuthServiceClass {
     return sessionStorage.getItem(this.getSessionKey());
   }
 
-  public storePagethenSignoutRedirect(pageAfterSignout?: any) {
+  public storePagethenSignoutRedirect(pageAfterSignout?: LocationDescriptor) {
     this.storePageAfterSignout(pageAfterSignout);
     this.signoutRedirect();
   }
@@ -299,7 +297,7 @@ class AuthServiceClass {
     return this.userManager.signoutRedirect();
   }
 
-  private storePageAfterSignout(pageAfterSignout?: any) {
+  private storePageAfterSignout(pageAfterSignout?: LocationDescriptor) {
     sessionStorage.setItem(
       OidcStorageKeys.pageaftersignout,
       JSON.stringify({
@@ -355,9 +353,8 @@ class AuthServiceClass {
     });
   }
 
-  public getLoginInfo(): LoginInfo {
-    return {} as LoginInfo;
-    // return this.oidcModule.loginInfo || ({} as LoginInfo);
+  public getLoginInfo() {
+    return store.getters["auth/loginInfo"];
   }
 
   public useLocalStoreToLogin() {
@@ -458,7 +455,7 @@ class AuthServiceClass {
     }
   }
 
-  public storePagethenSigninRedirect(pageAfterSignin?: any) {
+  public storePagethenSigninRedirect(pageAfterSignin?: LocationDescriptor) {
     this.storePageAfterSignin(pageAfterSignin);
 
     this.signinRedirect()
@@ -505,9 +502,9 @@ class AuthServiceClass {
     }
 
     if (isSignIn) {
-      //  this.oidcModule.signin(payload);
+      store.dispatch("auth/signin", { loginInfo: payload });
     } else {
-      //   this.oidcModule.signout(payload);
+      store.dispatch("auth/signout");
     }
   }
 
@@ -550,25 +547,24 @@ class AuthServiceClass {
     return null;
   }
 
-  private async setUserAvatar(loginInfo: LoginInfo): Promise<LoginInfo> {
-    try {
-      const avatar = await this.getUserAvatarUrl(
+  private setUserAvatar(loginInfo: LoginInfo): Promise<LoginInfo> {
+    return new Promise((resolve, reject) => {
+      this.getUserAvatarUrl(
         loginInfo.profile.sub,
         this.getExpiringInMinutes(loginInfo)
-      );
-      if (avatar) loginInfo.profile.avatarUrl = avatar;
-    } catch (err) {
-      console.log(err);
-    }
-    return loginInfo;
+      )
+        .then((userAvatarUrl: string) => {
+          loginInfo.profile.avatarUrl = userAvatarUrl;
+          resolve(loginInfo);
+        })
+        .catch((e: Error) => {
+          reject(loginInfo);
+        });
+    });
   }
 
-  private getUserAvatarUrl(
-    userId: string,
-    expirationInMinutes: any
-  ): Promise<string | null> {
-    console.log("Get User Avatar", userId, expirationInMinutes);
-    return Promise.resolve(null);
+  private getUserAvatarUrl(userId: string, expirationInMinutes: any): any {
+    return "";
     // return AccountService.getUserAvatarUrl(userId, expirationInMinutes);
   }
 

@@ -20,6 +20,7 @@ import {
 // import { getModule } from "vuex-module-decorators";
 // import { Spinner } from "../store/modules/spinner";
 import { CommonLocale } from "@/locales/localeid";
+import { store } from "@/store";
 
 export type ServiceOptions = {
   needLoader?: boolean;
@@ -44,12 +45,10 @@ function getNeedLoader(options: ServiceOptions) {
   };
 }
 export function maskThrottle() {
-  console.log("maskThrottle");
-  // spinModule.setMaskMain(true);
+	store.dispatch('spin/setMaskMain', true)
 }
 export function unmaskThrottle(d?: any) {
-  console.log("unmaskThrottle");
-  //spinModule.setMaskMain(false);
+  store.dispatch('spin/setMaskMain', false)
   return d;
 }
 export function customErrMsgs(errMsgs = {}) {
@@ -103,14 +102,12 @@ export function customError(
       if (customizedMessage) {
         const formattedValues = customizedMessage.values
           ? Object.keys(customizedMessage.values).reduce(function(
-              pre,
+              pre: any,
               cur,
               index
             ) {
               const value = customizedMessage.values[cur];
-              (pre as any)[cur] = value.id
-                ? fmtMsg(value.id).toLowerCase()
-                : value;
+              pre[cur] = value.id ? fmtMsg(value.id).toLowerCase() : value;
               return pre;
             },
             {})

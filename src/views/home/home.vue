@@ -1,19 +1,19 @@
 <template>
   <div class="home">
     <p></p>
-    <h2>Welcome @Liam Pham</h2>
-    <p>Choose a class to start</p>
+    <h2>Welcome {{ username }}</h2>
+    <p>Choose a role to start</p>
     <hr />
     <p></p>
-    <div>
-      <ClassCard
-        v-for="cl in classes"
-        :key="cl.id"
-        class="card-margin"
-        :id="cl.id"
-        :title="cl.title"
-        :description="cl.description"
-      />
+    <div class="content-container">
+      <div class="item-container teacher-container">
+        <BaseIcon class="item-icon" name="icon-teacher" />
+        <div class="item-name">Teacher</div>
+      </div>
+      <div class="item-container student-container">
+        <BaseIcon class="item-icon" name="icon-student" />
+        <div class="item-name">Student</div>
+      </div>
     </div>
   </div>
 </template>
