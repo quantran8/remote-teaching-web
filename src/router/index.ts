@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home/home.vue";
-import { LayoutGuard } from "./guard";
+import { LayoutGuard,AuthGuard } from "./guard";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -48,6 +48,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   try {
+    AuthGuard(to, from, next);
     LayoutGuard(to, from, next);
     next();
   } catch (error) {

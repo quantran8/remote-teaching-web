@@ -14,7 +14,8 @@ import {
   Permission,
 } from "../utils";
 import { LocationDescriptor } from "history";
-import { PermissionService } from "./permission-service";
+import { PermissionService } from "./permission.service";
+import AccountService from "./account.service";
 import { store } from "@/store";
 
 class RedirectNavigator {
@@ -543,7 +544,6 @@ class AuthServiceClass {
     if (expired === undefined && expires_at) {
       return Math.floor((expires_at - Math.floor(Date.now() / 1000)) / 60);
     }
-
     return null;
   }
 
@@ -554,6 +554,7 @@ class AuthServiceClass {
         this.getExpiringInMinutes(loginInfo)
       )
         .then((userAvatarUrl: string) => {
+          console.log("AvatarURL", userAvatarUrl);
           loginInfo.profile.avatarUrl = userAvatarUrl;
           resolve(loginInfo);
         })
@@ -564,8 +565,7 @@ class AuthServiceClass {
   }
 
   private getUserAvatarUrl(userId: string, expirationInMinutes: any): any {
-    return "";
-    // return AccountService.getUserAvatarUrl(userId, expirationInMinutes);
+    return AccountService.getUserAvatarUrl(userId, expirationInMinutes);
   }
 
   private getUserPermission(): any {

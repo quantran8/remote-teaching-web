@@ -1,12 +1,26 @@
-.icon {
-  width: 24px;
-  height: 24px;
+.menu-item {
+  position: relative;
 }
-img g,
-path {
-  fill: red;
+.menu-item-content {
+  display: flex;
+  align-items: center;
+}
+.menu-item-content:hover {
+  cursor: pointer;
+}
+.menu-item-dropdown-icon::before {
+  font-size: 24px;
+  padding: 10px;
 }
 
-.title {
-  font-weight: bold;
+.menu-item-popup {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding: 16px;
+  background-color: white;
+  color: black;
+  border-radius: 6px;
+  border: solid 1px black;
 }

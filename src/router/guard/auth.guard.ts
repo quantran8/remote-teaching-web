@@ -5,13 +5,10 @@ import {
   LoginInfo,
   RoleName,
 } from "@/commonui";
-import {
-  NavigationGuardNext,
-  RouteLocationNormalized,
-  Router,
-} from "vue-router";
+import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 
 import { store } from "@/store";
+import { AppView } from "@/store/app/state";
 
 const isTokenExpired = () => {
   const { getTokenParam } = AuthService.getTokenUrlParams();
@@ -21,6 +18,7 @@ const isTokenExpired = () => {
 
 const verifySession = () => {
   if (isTokenExpired()) {
+    console.log("token expired");
     const abortSignin = () => {
       locationReplace("/");
       return Promise.reject();
@@ -43,10 +41,9 @@ const routeAuth = (
     GLUtil.isExpired(loginInfo) ||
     !AuthService.hasPermissions(loginInfo)
   ) {
-    // if (!spinModule.splash) {
-    // 	spinModule.setSplash(true);
-    // }
-    store.dispatch("spin/setSplash", true);
+    if (!store.getters["spin/setSplash"]) {
+      store.dispatch("spin/setSplash", true);
+    }
     AuthService.storePagethenSigninRedirect();
   } else {
     if (to.meta) {
@@ -57,43 +54,24 @@ const routeAuth = (
           (r) => r === RoleName.systemAdmin || r === RoleName.contentAdmin
         );
       if (!isSadminOrCAdmin) {
-        //	appSetting.setAppMode(AppViewMode.UnAuthorized);
+        store.dispatch("setAppView", { appView: AppView.UnAuthorized });
         return;
       }
-      // if (appSetting.mode !== AppViewMode.Authorized) {
-      // 	appSetting.setAppMode(AppViewMode.Authorized);
-      // }
-
-      store.dispatch("spin/setSplash", false);
-      // if (spinModule.splash) {
-      // 	spinModule.setSplash(false);
-      // }
-
-      // if (to.matched && to.matched.length > 0) {
-      // 	appSetting.setAppMenu(to.matched[0]?.meta?.viewId);
-      // 	appSetting.setMenuCategory(to.matched[0]?.meta?.menuId);
-      // 	appSetting.setMangerVisible(last(to.matched)!.meta?.verManagerVisible);
-      // }
-
-      // const authInfo = getAutorizationDetails(to.meta, loginInfo.profile.permissions);
-      // if (authInfo.isAuthorized && (isUndefined(authInfo.navigateTo) || isNull(authInfo.navigateTo))) {
-      // 	appSetting.setChildMenu(to.meta?.viewId);
-      // 	next();
-      // } else if (authInfo.isAuthorized && !isUndefined(authInfo.navigateTo) && !isNull(authInfo.navigateTo)) {
-      // 	to.path === authInfo.navigateTo ? next() : next({ path: authInfo.navigateTo, replace: true });
-      // } else {
-      // 	appSetting.setAppMode(AppViewMode.UnAuthorized);
-      // 	next(false);
-      // }
+      if (store.getters.appView !== AppView.Authorized) {
+        store.dispatch("setAppView", { appView: AppView.Authorized });
+      }
+      if (store.getters["spin/setSplash"]) {
+        store.dispatch("spin/setSplash", false);
+      }
+      next();
     } else {
-      // appSetting.setAppMode(AppViewMode.UnAuthorized);
+      store.dispatch("setAppView", { appView: AppView.UnAuthorized });
       next(false);
     }
   }
 };
 
 export default (
-  router: Router,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardNext
@@ -101,6 +79,8 @@ export default (
   const requiresAuth: boolean = to.matched.some(
     (record) => record.meta.requiresAuth
   );
+
+  const hasIdTokenInUrl = window.location.href.indexOf("id_token") !== -1;
   if (requiresAuth) {
     const isSigningOut = window.location.href.indexOf("oidc/signout") !== -1;
     if (isSigningOut) {
@@ -114,7 +94,7 @@ export default (
         .catch((e) => {
           console.error(e);
         });
-    } else if (window.location.href.indexOf("id_token") !== -1) {
+    } else if (hasIdTokenInUrl) {
       verifySession().then(() => {
         AuthService.signinRedirectCallback().then((user) => {
           try {
@@ -147,10 +127,10 @@ export default (
       }
     }
   } else if (to.matched.some((record) => record.meta.notFound)) {
-    // appSetting.setAppMode(AppViewMode.NotFound);
+    store.dispatch("setAppView", { appView: AppView.NotFound });
     next();
   } else {
-    // appSetting.setAppMode(AppViewMode.Blank);
+    store.dispatch("setAppView", { appView: AppView.Blank });
     next();
   }
   next();

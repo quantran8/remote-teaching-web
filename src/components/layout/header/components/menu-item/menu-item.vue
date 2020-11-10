@@ -1,9 +1,27 @@
 <template>
-  <div class="menu-item">
-    <BaseIcon name="icon-help" style="icon"></BaseIcon>
-    <div class="title">Item Name</div>
+  <!-- <div class="menu-item">
+    <div
+      class="menu-item-content"
+      @click="showPopup"
+      v-click-outside="hidePopup"
+    >
+      <slot></slot>
+      <BaseIcon class="menu-item-dropdown-icon" name="keyboard_arrow_down" />
+    </div>
+    <div class="menu-item-popup" v-if="popup">
+      <slot name="popup"></slot>
+    </div>
+  </div> -->
+  <div class="popover__wrapper">
+    <slot></slot>
+    <div class="popover__content">
+        <slot name="popup"></slot>
+    </div>
   </div>
 </template>
+
+
+
 
 <style lang="scss" src="./menu-item.scss"></style>
 
