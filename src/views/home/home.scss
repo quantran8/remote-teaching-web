@@ -8,6 +8,9 @@
   align-items: center;
   justify-content: center;
   min-height: 200px;
+  a {
+    text-decoration: none;
+  }
   .item-container {
     border-radius: 10px;
     color: white;
@@ -27,7 +30,7 @@
     }
   }
 
-  .item-container:hover{
+  .item-container:hover {
     cursor: pointer;
     opacity: 0.9;
   }

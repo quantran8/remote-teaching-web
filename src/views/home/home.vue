@@ -6,14 +6,18 @@
     <hr />
     <p></p>
     <div class="content-container">
-      <div class="item-container teacher-container">
-        <BaseIcon class="item-icon" name="icon-teacher" />
-        <div class="item-name">Teacher</div>
-      </div>
-      <div class="item-container student-container">
-        <BaseIcon class="item-icon" name="icon-student" />
-        <div class="item-name">Student</div>
-      </div>
+      <router-link to="/teacher">
+        <div class="item-container teacher-container">
+          <BaseIcon class="item-icon" name="icon-teacher" />
+          <div class="item-name">Teacher</div>
+        </div>
+      </router-link>
+      <router-link to="/student">
+        <div class="item-container student-container">
+          <BaseIcon class="item-icon" name="icon-student" />
+          <div class="item-name">Student</div>
+        </div>
+      </router-link>
     </div>
   </div>
 </template>

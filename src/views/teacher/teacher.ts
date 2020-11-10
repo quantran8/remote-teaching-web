@@ -1,6 +1,6 @@
 import { randomUUID } from "@/utils/utils";
 import { computed, defineComponent } from "vue";
-import { useStore } from 'vuex';
+import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 export default defineComponent({
   components: {
@@ -61,10 +61,10 @@ export default defineComponent({
     ];
 
     const store = useStore();
-    const username = computed(()=> store.getters['auth/username']);
+    const username = computed(() => store.getters["auth/username"]);
     return {
       classes,
-      username
+      username,
     };
   },
 });

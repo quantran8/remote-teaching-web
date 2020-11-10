@@ -1,18 +1,14 @@
-import {
-  NavigationGuardNext,
-  RouteLocationNormalized,
-  Router,
-} from "vue-router";
-import { Store } from "vuex";
+import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
+import { store } from "@/store";
+
 export default (
-  store: Store<any>,
-  router: Router,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
+  _from: RouteLocationNormalized,
+  _next: NavigationGuardNext
 ) => {
   if (to.meta) {
-    store.dispatch("setLayout", to.meta.layout);
+    store.dispatch("setLayout", {
+      layout: to.meta.layout,
+    });
   }
-  next();
 };

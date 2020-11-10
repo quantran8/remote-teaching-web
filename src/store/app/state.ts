@@ -1,23 +1,11 @@
-export interface LayoutState {
-  header: {
-    visible: boolean;
-    backgroundColor?: string;
-  };
-  footer: {
-    visible: boolean;
-    backgroundColor?: string;
-  };
-}
+export type LayoutType = "" | "full" | "main";
 
 export interface AppState {
-  layout: LayoutState;
+  layout: LayoutType;
 }
 
 const state: AppState = {
-  layout: {
-    header: { visible: true },
-    footer: { visible: true },
-  },
+  layout: "main",
 };
 
 export default state;

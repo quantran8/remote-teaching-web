@@ -1,9 +1,9 @@
-import { AppState, LayoutState } from "./state";
+import { AppState, LayoutType } from "./state";
 import { MutationTree } from "vuex";
 
 const mutations: MutationTree<AppState> = {
-  setLayoutState(state, payload: LayoutState) {
-    state.layout = payload;
+  setLayout(state, payload: { layout: LayoutType }) {
+    state.layout = payload.layout;
   },
 };
 

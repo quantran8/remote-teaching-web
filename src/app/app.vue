@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
     <template v-if="isHeaderVisible" v-slot:header>
-      <AppHeader title="Remote Teaching" @click="refresh"/>
+      <AppHeader title="Remote Teaching" />
     </template>
     <router-view />
     <template v-if="isFooterVisible" v-slot:footer>
