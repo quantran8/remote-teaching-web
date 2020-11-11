@@ -7,7 +7,7 @@
   height: 60px;
   .logo {
     height: 48px;
-    margin: 0 16px;    
+    margin: 0 16px;
   }
   .h-spacer {
     height: 24px;
@@ -31,6 +31,9 @@
       width: 36px;
       height: 36px;
       margin: 0 16px;
+      border-radius: 18px;
+      object-fit: cover;
+      object-position: center;
     }
     .user-info {
       .user-name {
@@ -45,72 +48,26 @@
       }
     }
 
-    .user-dropdown::before {
-      font-size: 24px;
-      padding: 10px;
-    }
+    .menu-item {
+      padding: 1rem 2rem;
+      color: rgb(50, 50, 50);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
 
-    .use-popup {
-      position: absolute;
-      left: 50%;
-      top: 100%;
-      padding: 16px;
-      background-color: white;
-      color: black;
-      transform: translateX(-50%);
+      .item-action {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        margin-left: 0.5rem;
+      }
+    }
+    .menu-item:hover {
+      cursor: pointer;
+      background-color: #00591b23;
     }
   }
   .user-container:hover {
     cursor: pointer;
   }
-}
-
-
-
-.popover__title {
-  font-size: 24px;
-  line-height: 36px;
-  text-decoration: none;
-  color: rgb(228, 68, 68);
-  text-align: center;
-  padding: 15px 0;
-}
-
-.popover__wrapper {
-  position: relative;
-  margin-top: 1.5rem;
-  display: inline-block;
-}
-.popover__content {
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-  left: -150px;
-  transform: translate(0, 10px);
-  background-color: #bfbfbf;
-  padding: 1.5rem;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-  width: auto;
-}
-.popover__content:before {
-  position: absolute;
-  z-index: -1;
-  content: "";
-  right: calc(50% - 10px);
-  top: -8px;
-  border-style: solid;
-  border-width: 0 10px 10px 10px;
-  border-color: transparent transparent #bfbfbf transparent;
-  transition-duration: 0.3s;
-  transition-property: transform;
-}
-.popover__wrapper:hover .popover__content {
-  z-index: 10;
-  opacity: 1;
-  visibility: visible;
-  transform: translate(0, -20px);
-  transition: all 0.5s cubic-bezier(0.75, -0.02, 0.2, 0.97);
-}
-.popover__message {
-  text-align: center;
 }

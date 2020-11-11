@@ -1,4 +1,4 @@
-import { LoginInfo } from "@/commonui";
+import { AuthService, GLGlobal, LoginInfo } from "@/commonui";
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import MenuItem from "./components/menu-item/menu-item.vue";
@@ -11,10 +11,10 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const logginInfo: LoginInfo = store.getters["auth/loginInfo"];
-    const userAvatar = computed(async () => {
-      return logginInfo?.profile?.avatarUrl;
-    });
+    const isLoggedIn =  computed(() => store.getters["auth/isLoggedIn"])
+    const userName = computed(() => store.getters["auth/username"]);
+    const userRole = computed(() => store.getters["auth/userRole"]);
+    const userAvatar = computed(() => store.getters["auth/userAvatar"]);
     const showInfo = ref<boolean>(false);
     const onClickShowInfo = () => {
       showInfo.value = true;
@@ -22,11 +22,22 @@ export default defineComponent({
     const onClickHideInfo = () => {
       showInfo.value = false;
     };
+    const onClickOpenAccountPage = () => {
+      window.open(GLGlobal.authorityUrl());
+    };
+    const onClickSignOut = () => {
+      AuthService.storePagethenSignoutRedirect();
+    };
     return {
+      isLoggedIn,
       userAvatar,
+      userName,
+      userRole,
       showInfo,
       onClickShowInfo,
-      onClickHideInfo
+      onClickHideInfo,
+      onClickSignOut,
+      onClickOpenAccountPage,
     };
   },
 });

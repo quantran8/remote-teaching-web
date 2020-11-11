@@ -28,9 +28,7 @@ class RedirectNavigator {
       console.error("RedirectNavigator.navigate: No url provided");
       return Promise.reject(new Error("No url provided"));
     }
-
     // window.location = params.url;
-
     return Promise.resolve({
       params,
       navigate: () => {
@@ -197,8 +195,8 @@ class AuthServiceClass {
 
     this.userManager.events.addUserSignedOut(() => {
       // when sso signout
-      console.log("addUserSignedOut");
       this.clearSignStorage();
+      store.dispatch("auth/signout");
     });
   }
 

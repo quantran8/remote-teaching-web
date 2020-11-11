@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home/home.vue";
-import { LayoutGuard,AuthGuard } from "./guard";
+import { LayoutGuard, AuthGuard } from "./guard";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,6 +10,15 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       layout: "main",
       requiresAuth: true,
+    },
+  },
+  {
+    path: "/access-denied",
+    name: "access-denied",
+    component: () => import("../views/access-denied/access-denied.vue"),
+    meta: {
+      layout: "main",
+      requiresAuth: false,
     },
   },
   {

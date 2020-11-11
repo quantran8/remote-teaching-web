@@ -9,7 +9,7 @@
     "build:dev": "vue-cli-service build --mode dev",
     "build:prod": "vue-cli-service build --mode prod",
     "build:test": "vue-cli-service build --mode test",
-    "start": "vue-cli-service serve --host 127.0.0.1 --port 8189 --open --mode local"
+    "start": "vue-cli-service serve --host 127.0.0.1 --port 8091 --open --mode local"
   },
   "dependencies": {
     "@types/history": "4.7.6",

@@ -13,22 +13,26 @@
       <slot />
     </div>
     <slot name="actions">
-      <MenuItem class="user-container">
+      <MenuItem class="user-container" v-if="isLoggedIn">
         <div class="user-container">
           <img
             class="user-avatar"
-            src="@/assets/images/user-default.png"
+            :src="userAvatar"
             alt="User Avatar"
           />
           <div class="user-info">
-            <div class="user-name">user name</div>
-            <div class="user-role">(user role)</div>
+            <div class="user-name">{{ userName }}</div>
+            <div class="user-role">{{ userRole }}</div>
           </div>
         </div>
         <template v-slot:popup>
-          <div>hello</div>
-          <div>hello 1</div>
-          <div>hello 2</div>
+          <div class="menu-item" @click.prevent="onClickOpenAccountPage">
+            <div class="item-title">
+              Edit Profile
+            </div>
+            <BaseIcon class="item-action" name="reply" />
+          </div>
+          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
         </template>
       </MenuItem>
     </slot>
