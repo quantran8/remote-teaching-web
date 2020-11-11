@@ -14,7 +14,6 @@ import {
   Permission,
 } from "../utils";
 import { LocationDescriptor } from "history";
-import { PermissionService } from "./permission.service";
 import AccountService from "./account.service";
 import { store } from "@/store";
 
@@ -227,7 +226,6 @@ class AuthServiceClass {
       profile: {
         roles: [],
         roleInfos: [],
-        permissions: [],
       },
       ...user,
     };
@@ -364,11 +362,7 @@ class AuthServiceClass {
 
   private mergeLoginInfo(user: any) {
     return Promise.resolve(this.processUser(user))
-      .then(
-        this.accessTokenScope(
-          this.appendPermissionAndAvatarInfo.bind(this)
-        ) as any
-      )
+      .then(this.accessTokenScope(this.appendUserAvatarInfo.bind(this)) as any)
       .then((loginInfo: any) => {
         this.setLoginInfo(true, loginInfo);
         return Promise.resolve(loginInfo);
@@ -376,22 +370,16 @@ class AuthServiceClass {
       .catch((e) => Promise.reject(e));
   }
 
-  public hasPermissions(loginInfo: LoginInfo) {
-    return (
-      loginInfo.profile.permissions && loginInfo.profile.permissions.length > 0
-    );
-  }
-
-  private appendPermissionAndAvatarInfo(loginInfo: LoginInfo) {
+  private appendUserAvatarInfo(loginInfo: LoginInfo) {
     return new Promise<LoginInfo>((resolve, reject) => {
       if (!loginInfo.loggedin || GLUtil.isExpired(loginInfo)) {
         resolve(loginInfo);
-      } else if (!this.hasPermissions(loginInfo)) {
-        this.setPermissionInfo(loginInfo).then((result) => {
-          this.setUserAvatar(result).then((avatarResult) => {
+      } else if (!loginInfo.profile.avatarUrl) {
+        this.setUserAvatar(loginInfo)
+          .then((avatarResult) => {
             resolve(avatarResult);
-          });
-        });
+          })
+          .catch(() => resolve(loginInfo));
       } else {
         resolve(loginInfo);
       }
@@ -520,24 +508,6 @@ class AuthServiceClass {
     }
   }
 
-  public getPermissionInfo(): Permission[] {
-    const logininfo = this.getLoginInfo();
-    return logininfo && logininfo.profile ? logininfo.profile.permissions : [];
-  }
-
-  private setPermissionInfo(loginInfo: LoginInfo): Promise<LoginInfo> {
-    return new Promise((resolve, reject) => {
-      this.getUserPermission()
-        .then((permissions: any) => {
-          loginInfo.profile.permissions = permissions;
-          resolve(loginInfo);
-        })
-        .catch((e: any) => {
-          reject(loginInfo);
-        });
-    });
-  }
-
   private getExpiringInMinutes({ expires_at, expired }: LoginInfo): any {
     if (expired === undefined && expires_at) {
       return Math.floor((expires_at - Math.floor(Date.now() / 1000)) / 60);
@@ -564,10 +534,6 @@ class AuthServiceClass {
 
   private getUserAvatarUrl(userId: string, expirationInMinutes: any): any {
     return AccountService.getUserAvatarUrl(userId, expirationInMinutes);
-  }
-
-  private getUserPermission(): any {
-    return PermissionService.getPermissions();
   }
 }
 

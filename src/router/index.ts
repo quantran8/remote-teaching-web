@@ -28,6 +28,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       layout: "main",
       requiresAuth: true,
+      requireTeacher: true,
     },
   },
   {
@@ -37,6 +38,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       layout: "main",
       requiresAuth: true,
+      requireParent: true,
     },
   },
   {

@@ -169,7 +169,6 @@ export class GLGlobal {
 	public static appClientUrl = () => GLGlobal.processEnv().VUE_APP_CLIENT_URL;
 	public static loginInfo = () => AuthService.getLoginInfo();
 	public static refreshLoginInfo = () => AuthService.signinSilent();
-	public static permissionInfo = () => AuthService.getPermissionInfo();
 	public static defaultIpApiConfig = () => ({
 		domain: "https://ipapi.co",
 		contentType: "json",

@@ -15,7 +15,6 @@ export interface Profile {
 	sub: string;
 	roles: string[];
 	roleInfos: { id: string; name: string }[];
-	permissions: Permission[];
 	[prop: string]: any;
 	avatarUrl: string | null;
 }

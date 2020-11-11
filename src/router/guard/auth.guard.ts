@@ -36,27 +36,11 @@ const routeAuth = (
   to: RouteLocationNormalized,
   next: any
 ) => {
-  if (
-    !loginInfo.loggedin ||
-    GLUtil.isExpired(loginInfo) ||
-    !AuthService.hasPermissions(loginInfo)
-  ) {
-    if (!store.getters["spin/setSplash"]) {
-      store.dispatch("spin/setSplash", true);
-    }
+  const isNotAuthorized = !loginInfo.loggedin || GLUtil.isExpired(loginInfo);
+  if (isNotAuthorized) {
     AuthService.storePagethenSigninRedirect();
   } else {
     if (to.meta) {
-      const roles = loginInfo?.profile?.roles;
-      const isSadminOrCAdmin =
-        Array.isArray(roles) &&
-        roles.some(
-          (r) => r === RoleName.systemAdmin || r === RoleName.contentAdmin
-        );
-      if (!isSadminOrCAdmin) {
-        store.dispatch("setAppView", { appView: AppView.UnAuthorized });
-        return;
-      }
       if (store.getters.appView !== AppView.Authorized) {
         store.dispatch("setAppView", { appView: AppView.Authorized });
       }

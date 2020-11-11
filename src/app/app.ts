@@ -1,5 +1,7 @@
 import { AuthService } from "@/commonui";
+import { AppView } from "@/store/app/state";
 import { computed, defineComponent, watch } from "vue";
+import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 
@@ -13,17 +15,29 @@ export default defineComponent({
     AuthService.localSilentLogin();
   },
   setup() {
-    const { getters } = useStore();
-    const isHeaderVisible = computed(() => getters.appLayout !== "full");
-    const isFooterVisible = computed(() => getters.appLayout !== "full");
-    const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
-
+    const store = useStore();
+    const isHeaderVisible = computed(() => store.getters.appLayout !== "full");
+    const isFooterVisible = computed(() => store.getters.appLayout !== "full");
+    const isSignedIn = computed(() => store.getters["auth/isLoggedIn"]);
+    const appView = computed(() => store.getters["appView"]);
+    const router = useRouter();
     watch([isSignedIn], () => {
       if (!isSignedIn.value) {
-        console.log("User Signed Out");
+        // user slient signed out from account side.
+        // AuthService.storePagethenSignoutRedirect();
+        router.replace('/access-denied');
+      } else {
+        store.dispatch("setAppView", {
+          appView: AppView.Authorized,
+        });
       }
     });
 
-    return { isSignedIn, isHeaderVisible, isFooterVisible };
+    return {
+      appView,
+      isSignedIn,
+      isHeaderVisible,
+      isFooterVisible,
+    };
   },
 });
