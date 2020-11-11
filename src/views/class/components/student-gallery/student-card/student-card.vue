@@ -9,7 +9,7 @@
       <div class="name">{{ name }}</div>
       <div class="info">
         <BaseTag :tag="`${index + 1}`" @click="toggleContextMenu" />
-        <BaseButton class="media-button" @click="toggleAudio">
+        <BaseButton class="media-button" @click="toggleAudio" draggable="true">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
         <BaseButton class="media-button" @click="toggleVideo">
