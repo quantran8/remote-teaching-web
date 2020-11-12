@@ -1,4 +1,4 @@
-import { AuthService } from "@/commonui";
+import { AuthService, LoginInfo } from "@/commonui";
 import { AppView } from "@/store/app/state";
 import { computed, defineComponent, watch } from "vue";
 // import { useRouter } from "vue-router";
@@ -15,19 +15,27 @@ export default defineComponent({
     AuthService.localSilentLogin();
   },
   setup() {
-    const store = useStore();
-    const isHeaderVisible = computed(() => store.getters.appLayout !== "full");
-    const isFooterVisible = computed(() => store.getters.appLayout !== "full");
-    const isSignedIn = computed(() => store.getters["auth/isLoggedIn"]);
-    const appView = computed(() => store.getters["appView"]);
+    const { getters, dispatch } = useStore();
+    const isHeaderVisible = computed(() => getters.appLayout !== "full");
+    const isFooterVisible = computed(() => getters.appLayout !== "full");
+    const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
+    const appView = computed(() => getters["appView"]);
     // const router = useRouter();
     watch([isSignedIn], () => {
       if (!isSignedIn.value) {
         // router.replace("/");
       } else {
-        store.dispatch("setAppView", {
+        dispatch("setAppView", {
           appView: AppView.Authorized,
         });
+        const loginInfo: LoginInfo = getters["auth/loginInfo"];
+        if (loginInfo) {
+          dispatch("parent/setInfo", {
+            id: loginInfo.profile.sub,
+            name: loginInfo.profile.name,
+          });
+          dispatch("parent/loadChildren");
+        }
       }
     });
 
