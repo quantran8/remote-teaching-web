@@ -1,8 +1,6 @@
 import { GetterTree } from "vuex";
-import state from "../app/state";
 import {
   ClassState,
-  StudentInClassStatus,
   StudentState,
   TeacherState,
 } from "./state";
@@ -19,6 +17,18 @@ const getters: GetterTree<ClassState, any> = {
   },
   isGalleryView(state: ClassState) {
     return state.view === 2;
+  },
+  isAllVideoHidden(state: ClassState) {
+    for (const student of state.students) {
+      if (student.videoEnabled) return false;
+    }
+    return true;
+  },
+  isAllAudioMuted(state: ClassState) {
+    for (const student of state.students) {
+      if (student.audioEnabled) return false;
+    }
+    return true;
   },
 };
 

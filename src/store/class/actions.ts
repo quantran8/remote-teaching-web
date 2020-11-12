@@ -37,8 +37,14 @@ const actions: ActionTree<ClassState, any> = {
   hideAllStudents(store) {
     store.commit("hideAllStudents", {});
   },
+  showAllStudents(store) {
+    store.commit("showAllStudents", {});
+  },
   muteAllStudents(store) {
     store.commit("muteAllStudents", {});
+  },
+  unmuteAllStudents(store) {
+    store.commit("unmuteAllStudents", {});
   },
   studentJoinned(store, payload: { studentId: string }) {
     store.commit("studentJoinned", payload);

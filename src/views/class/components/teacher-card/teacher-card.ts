@@ -15,7 +15,7 @@ export default defineComponent({
       default: true,
     },
   },
-
+  emits: ["show-all", "hide-all", "mute-all", "unmute-all", "end"],
   setup(props, { emit }) {
     const video = useFakeVideoUrl(0);
     const store = useStore();
@@ -28,6 +28,31 @@ export default defineComponent({
     );
     const videoIcon = computed(() =>
       props.videoEnabled ? "icon-video-on" : "icon-video-off"
+    );
+
+    const isAllVideoHidden = computed(
+      () => store.getters["class/isAllVideoHidden"]
+    );
+    const isAllAudioMuted = computed(
+      () => store.getters["class/isAllAudioMuted"]
+    );
+
+    const globalAudioText = computed(() =>
+      store.getters["class/isAllAudioMuted"] ? "Unmute All" : "Mute All"
+    );
+    const globalVideoText = computed(() =>
+      store.getters["class/isAllVideoHidden"] ? "Show All" : "Hide All"
+    );
+
+    const globalAudioIcon = computed(() =>
+      store.getters["class/isAllAudioMuted"]
+        ? "icon-audio-on"
+        : "icon-audio-off"
+    );
+    const globalVideoIcon = computed(() =>
+      store.getters["class/isAllVideoHidden"]
+        ? "icon-video-on"
+        : "icon-video-off"
     );
 
     const toggleAudio = () => {
@@ -44,15 +69,16 @@ export default defineComponent({
       });
     };
 
-    const onClickHideAll = () => {
-      emit("hide-all");
+    const onClickToggleVideo = () => {
+      emit(isAllVideoHidden.value ? "show-all" : "hide-all");
     };
-    const onClickMuteAll = () => {
-      emit("mute-all");
+    const onClickToggleAudio = () => {
+      emit(isAllAudioMuted.value ? "unmute-all" : "mute-all");
     };
     const onClickEnd = () => {
       emit("end");
     };
+
     return {
       video,
       audioIcon,
@@ -61,9 +87,13 @@ export default defineComponent({
       toggleVideo,
       contextMenuVisibility,
       toggleContextMenu,
-      onClickHideAll,
-      onClickMuteAll,
+      onClickToggleVideo,
+      onClickToggleAudio,
       onClickEnd,
+      globalAudioText,
+      globalVideoText,
+      globalAudioIcon,
+      globalVideoIcon,
     };
   },
 });

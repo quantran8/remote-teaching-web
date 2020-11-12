@@ -44,8 +44,14 @@ const mutations: MutationTree<ClassState> = {
   hideAllStudents(state: ClassState) {
     state.students.forEach((student) => (student.videoEnabled = false));
   },
+  showAllStudents(state: ClassState) {
+    state.students.forEach((student) => (student.videoEnabled = true));
+  },
   muteAllStudents(state: ClassState) {
     state.students.forEach((student) => (student.audioEnabled = false));
+  },
+  unmuteAllStudents(state: ClassState) {
+    state.students.forEach((student) => (student.audioEnabled = true));
   },
   studentJoinned(state: ClassState, payload: { studentId: string }) {
     const student = state.students.find(

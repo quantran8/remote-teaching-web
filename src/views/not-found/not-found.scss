@@ -1,0 +1,27 @@
+.page-container {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+  img {
+    margin: 4rem 0;
+    height: 20rem;
+    max-width: 80vw;
+  }
+
+  .btn-homepage {
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    color: white;
+    background-color: #00591b;
+    border-radius: 10rem;
+    display: inline-block;
+    text-decoration: none;
+
+    -moz-box-shadow: 1px 2px 4px 4px #00591b23;
+    -webkit-box-shadow: 1px 2px 4px 4px #00591b23;
+    box-shadow: 1px 2px 4px 4px #00591b23;
+  }
+  .btn-homepage:hover {
+    cursor: pointer;
+  }
+}

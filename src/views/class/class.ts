@@ -1,5 +1,5 @@
 import { computed, defineComponent, ref } from "vue";
-import { onBeforeRouteLeave, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
   TeacherCard,
@@ -48,9 +48,16 @@ export default defineComponent({
     const onClickHideAll = () => {
       store.dispatch("class/hideAllStudents");
     };
+    const onClickShowAll = () => {
+      store.dispatch("class/showAllStudents");
+    };
 
     const onClickMuteAll = () => {
       store.dispatch("class/muteAllStudents");
+    };
+
+    const onClickUnmuteAll = () => {
+      store.dispatch("class/unmuteAllStudents");
     };
 
     const onClickEnd = () => {
@@ -66,18 +73,12 @@ export default defineComponent({
       showModal.value = false;
     };
 
-    // onBeforeRouteLeave((to, from, next) => {
-    //   if (!hasConfirmed.value) {
-    //     showModal.value = true;
-    //     return;
-    //   }
-    //   next();
-    // });
-
     return {
       showModal,
       onClickHideAll,
+      onClickShowAll,
       onClickMuteAll,
+      onClickUnmuteAll,
       onClickEnd,
       currentView,
       isGalleryView,

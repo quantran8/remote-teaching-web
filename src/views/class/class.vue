@@ -10,6 +10,8 @@
           :videoEnabled="teacher.videoEnabled"
           @hide-all="onClickHideAll"
           @mute-all="onClickMuteAll"
+          @show-all="onClickShowAll"
+          @unmute-all="onClickUnmuteAll"
           @end="onClickEnd"
         />
       </div>

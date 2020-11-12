@@ -20,14 +20,18 @@
         <BaseButton class="button-setting" @click="toggleContextMenu">
           <BaseIcon class="icon-setting" name="icon-setting"></BaseIcon>
           <div v-if="contextMenuVisibility" class="context-menu">
-            <BaseButton class="menu-item" @click="onClickHideAll">
-              <BaseIcon name="icon-video-on" class="menu-icon"></BaseIcon>
-              <div class="item-title">Hide All</div>
+            <BaseButton class="menu-item" @click="onClickToggleVideo">
+              <BaseIcon :name="globalVideoIcon" class="menu-icon"></BaseIcon>
+              <div class="item-title">
+                {{ globalVideoText }}
+              </div>
             </BaseButton>
 
-            <BaseButton class="menu-item" @click="onClickMuteAll">
-              <BaseIcon name="icon-audio-on" class="menu-icon"></BaseIcon>
-              <div class="item-title">Mute All</div>
+            <BaseButton class="menu-item" @click="onClickToggleAudio">
+              <BaseIcon :name="globalAudioIcon" class="menu-icon"></BaseIcon>
+              <div class="item-title">
+                {{ globalAudioText }}
+              </div>
             </BaseButton>
 
             <div class="menu-item spacer"></div>

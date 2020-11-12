@@ -50,6 +50,16 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true,
     },
   },
+
+  {
+    path: "/:catchAll(.*)",
+    name: "NotFound",
+    component: () => import("../views/not-found/not-found.vue"),
+    meta: {
+      layout: "full",
+      requiresAuth: false,
+    },
+  },
 ];
 
 const router = createRouter({

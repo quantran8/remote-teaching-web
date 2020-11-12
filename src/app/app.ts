@@ -1,7 +1,7 @@
 import { AuthService } from "@/commonui";
 import { AppView } from "@/store/app/state";
 import { computed, defineComponent, watch } from "vue";
-import { useRouter } from 'vue-router';
+// import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 
@@ -20,12 +20,10 @@ export default defineComponent({
     const isFooterVisible = computed(() => store.getters.appLayout !== "full");
     const isSignedIn = computed(() => store.getters["auth/isLoggedIn"]);
     const appView = computed(() => store.getters["appView"]);
-    const router = useRouter();
+    // const router = useRouter();
     watch([isSignedIn], () => {
       if (!isSignedIn.value) {
-        // user slient signed out from account side.
-        // AuthService.storePagethenSignoutRedirect();
-        router.replace('/access-denied');
+        // router.replace("/");
       } else {
         store.dispatch("setAppView", {
           appView: AppView.Authorized,
