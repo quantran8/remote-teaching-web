@@ -3,7 +3,6 @@ import {
   GLUtil,
   locationReplace,
   LoginInfo,
-  RoleName,
 } from "@/commonui";
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 
