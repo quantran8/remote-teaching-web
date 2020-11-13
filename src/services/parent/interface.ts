@@ -1,5 +1,5 @@
 import { GetChildrenModel } from "./model";
 
-export interface IParentService {
+export interface ParentServiceInterface {
   getChildren(parentId: string): Promise<GetChildrenModel>;
 }
