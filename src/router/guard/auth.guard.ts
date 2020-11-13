@@ -47,10 +47,8 @@ const routeAuth = (
       if (store.getters["spin/setSplash"]) {
         store.dispatch("spin/setSplash", false);
       }
-      next();
     } else {
       store.dispatch("setAppView", { appView: AppView.UnAuthorized });
-      next(false);
     }
   }
 };
@@ -112,10 +110,7 @@ export default (
     }
   } else if (to.matched.some((record) => record.meta.notFound)) {
     store.dispatch("setAppView", { appView: AppView.NotFound });
-    next();
   } else {
     store.dispatch("setAppView", { appView: AppView.Blank });
-    next();
   }
-  next();
 };

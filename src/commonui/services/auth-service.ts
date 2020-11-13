@@ -11,7 +11,6 @@ import {
   LoginInfo,
   GLUtil,
   GLGlobal,
-  Permission,
 } from "../utils";
 import { LocationDescriptor } from "history";
 import AccountService from "./account.service";
@@ -522,7 +521,6 @@ class AuthServiceClass {
         this.getExpiringInMinutes(loginInfo)
       )
         .then((userAvatarUrl: string) => {
-          console.log("AvatarURL", userAvatarUrl);
           loginInfo.profile.avatarUrl = userAvatarUrl;
           resolve(loginInfo);
         })
