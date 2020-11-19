@@ -1,14 +1,9 @@
+import { AdminService } from "@/commonui";
 import { ParentServiceInterface } from "./interface";
-import { GetChildrenModel } from "./model";
-
-class ParentServiceClass implements ParentServiceInterface {
-  // serviceRoute: ServiceRoute = { prefix: "admin/v1/parents" };
-  // getChildren(parentId: string): Promise<GetChildrenModel> {
-  //   return this.get(`/${parentId}/GetChildrenDetail`);
-  // }
-
-  getChildren(parentId: string): Promise<GetChildrenModel> {
-    return Promise.reject(parentId);
+class ParentServiceClass extends AdminService
+  implements ParentServiceInterface {
+  getChildren<T>(parentId: string): Promise<T> {
+    return this.get(`${parentId}/GetChildrenDetail`);
   }
 }
 

@@ -1,5 +1,6 @@
+import { AdminService } from '@/commonui';
 import { Parent } from "@/models/parent.model";
-import { ParentService } from "@/services";
+import { GetChildrenModel, ParentService } from '@/services';
 import { ActionContext, ActionTree } from "vuex";
 import { ParentState } from "./state";
 
@@ -13,8 +14,8 @@ const actions: ActionTree<ParentState, any> = {
         reject();
         return;
       }
-      ParentService.getChildren(state.info.id)
-        .then((res) => {
+      new AdminService().getChildren<GetChildrenModel>(state.info.id)
+        .then((res: any) => {
           commit("setChildren", res.children);
           resolve();
         })
