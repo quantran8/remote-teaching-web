@@ -1,7 +1,17 @@
 <template>
-  <div>
-    <div v-for="child in children" :key="child.id">
-      {{ child.name }}
+  <div class="student-page">
+    <p></p>
+    <h2>Welcome {{ username }}</h2>
+    <p>Choose a student to start</p>
+    <hr />
+    <p></p>
+    <div class="list-student">
+      <StudentCard
+        v-for="child in children"
+        :key="child.id"
+        :name="child.name"
+      >
+      </StudentCard>
     </div>
   </div>
 </template>
