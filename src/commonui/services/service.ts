@@ -17,16 +17,12 @@ import {
   GLGlobal,
   fmtMsg,
 } from "@/commonui/utils";
-// import { getModule } from "vuex-module-decorators";
-// import { Spinner } from "../store/modules/spinner";
 import { CommonLocale } from "@/locales/localeid";
 import { store } from "@/store";
 
 export type ServiceOptions = {
   needLoader?: boolean;
 };
-
-// const spinModule = getModule(Spinner) as Spinner;
 
 export function getServiceMethodKey(
   service: GLServiceBase<any, any>,
@@ -188,13 +184,13 @@ export interface IGLService {
 }
 export interface ITGLService<
   TRequest extends GLRequest,
-  TPageReuest extends GLPagingRequest
+  TPageRequest extends GLPagingRequest
 > extends IGLService {
-  getItemsBy<TResp = GLPagingResponse, TReq = TPageReuest>(
+  getItemsBy<TResp = GLPagingResponse, TReq = TPageRequest>(
     data?: TReq,
     routeData?: object
   ): Promise<TResp>;
-  getItemsBy<TResp = GLPagingResponse, TReq = TPageReuest>(
+  getItemsBy<TResp = GLPagingResponse, TReq = TPageRequest>(
     suffix: string,
     data?: TReq,
     routeData?: object
