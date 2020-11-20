@@ -1,6 +1,5 @@
 import { AuthService, LoginInfo } from "@/commonui";
 import { AppView } from "@/store/app/state";
-import { startHub } from '@/ws';
 import { computed, defineComponent, watch } from "vue";
 // import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -14,7 +13,6 @@ export default defineComponent({
   },
   created() {
     AuthService.localSilentLogin();
-    startHub();
   },
   setup() {
     const { getters, dispatch } = useStore();
