@@ -50,6 +50,15 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true,
     },
   },
+  {
+    path: "/student-view/:id",
+    name: "StudentView",
+    component: () => import("../views/student-view/student-view.vue"),
+    meta: {
+      layout: "main",
+      requiresAuth: true,
+    },
+  },
 
   {
     path: "/:catchAll(.*)",
