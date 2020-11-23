@@ -1,4 +1,4 @@
-import { AuthService, LoginInfo } from "@/commonui";
+import { AuthService, LoginInfo, RoleName } from "@/commonui";
 import { AppView } from "@/store/app/state";
 import { computed, defineComponent, watch } from "vue";
 // import { useRouter } from "vue-router";
@@ -29,12 +29,30 @@ export default defineComponent({
           appView: AppView.Authorized,
         });
         const loginInfo: LoginInfo = getters["auth/loginInfo"];
-        if (loginInfo) {
+        const isLoggedIn = loginInfo && loginInfo.loggedin;
+        const isParent =
+          loginInfo &&
+          loginInfo.profile &&
+          loginInfo.profile.roles.indexOf(RoleName.parent) !== -1;
+        const isTeacher =
+          loginInfo &&
+          loginInfo.profile &&
+          loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1;
+
+        if (isLoggedIn && isParent) {
           dispatch("parent/setInfo", {
             id: loginInfo.profile.sub,
             name: loginInfo.profile.name,
           });
           dispatch("parent/loadChildren");
+        }
+
+        if (isLoggedIn && isTeacher) {
+          dispatch("teacher/setInfo", {
+            id: loginInfo.profile.sub,
+            name: loginInfo.profile.name,
+          });
+          dispatch("teacher/loadClasses");
         }
       }
     });

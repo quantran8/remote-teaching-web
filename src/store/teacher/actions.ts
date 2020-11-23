@@ -1,6 +1,5 @@
-import { ClassModel } from "@/models/class.model";
 import { Parent } from "@/models/parent.model";
-import { ContentService } from '@/services';
+import { GetClassesModel, TeacherService } from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
@@ -14,10 +13,9 @@ const actions: ActionTree<TeacherState, any> = {
         reject();
         return;
       }
-      new ContentService()
-        .teacherGetClasses(state.info.id)
-        .then((res: Array<ClassModel>) => {
-          commit("setClasses", res);
+      TeacherService.getClasses(state.info.id)
+        .then((res: GetClassesModel) => {
+          commit("setClasses", res.data);
           resolve();
         })
         .catch((err) => {

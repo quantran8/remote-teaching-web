@@ -7,12 +7,12 @@
     <p></p>
     <div>
       <ClassCard
-        v-for="cl in classes"
-        :key="cl.id"
         class="card-margin"
-        :id="cl.id"
-        :title="cl.title"
-        :description="cl.description"
+        v-for="cl in classes"
+        :key="cl.schoolClassId"
+        :id="cl.schoolClassId"
+        :title="cl.schoolClassName"
+        :description="cl.schoolName"
       />
     </div>
   </div>

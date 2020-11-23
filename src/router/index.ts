@@ -1,6 +1,9 @@
+import { store } from "@/store";
+import { AppView } from "@/store/app/state";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home/home.vue";
-import { LayoutGuard, AuthGuard } from "./guard";
+import { RequireTeacherError } from "./error";
+import { LayoutGuard, AuthGuard, TeacherGuard, ParentGuard } from "./guard";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -79,10 +82,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   try {
     AuthGuard(to, from, next);
+    TeacherGuard(to, from, next);
+    ParentGuard(to, from, next);
     LayoutGuard(to, from, next);
     next();
   } catch (error) {
     console.log("Error", error);
+    if (error as RequireTeacherError) {
+      console.log("xxxxxxx");
+      next();
+      store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+    }
   }
 });
 
