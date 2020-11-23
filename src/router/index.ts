@@ -87,9 +87,8 @@ router.beforeEach((to, from, next) => {
     LayoutGuard(to, from, next);
     next();
   } catch (error) {
-    console.log("Error", error);
+    console.log("RouterError", error);
     if (error as RequireTeacherError) {
-      console.log("xxxxxxx");
       next();
       store.dispatch("setAppView", { appView: AppView.UnAuthorized });
     }
