@@ -1,4 +1,4 @@
-import { AdminService } from "@/commonui";
+import { AdminService } from "../admin.service";
 import { ParentServiceInterface } from "./interface";
 class ParentServiceClass extends AdminService
   implements ParentServiceInterface {

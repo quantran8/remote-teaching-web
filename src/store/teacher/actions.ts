@@ -1,6 +1,6 @@
 import { ClassModel } from "@/models/class.model";
 import { Parent } from "@/models/parent.model";
-import { ContentService } from '@/test';
+import { ContentService } from '@/services';
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
