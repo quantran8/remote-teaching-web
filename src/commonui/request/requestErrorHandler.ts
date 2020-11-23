@@ -27,7 +27,7 @@ export class GLRequestErrorHandler implements IGLRequestErrorHandler {
 	}
 	errorMessage(id: any) {
 		const error = fmtMsg(id);
-		MessageHelper.ShowError({ error: error, error_description: error, error_code: null! });
+		MessageHelper.ShowError({ error: error, errorDescription: error, errorCode: null! });
 	}
 	badRequest(response: any) {
 		(response.body && response.body.error_code) || this.errorMessage(CommonLocale.CommonHttpBadRequest);

@@ -34,11 +34,11 @@ export class MessageHelper {
 		// });
 	}
 
-	static ShowError(error?: { error: string; error_description: string; error_code: string }) {
+	static ShowError(error?: { error: string; errorDescription: string; errorCode: string }) {
 		if (!error) {
 			return;
 		}
-		MessageHelper.Message(NotificationType.Failed, error.error_description);
+		MessageHelper.Message(NotificationType.Failed, error.errorDescription);
 	}
 
 	static Confirm(content: string | VNode, onOk: any, onCancel: any = null, okText = null, cancelText = null) {

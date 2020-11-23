@@ -8,7 +8,7 @@ import {
   ObjectArray,
   GLMergeDoc,
   GLRequestParam,
-} from "../request";
+} from "@/commonui/request";
 import {
   MessageHelper,
   HttpMethod,
@@ -41,10 +41,10 @@ function getNeedLoader(options: ServiceOptions) {
   };
 }
 export function maskThrottle() {
-	store.dispatch('spin/setMaskMain', true)
+  store.dispatch("spin/setMaskMain", true);
 }
 export function unmaskThrottle(d?: any) {
-  store.dispatch('spin/setMaskMain', false)
+  store.dispatch("spin/setMaskMain", false);
   return d;
 }
 export function customErrMsgs(errMsgs = {}) {
@@ -173,7 +173,7 @@ export function customError(
   };
 }
 
-export interface IGLService {
+export interface GLServiceInterface {
   getItemsBy(data: GLPagingRequest): Promise<GLPagingResponse>;
   get(data: GLRequest): Promise<GLResponse>;
   delete(data: GLRequest): Promise<GLResponse>;
@@ -182,10 +182,10 @@ export interface IGLService {
   merge(data: GLMergeDoc[] | any): Promise<GLResponse>;
   getBlob(data: GLRequest): Promise<GLResponse>;
 }
-export interface ITGLService<
+export interface TGLServiceInterface<
   TRequest extends GLRequest,
   TPageRequest extends GLPagingRequest
-> extends IGLService {
+> extends GLServiceInterface {
   getItemsBy<TResp = GLPagingResponse, TReq = TPageRequest>(
     data?: TReq,
     routeData?: object
@@ -305,7 +305,7 @@ export interface ServiceRoute {
 export abstract class GLServiceBase<
   TRequest extends GLRequest,
   TPageReuest extends GLPagingRequest
-> implements ITGLService<TRequest, TPageReuest> {
+> implements TGLServiceInterface<TRequest, TPageReuest> {
   request: ITGLRequest<GLRequest, GLResponse> = new GLRequestProxy<
     GLRequest,
     GLResponse
