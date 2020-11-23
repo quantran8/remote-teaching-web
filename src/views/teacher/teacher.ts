@@ -5,6 +5,10 @@ export default defineComponent({
   components: {
     ClassCard,
   },
+  created(){
+    const store = useStore();
+    store.dispatch("room/loadRooms");
+  },
   setup() {
     const store = useStore();
     const classes = computed(() => store.getters["teacher/classes"]);

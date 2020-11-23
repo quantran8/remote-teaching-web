@@ -6,6 +6,9 @@ const actions: ActionTree<RoomState, any> = {
   setInfo({ commit }, payload: Parent) {
     commit("setInfo", payload);
   },
+  async loadRooms(store, payload: any) {
+    console.log("loadRooms", store, payload);
+  },
 };
 
 export default actions;
