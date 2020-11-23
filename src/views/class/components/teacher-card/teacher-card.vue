@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="setting">
-        <BaseButton class="button-setting" @click="toggleContextMenu">
+        <BaseButton class="button-setting" @click="toggleContextMenu" v-click-outside="hideContextMenu">
           <BaseIcon class="icon-setting" name="icon-setting"></BaseIcon>
           <div v-if="contextMenuVisibility" class="context-menu">
             <BaseButton class="menu-item" @click="onClickToggleVideo">

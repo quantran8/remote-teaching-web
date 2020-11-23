@@ -23,6 +23,9 @@ export default defineComponent({
     const toggleContextMenu = () => {
       contextMenuVisibility.value = !contextMenuVisibility.value;
     };
+    const hideContextMenu = () => {
+      contextMenuVisibility.value = false;
+    };
     const audioIcon = computed(() =>
       props.audioEnabled ? "icon-audio-on" : "icon-audio-off"
     );
@@ -87,6 +90,7 @@ export default defineComponent({
       toggleVideo,
       contextMenuVisibility,
       toggleContextMenu,
+      hideContextMenu,
       onClickToggleVideo,
       onClickToggleAudio,
       onClickEnd,

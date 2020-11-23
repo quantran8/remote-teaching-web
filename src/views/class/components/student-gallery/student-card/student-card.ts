@@ -66,6 +66,9 @@ export default defineComponent({
     const toggleContextMenu = () => {
       isContextMenuVisible.value = !isContextMenuVisible.value;
     };
+    const hideContextMenu = () => {
+      isContextMenuVisible.value = false;
+    };
 
     return {
       video,
@@ -76,6 +79,7 @@ export default defineComponent({
       addABadge,
       isContextMenuVisible,
       toggleContextMenu,
+      hideContextMenu,
     };
   },
 });

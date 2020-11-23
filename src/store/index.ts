@@ -4,6 +4,7 @@ import ClassModule from "./class";
 import AuthModule from "./auth";
 import SpinModule from "./spin";
 import ParentModule from "./parent";
+import TeacherModule from "./teacher";
 
 const store = createStore({
   state: {},
@@ -15,7 +16,16 @@ const store = createStore({
     auth: AuthModule,
     spin: SpinModule,
     parent: ParentModule,
+    teacher: TeacherModule,
   },
 });
 
-export { store, AppModule, ClassModule, AuthModule, SpinModule, ParentModule };
+export {
+  store,
+  AppModule,
+  ClassModule,
+  AuthModule,
+  SpinModule,
+  ParentModule,
+  TeacherModule,
+};

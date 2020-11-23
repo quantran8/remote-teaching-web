@@ -8,7 +8,7 @@
     <div class="mask" :class="{ masked: !videoEnabled }">
       <div class="name">{{ name }}</div>
       <div class="info">
-        <BaseTag :tag="`${index + 1}`" @click="toggleContextMenu" />
+        <BaseTag :tag="`${index + 1}`" @click="toggleContextMenu" v-click-outside="hideContextMenu"/>
         <BaseButton class="media-button" @click="toggleAudio" draggable="true">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>

@@ -1,4 +1,3 @@
-import { LoginInfo } from "@/commonui";
 import { Parent } from "@/models/parent.model";
 import { ChildModel } from "@/services";
 import { MutationTree } from "vuex";

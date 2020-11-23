@@ -1,4 +1,3 @@
-export interface Parent {
-  id: string;
-  name: string;
-}
+import { UserModel } from "./user.model";
+
+export interface Parent extends UserModel {}
