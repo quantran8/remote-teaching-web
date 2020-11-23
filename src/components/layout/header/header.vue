@@ -1,9 +1,9 @@
 <template>
   <div class="header">
     <slot name="leading">
-      <a href="/">
+      <router-link to="/">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
-      </a>
+      </router-link>
     </slot>
     <div class="h-spacer"></div>
     <div class="content">
@@ -15,11 +15,7 @@
     <slot name="actions">
       <MenuItem class="user-container" v-if="isLoggedIn">
         <div class="user-container">
-          <img
-            class="user-avatar"
-            :src="userAvatar"
-            alt="User Avatar"
-          />
+          <img class="user-avatar" :src="userAvatar" alt="User Avatar" />
           <div class="user-info">
             <div class="user-name">{{ userName }}</div>
             <div class="user-role">{{ userRole }}</div>
@@ -27,9 +23,7 @@
         </div>
         <template v-slot:popup>
           <div class="menu-item" @click.prevent="onClickOpenAccountPage">
-            <div class="item-title">
-              Edit Profile
-            </div>
+            <div class="item-title">Edit Profile</div>
             <BaseIcon class="item-action" name="reply" />
           </div>
           <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>

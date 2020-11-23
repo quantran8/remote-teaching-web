@@ -1,7 +1,16 @@
 <template>
   <LoadingPage v-if="appView === 4" />
   <NotFoundPage v-else-if="appView === 3" />
-  <AccessDeniedPage v-else-if="appView === 2" />
+
+  <MainLayout v-else-if="appView === 2">
+    <template v-slot:header>
+      <AppHeader title="Remote Teaching" />
+    </template>
+    <AccessDeniedPage />
+    <template v-slot:footer>
+      <AppFooter />
+    </template>
+  </MainLayout>
   <MainLayout v-else>
     <template v-if="isHeaderVisible" v-slot:header>
       <AppHeader title="Remote Teaching" />
