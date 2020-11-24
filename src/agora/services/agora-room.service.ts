@@ -68,7 +68,7 @@ export class AgoraRoomApi {
         host: {
           limit: 1,
         },
-        broadcaster: {
+        audience: {
           limit: 16,
         },
       },
@@ -89,7 +89,7 @@ export class AgoraRoomApi {
       method: "POST",
       data: {
         roleConfig: {
-          broadcaster: {
+          audience: {
             limit: 4,
           },
           assistant: {
@@ -150,7 +150,7 @@ export class AgoraRoomApi {
     username: string,
     token: string,
     streamUUID: string = "0",
-    isHost: boolean = false
+    role: "host" | "audience" = "audience"
   ) {
     const url = `/v1/rooms/${room}/users/${username}/entry`;
     return await this.fetch({
@@ -159,7 +159,7 @@ export class AgoraRoomApi {
       data: {
         userName: username,
         streamUuid: streamUUID,
-        role: isHost ? "host" : "broadcaster",
+        role: role,
       },
       token: token,
     });
