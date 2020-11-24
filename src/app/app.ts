@@ -29,6 +29,7 @@ export default defineComponent({
           appView: AppView.Authorized,
         });
         const loginInfo: LoginInfo = getters["auth/loginInfo"];
+        console.log("LoginInfo", loginInfo);
         const isLoggedIn = loginInfo && loginInfo.loggedin;
         const isParent =
           loginInfo &&

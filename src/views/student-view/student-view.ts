@@ -15,9 +15,18 @@ export default defineComponent({
       AgoraClientSDK.initStream();
       console.log(AgoraClientSDK.stream);
     };
+
+    const getDevices = ()=>{
+      AgoraClientSDK.getDevices();
+    }
+    const getCameras = ()=>{
+      AgoraClientSDK.getCameras();
+    }
     return {
       joinZoom,
-      startStream
+      startStream,
+      getDevices,
+      getCameras
     };
   },
 });
