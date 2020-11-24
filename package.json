@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@microsoft/signalr": "^5.0.0",
-    "@types/agora-rtc-sdk": "^3.1.0",
     "@types/history": "4.7.6",
     "@types/js-cookie": "^2.2.6",
     "@types/jsrsasign": "^8.0.8",
@@ -21,7 +20,7 @@
     "@types/superagent": "^4.1.10",
     "@types/uuid": "^8.3.0",
     "@zoomus/websdk": "^1.8.3",
-    "agora-rtc-sdk": "^3.2.3",
+    "agora-rtc-sdk-ng": "^4.1.1",
     "bowser": "^2.11.0",
     "core-js": "^3.6.5",
     "js-cookie": "^2.2.1",

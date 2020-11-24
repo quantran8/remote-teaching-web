@@ -1,6 +1,5 @@
 import { AGORA_APP_CERTIFICATE, AGORA_APP_ID } from "@/agora/agora.config";
 import { AuthService, LoginInfo, RoleName } from "@/commonui";
-import { RTRoomManager } from "@/manager/room.manager";
 import { AppView } from "@/store/app/state";
 import { computed, defineComponent, watch } from "vue";
 // import { useRouter } from "vue-router";
@@ -56,13 +55,14 @@ export default defineComponent({
           dispatch("teacher/loadClasses");
         }
 
-        RTRoomManager.init({
+        dispatch("room/initRoom", {
           agora: {
             appId: AGORA_APP_ID,
             appCertificate: AGORA_APP_CERTIFICATE,
             webConfig: {
               mode: "rtc",
               codec: "vp8",
+              role: isTeacher ? "host" : "audience",
             },
             user: {
               channel: "remote_teaching",
@@ -71,6 +71,23 @@ export default defineComponent({
             },
           },
         });
+
+        // RTRoomManager.init({
+        //   agora: {
+        //     appId: AGORA_APP_ID,
+        //     appCertificate: AGORA_APP_CERTIFICATE,
+        //     webConfig: {
+        //       mode: "rtc",
+        //       codec: "vp8",
+        //       role: isTeacher ? "host" : "audience",
+        //     },
+        //     user: {
+        //       channel: "remote_teaching",
+        //       username: loginInfo.profile.name.toLowerCase().replace(/ /g, ""),
+        //       role: isTeacher ? "host" : "audience",
+        //     },
+        //   },
+        // });
       }
     });
 

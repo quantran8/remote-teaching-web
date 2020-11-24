@@ -1,23 +1,11 @@
-import { IAgoraRTC, IAgoraRTCClient } from "agora-rtc-sdk";
-import AgoraRtcEngine from "./electron/types";
+import { IAgoraRTC, IAgoraRTCClient } from "agora-rtc-sdk-ng";
 
 declare function event_device_changed(evt: any): void;
 declare function event_media_state_changed(evt: any): void;
 
 type Option = any;
 
-type RTCWrapperProvider = AgoraWebRtcWrapper | AgoraElectronRTCWrapper;
-
-declare interface RTCProviderInitParams {
-  agoraSdk: any;
-  platform: string;
-  codec: string;
-  appId: string;
-  electronLogPath?: {
-    logPath: string;
-    videoSourceLogPath: string;
-  };
-}
+type RTCWrapperProvider = AgoraWebRtcWrapper;
 
 declare interface PrepareScreenShareParams {
   dom?: HTMLElement;
@@ -26,12 +14,14 @@ declare interface PrepareScreenShareParams {
 }
 
 declare interface StartScreenShareParams {
+  // Electron屏幕共享参数
   windowId?: number;
   config?: {
     profile: number;
     rect: any;
     param: any;
   };
+  // Web屏幕共享参数
   params: {
     uid: any;
     channel: string;
@@ -108,9 +98,6 @@ declare interface IAgoraRTCModule {
 
 declare interface IMediaService extends IAgoraRTCModule {
   sdkWrapper: RTCWrapperProvider;
-  web: AgoraWebRtcWrapper;
-  electron: AgoraElectronRTCWrapper;
-
   init(): void;
   release(): void;
 }
