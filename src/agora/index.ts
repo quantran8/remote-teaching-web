@@ -1,17 +1,14 @@
-import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   ConnectionDisconnectedReason,
   ConnectionState,
   IAgoraRTC,
   IAgoraRTCClient,
-  IAgoraRTCRemoteUser,
   ICameraVideoTrack,
   ILocalTrack,
   IMicrophoneAudioTrack,
 } from "agora-rtc-sdk-ng";
-import { AGORA_APP_TOKEN } from "./agora.config";
-import { AgoraRoomApi } from "./services/agora-room.service";
+import { AGORA_APP_TOKEN } from "./config";
 
 export interface AgoraClientSDK {
   appId: string;
@@ -36,7 +33,6 @@ export interface AgoraClientOptions {
 
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
-  _api?: AgoraRoomApi;
   _config?: ClientConfig;
   _appId: string;
   _appCertificate: string;
@@ -55,9 +51,6 @@ export class AgoraClient implements AgoraClientSDK {
   }
   get user(): AgoraUser {
     return this._options.user as AgoraUser;
-  }
-  get roomApi(): AgoraRoomApi {
-    return this._api as AgoraRoomApi;
   }
 
   get client(): IAgoraRTCClient {
@@ -83,7 +76,6 @@ export class AgoraClient implements AgoraClientSDK {
     this._config = options.webConfig;
     this._appId = options.appId;
     this._appCertificate = options.appCertificate;
-    this._api = new AgoraRoomApi();
     this.streamUUID = "";
   }
   joined: boolean = false;
@@ -93,20 +85,6 @@ export class AgoraClient implements AgoraClientSDK {
   async initClient() {
     if (this._client) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-
-    // const entryRoomData = await this.roomApi.entry(
-    //   this.user.channel,
-    //   this.user.username,
-    //   AGORA_APP_TOKEN,
-    //   "0",
-    //   this.user.role
-    // );
-    // this.streamUUID = entryRoomData.data.user.streamUuid;
-
-    // const streams = get(entryRoomData, "user.streams", []);
-    // console.log("Entry Room Data");
-    // console.log(streams);
-
     const responseJoinChannel = await this.client.join(
       this.appId,
       this.user.channel,
@@ -114,10 +92,8 @@ export class AgoraClient implements AgoraClientSDK {
       this.user.username
     );
     console.log("ResponseJoinChannel", responseJoinChannel);
-
     this.joined = true;
 
-    // Create a video track from the video captured by a camera.
     const localVideoTrack = await AgoraRTC.createCameraVideoTrack();
     const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
     await this.client.publish([localVideoTrack, localAudioTrack]);
@@ -131,20 +107,7 @@ export class AgoraClient implements AgoraClientSDK {
       console.log("user-info-updated", payload);
     });
     this.client.on("user-published", async (user, mediaType) => {
-      // Initiate the subscription
-      // await this.client.subscribe(user, mediaType);
-
-      // // If the subscribed track is an audio track
-      // if (mediaType === "audio") {
-      //   const audioTrack = user.audioTrack;
-      //   // Play the audio
-      //   audioTrack?.play();
-      // } else {
-      //   const videoTrack = user.videoTrack;
-      //   // Play the video
-      //   // videoTrack?.play("userStreamID");
-      //   console.log("videoTrack", videoTrack);
-      // }
+      console.log("user-published", user, mediaType);
       if (mediaType === "video") {
         const videoTrack = await this.client.subscribe(
           this.client.remoteUsers[0],
@@ -154,17 +117,6 @@ export class AgoraClient implements AgoraClientSDK {
         videoTrack.play("userStream1");
       }
     });
-    // this.client.on(
-    //   "user-published",
-    //   async (user: IAgoraRTCRemoteUser, mediaType) => {
-    //     console.log("user-published", user, mediaType);
-    //     try {
-    //       await this.client.subscribe(user, mediaType);
-    //     } catch (error) {
-    //       console.log("Error", error);
-    //     }
-    //   }
-    // );
     this.client.on(
       "connection-state-change",
       (
@@ -180,20 +132,14 @@ export class AgoraClient implements AgoraClientSDK {
   streams: Array<string> = [];
 
   async openCamera(): Promise<any> {
-    Logger.info("[agora-web] invoke web#openCamera");
     this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
     this.cameraTrack.on("track-ended", () => {
       this.cameraTrack && this.closeMediaTrack(this.cameraTrack);
     });
-    Logger.info(
-      `[agora-web] create default camera [${this.cameraTrack.getTrackId()}] video track success`
-    );
-
     if (this.joined && !this.publishedVideo) {
       const cameraId = this.cameraTrack.getTrackId();
       await this.client.publish([this.cameraTrack]);
       this.publishedVideo = true;
-      Logger.info(`[agora-web] publish camera [${cameraId}] success`);
     }
   }
 
@@ -206,7 +152,6 @@ export class AgoraClient implements AgoraClientSDK {
       this._cameraTrack = undefined;
     }
     if (track.trackMediaType === "audio") {
-      // this.closeInterval('volume')
       this._microphoneTrack = undefined;
     }
   }

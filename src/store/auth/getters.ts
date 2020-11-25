@@ -6,6 +6,27 @@ const getters: GetterTree<AuthState, any> = {
   isLoggedIn: (state: AuthState): boolean => {
     return state.loginInfo?.loggedin || false;
   },
+  isOnlyParent: (state: AuthState): boolean => {
+    if (!state.loginInfo || !state.loginInfo.loggedin) return false;
+    return (
+      state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 &&
+      state.loginInfo.profile.roles.indexOf(RoleName.teacher) === -1
+    );
+  },
+  isOnlyTeacher: (state: AuthState): boolean => {
+    if (!state.loginInfo || !state.loginInfo.loggedin) return false;
+    return (
+      state.loginInfo.profile.roles.indexOf(RoleName.parent) === -1 &&
+      state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1
+    );
+  },
+  isParentAndTeacher: (state: AuthState): boolean => {
+    if (!state.loginInfo || !state.loginInfo.loggedin) return false;
+    return (
+      state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 &&
+      state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1
+    );
+  },
   loginInfo: (state: AuthState): LoginInfo => {
     return state.loginInfo || ({} as LoginInfo);
   },
