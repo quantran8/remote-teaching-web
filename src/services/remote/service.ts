@@ -5,7 +5,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any>
   implements RemoteTeachingServiceInterface {
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
 
-  getAvailableRooms(): Promise<TeacherGetRoomResponse> {
+  getActiveClassRoom(): Promise<TeacherGetRoomResponse> {
     return this.get("room/teacher");
   }
 }

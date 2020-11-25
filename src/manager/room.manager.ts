@@ -28,7 +28,7 @@ export class RoomManager {
   }
 
   join() {
-    console.log("join room");
+    this.agoraClient.initClient();
   }
 
   reset() {

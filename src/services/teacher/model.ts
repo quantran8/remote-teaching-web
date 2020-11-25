@@ -1,4 +1,4 @@
-import { ClassModel } from "@/models/class.model";
+import { ClassModel } from "@/models";
 
 export interface GetClassesModel {
   extraData: {

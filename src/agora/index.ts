@@ -22,6 +22,7 @@ export interface AgoraUser {
   channel: string;
   username: string;
   role: "host" | "audience";
+  token: string;
 }
 
 export interface AgoraClientOptions {
@@ -88,7 +89,7 @@ export class AgoraClient implements AgoraClientSDK {
     const responseJoinChannel = await this.client.join(
       this.appId,
       this.user.channel,
-      AGORA_APP_TOKEN,
+      this.user.token,
       this.user.username
     );
     console.log("ResponseJoinChannel", responseJoinChannel);

@@ -1,4 +1,4 @@
-import { Parent } from "@/models/parent.model";
+import { Parent } from "@/models";
 import { ChildModel } from "@/services";
 
 export interface ParentState {

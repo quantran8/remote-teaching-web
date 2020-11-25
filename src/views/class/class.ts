@@ -19,7 +19,6 @@ export default defineComponent({
     StudentGallery,
     LeaveModal,
   },
-
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -76,13 +75,11 @@ export default defineComponent({
     };
 
     const joinRoom = () => {
-      roomManager.agoraClient.initClient();
+      roomManager.join();
     };
     const startStream = () => {
       roomManager.agoraClient.initStream();
     };
-
-    console.log(teacher.audioEnabled);
     watch(teacher, () => {
       if (!teacher.audioEnabled) {
         console.log("JoinRoom");

@@ -1,4 +1,4 @@
-import { Parent } from "@/models/parent.model";
+import { Parent } from "@/models";
 import { ChildModel } from "@/services";
 import { MutationTree } from "vuex";
 import { ParentState } from "./state";

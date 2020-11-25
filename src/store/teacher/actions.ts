@@ -1,4 +1,4 @@
-import { Parent } from "@/models/parent.model";
+import { Parent } from "@/models";
 import { GetClassesModel, TeacherService } from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";

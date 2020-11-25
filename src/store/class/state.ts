@@ -53,7 +53,7 @@ export interface ClassState {
 }
 
 const state: ClassState = {
-  view: 2,
+  view: 1,
   teacher: {
     id: randomUUID(),
     name: "Teacher's name",

@@ -1,4 +1,4 @@
-import { ClassModel } from "@/models/class.model";
+import { ClassModel } from "@/models";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
 import { TeacherState } from "./state";

@@ -1,4 +1,4 @@
-import { Parent } from "@/models/parent.model";
+import { Parent } from "@/models";
 import { GetChildrenModel, ParentService } from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { ParentState } from "./state";
