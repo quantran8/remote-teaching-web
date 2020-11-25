@@ -5,7 +5,7 @@ export const AGORA_RESTFULL_TOKEN = "agora_restful_api_token";
 export const AGORA_APP_SDK_DOMAIN = "https://api.agora.io";
 export const AGORA_APP_ID = "da2d4c42cea04e30973bd4d6800dd468";
 export const AGORA_APP_TOKEN =
-  "006da2d4c42cea04e30973bd4d6800dd468IAA9MiiC0LEonRHtDnq0Trz2S5BwMJPE97eiV9wm8VYa8v4QIssAAAAAEABID2Uqrfi9XwEAAQCs+L1f";
+  "006da2d4c42cea04e30973bd4d6800dd468IAC3vwHO0imp6UGTFL0VNTNim7VoXcsr3OYWrqt/vBDo71S3+VsAAAAAEABID2UqXh+/XwEAAQBdH79f";
 export const AGORA_APP_CERTIFICATE = "7fc4785b0a4b44c7a7b095aea71bbc2d";
 export const AGORA_APP_SDK_LOG_SECRET = "agora_edu_sdk_log_secret";
 export const NETLESS_APP_ID = "XvsYcCsPEeu0Xy2cBkFEzw/IFE3jXGbuV-E0Q";

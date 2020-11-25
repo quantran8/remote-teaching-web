@@ -1,4 +1,5 @@
-import { computed, defineComponent, ref } from "vue";
+import { RoomManager } from "@/manager/room.manager";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
@@ -25,6 +26,7 @@ export default defineComponent({
     const teacher = store.getters["class/teacher"];
     const showModal = ref(false);
     const hasConfirmed = ref(false);
+    const roomManager = store.getters["room/roomManager"] as RoomManager;
 
     const views = [
       { id: 1, name: "Gallery", icon: "" },
@@ -73,7 +75,25 @@ export default defineComponent({
       showModal.value = false;
     };
 
-    
+    const joinRoom = () => {
+      roomManager.agoraClient.initClient();
+    };
+    const startStream = () => {
+      roomManager.agoraClient.initStream();
+    };
+
+    console.log(teacher.audioEnabled);
+    watch(teacher, () => {
+      if (!teacher.audioEnabled) {
+        console.log("JoinRoom");
+        joinRoom();
+      }
+      if (!teacher.videoEnabled) {
+        console.log("startStream");
+        startStream();
+      }
+    });
+
     return {
       showModal,
       onClickHideAll,

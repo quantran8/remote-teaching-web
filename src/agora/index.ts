@@ -1,6 +1,8 @@
 import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
+  ConnectionDisconnectedReason,
+  ConnectionState,
   IAgoraRTC,
   IAgoraRTCClient,
   IAgoraRTCRemoteUser,
@@ -32,98 +34,6 @@ export interface AgoraClientOptions {
   user?: AgoraUser;
 }
 
-export type AgoraClientEvent =
-  | "first-audio-frame-decode"
-  | "first-video-frame-decode"
-  | "stream-published"
-  | "stream-unpublished"
-  | "stream-added"
-  | "stream-removed"
-  | "stream-subscribed"
-  | "peer-online"
-  | "peer-leave"
-  | "mute-audio"
-  | "unmute-audio"
-  | "mute-video"
-  | "unmute-video"
-  | "crypt-error"
-  | "client-banned"
-  | "active-speaker"
-  | "volume-indicator"
-  | "liveStreamingStarted"
-  | "liveStreamingFailed"
-  | "liveStreamingStopped"
-  | "liveTranscodingUpdated"
-  | "streamInjectedStatus"
-  | "onTokenPrivilegeWillExpire"
-  | "onTokenPrivilegeDidExpire"
-  | "error"
-  | "network-type-changed"
-  | "recording-device-changed"
-  | "playout-device-changed"
-  | "camera-changed"
-  | "stream-type-changed"
-  | "connection-state-change"
-  | "stream-reconnect-start"
-  | "stream-reconnect-end"
-  | "client-role-changed"
-  | "reconnect"
-  | "connected"
-  // | "network-quality"
-  | "stream-fallback"
-  | "stream-updated"
-  | "exception"
-  | "enable-local-video"
-  | "disable-local-video"
-  | "channel-media-relay-event"
-  | "channel-media-relay-state";
-
-export const AgoraClientEvents: Array<AgoraClientEvent> = [
-  "first-audio-frame-decode",
-  "first-video-frame-decode",
-  "stream-published",
-  "stream-unpublished",
-  "stream-added",
-  "stream-removed",
-  "stream-subscribed",
-  "peer-online",
-  "peer-leave",
-  "mute-audio",
-  "unmute-audio",
-  "mute-video",
-  "unmute-video",
-  "crypt-error",
-  "client-banned",
-  "active-speaker",
-  "volume-indicator",
-  "liveStreamingStarted",
-  "liveStreamingFailed",
-  "liveStreamingStopped",
-  "liveTranscodingUpdated",
-  "streamInjectedStatus",
-  "onTokenPrivilegeWillExpire",
-  "onTokenPrivilegeDidExpire",
-  "error",
-  "network-type-changed",
-  "recording-device-changed",
-  "playout-device-changed",
-  "camera-changed",
-  "stream-type-changed",
-  "connection-state-change",
-  "stream-reconnect-start",
-  "stream-reconnect-end",
-  "client-role-changed",
-  "reconnect",
-  "connected",
-  // "network-quality",
-  "stream-fallback",
-  "stream-updated",
-  "exception",
-  "enable-local-video",
-  "disable-local-video",
-  "channel-media-relay-event",
-  "channel-media-relay-state",
-];
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
   _api?: AgoraRoomApi;
@@ -183,6 +93,20 @@ export class AgoraClient implements AgoraClientSDK {
   async initClient() {
     if (this._client) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
+
+    // const entryRoomData = await this.roomApi.entry(
+    //   this.user.channel,
+    //   this.user.username,
+    //   AGORA_APP_TOKEN,
+    //   "0",
+    //   this.user.role
+    // );
+    // this.streamUUID = entryRoomData.data.user.streamUuid;
+
+    // const streams = get(entryRoomData, "user.streams", []);
+    // console.log("Entry Room Data");
+    // console.log(streams);
+
     const responseJoinChannel = await this.client.join(
       this.appId,
       this.user.channel,
@@ -190,40 +114,67 @@ export class AgoraClient implements AgoraClientSDK {
       this.user.username
     );
     console.log("ResponseJoinChannel", responseJoinChannel);
-    const entryRoom = await this.roomApi.entry(
-      this.user.channel,
-      this.user.username,
-      AGORA_APP_TOKEN,
-      "0",
-      this.user.role
-    );
-    this.streamUUID = entryRoom.data.user.streamUuid;
+
     this.joined = true;
+
+    // Create a video track from the video captured by a camera.
+    const localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+    const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    await this.client.publish([localVideoTrack, localAudioTrack]);
+    localVideoTrack.play("userStreamID");
 
     this.client.on("user-joined", (payload) => {
       console.log("user-joined", payload);
     });
-    // this.client.on("user-info-update", (payload: any) => {
-    //   console.log("user-info-update", payload);
-    // });
 
     this.client.on("user-info-updated", (payload) => {
       console.log("user-info-updated", payload);
     });
+    this.client.on("user-published", async (user, mediaType) => {
+      // Initiate the subscription
+      // await this.client.subscribe(user, mediaType);
+
+      // // If the subscribed track is an audio track
+      // if (mediaType === "audio") {
+      //   const audioTrack = user.audioTrack;
+      //   // Play the audio
+      //   audioTrack?.play();
+      // } else {
+      //   const videoTrack = user.videoTrack;
+      //   // Play the video
+      //   // videoTrack?.play("userStreamID");
+      //   console.log("videoTrack", videoTrack);
+      // }
+      if (mediaType === "video") {
+        const videoTrack = await this.client.subscribe(
+          this.client.remoteUsers[0],
+          "video"
+        );
+        console.log("VideoTrack", videoTrack);
+        videoTrack.play("userStream1");
+      }
+    });
+    // this.client.on(
+    //   "user-published",
+    //   async (user: IAgoraRTCRemoteUser, mediaType) => {
+    //     console.log("user-published", user, mediaType);
+    //     try {
+    //       await this.client.subscribe(user, mediaType);
+    //     } catch (error) {
+    //       console.log("Error", error);
+    //     }
+    //   }
+    // );
     this.client.on(
-      "user-published",
-      (user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") => {
-        console.log("user-published", user, mediaType);
-        if (user.hasVideo) {
-          console.log("user has video", user.videoTrack);
-          user.videoTrack?.play("userStream1");
-        } else {
-          console.log("user dont have video");
-        }
+      "connection-state-change",
+      (
+        curState: ConnectionState,
+        revState: ConnectionState,
+        reason?: ConnectionDisconnectedReason
+      ) => {
+        console.log("connection-state-change", curState, revState, reason);
       }
     );
-
-    console.log("remoteUsers", this.client.remoteUsers);
   }
 
   streams: Array<string> = [];
@@ -238,9 +189,10 @@ export class AgoraClient implements AgoraClientSDK {
       `[agora-web] create default camera [${this.cameraTrack.getTrackId()}] video track success`
     );
 
-    if (this.joined && this.publishedVideo) {
+    if (this.joined && !this.publishedVideo) {
       const cameraId = this.cameraTrack.getTrackId();
       await this.client.publish([this.cameraTrack]);
+      this.publishedVideo = true;
       Logger.info(`[agora-web] publish camera [${cameraId}] success`);
     }
   }
@@ -280,15 +232,8 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async initStream() {
-    this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
+    await this.openCamera();
     this.cameraTrack.play("userStreamID");
-    if (this.joined && !this.publishedVideo) {
-      const cameraId = this.cameraTrack.getTrackId();
-      await this.client.publish([this.cameraTrack]);
-      this.publishedVideo = true;
-      Logger.info(`[agora-web] publish camera [${cameraId}] success`);
-    }
-
     console.log("remoteUsers", this.client.remoteUsers);
   }
 
