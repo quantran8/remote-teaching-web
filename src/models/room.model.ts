@@ -5,16 +5,13 @@ export interface RoomModel {
   id: string;
   status: number;
   teacher: TeacherModel;
-  zoomSetting: any;
-  agoraInfo: {
+  streamInfo: {
     token: string;
     chanelId: string;
     userId: string;
+    appId: string;
   };
   students: Array<StudentModel>;
-  lessons: any;
-  contentModels: Array<any>;
-  zoomId: string;
-  zoomMeetingNumber: number;
-  zoomPassword: string;
+  contents: Array<any>;
+  focusTab: number;
 }

@@ -7,6 +7,9 @@ const actions: ActionTree<ParentState, any> = {
   setInfo({ commit }, payload: Parent) {
     commit("setInfo", payload);
   },
+  setSelectedChild({ commit }, payload: { childId: string }) {
+    commit("setSelectedChild", payload);
+  },
   async loadChildren({ commit, state }: ActionContext<ParentState, any>) {
     return new Promise((resolve, reject) => {
       if (!state.info) {

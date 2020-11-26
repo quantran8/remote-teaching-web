@@ -1,0 +1,24 @@
+.page-container {
+  padding: 20px;
+  text-align: center;
+  #userStreamID {
+    width: 400px;
+    height: 320px;
+    background-color: gray;
+    border: solid 1px black;
+    video {
+      left: 0;
+    }
+  }
+
+  .user-stream-container {
+    .user-stream {
+      width: 200px;
+      height: 160px;
+      display: inline-block;
+      background-color: gray;
+      border: solid 1px black;
+      margin: 16px;
+    }
+  }
+}

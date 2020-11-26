@@ -48,15 +48,15 @@ const mutations: MutationTree<RoomState> = {
     });
     state.info = room;
     const role =
-      room.agoraInfo.userId === room.teacher.id ? "host" : "audience";
+      room.streamInfo.userId === room.teacher.id ? "host" : "audience";
     state.manager = new RoomManager({
       agora: {
         appId: AGORA_APP_ID,
         webConfig: { mode: "rtc", codec: "vp8", role: role },
         user: {
-          channel: room.agoraInfo.chanelId,
-          username: room.agoraInfo.userId,
-          token: room.agoraInfo.token,
+          channel: room.streamInfo.chanelId,
+          username: room.streamInfo.userId,
+          token: room.streamInfo.token,
           role,
         },
       },

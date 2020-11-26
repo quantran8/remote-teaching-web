@@ -4,6 +4,7 @@ import AgoraRTC, {
   ConnectionState,
   IAgoraRTC,
   IAgoraRTCClient,
+  IAgoraRTCRemoteUser,
   ICameraVideoTrack,
   ILocalTrack,
   IMicrophoneAudioTrack,
@@ -68,7 +69,11 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
-  async joinRTCRoom(options: { camera: boolean; microphone: boolean }) {
+  async joinRTCRoom(options: {
+    camera?: boolean;
+    microphone?: boolean;
+    publish?: boolean;
+  }) {
     if (this._client) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     await this.client.join(
@@ -84,36 +89,25 @@ export class AgoraClient implements AgoraClientSDK {
     if (options.microphone) {
       await this.openMicrophone();
     }
-    // await this.publish();
+    if (options.publish) await this.publish();
 
-    this.client.on("user-joined", (payload) => {
-      console.log("user-joined", payload);
-    });
-
-    this.client.on("user-info-updated", (payload) => {
-      console.log("user-info-updated", payload);
-    });
     this.client.on("user-published", async (user, mediaType) => {
-      console.log("user-published", user, mediaType);
-      if (mediaType === "video") {
-        const videoTrack = await this.client.subscribe(
-          this.client.remoteUsers[0],
-          "video"
-        );
-        console.log("VideoTrack", videoTrack);
-        videoTrack.play("userStream1");
+      for (const remoteUser of this.client.remoteUsers) {
+        this.subscribeUser(remoteUser, mediaType);
       }
     });
-    this.client.on(
-      "connection-state-change",
-      (
-        curState: ConnectionState,
-        revState: ConnectionState,
-        reason?: ConnectionDisconnectedReason
-      ) => {
-        console.log("connection-state-change", curState, revState, reason);
+  }
+
+  subscribedVideos: Array<string> = [];
+  async subscribeUser(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") {
+    if (!user) return;
+    const userUID = "" + user.uid;
+    if (mediaType === "video") {
+      if (this.subscribedVideos.indexOf(userUID) === -1) {
+        const remoteVideoTrack = await this.client.subscribe(user, mediaType);
+        remoteVideoTrack.play(userUID);
       }
-    );
+    }
   }
 
   async openMicrophone(): Promise<any> {
@@ -167,10 +161,12 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async initStream() {
-    const cameras = await this.agoraRTC.getCameras();
-    console.log("cameras", cameras);
     if (this.cameraTrack) return;
     await this.openCamera();
+  }
+
+  getRemoteUsers() {
+    return this.client.remoteUsers;
   }
 
   reset() {

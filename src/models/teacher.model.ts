@@ -6,4 +6,6 @@ export interface TeacherModel extends UserModel {
   isInClass: boolean;
   zoomId?: string;
   signalrConnectId?: string;
+  isMuteAudio: boolean;
+  isMuteVideo: boolean;
 }

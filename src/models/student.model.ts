@@ -1,4 +1,4 @@
-import { UserModel } from './user.model';
+import { UserModel } from "./user.model";
 
 export interface StudentModel extends UserModel {
   id: string;
@@ -6,8 +6,11 @@ export interface StudentModel extends UserModel {
   englishName: string;
   updateTime: any;
   subscriptionType: number;
-  zoomId?: string;
+  streamId?: string;
   signalrConnectId?: string;
   signature: string;
   isLeave: boolean;
+  isMuteAudio: boolean;
+  isMuteVideo: boolean;
+  badge: number;
 }

@@ -23,8 +23,9 @@ const mutations: MutationTree<RoomState> = {
       audioEnabled: false,
       videoEnabled: false,
     };
-    state.students = room.students.map((st, index) => {
-      return {
+    state.students = [];
+    for (const st of room.students) {
+      const student = {
         id: st.id,
         name: st.name,
         avatar: "",
@@ -33,20 +34,26 @@ const mutations: MutationTree<RoomState> = {
         badge: 0,
         status: StudentInClassStatus.DEFAULT,
         hasJoinned: false,
-        index: index,
+        index: state.students.length,
       };
-    });
+      if (st.id === state.user?.id) {
+        student.index = 999;
+        state.student = student;
+      } else {
+        state.students.push(student);
+      }
+    }
+
     state.info = room;
-    const role =
-      room.agoraInfo.userId === room.teacher.id ? "host" : "audience";
+    const role = "audience";
     state.manager = new RoomManager({
       agora: {
         appId: AGORA_APP_ID,
         webConfig: { mode: "rtc", codec: "vp8", role: role },
         user: {
-          channel: room.agoraInfo.chanelId,
-          username: room.agoraInfo.userId,
-          token: room.agoraInfo.token,
+          channel: room.streamInfo.chanelId,
+          username: room.streamInfo.userId,
+          token: room.streamInfo.token,
           role,
         },
       },

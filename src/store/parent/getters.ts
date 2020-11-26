@@ -6,6 +6,9 @@ const getters: GetterTree<ParentState, any> = {
   children(state: ParentState): Array<ChildModel> {
     return state.children;
   },
+  selectedChild(state: ParentState): ChildModel {
+    return state.selectedChild as ChildModel;
+  },
 };
 
 export default getters;

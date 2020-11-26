@@ -96,6 +96,10 @@ export default defineComponent({
 
     watch(teacher, onTeacherChanged);
 
+    watch(roomManager.remoteUsers, () => {
+      console.log(roomManager.remoteUsers);
+    });
+
     return {
       showModal,
       onClickHideAll,

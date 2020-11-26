@@ -16,6 +16,9 @@ const getters: GetterTree<RoomState, any> = {
   teacher(state: RoomState): TeacherState {
     return state.teacher as TeacherState;
   },
+  student(state: RoomState): StudentState {
+    return state.student as StudentState;
+  },
   roomManager(state: RoomState): RoomManager {
     return state.manager as RoomManager;
   },

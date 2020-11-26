@@ -64,6 +64,16 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   {
+    path: "/student/:studentId/class/:classId",
+    name: "StudentClass",
+    component: () => import("../views/student-class/student-class.vue"),
+    meta: {
+      layout: "main",
+      requiresAuth: true,
+    },
+  },
+
+  {
     path: "/:catchAll(.*)",
     name: "NotFound",
     component: () => import("../views/not-found/not-found.vue"),

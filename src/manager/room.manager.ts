@@ -1,4 +1,5 @@
 import { AgoraClient, AgoraClientOptions } from "@/agora";
+import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
 
 export interface RoomOptions {
   agora: AgoraClientOptions;
@@ -29,9 +30,12 @@ export class RoomManager {
     this.options = options;
     this.agoraClient = new AgoraClient(options.agora);
   }
+  isJoinedRoom() {
+    return this.agoraClient.joined;
+  }
 
-  join(options: { camera: boolean; microphone: boolean }) {
-    this.agoraClient.joinRTCRoom(options);
+  join(options: { camera?: boolean; microphone?: boolean; publish?: boolean }) {
+    return this.agoraClient.joinRTCRoom(options);
   }
 
   setCamera(options: { enable: boolean }) {
@@ -44,5 +48,9 @@ export class RoomManager {
 
   close() {
     this.agoraClient.reset();
+  }
+
+  get remoteUsers(): Array<IAgoraRTCRemoteUser> {
+    return this.agoraClient.getRemoteUsers();
   }
 }

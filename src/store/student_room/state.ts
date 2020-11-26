@@ -62,6 +62,7 @@ export interface RoomState {
   info?: RoomModel;
   user?: UserModel;
   teacher?: TeacherState;
+  student?: StudentState;
   students: Array<StudentState>;
   manager?: RoomManager;
   classes: Array<ClassModel>;

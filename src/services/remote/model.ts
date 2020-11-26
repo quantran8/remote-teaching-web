@@ -7,3 +7,5 @@ export interface BaseResponse<T> {
 }
 
 export type TeacherGetRoomResponse = BaseResponse<RoomModel>;
+
+export type StudentGetRoomResponse = BaseResponse<RoomModel>;

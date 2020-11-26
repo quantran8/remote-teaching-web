@@ -21,24 +21,25 @@ export default defineComponent({
 
     watch(isSignedIn, () => {
       if (isSignedIn.value) {
-        const logginInfo: LoginInfo = getters["auth/loginInfo"];
+        const loginInfo: LoginInfo = getters["auth/loginInfo"];
         const isTeacher: boolean = getters["auth/isTeacher"];
         const isParent: boolean = getters["auth/isParent"];
         if (isTeacher) {
           dispatch("teacherRoom/setUser", {
-            id: logginInfo.profile.sub,
-            name: logginInfo.profile.name,
+            id: loginInfo.profile.sub,
+            name: loginInfo.profile.name,
           });
           dispatch("teacherRoom/loadRooms");
-          dispatch("teacherRoom/loadClasses", { teacherId: logginInfo.profile.sub });
+          dispatch("teacherRoom/loadClasses", {
+            teacherId: loginInfo.profile.sub,
+          });
         }
         if (isParent) {
-          // dispatch("teacherRoom/setUser", {
-          //   id: logginInfo.profile.sub,
-          //   name: logginInfo.profile.name,
-          // });
-          // dispatch("teacherRoom/loadRooms");
-          // dispatch("teacherRoom/loadClasses", { teacherId: logginInfo.profile.sub });
+          dispatch("parent/setInfo", {
+            id: loginInfo.profile.sub,
+            name: loginInfo.profile.name,
+          });
+          dispatch("parent/loadChildren");
         }
       }
     });

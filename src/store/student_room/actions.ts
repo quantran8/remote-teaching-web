@@ -6,15 +6,26 @@ import {
   TeacherService,
 } from "@/services";
 import { ActionTree } from "vuex";
-import { RoomState } from './state';
+import { RoomState } from "./state";
 
 const actions: ActionTree<RoomState, any> = {
-
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async loadRooms({ commit }, _payload: any) {
-    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
+  async joinRoom({ state }, _payload: any) {
+    if (!state.manager?.isJoinedRoom()) {
+      await state.manager?.join({
+        camera: true,
+        microphone: false,
+        publish: true,
+      });
+    }
+  },
+  async loadRooms({ commit, state }, _payload: any) {
+    if (!state.user) return;
+    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
+      state.user.id
+    );
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },
