@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "StudentClass",
     component: () => import("../views/student-class/student-class.vue"),
     meta: {
-      layout: "main",
+      layout: "full",
       requiresAuth: true,
     },
   },

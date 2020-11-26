@@ -1,7 +1,5 @@
 import AgoraRTC, {
   ClientConfig,
-  ConnectionDisconnectedReason,
-  ConnectionState,
   IAgoraRTC,
   IAgoraRTCClient,
   IAgoraRTCRemoteUser,
@@ -124,7 +122,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.cameraTrack.on("track-ended", () => {
       this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
     });
-    this.cameraTrack.play("userStreamID");
+    this.cameraTrack.play(this.user.username);
   }
 
   private _closeMediaTrack(track: ILocalTrack) {
@@ -180,17 +178,19 @@ export class AgoraClient implements AgoraClientSDK {
     this.publishedTrackIds = [];
   }
 
-  async setCamera(options: { enable: boolean }) {
+  async setCamera(options: { enable: boolean; publish?: boolean }) {
     if (options.enable) {
       await this.openCamera();
+      if (options.publish) await this.publish();
     } else {
       this._closeMediaTrack(this.cameraTrack);
     }
   }
 
-  async setMicrophone(options: { enable: boolean }) {
+  async setMicrophone(options: { enable: boolean; publish?: boolean }) {
     if (options.enable) {
       await this.openMicrophone();
+      if (options.publish) await this.publish();
     } else {
       this._closeMediaTrack(this.microphoneTrack);
     }

@@ -80,6 +80,7 @@ export default defineComponent({
       roomManager.join({
         camera: teacher.videoEnabled,
         microphone: teacher.audioEnabled,
+        publish: true,
       });
     };
     joinRoom();
@@ -87,6 +88,7 @@ export default defineComponent({
     const onTeacherChanged = async () => {
       roomManager.setCamera({
         enable: teacher.videoEnabled,
+        publish: teacher.videoEnabled,
       });
 
       roomManager.setMicrophone({

@@ -21,6 +21,10 @@ const actions: ActionTree<RoomState, any> = {
       });
     }
   },
+
+  async leaveRoom({ state }, _payload: any) {
+    state.manager?.close();
+  },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(

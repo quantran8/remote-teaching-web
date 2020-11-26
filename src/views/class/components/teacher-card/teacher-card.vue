@@ -2,7 +2,7 @@
   <div>
     <div class="container">
       <div class="item-container">
-        <div class="video" id="userStreamID"></div>
+        <div class="video" :id="id"></div>
         <div class="mask">
           <BaseTag class="tag" tag="T"></BaseTag>
           <div class="info">

@@ -38,11 +38,11 @@ export class RoomManager {
     return this.agoraClient.joinRTCRoom(options);
   }
 
-  setCamera(options: { enable: boolean }) {
+  setCamera(options: { enable: boolean; publish?: boolean }) {
     this.agoraClient.setCamera(options);
   }
 
-  setMicrophone(options: { enable: boolean }) {
+  setMicrophone(options: { enable: boolean; publish?: boolean }) {
     this.agoraClient.setMicrophone(options);
   }
 
