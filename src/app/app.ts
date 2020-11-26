@@ -1,5 +1,4 @@
 import { AuthService, LoginInfo } from "@/commonui";
-import { RoomModel } from "@/models";
 import { computed, defineComponent, watch } from "vue";
 import { useStore } from "vuex";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
@@ -23,19 +22,27 @@ export default defineComponent({
     watch(isSignedIn, () => {
       if (isSignedIn.value) {
         const logginInfo: LoginInfo = getters["auth/loginInfo"];
-        const isOnlyTeacher: boolean = getters["auth/isOnlyTeacher"];
-        if (isOnlyTeacher) {
-          dispatch("room/setCurrentUser", {
+        const isTeacher: boolean = getters["auth/isTeacher"];
+        const isParent: boolean = getters["auth/isParent"];
+        if (isTeacher) {
+          dispatch("teacherRoom/setUser", {
             id: logginInfo.profile.sub,
             name: logginInfo.profile.name,
           });
-          dispatch("room/loadRooms");
-          dispatch("room/loadClasses", { teacherId: logginInfo.profile.sub });
+          dispatch("teacherRoom/loadRooms");
+          dispatch("teacherRoom/loadClasses", { teacherId: logginInfo.profile.sub });
+        }
+        if (isParent) {
+          // dispatch("teacherRoom/setUser", {
+          //   id: logginInfo.profile.sub,
+          //   name: logginInfo.profile.name,
+          // });
+          // dispatch("teacherRoom/loadRooms");
+          // dispatch("teacherRoom/loadClasses", { teacherId: logginInfo.profile.sub });
         }
       }
     });
 
-   
     return {
       appView,
       isSignedIn,

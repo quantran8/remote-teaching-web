@@ -7,7 +7,7 @@ export default defineComponent({
   },
   setup() {
     const { getters } = useStore();
-    const students = getters["class/students"];
+    const students = getters["teacherRoom/students"];
     return {
       students,
     };

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="content">
-      <div class="teacher" :class="{ 'teacher-full': !isGalleryView }">
+      <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
         <TeacherCard
           class="teacher-card"
           :id="teacher.id"
@@ -15,10 +15,10 @@
           @end="onClickEnd"
         />
       </div>
-      <div v-if="isGalleryView" class="activity-content">
+      <div v-if="!isGalleryView" class="activity-content">
         <ActivityContent />
       </div>
-      <div v-if="isGalleryView" class="audio-bar">
+      <div v-if="!isGalleryView" class="audio-bar">
         <GlobalAudioBar />
       </div>
       <div class="view-controls">
@@ -34,10 +34,10 @@
         </div>
       </div>
     </div>
-    <div v-if="isGalleryView" class="lesson-plan">
+    <div v-if="!isGalleryView" class="lesson-plan">
       <LessonPlan />
     </div>
-    <div class="gallery" :class="{ 'gallery-lg': !isGalleryView }">
+    <div class="gallery">
       <StudentGallery />
     </div>
     <LeaveModal

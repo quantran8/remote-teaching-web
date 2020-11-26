@@ -43,21 +43,21 @@ export default defineComponent({
     });
 
     const toggleAudio = () => {
-      store.dispatch("class/setStudentAudio", {
+      store.dispatch("teacherRoom/setStudentAudio", {
         studentId: props.id,
         audioEnabled: !props.audioEnabled,
       });
     };
 
     const toggleVideo = () => {
-      store.dispatch("class/setStudentVideo", {
+      store.dispatch("teacherRoom/setStudentVideo", {
         studentId: props.id,
         videoEnabled: !props.videoEnabled,
       });
     };
 
     const addABadge = () => {
-      store.dispatch("class/setStudentBadge", {
+      store.dispatch("teacherRoom/setStudentBadge", {
         studentId: props.id,
         badge: props.badge + 1,
       });

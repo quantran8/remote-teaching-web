@@ -34,39 +34,39 @@ export default defineComponent({
     );
 
     const isAllVideoHidden = computed(
-      () => store.getters["class/isAllVideoHidden"]
+      () => store.getters["teacherRoom/isAllVideoHidden"]
     );
     const isAllAudioMuted = computed(
-      () => store.getters["class/isAllAudioMuted"]
+      () => store.getters["teacherRoom/isAllAudioMuted"]
     );
 
     const globalAudioText = computed(() =>
-      store.getters["class/isAllAudioMuted"] ? "Unmute All" : "Mute All"
+      store.getters["teacherRoom/isAllAudioMuted"] ? "Unmute All" : "Mute All"
     );
     const globalVideoText = computed(() =>
-      store.getters["class/isAllVideoHidden"] ? "Show All" : "Hide All"
+      store.getters["teacherRoom/isAllVideoHidden"] ? "Show All" : "Hide All"
     );
 
     const globalAudioIcon = computed(() =>
-      store.getters["class/isAllAudioMuted"]
+      store.getters["teacherRoom/isAllAudioMuted"]
         ? "icon-audio-on"
         : "icon-audio-off"
     );
     const globalVideoIcon = computed(() =>
-      store.getters["class/isAllVideoHidden"]
+      store.getters["teacherRoom/isAllVideoHidden"]
         ? "icon-video-on"
         : "icon-video-off"
     );
 
     const toggleAudio = () => {
-      store.dispatch("class/setTeacherAudio", {
+      store.dispatch("teacherRoom/setTeacherAudio", {
         teacherId: props.id,
         audioEnabled: !props.audioEnabled,
       });
     };
 
     const toggleVideo = () => {
-      store.dispatch("class/setTeacherVideo", {
+      store.dispatch("teacherRoom/setTeacherVideo", {
         teacherId: props.id,
         videoEnabled: !props.videoEnabled,
       });

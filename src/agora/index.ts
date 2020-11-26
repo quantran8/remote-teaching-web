@@ -8,13 +8,11 @@ import AgoraRTC, {
   ILocalTrack,
   IMicrophoneAudioTrack,
 } from "agora-rtc-sdk-ng";
-import { AGORA_APP_TOKEN } from "./config";
 
 export interface AgoraClientSDK {
   appId: string;
-  appCertificate: string;
   client: IAgoraRTCClient;
-  initClient(): void;
+  joinRTCRoom(payload: { camera: boolean; microphone: boolean }): void;
   initStream(): void;
 }
 
@@ -27,20 +25,15 @@ export interface AgoraUser {
 
 export interface AgoraClientOptions {
   appId: string;
-  appCertificate: string;
   webConfig: ClientConfig;
   user?: AgoraUser;
 }
 
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
-  _config?: ClientConfig;
-  _appId: string;
-  _appCertificate: string;
   _options: AgoraClientOptions;
   _cameraTrack?: ICameraVideoTrack;
   _microphoneTrack?: IMicrophoneAudioTrack;
-  streamUUID: string;
   get cameraTrack(): ICameraVideoTrack {
     return this._cameraTrack as ICameraVideoTrack;
   }
@@ -53,7 +46,6 @@ export class AgoraClient implements AgoraClientSDK {
   get user(): AgoraUser {
     return this._options.user as AgoraUser;
   }
-
   get client(): IAgoraRTCClient {
     return this._client as IAgoraRTCClient;
   }
@@ -61,44 +53,38 @@ export class AgoraClient implements AgoraClientSDK {
     return (this._client as any).clientId;
   }
   get clientConfig(): ClientConfig {
-    return this._config as ClientConfig;
+    return this.options.webConfig as ClientConfig;
   }
   get appId(): string {
-    return this._appId;
-  }
-  get appCertificate(): string {
-    return this._appCertificate;
+    return this.options.appId;
   }
   get agoraRTC(): IAgoraRTC {
     return AgoraRTC;
   }
   constructor(options: AgoraClientOptions) {
     this._options = options;
-    this._config = options.webConfig;
-    this._appId = options.appId;
-    this._appCertificate = options.appCertificate;
-    this.streamUUID = "";
   }
   joined: boolean = false;
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
-  async initClient() {
+  async joinRTCRoom(options: { camera: boolean; microphone: boolean }) {
     if (this._client) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-    const responseJoinChannel = await this.client.join(
+    await this.client.join(
       this.appId,
       this.user.channel,
       this.user.token,
       this.user.username
     );
-    console.log("ResponseJoinChannel", responseJoinChannel);
     this.joined = true;
-
-    const localVideoTrack = await AgoraRTC.createCameraVideoTrack();
-    const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    await this.client.publish([localVideoTrack, localAudioTrack]);
-    localVideoTrack.play("userStreamID");
+    if (options.camera) {
+      await this.openCamera();
+    }
+    if (options.microphone) {
+      await this.openMicrophone();
+    }
+    // await this.publish();
 
     this.client.on("user-joined", (payload) => {
       console.log("user-joined", payload);
@@ -130,25 +116,28 @@ export class AgoraClient implements AgoraClientSDK {
     );
   }
 
-  streams: Array<string> = [];
-
+  async openMicrophone(): Promise<any> {
+    if (this._microphoneTrack) return;
+    this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
+    this.microphoneTrack.on("track-ended", () => {
+      this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
+    });
+    this.microphoneTrack.play();
+  }
   async openCamera(): Promise<any> {
+    if (this._cameraTrack) return;
     this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
     this.cameraTrack.on("track-ended", () => {
-      this.cameraTrack && this.closeMediaTrack(this.cameraTrack);
+      this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
     });
-    if (this.joined && !this.publishedVideo) {
-      const cameraId = this.cameraTrack.getTrackId();
-      await this.client.publish([this.cameraTrack]);
-      this.publishedVideo = true;
-    }
+    this.cameraTrack.play("userStreamID");
   }
 
-  private closeMediaTrack(track: ILocalTrack) {
-    if (track) {
-      track.stop();
-      track.close();
-    }
+  private _closeMediaTrack(track: ILocalTrack) {
+    if (!track) return;
+    track.stop();
+    track.close();
+
     if (track.trackMediaType === "video") {
       this._cameraTrack = undefined;
     }
@@ -178,33 +167,36 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async initStream() {
+    const cameras = await this.agoraRTC.getCameras();
+    console.log("cameras", cameras);
+    if (this.cameraTrack) return;
     await this.openCamera();
-    this.cameraTrack.play("userStreamID");
-    console.log("remoteUsers", this.client.remoteUsers);
   }
 
   reset() {
+    this.client.leave();
+    this._client = undefined;
     this.publishedVideo = false;
     this.publishedAudio = false;
-    // this.localUid = undefined
-    // this.releaseAllClient()
-    //  this.clearAllInterval()
-    this.cameraTrack && this.closeMediaTrack(this.cameraTrack);
-    this.microphoneTrack && this.closeMediaTrack(this.microphoneTrack);
-    // this.cameraTestTrack && this.closeTestTrack(this.cameraTestTrack)
-    //  this.microphoneTestTrack && this.closeTestTrack(this.microphoneTestTrack)
-    //  this.screenVideoTrack && this.closeScreenTrack(this.screenVideoTrack)
-    //  this.screenAudioTrack && this.closeScreenTrack(this.screenAudioTrack)
+    this._closeMediaTrack(this.cameraTrack);
+    this._closeMediaTrack(this.microphoneTrack);
     this.joined = false;
     this.publishedTrackIds = [];
-    // this.deviceList = []
-    // this.subscribeVideoList = []
-    // this.subscribeAudioList = []
-    // this.unsubscribeAudioList = []
-    // this.unsubscribeVideoList = []
-    // this.videoMuted = false
-    // this.audioMuted = false
-    // this.channelName = ''
-    // this.init()
+  }
+
+  async setCamera(options: { enable: boolean }) {
+    if (options.enable) {
+      await this.openCamera();
+    } else {
+      this._closeMediaTrack(this.cameraTrack);
+    }
+  }
+
+  async setMicrophone(options: { enable: boolean }) {
+    if (options.enable) {
+      await this.openMicrophone();
+    } else {
+      this._closeMediaTrack(this.microphoneTrack);
+    }
   }
 }

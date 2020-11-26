@@ -1,4 +1,5 @@
 import { RoomManager } from "@/manager/room.manager";
+import { ClassView, TeacherState } from "@/store/teacher_room/state";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -22,43 +23,43 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const teacher = store.getters["class/teacher"];
+    const teacher: TeacherState = store.getters["teacherRoom/teacher"];
     const showModal = ref(false);
     const hasConfirmed = ref(false);
-    const roomManager = store.getters["room/roomManager"] as RoomManager;
+    const roomManager = store.getters["teacherRoom/roomManager"] as RoomManager;
 
     const views = [
-      { id: 1, name: "Gallery", icon: "" },
-      { id: 2, name: "LessonPlan", icon: "" },
-      { id: 3, name: "Whiteboard", icon: "" },
-      { id: 4, name: "Game", icon: "" },
+      { id: ClassView.GALLERY, name: "Gallery", icon: "" },
+      { id: ClassView.LESSON_PLAN, name: "LessonPlan", icon: "" },
+      { id: ClassView.WHITE_BOARD, name: "Whiteboard", icon: "" },
+      { id: ClassView.GAME, name: "Game", icon: "" },
     ];
 
     const currentView = computed(() => {
-      return store.getters["class/view"];
+      return store.getters["teacherRoom/classView"];
     });
 
     const isGalleryView = computed(() => {
-      return store.getters["class/isGalleryView"];
+      return store.getters["teacherRoom/isGalleryView"];
     });
 
-    const setClassView = (newView: number) => {
-      store.dispatch("class/setClassView", { view: newView });
+    const setClassView = (newView: ClassView) => {
+      store.dispatch("teacherRoom/setClassView", { classView: newView });
     };
 
     const onClickHideAll = () => {
-      store.dispatch("class/hideAllStudents");
+      store.dispatch("teacherRoom/hideAllStudents");
     };
     const onClickShowAll = () => {
-      store.dispatch("class/showAllStudents");
+      store.dispatch("teacherRoom/showAllStudents");
     };
 
     const onClickMuteAll = () => {
-      store.dispatch("class/muteAllStudents");
+      store.dispatch("teacherRoom/muteAllStudents");
     };
 
     const onClickUnmuteAll = () => {
-      store.dispatch("class/unmuteAllStudents");
+      store.dispatch("teacherRoom/unmuteAllStudents");
     };
 
     const onClickEnd = () => {
@@ -67,7 +68,8 @@ export default defineComponent({
 
     const onClickLeave = () => {
       hasConfirmed.value = true;
-      router.back();
+      store.dispatch("teacherRoom/endClass");
+      router.replace("/teacher");
     };
 
     const onClickCloseModal = () => {
@@ -75,21 +77,24 @@ export default defineComponent({
     };
 
     const joinRoom = () => {
-      roomManager.join();
+      roomManager.join({
+        camera: teacher.videoEnabled,
+        microphone: teacher.audioEnabled,
+      });
     };
-    const startStream = () => {
-      roomManager.agoraClient.initStream();
+    joinRoom();
+
+    const onTeacherChanged = async () => {
+      roomManager.setCamera({
+        enable: teacher.videoEnabled,
+      });
+
+      roomManager.setMicrophone({
+        enable: teacher.audioEnabled,
+      });
     };
-    watch(teacher, () => {
-      if (!teacher.audioEnabled) {
-        console.log("JoinRoom");
-        joinRoom();
-      }
-      if (!teacher.videoEnabled) {
-        console.log("startStream");
-        startStream();
-      }
-    });
+
+    watch(teacher, onTeacherChanged);
 
     return {
       showModal,

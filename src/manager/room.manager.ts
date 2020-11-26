@@ -4,34 +4,45 @@ export interface RoomOptions {
   agora: AgoraClientOptions;
 }
 
+export enum MediaDeviceStatus {
+  DEFAULT = 0,
+  LOCKED = 1,
+  UNLOCKED = 2,
+}
+
+export interface MediaDevice {
+  id: string;
+  name: string;
+}
+
+export interface MediaStateInterface {
+  devices: Array<MediaDevice>;
+  activeDeviceId?: string;
+  status: MediaDeviceStatus;
+}
+
 export class RoomManager {
-  _agoraClient?: AgoraClient;
-  _options?: RoomOptions;
+  agoraClient: AgoraClient;
+  options: RoomOptions;
 
-  constructor(options?: RoomOptions) {
-    if (options) this.init(options);
+  constructor(options: RoomOptions) {
+    this.options = options;
+    this.agoraClient = new AgoraClient(options.agora);
   }
 
-  get agoraClient(): AgoraClient {
-    return this._agoraClient as AgoraClient;
+  join(options: { camera: boolean; microphone: boolean }) {
+    this.agoraClient.joinRTCRoom(options);
   }
 
-  get options(): RoomOptions {
-    return this._options as RoomOptions;
+  setCamera(options: { enable: boolean }) {
+    this.agoraClient.setCamera(options);
   }
 
-  init(options: RoomOptions) {
-    if (this._options) return;
-    this.reset();
-    this._options = options;
-    this._agoraClient = new AgoraClient(options.agora);
+  setMicrophone(options: { enable: boolean }) {
+    this.agoraClient.setMicrophone(options);
   }
 
-  join() {
-    this.agoraClient.initClient();
-  }
-
-  reset() {
-    console.log("reset room");
+  close() {
+    this.agoraClient.reset();
   }
 }

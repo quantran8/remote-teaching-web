@@ -4,14 +4,14 @@ import { useStore } from "vuex";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const roomManager = store.getters["room/roomManager"] as RoomManager;
+    const roomManager = store.getters["studentRoom/roomManager"] as RoomManager;
     const joinZoom = () => {
       console.log("Join Zooom", roomManager.options);
-      roomManager.agoraClient.initClient();
+      // roomManager.agoraClient.joinRTCRoom();
     };
     const startStream = () => {
       console.log("Start Stream");
-      roomManager.agoraClient.initStream();
+      // roomManager.agoraClient.initStream();
     };
 
     const getDevices = () => {
