@@ -1,9 +1,14 @@
 <template>
   <BaseCard>
     <div class="container">
-      <h3>{{ title }}</h3>
+      <div class="class-title">
+        <LiveCircle class="live-dot" v-if="active"></LiveCircle>
+        <h3>{{ title }}</h3>
+      </div>
       <p>{{ description }}</p>
-      <router-link :to="'/class/' + id">Start</router-link>
+      <BaseButton mode="clear" color="primary" @click="onClick">{{
+        btnText
+      }}</BaseButton>
     </div>
   </BaseCard>
 </template>

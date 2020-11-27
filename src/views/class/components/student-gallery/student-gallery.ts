@@ -1,4 +1,4 @@
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import StudentCard from "./student-card/student-card.vue";
 export default defineComponent({
@@ -7,7 +7,7 @@ export default defineComponent({
   },
   setup() {
     const { getters } = useStore();
-    const students = getters["teacherRoom/students"];
+    const students = computed(() => getters["teacherRoom/students"]);
     return {
       students,
     };

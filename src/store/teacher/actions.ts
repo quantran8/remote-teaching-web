@@ -1,5 +1,9 @@
 import { Parent } from "@/models";
-import { GetClassesModel, TeacherService } from "@/services";
+import {
+  RemoteTeachingService,
+  TeacherGetRoomResponse,
+  TeacherService,
+} from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
@@ -8,20 +12,14 @@ const actions: ActionTree<TeacherState, any> = {
     commit("setInfo", payload);
   },
   async loadClasses({ commit, state }: ActionContext<TeacherState, any>) {
-    return new Promise((resolve, reject) => {
-      if (!state.info) {
-        reject();
-        return;
-      }
-      TeacherService.getClasses(state.info.id)
-        .then((res: GetClassesModel) => {
-          commit("setClasses", res.data);
-          resolve();
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+    if (!state.info) return;
+    const response = await TeacherService.getClasses(state.info.id);
+    commit("setClasses", response.data);
+  },
+  async loadClassRoom({ commit, state }: ActionContext<TeacherState, any>) {
+    if (!state.info) return;
+    const response: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
+    commit("setClassRoom", response.data);
   },
 };
 

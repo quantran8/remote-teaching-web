@@ -1,5 +1,5 @@
 <template>
-  <div class="base-button" :class="buttonMode">
+  <div class="base-button" :class="cssClass">
     <slot></slot>
   </div>
 </template>

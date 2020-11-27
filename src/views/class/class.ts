@@ -1,7 +1,17 @@
+import { LoginInfo, RoleName } from "@/commonui";
 import { RoomManager } from "@/manager/room/base.manager";
-import { ClassView, TeacherState } from '@/store/room/interface';
-import { computed, defineComponent, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { GLErrorCode } from "@/models/error.model";
+import { ClassView } from "@/store/room/interface";
+import {
+  computed,
+  ComputedRef,
+  defineComponent,
+  ref,
+  toRef,
+  watch,
+  watchEffect,
+} from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
   TeacherCard,
@@ -10,6 +20,7 @@ import {
   StudentGallery,
   GlobalAudioBar,
   LeaveModal,
+  ErrorModal,
 } from "./components";
 export default defineComponent({
   components: {
@@ -19,14 +30,41 @@ export default defineComponent({
     GlobalAudioBar,
     StudentGallery,
     LeaveModal,
+    ErrorModal,
   },
+  async beforeUnmount() {
+    const store = useStore();
+    await store.dispatch("teacherRoom/leaveRoom");
+  },
+  async created() {
+    const { getters, dispatch } = useStore();
+    const route = useRoute();
+    const { classId } = route.params;
+    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    await dispatch("teacherRoom/initClassRoom", {
+      classId: classId,
+      userId: loginInfo.profile.sub,
+      userName: loginInfo.profile.name,
+      role: RoleName.teacher,
+    });
+    await dispatch("teacherRoom/joinRoom");
+  },
+
   setup() {
     const store = useStore();
     const router = useRouter();
-    const teacher: TeacherState = store.getters["teacherRoom/teacher"];
     const showModal = ref(false);
     const hasConfirmed = ref(false);
-    const roomManager = store.getters["teacherRoom/roomManager"] as RoomManager;
+    const teacher = computed(() => store.getters["teacherRoom/teacher"]);
+    const error = computed(() => store.getters["teacherRoom/error"]);
+    const roomManager = computed(
+      () => store.getters["teacherRoom/roomManager"]
+    );
+    const isClassNotActive = computed(() => {
+      return (
+        error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
+      );
+    });
 
     const views = [
       { id: ClassView.GALLERY, name: "Gallery", icon: "" },
@@ -50,6 +88,7 @@ export default defineComponent({
     const onClickHideAll = () => {
       store.dispatch("teacherRoom/hideAllStudents");
     };
+
     const onClickShowAll = () => {
       store.dispatch("teacherRoom/showAllStudents");
     };
@@ -66,40 +105,37 @@ export default defineComponent({
       showModal.value = true;
     };
 
-    const onClickLeave = () => {
+    const onClickLeave = async () => {
       hasConfirmed.value = true;
-      store.dispatch("teacherRoom/endClass");
+      await store.dispatch("teacherRoom/endClass");
       router.replace("/teacher");
     };
-
+    const onClickCloseError = () => {
+      // store.dispatch("teacherRoom/setError", null);
+      // does nothing, we only accept leave room;
+    };
     const onClickCloseModal = () => {
       showModal.value = false;
     };
 
-    const joinRoom = () => {
-      roomManager.join({
-        camera: teacher.videoEnabled,
-        microphone: teacher.audioEnabled,
-        publish: true,
-      });
-    };
-    joinRoom();
-
     const onTeacherChanged = async () => {
-      roomManager.setCamera({
-        enable: teacher.videoEnabled,
-        publish: teacher.videoEnabled,
+      console.log("on teacher changed", teacher.value);
+      if (!roomManager.value) return;
+
+      roomManager.value.setCamera({
+        enable: teacher.value.videoEnabled,
+        publish: teacher.value.videoEnabled,
       });
 
-      roomManager.setMicrophone({
-        enable: teacher.audioEnabled,
+      roomManager.value.setMicrophone({
+        enable: teacher.value.audioEnabled,
       });
     };
 
-    watch(teacher, onTeacherChanged);
+    watch(teacher, onTeacherChanged, { deep: true });
 
-    watch(roomManager.remoteUsers, () => {
-      console.log(roomManager.remoteUsers);
+    watch(error, () => {
+      console.log(error.value);
     });
 
     return {
@@ -116,6 +152,8 @@ export default defineComponent({
       teacher,
       onClickLeave,
       onClickCloseModal,
+      isClassNotActive,
+      onClickCloseError,
     };
   },
 });

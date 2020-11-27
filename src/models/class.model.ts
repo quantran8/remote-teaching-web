@@ -20,3 +20,7 @@ export interface ClassModel {
   regionName: string;
   regionEnglishName: string;
 }
+
+export interface TeacherClassModel extends ClassModel {
+  isActive?: boolean;
+}

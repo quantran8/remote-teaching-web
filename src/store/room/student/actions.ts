@@ -1,7 +1,10 @@
+import { RoomModel } from "@/models";
+import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import {
   GetClassesModel,
   RemoteTeachingService,
+  StudentGetRoomResponse,
   TeacherGetRoomResponse,
   TeacherService,
 } from "@/services";
@@ -9,15 +12,45 @@ import { ActionTree } from "vuex";
 import { StudentRoomState } from "./state";
 
 const actions: ActionTree<StudentRoomState, any> = {
+  async initClassRoom(
+    { commit },
+    payload: {
+      classId: string;
+      userId: string;
+      userName: string;
+      studentId: string;
+      role: string;
+    }
+  ) {
+    commit("setUser", {
+      id: payload.studentId,
+      name: payload.userName,
+    });
+
+    const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
+      payload.studentId
+    );
+    if (!roomResponse) return;
+    const roomInfo: RoomModel = roomResponse.data;
+    if (!roomInfo || roomInfo.classId !== payload.classId) {
+      commit("setError", {
+        errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+        message: "This class is not active!",
+      });
+      return;
+    }
+    commit("setRoomInfo", roomResponse.data);
+  },
+
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
   async joinRoom({ state }, _payload: any) {
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
-        camera: true,
-        microphone: false,
-        publish: true,
+        camera: state.student?.videoEnabled,
+        microphone: state.student?.audioEnabled,
+        publish: state.student?.videoEnabled,
       });
     }
   },
@@ -39,52 +72,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     );
     if (!response) return;
     commit("setClasses", response.data);
-  },
-
-  // for camera
-  async openCamera(_store, _payload) {
-    // TO DO
-  },
-  async muteLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async unmuteLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async lockLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async unlockLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async closeCamera(_store, _payload) {
-    // TO DO
-  },
-  async changeCamera(_store, _payload: { deviceId: string }) {
-    // TO DO
-  },
-
-  // for microphone
-  async muteLocalMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async unmuteLocalMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async lockMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async unLockMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async openMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async closeMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async changeMicrophone(_store, _payload: { deviceId: string }) {
-    // TO DO
   },
 
   setStudentAudio(

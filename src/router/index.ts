@@ -45,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/class/:id",
+    path: "/class/:classId",
     name: "Class",
     component: () => import("../views/class/class.vue"),
     meta: {

@@ -19,20 +19,20 @@ export default defineComponent({
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
 
-    watch(isSignedIn, () => {
+    watch(isSignedIn, async () => {
       if (isSignedIn.value) {
         const loginInfo: LoginInfo = getters["auth/loginInfo"];
         const isTeacher: boolean = getters["auth/isTeacher"];
         const isParent: boolean = getters["auth/isParent"];
         if (isTeacher) {
-          dispatch("teacherRoom/setUser", {
+          dispatch("teacher/setInfo", {
             id: loginInfo.profile.sub,
             name: loginInfo.profile.name,
           });
-          dispatch("teacherRoom/loadRooms");
-          dispatch("teacherRoom/loadClasses", {
+          await dispatch("teacher/loadClasses", {
             teacherId: loginInfo.profile.sub,
           });
+          dispatch("teacher/loadClassRoom");
         }
         if (isParent) {
           dispatch("parent/setInfo", {

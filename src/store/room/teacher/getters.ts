@@ -8,6 +8,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   info(state: TeacherRoomState): RoomModel {
     return state.info as RoomModel;
   },
+  error(state: TeacherRoomState): any {
+    return state.error;
+  },
   classes(state: TeacherRoomState): Array<ClassModel> {
     return state.classes;
   },

@@ -3,6 +3,7 @@ import { TeacherModel } from "./teacher.model";
 
 export interface RoomModel {
   id: string;
+  classId: string;
   status: number;
   teacher: TeacherModel;
   streamInfo: {

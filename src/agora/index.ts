@@ -140,6 +140,7 @@ export class AgoraClient implements AgoraClientSDK {
 
   publishedTrackIds: any[] = [];
   async publish(): Promise<any> {
+    if (!this.joined) return;
     if (this.cameraTrack) {
       const trackId = this.cameraTrack.getTrackId();
       if (this.publishedTrackIds.indexOf(trackId) < 0) {
@@ -166,9 +167,15 @@ export class AgoraClient implements AgoraClientSDK {
   getRemoteUsers() {
     return this.client.remoteUsers;
   }
-
+  unPublishAll() {
+    this.client && this.client.unpublish();
+  }
+  unsubscribeAll() {
+    // todo
+  }
   reset() {
-    this.client.leave();
+    this.unPublishAll();
+    this._client?.leave();
     this._client = undefined;
     this.publishedVideo = false;
     this.publishedAudio = false;
@@ -183,6 +190,7 @@ export class AgoraClient implements AgoraClientSDK {
       await this.openCamera();
       if (options.publish) await this.publish();
     } else {
+      await this.client?.unpublish(this.cameraTrack);
       this._closeMediaTrack(this.cameraTrack);
     }
   }
@@ -192,6 +200,7 @@ export class AgoraClient implements AgoraClientSDK {
       await this.openMicrophone();
       if (options.publish) await this.publish();
     } else {
+      await this.client?.unpublish(this.microphoneTrack);
       this._closeMediaTrack(this.microphoneTrack);
     }
   }

@@ -6,9 +6,15 @@ export default defineComponent({
       type: String,
       default: "fill",
     },
+    color: {
+      type: String,
+      default: "white",
+    },
   },
   setup(props) {
-    const buttonMode = computed(() => `button-${props.mode}`);
-    return { buttonMode };
+    const cssClass = computed(
+      () => `button-${props.mode} color-${props.color}`
+    );
+    return { cssClass };
   },
 });

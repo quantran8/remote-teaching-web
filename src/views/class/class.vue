@@ -3,6 +3,7 @@
     <div class="content">
       <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
         <TeacherCard
+          v-if="teacher"
           class="teacher-card"
           :id="teacher.id"
           :name="teacher.name"
@@ -45,6 +46,11 @@
       @dismiss="onClickCloseModal"
       @leave="onClickLeave"
     ></LeaveModal>
+    <ErrorModal
+      v-if="isClassNotActive"
+      @dismiss="onClickCloseError"
+      @confirm="onClickLeave"
+    ></ErrorModal>
   </div>
 </template>
 <style lang="scss" scoped src="./class.scss"></style>

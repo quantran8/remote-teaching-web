@@ -1,4 +1,4 @@
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -14,8 +14,19 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    active: {
+      type: Boolean,
+      default: false,
+    },
   },
-  setup(props) {
-    return {};
+  emits: ["btn-click"],
+  setup(props, { emit }) {
+    const btnText = computed(() => {
+      return props.active ? "Join" : "Start";
+    });
+    const onClick = () => {
+      emit("btn-click");
+    };
+    return { onClick, btnText };
   },
 });

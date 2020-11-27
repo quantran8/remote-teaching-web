@@ -1,12 +1,17 @@
 import { AGORA_APP_ID } from "@/agora/config";
 import { RoomManager } from "@/manager/room/base.manager";
 import { ClassModel, RoomModel } from "@/models";
+import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, StudentInClassStatus } from '../interface';
-import { StudentRoomState } from './state';
+import { ClassView, StudentInClassStatus } from "../interface";
+import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
+  setError(state: StudentRoomState, payload: GLError | null) {
+    state.error = payload;
+  },
+
   setClassView(state: StudentRoomState, payload: { classView: ClassView }) {
     state.classView = payload.classView;
   },
@@ -65,14 +70,20 @@ const mutations: MutationTree<StudentRoomState> = {
     state: StudentRoomState,
     payload: { studentId: string; audioEnabled: boolean }
   ) {
-    const student = state.students.find((st) => st.id === payload.studentId);
+    const student =
+      payload.studentId === state.student?.id
+        ? state.student
+        : state.students.find((st) => st.id === payload.studentId);
     if (student) student.audioEnabled = payload.audioEnabled;
   },
   setStudentVideo(
     state: StudentRoomState,
     payload: { studentId: string; videoEnabled: boolean }
   ) {
-    const student = state.students.find((st) => st.id === payload.studentId);
+    const student =
+      payload.studentId === state.student?.id
+        ? state.student
+        : state.students.find((st) => st.id === payload.studentId);
     if (student) student.videoEnabled = payload.videoEnabled;
   },
   setStudentBadge(

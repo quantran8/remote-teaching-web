@@ -1,5 +1,5 @@
 <template>
-  <BaseModal @on-close="onClickDismiss">
+  <BaseModal @close="onClickDismiss">
     <div class="modal-boxshadow leave-modal">
       <div class="header">Leave page?</div>
       <div class="body"></div>

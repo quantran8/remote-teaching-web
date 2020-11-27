@@ -1,10 +1,11 @@
 import { AGORA_APP_ID } from "@/agora/config";
 import { RoomManager } from "@/manager/room/base.manager";
 import { ClassModel, RoomModel } from "@/models";
+import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, StudentInClassStatus } from '../interface';
-import { TeacherRoomState } from './state';
+import { ClassView, StudentInClassStatus } from "../interface";
+import { TeacherRoomState } from "./state";
 
 const mutations: MutationTree<TeacherRoomState> = {
   endClass(state: TeacherRoomState, payload: any) {
@@ -19,6 +20,9 @@ const mutations: MutationTree<TeacherRoomState> = {
   },
   setClassView(state: TeacherRoomState, payload: { classView: ClassView }) {
     state.classView = payload.classView;
+  },
+  setError(state: TeacherRoomState, payload: GLError | null) {
+    state.error = payload;
   },
   setClasses(state: TeacherRoomState, payload: Array<ClassModel>) {
     state.classes = payload;

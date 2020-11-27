@@ -1,10 +1,10 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  emits: ["on-close"],
+  emits: ["close"],
   setup(props, { emit }) {
     const onClickDismiss = () => {
-      emit("on-close");
+      emit("close");
     };
     return { onClickDismiss };
   },

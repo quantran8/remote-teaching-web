@@ -1,4 +1,5 @@
-import { computed, defineComponent } from "vue";
+import { LoginInfo, RoleName } from "@/commonui";
+import { computed, defineComponent, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
@@ -7,15 +8,18 @@ export default defineComponent({
     StudentCard,
   },
   async created() {
-    const store = useStore();
+    const { getters, dispatch } = useStore();
     const route = useRoute();
-    const { studentId } = route.params;
-    store.dispatch("studentRoom/setUser", {
-      id: studentId,
-      name: "",
+    const { studentId, classId } = route.params;
+    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    await dispatch("studentRoom/initClassRoom", {
+      classId: classId,
+      userId: loginInfo.profile.sub,
+      userName: loginInfo.profile.name,
+      studentId: studentId,
+      role: RoleName.parent,
     });
-    await store.dispatch("studentRoom/loadRooms");
-    await store.dispatch("studentRoom/joinRoom");
+    await dispatch("studentRoom/joinRoom");
   },
   async beforeUnmount() {
     const store = useStore();
@@ -27,6 +31,23 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const teacher = computed(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
+    const roomManager = computed(
+      () => store.getters["studentRoom/roomManager"]
+    );
+    const onStudentChanged = async () => {
+      console.log("onStudentChanged", student);
+      if (!roomManager.value) return;
+      roomManager.value.setCamera({
+        enable: student.value.videoEnabled,
+        publish: student.value.videoEnabled,
+      });
+
+      roomManager.value.setMicrophone({
+        enable: student.value.audioEnabled,
+      });
+    };
+
+    watch(student, onStudentChanged, { deep: true });
 
     const audioIcon = computed(() =>
       student.value?.audioEnabled ? "icon-audio-on" : "icon-audio-off"
@@ -36,17 +57,17 @@ export default defineComponent({
     );
 
     const toggleAudio = () => {
-      // store.dispatch("teacherRoom/setTeacherAudio", {
-      //   teacherId: props.id,
-      //   audioEnabled: !props.audioEnabled,
-      // });
+      store.dispatch("studentRoom/setStudentAudio", {
+        studentId: student.value.id,
+        audioEnabled: !student.value.audioEnabled,
+      });
     };
 
     const toggleVideo = () => {
-      // store.dispatch("teacherRoom/setTeacherVideo", {
-      //   teacherId: props.id,
-      //   videoEnabled: !props.videoEnabled,
-      // });
+      store.dispatch("studentRoom/setStudentVideo", {
+        studentId: student.value.id,
+        videoEnabled: !student.value.videoEnabled,
+      });
     };
 
     return {

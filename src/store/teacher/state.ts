@@ -1,16 +1,16 @@
-import { ClassModel } from "@/models";
+import { RoomModel, TeacherClassModel } from "@/models";
 import { UserModel } from "@/models/user.model";
 
 export interface TeacherState {
   info?: UserModel;
-  currentClassId?: string;
-  classes: Array<ClassModel>;
+  classes: Array<TeacherClassModel>;
+  room?: RoomModel;
 }
 
 const state: TeacherState = {
   info: undefined,
-  currentClassId: undefined,
   classes: [],
+  room: undefined,
 };
 
 export default state;

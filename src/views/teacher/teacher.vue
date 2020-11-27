@@ -13,6 +13,8 @@
         :id="cl.schoolClassId"
         :title="cl.schoolClassName"
         :description="cl.schoolName"
+        :active="cl.isActive"
+        @btn-click="() => onClickClass(cl)"
       />
     </div>
   </div>

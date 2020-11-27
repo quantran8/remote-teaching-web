@@ -1,84 +1,61 @@
+import { RoomModel } from "@/models";
+import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import {
-  GetClassesModel,
-  RemoteTeachingService,
-  TeacherGetRoomResponse,
-  TeacherService,
-} from "@/services";
+import { RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
 import { ClassView } from "../interface";
 import { TeacherRoomState } from "./state";
 
 const actions: ActionTree<TeacherRoomState, any> = {
-  endClass(store, payload: any) {
-    store.commit("endClass", payload);
+  async endClass({ commit, state }, payload: any) {
+    await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
+    commit("endClass", payload);
   },
   setClassView(store, payload: { classView: ClassView }) {
     store.commit("setClassView", payload);
   },
-
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async loadRooms({ commit, state }, _payload: any) {
-    console.log("Call loadRooms");
-    if (state.info) return;
+  setError(store, payload: GLError | null) {
+    store.commit("setError", payload);
+  },
+  async leaveRoom({ state }, _payload: any) {
+    return state.manager?.close();
+  },
+  async joinRoom({ state }, _payload: any) {
+    if (!state.info || !state.teacher || !state.manager) return;
+    state.manager?.join({
+      camera: state.teacher.videoEnabled,
+      microphone: state.teacher.audioEnabled,
+      publish: state.teacher.audioEnabled,
+    });
+  },
+  async initClassRoom(
+    { commit },
+    payload: {
+      classId: string;
+      userId: string;
+      userName: string;
+      role: string;
+    }
+  ) {
+    commit("setUser", {
+      id: payload.userId,
+      name: payload.userName,
+    });
+
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     if (!roomResponse) return;
+    const roomInfo: RoomModel = roomResponse.data;
+    if (!roomInfo || roomInfo.classId !== payload.classId) {
+      commit("setError", {
+        errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+        message: "This class is not active!",
+      });
+      return;
+    }
     commit("setRoomInfo", roomResponse.data);
-  },
-  async loadClasses({ commit }, { teacherId }: { teacherId: string }) {
-    const response: GetClassesModel = await TeacherService.getClasses(
-      teacherId
-    );
-    if (!response) return;
-    commit("setClasses", response.data);
-  },
-
-  // for camera
-  async openCamera(_store, _payload) {
-    // TO DO
-  },
-  async muteLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async unmuteLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async lockLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async unlockLocalCamera(_store, _payload) {
-    // TO DO
-  },
-  async closeCamera(_store, _payload) {
-    // TO DO
-  },
-  async changeCamera(_store, _payload: { deviceId: string }) {
-    // TO DO
-  },
-
-  // for microphone
-  async muteLocalMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async unmuteLocalMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async lockMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async unLockMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async openMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async closeMicrophone(_store, _payload) {
-    // TO DO
-  },
-  async changeMicrophone(_store, _payload: { deviceId: string }) {
-    // TO DO
   },
 
   setStudentAudio(

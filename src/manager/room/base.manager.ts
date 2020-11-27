@@ -47,7 +47,7 @@ export class RoomManager {
     this.agoraClient.setMicrophone(options);
   }
 
-  close() {
+  async close() {
     this.agoraClient.reset();
   }
 
