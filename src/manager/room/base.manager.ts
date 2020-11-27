@@ -1,4 +1,5 @@
 import { AgoraClient, AgoraClientOptions } from "@/agora";
+import { RTSocketClient } from "@/ws";
 import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
 
 export interface RoomOptions {
@@ -25,17 +26,29 @@ export interface MediaStateInterface {
 export class RoomManager {
   agoraClient: AgoraClient;
   options: RoomOptions;
-
+  wsClient: RTSocketClient;
   constructor(options: RoomOptions) {
     this.options = options;
     this.agoraClient = new AgoraClient(options.agora);
+    this.wsClient = new RTSocketClient({
+      url: `http://vn-gs-server.grapecity.net:5010/teaching`,
+    });
+    this.wsClient.init();
   }
-  
+
   isJoinedRoom() {
     return this.agoraClient.joined;
   }
 
-  join(options: { camera?: boolean; microphone?: boolean; publish?: boolean }) {
+  async join(options: {
+    classId?: string;
+    camera?: boolean;
+    microphone?: boolean;
+    publish?: boolean;
+  }) {
+    if (options.classId) {
+      await this.wsClient.connect();
+    }
     return this.agoraClient.joinRTCRoom(options);
   }
 

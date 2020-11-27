@@ -1,4 +1,4 @@
-import { AuthService } from "@/commonui";
+import { AuthService, GLGlobal } from "@/commonui";
 import {
   HubConnectionBuilder,
   HttpTransportType,
@@ -30,7 +30,7 @@ export class RTSocketClient {
       skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
       logging: LogLevel.Trace,
-      accessTokenFactory: () => AuthService.accessToken || "",
+      accessTokenFactory: () => GLGlobal.loginInfo().access_token,
     };
 
     this._hubConnection = new HubConnectionBuilder()
@@ -39,24 +39,14 @@ export class RTSocketClient {
       .build();
   }
 
-  connect() {
-    this.hubConnection
-      .start()
-      .catch((err) => {
-        console.log("error", err);
-      })
-      .then((success) => {
-        console.log("Success", success);
-      });
-    this.hubConnection.on("ResourceUpdated", (data) => {
-      console.log("WS", JSON.stringify(data));
-    });
-    this.hubConnection.onclose(() => {
-      console.log("onConnection Closed");
+  async connect() {
+    return this.hubConnection.start();
+  }
+  
+  sendRequestJoinClass(roomId: string) {
+    console.log("sendRequestJoinClass", roomId);
+    this.hubConnection.send("TeacherJoinClass", {
+      roomId: roomId,
     });
   }
 }
-
-export const RTWSClient: RTSocketClient = new RTSocketClient({
-  url: "http://127.0.0.1:5010/teaching",
-});
