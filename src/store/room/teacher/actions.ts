@@ -6,9 +6,10 @@ import {
   TeacherService,
 } from "@/services";
 import { ActionTree } from "vuex";
-import { ClassView, RoomState } from "./state";
+import { ClassView } from "../interface";
+import { TeacherRoomState } from "./state";
 
-const actions: ActionTree<RoomState, any> = {
+const actions: ActionTree<TeacherRoomState, any> = {
   endClass(store, payload: any) {
     store.commit("endClass", payload);
   },

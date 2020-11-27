@@ -1,4 +1,3 @@
-import { StudentState } from "@/store/student_room/state";
 import { computed, defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";

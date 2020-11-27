@@ -1,4 +1,3 @@
-import { useFakeVideoUrl } from "@/fake/video.fake";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
@@ -27,7 +26,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const video = useFakeVideoUrl(props.index);
     const isContextMenuVisible = ref(false);
     const store = useStore();
 
@@ -71,7 +69,6 @@ export default defineComponent({
     };
 
     return {
-      video,
       audioIcon,
       videoIcon,
       toggleAudio,

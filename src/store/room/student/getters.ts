@@ -1,40 +1,41 @@
-import { RoomManager } from "@/manager/room.manager";
+import { RoomManager } from "@/manager/room/base.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GetterTree } from "vuex";
-import { ClassView, RoomState, StudentState, TeacherState } from "./state";
+import { ClassView, StudentState, TeacherState } from "../interface";
+import { StudentRoomState } from "./state";
 
-const getters: GetterTree<RoomState, any> = {
-  info(state: RoomState): RoomModel {
+const getters: GetterTree<StudentRoomState, any> = {
+  info(state: StudentRoomState): RoomModel {
     return state.info as RoomModel;
   },
-  classes(state: RoomState): Array<ClassModel> {
+  classes(state: StudentRoomState): Array<ClassModel> {
     return state.classes;
   },
-  students(state: RoomState): Array<StudentState> {
+  students(state: StudentRoomState): Array<StudentState> {
     return state.students;
   },
-  teacher(state: RoomState): TeacherState {
+  teacher(state: StudentRoomState): TeacherState {
     return state.teacher as TeacherState;
   },
-  student(state: RoomState): StudentState {
+  student(state: StudentRoomState): StudentState {
     return state.student as StudentState;
   },
-  roomManager(state: RoomState): RoomManager {
+  roomManager(state: StudentRoomState): RoomManager {
     return state.manager as RoomManager;
   },
-  classView(state: RoomState): ClassView {
+  classView(state: StudentRoomState): ClassView {
     return state.classView;
   },
-  isGalleryView(state: RoomState) {
+  isGalleryView(state: StudentRoomState) {
     return state.classView === ClassView.GALLERY;
   },
-  isAllVideoHidden(state: RoomState) {
+  isAllVideoHidden(state: StudentRoomState) {
     for (const student of state.students) {
       if (student.videoEnabled) return false;
     }
     return true;
   },
-  isAllAudioMuted(state: RoomState) {
+  isAllAudioMuted(state: StudentRoomState) {
     for (const student of state.students) {
       if (student.audioEnabled) return false;
     }

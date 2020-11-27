@@ -1,5 +1,5 @@
-import { RoomManager } from "@/manager/room.manager";
-import { ClassView, TeacherState } from "@/store/teacher_room/state";
+import { RoomManager } from "@/manager/room/base.manager";
+import { ClassView, TeacherState } from '@/store/room/interface';
 import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";

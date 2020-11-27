@@ -30,6 +30,7 @@ export class RoomManager {
     this.options = options;
     this.agoraClient = new AgoraClient(options.agora);
   }
+  
   isJoinedRoom() {
     return this.agoraClient.joined;
   }

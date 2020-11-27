@@ -1,12 +1,13 @@
 import { AGORA_APP_ID } from "@/agora/config";
-import { RoomManager } from "@/manager/room.manager";
+import { RoomManager } from "@/manager/room/base.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, RoomState, StudentInClassStatus } from "./state";
+import { ClassView, StudentInClassStatus } from '../interface';
+import { TeacherRoomState } from './state';
 
-const mutations: MutationTree<RoomState> = {
-  endClass(state: RoomState, payload: any) {
+const mutations: MutationTree<TeacherRoomState> = {
+  endClass(state: TeacherRoomState, payload: any) {
     state.manager?.close();
     state.info = undefined;
     state.user = undefined;
@@ -16,16 +17,16 @@ const mutations: MutationTree<RoomState> = {
     state.classes = [];
     state.classView = ClassView.GALLERY;
   },
-  setClassView(state: RoomState, payload: { classView: ClassView }) {
+  setClassView(state: TeacherRoomState, payload: { classView: ClassView }) {
     state.classView = payload.classView;
   },
-  setClasses(state: RoomState, payload: Array<ClassModel>) {
+  setClasses(state: TeacherRoomState, payload: Array<ClassModel>) {
     state.classes = payload;
   },
-  setUser(state: RoomState, payload: UserModel) {
+  setUser(state: TeacherRoomState, payload: UserModel) {
     state.user = payload;
   },
-  setRoomInfo(state: RoomState, room: RoomModel) {
+  setRoomInfo(state: TeacherRoomState, room: RoomModel) {
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,
@@ -64,66 +65,66 @@ const mutations: MutationTree<RoomState> = {
   },
 
   setStudentAudio(
-    state: RoomState,
+    state: TeacherRoomState,
     payload: { studentId: string; audioEnabled: boolean }
   ) {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.audioEnabled = payload.audioEnabled;
   },
   setStudentVideo(
-    state: RoomState,
+    state: TeacherRoomState,
     payload: { studentId: string; videoEnabled: boolean }
   ) {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.videoEnabled = payload.videoEnabled;
   },
   setStudentBadge(
-    state: RoomState,
+    state: TeacherRoomState,
     payload: { studentId: string; badge: number }
   ) {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.badge = payload.badge;
   },
   setTeacherAudio(
-    state: RoomState,
+    state: TeacherRoomState,
     payload: { teacherId: string; audioEnabled: boolean }
   ) {
     if (state.teacher?.id === payload.teacherId)
       state.teacher.audioEnabled = payload.audioEnabled;
   },
   setTeacherVideo(
-    state: RoomState,
+    state: TeacherRoomState,
     payload: { teacherId: string; videoEnabled: boolean }
   ) {
     if (state.teacher?.id === payload.teacherId)
       state.teacher.videoEnabled = payload.videoEnabled;
   },
 
-  hideAllStudents(state: RoomState) {
+  hideAllStudents(state: TeacherRoomState) {
     state.students.forEach((student) => (student.videoEnabled = false));
   },
-  showAllStudents(state: RoomState) {
+  showAllStudents(state: TeacherRoomState) {
     state.students.forEach((student) => (student.videoEnabled = true));
   },
-  muteAllStudents(state: RoomState) {
+  muteAllStudents(state: TeacherRoomState) {
     state.students.forEach((student) => (student.audioEnabled = false));
   },
-  unmuteAllStudents(state: RoomState) {
+  unmuteAllStudents(state: TeacherRoomState) {
     state.students.forEach((student) => (student.audioEnabled = true));
   },
-  studentJoinned(state: RoomState, payload: { studentId: string }) {
+  studentJoinned(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
     if (student) student.status = StudentInClassStatus.JOINED;
   },
-  studentLeftClass(state: RoomState, payload: { studentId: string }) {
+  studentLeftClass(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
     if (student) student.status = StudentInClassStatus.LEFT;
   },
-  studentLeaving(state: RoomState, payload: { studentId: string }) {
+  studentLeaving(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );

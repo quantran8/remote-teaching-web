@@ -1,4 +1,4 @@
-import { RoomManager } from "@/manager/room.manager";
+import { RoomManager } from "@/manager/room/base.manager";
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 export default defineComponent({

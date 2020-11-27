@@ -1,21 +1,22 @@
 import { AGORA_APP_ID } from "@/agora/config";
-import { RoomManager } from "@/manager/room.manager";
+import { RoomManager } from "@/manager/room/base.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, RoomState, StudentInClassStatus } from "./state";
+import { ClassView, StudentInClassStatus } from '../interface';
+import { StudentRoomState } from './state';
 
-const mutations: MutationTree<RoomState> = {
-  setClassView(state: RoomState, payload: { classView: ClassView }) {
+const mutations: MutationTree<StudentRoomState> = {
+  setClassView(state: StudentRoomState, payload: { classView: ClassView }) {
     state.classView = payload.classView;
   },
-  setClasses(state: RoomState, payload: Array<ClassModel>) {
+  setClasses(state: StudentRoomState, payload: Array<ClassModel>) {
     state.classes = payload;
   },
-  setUser(state: RoomState, payload: UserModel) {
+  setUser(state: StudentRoomState, payload: UserModel) {
     state.user = payload;
   },
-  setRoomInfo(state: RoomState, room: RoomModel) {
+  setRoomInfo(state: StudentRoomState, room: RoomModel) {
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,
@@ -61,66 +62,66 @@ const mutations: MutationTree<RoomState> = {
   },
 
   setStudentAudio(
-    state: RoomState,
+    state: StudentRoomState,
     payload: { studentId: string; audioEnabled: boolean }
   ) {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.audioEnabled = payload.audioEnabled;
   },
   setStudentVideo(
-    state: RoomState,
+    state: StudentRoomState,
     payload: { studentId: string; videoEnabled: boolean }
   ) {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.videoEnabled = payload.videoEnabled;
   },
   setStudentBadge(
-    state: RoomState,
+    state: StudentRoomState,
     payload: { studentId: string; badge: number }
   ) {
     const student = state.students.find((st) => st.id === payload.studentId);
     if (student) student.badge = payload.badge;
   },
   setTeacherAudio(
-    state: RoomState,
+    state: StudentRoomState,
     payload: { teacherId: string; audioEnabled: boolean }
   ) {
     if (state.teacher?.id === payload.teacherId)
       state.teacher.audioEnabled = payload.audioEnabled;
   },
   setTeacherVideo(
-    state: RoomState,
+    state: StudentRoomState,
     payload: { teacherId: string; videoEnabled: boolean }
   ) {
     if (state.teacher?.id === payload.teacherId)
       state.teacher.videoEnabled = payload.videoEnabled;
   },
 
-  hideAllStudents(state: RoomState) {
+  hideAllStudents(state: StudentRoomState) {
     state.students.forEach((student) => (student.videoEnabled = false));
   },
-  showAllStudents(state: RoomState) {
+  showAllStudents(state: StudentRoomState) {
     state.students.forEach((student) => (student.videoEnabled = true));
   },
-  muteAllStudents(state: RoomState) {
+  muteAllStudents(state: StudentRoomState) {
     state.students.forEach((student) => (student.audioEnabled = false));
   },
-  unmuteAllStudents(state: RoomState) {
+  unmuteAllStudents(state: StudentRoomState) {
     state.students.forEach((student) => (student.audioEnabled = true));
   },
-  studentJoinned(state: RoomState, payload: { studentId: string }) {
+  studentJoinned(state: StudentRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
     if (student) student.status = StudentInClassStatus.JOINED;
   },
-  studentLeftClass(state: RoomState, payload: { studentId: string }) {
+  studentLeftClass(state: StudentRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
     if (student) student.status = StudentInClassStatus.LEFT;
   },
-  studentLeaving(state: RoomState, payload: { studentId: string }) {
+  studentLeaving(state: StudentRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );

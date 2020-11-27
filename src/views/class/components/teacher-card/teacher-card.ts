@@ -1,4 +1,3 @@
-import { useFakeVideoUrl } from "@/fake/video.fake";
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 
@@ -17,7 +16,6 @@ export default defineComponent({
   },
   emits: ["show-all", "hide-all", "mute-all", "unmute-all", "end"],
   setup(props, { emit }) {
-    const video = useFakeVideoUrl(0);
     const store = useStore();
     const contextMenuVisibility = ref(false);
     const toggleContextMenu = () => {
@@ -83,7 +81,6 @@ export default defineComponent({
     };
 
     return {
-      video,
       audioIcon,
       videoIcon,
       toggleAudio,

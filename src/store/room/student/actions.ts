@@ -6,9 +6,9 @@ import {
   TeacherService,
 } from "@/services";
 import { ActionTree } from "vuex";
-import { RoomState } from "./state";
+import { StudentRoomState } from "./state";
 
-const actions: ActionTree<RoomState, any> = {
+const actions: ActionTree<StudentRoomState, any> = {
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
