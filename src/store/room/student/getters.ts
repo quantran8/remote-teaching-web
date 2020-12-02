@@ -1,11 +1,15 @@
 import { BaseRoomManager } from "@/manager/room/base.manager";
-import { StudentRoomManager } from '@/manager/room/student.manager';
+import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
+import { GLError } from "@/models/error.model";
 import { GetterTree } from "vuex";
 import { ClassView, StudentState, TeacherState } from "../interface";
 import { StudentRoomState } from "./state";
 
 const getters: GetterTree<StudentRoomState, any> = {
+  error(state: StudentRoomState): GLError | null {
+    return state.error;
+  },
   info(state: StudentRoomState): RoomModel {
     return state.info as RoomModel;
   },

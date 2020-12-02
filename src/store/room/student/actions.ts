@@ -36,7 +36,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (!roomInfo || roomInfo.classId !== payload.classId) {
       commit("setError", {
         errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-        message: "This class is not active!",
+        message: "Your class has not been started!",
       });
       return;
     }

@@ -1,5 +1,5 @@
 import { AgoraClient } from "@/agora";
-import { StudentWSClient, WSEventHandler } from "@/ws";
+import { StudentWSClient } from "@/ws";
 import { BaseRoomManager, RoomOptions } from "./base.manager";
 
 export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
