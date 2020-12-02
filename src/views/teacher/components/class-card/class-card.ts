@@ -22,7 +22,7 @@ export default defineComponent({
   emits: ["btn-click"],
   setup(props, { emit }) {
     const btnText = computed(() => {
-      return props.active ? "Join" : "Start";
+      return props.active ? "Join now" : "Start";
     });
     const onClick = () => {
       emit("btn-click");

@@ -29,14 +29,21 @@ export const ValueOfClassView = (classView: ClassView) => {
       return 1;
     case ClassView.LESSON_PLAN:
       return 2;
-    case ClassView.WHITE_BOARD:
-      return 3;
     case ClassView.GAME:
+      return 3;
+    case ClassView.WHITE_BOARD:
       return 4;
 
     default:
       return 1;
   }
+};
+export const ClassViewFromValue = (value: number) => {
+  if (value === 1) return ClassView.GALLERY;
+  if (value === 2) return ClassView.LESSON_PLAN;
+  if (value === 3) return ClassView.GAME;
+  if (value === 4) return ClassView.WHITE_BOARD;
+  throw new Error("Unsupported value " + value);
 };
 
 export enum StudentInClassStatus {

@@ -1,10 +1,13 @@
-import { AGORA_APP_ID } from "@/agora/config";
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, StudentInClassStatus } from "../interface";
+import {
+  ClassView,
+  ClassViewFromValue,
+  StudentInClassStatus,
+} from "../interface";
 import { TeacherRoomState } from "./state";
 
 const mutations: MutationTree<TeacherRoomState> = {
@@ -38,6 +41,7 @@ const mutations: MutationTree<TeacherRoomState> = {
       audioEnabled: !room.teacher.isMuteAudio,
       videoEnabled: !room.teacher.isMuteVideo,
     };
+    state.classView = ClassViewFromValue(room.focusTab);
     state.students = room.students.map((st, index) => {
       return {
         id: st.id,
@@ -56,7 +60,7 @@ const mutations: MutationTree<TeacherRoomState> = {
       room.streamInfo.userId === room.teacher.id ? "host" : "audience";
     state.manager = new TeacherRoomManager({
       agora: {
-        appId: AGORA_APP_ID,
+        appId: room.streamInfo.appId,
         webConfig: { mode: "rtc", codec: "vp8", role: role },
         user: {
           channel: room.streamInfo.chanelId,

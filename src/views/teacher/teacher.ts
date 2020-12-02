@@ -1,6 +1,6 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import { RemoteTeachingService } from "@/services";
+import { LessonService, RemoteTeachingService } from "@/services";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -26,9 +26,12 @@ export default defineComponent({
     const username = computed(() => store.getters["auth/username"]);
     const startClass = async (teacherClass: TeacherClassModel) => {
       try {
+        const lessons = await LessonService.getLessonByUnit(11);
+        let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
+        if (!lesson) lesson = lessons[0];
         const response = await RemoteTeachingService.teacherStartClassRoom(
           teacherClass.schoolClassId,
-          "a462b7c5-1c8d-448d-9fe0-a24a4c2d65b8"
+          lesson.id
         );
         if (response && response.success) {
           router.replace("/class/" + teacherClass.schoolClassId);
@@ -36,7 +39,6 @@ export default defineComponent({
           console.log(response);
         }
       } catch (err) {
-        
         if (err && err.body) {
           const responseError: {
             Data: string;
@@ -44,7 +46,6 @@ export default defineComponent({
           } = err.body;
           console.log(responseError);
         }
-
       }
     };
     const onClickClass = (teacherClass: TeacherClassModel) => {

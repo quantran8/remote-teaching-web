@@ -1,4 +1,3 @@
-import { AGORA_APP_ID } from "@/agora/config";
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
@@ -54,7 +53,7 @@ const mutations: MutationTree<StudentRoomState> = {
     const role = "audience";
     state.manager = new StudentRoomManager({
       agora: {
-        appId: AGORA_APP_ID,
+        appId: room.streamInfo.appId,
         webConfig: { mode: "rtc", codec: "vp8", role: role },
         user: {
           channel: room.streamInfo.chanelId,
