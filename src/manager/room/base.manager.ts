@@ -33,7 +33,6 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     teacherId?: string;
     camera?: boolean;
     microphone?: boolean;
-    publish?: boolean;
   }): Promise<any>;
 
   isJoinedRoom() {

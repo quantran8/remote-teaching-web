@@ -18,7 +18,6 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     teacherId?: string;
     camera?: boolean;
     microphone?: boolean;
-    publish?: boolean;
   }) {
     if (!options.studentId || !options.classId)
       throw new Error("Missing Params");
@@ -27,11 +26,11 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     await this.agoraClient.joinRTCRoom(options);
   }
 
-  setCamera(options: { enable: boolean; publish?: boolean }) {
+  setCamera(options: { enable: boolean }) {
     this.agoraClient.setCamera(options);
     this.WSClient.sendRequestMuteVideo(!options.enable);
   }
-  setMicrophone(options: { enable: boolean; publish?: boolean }) {
+  setMicrophone(options: { enable: boolean }) {
     this.agoraClient.setMicrophone(options);
     // this.WSClient.sendRequestMuteAudio(!options.enable);
   }

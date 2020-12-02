@@ -28,7 +28,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.join({
       camera: state.teacher.videoEnabled,
       microphone: state.teacher.audioEnabled,
-      publish: state.teacher.audioEnabled,
       classId: state.info.id,
       teacherId: state.user?.id,
     });

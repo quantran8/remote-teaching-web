@@ -51,7 +51,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       await state.manager?.join({
         camera: state.student?.videoEnabled,
         microphone: state.student?.audioEnabled,
-        publish: state.student?.videoEnabled,
         classId: state.info?.id,
         studentId: state.user?.id,
       });

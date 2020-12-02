@@ -67,11 +67,7 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
-  async joinRTCRoom(options: {
-    camera?: boolean;
-    microphone?: boolean;
-    publish?: boolean;
-  }) {
+  async joinRTCRoom(options: { camera?: boolean; microphone?: boolean }) {
     if (this._client) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     await this.client.join(
@@ -87,7 +83,7 @@ export class AgoraClient implements AgoraClientSDK {
     if (options.microphone) {
       await this.openMicrophone();
     }
-    if (options.publish) await this.publish();
+    await this.publish();
 
     this.client.on("user-published", async (user, mediaType) => {
       for (const remoteUser of this.client.remoteUsers) {
@@ -122,7 +118,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.cameraTrack.on("track-ended", () => {
       this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
     });
-    this.cameraTrack.play(this.user.username);
+    this.cameraTrack.play(this.user.username, { mirror: false });
   }
 
   private _closeMediaTrack(track: ILocalTrack) {
@@ -182,20 +178,20 @@ export class AgoraClient implements AgoraClientSDK {
     this.publishedTrackIds = [];
   }
 
-  async setCamera(options: { enable: boolean; publish?: boolean }) {
+  async setCamera(options: { enable: boolean }) {
     if (options.enable) {
       await this.openCamera();
-      if (options.publish) await this.publish();
+      await this.publish();
     } else {
       await this.client?.unpublish(this.cameraTrack);
       this._closeMediaTrack(this.cameraTrack);
     }
   }
 
-  async setMicrophone(options: { enable: boolean; publish?: boolean }) {
+  async setMicrophone(options: { enable: boolean }) {
     if (options.enable) {
       await this.openMicrophone();
-      if (options.publish) await this.publish();
+      await this.publish();
     } else {
       await this.client?.unpublish(this.microphoneTrack);
       this._closeMediaTrack(this.microphoneTrack);

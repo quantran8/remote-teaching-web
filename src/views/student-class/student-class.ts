@@ -38,7 +38,6 @@ export default defineComponent({
       if (!roomManager.value) return;
       roomManager.value.setCamera({
         enable: student.value.videoEnabled,
-        publish: student.value.videoEnabled,
       });
 
       roomManager.value.setMicrophone({
