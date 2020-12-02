@@ -13,7 +13,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     this.WSClient.init();
   }
   async join(options: {
-    classId?: string;
+    classId: string;
     studentId?: string;
     teacherId?: string;
     camera?: boolean;

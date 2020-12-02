@@ -35,16 +35,16 @@ const mutations: MutationTree<TeacherRoomState> = {
       id: room.teacher.id,
       name: room.teacher.name,
       avatar: "",
-      audioEnabled: false,
-      videoEnabled: false,
+      audioEnabled: !room.teacher.isMuteAudio,
+      videoEnabled: !room.teacher.isMuteVideo,
     };
     state.students = room.students.map((st, index) => {
       return {
         id: st.id,
         name: st.name,
         avatar: "",
-        audioEnabled: false,
-        videoEnabled: false,
+        audioEnabled: !st.isMuteAudio,
+        videoEnabled: !st.isMuteVideo,
         badge: 0,
         status: StudentInClassStatus.DEFAULT,
         hasJoinned: false,

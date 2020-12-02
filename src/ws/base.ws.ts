@@ -54,11 +54,14 @@ export class GLSocketClient {
       })
       .catch((err) => {
         this._isConnected = false;
+        console.log("WSError", err);
         return err;
       });
   }
   async send(command: string, payload: any) {
     if (!this.isConnected) return;
-    return this.hubConnection.send(command, payload);
+    return this.hubConnection
+      .send(command, payload)
+      .catch((err) => console.error("WSError", err));
   }
 }

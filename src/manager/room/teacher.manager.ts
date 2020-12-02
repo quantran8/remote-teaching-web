@@ -21,6 +21,8 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     microphone?: boolean;
     publish?: boolean;
   }) {
+    if (!options.teacherId || !options.classId)
+      throw new Error("Missing Params");
     await this.WSClient.connect();
     await this.WSClient.sendRequestJoinRoom(options.classId);
     await this.agoraClient.joinRTCRoom(options);

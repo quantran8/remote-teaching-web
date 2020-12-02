@@ -47,11 +47,12 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinRoom({ state }, _payload: any) {
     if (!state.manager?.isJoinedRoom()) {
+      if (!state.info) return;
       await state.manager?.join({
         camera: state.student?.videoEnabled,
         microphone: state.student?.audioEnabled,
         publish: state.student?.videoEnabled,
-        classId: state.info?.classId,
+        classId: state.info?.id,
         studentId: state.user?.id,
       });
     }
