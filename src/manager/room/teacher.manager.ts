@@ -23,16 +23,13 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     if (!options.teacherId || !options.classId)
       throw new Error("Missing Params");
     await this.WSClient.connect();
-    await this.WSClient.sendRequestJoinRoom(options.classId);
     await this.agoraClient.joinRTCRoom(options);
   }
 
   setCamera(options: { enable: boolean }) {
     this.agoraClient.setCamera(options);
-    this.WSClient.sendRequestMuteVideo(!options.enable);
   }
   setMicrophone(options: { enable: boolean }) {
     this.agoraClient.setMicrophone(options);
-    this.WSClient.sendRequestMuteAudio(!options.enable);
   }
 }

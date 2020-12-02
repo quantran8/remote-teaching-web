@@ -23,6 +23,21 @@ export enum ClassView {
   WHITE_BOARD = "white_board",
   GAME = "game",
 }
+export const ValueOfClassView = (classView: ClassView) => {
+  switch (classView) {
+    case ClassView.GALLERY:
+      return 1;
+    case ClassView.LESSON_PLAN:
+      return 2;
+    case ClassView.WHITE_BOARD:
+      return 3;
+    case ClassView.GAME:
+      return 4;
+
+    default:
+      return 1;
+  }
+};
 
 export enum StudentInClassStatus {
   /**Student is not join the class yet */

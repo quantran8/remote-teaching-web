@@ -1,4 +1,4 @@
-import { RoomModel } from "@/models";
+import { RoomModel, StudentModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import {
@@ -8,6 +8,7 @@ import {
   TeacherGetRoomResponse,
   TeacherService,
 } from "@/services";
+import { WSEventHandler } from "@/ws";
 import { ActionTree } from "vuex";
 import { StudentRoomState } from "./state";
 
@@ -45,9 +46,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async joinRoom({ state }, _payload: any) {
+  async joinRoom({ state, commit }, _payload: any) {
+    if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
-      if (!state.info) return;
       await state.manager?.join({
         camera: state.student?.videoEnabled,
         microphone: state.student?.audioEnabled,
@@ -55,6 +56,79 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
+    state.manager?.WSClient.sendRequestJoinRoom(state.info?.id, state.user?.id);
+    const eventHandler: WSEventHandler = {
+      onStudentJoinClass: (payload: any) => {
+        console.log(payload);
+      },
+      onStudentStreamConnect: (payload: any) => {
+        console.log(payload);
+      },
+      onStudentMuteAudio: (payload: StudentModel) => {
+        console.log(payload);
+      },
+      onStudentMuteVideo: (payload: StudentModel) => {
+        console.log(payload);
+      },
+      onStudentLeave: (payload: any) => {
+        console.log(payload);
+      },
+      onStudentDisconnected: (payload: any) => {
+        console.log(payload);
+      },
+
+      onTeacherJoinClass: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherStreamConnect: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherMuteAudio: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherMuteVideo: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherMuteStudentVideo: (payload: StudentModel) => {
+        commit("setStudentVideo", {
+          studentId: payload.id,
+          videoEnabled: !payload.isMuteVideo,
+        });
+      },
+      onTeacherMuteStudentAudio: (payload: StudentModel) => {
+        commit("setStudentAudio", {
+          studentId: payload.id,
+          audioEnabled: !payload.isMuteAudio,
+        });
+      },
+      onTeacherMuteAllStudentVideo: (payload: Array<StudentModel>) => {
+        for (const student of payload) {
+          commit("setStudentVideo", {
+            studentId: student.id,
+            videoEnabled: !student.isMuteVideo,
+          });
+        }
+      },
+      onTeacherMuteAllStudentAudio: (payload: Array<StudentModel>) => {
+        for (const student of payload) {
+          commit("setStudentAudio", {
+            studentId: student.id,
+            audioEnabled: !student.isMuteAudio,
+          });
+        }
+      },
+      onTeacherEndClass: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherDisconnect: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherSetFocusTab: (payload: any) => {
+        console.log(payload);
+      },
+    };
+
+    state.manager?.registerEventHandler(eventHandler);
   },
 
   async leaveRoom({ state }, _payload: any) {
@@ -83,10 +157,11 @@ const actions: ActionTree<StudentRoomState, any> = {
     store.commit("setStudentAudio", payload);
   },
   setStudentVideo(
-    store,
+    { state, commit },
     payload: { studentId: string; videoEnabled: boolean }
   ) {
-    store.commit("setStudentVideo", payload);
+    commit("setStudentVideo", payload);
+    state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
   },
   setStudentBadge(store, payload: { studentId: string; badge: number }) {
     store.commit("setStudentBadge", payload);

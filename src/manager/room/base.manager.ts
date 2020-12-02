@@ -1,5 +1,5 @@
 import { AgoraClient, AgoraClientOptions } from "@/agora";
-import { GLSocketClient } from "@/ws";
+import { GLSocketClient, WSEventHandler } from "@/ws";
 
 export interface RoomOptions {
   agora: AgoraClientOptions;
@@ -34,6 +34,10 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     camera?: boolean;
     microphone?: boolean;
   }): Promise<any>;
+
+  registerEventHandler(eventHandler: WSEventHandler) {
+    return this.WSClient.registerEventHandler(eventHandler);
+  }
 
   isJoinedRoom() {
     return this.agoraClient.joined;

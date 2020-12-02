@@ -1,5 +1,5 @@
 import { AGORA_APP_ID } from "@/agora/config";
-import { StudentRoomManager } from '@/manager/room/student.manager';
+import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -26,8 +26,8 @@ const mutations: MutationTree<StudentRoomState> = {
       id: room.teacher.id,
       name: room.teacher.name,
       avatar: "",
-      audioEnabled: false,
-      videoEnabled: false,
+      audioEnabled: !room.teacher.isMuteAudio,
+      videoEnabled: !room.teacher.isMuteVideo,
     };
     state.students = [];
     for (const st of room.students) {
@@ -35,8 +35,8 @@ const mutations: MutationTree<StudentRoomState> = {
         id: st.id,
         name: st.name,
         avatar: "",
-        audioEnabled: false,
-        videoEnabled: false,
+        audioEnabled: !st.isMuteAudio,
+        videoEnabled: !st.isMuteVideo,
         badge: 0,
         status: StudentInClassStatus.DEFAULT,
         hasJoinned: false,

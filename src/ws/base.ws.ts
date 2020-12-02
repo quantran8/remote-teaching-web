@@ -10,6 +10,53 @@ export interface GLSocketOptions {
   url: string;
 }
 
+export enum TeacherWSEvent {
+  EVENT_TEACHER_JOIN_CLASS = "EVENT_TEACHER_JOIN_CLASS",
+  EVENT_TEACHER_STREAM_CONNECT = "EVENT_TEACHER_STREAM_CONNECT",
+  EVENT_TEACHER_MUTE_AUDIO = "EVENT_TEACHER_MUTE_AUDIO",
+  EVENT_TEACHER_MUTE_VIDEO = "EVENT_TEACHER_MUTE_VIDEO",
+  EVENT_TEACHER_MUTE_STUDENT_AUDIO = "EVENT_TEACHER_MUTE_AUDIO_STUDENT",
+  EVENT_TEACHER_MUTE_STUDENT_VIDEO = "EVENT_TEACHER_MUTE_VIDEO_STUDENT",
+  EVENT_TEACHER_MUTE_AUDIO_ALL_STUDENT = "EVENT_TEACHER_MUTE_AUDIO_ALL_STUDENT",
+  EVENT_TEACHER_MUTE_VIDEO_ALL_STUDENT = "EVENT_TEACHER_MUTE_VIDEO_ALL_STUDENT",
+  EVENT_TEACHER_END_CLASS = "EVENT_TEACHER_END_CLASS",
+  EVENT_TEACHER_DISCONNECT = "EVENT_TEACHER_DISCONNECT",
+  EVENT_SET_FOCUS_TAB = "EVENT_SET_FOCUS_TAB",
+}
+export enum StudentWSEvent {
+  EVENT_STUDENT_JOIN_CLASS = "EVENT_STUDENT_JOIN_CLASS",
+  EVENT_STUDENT_STREAM_CONNECT = "EVENT_STUDENT_STREAM_CONNECT",
+  EVENT_STUDENT_MUTE_AUDIO = "EVENT_STUDENT_MUTE_AUDIO",
+  EVENT_STUDENT_MUTE_VIDEO = "EVENT_STUDENT_MUTE_VIDEO",
+  EVENT_STUDENT_LEAVE = "EVENT_STUDENT_LEAVE",
+  EVENT_STUDENT_DISCONNECT = "EVENT_TEACHER_DISCONNECT",
+}
+export type WSEvent = StudentWSEvent & TeacherWSEvent;
+export interface StudentWSEventHandler {
+  onStudentJoinClass(payload: any): void;
+  onStudentStreamConnect(payload: any): void;
+  onStudentMuteAudio(payload: any): void;
+  onStudentMuteVideo(payload: any): void;
+  onStudentLeave(payload: any): void;
+  onStudentDisconnected(payload: any): void;
+}
+
+export interface TeacherWSEventHandler {
+  onTeacherJoinClass(payload: any): void;
+  onTeacherStreamConnect(payload: any): void;
+  onTeacherMuteAudio(payload: any): void;
+  onTeacherMuteVideo(payload: any): void;
+  onTeacherMuteStudentVideo(payload: any): void;
+  onTeacherMuteStudentAudio(payload: any): void;
+  onTeacherMuteAllStudentVideo(payload: any): void;
+  onTeacherMuteAllStudentAudio(payload: any): void;
+  onTeacherEndClass(payload: any): void;
+  onTeacherDisconnect(payload: any): void;
+  onTeacherSetFocusTab(payload: any): void;
+}
+
+export type WSEventHandler = StudentWSEventHandler & TeacherWSEventHandler;
+
 export class GLSocketClient {
   private _hubConnection?: HubConnection;
   private _options?: GLSocketOptions;
@@ -38,6 +85,9 @@ export class GLSocketClient {
       .configureLogging(LogLevel.Debug)
       .build();
     this._isConnected = false;
+    this._hubConnection.on("EVENT_STUDENT_MUTE_VIDEO", (data) => {
+      console.info("EVENT_STUDENT_MUTE_VIDEO", data);
+    });
   }
 
   get isConnected(): boolean {
@@ -59,9 +109,85 @@ export class GLSocketClient {
       });
   }
   async send(command: string, payload: any) {
-    if (!this.isConnected) return;
+    console.log(`=======${command}=====`, payload);
+    if (!this.isConnected) {
+      console.log("NOT CONNECTED");
+      return;
+    }
+
     return this.hubConnection
       .send(command, payload)
       .catch((err) => console.error("WSError", err));
+  }
+
+  registerEventHandler(handler: WSEventHandler) {
+    this.hubConnection.on(
+      StudentWSEvent.EVENT_STUDENT_JOIN_CLASS,
+      handler.onStudentDisconnected
+    );
+    this.hubConnection.on(
+      StudentWSEvent.EVENT_STUDENT_STREAM_CONNECT,
+      handler.onStudentStreamConnect
+    );
+    this.hubConnection.on(
+      StudentWSEvent.EVENT_STUDENT_MUTE_AUDIO,
+      handler.onStudentMuteAudio
+    );
+    this.hubConnection.on(
+      StudentWSEvent.EVENT_STUDENT_MUTE_VIDEO,
+      handler.onStudentMuteVideo
+    );
+    this.hubConnection.on(
+      StudentWSEvent.EVENT_STUDENT_LEAVE,
+      handler.onStudentLeave
+    );
+    this.hubConnection.on(
+      StudentWSEvent.EVENT_STUDENT_DISCONNECT,
+      handler.onStudentDisconnected
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_SET_FOCUS_TAB,
+      handler.onTeacherSetFocusTab
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_DISCONNECT,
+      handler.onTeacherDisconnect
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_END_CLASS,
+      handler.onTeacherEndClass
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_JOIN_CLASS,
+      handler.onTeacherJoinClass
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_MUTE_AUDIO,
+      handler.onTeacherMuteAudio
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_MUTE_AUDIO_ALL_STUDENT,
+      handler.onTeacherMuteAllStudentAudio
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_MUTE_STUDENT_AUDIO,
+      handler.onTeacherMuteStudentAudio
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_MUTE_STUDENT_VIDEO,
+      handler.onTeacherMuteStudentVideo
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_MUTE_VIDEO,
+      handler.onTeacherMuteVideo
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_MUTE_VIDEO_ALL_STUDENT,
+      handler.onTeacherMuteAllStudentVideo
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_TEACHER_STREAM_CONNECT,
+      handler.onTeacherStreamConnect
+    );
   }
 }
