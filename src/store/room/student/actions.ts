@@ -51,7 +51,8 @@ const actions: ActionTree<StudentRoomState, any> = {
         camera: state.student?.videoEnabled,
         microphone: state.student?.audioEnabled,
         publish: state.student?.videoEnabled,
-        classId: state.info?.classId
+        classId: state.info?.classId,
+        studentId: state.user?.id,
       });
     }
   },

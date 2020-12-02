@@ -1,4 +1,5 @@
-import { RoomManager } from "@/manager/room/base.manager";
+import { BaseRoomManager } from "@/manager/room/base.manager";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GetterTree } from "vuex";
 import { ClassView, StudentState, TeacherState } from "../interface";
@@ -20,8 +21,8 @@ const getters: GetterTree<TeacherRoomState, any> = {
   teacher(state: TeacherRoomState): TeacherState {
     return state.teacher as TeacherState;
   },
-  roomManager(state: TeacherRoomState): RoomManager {
-    return state.manager as RoomManager;
+  roomManager(state: TeacherRoomState): TeacherRoomManager {
+    return state.manager as TeacherRoomManager;
   },
   classView(state: TeacherRoomState): ClassView {
     return state.classView;

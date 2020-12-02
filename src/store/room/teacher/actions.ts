@@ -30,6 +30,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       microphone: state.teacher.audioEnabled,
       publish: state.teacher.audioEnabled,
       classId: state.info.classId,
+      teacherId: state.user?.id,
     });
   },
   async initClassRoom(

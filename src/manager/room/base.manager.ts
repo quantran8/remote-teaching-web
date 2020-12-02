@@ -1,6 +1,5 @@
 import { AgoraClient, AgoraClientOptions } from "@/agora";
-import { RTSocketClient } from "@/ws";
-import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
+import { GLSocketClient } from "@/ws";
 
 export interface RoomOptions {
   agora: AgoraClientOptions;
@@ -23,48 +22,25 @@ export interface MediaStateInterface {
   status: MediaDeviceStatus;
 }
 
-export class RoomManager {
-  agoraClient: AgoraClient;
-  options: RoomOptions;
-  wsClient: RTSocketClient;
-  constructor(options: RoomOptions) {
-    this.options = options;
-    this.agoraClient = new AgoraClient(options.agora);
-    this.wsClient = new RTSocketClient({
-      url: `http://vn-gs-server.grapecity.net:5010/teaching`,
-    });
-    this.wsClient.init();
-  }
+export abstract class BaseRoomManager<T extends GLSocketClient> {
+  agoraClient!: AgoraClient;
+  options!: RoomOptions;
+  WSClient!: T;
+
+  abstract async join(options: {
+    classId: string;
+    studentId?: string;
+    teacherId?: string;
+    camera?: boolean;
+    microphone?: boolean;
+    publish?: boolean;
+  }): Promise<any>;
 
   isJoinedRoom() {
     return this.agoraClient.joined;
   }
 
-  async join(options: {
-    classId?: string;
-    camera?: boolean;
-    microphone?: boolean;
-    publish?: boolean;
-  }) {
-    if (options.classId) {
-      await this.wsClient.connect();
-    }
-    return this.agoraClient.joinRTCRoom(options);
-  }
-
-  setCamera(options: { enable: boolean; publish?: boolean }) {
-    this.agoraClient.setCamera(options);
-  }
-
-  setMicrophone(options: { enable: boolean; publish?: boolean }) {
-    this.agoraClient.setMicrophone(options);
-  }
-
   async close() {
     this.agoraClient.reset();
-  }
-
-  get remoteUsers(): Array<IAgoraRTCRemoteUser> {
-    return this.agoraClient.getRemoteUsers();
   }
 }

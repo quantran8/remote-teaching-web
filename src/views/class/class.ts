@@ -1,15 +1,11 @@
 import { LoginInfo, RoleName } from "@/commonui";
-import { RoomManager } from "@/manager/room/base.manager";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView } from "@/store/room/interface";
 import {
   computed,
-  ComputedRef,
   defineComponent,
   ref,
-  toRef,
   watch,
-  watchEffect,
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";

@@ -1,10 +1,10 @@
-import { RoomManager } from "@/manager/room/base.manager";
+import { StudentRoomManager } from '@/manager/room/student.manager';
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const roomManager = store.getters["studentRoom/roomManager"] as RoomManager;
+    const roomManager = store.getters["studentRoom/roomManager"] as StudentRoomManager;
     const joinZoom = () => {
       console.log("Join Zooom", roomManager.options);
       // roomManager.agoraClient.joinRTCRoom();

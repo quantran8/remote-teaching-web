@@ -1,5 +1,5 @@
 import { AGORA_APP_ID } from "@/agora/config";
-import { RoomManager } from "@/manager/room/base.manager";
+import { StudentRoomManager } from '@/manager/room/student.manager';
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -52,7 +52,7 @@ const mutations: MutationTree<StudentRoomState> = {
 
     state.info = room;
     const role = "audience";
-    state.manager = new RoomManager({
+    state.manager = new StudentRoomManager({
       agora: {
         appId: AGORA_APP_ID,
         webConfig: { mode: "rtc", codec: "vp8", role: role },

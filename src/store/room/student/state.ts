@@ -1,4 +1,4 @@
-import { RoomManager } from "@/manager/room/base.manager";
+import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel } from "@/models";
 import { RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
@@ -11,7 +11,7 @@ export interface StudentRoomState {
   teacher?: TeacherState;
   student?: StudentState;
   students: Array<StudentState>;
-  manager?: RoomManager;
+  manager?: StudentRoomManager;
   classes: Array<ClassModel>;
   classView: ClassView;
   error: GLError | null;

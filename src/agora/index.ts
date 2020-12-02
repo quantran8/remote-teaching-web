@@ -164,9 +164,6 @@ export class AgoraClient implements AgoraClientSDK {
     await this.openCamera();
   }
 
-  getRemoteUsers() {
-    return this.client.remoteUsers;
-  }
   unPublishAll() {
     this.client && this.client.unpublish();
   }

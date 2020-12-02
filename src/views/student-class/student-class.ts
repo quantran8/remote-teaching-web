@@ -35,7 +35,6 @@ export default defineComponent({
       () => store.getters["studentRoom/roomManager"]
     );
     const onStudentChanged = async () => {
-      console.log("onStudentChanged", student);
       if (!roomManager.value) return;
       roomManager.value.setCamera({
         enable: student.value.videoEnabled,
