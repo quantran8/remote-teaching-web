@@ -10,6 +10,12 @@ export enum TeacherWSCommand {
   MUTE_ALL_STUDENT_AUDIO = "TeacherMuteAllStudentAudio",
   MUTE_ALL_STUDENT_VIDEO = "TeacherMuteAllStudentVideo",
   SET_FOCUS_TAB = "TeacherSetFocusTab",
+  END_CLASS = "TeacherEndClass",
+  SET_STUDENT_BADGE = "TeacherSetStudentBadge",
+  ADD_STUDENT_AUDIO = "TeacherAddStudentAudio",
+  CLEAR_STUDENT_AUDIO = "TeacherClearStudentAudio",
+  SET_GLOBAL_STUDENT = "TeacherSetGlobalStudent",
+  CLEAR_GLOBAL_STUDENT = "TeacherClearGlobalStudent",
 }
 export class TeacherWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string) {
@@ -44,5 +50,11 @@ export class TeacherWSClient extends GLSocketClient {
   }
   sendRequestSetFocusTab(ForcusTab: number) {
     return this.send(TeacherWSCommand.SET_FOCUS_TAB, { ForcusTab });
+  }
+  sendRequestEndRoom(roomId: string) {
+    return this.send(TeacherWSCommand.END_CLASS, { roomId });
+  }
+  sendRequestSetStudentBadge(StudentId: string, Badge: number) {
+    return this.send(TeacherWSCommand.SET_STUDENT_BADGE, { StudentId, Badge });
   }
 }

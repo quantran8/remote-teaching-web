@@ -123,7 +123,7 @@ export class GLSocketClient {
   registerEventHandler(handler: WSEventHandler) {
     this.hubConnection.on(
       StudentWSEvent.EVENT_STUDENT_JOIN_CLASS,
-      handler.onStudentDisconnected
+      handler.onStudentJoinClass
     );
     this.hubConnection.on(
       StudentWSEvent.EVENT_STUDENT_STREAM_CONNECT,

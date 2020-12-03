@@ -1,3 +1,4 @@
+import { InClassStatus } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
@@ -24,11 +25,15 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    status: {
+      type: Number,
+      default: InClassStatus.DEFAULT,
+    },
   },
   setup(props) {
     const isContextMenuVisible = ref(false);
     const store = useStore();
-
+    const isNotJoinned = computed(() => props.status !== InClassStatus.JOINED);
     const audioIcon = computed(() =>
       props.audioEnabled ? "icon-audio-on" : "icon-audio-off"
     );
@@ -77,6 +82,7 @@ export default defineComponent({
       isContextMenuVisible,
       toggleContextMenu,
       hideContextMenu,
+      isNotJoinned,
     };
   },
 });

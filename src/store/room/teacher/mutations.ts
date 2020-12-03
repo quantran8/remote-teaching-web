@@ -6,7 +6,7 @@ import { MutationTree } from "vuex";
 import {
   ClassView,
   ClassViewFromValue,
-  StudentInClassStatus,
+  InClassStatus,
 } from "../interface";
 import { TeacherRoomState } from "./state";
 
@@ -40,6 +40,7 @@ const mutations: MutationTree<TeacherRoomState> = {
       avatar: "",
       audioEnabled: !room.teacher.isMuteAudio,
       videoEnabled: !room.teacher.isMuteVideo,
+      status: room.teacher.connectionStatus
     };
     state.classView = ClassViewFromValue(room.focusTab);
     state.students = room.students.map((st, index) => {
@@ -49,9 +50,8 @@ const mutations: MutationTree<TeacherRoomState> = {
         avatar: "",
         audioEnabled: !st.isMuteAudio,
         videoEnabled: !st.isMuteVideo,
-        badge: 0,
-        status: StudentInClassStatus.DEFAULT,
-        hasJoinned: false,
+        badge: st.badge,
+        status: st.connectionStatus,
         index: index,
       };
     });
@@ -124,19 +124,19 @@ const mutations: MutationTree<TeacherRoomState> = {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
-    if (student) student.status = StudentInClassStatus.JOINED;
+    if (student) student.status = InClassStatus.JOINED;
   },
   studentLeftClass(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
-    if (student) student.status = StudentInClassStatus.LEFT;
+    if (student) student.status = InClassStatus.LEFT;
   },
   studentLeaving(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
-    if (student) student.status = StudentInClassStatus.LEAVING;
+    if (student) student.status = InClassStatus.LEAVING;
   },
 };
 

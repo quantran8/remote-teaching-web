@@ -3,7 +3,7 @@ import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, StudentInClassStatus } from "../interface";
+import { ClassView, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
@@ -27,6 +27,7 @@ const mutations: MutationTree<StudentRoomState> = {
       avatar: "",
       audioEnabled: !room.teacher.isMuteAudio,
       videoEnabled: !room.teacher.isMuteVideo,
+      status: room.teacher.connectionStatus,
     };
     state.students = [];
     for (const st of room.students) {
@@ -36,9 +37,8 @@ const mutations: MutationTree<StudentRoomState> = {
         avatar: "",
         audioEnabled: !st.isMuteAudio,
         videoEnabled: !st.isMuteVideo,
-        badge: 0,
-        status: StudentInClassStatus.DEFAULT,
-        hasJoinned: false,
+        badge: st.badge,
+        status: InClassStatus.DEFAULT,
         index: state.students.length,
       };
       if (st.id === state.user?.id) {
@@ -123,19 +123,19 @@ const mutations: MutationTree<StudentRoomState> = {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
-    if (student) student.status = StudentInClassStatus.JOINED;
+    if (student) student.status = InClassStatus.JOINED;
   },
   studentLeftClass(state: StudentRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
-    if (student) student.status = StudentInClassStatus.LEFT;
+    if (student) student.status = InClassStatus.LEFT;
   },
   studentLeaving(state: StudentRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
     );
-    if (student) student.status = StudentInClassStatus.LEAVING;
+    if (student) student.status = InClassStatus.LEAVING;
   },
 };
 

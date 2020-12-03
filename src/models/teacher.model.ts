@@ -8,4 +8,5 @@ export interface TeacherModel extends UserModel {
   signalrConnectId?: string;
   isMuteAudio: boolean;
   isMuteVideo: boolean;
+  connectionStatus: number;
 }

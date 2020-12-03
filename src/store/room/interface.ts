@@ -4,10 +4,9 @@ export interface StudentState {
   name: string;
   avatar: string;
   badge: number;
-  hasJoinned: boolean;
   audioEnabled: boolean;
   videoEnabled: boolean;
-  status: StudentInClassStatus;
+  status: InClassStatus;
 }
 
 export interface TeacherState {
@@ -16,6 +15,7 @@ export interface TeacherState {
   avatar: string;
   audioEnabled: boolean;
   videoEnabled: boolean;
+  status: InClassStatus;
 }
 export enum ClassView {
   GALLERY = "gallery",
@@ -46,7 +46,7 @@ export const ClassViewFromValue = (value: number) => {
   throw new Error("Unsupported value " + value);
 };
 
-export enum StudentInClassStatus {
+export enum InClassStatus {
   /**Student is not join the class yet */
   DEFAULT = 0,
   /**

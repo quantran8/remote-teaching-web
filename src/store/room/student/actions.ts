@@ -151,10 +151,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
 
   setStudentAudio(
-    store,
+    { commit, state },
     payload: { studentId: string; audioEnabled: boolean }
   ) {
-    store.commit("setStudentAudio", payload);
+    commit("setStudentAudio", payload);
+    state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
   },
   setStudentVideo(
     { state, commit },

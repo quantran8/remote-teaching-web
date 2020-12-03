@@ -3,6 +3,7 @@ import { GLSocketClient } from "./base.ws";
 export enum StudentWSCommand {
   JOIN_CLASS = "StudentJoinClass",
   MUTE_VIDEO = "StudentMuteVideo",
+  MUTE_AUDIO = "StudentMuteAudio",
 }
 
 export class StudentWSClient extends GLSocketClient {
@@ -11,5 +12,8 @@ export class StudentWSClient extends GLSocketClient {
   }
   sendRequestMuteVideo(IsMute: boolean) {
     return this.send(StudentWSCommand.MUTE_VIDEO, { IsMute });
+  }
+  sendRequestMuteAudio(IsMute: boolean) {
+    return this.send(StudentWSCommand.MUTE_AUDIO, { IsMute });
   }
 }

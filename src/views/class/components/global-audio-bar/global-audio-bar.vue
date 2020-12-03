@@ -1,5 +1,5 @@
 <template>
-  <div class="sound">
+  <div class="sound" @drop="onDrop">
     <BaseButton class="icon">
       <BaseIcon name="icon-audio-on"></BaseIcon>
     </BaseButton>

@@ -13,4 +13,5 @@ export interface StudentModel extends UserModel {
   isMuteAudio: boolean;
   isMuteVideo: boolean;
   badge: number;
+  connectionStatus: number;
 }

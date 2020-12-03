@@ -9,8 +9,10 @@ import { TeacherRoomState } from "./state";
 
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: any) {
-    await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
-    // await state.manager?.sendRequestEndClass();
+    if (state.info) {
+      await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
+      await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
+    }
     commit("endClass", payload);
   },
   setClassView({ commit, state }, payload: { classView: ClassView }) {
@@ -39,14 +41,17 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.WSClient.sendRequestJoinRoom(state.info.id);
 
     const eventHandler: WSEventHandler = {
-      onStudentJoinClass: (payload: any) => {
-        console.log(payload);
+      onStudentJoinClass: (payload: StudentModel) => {
+        commit("studentJoinned", { studentId: payload.id });
       },
       onStudentStreamConnect: (payload: any) => {
         console.log(payload);
       },
-      onStudentMuteAudio: (payload: any) => {
-        console.log(payload);
+      onStudentMuteAudio: (payload: StudentModel) => {
+        commit("setStudentAudio", {
+          studentId: payload.id,
+          audioEnabled: !payload.isMuteAudio,
+        });
       },
       onStudentMuteVideo: (payload: StudentModel) => {
         console.log(payload);
@@ -55,11 +60,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
           videoEnabled: !payload.isMuteVideo,
         });
       },
-      onStudentLeave: (payload: any) => {
-        console.log(payload);
+      onStudentLeave: (payload: StudentModel) => {
+        commit("studentJoinned", { studentId: payload.id });
       },
-      onStudentDisconnected: (payload: any) => {
-        console.log(payload);
+      onStudentDisconnected: (payload: StudentModel) => {
+        commit("studentLeftClass", { studentId: payload.id });
       },
 
       onTeacherJoinClass: (payload: any) => {
@@ -146,8 +151,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
       !payload.videoEnabled
     );
   },
-  setStudentBadge(store, payload: { studentId: string; badge: number }) {
-    store.commit("setStudentBadge", payload);
+  setStudentBadge(
+    { commit, state },
+    payload: { studentId: string; badge: number }
+  ) {
+    commit("setStudentBadge", payload);
+    state.manager?.WSClient.sendRequestSetStudentBadge(
+      payload.studentId,
+      payload.badge
+    );
   },
 
   setTeacherAudio(
@@ -185,10 +197,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.commit("studentJoinned", payload);
   },
   studentLeftClass(store, payload: { studentId: string }) {
-    store.commit("studentJoinned", payload);
+    store.commit("studentLeftClass", payload);
   },
   studentLeaving(store, payload: { studentId: string }) {
-    store.commit("studentJoinned", payload);
+    store.commit("studentLeaving", payload);
   },
 };
 

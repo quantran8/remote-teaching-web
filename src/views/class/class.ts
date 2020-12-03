@@ -1,12 +1,7 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView } from "@/store/room/interface";
-import {
-  computed,
-  defineComponent,
-  ref,
-  watch,
-} from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
@@ -47,15 +42,13 @@ export default defineComponent({
   },
 
   setup() {
-    const store = useStore();
+    const { getters, dispatch } = useStore();
     const router = useRouter();
     const showModal = ref(false);
     const hasConfirmed = ref(false);
-    const teacher = computed(() => store.getters["teacherRoom/teacher"]);
-    const error = computed(() => store.getters["teacherRoom/error"]);
-    const roomManager = computed(
-      () => store.getters["teacherRoom/roomManager"]
-    );
+    const teacher = computed(() => getters["teacherRoom/teacher"]);
+    const error = computed(() => getters["teacherRoom/error"]);
+    const roomManager = computed(() => getters["teacherRoom/roomManager"]);
     const isClassNotActive = computed(() => {
       return (
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
@@ -70,31 +63,31 @@ export default defineComponent({
     ];
 
     const currentView = computed(() => {
-      return store.getters["teacherRoom/classView"];
+      return getters["teacherRoom/classView"];
     });
 
     const isGalleryView = computed(() => {
-      return store.getters["teacherRoom/isGalleryView"];
+      return getters["teacherRoom/isGalleryView"];
     });
 
     const setClassView = (newView: ClassView) => {
-      store.dispatch("teacherRoom/setClassView", { classView: newView });
+      dispatch("teacherRoom/setClassView", { classView: newView });
     };
 
     const onClickHideAll = () => {
-      store.dispatch("teacherRoom/hideAllStudents");
+      dispatch("teacherRoom/hideAllStudents");
     };
 
     const onClickShowAll = () => {
-      store.dispatch("teacherRoom/showAllStudents");
+      dispatch("teacherRoom/showAllStudents");
     };
 
     const onClickMuteAll = () => {
-      store.dispatch("teacherRoom/muteAllStudents");
+      dispatch("teacherRoom/muteAllStudents");
     };
 
     const onClickUnmuteAll = () => {
-      store.dispatch("teacherRoom/unmuteAllStudents");
+      dispatch("teacherRoom/unmuteAllStudents");
     };
 
     const onClickEnd = () => {
@@ -103,7 +96,7 @@ export default defineComponent({
 
     const onClickLeave = async () => {
       hasConfirmed.value = true;
-      await store.dispatch("teacherRoom/endClass");
+      await dispatch("teacherRoom/endClass");
       router.replace("/teacher");
     };
     const onClickCloseError = () => {
@@ -115,9 +108,7 @@ export default defineComponent({
     };
 
     const onTeacherChanged = async () => {
-      console.log("on teacher changed", teacher.value);
       if (!roomManager.value) return;
-
       roomManager.value.setCamera({
         enable: teacher.value.videoEnabled,
       });

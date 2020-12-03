@@ -12,6 +12,7 @@
         :badge="student.badge"
         :audioEnabled="student.audioEnabled"
         :videoEnabled="student.videoEnabled"
+        :status="student.status"
       />
     </div>
   </div>

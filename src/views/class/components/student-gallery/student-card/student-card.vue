@@ -1,14 +1,11 @@
 <template>
   <div class="item-container">
-    <div class="video" :id="id">
-      <!-- <video autoplay loop :muted="!audioEnabled" v-if="videoEnabled">
-        <source :src="video" type="video/mp4" />
-      </video> -->
-    </div>
+    <div class="video" :id="id"></div>
     <div class="mask" :class="{ masked: !videoEnabled }">
       <div class="name">{{ name }}</div>
       <div class="info">
         <BaseTag
+          draggable="true"
           :tag="`${index + 1}`"
           @click="toggleContextMenu"
           v-click-outside="hideContextMenu"
@@ -16,7 +13,7 @@
         <BaseButton class="media-button" @click="toggleAudio" draggable="true">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
-        <BaseButton class="media-button" @click="toggleVideo">
+        <BaseButton class="media-button" @click="toggleVideo" draggable="true">
           <BaseIcon :name="videoIcon"></BaseIcon>
         </BaseButton>
       </div>
@@ -24,6 +21,9 @@
       <div v-if="isContextMenuVisible" class="context-menu">
         <div>Context Menu</div>
       </div>
+    </div>
+    <div class="hasNotJoinned" v-if="isNotJoinned">
+      Student has not been joined
     </div>
   </div>
 </template>
