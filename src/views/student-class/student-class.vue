@@ -20,6 +20,7 @@
           :badge="student.badge"
           :audioEnabled="student.audioEnabled"
           :videoEnabled="student.videoEnabled"
+          :showBadge="true"
         />
       </div>
       <div class="fill-center">

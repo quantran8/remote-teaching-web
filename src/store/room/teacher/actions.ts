@@ -100,6 +100,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onTeacherSetFocusTab: (payload: any) => {
         console.log(payload);
       },
+      onTeacherUpdateGlobalStudentAudio: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherUpdateStudentAudio: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherUpdateStudentBadge: (payload: any) => {
+        console.log(payload);
+      },
     };
 
     state.manager?.registerEventHandler(eventHandler);

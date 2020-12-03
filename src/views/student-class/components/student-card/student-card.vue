@@ -3,6 +3,7 @@
     <div class="video" :id="id"></div>
     <div class="mask" :class="{ masked: !videoEnabled }">
       <div class="name">{{ name }}</div>
+      <StudentBadge class="badge" :badge="badge" v-if="showBadge"/>
     </div>
   </div>
 </template>

@@ -22,6 +22,10 @@ export enum TeacherWSEvent {
   EVENT_TEACHER_END_CLASS = "EVENT_TEACHER_END_CLASS",
   EVENT_TEACHER_DISCONNECT = "EVENT_TEACHER_DISCONNECT",
   EVENT_SET_FOCUS_TAB = "EVENT_SET_FOCUS_TAB",
+
+  EVENT_UPDATE_GLOBAL_STUDENT_AUDIO = "EVENT_UPDATE_GLOBAL_STUDENT_AUDIO",
+  EVENT_UPDATE_STUDENT_AUDIO = "EVENT_UPDATE_STUDENT_AUDIO",
+  EVENT_UPDATE_STUDENT_BADGE = "EVENT_UPDATE_STUDENT_BADGE",
 }
 export enum StudentWSEvent {
   EVENT_STUDENT_JOIN_CLASS = "EVENT_STUDENT_JOIN_CLASS",
@@ -53,6 +57,10 @@ export interface TeacherWSEventHandler {
   onTeacherEndClass(payload: any): void;
   onTeacherDisconnect(payload: any): void;
   onTeacherSetFocusTab(payload: any): void;
+
+  onTeacherUpdateGlobalStudentAudio(payload: any): void;
+  onTeacherUpdateStudentAudio(payload: any): void;
+  onTeacherUpdateStudentBadge(payload: any): void;
 }
 
 export type WSEventHandler = StudentWSEventHandler & TeacherWSEventHandler;
@@ -188,6 +196,19 @@ export class GLSocketClient {
     this.hubConnection.on(
       TeacherWSEvent.EVENT_TEACHER_STREAM_CONNECT,
       handler.onTeacherStreamConnect
+    );
+
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_UPDATE_GLOBAL_STUDENT_AUDIO,
+      handler.onTeacherUpdateGlobalStudentAudio
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_UPDATE_STUDENT_AUDIO,
+      handler.onTeacherUpdateStudentAudio
+    );
+    this.hubConnection.on(
+      TeacherWSEvent.EVENT_UPDATE_STUDENT_BADGE,
+      handler.onTeacherUpdateStudentBadge
     );
   }
 }

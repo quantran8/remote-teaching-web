@@ -89,7 +89,10 @@ const mutations: MutationTree<StudentRoomState> = {
     state: StudentRoomState,
     payload: { studentId: string; badge: number }
   ) {
-    const student = state.students.find((st) => st.id === payload.studentId);
+    const student =
+      payload.studentId === state.student?.id
+        ? state.student
+        : state.students.find((st) => st.id === payload.studentId);
     if (student) student.badge = payload.badge;
   },
   setTeacherAudio(

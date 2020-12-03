@@ -31,6 +31,12 @@ $border-radius: 4px;
       background-color: gray;
       padding: 0.4rem 0.8rem;
     }
+    .badge {
+      position: absolute;
+      left: 0px;
+      bottom: 0px;
+      margin: $margin;
+    }
   }
 
   .masked {

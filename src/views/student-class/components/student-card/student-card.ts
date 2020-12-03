@@ -1,7 +1,7 @@
 import { computed, defineComponent, ref, watch } from "vue";
-import { useStore } from "vuex";
+import StudentBadge from "../student-badge/student-badge.vue";
 export default defineComponent({
-  components: {},
+  components: { StudentBadge },
   props: {
     id: String,
     index: {
@@ -21,10 +21,13 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    showBadge: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     const isContextMenuVisible = ref(false);
-    // const store = useStore();
 
     const audioIcon = computed(() =>
       props.audioEnabled ? "icon-audio-on" : "icon-audio-off"

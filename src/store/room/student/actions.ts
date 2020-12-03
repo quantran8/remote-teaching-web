@@ -129,6 +129,18 @@ const actions: ActionTree<StudentRoomState, any> = {
       onTeacherSetFocusTab: (payload: any) => {
         console.log(payload);
       },
+      onTeacherUpdateGlobalStudentAudio: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherUpdateStudentAudio: (payload: any) => {
+        console.log(payload);
+      },
+      onTeacherUpdateStudentBadge: (payload: StudentModel) => {
+        commit("setStudentBadge", {
+          studentId: payload.id,
+          badge: payload.badge,
+        });
+      },
     };
 
     state.manager?.registerEventHandler(eventHandler);
