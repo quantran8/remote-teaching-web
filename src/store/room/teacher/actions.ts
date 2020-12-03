@@ -202,6 +202,22 @@ const actions: ActionTree<TeacherRoomState, any> = {
   studentLeaving(store, payload: { studentId: string }) {
     store.commit("studentLeaving", payload);
   },
+  addGlobalAudio({ commit, state }, payload: { studentId: string }) {
+    commit("addGlobalAudio", payload);
+    state.manager?.WSClient.sendRequestAddGlobalAudio(payload.studentId);
+  },
+  clearGlobalAudio({ commit, state }, payload: any) {
+    commit("clearGlobalAudio", payload);
+    state.manager?.WSClient.sendRequestClearGlobalAudio();
+  },
+  addStudentAudio({ commit, state }, payload: { studentId: string }) {
+    commit("addStudentAudio", payload);
+    state.manager?.WSClient.sendRequestAddStudentAudio(payload.studentId);
+  },
+  clearStudentAudio({ commit, state }, payload: any) {
+    commit("clearStudentAudio", payload);
+    state.manager?.WSClient.sendRequestClearStudentAudio();
+  },
 };
 
 export default actions;

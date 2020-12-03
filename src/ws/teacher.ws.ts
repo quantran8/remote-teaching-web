@@ -14,8 +14,8 @@ export enum TeacherWSCommand {
   SET_STUDENT_BADGE = "TeacherSetStudentBadge",
   ADD_STUDENT_AUDIO = "TeacherAddStudentAudio",
   CLEAR_STUDENT_AUDIO = "TeacherClearStudentAudio",
-  SET_GLOBAL_STUDENT = "TeacherSetGlobalStudent",
-  CLEAR_GLOBAL_STUDENT = "TeacherClearGlobalStudent",
+  ADD_GLOBAL_STUDENT_AUDIO = "TeacherAddGlobalStudentAudio",
+  CLEAR_GLOBAL_STUDENT_AUDIO = "TeacherClearGlobalStudentAudio",
 }
 export class TeacherWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string) {
@@ -56,5 +56,17 @@ export class TeacherWSClient extends GLSocketClient {
   }
   sendRequestSetStudentBadge(StudentId: string, Badge: number) {
     return this.send(TeacherWSCommand.SET_STUDENT_BADGE, { StudentId, Badge });
+  }
+  sendRequestAddStudentAudio(StudentId: string) {
+    return this.send(TeacherWSCommand.ADD_STUDENT_AUDIO, { StudentId });
+  }
+  sendRequestClearStudentAudio() {
+    return this.send(TeacherWSCommand.CLEAR_STUDENT_AUDIO, {});
+  }
+  sendRequestAddGlobalAudio(StudentId: string) {
+    return this.send(TeacherWSCommand.ADD_GLOBAL_STUDENT_AUDIO, { StudentId });
+  }
+  sendRequestClearGlobalAudio() {
+    return this.send(TeacherWSCommand.CLEAR_GLOBAL_STUDENT_AUDIO, {});
   }
 }

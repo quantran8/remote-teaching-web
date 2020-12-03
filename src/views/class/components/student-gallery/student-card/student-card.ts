@@ -73,6 +73,10 @@ export default defineComponent({
       isContextMenuVisible.value = false;
     };
 
+    const onDragStart = (event: any) => {
+      event.dataTransfer.setData("studentId", props.id);
+    };
+
     return {
       audioIcon,
       videoIcon,
@@ -83,6 +87,7 @@ export default defineComponent({
       toggleContextMenu,
       hideContextMenu,
       isNotJoinned,
+      onDragStart,
     };
   },
 });

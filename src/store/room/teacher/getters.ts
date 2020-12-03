@@ -1,4 +1,3 @@
-import { BaseRoomManager } from "@/manager/room/base.manager";
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GetterTree } from "vuex";
@@ -6,6 +5,16 @@ import { ClassView, StudentState, TeacherState } from "../interface";
 import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
+  globalAudios(
+    state: TeacherRoomState
+  ): Array<{ studentId: string; tag: string }> {
+    return state.globalAudios;
+  },
+  localAudios(
+    state: TeacherRoomState
+  ): Array<{ studentId: string; tag: string }> {
+    return state.localAudios;
+  },
   info(state: TeacherRoomState): RoomModel {
     return state.info as RoomModel;
   },

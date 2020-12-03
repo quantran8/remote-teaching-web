@@ -17,7 +17,11 @@
         </div>
       </div>
       <div class="setting">
-        <BaseButton class="button-setting" @click="toggleContextMenu" v-click-outside="hideContextMenu">
+        <BaseButton
+          class="button-setting"
+          @click="toggleContextMenu"
+          v-click-outside="hideContextMenu"
+        >
           <BaseIcon class="icon-setting" name="icon-setting"></BaseIcon>
           <div v-if="contextMenuVisibility" class="context-menu">
             <BaseButton class="menu-item" @click="onClickToggleVideo">
@@ -42,12 +46,20 @@
           </div>
         </BaseButton>
 
-        <div class="sound">
+        <div class="sound" @dragover="onDragOver" @drop="onDrop">
           <BaseButton mode="fill">
             <BaseIcon name="icon-audio-on"></BaseIcon>
           </BaseButton>
-          <div class="content"></div>
-          <BaseButton mode="clear">
+          <div class="content">
+            <div
+              class="student-audio"
+              v-for="studentAudio in localAudios"
+              :key="studentAudio.studentId"
+            >
+              <BaseTag :tag="studentAudio.tag" />
+            </div>
+          </div>
+          <BaseButton mode="clear" @click="onClickClearAll">
             <BaseIcon class="close" name="icon-close" />
           </BaseButton>
         </div>

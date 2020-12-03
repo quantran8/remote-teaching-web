@@ -15,4 +15,6 @@ export interface RoomModel {
   students: Array<StudentModel>;
   contents: Array<any>;
   focusTab: number;
+  studentsAudio: Array<string>;
+  globalStudentsAudio: Array<string>;
 }

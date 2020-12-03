@@ -14,6 +14,14 @@ export interface TeacherRoomState {
   classes: Array<ClassModel>;
   classView: ClassView;
   error: GLError | null;
+  globalAudios: Array<{
+    studentId: string;
+    tag: string;
+  }>;
+  localAudios: Array<{
+    studentId: string;
+    tag: string;
+  }>;
 }
 
 const state: TeacherRoomState = {
@@ -25,6 +33,8 @@ const state: TeacherRoomState = {
   classes: [],
   classView: ClassView.GALLERY,
   error: null,
+  globalAudios: [],
+  localAudios: [],
 };
 
 export default state;

@@ -118,10 +118,13 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       },
       onTeacherEndClass: (payload: any) => {
-        console.log(payload);
+        commit("setError", {
+          errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
+          message: "Your class has been ended!",
+        });
       },
       onTeacherDisconnect: (payload: any) => {
-        console.log(payload);
+        console.log("onTeacherDisconnect", payload);
       },
       onTeacherSetFocusTab: (payload: any) => {
         console.log(payload);

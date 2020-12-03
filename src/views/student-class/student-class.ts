@@ -57,6 +57,11 @@ export default defineComponent({
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
           window.confirm(errors.value.message);
           router.replace("/");
+        } else if (
+          errors.value.errorCode === GLErrorCode.CLASS_HAS_BEEN_ENDED
+        ) {
+          window.confirm(errors.value.message);
+          router.replace("/");
         }
       }
     });

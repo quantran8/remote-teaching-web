@@ -6,14 +6,15 @@
       <div class="info">
         <BaseTag
           draggable="true"
+          @dragstart="onDragStart"
           :tag="`${index + 1}`"
           @click="toggleContextMenu"
           v-click-outside="hideContextMenu"
         />
-        <BaseButton class="media-button" @click="toggleAudio" draggable="true">
+        <BaseButton class="media-button" @click="toggleAudio" draggable="true" @dragstart="onDragStart">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
-        <BaseButton class="media-button" @click="toggleVideo" draggable="true">
+        <BaseButton class="media-button" @click="toggleVideo">
           <BaseIcon :name="videoIcon"></BaseIcon>
         </BaseButton>
       </div>

@@ -16,7 +16,7 @@ export default defineComponent({
   },
   emits: ["show-all", "hide-all", "mute-all", "unmute-all", "end"],
   setup(props, { emit }) {
-    const store = useStore();
+    const { getters, dispatch } = useStore();
     const contextMenuVisibility = ref(false);
     const toggleContextMenu = () => {
       contextMenuVisibility.value = !contextMenuVisibility.value;
@@ -32,39 +32,39 @@ export default defineComponent({
     );
 
     const isAllVideoHidden = computed(
-      () => store.getters["teacherRoom/isAllVideoHidden"]
+      () => getters["teacherRoom/isAllVideoHidden"]
     );
     const isAllAudioMuted = computed(
-      () => store.getters["teacherRoom/isAllAudioMuted"]
+      () => getters["teacherRoom/isAllAudioMuted"]
     );
 
     const globalAudioText = computed(() =>
-      store.getters["teacherRoom/isAllAudioMuted"] ? "Unmute All" : "Mute All"
+      getters["teacherRoom/isAllAudioMuted"] ? "Unmute All" : "Mute All"
     );
     const globalVideoText = computed(() =>
-      store.getters["teacherRoom/isAllVideoHidden"] ? "Show All" : "Hide All"
+      getters["teacherRoom/isAllVideoHidden"] ? "Show All" : "Hide All"
     );
 
     const globalAudioIcon = computed(() =>
-      store.getters["teacherRoom/isAllAudioMuted"]
+      getters["teacherRoom/isAllAudioMuted"]
         ? "icon-audio-on"
         : "icon-audio-off"
     );
     const globalVideoIcon = computed(() =>
-      store.getters["teacherRoom/isAllVideoHidden"]
+      getters["teacherRoom/isAllVideoHidden"]
         ? "icon-video-on"
         : "icon-video-off"
     );
 
     const toggleAudio = () => {
-      store.dispatch("teacherRoom/setTeacherAudio", {
+      dispatch("teacherRoom/setTeacherAudio", {
         teacherId: props.id,
         audioEnabled: !props.audioEnabled,
       });
     };
 
     const toggleVideo = () => {
-      store.dispatch("teacherRoom/setTeacherVideo", {
+      dispatch("teacherRoom/setTeacherVideo", {
         teacherId: props.id,
         videoEnabled: !props.videoEnabled,
       });
@@ -80,6 +80,20 @@ export default defineComponent({
       emit("end");
     };
 
+    const localAudios = computed(() => getters["teacherRoom/localAudios"]);
+    const onDrop = (event: any) => {
+      event.preventDefault();
+      const studentId = event.dataTransfer.getData("studentId");
+      dispatch("teacherRoom/addStudentAudio", {
+        studentId: studentId,
+      });
+    };
+    const onDragOver = (event: any) => {
+      event.preventDefault();
+    };
+    const onClickClearAll = () => {
+      dispatch("teacherRoom/clearStudentAudio");
+    };
     return {
       audioIcon,
       videoIcon,
@@ -95,6 +109,10 @@ export default defineComponent({
       globalVideoText,
       globalAudioIcon,
       globalVideoIcon,
+      localAudios,
+      onDrop,
+      onDragOver,
+      onClickClearAll,
     };
   },
 });

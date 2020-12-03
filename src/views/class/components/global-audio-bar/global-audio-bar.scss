@@ -6,6 +6,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  .student-audio {
+    display: inline-block;
+    margin-right: 0.2rem;
+  }
   .icon {
     margin: 4px;
   }

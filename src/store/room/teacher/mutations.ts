@@ -3,11 +3,7 @@ import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import {
-  ClassView,
-  ClassViewFromValue,
-  InClassStatus,
-} from "../interface";
+import { ClassView, ClassViewFromValue, InClassStatus } from "../interface";
 import { TeacherRoomState } from "./state";
 
 const mutations: MutationTree<TeacherRoomState> = {
@@ -40,7 +36,7 @@ const mutations: MutationTree<TeacherRoomState> = {
       avatar: "",
       audioEnabled: !room.teacher.isMuteAudio,
       videoEnabled: !room.teacher.isMuteVideo,
-      status: room.teacher.connectionStatus
+      status: room.teacher.connectionStatus,
     };
     state.classView = ClassViewFromValue(room.focusTab);
     state.students = room.students.map((st, index) => {
@@ -55,6 +51,16 @@ const mutations: MutationTree<TeacherRoomState> = {
         index: index,
       };
     });
+    state.globalAudios = state.students
+      .filter((ele) => room.globalStudentsAudio.indexOf(ele.id) !== -1)
+      .map((el) => {
+        return { studentId: el.id, tag: `${el.index + 1}` };
+      });
+    state.localAudios = state.students
+      .filter((ele) => room.studentsAudio.indexOf(ele.id) !== -1)
+      .map((el) => {
+        return { studentId: el.id, tag: `${el.index + 1}` };
+      });
     state.info = room;
     const role =
       room.streamInfo.userId === room.teacher.id ? "host" : "audience";
@@ -137,6 +143,38 @@ const mutations: MutationTree<TeacherRoomState> = {
       (student) => student.id === payload.studentId
     );
     if (student) student.status = InClassStatus.LEAVING;
+  },
+  addGlobalAudio(state: TeacherRoomState, payload: { studentId: string }) {
+    const student = state.students.find(
+      (student) => student.id === payload.studentId
+    );
+    if (student) {
+      if (!state.globalAudios.find((ele) => ele.studentId === student?.id)) {
+        state.globalAudios.push({
+          studentId: student.id,
+          tag: `${student.index + 1}`,
+        });
+      }
+    }
+  },
+  clearGlobalAudio(state: TeacherRoomState, payload: any) {
+    state.globalAudios = [];
+  },
+  addStudentAudio(state: TeacherRoomState, payload: { studentId: string }) {
+    const student = state.students.find(
+      (student) => student.id === payload.studentId
+    );
+    if (student) {
+      if (!state.localAudios.find((ele) => ele.studentId === student?.id)) {
+        state.localAudios.push({
+          studentId: student.id,
+          tag: `${student.index + 1}`,
+        });
+      }
+    }
+  },
+  clearStudentAudio(state: TeacherRoomState, payload: any) {
+    state.localAudios = [];
   },
 };
 
