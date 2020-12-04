@@ -1,3 +1,4 @@
+import { AgoraEventHandler } from "@/agora";
 import { RoomModel, StudentModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -112,6 +113,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
 
     state.manager?.registerEventHandler(eventHandler);
+
+    const agoraEventHandler: AgoraEventHandler = {
+      onUserPublished: (user, mediaType) => {
+        console.log(user, mediaType);
+      },
+    };
+    state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
   async initClassRoom(
     { commit },

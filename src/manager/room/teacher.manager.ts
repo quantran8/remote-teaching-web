@@ -32,4 +32,11 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
   setMicrophone(options: { enable: boolean }) {
     this.agoraClient.setMicrophone(options);
   }
+
+  subcriseRemoteAudios(
+    local: Array<{ studentId: string; tag: string }>,
+    global: Array<{ studentId: string; tag: string }>
+  ) {
+    return this.agoraClient.subcriseRemoteAudios(local, global);
+  }
 }

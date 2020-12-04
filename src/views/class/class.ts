@@ -49,6 +49,8 @@ export default defineComponent({
     const teacher = computed(() => getters["teacherRoom/teacher"]);
     const error = computed(() => getters["teacherRoom/error"]);
     const roomManager = computed(() => getters["teacherRoom/roomManager"]);
+    const globalAudios = computed(() => getters["teacherRoom/globalAudios"]);
+    const localAudios = computed(() => getters["teacherRoom/localAudios"]);
     const isClassNotActive = computed(() => {
       return (
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
@@ -123,6 +125,19 @@ export default defineComponent({
     watch(error, () => {
       console.log(error.value);
     });
+
+    watch(
+      [globalAudios, localAudios],
+      () => {
+        // console.error("Audio Changed", globalAudios.value, localAudios.value);
+        if (!roomManager.value) return;
+        roomManager.value.subcriseRemoteAudios(
+          localAudios.value,
+          globalAudios.value
+        );
+      },
+      { deep: true }
+    );
 
     return {
       showModal,

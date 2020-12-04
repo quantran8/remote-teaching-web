@@ -56,7 +56,10 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    state.manager?.WSClient.sendRequestJoinRoom(state.info?.id, state.user?.id);
+    await state.manager?.WSClient.sendRequestJoinRoom(
+      state.info?.id,
+      state.user?.id
+    );
     const eventHandler: WSEventHandler = {
       onStudentJoinClass: (payload: any) => {
         console.log(payload);

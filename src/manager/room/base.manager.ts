@@ -1,4 +1,4 @@
-import { AgoraClient, AgoraClientOptions } from "@/agora";
+import { AgoraClient, AgoraClientOptions, AgoraEventHandler } from "@/agora";
 import { GLSocketClient, WSEventHandler } from "@/ws";
 
 export interface RoomOptions {
@@ -37,6 +37,9 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 
   registerEventHandler(eventHandler: WSEventHandler) {
     return this.WSClient.registerEventHandler(eventHandler);
+  }
+  registerAgoraEventHandler(eventHandler: AgoraEventHandler) {
+    return this.agoraClient.registerEventHandler(eventHandler);
   }
 
   isJoinedRoom() {

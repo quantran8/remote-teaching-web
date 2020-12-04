@@ -27,7 +27,12 @@ export interface AgoraClientOptions {
   webConfig: ClientConfig;
   user?: AgoraUser;
 }
-
+export interface AgoraEventHandler {
+  onUserPublished(
+    user: IAgoraRTCRemoteUser,
+    mediaType: "audio" | "video"
+  ): void;
+}
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
   _options: AgoraClientOptions;
@@ -90,6 +95,15 @@ export class AgoraClient implements AgoraClientSDK {
         this.subscribeUser(remoteUser, mediaType);
       }
     });
+  }
+
+  registerEventHandler(handler: AgoraEventHandler) {
+    // this.client.on("user-published", handler.onUserPublished);
+    // this.client.on("user-published", async (user, mediaType) => {
+    //   for (const remoteUser of this.client.remoteUsers) {
+    //     this.subscribeUser(remoteUser, mediaType);
+    //   }
+    // });
   }
 
   subscribedVideos: Array<string> = [];
@@ -195,6 +209,29 @@ export class AgoraClient implements AgoraClientSDK {
     } else {
       await this.client?.unpublish(this.microphoneTrack);
       this._closeMediaTrack(this.microphoneTrack);
+    }
+  }
+  getRemoteUsers(): Array<IAgoraRTCRemoteUser> {
+    if (!this.client) return [];
+    return this.client.remoteUsers;
+  }
+
+  subcriseRemoteAudios(
+    local: Array<{ studentId: string; tag: string }>,
+    global: Array<{ studentId: string; tag: string }>
+  ) {
+    const remoteUsers = this.getRemoteUsers();
+    for (const user of remoteUsers) {
+      const userId = user.uid;
+      let enable: boolean = true;
+      if (local.length !== 0) {
+        enable = local.find((ele) => ele.studentId === userId) !== undefined;
+      } else if (global.length !== 0) {
+        enable = global.find((ele) => ele.studentId === userId) !== undefined;
+      }
+      if (enable) this.client.subscribe(user, "audio");
+      else this.client.unsubscribe(user, "audio");
+      console.log(userId, enable);
     }
   }
 }
