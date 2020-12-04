@@ -12,7 +12,11 @@
         <BaseTag :tag="studentAudio.tag" />
       </div>
     </div>
-    <BaseButton mode="clear" @click="onClickClearAll">
+    <BaseButton
+      mode="clear"
+      @click="onClickClearAll"
+      v-if="globalAudios.length"
+    >
       <BaseIcon class="close" name="icon-close"></BaseIcon>
     </BaseButton>
   </div>
