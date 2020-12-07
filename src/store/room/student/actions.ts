@@ -46,7 +46,10 @@ const actions: ActionTree<StudentRoomState, any> = {
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async joinRoom({ state, commit }, _payload: any) {
+  async updateAudioAndVideoFeed({ state }, payload: any) {
+    console.log("updateAudioAndVideo", state, payload);
+  },
+  async joinRoom({ state, commit, dispatch }, _payload: any) {
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
@@ -61,6 +64,10 @@ const actions: ActionTree<StudentRoomState, any> = {
       state.user?.id
     );
     const eventHandler: WSEventHandler = {
+      onRoomInfo: (payload: any) => {
+        commit("setRoomInfo", payload);
+        dispatch("updateAudioAndVideoFeed", {});
+      },
       onStudentJoinClass: (payload: any) => {
         console.log(payload);
       },

@@ -73,7 +73,7 @@ export class AgoraClient implements AgoraClientSDK {
   publishedAudio: boolean = false;
 
   async joinRTCRoom(options: { camera?: boolean; microphone?: boolean }) {
-    if (this._client) return;
+    if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     await this.client.join(
       this.appId,
@@ -82,19 +82,10 @@ export class AgoraClient implements AgoraClientSDK {
       this.user.username
     );
     this.joined = true;
-    if (options.camera) {
-      await this.openCamera();
-    }
-    if (options.microphone) {
-      await this.openMicrophone();
-    }
+    if (options.camera) await this.openCamera();
+    if (options.microphone) await this.openMicrophone();
     await this.publish();
 
-    this.client.on("user-published", async (user, mediaType) => {
-      for (const remoteUser of this.client.remoteUsers) {
-        this.subscribeUser(remoteUser, mediaType);
-      }
-    });
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
@@ -107,6 +98,7 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   subscribedVideos: Array<string> = [];
+  subscribedAudios: Array<string> = [];
   async subscribeUser(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") {
     if (!user) return;
     const userUID = "" + user.uid;
@@ -114,6 +106,34 @@ export class AgoraClient implements AgoraClientSDK {
       if (this.subscribedVideos.indexOf(userUID) === -1) {
         const remoteVideoTrack = await this.client.subscribe(user, mediaType);
         remoteVideoTrack.play(userUID);
+        this.subscribedVideos.push(userUID);
+      }
+    } else {
+      if (this.subscribedAudios.indexOf(userUID) === -1) {
+        const remoteTrack = await this.client.subscribe(user, mediaType);
+        remoteTrack.play();
+        this.subscribedAudios.push(userUID);
+      }
+    }
+  }
+
+  async unsubscribeUser(
+    user: IAgoraRTCRemoteUser,
+    mediaType: "audio" | "video"
+  ) {
+    if (!user) return;
+    const userUID = "" + user.uid;
+    if (mediaType === "video") {
+      const trackIndex = this.subscribedVideos.indexOf(userUID);
+      if (trackIndex !== -1) {
+        await this.client.unsubscribe(user, mediaType);
+        this.subscribedVideos.splice(trackIndex, 1);
+      }
+    } else if (mediaType === "audio") {
+      const trackIndex = this.subscribedAudios.indexOf(userUID);
+      if (trackIndex !== -1) {
+        await this.client.unsubscribe(user, mediaType);
+        this.subscribedAudios.splice(trackIndex, 1);
       }
     }
   }
@@ -174,15 +194,15 @@ export class AgoraClient implements AgoraClientSDK {
     await this.openCamera();
   }
 
-  unPublishAll() {
-    this.client && this.client.unpublish();
+  async unPublishAll() {
+    if (this.client) await this.client.unpublish();
   }
   unsubscribeAll() {
     // todo
   }
-  reset() {
-    this.unPublishAll();
-    this._client?.leave();
+  async reset() {
+    await this.unPublishAll();
+    await this._client?.leave();
     this._client = undefined;
     this.publishedVideo = false;
     this.publishedAudio = false;
@@ -216,12 +236,13 @@ export class AgoraClient implements AgoraClientSDK {
     return this.client.remoteUsers;
   }
 
-  subcriseRemoteAudios(
+  async subcriseRemoteUsers(
     local: Array<{ studentId: string; tag: string }>,
     global: Array<{ studentId: string; tag: string }>
   ) {
     const remoteUsers = this.getRemoteUsers();
     for (const user of remoteUsers) {
+      await this.subscribeUser(user, "video");
       const userId = user.uid;
       let enable: boolean = true;
       if (local.length !== 0) {
@@ -229,9 +250,10 @@ export class AgoraClient implements AgoraClientSDK {
       } else if (global.length !== 0) {
         enable = global.find((ele) => ele.studentId === userId) !== undefined;
       }
-      if (enable) this.client.subscribe(user, "audio");
-      else this.client.unsubscribe(user, "audio");
-      console.log(userId, enable);
+      if (enable) await this.subscribeUser(user, "audio");
+      else await this.unsubscribeUser(user, "audio");
     }
+    console.log("Subscrise Videos", this.subscribedVideos);
+    console.log("Subscrise Audios", this.subscribedAudios);
   }
 }

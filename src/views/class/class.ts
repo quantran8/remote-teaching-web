@@ -1,7 +1,7 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
-import { ClassView } from "@/store/room/interface";
-import { computed, defineComponent, ref, watch } from "vue";
+import { ClassView, TeacherState } from "@/store/room/interface";
+import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
@@ -46,10 +46,11 @@ export default defineComponent({
     const router = useRouter();
     const showModal = ref(false);
     const hasConfirmed = ref(false);
-    const teacher = computed(() => getters["teacherRoom/teacher"]);
+    const teacher: ComputedRef<TeacherState> = computed(
+      () => getters["teacherRoom/teacher"]
+    );
     const error = computed(() => getters["teacherRoom/error"]);
     const roomManager = computed(() => getters["teacherRoom/roomManager"]);
-    const globalAudios = computed(() => getters["teacherRoom/globalAudios"]);
     const localAudios = computed(() => getters["teacherRoom/localAudios"]);
     const isClassNotActive = computed(() => {
       return (
@@ -109,35 +110,12 @@ export default defineComponent({
       showModal.value = false;
     };
 
-    const onTeacherChanged = async () => {
-      if (!roomManager.value) return;
-      roomManager.value.setCamera({
-        enable: teacher.value.videoEnabled,
-      });
 
-      roomManager.value.setMicrophone({
-        enable: teacher.value.audioEnabled,
-      });
-    };
-
-    watch(teacher, onTeacherChanged, { deep: true });
 
     watch(error, () => {
       console.log(error.value);
     });
 
-    watch(
-      [globalAudios, localAudios],
-      () => {
-        // console.error("Audio Changed", globalAudios.value, localAudios.value);
-        if (!roomManager.value) return;
-        roomManager.value.subcriseRemoteAudios(
-          localAudios.value,
-          globalAudios.value
-        );
-      },
-      { deep: true }
-    );
 
     return {
       showModal,

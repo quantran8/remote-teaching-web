@@ -10,6 +10,10 @@ export interface GLSocketOptions {
   url: string;
 }
 
+export enum RoomWSEvent {
+  EVENT_ROOM_INFO = "EVENT_ROOM_INFO",
+}
+
 export enum TeacherWSEvent {
   EVENT_TEACHER_JOIN_CLASS = "EVENT_TEACHER_JOIN_CLASS",
   EVENT_TEACHER_STREAM_CONNECT = "EVENT_TEACHER_STREAM_CONNECT",
@@ -35,7 +39,10 @@ export enum StudentWSEvent {
   EVENT_STUDENT_LEAVE = "EVENT_STUDENT_LEAVE",
   EVENT_STUDENT_DISCONNECT = "EVENT_TEACHER_DISCONNECT",
 }
-export type WSEvent = StudentWSEvent & TeacherWSEvent;
+export type WSEvent = RoomWSEvent & StudentWSEvent & TeacherWSEvent;
+export interface RoomWSEventHandler {
+  onRoomInfo(payload: any): void;
+}
 export interface StudentWSEventHandler {
   onStudentJoinClass(payload: any): void;
   onStudentStreamConnect(payload: any): void;
@@ -63,7 +70,9 @@ export interface TeacherWSEventHandler {
   onTeacherUpdateStudentBadge(payload: any): void;
 }
 
-export type WSEventHandler = StudentWSEventHandler & TeacherWSEventHandler;
+export type WSEventHandler = RoomWSEventHandler &
+  StudentWSEventHandler &
+  TeacherWSEventHandler;
 
 export class GLSocketClient {
   private _hubConnection?: HubConnection;
@@ -129,6 +138,7 @@ export class GLSocketClient {
   }
 
   registerEventHandler(handler: WSEventHandler) {
+    this.hubConnection.on(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
     this.hubConnection.on(
       StudentWSEvent.EVENT_STUDENT_JOIN_CLASS,
       handler.onStudentJoinClass

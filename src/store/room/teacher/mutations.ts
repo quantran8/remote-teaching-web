@@ -64,18 +64,19 @@ const mutations: MutationTree<TeacherRoomState> = {
     state.info = room;
     const role =
       room.streamInfo.userId === room.teacher.id ? "host" : "audience";
-    state.manager = new TeacherRoomManager({
-      agora: {
-        appId: room.streamInfo.appId,
-        webConfig: { mode: "rtc", codec: "vp8", role: role },
-        user: {
-          channel: room.streamInfo.chanelId,
-          username: room.streamInfo.userId,
-          token: room.streamInfo.token,
-          role,
+    if (!state.manager)
+      state.manager = new TeacherRoomManager({
+        agora: {
+          appId: room.streamInfo.appId,
+          webConfig: { mode: "rtc", codec: "vp8", role: role },
+          user: {
+            channel: room.streamInfo.chanelId,
+            username: room.streamInfo.userId,
+            token: room.streamInfo.token,
+            role,
+          },
         },
-      },
-    });
+      });
   },
 
   setStudentAudio(

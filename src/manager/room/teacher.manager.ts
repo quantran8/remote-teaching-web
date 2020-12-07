@@ -27,16 +27,16 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
   }
 
   setCamera(options: { enable: boolean }) {
-    this.agoraClient.setCamera(options);
+    return this.agoraClient.setCamera(options);
   }
   setMicrophone(options: { enable: boolean }) {
-    this.agoraClient.setMicrophone(options);
+    return this.agoraClient.setMicrophone(options);
   }
 
-  subcriseRemoteAudios(
+  subcriseRemoteUsers(
     local: Array<{ studentId: string; tag: string }>,
     global: Array<{ studentId: string; tag: string }>
   ) {
-    return this.agoraClient.subcriseRemoteAudios(local, global);
+    return this.agoraClient.subcriseRemoteUsers(local, global);
   }
 }
