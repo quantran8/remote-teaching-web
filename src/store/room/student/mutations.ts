@@ -2,12 +2,23 @@ import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { Logger } from "@/utils/logger";
 import { MutationTree } from "vuex";
 import { ClassView, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
+  leaveRoom(state: StudentRoomState, _payload: any) {
+    state.manager = undefined;
+    state.info = undefined;
+    state.user = undefined;
+    state.teacher = undefined;
+    state.students = [];
+    state.manager = undefined;
+    state.classes = [];
+    state.classView = ClassView.GALLERY;
+    state.error = null;
+    state.globalAudios = [];
+  },
   setError(state: StudentRoomState, payload: GLError | null) {
     state.error = payload;
   },

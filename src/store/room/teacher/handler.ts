@@ -35,7 +35,7 @@ export const useTeacherRoomWSHandler = ({
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentLeave: (payload: StudentModel) => {
-      commit("studentJoinned", { studentId: payload.id });
+      commit("studentLeftClass", { studentId: payload.id });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {

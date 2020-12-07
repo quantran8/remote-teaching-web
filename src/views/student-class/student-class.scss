@@ -10,6 +10,9 @@
     .media-button {
       width: 2.4rem;
       height: 2.4rem;
+      .rt-icon::before {
+        font-size: 1.6rem;
+      }
     }
 
     .current-student {

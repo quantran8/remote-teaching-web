@@ -9,7 +9,6 @@ import {
   TeacherService,
 } from "@/services";
 import { Logger } from "@/utils/logger";
-import { WSEventHandler } from "@/ws";
 import { ActionTree } from "vuex";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
@@ -87,8 +86,9 @@ const actions: ActionTree<StudentRoomState, any> = {
     });
   },
 
-  async leaveRoom({ state }, _payload: any) {
-    state.manager?.close();
+  async leaveRoom({ state, commit }, payload: any) {
+    await state.manager?.close();
+    commit("leaveRoom", payload);
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;

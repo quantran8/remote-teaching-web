@@ -1,3 +1,4 @@
+import { RemoteTeachingService } from "@/services";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -11,7 +12,7 @@ export default defineComponent({
     const router = useRouter();
     const children = computed(() => store.getters["parent/children"]);
     const username = computed(() => store.getters["auth/username"]);
-    const onClickChild = (student: any) => {
+    const onClickChild = async (student: any) => {
       router.push(`/student/${student.id}/class/${student.schoolClassId}`);
     };
     return { children, username, onClickChild };

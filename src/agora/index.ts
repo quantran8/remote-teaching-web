@@ -238,19 +238,17 @@ export class AgoraClient implements AgoraClientSDK {
   async unPublishAll() {
     if (this.client) await this.client.unpublish();
   }
-  unsubscribeAll() {
-    // todo
-  }
   async reset() {
-    await this.unPublishAll();
     await this._client?.leave();
-    this._client = undefined;
     this.publishedVideo = false;
     this.publishedAudio = false;
     this._closeMediaTrack(this.cameraTrack);
     this._closeMediaTrack(this.microphoneTrack);
     this.joined = false;
     this.publishedTrackIds = [];
+    this._client = undefined;
+    this.cameraError = null;
+    this.microphoneError = null;
   }
 
   async setCamera(options: { enable: boolean }) {

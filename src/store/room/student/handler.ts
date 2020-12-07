@@ -80,7 +80,8 @@ export const useStudentRoomHandler = (
         });
       }
     },
-    onTeacherEndClass: (_payload: any) => {
+    onTeacherEndClass: async (_payload: any) => {
+      await dispatch("leaveRoom", {});
       commit("setError", {
         errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",
@@ -104,7 +105,7 @@ export const useStudentRoomHandler = (
         badge: payload.badge,
       });
       if (payload.id === state.student?.id) {
-        const message = `Congratulations! You got ${payload.badge} more badge${
+        const message = `Congratulations! You got ${payload.badge} badge${
           payload.badge > 1 ? "s" : ""
         } from your teacher!`;
         store.dispatch("setToast", message, { root: true });

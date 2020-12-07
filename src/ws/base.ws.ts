@@ -38,7 +38,7 @@ export enum StudentWSEvent {
   MUTE_AUDIO = "EVENT_STUDENT_MUTE_AUDIO",
   MUTE_VIDEO = "EVENT_STUDENT_MUTE_VIDEO",
   LEAVE = "EVENT_STUDENT_LEAVE",
-  DISCONNECT = "EVENT_TEACHER_DISCONNECT",
+  DISCONNECT = "EVENT_STUDENT_DISCONNECT",
 }
 export type WSEvent = RoomWSEvent | StudentWSEvent | TeacherWSEvent;
 
@@ -107,7 +107,10 @@ export class GLSocketClient {
   get isConnected(): boolean {
     return this._isConnected;
   }
-
+  async disconnect() {
+    if (!this.isConnected) return;
+    return this._hubConnection?.stop();
+  }
   async connect() {
     if (this.isConnected) return;
     return this.hubConnection

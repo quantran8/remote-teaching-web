@@ -47,6 +47,6 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   }
 
   async close() {
-    this.agoraClient.reset();
+   return this.agoraClient.reset();
   }
 }
