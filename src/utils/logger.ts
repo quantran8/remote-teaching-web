@@ -1,14 +1,19 @@
 export class Logger {
+  private static _ENABLE_ = true;
   public static log(message?: any, ...optionalParams: any[]) {
-    console.log(message, ...optionalParams);
+    if (!this._ENABLE_) return;
+    console.log(message ? message : "", ...optionalParams);
   }
   public static info(message?: any, ...optionalParams: any[]) {
-    console.info(message, ...optionalParams);
+    if (!this._ENABLE_) return;
+    console.info(message ? message : "", ...optionalParams);
   }
   public static error(message?: any, ...optionalParams: any[]) {
-    console.error(message, ...optionalParams);
+    if (!this._ENABLE_) return;
+    console.error(message ? message : "", ...optionalParams);
   }
   public static debug(message?: any, ...optionalParams: any[]) {
-    console.debug(message, ...optionalParams);
+    if (!this._ENABLE_) return;
+    console.debug(message ? message : "", ...optionalParams);
   }
 }

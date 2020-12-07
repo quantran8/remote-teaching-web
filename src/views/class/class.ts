@@ -100,7 +100,7 @@ export default defineComponent({
     const onClickLeave = async () => {
       hasConfirmed.value = true;
       await dispatch("teacherRoom/endClass");
-      router.replace("/teacher");
+      router.push("/teacher");
     };
     const onClickCloseError = () => {
       // store.dispatch("teacherRoom/setError", null);
@@ -110,12 +110,9 @@ export default defineComponent({
       showModal.value = false;
     };
 
-
-
     watch(error, () => {
       console.log(error.value);
     });
-
 
     return {
       showModal,

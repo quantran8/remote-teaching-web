@@ -34,7 +34,7 @@ export default defineComponent({
           lesson.id
         );
         if (response && response.success) {
-          router.replace("/class/" + teacherClass.schoolClassId);
+          router.push("/class/" + teacherClass.schoolClassId);
         } else {
           console.log(response);
         }
@@ -50,7 +50,7 @@ export default defineComponent({
     };
     const onClickClass = (teacherClass: TeacherClassModel) => {
       if (teacherClass.isActive) {
-        router.replace("/class/" + teacherClass.schoolClassId);
+        router.push("/class/" + teacherClass.schoolClassId);
       } else {
         startClass(teacherClass);
       }

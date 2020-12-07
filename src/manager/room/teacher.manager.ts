@@ -8,7 +8,7 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     this.options = options;
     this.agoraClient = new AgoraClient(options.agora);
     this.WSClient = new TeacherWSClient({
-      url: `http://vn-gs-server.grapecity.net:5010/teaching`,
+      url: `${process.env.VUE_APP_REMOTE_TEACHING_SERVICE}/teaching`,
     });
     this.WSClient.init();
   }

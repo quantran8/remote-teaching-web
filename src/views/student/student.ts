@@ -12,7 +12,7 @@ export default defineComponent({
     const children = computed(() => store.getters["parent/children"]);
     const username = computed(() => store.getters["auth/username"]);
     const onClickChild = (student: any) => {
-      router.replace(`/student/${student.id}/class/${student.schoolClassId}`);
+      router.push(`/student/${student.id}/class/${student.schoolClassId}`);
     };
     return { children, username, onClickChild };
   },
