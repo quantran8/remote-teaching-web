@@ -36,22 +36,7 @@ export default defineComponent({
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
-    const roomManager = computed(
-      () => store.getters["studentRoom/roomManager"]
-    );
-    const onStudentChanged = async () => {
-      if (!roomManager.value) return;
-      roomManager.value.setCamera({
-        enable: student.value.videoEnabled,
-      });
-
-      roomManager.value.setMicrophone({
-        enable: student.value.audioEnabled,
-      });
-    };
-
-    watch(student, onStudentChanged, { deep: true });
-
+  
     watch(errors, () => {
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {

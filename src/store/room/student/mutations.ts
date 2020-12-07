@@ -2,6 +2,7 @@ import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
+import { Logger } from "@/utils/logger";
 import { MutationTree } from "vuex";
 import { ClassView, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
@@ -48,21 +49,22 @@ const mutations: MutationTree<StudentRoomState> = {
         state.students.push(student);
       }
     }
-
+    state.globalAudios = room.globalStudentsAudio;
     state.info = room;
     const role = "audience";
-    state.manager = new StudentRoomManager({
-      agora: {
-        appId: room.streamInfo.appId,
-        webConfig: { mode: "rtc", codec: "vp8", role: role },
-        user: {
-          channel: room.streamInfo.chanelId,
-          username: room.streamInfo.userId,
-          token: room.streamInfo.token,
-          role,
+    if (!state.manager)
+      state.manager = new StudentRoomManager({
+        agora: {
+          appId: room.streamInfo.appId,
+          webConfig: { mode: "rtc", codec: "vp8", role: role },
+          user: {
+            channel: room.streamInfo.chanelId,
+            username: room.streamInfo.userId,
+            token: room.streamInfo.token,
+            role,
+          },
         },
-      },
-    });
+      });
   },
 
   setStudentAudio(

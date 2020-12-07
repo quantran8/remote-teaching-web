@@ -10,7 +10,7 @@
         v-for="child in children"
         :key="child.id"
         :name="child.name"
-        @click="()=>onClickChild(child)"
+        @click="() => onClickChild(child)"
       >
       </StudentCard>
     </div>

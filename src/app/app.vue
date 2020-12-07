@@ -20,6 +20,7 @@
       <AppFooter />
     </template>
   </MainLayout>
+  <Toast></Toast>
 </template>
 <script lang="ts" src="./app.ts"/>
 <style lang="scss" src="./app.scss"/>

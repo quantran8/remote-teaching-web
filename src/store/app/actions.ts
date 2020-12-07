@@ -2,6 +2,9 @@ import { ActionTree } from "vuex";
 import { AppState, AppView, LayoutType } from "./state";
 
 const actions: ActionTree<AppState, any> = {
+  setToast(store, payload: string) {
+    store.commit("setToast", payload);
+  },
   setLayout(store, payload: { layout: LayoutType }) {
     store.commit("setLayout", payload);
   },

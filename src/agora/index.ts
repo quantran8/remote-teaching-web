@@ -1,3 +1,4 @@
+import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -6,6 +7,7 @@ import AgoraRTC, {
   ICameraVideoTrack,
   ILocalTrack,
   IMicrophoneAudioTrack,
+  IRemoteTrack,
 } from "agora-rtc-sdk-ng";
 
 export interface AgoraClientSDK {
@@ -32,6 +34,11 @@ export interface AgoraEventHandler {
     user: IAgoraRTCRemoteUser,
     mediaType: "audio" | "video"
   ): void;
+  onUserUnPublished(
+    user: IAgoraRTCRemoteUser,
+    mediaType: "audio" | "video"
+  ): void;
+  onException(payload: any): void;
 }
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
@@ -89,30 +96,40 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
-    // this.client.on("user-published", handler.onUserPublished);
-    // this.client.on("user-published", async (user, mediaType) => {
-    //   for (const remoteUser of this.client.remoteUsers) {
-    //     this.subscribeUser(remoteUser, mediaType);
-    //   }
-    // });
+    this.client.on("user-published", handler.onUserPublished);
+    this.client.on("user-unpublished", handler.onUserUnPublished);
+    this.client.on("exception", handler.onException);
   }
 
-  subscribedVideos: Array<string> = [];
-  subscribedAudios: Array<string> = [];
+  subscribedVideos: Array<{
+    userId: string;
+    track: IRemoteTrack;
+  }> = [];
+  subscribedAudios: Array<{
+    userId: string;
+    track: IRemoteTrack;
+  }> = [];
+
   async subscribeUser(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") {
     if (!user) return;
     const userUID = "" + user.uid;
     if (mediaType === "video") {
-      if (this.subscribedVideos.indexOf(userUID) === -1) {
-        const remoteVideoTrack = await this.client.subscribe(user, mediaType);
-        remoteVideoTrack.play(userUID);
-        this.subscribedVideos.push(userUID);
+      if (!this.subscribedVideos.find((ele) => ele.userId === userUID)) {
+        const remoteTrack = await this.client.subscribe(user, mediaType);
+        remoteTrack.play(userUID);
+        this.subscribedVideos.push({
+          userId: userUID,
+          track: remoteTrack,
+        });
       }
     } else {
-      if (this.subscribedAudios.indexOf(userUID) === -1) {
+      if (!this.subscribedAudios.find((ele) => ele.userId === userUID)) {
         const remoteTrack = await this.client.subscribe(user, mediaType);
         remoteTrack.play();
-        this.subscribedAudios.push(userUID);
+        this.subscribedAudios.push({
+          userId: userUID,
+          track: remoteTrack,
+        });
       }
     }
   }
@@ -124,35 +141,59 @@ export class AgoraClient implements AgoraClientSDK {
     if (!user) return;
     const userUID = "" + user.uid;
     if (mediaType === "video") {
-      const trackIndex = this.subscribedVideos.indexOf(userUID);
+      const trackIndex = this.subscribedVideos.findIndex(
+        (ele) => ele.userId === userUID
+      );
       if (trackIndex !== -1) {
         await this.client.unsubscribe(user, mediaType);
+        this.subscribedVideos[trackIndex].track.stop();
         this.subscribedVideos.splice(trackIndex, 1);
       }
     } else if (mediaType === "audio") {
-      const trackIndex = this.subscribedAudios.indexOf(userUID);
+      const trackIndex = this.subscribedAudios.findIndex(
+        (ele) => ele.userId === userUID
+      );
       if (trackIndex !== -1) {
         await this.client.unsubscribe(user, mediaType);
+        this.subscribedAudios[trackIndex].track.stop();
         this.subscribedAudios.splice(trackIndex, 1);
       }
     }
   }
-
+  microphoneError: {
+    code: string;
+    message: string;
+  } | null = null;
   async openMicrophone(): Promise<any> {
     if (this._microphoneTrack) return;
-    this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
-    this.microphoneTrack.on("track-ended", () => {
-      this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
-    });
-    this.microphoneTrack.play();
+    try {
+      this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
+      this.microphoneTrack.on("track-ended", () => {
+        this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
+      });
+      this.microphoneTrack.play();
+      this.microphoneError = null;
+    } catch (err) {
+      this.microphoneError = err;
+    }
   }
+
+  cameraError: {
+    code: string;
+    message: string;
+  } | null = null;
   async openCamera(): Promise<any> {
     if (this._cameraTrack) return;
-    this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
-    this.cameraTrack.on("track-ended", () => {
-      this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
-    });
-    this.cameraTrack.play(this.user.username, { mirror: false });
+    try {
+      this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
+      this.cameraTrack.on("track-ended", () => {
+        this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
+      });
+      this.cameraTrack.play(this.user.username, { mirror: false });
+      this.cameraError = null;
+    } catch (err) {
+      this.cameraError = err;
+    }
   }
 
   private _closeMediaTrack(track: ILocalTrack) {
@@ -253,7 +294,48 @@ export class AgoraClient implements AgoraClientSDK {
       if (enable) await this.subscribeUser(user, "audio");
       else await this.unsubscribeUser(user, "audio");
     }
-    console.log("Subscrise Videos", this.subscribedVideos);
-    console.log("Subscrise Audios", this.subscribedAudios);
+    console.log(
+      remoteUsers.map((ele) => ele.uid),
+      this.subscribedVideos,
+      this.subscribedAudios
+    );
+  }
+  async studentSubcriseRemoteUsers(global: Array<string>) {
+    const remoteUsers = this.getRemoteUsers();
+    for (const user of remoteUsers) {
+      await this.subscribeUser(user, "video");
+      const userId = user.uid + "";
+      const enable = global.length === 0 || global.indexOf(userId) !== -1;
+      if (enable) await this.subscribeUser(user, "audio");
+      else await this.unsubscribeUser(user, "audio");
+    }
+    console.log(
+      remoteUsers.map((ele) => ele.uid),
+      this.subscribedVideos,
+      this.subscribedAudios
+    );
+  }
+  async unsubcriseRemoteUser(payload: {
+    user: IAgoraRTCRemoteUser;
+    mediaType: "video" | "audio";
+  }) {
+    const userId = payload.user.uid + "";
+    if (payload.mediaType === "video") {
+      const trackIndex = this.subscribedVideos.findIndex(
+        (ele) => ele.userId === userId
+      );
+      if (trackIndex !== -1) {
+        this.subscribedVideos[trackIndex].track.stop();
+        this.subscribedVideos.splice(trackIndex, 1);
+      }
+    } else if (payload.mediaType === "audio") {
+      const trackIndex = this.subscribedAudios.findIndex(
+        (ele) => ele.userId === userId
+      );
+      if (trackIndex !== -1) {
+        this.subscribedAudios[trackIndex].track.stop();
+        this.subscribedAudios.splice(trackIndex, 1);
+      }
+    }
   }
 }

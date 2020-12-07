@@ -9,7 +9,7 @@ import {
   BaseModal,
   BaseTag,
 } from "./components/base";
-import { LiveCircle } from "./components/common";
+import { LiveCircle, Toast } from "./components/common";
 
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
@@ -29,6 +29,7 @@ app.component("BaseCard", BaseCard);
 app.component("BaseTag", BaseTag);
 app.component("BaseModal", BaseModal);
 app.component("LiveCircle", LiveCircle);
+app.component("Toast", Toast);
 app.use(router);
 app.use(store);
 app.mount("#app");

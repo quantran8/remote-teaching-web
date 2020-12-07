@@ -8,6 +8,9 @@ const getters: GetterTree<AppState, any> = {
   appView(state: AppState): AppView {
     return state.appView;
   },
+  appToast(state: AppState): string {
+    return state.toast;
+  },
 };
 
 export default getters;

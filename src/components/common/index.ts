@@ -1,2 +1,3 @@
 import LiveCircle from "./live-circle/live-circle.vue";
-export { LiveCircle };
+import Toast from "./toast/toast.vue";
+export { LiveCircle, Toast };

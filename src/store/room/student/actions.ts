@@ -8,8 +8,10 @@ import {
   TeacherGetRoomResponse,
   TeacherService,
 } from "@/services";
+import { Logger } from "@/utils/logger";
 import { WSEventHandler } from "@/ws";
 import { ActionTree } from "vuex";
+import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 
 const actions: ActionTree<StudentRoomState, any> = {
@@ -27,7 +29,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       id: payload.studentId,
       name: payload.userName,
     });
-
     const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
       payload.studentId
     );
@@ -46,10 +47,15 @@ const actions: ActionTree<StudentRoomState, any> = {
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async updateAudioAndVideoFeed({ state }, payload: any) {
-    console.log("updateAudioAndVideo", state, payload);
+  async userUnPublished({ state }, payload: any) {
+    state.manager?.unsubcriseRemoteUser(payload);
   },
-  async joinRoom({ state, commit, dispatch }, _payload: any) {
+  async updateAudioAndVideoFeed({ state }, payload: any) {
+    const { globalAudios } = state;
+    state.manager?.subcriseRemoteUsers(globalAudios);
+  },
+  async joinRoom(store, _payload: any) {
+    const { state, dispatch } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
@@ -63,97 +69,22 @@ const actions: ActionTree<StudentRoomState, any> = {
       state.info?.id,
       state.user?.id
     );
-    const eventHandler: WSEventHandler = {
-      onRoomInfo: (payload: any) => {
-        commit("setRoomInfo", payload);
+    const eventHandler = useStudentRoomHandler(store);
+    state.manager?.registerEventHandler(eventHandler);
+    state.manager?.agoraClient.registerEventHandler({
+      onUserPublished: (_payload) => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onStudentJoinClass: (payload: any) => {
-        console.log(payload);
-      },
-      onStudentStreamConnect: (payload: any) => {
-        console.log(payload);
-      },
-      onStudentMuteAudio: (payload: StudentModel) => {
-        console.log(payload);
-      },
-      onStudentMuteVideo: (payload: StudentModel) => {
-        console.log(payload);
-      },
-      onStudentLeave: (payload: any) => {
-        console.log(payload);
-      },
-      onStudentDisconnected: (payload: any) => {
-        console.log(payload);
-      },
-
-      onTeacherJoinClass: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherStreamConnect: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherMuteAudio: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherMuteVideo: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherMuteStudentVideo: (payload: StudentModel) => {
-        commit("setStudentVideo", {
-          studentId: payload.id,
-          videoEnabled: !payload.isMuteVideo,
+      onUserUnPublished: (user, mediaType) => {
+        dispatch("userUnPublished", {
+          user,
+          mediaType,
         });
       },
-      onTeacherMuteStudentAudio: (payload: StudentModel) => {
-        commit("setStudentAudio", {
-          studentId: payload.id,
-          audioEnabled: !payload.isMuteAudio,
-        });
+      onException: (payload: any) => {
+        Logger.error("Exception", payload);
       },
-      onTeacherMuteAllStudentVideo: (payload: Array<StudentModel>) => {
-        for (const student of payload) {
-          commit("setStudentVideo", {
-            studentId: student.id,
-            videoEnabled: !student.isMuteVideo,
-          });
-        }
-      },
-      onTeacherMuteAllStudentAudio: (payload: Array<StudentModel>) => {
-        for (const student of payload) {
-          commit("setStudentAudio", {
-            studentId: student.id,
-            audioEnabled: !student.isMuteAudio,
-          });
-        }
-      },
-      onTeacherEndClass: (payload: any) => {
-        commit("setError", {
-          errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
-          message: "Your class has been ended!",
-        });
-      },
-      onTeacherDisconnect: (payload: any) => {
-        console.log("onTeacherDisconnect", payload);
-      },
-      onTeacherSetFocusTab: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherUpdateGlobalStudentAudio: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherUpdateStudentAudio: (payload: any) => {
-        console.log(payload);
-      },
-      onTeacherUpdateStudentBadge: (payload: StudentModel) => {
-        commit("setStudentBadge", {
-          studentId: payload.id,
-          badge: payload.badge,
-        });
-      },
-    };
-
-    state.manager?.registerEventHandler(eventHandler);
+    });
   },
 
   async leaveRoom({ state }, _payload: any) {

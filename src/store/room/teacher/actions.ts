@@ -8,6 +8,63 @@ import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
+import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
+
+interface InitClassRoomPayload {
+  classId: string;
+  userId: string;
+  userName: string;
+  role: string;
+}
+
+interface SetStudentAudioPayload {
+  studentId: string;
+  audioEnabled: boolean;
+}
+
+interface SetStudentVideoPayload {
+  studentId: string;
+  videoEnabled: boolean;
+}
+
+interface SetStudentBadgePayload {
+  studentId: string;
+  badge: number;
+}
+
+interface SetTeacherAudioPayload {
+  teacherId: string;
+  audioEnabled: boolean;
+}
+
+interface SetTeacherVideoPayload {
+  teacherId: string;
+  videoEnabled: boolean;
+}
+
+interface SetClassViewPayload {
+  classView: ClassView;
+}
+
+interface AddGlobalAudioPayload {
+  studentId: string;
+}
+
+interface AddLocalAudioPayload {
+  studentId: string;
+}
+
+interface OnStudentJoinedPayload {
+  studentId: string;
+}
+
+interface OnStudentLeftPayload {
+  studentId: string;
+}
+
+interface OnStudentLeavingPayload {
+  studentId: string;
+}
 
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: any) {
@@ -17,7 +74,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     commit("endClass", payload);
   },
-  setClassView({ commit, state }, payload: { classView: ClassView }) {
+  setClassView({ commit, state }, payload: SetClassViewPayload) {
     commit("setClassView", payload);
     state.manager?.WSClient.sendRequestSetFocusTab(
       ValueOfClassView(payload.classView)
@@ -29,7 +86,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setError(store, payload: GLError | null) {
     store.commit("setError", payload);
   },
-
+  async userUnPublished(
+    { state },
+    payload: {
+      user: IAgoraRTCRemoteUser;
+      mediaType: "video" | "audio";
+    }
+  ) {
+    state.manager?.unsubcriseRemoteUser(payload);
+  },
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager } = state;
     manager?.subcriseRemoteUsers(localAudios, globalAudios);
@@ -38,7 +103,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     return state.manager?.close();
   },
   async joinRoom(store, _payload: any) {
-    const { state } = store;
+    const { state, dispatch } = store;
     if (!state.info || !state.teacher || !state.manager) return;
     await state.manager?.join({
       camera: state.teacher.videoEnabled,
@@ -50,21 +115,22 @@ const actions: ActionTree<TeacherRoomState, any> = {
     const eventHandler = useTeacherRoomWSHandler(store);
     state.manager?.registerEventHandler(eventHandler);
     const agoraEventHandler: AgoraEventHandler = {
-      onUserPublished: (user, mediaType) => {
-        console.log(user, mediaType);
+      onUserPublished: (_user, _mediaType) => {
+        dispatch("updateAudioAndVideoFeed", {});
+      },
+      onUserUnPublished: (user, mediaType) => {
+        dispatch("userUnPublished", {
+          user,
+          mediaType,
+        });
+      },
+      onException: (payload: any) => {
+        Logger.error("Exception", payload);
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
-  async initClassRoom(
-    { commit },
-    payload: {
-      classId: string;
-      userId: string;
-      userName: string;
-      role: string;
-    }
-  ) {
+  async initClassRoom({ commit }, payload: InitClassRoomPayload) {
     commit("setUser", {
       id: payload.userId,
       name: payload.userName,
@@ -83,30 +149,21 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setRoomInfo", roomResponse.data);
   },
 
-  setStudentAudio(
-    { state, commit },
-    payload: { studentId: string; audioEnabled: boolean }
-  ) {
+  setStudentAudio({ state, commit }, payload: SetStudentAudioPayload) {
     commit("setStudentAudio", payload);
     state.manager?.WSClient.sendRequestMuteStudentAudio(
       payload.studentId,
       !payload.audioEnabled
     );
   },
-  setStudentVideo(
-    { state, commit },
-    payload: { studentId: string; videoEnabled: boolean }
-  ) {
+  setStudentVideo({ state, commit }, payload: SetStudentVideoPayload) {
     commit("setStudentVideo", payload);
     state.manager?.WSClient.sendRequestMuteStudentVideo(
       payload.studentId,
       !payload.videoEnabled
     );
   },
-  setStudentBadge(
-    { commit, state },
-    payload: { studentId: string; badge: number }
-  ) {
+  setStudentBadge({ commit, state }, payload: SetStudentBadgePayload) {
     commit("setStudentBadge", payload);
     state.manager?.WSClient.sendRequestSetStudentBadge(
       payload.studentId,
@@ -114,18 +171,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
     );
   },
 
-  setTeacherAudio(
-    { state, commit },
-    payload: { teacherId: string; audioEnabled: boolean }
-  ) {
+  setTeacherAudio({ state, commit }, payload: SetTeacherAudioPayload) {
     commit("setTeacherAudio", payload);
     state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
   },
 
-  setTeacherVideo(
-    { state, commit },
-    payload: { teacherId: string; videoEnabled: boolean }
-  ) {
+  setTeacherVideo({ state, commit }, payload: SetTeacherVideoPayload) {
     commit("setTeacherVideo", payload);
     state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
   },
@@ -145,16 +196,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("unmuteAllStudents", {});
     state.manager?.WSClient.sendRequestMuteAllStudentAudio(false);
   },
-  studentJoinned(store, payload: { studentId: string }) {
+  studentJoinned(store, payload: OnStudentJoinedPayload) {
     store.commit("studentJoinned", payload);
   },
-  studentLeftClass(store, payload: { studentId: string }) {
+  studentLeftClass(store, payload: OnStudentLeftPayload) {
     store.commit("studentLeftClass", payload);
   },
-  studentLeaving(store, payload: { studentId: string }) {
+  studentLeaving(store, payload: OnStudentLeavingPayload) {
     store.commit("studentLeaving", payload);
   },
-  addGlobalAudio({ commit, state }, payload: { studentId: string }) {
+  addGlobalAudio({ commit, state }, payload: AddGlobalAudioPayload) {
     commit("addGlobalAudio", payload);
     state.manager?.WSClient.sendRequestAddGlobalAudio(payload.studentId);
   },
@@ -162,7 +213,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("clearGlobalAudio", payload);
     state.manager?.WSClient.sendRequestClearGlobalAudio();
   },
-  addStudentAudio({ commit, state }, payload: { studentId: string }) {
+  addStudentAudio({ commit, state }, payload: AddLocalAudioPayload) {
     commit("addStudentAudio", payload);
     state.manager?.WSClient.sendRequestAddStudentAudio(payload.studentId);
   },

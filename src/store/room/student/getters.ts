@@ -1,4 +1,3 @@
-import { BaseRoomManager } from "@/manager/room/base.manager";
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
@@ -7,6 +6,9 @@ import { ClassView, StudentState, TeacherState } from "../interface";
 import { StudentRoomState } from "./state";
 
 const getters: GetterTree<StudentRoomState, any> = {
+  globalAudios(state: StudentRoomState): Array<string> {
+    return state.globalAudios;
+  },
   error(state: StudentRoomState): GLError | null {
     return state.error;
   },

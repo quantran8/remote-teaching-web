@@ -9,11 +9,13 @@ export enum AppView {
 export interface AppState {
   layout: LayoutType;
   appView: AppView;
+  toast: string;
 }
 
 const state: AppState = {
   layout: "main",
   appView: AppView.Blank,
+  toast: "",
 };
 
 export default state;

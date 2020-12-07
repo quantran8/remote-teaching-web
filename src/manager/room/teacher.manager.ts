@@ -1,5 +1,6 @@
 import { AgoraClient } from "@/agora";
 import { TeacherWSClient } from "@/ws";
+import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
 import { BaseRoomManager, RoomOptions } from "./base.manager";
 
 export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
@@ -38,5 +39,11 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     global: Array<{ studentId: string; tag: string }>
   ) {
     return this.agoraClient.subcriseRemoteUsers(local, global);
+  }
+  unsubcriseRemoteUser(payload: {
+    user: IAgoraRTCRemoteUser;
+    mediaType: "video" | "audio";
+  }) {
+    return this.agoraClient.unsubcriseRemoteUser(payload);
   }
 }
