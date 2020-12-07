@@ -145,6 +145,17 @@ const mutations: MutationTree<TeacherRoomState> = {
     );
     if (student) student.status = InClassStatus.LEAVING;
   },
+
+  setGlobalAudios(state: TeacherRoomState, payload: Array<string>) {
+    state.globalAudios = state.students
+      .filter((st) => payload.indexOf(st.id) !== -1)
+      .map((s) => {
+        return {
+          studentId: s.id,
+          tag: `${s.index + 1}`,
+        };
+      });
+  },
   addGlobalAudio(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(
       (student) => student.id === payload.studentId
@@ -173,6 +184,16 @@ const mutations: MutationTree<TeacherRoomState> = {
         });
       }
     }
+  },
+  setLocalAudios(state: TeacherRoomState, payload: Array<string>) {
+    state.localAudios = state.students
+      .filter((st) => payload.indexOf(st.id) !== -1)
+      .map((s) => {
+        return {
+          studentId: s.id,
+          tag: `${s.index + 1}`,
+        };
+      });
   },
   clearStudentAudio(state: TeacherRoomState, payload: any) {
     state.localAudios = [];

@@ -115,21 +115,29 @@ export class AgoraClient implements AgoraClientSDK {
     const userUID = "" + user.uid;
     if (mediaType === "video") {
       if (!this.subscribedVideos.find((ele) => ele.userId === userUID)) {
-        const remoteTrack = await this.client.subscribe(user, mediaType);
-        remoteTrack.play(userUID);
-        this.subscribedVideos.push({
-          userId: userUID,
-          track: remoteTrack,
-        });
+        try {
+          const remoteTrack = await this.client.subscribe(user, mediaType);
+          remoteTrack.play(userUID);
+          this.subscribedVideos.push({
+            userId: userUID,
+            track: remoteTrack,
+          });
+        } catch (err) {
+          console.log("Error", err);
+        }
       }
     } else {
       if (!this.subscribedAudios.find((ele) => ele.userId === userUID)) {
-        const remoteTrack = await this.client.subscribe(user, mediaType);
-        remoteTrack.play();
-        this.subscribedAudios.push({
-          userId: userUID,
-          track: remoteTrack,
-        });
+        try {
+          const remoteTrack = await this.client.subscribe(user, mediaType);
+          remoteTrack.play();
+          this.subscribedAudios.push({
+            userId: userUID,
+            track: remoteTrack,
+          });
+        } catch (err) {
+          console.log("Error", err);
+        }
       }
     }
   }
@@ -292,11 +300,6 @@ export class AgoraClient implements AgoraClientSDK {
       if (enable) await this.subscribeUser(user, "audio");
       else await this.unsubscribeUser(user, "audio");
     }
-    console.log(
-      remoteUsers.map((ele) => ele.uid),
-      this.subscribedVideos,
-      this.subscribedAudios
-    );
   }
   async studentSubcriseRemoteUsers(global: Array<string>) {
     const remoteUsers = this.getRemoteUsers();
@@ -307,11 +310,6 @@ export class AgoraClient implements AgoraClientSDK {
       if (enable) await this.subscribeUser(user, "audio");
       else await this.unsubscribeUser(user, "audio");
     }
-    console.log(
-      remoteUsers.map((ele) => ele.uid),
-      this.subscribedVideos,
-      this.subscribedAudios
-    );
   }
   async unsubcriseRemoteUser(payload: {
     user: IAgoraRTCRemoteUser;

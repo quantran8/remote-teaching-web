@@ -51,7 +51,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async updateAudioAndVideoFeed({ state }, payload: any) {
     const { globalAudios } = state;
-    state.manager?.subcriseRemoteUsers(globalAudios);
+    await state.manager?.subcriseRemoteUsers(globalAudios);
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;

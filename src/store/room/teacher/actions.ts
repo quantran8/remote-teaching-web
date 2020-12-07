@@ -70,12 +70,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: any) {
     if (state.info) {
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
-      // await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
     }
     commit("endClass", payload);
   },
-  setClassView({ commit, state }, payload: SetClassViewPayload) {
-    commit("setClassView", payload);
+  setClassView({ state }, payload: SetClassViewPayload) {
     state.manager?.WSClient.sendRequestSetFocusTab(
       ValueOfClassView(payload.classView)
     );
@@ -97,7 +95,18 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager } = state;
-    manager?.subcriseRemoteUsers(localAudios, globalAudios);
+    await manager?.subcriseRemoteUsers(localAudios, globalAudios);
+    const remoteAudios = state.manager?.agoraClient.subscribedAudios;
+    if (remoteAudios) {
+      const remoteAudioIds = remoteAudios.map((ele) => ele.userId);
+      const remoteAudioStudents = state.students
+        .filter((student) => {
+          return remoteAudioIds.indexOf(student.id) !== -1;
+        })
+        .map((st) => st.name);
+
+      console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
+    }
   },
   async leaveRoom({ state }, _payload: any) {
     return state.manager?.close();
@@ -163,8 +172,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       !payload.videoEnabled
     );
   },
-  setStudentBadge({ commit, state }, payload: SetStudentBadgePayload) {
-    commit("setStudentBadge", payload);
+  setStudentBadge({ state }, payload: SetStudentBadgePayload) {
+    // commit("setStudentBadge", payload);
     state.manager?.WSClient.sendRequestSetStudentBadge(
       payload.studentId,
       payload.badge

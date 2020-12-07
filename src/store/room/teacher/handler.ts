@@ -1,6 +1,7 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
+import { ClassViewFromValue } from "../interface";
 import { TeacherRoomState } from "./state";
 
 export const useTeacherRoomWSHandler = ({
@@ -81,19 +82,24 @@ export const useTeacherRoomWSHandler = ({
     onTeacherDisconnect: (payload: any) => {
       console.log(payload);
     },
-    onTeacherSetFocusTab: (payload: any) => {
-      console.log(payload);
+    onTeacherSetFocusTab: (payload: RoomModel) => {
+      commit("setClassView", {
+        classView: ClassViewFromValue(payload.focusTab),
+      });
     },
-    onTeacherUpdateGlobalStudentAudio: (payload: any) => {
-      console.log(payload);
+    onTeacherUpdateGlobalStudentAudio: (payload: Array<string>) => {
+      commit("setGlobalAudios", payload);
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherUpdateStudentAudio: (payload: Array<string>) => {
-      console.log(payload);
+      commit("setLocalAudios", payload);
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentBadge: (payload: any) => {
-      console.log(payload);
+    onTeacherUpdateStudentBadge: (payload: StudentModel) => {
+      commit("setStudentBadge", {
+        studentId: payload.id,
+        badge: payload.badge,
+      });
     },
   };
   return handler;
