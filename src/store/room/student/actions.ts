@@ -50,8 +50,22 @@ const actions: ActionTree<StudentRoomState, any> = {
     state.manager?.unsubcriseRemoteUser(payload);
   },
   async updateAudioAndVideoFeed({ state }, payload: any) {
-    const { globalAudios } = state;
-    await state.manager?.subcriseRemoteUsers(globalAudios);
+    const { globalAudios, teacher, manager, students } = state;
+    if (teacher && manager) {
+      await manager?.subcriseRemoteUsers(globalAudios, teacher.id);
+      const remoteAudios = manager?.agoraClient.subscribedAudios.map(
+        (s) => s.userId
+      );
+      if (remoteAudios) {
+        const remoteAudioStudents = students
+          .filter((student) => {
+            return remoteAudios.indexOf(student.id) !== -1;
+          })
+          .map((st) => st.name);
+        remoteAudioStudents.push(teacher.name);
+        console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
+      }
+    }
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
@@ -75,6 +89,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: (user, mediaType) => {
+        console.log("User UnPublished", user.uid);
         dispatch("userUnPublished", {
           user,
           mediaType,

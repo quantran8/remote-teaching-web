@@ -307,13 +307,16 @@ export class AgoraClient implements AgoraClientSDK {
       }
     }
   }
-  async studentSubcriseRemoteUsers(global: Array<string>) {
+  async studentSubcriseRemoteUsers(global: Array<string>, teacherId: string) {
     const remoteUsers = this.getRemoteUsers();
     for (const user of remoteUsers) {
       try {
         await this.subscribeUser(user, "video");
         const userId = user.uid + "";
-        const enable = global.length === 0 || global.indexOf(userId) !== -1;
+        const enable =
+          userId === teacherId ||
+          global.length === 0 ||
+          global.indexOf(userId) !== -1;
         if (enable) await this.subscribeUser(user, "audio");
         else await this.unsubscribeUser(user, "audio");
       } catch (err) {

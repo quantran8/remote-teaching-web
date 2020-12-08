@@ -13,8 +13,14 @@ export const useStudentRoomHandler = (
       commit("setRoomInfo", payload);
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentJoinClass: (payload: any) => {
-      console.log(payload);
+    onStudentJoinClass: (_payload: any) => {
+      dispatch("updateAudioAndVideoFeed", {});
+    },
+    onStudentLeave: (_payload: any) => {
+      dispatch("updateAudioAndVideoFeed", {});
+    },
+    onStudentDisconnected: (_payload: any) => {
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
       console.log(payload);
@@ -25,13 +31,6 @@ export const useStudentRoomHandler = (
     onStudentMuteVideo: (payload: StudentModel) => {
       console.log(payload);
     },
-    onStudentLeave: (payload: any) => {
-      console.log(payload);
-    },
-    onStudentDisconnected: (payload: any) => {
-      console.log(payload);
-    },
-
     onTeacherJoinClass: (payload: any) => {
       console.log(payload);
     },
@@ -93,8 +92,9 @@ export const useStudentRoomHandler = (
     onTeacherSetFocusTab: (payload: any) => {
       console.log(payload);
     },
-    onTeacherUpdateGlobalStudentAudio: (payload: any) => {
-      console.log(payload);
+    onTeacherUpdateGlobalStudentAudio: async (payload: Array<string>) => {
+      commit("setGlobalAudios", payload);
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherUpdateStudentAudio: (payload: any) => {
       console.log(payload);

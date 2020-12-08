@@ -1,7 +1,11 @@
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import {
+  LessonService,
+  RemoteTeachingService,
+  TeacherGetRoomResponse,
+} from "@/services";
 import { ActionTree } from "vuex";
 import { ClassView, ValueOfClassView } from "../interface";
 import { TeacherRoomState } from "./state";
@@ -96,17 +100,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager } = state;
     await manager?.subcriseRemoteUsers(localAudios, globalAudios);
-    // const remoteAudios = manager?.agoraClient.subscribedAudios.map(
-    //   (s) => s.userId
-    // );
-    // if (remoteAudios) {
-    //   const remoteAudioStudents = students
-    //     .filter((student) => {
-    //       return remoteAudios.indexOf(student.id) !== -1;
-    //     })
-    //     .map((st) => st.name);
-    //   console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
-    // }
   },
   async leaveRoom({ state }, _payload: any) {
     return state.manager?.close();
@@ -144,9 +137,26 @@ const actions: ActionTree<TeacherRoomState, any> = {
       id: payload.userId,
       name: payload.userName,
     });
-
-    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
-    if (!roomResponse) return;
+    let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
+    if (!roomResponse) {
+      // start class room
+      const lessons = await LessonService.getLessonByUnit(11);
+      let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
+      if (!lesson) lesson = lessons[0];
+      const createRoomResponse = await RemoteTeachingService.teacherStartClassRoom(
+        payload.classId,
+        lesson.id
+      );
+      if (createRoomResponse) {
+        roomResponse = await RemoteTeachingService.getActiveClassRoom();
+        if (!roomResponse) {
+          // Cannot start class room
+          return;
+        }
+      } else {
+        return;
+      }
+    }
     const roomInfo: RoomModel = roomResponse.data;
     if (!roomInfo || roomInfo.classId !== payload.classId) {
       commit("setError", {

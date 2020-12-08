@@ -1,4 +1,5 @@
 import { computed, defineComponent, ref, watch } from "vue";
+import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 export default defineComponent({
   components: { StudentBadge },
@@ -27,6 +28,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const store = useStore();
     const isContextMenuVisible = ref(false);
 
     const audioIcon = computed(() =>
@@ -40,27 +42,6 @@ export default defineComponent({
       isContextMenuVisible.value = false;
     });
 
-    const toggleAudio = () => {
-      // store.dispatch("teacherRoom/setStudentAudio", {
-      //   studentId: props.id,
-      //   audioEnabled: !props.audioEnabled,
-      // });
-    };
-
-    const toggleVideo = () => {
-      // store.dispatch("teacherRoom/setStudentVideo", {
-      //   studentId: props.id,
-      //   videoEnabled: !props.videoEnabled,
-      // });
-    };
-
-    const addABadge = () => {
-      // store.dispatch("teacherRoom/setStudentBadge", {
-      //   studentId: props.id,
-      //   badge: props.badge + 1,
-      // });
-    };
-
     const toggleContextMenu = () => {
       isContextMenuVisible.value = !isContextMenuVisible.value;
     };
@@ -68,15 +49,19 @@ export default defineComponent({
       isContextMenuVisible.value = false;
     };
 
+    const isAudioHightlight = computed(() => {
+      const enableAudios: Array<string> =
+        store.getters["studentRoom/globalAudios"];
+      return props.id && enableAudios.indexOf(props.id) !== -1;
+    });
+
     return {
       audioIcon,
       videoIcon,
-      toggleAudio,
-      toggleVideo,
-      addABadge,
       isContextMenuVisible,
       toggleContextMenu,
       hideContextMenu,
+      isAudioHightlight,
     };
   },
 });

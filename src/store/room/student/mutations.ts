@@ -7,6 +7,9 @@ import { ClassView, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
+  setGlobalAudios(state: StudentRoomState, payload: Array<string>) {
+    state.globalAudios = payload;
+  },
   leaveRoom(state: StudentRoomState, _payload: any) {
     state.manager = undefined;
     state.info = undefined;

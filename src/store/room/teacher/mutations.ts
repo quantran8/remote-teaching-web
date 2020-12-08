@@ -29,6 +29,23 @@ const mutations: MutationTree<TeacherRoomState> = {
   setUser(state: TeacherRoomState, payload: UserModel) {
     state.user = payload;
   },
+  initClassRoom(state: TeacherRoomState, room: RoomModel) {
+    const role =
+      room.streamInfo.userId === room.teacher.id ? "host" : "audience";
+    if (!state.manager)
+      state.manager = new TeacherRoomManager({
+        agora: {
+          appId: room.streamInfo.appId,
+          webConfig: { mode: "rtc", codec: "vp8", role: role },
+          user: {
+            channel: room.streamInfo.chanelId,
+            username: room.streamInfo.userId,
+            token: room.streamInfo.token,
+            role,
+          },
+        },
+      });
+  },
   setRoomInfo(state: TeacherRoomState, room: RoomModel) {
     state.teacher = {
       id: room.teacher.id,
@@ -62,21 +79,6 @@ const mutations: MutationTree<TeacherRoomState> = {
         return { studentId: el.id, tag: `${el.index + 1}` };
       });
     state.info = room;
-    const role =
-      room.streamInfo.userId === room.teacher.id ? "host" : "audience";
-    if (!state.manager)
-      state.manager = new TeacherRoomManager({
-        agora: {
-          appId: room.streamInfo.appId,
-          webConfig: { mode: "rtc", codec: "vp8", role: role },
-          user: {
-            channel: room.streamInfo.chanelId,
-            username: room.streamInfo.userId,
-            token: room.streamInfo.token,
-            role,
-          },
-        },
-      });
   },
 
   setStudentAudio(

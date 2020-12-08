@@ -34,8 +34,8 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     this.agoraClient.setMicrophone(options);
   }
 
-  subcriseRemoteUsers(global: Array<string>) {
-    return this.agoraClient.studentSubcriseRemoteUsers(global);
+  subcriseRemoteUsers(global: Array<string>, teacherId: string) {
+    return this.agoraClient.studentSubcriseRemoteUsers(global,teacherId);
   }
 
   unsubcriseRemoteUser(payload: {
