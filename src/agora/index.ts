@@ -1,4 +1,3 @@
-import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -114,7 +113,10 @@ export class AgoraClient implements AgoraClientSDK {
     if (!user) return;
     const userUID = "" + user.uid;
     if (mediaType === "video") {
-      if (!this.subscribedVideos.find((ele) => ele.userId === userUID)) {
+      if (
+        this.subscribedVideos.find((ele) => ele.userId === userUID) ===
+        undefined
+      ) {
         try {
           const remoteTrack = await this.client.subscribe(user, mediaType);
           remoteTrack.play(userUID);
@@ -127,7 +129,10 @@ export class AgoraClient implements AgoraClientSDK {
         }
       }
     } else {
-      if (!this.subscribedAudios.find((ele) => ele.userId === userUID)) {
+      if (
+        this.subscribedAudios.find((ele) => ele.userId === userUID) ===
+        undefined
+      ) {
         try {
           const remoteTrack = await this.client.subscribe(user, mediaType);
           remoteTrack.play();
@@ -283,32 +288,37 @@ export class AgoraClient implements AgoraClientSDK {
     return this.client.remoteUsers;
   }
 
-  async subcriseRemoteUsers(
-    local: Array<{ studentId: string; tag: string }>,
-    global: Array<{ studentId: string; tag: string }>
-  ) {
+  async subcriseRemoteUsers(locals: Array<string>, globals: Array<string>) {
     const remoteUsers = this.getRemoteUsers();
     for (const user of remoteUsers) {
-      await this.subscribeUser(user, "video");
-      const userId = user.uid;
-      let enable: boolean = true;
-      if (local.length !== 0) {
-        enable = local.find((ele) => ele.studentId === userId) !== undefined;
-      } else if (global.length !== 0) {
-        enable = global.find((ele) => ele.studentId === userId) !== undefined;
+      try {
+        await this.subscribeUser(user, "video");
+        const userId = user.uid + "";
+        let enable: boolean = true;
+        if (locals.length > 0) {
+          enable = locals.indexOf(userId) !== -1;
+        } else if (globals.length > 0) {
+          enable = globals.indexOf(userId) !== -1;
+        }
+        if (enable) await this.subscribeUser(user, "audio");
+        else await this.unsubscribeUser(user, "audio");
+      } catch (err) {
+        console.log("subcriseRemoteUsers", err);
       }
-      if (enable) await this.subscribeUser(user, "audio");
-      else await this.unsubscribeUser(user, "audio");
     }
   }
   async studentSubcriseRemoteUsers(global: Array<string>) {
     const remoteUsers = this.getRemoteUsers();
     for (const user of remoteUsers) {
-      await this.subscribeUser(user, "video");
-      const userId = user.uid + "";
-      const enable = global.length === 0 || global.indexOf(userId) !== -1;
-      if (enable) await this.subscribeUser(user, "audio");
-      else await this.unsubscribeUser(user, "audio");
+      try {
+        await this.subscribeUser(user, "video");
+        const userId = user.uid + "";
+        const enable = global.length === 0 || global.indexOf(userId) !== -1;
+        if (enable) await this.subscribeUser(user, "audio");
+        else await this.unsubscribeUser(user, "audio");
+      } catch (err) {
+        console.log("studentSubcriseRemoteUsers", err);
+      }
     }
   }
   async unsubcriseRemoteUser(payload: {

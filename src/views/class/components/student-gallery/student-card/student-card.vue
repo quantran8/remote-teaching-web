@@ -11,7 +11,13 @@
           @click="toggleContextMenu"
           v-click-outside="hideContextMenu"
         />
-        <BaseButton class="media-button" @click="toggleAudio" draggable="true" @dragstart="onDragStart">
+        <BaseButton
+          class="media-button"
+          :class="{ hightlight: isAudioHightlight }"
+          @click="toggleAudio"
+          draggable="true"
+          @dragstart="onDragStart"
+        >
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
         <BaseButton class="media-button" @click="toggleVideo">

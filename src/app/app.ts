@@ -32,7 +32,6 @@ export default defineComponent({
           await dispatch("teacher/loadClasses", {
             teacherId: loginInfo.profile.sub,
           });
-          dispatch("teacher/loadClassRoom");
         }
         if (isParent) {
           dispatch("parent/setInfo", {

@@ -96,17 +96,17 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager } = state;
     await manager?.subcriseRemoteUsers(localAudios, globalAudios);
-    const remoteAudios = state.manager?.agoraClient.subscribedAudios;
-    if (remoteAudios) {
-      const remoteAudioIds = remoteAudios.map((ele) => ele.userId);
-      const remoteAudioStudents = state.students
-        .filter((student) => {
-          return remoteAudioIds.indexOf(student.id) !== -1;
-        })
-        .map((st) => st.name);
-
-      console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
-    }
+    // const remoteAudios = manager?.agoraClient.subscribedAudios.map(
+    //   (s) => s.userId
+    // );
+    // if (remoteAudios) {
+    //   const remoteAudioStudents = students
+    //     .filter((student) => {
+    //       return remoteAudios.indexOf(student.id) !== -1;
+    //     })
+    //     .map((st) => st.name);
+    //   console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
+    // }
   },
   async leaveRoom({ state }, _payload: any) {
     return state.manager?.close();
@@ -214,20 +214,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
   studentLeaving(store, payload: OnStudentLeavingPayload) {
     store.commit("studentLeaving", payload);
   },
-  addGlobalAudio({ commit, state }, payload: AddGlobalAudioPayload) {
-    commit("addGlobalAudio", payload);
+  addGlobalAudio({ state }, payload: AddGlobalAudioPayload) {
     state.manager?.WSClient.sendRequestAddGlobalAudio(payload.studentId);
   },
-  clearGlobalAudio({ commit, state }, payload: any) {
-    commit("clearGlobalAudio", payload);
+  clearGlobalAudio({ state }, _payload: any) {
     state.manager?.WSClient.sendRequestClearGlobalAudio();
   },
-  addStudentAudio({ commit, state }, payload: AddLocalAudioPayload) {
-    commit("addStudentAudio", payload);
+  addStudentAudio({ state }, payload: AddLocalAudioPayload) {
     state.manager?.WSClient.sendRequestAddStudentAudio(payload.studentId);
   },
-  clearStudentAudio({ commit, state }, payload: any) {
-    commit("clearStudentAudio", payload);
+  clearStudentAudio({ state }, _payload: any) {
     state.manager?.WSClient.sendRequestClearStudentAudio();
   },
 };

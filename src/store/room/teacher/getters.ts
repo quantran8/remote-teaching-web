@@ -5,6 +5,13 @@ import { ClassView, StudentState, TeacherState } from "../interface";
 import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
+  enableAudios(state: TeacherRoomState): Array<string> {
+    if (state.localAudios.length > 0)
+      return state.localAudios.map((s) => s.studentId);
+    else if (state.globalAudios.length > 0)
+      return state.globalAudios.map((s) => s.studentId);
+    return [];
+  },
   globalAudios(
     state: TeacherRoomState
   ): Array<{ studentId: string; tag: string }> {

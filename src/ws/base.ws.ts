@@ -112,18 +112,19 @@ export class GLSocketClient {
     return this._hubConnection?.stop();
   }
   async connect() {
-    if (this.isConnected) return;
-    return this.hubConnection
-      .start()
-      .then((res) => {
-        this._isConnected = true;
-        return res;
-      })
-      .catch((err) => {
-        this._isConnected = false;
-        Logger.error("=======WSError=======", err);
-        return err;
-      });
+    if (this.isConnected) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      this.hubConnection
+        .start()
+        .then((res) => {
+          this._isConnected = true;
+          resolve(res);
+        })
+        .catch((err) => {
+          this._isConnected = false;
+          reject(err);
+        });
+    });
   }
   async send(command: string, payload: any) {
     Logger.log("SEND", command, payload);

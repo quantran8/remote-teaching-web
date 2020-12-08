@@ -14,12 +14,9 @@ const actions: ActionTree<TeacherState, any> = {
   async loadClasses({ commit, state }: ActionContext<TeacherState, any>) {
     if (!state.info) return;
     const response = await TeacherService.getClasses(state.info.id);
+    const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     commit("setClasses", response.data);
-  },
-  async loadClassRoom({ commit, state }: ActionContext<TeacherState, any>) {
-    if (!state.info) return;
-    const response: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
-    commit("setClassRoom", response.data);
+    commit("setClassRoom", responseActive.data);
   },
 };
 

@@ -16,7 +16,6 @@ export default defineComponent({
       await store.dispatch("teacher/loadClasses", {
         teacherId: logginInfo.profile.sub,
       });
-      store.dispatch("teacher/loadClassRoom");
     }
   },
   setup() {
@@ -41,10 +40,16 @@ export default defineComponent({
       } catch (err) {
         if (err && err.body) {
           const responseError: {
-            Data: string;
-            Success: boolean;
+            data: {
+              Code: string;
+              Message: string;
+              Success: boolean;
+            };
+            success: boolean;
           } = err.body;
-          console.log(responseError);
+          if (responseError && !responseError.success) {
+            console.log("ERROR", responseError.data.Message);
+          }
         }
       }
     };

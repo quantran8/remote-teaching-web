@@ -41,6 +41,12 @@ export default defineComponent({
       props.videoEnabled ? "icon-video-on" : "icon-video-off"
     );
 
+    const isAudioHightlight = computed(() => {
+      const enableAudios: Array<string> =
+        store.getters["teacherRoom/enableAudios"];
+      return props.id && enableAudios.indexOf(props.id) !== -1;
+    });
+
     watch(props, () => {
       isContextMenuVisible.value = false;
     });
@@ -88,6 +94,7 @@ export default defineComponent({
       hideContextMenu,
       isNotJoinned,
       onDragStart,
+      isAudioHightlight,
     };
   },
 });

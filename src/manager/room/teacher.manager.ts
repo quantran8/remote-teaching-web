@@ -38,7 +38,10 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     local: Array<{ studentId: string; tag: string }>,
     global: Array<{ studentId: string; tag: string }>
   ) {
-    return this.agoraClient.subcriseRemoteUsers(local, global);
+    return this.agoraClient.subcriseRemoteUsers(
+      local.map((s) => s.studentId),
+      global.map((s) => s.studentId)
+    );
   }
   unsubcriseRemoteUser(payload: {
     user: IAgoraRTCRemoteUser;

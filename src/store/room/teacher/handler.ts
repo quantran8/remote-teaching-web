@@ -10,38 +10,38 @@ export const useTeacherRoomWSHandler = ({
   state,
 }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
-    onRoomInfo: (payload: RoomModel) => {
+    onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentJoinClass: (payload: StudentModel) => {
+    onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { studentId: payload.id });
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
       console.log(payload);
     },
-    onStudentMuteAudio: (payload: StudentModel) => {
+    onStudentMuteAudio: async (payload: StudentModel) => {
       commit("setStudentAudio", {
         studentId: payload.id,
         audioEnabled: !payload.isMuteAudio,
       });
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentMuteVideo: (payload: StudentModel) => {
+    onStudentMuteVideo: async (payload: StudentModel) => {
       commit("setStudentVideo", {
         studentId: payload.id,
         videoEnabled: !payload.isMuteVideo,
       });
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentLeave: (payload: StudentModel) => {
+    onStudentLeave: async (payload: StudentModel) => {
       commit("studentLeftClass", { studentId: payload.id });
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentDisconnected: (payload: StudentModel) => {
+    onStudentDisconnected: async (payload: StudentModel) => {
       commit("studentLeftClass", { studentId: payload.id });
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
 
     onTeacherJoinClass: (payload: any) => {
@@ -60,21 +60,21 @@ export const useTeacherRoomWSHandler = ({
         enable: !payload.isMuteVideo,
       });
     },
-    onTeacherMuteStudentVideo: (payload: any) => {
+    onTeacherMuteStudentVideo: async (payload: any) => {
       console.log(payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherMuteStudentAudio: (payload: any) => {
+    onTeacherMuteStudentAudio: async (payload: any) => {
       console.log(payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherMuteAllStudentVideo: (payload: any) => {
+    onTeacherMuteAllStudentVideo: async (payload: any) => {
       console.log(payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherMuteAllStudentAudio: (payload: any) => {
+    onTeacherMuteAllStudentAudio: async (payload: any) => {
       console.log(payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: (payload: any) => {
       console.log(payload);
@@ -87,13 +87,13 @@ export const useTeacherRoomWSHandler = ({
         classView: ClassViewFromValue(payload.focusTab),
       });
     },
-    onTeacherUpdateGlobalStudentAudio: (payload: Array<string>) => {
+    onTeacherUpdateGlobalStudentAudio: async (payload: Array<string>) => {
       commit("setGlobalAudios", payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentAudio: (payload: Array<string>) => {
+    onTeacherUpdateStudentAudio: async (payload: Array<string>) => {
       commit("setLocalAudios", payload);
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherUpdateStudentBadge: (payload: StudentModel) => {
       commit("setStudentBadge", {

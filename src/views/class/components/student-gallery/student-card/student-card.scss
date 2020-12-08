@@ -38,6 +38,12 @@ $border-radius: 4px;
       .media-button {
         margin-top: 2 * $margin;
       }
+      .hightlight {
+        border-color: cyan;
+        .rt-icon::before {
+          color: cyan;
+        }
+      }
     }
     .badge {
       position: absolute;
