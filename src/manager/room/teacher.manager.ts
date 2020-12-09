@@ -49,4 +49,8 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
   }) {
     return this.agoraClient.unsubcriseRemoteUser(payload);
   }
+
+  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
+    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+  }
 }

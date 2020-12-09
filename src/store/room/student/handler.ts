@@ -43,25 +43,29 @@ export const useStudentRoomHandler = (
     onTeacherMuteVideo: (payload: any) => {
       console.log(payload);
     },
-    onTeacherMuteStudentVideo: (payload: StudentModel) => {
-      commit("setStudentVideo", {
+    onTeacherMuteStudentVideo: async (payload: StudentModel) => {
+      await dispatch("setStudentVideo", {
         studentId: payload.id,
         videoEnabled: !payload.isMuteVideo,
       });
-      const message = `Your video has been turn ${
-        payload.isMuteVideo ? "off" : "on"
-      } by your teacher!`;
-      store.dispatch("setToast", message, { root: true });
+      if (payload.id === state.student?.id) {
+        const message = `Your video has been turn ${
+          payload.isMuteVideo ? "off" : "on"
+        } by your teacher!`;
+        store.dispatch("setToast", message, { root: true });
+      }
     },
-    onTeacherMuteStudentAudio: (payload: StudentModel) => {
-      commit("setStudentAudio", {
+    onTeacherMuteStudentAudio: async (payload: StudentModel) => {
+      await dispatch("setStudentAudio", {
         studentId: payload.id,
         audioEnabled: !payload.isMuteAudio,
       });
-      const message = `Your microphone has been turn ${
-        payload.isMuteAudio ? "off" : "on"
-      } by your teacher!`;
-      store.dispatch("setToast", message, { root: true });
+      if (payload.id === state.student?.id) {
+        const message = `Your microphone has been turn ${
+          payload.isMuteAudio ? "off" : "on"
+        } by your teacher!`;
+        store.dispatch("setToast", message, { root: true });
+      }
     },
     onTeacherMuteAllStudentVideo: (payload: Array<StudentModel>) => {
       for (const student of payload) {

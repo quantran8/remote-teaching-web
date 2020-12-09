@@ -132,10 +132,7 @@ export class GLSocketClient {
       console.log("NOT CONNECTED");
       return;
     }
-
-    return this.hubConnection
-      .send(command, payload)
-      .catch((err) => Logger.error("=======WSError=======", err));
+    return this.hubConnection.send(command, payload);
   }
 
   registerEventHandler(handler: WSEventHandler) {

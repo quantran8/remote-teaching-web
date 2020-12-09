@@ -7,7 +7,7 @@ import {
   TeacherGetRoomResponse,
 } from "@/services";
 import { ActionTree } from "vuex";
-import { ClassView, ValueOfClassView } from "../interface";
+import { ClassView, InClassStatus, ValueOfClassView } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
@@ -98,8 +98,20 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.unsubcriseRemoteUser(payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, localAudios, manager } = state;
-    await manager?.subcriseRemoteUsers(localAudios, globalAudios);
+    const { globalAudios, localAudios, manager, students } = state;
+    if (!manager) return;
+    const cameras = students
+      .filter((s) => s.videoEnabled && s.status === InClassStatus.JOINED)
+      .map((s) => s.id);
+    let audios = students
+      .filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED)
+      .map((s) => s.id);
+    if (localAudios.length > 0) {
+      audios = localAudios.map((s) => s.studentId);
+    } else if (globalAudios.length > 0) {
+      audios = globalAudios.map((s) => s.studentId);
+    }
+    return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
   async leaveRoom({ state }, _payload: any) {
     return state.manager?.close();
@@ -168,14 +180,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setRoomInfo", roomResponse.data);
   },
 
-  setStudentAudio({ state, commit }, payload: SetStudentAudioPayload) {
-    commit("setStudentAudio", payload);
-    state.manager?.WSClient.sendRequestMuteStudentAudio(
+  async setStudentAudio({ state, commit }, payload: SetStudentAudioPayload) {
+    await state.manager?.WSClient.sendRequestMuteStudentAudio(
       payload.studentId,
       !payload.audioEnabled
     );
+    commit("setStudentAudio", payload);
   },
-  setStudentVideo({ state, commit }, payload: SetStudentVideoPayload) {
+  async setStudentVideo({ state, commit }, payload: SetStudentVideoPayload) {
     commit("setStudentVideo", payload);
     state.manager?.WSClient.sendRequestMuteStudentVideo(
       payload.studentId,

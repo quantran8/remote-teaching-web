@@ -5,7 +5,6 @@
         v-for="student in students"
         :key="student.id"
         class="student-card"
-        :class="{ 'item-active': student.index == 6 }"
         :name="student.name"
         :id="student.id"
         :index="student.index"

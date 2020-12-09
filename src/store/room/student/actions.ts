@@ -10,6 +10,7 @@ import {
 } from "@/services";
 import { Logger } from "@/utils/logger";
 import { ActionTree } from "vuex";
+import { InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 
@@ -50,22 +51,44 @@ const actions: ActionTree<StudentRoomState, any> = {
     state.manager?.unsubcriseRemoteUser(payload);
   },
   async updateAudioAndVideoFeed({ state }, payload: any) {
-    const { globalAudios, teacher, manager, students } = state;
-    if (teacher && manager) {
-      await manager?.subcriseRemoteUsers(globalAudios, teacher.id);
-      const remoteAudios = manager?.agoraClient.subscribedAudios.map(
-        (s) => s.userId
-      );
-      if (remoteAudios) {
-        const remoteAudioStudents = students
-          .filter((student) => {
-            return remoteAudios.indexOf(student.id) !== -1;
-          })
-          .map((st) => st.name);
-        remoteAudioStudents.push(teacher.name);
-        console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
+    // const { globalAudios, teacher, manager, students } = state;
+    // if (teacher && manager) {
+    //   await manager?.subcriseRemoteUsers(globalAudios, teacher.id);
+    //   const remoteAudios = manager?.agoraClient.subscribedAudios.map(
+    //     (s) => s.userId
+    //   );
+    //   if (remoteAudios) {
+    //     const remoteAudioStudents = students
+    //       .filter((student) => {
+    //         return remoteAudios.indexOf(student.id) !== -1;
+    //       })
+    //       .map((st) => st.name);
+    //     remoteAudioStudents.push(teacher.name);
+    //     console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
+    //   }
+    // }
+
+    const { globalAudios, manager, students, teacher } = state;
+    if (!manager) return;
+    const cameras = students
+      .filter((s) => s.videoEnabled && s.status === InClassStatus.JOINED)
+      .map((s) => s.id);
+    let audios = students
+      .filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED)
+      .map((s) => s.id);
+    if (globalAudios.length > 0) {
+      audios = globalAudios;
+    }
+    if (teacher) {
+      if (teacher.videoEnabled && teacher.status === InClassStatus.JOINED) {
+        cameras.push(teacher.id);
+      }
+      if (teacher.audioEnabled && teacher.status === InClassStatus.JOINED) {
+        audios.push(teacher.id);
       }
     }
+
+    return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
@@ -121,20 +144,27 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setClasses", response.data);
   },
 
-  setStudentAudio(
+  async setStudentAudio(
     { commit, state },
     payload: { studentId: string; audioEnabled: boolean }
   ) {
+    if (payload.studentId === state.student?.id) {
+      await state.manager?.setMicrophone({ enable: payload.audioEnabled });
+      state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
+    }
     commit("setStudentAudio", payload);
-    state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
   },
-  setStudentVideo(
+  async setStudentVideo(
     { state, commit },
     payload: { studentId: string; videoEnabled: boolean }
   ) {
+    if (payload.studentId === state.student?.id) {
+      await state.manager?.setCamera({ enable: payload.videoEnabled });
+      state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
+    }
     commit("setStudentVideo", payload);
-    state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
   },
+
   setStudentBadge(store, payload: { studentId: string; badge: number }) {
     store.commit("setStudentBadge", payload);
   },

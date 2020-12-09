@@ -28,14 +28,14 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   }
 
   setCamera(options: { enable: boolean }) {
-    this.agoraClient.setCamera(options);
+    return this.agoraClient.setCamera(options);
   }
   setMicrophone(options: { enable: boolean }) {
-    this.agoraClient.setMicrophone(options);
+    return this.agoraClient.setMicrophone(options);
   }
 
   subcriseRemoteUsers(global: Array<string>, teacherId: string) {
-    return this.agoraClient.studentSubcriseRemoteUsers(global,teacherId);
+    return this.agoraClient.studentSubcriseRemoteUsers(global, teacherId);
   }
 
   unsubcriseRemoteUser(payload: {
@@ -43,6 +43,10 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     mediaType: "video" | "audio";
   }) {
     return this.agoraClient.unsubcriseRemoteUser(payload);
+  }
+
+  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
+    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
   }
 
   async close() {
