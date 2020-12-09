@@ -1,7 +1,12 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GetterTree } from "vuex";
-import { ClassView, StudentState, TeacherState } from "../interface";
+import {
+  ClassView,
+  InClassStatus,
+  StudentState,
+  TeacherState,
+} from "../interface";
 import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
@@ -47,13 +52,19 @@ const getters: GetterTree<TeacherRoomState, any> = {
     return state.classView === ClassView.GALLERY;
   },
   isAllVideoHidden(state: TeacherRoomState) {
-    for (const student of state.students) {
+    const allStudents = state.students.filter(
+      (s) => s.status === InClassStatus.JOINED
+    );
+    for (const student of allStudents) {
       if (student.videoEnabled) return false;
     }
     return true;
   },
   isAllAudioMuted(state: TeacherRoomState) {
-    for (const student of state.students) {
+    const allStudents = state.students.filter(
+      (s) => s.status === InClassStatus.JOINED
+    );
+    for (const student of allStudents) {
       if (student.audioEnabled) return false;
     }
     return true;

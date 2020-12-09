@@ -12,7 +12,6 @@ import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
-import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
 
 interface InitClassRoomPayload {
   classId: string;
@@ -88,15 +87,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setError(store, payload: GLError | null) {
     store.commit("setError", payload);
   },
-  async userUnPublished(
-    { state },
-    payload: {
-      user: IAgoraRTCRemoteUser;
-      mediaType: "video" | "audio";
-    }
-  ) {
-    state.manager?.unsubcriseRemoteUser(payload);
-  },
+
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager, students } = state;
     if (!manager) return;
@@ -132,11 +123,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: (user, mediaType) => {
-        dispatch("userUnPublished", {
-          user,
-          mediaType,
-        });
+      onUserUnPublished: (_payload) => {
+        dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
         Logger.error("Exception", payload);

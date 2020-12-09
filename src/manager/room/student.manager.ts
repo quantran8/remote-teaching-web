@@ -1,6 +1,5 @@
 import { AgoraClient } from "@/agora";
 import { StudentWSClient } from "@/ws";
-import { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
 import { BaseRoomManager, RoomOptions } from "./base.manager";
 
 export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
@@ -25,28 +24,6 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
       throw new Error("Missing Params");
     await this.WSClient.connect();
     await this.agoraClient.joinRTCRoom(options);
-  }
-
-  setCamera(options: { enable: boolean }) {
-    return this.agoraClient.setCamera(options);
-  }
-  setMicrophone(options: { enable: boolean }) {
-    return this.agoraClient.setMicrophone(options);
-  }
-
-  subcriseRemoteUsers(global: Array<string>, teacherId: string) {
-    return this.agoraClient.studentSubcriseRemoteUsers(global, teacherId);
-  }
-
-  unsubcriseRemoteUser(payload: {
-    user: IAgoraRTCRemoteUser;
-    mediaType: "video" | "audio";
-  }) {
-    return this.agoraClient.unsubcriseRemoteUser(payload);
-  }
-
-  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
-    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
   }
 
   async close() {

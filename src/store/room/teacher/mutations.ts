@@ -117,16 +117,24 @@ const mutations: MutationTree<TeacherRoomState> = {
   },
 
   hideAllStudents(state: TeacherRoomState) {
-    state.students.forEach((student) => (student.videoEnabled = false));
+    state.students
+      .filter((s) => s.status === InClassStatus.JOINED)
+      .forEach((student) => (student.videoEnabled = false));
   },
   showAllStudents(state: TeacherRoomState) {
-    state.students.forEach((student) => (student.videoEnabled = true));
+    state.students
+      .filter((s) => s.status === InClassStatus.JOINED)
+      .forEach((student) => (student.videoEnabled = true));
   },
   muteAllStudents(state: TeacherRoomState) {
-    state.students.forEach((student) => (student.audioEnabled = false));
+    state.students
+      .filter((s) => s.status === InClassStatus.JOINED)
+      .forEach((student) => (student.audioEnabled = false));
   },
   unmuteAllStudents(state: TeacherRoomState) {
-    state.students.forEach((student) => (student.audioEnabled = true));
+    state.students
+      .filter((s) => s.status === InClassStatus.JOINED)
+      .forEach((student) => (student.audioEnabled = true));
   },
   studentJoinned(state: TeacherRoomState, payload: { studentId: string }) {
     const student = state.students.find(

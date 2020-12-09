@@ -1,7 +1,8 @@
-import { StudentModel } from "@/models";
+import { RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
+import { InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 export const useStudentRoomHandler = (
@@ -9,44 +10,76 @@ export const useStudentRoomHandler = (
 ): WSEventHandler => {
   const { commit, dispatch, state } = store;
   const handler = {
-    onRoomInfo: (payload: any) => {
+    onRoomInfo: (payload: RoomModel) => {
       commit("setRoomInfo", payload);
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentJoinClass: (_payload: any) => {
+    onStudentJoinClass: (payload: StudentModel) => {
+      commit("setStudentStatus", {
+        id: payload.id,
+        status: payload.connectionStatus,
+      });
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentLeave: (_payload: any) => {
+    onStudentLeave: (payload: StudentModel) => {
+      commit("setStudentStatus", {
+        id: payload.id,
+        status: payload.connectionStatus,
+      });
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentDisconnected: (_payload: any) => {
+    onStudentDisconnected: (payload: StudentModel) => {
+      commit("setStudentStatus", {
+        id: payload.id,
+        status: payload.connectionStatus,
+      });
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentStreamConnect: (payload: any) => {
-      console.log(payload);
+    onStudentStreamConnect: (_payload: any) => {
+      console.log(_payload);
     },
     onStudentMuteAudio: (payload: StudentModel) => {
-      console.log(payload);
+      commit("setStudentAudio", {
+        id: payload.id,
+        enable: !payload.isMuteAudio,
+      });
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentMuteVideo: (payload: StudentModel) => {
-      console.log(payload);
+      commit("setStudentVideo", {
+        id: payload.id,
+        enable: !payload.isMuteVideo,
+      });
+      dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherJoinClass: (payload: any) => {
-      console.log(payload);
+    onTeacherJoinClass: (payload: TeacherModel) => {
+      commit("setTeacherStatus", {
+        id: payload.id,
+        status: payload.connectionStatus,
+      });
+      dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherStreamConnect: (payload: any) => {
-      console.log(payload);
+    onTeacherStreamConnect: (_payload: any) => {
+      dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherMuteAudio: (payload: any) => {
-      console.log(payload);
+    onTeacherMuteAudio: (payload: TeacherModel) => {
+      commit("setTeacherAudio", {
+        id: payload.id,
+        enable: !payload.isMuteAudio,
+      });
+      dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherMuteVideo: (payload: any) => {
-      console.log(payload);
+    onTeacherMuteVideo: (payload: TeacherModel) => {
+      commit("setTeacherVideo", {
+        id: payload.id,
+        enable: !payload.isMuteVideo,
+      });
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteStudentVideo: async (payload: StudentModel) => {
       await dispatch("setStudentVideo", {
-        studentId: payload.id,
-        videoEnabled: !payload.isMuteVideo,
+        id: payload.id,
+        enable: !payload.isMuteVideo,
       });
       if (payload.id === state.student?.id) {
         const message = `Your video has been turn ${
@@ -57,8 +90,8 @@ export const useStudentRoomHandler = (
     },
     onTeacherMuteStudentAudio: async (payload: StudentModel) => {
       await dispatch("setStudentAudio", {
-        studentId: payload.id,
-        audioEnabled: !payload.isMuteAudio,
+        id: payload.id,
+        enable: !payload.isMuteAudio,
       });
       if (payload.id === state.student?.id) {
         const message = `Your microphone has been turn ${
@@ -67,21 +100,23 @@ export const useStudentRoomHandler = (
         store.dispatch("setToast", message, { root: true });
       }
     },
-    onTeacherMuteAllStudentVideo: (payload: Array<StudentModel>) => {
+    onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
       for (const student of payload) {
-        commit("setStudentVideo", {
-          studentId: student.id,
-          videoEnabled: !student.isMuteVideo,
+        await dispatch("setStudentVideo", {
+          id: student.id,
+          enable: !student.isMuteVideo,
         });
       }
+      dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherMuteAllStudentAudio: (payload: Array<StudentModel>) => {
+    onTeacherMuteAllStudentAudio: async (payload: Array<StudentModel>) => {
       for (const student of payload) {
-        commit("setStudentAudio", {
-          studentId: student.id,
-          audioEnabled: !student.isMuteAudio,
+        await dispatch("setStudentAudio", {
+          id: student.id,
+          enable: !student.isMuteAudio,
         });
       }
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: async (_payload: any) => {
       await dispatch("leaveRoom", {});
@@ -91,7 +126,11 @@ export const useStudentRoomHandler = (
       });
     },
     onTeacherDisconnect: (payload: any) => {
-      console.log("onTeacherDisconnect", payload);
+      commit("setTeacherStatus", {
+        id: payload.id,
+        status: InClassStatus.DEFAULT,
+      });
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetFocusTab: (payload: any) => {
       console.log(payload);
@@ -100,12 +139,12 @@ export const useStudentRoomHandler = (
       commit("setGlobalAudios", payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentAudio: (payload: any) => {
-      console.log(payload);
+    onTeacherUpdateStudentAudio: (_payload: any) => {
+      // do nothing
     },
     onTeacherUpdateStudentBadge: (payload: StudentModel) => {
       commit("setStudentBadge", {
-        studentId: payload.id,
+        id: payload.id,
         badge: payload.badge,
       });
       if (payload.id === state.student?.id) {

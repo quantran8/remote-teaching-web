@@ -1,7 +1,7 @@
 <template>
   <div class="item-container">
     <div class="video" :id="id"></div>
-    <div class="mask" :class="{ masked: !videoEnabled }">
+    <div class="mask" :class="{ masked: !videoEnabled && !isNotJoinned }">
       <div class="name">{{ name }}</div>
       <div class="info">
         <BaseTag

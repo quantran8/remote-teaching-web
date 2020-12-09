@@ -1,4 +1,4 @@
-import { RoomModel, StudentModel } from "@/models";
+import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import {
@@ -47,27 +47,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async userUnPublished({ state }, payload: any) {
-    state.manager?.unsubcriseRemoteUser(payload);
-  },
-  async updateAudioAndVideoFeed({ state }, payload: any) {
-    // const { globalAudios, teacher, manager, students } = state;
-    // if (teacher && manager) {
-    //   await manager?.subcriseRemoteUsers(globalAudios, teacher.id);
-    //   const remoteAudios = manager?.agoraClient.subscribedAudios.map(
-    //     (s) => s.userId
-    //   );
-    //   if (remoteAudios) {
-    //     const remoteAudioStudents = students
-    //       .filter((student) => {
-    //         return remoteAudios.indexOf(student.id) !== -1;
-    //       })
-    //       .map((st) => st.name);
-    //     remoteAudioStudents.push(teacher.name);
-    //     console.log("Subscrise Remote Audios:", remoteAudioStudents.join(","));
-    //   }
-    // }
-
+  async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, manager, students, teacher } = state;
     if (!manager) return;
     const cameras = students
@@ -87,7 +67,6 @@ const actions: ActionTree<StudentRoomState, any> = {
         audios.push(teacher.id);
       }
     }
-
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
   async joinRoom(store, _payload: any) {
@@ -111,12 +90,8 @@ const actions: ActionTree<StudentRoomState, any> = {
       onUserPublished: (_payload) => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: (user, mediaType) => {
-        console.log("User UnPublished", user.uid);
-        dispatch("userUnPublished", {
-          user,
-          mediaType,
-        });
+      onUserUnPublished: () => {
+        dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
         Logger.error("Exception", payload);
@@ -146,62 +121,35 @@ const actions: ActionTree<StudentRoomState, any> = {
 
   async setStudentAudio(
     { commit, state },
-    payload: { studentId: string; audioEnabled: boolean }
+    payload: { id: string; enable: boolean }
   ) {
-    if (payload.studentId === state.student?.id) {
-      await state.manager?.setMicrophone({ enable: payload.audioEnabled });
-      state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
+    if (payload.id === state.student?.id) {
+      await state.manager?.setMicrophone({ enable: payload.enable });
+      state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
     }
     commit("setStudentAudio", payload);
   },
   async setStudentVideo(
     { state, commit },
-    payload: { studentId: string; videoEnabled: boolean }
+    payload: { id: string; enable: boolean }
   ) {
-    if (payload.studentId === state.student?.id) {
-      await state.manager?.setCamera({ enable: payload.videoEnabled });
-      state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
+    if (payload.id === state.student?.id) {
+      await state.manager?.setCamera({ enable: payload.enable });
+      state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
     }
     commit("setStudentVideo", payload);
   },
 
-  setStudentBadge(store, payload: { studentId: string; badge: number }) {
+  setStudentBadge(store, payload: { id: string; badge: number }) {
     store.commit("setStudentBadge", payload);
   },
 
-  setTeacherAudio(
-    store,
-    payload: { teacherId: string; audioEnabled: boolean }
-  ) {
+  setTeacherAudio(store, payload: { id: string; enable: boolean }) {
     store.commit("setTeacherAudio", payload);
   },
 
-  setTeacherVideo(
-    store,
-    payload: { teacherId: string; videoEnabled: boolean }
-  ) {
+  setTeacherVideo(store, payload: { id: string; enable: boolean }) {
     store.commit("setTeacherVideo", payload);
-  },
-  hideAllStudents(store) {
-    store.commit("hideAllStudents", {});
-  },
-  showAllStudents(store) {
-    store.commit("showAllStudents", {});
-  },
-  muteAllStudents(store) {
-    store.commit("muteAllStudents", {});
-  },
-  unmuteAllStudents(store) {
-    store.commit("unmuteAllStudents", {});
-  },
-  studentJoinned(store, payload: { studentId: string }) {
-    store.commit("studentJoinned", payload);
-  },
-  studentLeftClass(store, payload: { studentId: string }) {
-    store.commit("studentJoinned", payload);
-  },
-  studentLeaving(store, payload: { studentId: string }) {
-    store.commit("studentJoinned", payload);
   },
 };
 

@@ -46,7 +46,19 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     return this.agoraClient.joined;
   }
 
+  setCamera(options: { enable: boolean }) {
+    return this.agoraClient.setCamera(options);
+  }
+
+  setMicrophone(options: { enable: boolean }) {
+    return this.agoraClient.setMicrophone(options);
+  }
+
+  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
+    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+  }
+
   async close() {
-   return this.agoraClient.reset();
+    return this.agoraClient.reset();
   }
 }

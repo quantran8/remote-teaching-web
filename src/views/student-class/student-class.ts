@@ -60,15 +60,15 @@ export default defineComponent({
 
     const toggleAudio = () => {
       store.dispatch("studentRoom/setStudentAudio", {
-        studentId: student.value.id,
-        audioEnabled: !student.value.audioEnabled,
+        id: student.value.id,
+        enable: !student.value.audioEnabled,
       });
     };
 
     const toggleVideo = () => {
       store.dispatch("studentRoom/setStudentVideo", {
-        studentId: student.value.id,
-        videoEnabled: !student.value.videoEnabled,
+        id: student.value.id,
+        enable: !student.value.videoEnabled,
       });
     };
 

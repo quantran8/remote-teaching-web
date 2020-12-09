@@ -11,10 +11,8 @@ import AgoraRTC, {
 import { isEqual } from "lodash";
 
 export interface AgoraClientSDK {
-  appId: string;
   client: IAgoraRTCClient;
   joinRTCRoom(payload: { camera: boolean; microphone: boolean }): void;
-  initStream(): void;
 }
 
 export interface AgoraUser {
@@ -66,9 +64,7 @@ export class AgoraClient implements AgoraClientSDK {
   get clientConfig(): ClientConfig {
     return this.options.webConfig as ClientConfig;
   }
-  get appId(): string {
-    return this.options.appId;
-  }
+
   get agoraRTC(): IAgoraRTC {
     return AgoraRTC;
   }
@@ -84,7 +80,7 @@ export class AgoraClient implements AgoraClientSDK {
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.agoraRTC.setLogLevel(4);
     await this.client.join(
-      this.appId,
+      this.options.appId,
       this.user.channel,
       this.user.token,
       this.user.username
@@ -92,7 +88,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.joined = true;
     if (options.camera) await this.openCamera();
     if (options.microphone) await this.openMicrophone();
-    await this.publish();
+    await this._publish();
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
@@ -150,7 +146,8 @@ export class AgoraClient implements AgoraClientSDK {
     if (!track) return;
     track.stop();
     track.close();
-
+    const index = this._publishedTrackIds.indexOf(track.getTrackId());
+    this._publishedTrackIds.splice(index, 1);
     if (track.trackMediaType === "video") {
       this._cameraTrack = undefined;
     }
@@ -159,35 +156,27 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
-  publishedTrackIds: any[] = [];
-  async publish(): Promise<any> {
+  _publishedTrackIds: string[] = [];
+  private async _publish(): Promise<any> {
     if (!this.joined) return;
     if (this.cameraTrack) {
       const trackId = this.cameraTrack.getTrackId();
-      if (this.publishedTrackIds.indexOf(trackId) < 0) {
+      if (this._publishedTrackIds.indexOf(trackId) < 0) {
         await this.client.publish([this.cameraTrack]);
         this.publishedVideo = true;
-        this.publishedTrackIds.push(trackId);
+        this._publishedTrackIds.push(trackId);
       }
     }
     if (this.microphoneTrack) {
       const trackId = this.microphoneTrack.getTrackId();
-      if (this.publishedTrackIds.indexOf(trackId) < 0) {
+      if (this._publishedTrackIds.indexOf(trackId) < 0) {
         await this.client.publish([this.microphoneTrack]);
         this.publishedAudio = true;
-        this.publishedTrackIds.push(trackId);
+        this._publishedTrackIds.push(trackId);
       }
     }
   }
 
-  async initStream() {
-    if (this.cameraTrack) return;
-    await this.openCamera();
-  }
-
-  async unPublishAll() {
-    if (this.client) await this.client.unpublish();
-  }
   async reset() {
     await this._client?.leave();
     this.publishedVideo = false;
@@ -195,7 +184,7 @@ export class AgoraClient implements AgoraClientSDK {
     this._closeMediaTrack(this.cameraTrack);
     this._closeMediaTrack(this.microphoneTrack);
     this.joined = false;
-    this.publishedTrackIds = [];
+    this._publishedTrackIds = [];
     this._client = undefined;
     this.cameraError = null;
     this.microphoneError = null;
@@ -204,7 +193,7 @@ export class AgoraClient implements AgoraClientSDK {
   async setCamera(options: { enable: boolean }) {
     if (options.enable) {
       await this.openCamera();
-      await this.publish();
+      await this._publish();
     } else {
       await this.client?.unpublish(this.cameraTrack);
       this._closeMediaTrack(this.cameraTrack);
@@ -214,133 +203,16 @@ export class AgoraClient implements AgoraClientSDK {
   async setMicrophone(options: { enable: boolean }) {
     if (options.enable) {
       await this.openMicrophone();
-      await this.publish();
+      await this._publish();
     } else {
       await this.client?.unpublish(this.microphoneTrack);
       this._closeMediaTrack(this.microphoneTrack);
     }
   }
-  getRemoteUsers(): Array<IAgoraRTCRemoteUser> {
-    if (!this.client) return [];
-    return this.client.remoteUsers;
-  }
+
   private _getRemoteUser(userId: string): IAgoraRTCRemoteUser | undefined {
-    return this.getRemoteUsers().find((e) => isEqual(e.uid + "", userId));
-  }
-
-  async subcriseRemoteUsers(locals: Array<string>, globals: Array<string>) {
-    // const remoteUsers = this.getRemoteUsers();
-    // for (const user of remoteUsers) {
-    //   try {
-    //     await this.subcrise;
-    //     const userId = user.uid + "";
-    //     let enable: boolean = true;
-    //     if (locals.length > 0) {
-    //       enable = locals.indexOf(userId) !== -1;
-    //     } else if (globals.length > 0) {
-    //       enable = globals.indexOf(userId) !== -1;
-    //     }
-    //     if (enable) await this.subscribeUser(user, "audio");
-    //     else await this.unsubscribeUser(user, "audio");
-    //   } catch (err) {
-    //     console.log("subcriseRemoteUsers", err);
-    //   }
-    // }
-  }
-  async studentSubcriseRemoteUsers(global: Array<string>, teacherId: string) {
-    // const remoteUsers = this.getRemoteUsers();
-    // for (const user of remoteUsers) {
-    //   try {
-    //     await this.subscribeUser(user, "video");
-    //     const userId = user.uid + "";
-    //     const enable =
-    //       userId === teacherId ||
-    //       global.length === 0 ||
-    //       global.indexOf(userId) !== -1;
-    //     if (enable) await this.subscribeUser(user, "audio");
-    //     else await this.unsubscribeUser(user, "audio");
-    //   } catch (err) {
-    //     console.log("studentSubcriseRemoteUsers", err);
-    //   }
-    // }
-  }
-  async unsubcriseRemoteUser(payload: {
-    user: IAgoraRTCRemoteUser;
-    mediaType: "video" | "audio";
-  }) {
-    const userId = payload.user.uid + "";
-    if (payload.mediaType === "video") {
-      const trackIndex = this.subscribedVideos.findIndex(
-        (ele) => ele.userId === userId
-      );
-      if (trackIndex !== -1) {
-        this.subscribedVideos[trackIndex].track.stop();
-        this.subscribedVideos.splice(trackIndex, 1);
-      }
-    } else if (payload.mediaType === "audio") {
-      const trackIndex = this.subscribedAudios.findIndex(
-        (ele) => ele.userId === userId
-      );
-      if (trackIndex !== -1) {
-        this.subscribedAudios[trackIndex].track.stop();
-        this.subscribedAudios.splice(trackIndex, 1);
-      }
-    }
-  }
-
-  async subscribeUserAudio(user: IAgoraRTCRemoteUser) {
-    const userUID = "" + user.uid;
-    const subscribedAudio = this.subscribedAudios.find(
-      (ele) => ele.userId === userUID
-    );
-    if (subscribedAudio) return;
-    const remoteTrack = await this.client.subscribe(user, "audio");
-    remoteTrack.play();
-    this.subscribedAudios.push({ userId: userUID, track: remoteTrack });
-  }
-  async subscribeUserAudioById(userId: string) {
-    const user = this.getRemoteUsers().find((u) => isEqual(u.uid + "", userId));
-    if (!user) return;
-    return this.subscribeUserAudio(user);
-  }
-
-  async unSubscribeUserAudio(user: IAgoraRTCRemoteUser) {
-    const userUID = "" + user.uid;
-    const trackIndex = this.subscribedAudios.findIndex(
-      (ele) => ele.userId === userUID
-    );
-    if (trackIndex === -1) return;
-    await this.client.unsubscribe(user, "audio");
-    this.subscribedAudios[trackIndex].track.stop();
-    this.subscribedAudios.splice(trackIndex, 1);
-  }
-
-  async unSubscribeUserAudioById(userId: string) {
-    const user = this.getRemoteUsers().find((u) => isEqual(u.uid + "", userId));
-    if (!user) return;
-    return this.subscribeUserAudio(user);
-  }
-
-  async subscribeUserVideo(user: IAgoraRTCRemoteUser) {
-    const userUID = "" + user.uid;
-    const subscribed = this.subscribedVideos.find(
-      (ele) => ele.userId === userUID
-    );
-    if (subscribed) return;
-    const remoteTrack = await this.client.subscribe(user, "video");
-    remoteTrack.play(userUID);
-    this.subscribedVideos.push({ userId: userUID, track: remoteTrack });
-  }
-
-  async unSubscribeUserVideo(user: IAgoraRTCRemoteUser) {
-    const userUID = "" + user.uid;
-    const trackIndex = this.subscribedVideos.findIndex(
-      (ele) => ele.userId === userUID
-    );
-    if (trackIndex === -1) return;
-    await this.client.unsubscribe(user, "video");
-    this.subscribedVideos[trackIndex].track.stop();
-    this.subscribedVideos.splice(trackIndex, 1);
+    if (!this.client) return undefined;
+    return this.client.remoteUsers.find((e) => isEqual(e.uid + "", userId));
   }
 
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
