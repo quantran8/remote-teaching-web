@@ -7,6 +7,22 @@ import { ClassView, ClassViewFromValue, InClassStatus } from "../interface";
 import { TeacherRoomState } from "./state";
 
 const mutations: MutationTree<TeacherRoomState> = {
+  setCameraLock(
+    state: TeacherRoomState,
+    payload: {
+      enable: boolean;
+    }
+  ) {
+    state.cameraLock = payload.enable;
+  },
+  setMicrophoneLock(
+    state: TeacherRoomState,
+    payload: {
+      enable: boolean;
+    }
+  ) {
+    state.microphoneLock = payload.enable;
+  },
   endClass(state: TeacherRoomState, payload: any) {
     state.manager?.close();
     state.info = undefined;

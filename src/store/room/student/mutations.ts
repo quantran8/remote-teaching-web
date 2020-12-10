@@ -7,6 +7,22 @@ import { ClassView, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
+  setCameraLock(
+    state: StudentRoomState,
+    payload: {
+      enable: boolean;
+    }
+  ) {
+    state.cameraLock = payload.enable;
+  },
+  setMicrophoneLock(
+    state: StudentRoomState,
+    payload: {
+      enable: boolean;
+    }
+  ) {
+    state.microphoneLock = payload.enable;
+  },
   setGlobalAudios(state: StudentRoomState, payload: Array<string>) {
     state.globalAudios = payload;
   },

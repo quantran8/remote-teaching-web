@@ -36,7 +36,7 @@ export default defineComponent({
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
-  
+
     watch(errors, () => {
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
@@ -58,15 +58,15 @@ export default defineComponent({
       student.value?.videoEnabled ? "icon-video-on" : "icon-video-off"
     );
 
-    const toggleAudio = () => {
-      store.dispatch("studentRoom/setStudentAudio", {
+    const toggleAudio = async () => {
+      await store.dispatch("studentRoom/setStudentAudio", {
         id: student.value.id,
         enable: !student.value.audioEnabled,
       });
     };
 
-    const toggleVideo = () => {
-      store.dispatch("studentRoom/setStudentVideo", {
+    const toggleVideo = async () => {
+      await store.dispatch("studentRoom/setStudentVideo", {
         id: student.value.id,
         enable: !student.value.videoEnabled,
       });

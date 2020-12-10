@@ -22,6 +22,8 @@ export interface TeacherRoomState {
     studentId: string;
     tag: string;
   }>;
+  cameraLock: boolean;
+  microphoneLock: boolean;
 }
 
 const state: TeacherRoomState = {
@@ -35,6 +37,8 @@ const state: TeacherRoomState = {
   error: null,
   globalAudios: [],
   localAudios: [],
+  cameraLock: false,
+  microphoneLock: false,
 };
 
 export default state;

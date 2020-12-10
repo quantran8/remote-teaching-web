@@ -5,18 +5,18 @@ export default defineComponent({
   setup() {
     const { dispatch, getters } = useStore();
     const globalAudios = computed(() => getters["teacherRoom/globalAudios"]);
-    const onDrop = (event: any) => {
+    const onDrop = async (event: any) => {
       event.preventDefault();
       const studentId = event.dataTransfer.getData("studentId");
-      dispatch("teacherRoom/addGlobalAudio", {
+      await dispatch("teacherRoom/addGlobalAudio", {
         studentId: studentId,
       });
     };
     const onDragOver = (event: any) => {
       event.preventDefault();
     };
-    const onClickClearAll = () => {
-      dispatch("teacherRoom/clearGlobalAudio");
+    const onClickClearAll = async () => {
+      await dispatch("teacherRoom/clearGlobalAudio");
     };
     return {
       onDragOver,

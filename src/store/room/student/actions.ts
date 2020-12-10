@@ -124,20 +124,30 @@ const actions: ActionTree<StudentRoomState, any> = {
     payload: { id: string; enable: boolean }
   ) {
     if (payload.id === state.student?.id) {
+      if (state.microphoneLock) return;
+      commit("setMicrophoneLock", { enable: true });
       await state.manager?.setMicrophone({ enable: payload.enable });
-      state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+      await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+      commit("setStudentAudio", payload);
+      commit("setMicrophoneLock", { enable: false });
+    } else {
+      commit("setStudentAudio", payload);
     }
-    commit("setStudentAudio", payload);
   },
   async setStudentVideo(
     { state, commit },
     payload: { id: string; enable: boolean }
   ) {
     if (payload.id === state.student?.id) {
+      if (state.cameraLock) return;
+      commit("setCameraLock", { enable: true });
       await state.manager?.setCamera({ enable: payload.enable });
-      state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+      await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+      commit("setStudentVideo", payload);
+      commit("setCameraLock", { enable: false });
+    } else {
+      commit("setStudentVideo", payload);
     }
-    commit("setStudentVideo", payload);
   },
 
   setStudentBadge(store, payload: { id: string; badge: number }) {

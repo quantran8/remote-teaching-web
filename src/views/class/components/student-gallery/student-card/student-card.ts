@@ -51,22 +51,22 @@ export default defineComponent({
       isContextMenuVisible.value = false;
     });
 
-    const toggleAudio = () => {
-      store.dispatch("teacherRoom/setStudentAudio", {
+    const toggleAudio = async () => {
+      await store.dispatch("teacherRoom/setStudentAudio", {
         studentId: props.id,
         audioEnabled: !props.audioEnabled,
       });
     };
 
-    const toggleVideo = () => {
-      store.dispatch("teacherRoom/setStudentVideo", {
+    const toggleVideo = async () => {
+      await store.dispatch("teacherRoom/setStudentVideo", {
         studentId: props.id,
         videoEnabled: !props.videoEnabled,
       });
     };
 
-    const addABadge = () => {
-      store.dispatch("teacherRoom/setStudentBadge", {
+    const addABadge = async () => {
+      await store.dispatch("teacherRoom/setStudentBadge", {
         studentId: props.id,
         badge: props.badge + 1,
       });

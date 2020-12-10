@@ -183,21 +183,32 @@ const actions: ActionTree<TeacherRoomState, any> = {
     );
   },
   setStudentBadge({ state }, payload: SetStudentBadgePayload) {
-    // commit("setStudentBadge", payload);
     state.manager?.WSClient.sendRequestSetStudentBadge(
       payload.studentId,
       payload.badge
     );
   },
 
-  setTeacherAudio({ state, commit }, payload: SetTeacherAudioPayload) {
+  async setTeacherAudio({ state, commit }, payload: SetTeacherAudioPayload) {
+    if (state.microphoneLock) return;
+    commit("setMicrophoneLock", { enable: true });
+    await state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
+    await state.manager?.setMicrophone({
+      enable: payload.audioEnabled,
+    });
     commit("setTeacherAudio", payload);
-    state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
+    commit("setMicrophoneLock", { enable: false });
   },
 
-  setTeacherVideo({ state, commit }, payload: SetTeacherVideoPayload) {
+  async setTeacherVideo({ state, commit }, payload: SetTeacherVideoPayload) {
+    if (state.cameraLock) return;
+    commit("setCameraLock", { enable: true });
+    await state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
+    await state.manager?.setCamera({
+      enable: payload.videoEnabled,
+    });
     commit("setTeacherVideo", payload);
-    state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
+    commit("setCameraLock", { enable: false });
   },
   hideAllStudents({ commit, state }) {
     commit("hideAllStudents", {});

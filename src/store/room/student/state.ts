@@ -16,6 +16,8 @@ export interface StudentRoomState {
   classView: ClassView;
   error: GLError | null;
   globalAudios: Array<string>;
+  cameraLock: boolean;
+  microphoneLock: boolean;
 }
 
 const state: StudentRoomState = {
@@ -28,6 +30,8 @@ const state: StudentRoomState = {
   classView: ClassView.GALLERY,
   error: null,
   globalAudios: [],
+  cameraLock: false,
+  microphoneLock: false,
 };
 
 export default state;

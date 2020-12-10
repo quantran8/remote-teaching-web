@@ -50,8 +50,6 @@ export default defineComponent({
       () => getters["teacherRoom/teacher"]
     );
     const error = computed(() => getters["teacherRoom/error"]);
-    const roomManager = computed(() => getters["teacherRoom/roomManager"]);
-    const localAudios = computed(() => getters["teacherRoom/localAudios"]);
     const isClassNotActive = computed(() => {
       return (
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
@@ -73,24 +71,24 @@ export default defineComponent({
       return getters["teacherRoom/isGalleryView"];
     });
 
-    const setClassView = (newView: ClassView) => {
-      dispatch("teacherRoom/setClassView", { classView: newView });
+    const setClassView = async (newView: ClassView) => {
+      await dispatch("teacherRoom/setClassView", { classView: newView });
     };
 
-    const onClickHideAll = () => {
-      dispatch("teacherRoom/hideAllStudents");
+    const onClickHideAll = async () => {
+      await dispatch("teacherRoom/hideAllStudents");
     };
 
-    const onClickShowAll = () => {
-      dispatch("teacherRoom/showAllStudents");
+    const onClickShowAll = async () => {
+      await dispatch("teacherRoom/showAllStudents");
     };
 
-    const onClickMuteAll = () => {
-      dispatch("teacherRoom/muteAllStudents");
+    const onClickMuteAll = async () => {
+      await dispatch("teacherRoom/muteAllStudents");
     };
 
-    const onClickUnmuteAll = () => {
-      dispatch("teacherRoom/unmuteAllStudents");
+    const onClickUnmuteAll = async () => {
+      await dispatch("teacherRoom/unmuteAllStudents");
     };
 
     const onClickEnd = () => {

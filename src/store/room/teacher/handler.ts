@@ -50,14 +50,10 @@ export const useTeacherRoomWSHandler = ({
       console.log(payload);
     },
     onTeacherMuteAudio: (payload: TeacherModel) => {
-      state.manager?.setMicrophone({
-        enable: !payload.isMuteAudio,
-      });
+      console.log(payload);
     },
     onTeacherMuteVideo: (payload: any) => {
-      state.manager?.setCamera({
-        enable: !payload.isMuteVideo,
-      });
+      console.log(payload);
     },
     onTeacherMuteStudentVideo: async (payload: any) => {
       console.log(payload);
