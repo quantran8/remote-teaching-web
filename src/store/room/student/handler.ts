@@ -148,9 +148,7 @@ export const useStudentRoomHandler = (
         badge: payload.badge,
       });
       if (payload.id === state.student?.id) {
-        const message = `Congratulations! You got ${payload.badge} badge${
-          payload.badge > 1 ? "s" : ""
-        } from your teacher!`;
+        const message = `Congratulations! You got 1 more badge from your teacher!`;
         store.dispatch("setToast", message, { root: true });
       }
     },
