@@ -9,7 +9,7 @@ export default defineComponent({
       event.preventDefault();
       const studentId = event.dataTransfer.getData("studentId");
       await dispatch("teacherRoom/addGlobalAudio", {
-        studentId: studentId,
+        id: studentId,
       });
     };
     const onDragOver = (event: any) => {

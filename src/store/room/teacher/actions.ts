@@ -7,66 +7,24 @@ import {
   TeacherGetRoomResponse,
 } from "@/services";
 import { ActionTree } from "vuex";
-import { ClassView, InClassStatus, ValueOfClassView } from "../interface";
+import { InClassStatus, ValueOfClassView } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
+import {
+  ClassViewPayload,
+  DeviceMediaPayload,
+  StudentBadgePayload,
+  UserIdPayload,
+  UserMediaPayload,
+} from "./payload";
 
 interface InitClassRoomPayload {
   classId: string;
   userId: string;
   userName: string;
   role: string;
-}
-
-interface SetStudentAudioPayload {
-  studentId: string;
-  audioEnabled: boolean;
-}
-
-interface SetStudentVideoPayload {
-  studentId: string;
-  videoEnabled: boolean;
-}
-
-interface SetStudentBadgePayload {
-  studentId: string;
-  badge: number;
-}
-
-interface SetTeacherAudioPayload {
-  teacherId: string;
-  audioEnabled: boolean;
-}
-
-interface SetTeacherVideoPayload {
-  teacherId: string;
-  videoEnabled: boolean;
-}
-
-interface SetClassViewPayload {
-  classView: ClassView;
-}
-
-interface AddGlobalAudioPayload {
-  studentId: string;
-}
-
-interface AddLocalAudioPayload {
-  studentId: string;
-}
-
-interface OnStudentJoinedPayload {
-  studentId: string;
-}
-
-interface OnStudentLeftPayload {
-  studentId: string;
-}
-
-interface OnStudentLeavingPayload {
-  studentId: string;
 }
 
 const actions: ActionTree<TeacherRoomState, any> = {
@@ -76,7 +34,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     commit("endClass", payload);
   },
-  setClassView({ state }, payload: SetClassViewPayload) {
+  setClassView({ state }, payload: ClassViewPayload) {
     state.manager?.WSClient.sendRequestSetFocusTab(
       ValueOfClassView(payload.classView)
     );
@@ -87,7 +45,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setError(store, payload: GLError | null) {
     store.commit("setError", payload);
   },
-
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager, students } = state;
     if (!manager) return;
@@ -167,45 +124,44 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     commit("setRoomInfo", roomResponse.data);
   },
-
-  async setStudentAudio({ state, commit }, payload: SetStudentAudioPayload) {
+  async setStudentAudio({ state, commit }, payload: UserMediaPayload) {
     await state.manager?.WSClient.sendRequestMuteStudentAudio(
-      payload.studentId,
-      !payload.audioEnabled
+      payload.id,
+      !payload.enable
     );
     commit("setStudentAudio", payload);
   },
-  async setStudentVideo({ state, commit }, payload: SetStudentVideoPayload) {
+  async setStudentVideo({ state, commit }, payload: UserMediaPayload) {
     commit("setStudentVideo", payload);
     state.manager?.WSClient.sendRequestMuteStudentVideo(
-      payload.studentId,
-      !payload.videoEnabled
+      payload.id,
+      !payload.enable
     );
   },
-  setStudentBadge({ state }, payload: SetStudentBadgePayload) {
+  setStudentBadge({ state }, payload: StudentBadgePayload) {
     state.manager?.WSClient.sendRequestSetStudentBadge(
-      payload.studentId,
+      payload.id,
       payload.badge
     );
   },
 
-  async setTeacherAudio({ state, commit }, payload: SetTeacherAudioPayload) {
+  async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;
     commit("setMicrophoneLock", { enable: true });
-    await state.manager?.WSClient.sendRequestMuteAudio(!payload.audioEnabled);
+    await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
     await state.manager?.setMicrophone({
-      enable: payload.audioEnabled,
+      enable: payload.enable,
     });
     commit("setTeacherAudio", payload);
     commit("setMicrophoneLock", { enable: false });
   },
 
-  async setTeacherVideo({ state, commit }, payload: SetTeacherVideoPayload) {
+  async setTeacherVideo({ state, commit }, payload: DeviceMediaPayload) {
     if (state.cameraLock) return;
     commit("setCameraLock", { enable: true });
-    await state.manager?.WSClient.sendRequestMuteVideo(!payload.videoEnabled);
+    await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
     await state.manager?.setCamera({
-      enable: payload.videoEnabled,
+      enable: payload.enable,
     });
     commit("setTeacherVideo", payload);
     commit("setCameraLock", { enable: false });
@@ -226,23 +182,23 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("unmuteAllStudents", {});
     state.manager?.WSClient.sendRequestMuteAllStudentAudio(false);
   },
-  studentJoinned(store, payload: OnStudentJoinedPayload) {
+  studentJoinned(store, payload: UserIdPayload) {
     store.commit("studentJoinned", payload);
   },
-  studentLeftClass(store, payload: OnStudentLeftPayload) {
+  studentLeftClass(store, payload: UserIdPayload) {
     store.commit("studentLeftClass", payload);
   },
-  studentLeaving(store, payload: OnStudentLeavingPayload) {
+  studentLeaving(store, payload: UserIdPayload) {
     store.commit("studentLeaving", payload);
   },
-  addGlobalAudio({ state }, payload: AddGlobalAudioPayload) {
-    state.manager?.WSClient.sendRequestAddGlobalAudio(payload.studentId);
+  addGlobalAudio({ state }, payload: UserIdPayload) {
+    state.manager?.WSClient.sendRequestAddGlobalAudio(payload.id);
   },
   clearGlobalAudio({ state }, _payload: any) {
     state.manager?.WSClient.sendRequestClearGlobalAudio();
   },
-  addStudentAudio({ state }, payload: AddLocalAudioPayload) {
-    state.manager?.WSClient.sendRequestAddStudentAudio(payload.studentId);
+  addStudentAudio({ state }, payload: UserIdPayload) {
+    state.manager?.WSClient.sendRequestAddStudentAudio(payload.id);
   },
   clearStudentAudio({ state }, _payload: any) {
     state.manager?.WSClient.sendRequestClearStudentAudio();

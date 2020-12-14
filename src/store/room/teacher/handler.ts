@@ -15,7 +15,7 @@ export const useTeacherRoomWSHandler = ({
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentJoinClass: async (payload: StudentModel) => {
-      commit("studentJoinned", { studentId: payload.id });
+      commit("studentJoinned", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
@@ -23,24 +23,24 @@ export const useTeacherRoomWSHandler = ({
     },
     onStudentMuteAudio: async (payload: StudentModel) => {
       commit("setStudentAudio", {
-        studentId: payload.id,
-        audioEnabled: !payload.isMuteAudio,
+        id: payload.id,
+        enable: !payload.isMuteAudio,
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentMuteVideo: async (payload: StudentModel) => {
       commit("setStudentVideo", {
-        studentId: payload.id,
-        videoEnabled: !payload.isMuteVideo,
+        id: payload.id,
+        enable: !payload.isMuteVideo,
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentLeave: async (payload: StudentModel) => {
-      commit("studentLeftClass", { studentId: payload.id });
+      commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: async (payload: StudentModel) => {
-      commit("studentLeftClass", { studentId: payload.id });
+      commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherJoinClass: (payload: any) => {
@@ -92,7 +92,7 @@ export const useTeacherRoomWSHandler = ({
     },
     onTeacherUpdateStudentBadge: (payload: StudentModel) => {
       commit("setStudentBadge", {
-        studentId: payload.id,
+        id: payload.id,
         badge: payload.badge,
       });
     },

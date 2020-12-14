@@ -58,15 +58,15 @@ export default defineComponent({
 
     const toggleAudio = () => {
       dispatch("teacherRoom/setTeacherAudio", {
-        teacherId: props.id,
-        audioEnabled: !props.audioEnabled,
+        id: props.id,
+        enable: !props.audioEnabled,
       });
     };
 
     const toggleVideo = () => {
       dispatch("teacherRoom/setTeacherVideo", {
-        teacherId: props.id,
-        videoEnabled: !props.videoEnabled,
+        id: props.id,
+        enable: !props.videoEnabled,
       });
     };
 
@@ -85,7 +85,7 @@ export default defineComponent({
       event.preventDefault();
       const studentId = event.dataTransfer.getData("studentId");
       dispatch("teacherRoom/addStudentAudio", {
-        studentId: studentId,
+        id: studentId,
       });
     };
     const onDragOver = (event: any) => {
