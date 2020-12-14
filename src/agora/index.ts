@@ -1,3 +1,4 @@
+import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -246,10 +247,14 @@ export class AgoraClient implements AgoraClientSDK {
     );
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    if (!user) return;
-    const remoteTrack = await this.client.subscribe(user, "audio");
-    remoteTrack.play();
-    this.subscribedAudios.push({ userId: userId, track: remoteTrack });
+    if (!user || !user.hasAudio) return;
+    try {
+      const remoteTrack = await this.client.subscribe(user, "audio");
+      remoteTrack.play();
+      this.subscribedAudios.push({ userId: userId, track: remoteTrack });
+    } catch (err) {
+      Logger.error("_subscribeAudio", err);
+    }
   }
 
   async _subscribeVideo(userId: string) {
@@ -258,10 +263,14 @@ export class AgoraClient implements AgoraClientSDK {
     );
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    if (!user) return;
-    const remoteTrack = await this.client.subscribe(user, "video");
-    remoteTrack.play(userId);
-    this.subscribedVideos.push({ userId: userId, track: remoteTrack });
+    if (!user || !user.hasVideo) return;
+    try {
+      const remoteTrack = await this.client.subscribe(user, "video");
+      remoteTrack.play(userId);
+      this.subscribedVideos.push({ userId: userId, track: remoteTrack });
+    } catch (err) {
+      Logger.error("_subscribeVideo", err);
+    }
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {

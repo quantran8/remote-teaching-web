@@ -11,21 +11,33 @@ import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
   enableAudios(state: TeacherRoomState): Array<string> {
-    if (state.localAudios.length > 0)
-      return state.localAudios.map((s) => s.studentId);
-    else if (state.globalAudios.length > 0)
-      return state.globalAudios.map((s) => s.studentId);
+    if (state.localAudios.length > 0) return state.localAudios;
+    else if (state.globalAudios.length > 0) return state.globalAudios;
     return [];
   },
   globalAudios(
     state: TeacherRoomState
   ): Array<{ studentId: string; tag: string }> {
-    return state.globalAudios;
+    return state.students
+      .filter((s) => state.globalAudios.indexOf(s.id) !== -1)
+      .map((s) => {
+        return {
+          studentId: s.id,
+          tag: `${s.index + 1}`,
+        };
+      });
   },
   localAudios(
     state: TeacherRoomState
   ): Array<{ studentId: string; tag: string }> {
-    return state.localAudios;
+    return state.students
+      .filter((s) => state.localAudios.indexOf(s.id) !== -1)
+      .map((s) => {
+        return {
+          studentId: s.id,
+          tag: `${s.index + 1}`,
+        };
+      });
   },
   info(state: TeacherRoomState): RoomModel {
     return state.info as RoomModel;

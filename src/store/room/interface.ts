@@ -72,3 +72,32 @@ export enum StreamingStatus {
   CONNECTED = 2,
   DISCONNECTED = 3,
 }
+
+export interface UserIdPayload {
+  id: string;
+}
+export interface UserMediaPayload {
+  id: string;
+  enable: boolean;
+}
+export interface DeviceMediaPayload {
+  enable: boolean;
+}
+
+export interface StudentBadgePayload {
+  id: string;
+  badge: number;
+}
+
+export interface ClassViewPayload {
+  classView: ClassView;
+}
+
+export type DefaultPayload = any;
+
+export interface InitClassRoomPayload {
+  classId: string;
+  userId: string;
+  userName: string;
+  role: string;
+}

@@ -14,14 +14,8 @@ export interface TeacherRoomState {
   classes: Array<ClassModel>;
   classView: ClassView;
   error: GLError | null;
-  globalAudios: Array<{
-    studentId: string;
-    tag: string;
-  }>;
-  localAudios: Array<{
-    studentId: string;
-    tag: string;
-  }>;
+  globalAudios: string[];
+  localAudios: string[];
   cameraLock: boolean;
   microphoneLock: boolean;
 }

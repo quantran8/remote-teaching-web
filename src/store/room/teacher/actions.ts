@@ -7,37 +7,32 @@ import {
   TeacherGetRoomResponse,
 } from "@/services";
 import { ActionTree } from "vuex";
-import { InClassStatus, ValueOfClassView } from "../interface";
+import {
+  ClassViewPayload,
+  DefaultPayload,
+  DeviceMediaPayload,
+  InClassStatus,
+  InitClassRoomPayload,
+  StudentBadgePayload,
+  UserIdPayload,
+  UserMediaPayload,
+  ValueOfClassView,
+} from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
-import {
-  ClassViewPayload,
-  DeviceMediaPayload,
-  StudentBadgePayload,
-  UserIdPayload,
-  UserMediaPayload,
-} from "./payload";
-
-interface InitClassRoomPayload {
-  classId: string;
-  userId: string;
-  userName: string;
-  role: string;
-}
 
 const actions: ActionTree<TeacherRoomState, any> = {
-  async endClass({ commit, state }, payload: any) {
+  async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
     }
     commit("endClass", payload);
   },
   setClassView({ state }, payload: ClassViewPayload) {
-    state.manager?.WSClient.sendRequestSetFocusTab(
-      ValueOfClassView(payload.classView)
-    );
+    const focusTab = ValueOfClassView(payload.classView);
+    state.manager?.WSClient.sendRequestSetFocusTab(focusTab);
   },
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
@@ -55,9 +50,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
       .filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED)
       .map((s) => s.id);
     if (localAudios.length > 0) {
-      audios = localAudios.map((s) => s.studentId);
+      audios = [...localAudios];
     } else if (globalAudios.length > 0) {
-      audios = globalAudios.map((s) => s.studentId);
+      audios = [...globalAudios];
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
@@ -90,10 +85,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
   async initClassRoom({ commit }, payload: InitClassRoomPayload) {
-    commit("setUser", {
-      id: payload.userId,
-      name: payload.userName,
-    });
+    commit("setUser", { id: payload.userId, name: payload.userName });
     let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     if (!roomResponse) {
       // start class room
