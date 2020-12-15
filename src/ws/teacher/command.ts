@@ -1,0 +1,17 @@
+export enum TeacherWSCommand {
+  STREAM_CONNECT = "TeacherStreamConnect",
+  JOIN_CLASS = "TeacherJoinClass",
+  MUTE_VIDEO = "TeacherMuteVideo",
+  MUTE_AUDIO = "TeacherMuteAudio",
+  MUTE_STUDENT_VIDEO = "TeacherMuteStudentVideo",
+  MUTE_STUDENT_AUDIO = "TeacherMuteStudentAudio",
+  MUTE_ALL_STUDENT_AUDIO = "TeacherMuteAllStudentAudio",
+  MUTE_ALL_STUDENT_VIDEO = "TeacherMuteAllStudentVideo",
+  SET_FOCUS_TAB = "TeacherSetFocusTab",
+  END_CLASS = "TeacherEndClass",
+  SET_STUDENT_BADGE = "TeacherSetStudentBadge",
+  ADD_STUDENT_AUDIO = "TeacherAddStudentAudio",
+  CLEAR_STUDENT_AUDIO = "TeacherClearStudentAudio",
+  ADD_GLOBAL_STUDENT_AUDIO = "TeacherAddGlobalStudentAudio",
+  CLEAR_GLOBAL_STUDENT_AUDIO = "TeacherClearGlobalStudentAudio",
+}

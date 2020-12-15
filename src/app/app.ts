@@ -1,6 +1,6 @@
+import { useStore } from "vuex";
 import { AuthService, LoginInfo } from "@/commonui";
 import { computed, defineComponent, watch } from "vue";
-import { useStore } from "vuex";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 
 export default defineComponent({
@@ -20,28 +20,34 @@ export default defineComponent({
     const appView = computed(() => getters["appView"]);
 
     watch(isSignedIn, async () => {
-      if (isSignedIn.value) {
-        const loginInfo: LoginInfo = getters["auth/loginInfo"];
-        const isTeacher: boolean = getters["auth/isTeacher"];
-        const isParent: boolean = getters["auth/isParent"];
-        if (isTeacher) {
-          dispatch("teacher/setInfo", {
-            id: loginInfo.profile.sub,
-            name: loginInfo.profile.name,
-          });
-          await dispatch("teacher/loadClasses", {
-            teacherId: loginInfo.profile.sub,
-          });
-        }
-        if (isParent) {
-          dispatch("parent/setInfo", {
-            id: loginInfo.profile.sub,
-            name: loginInfo.profile.name,
-          });
-          dispatch("parent/loadChildren");
-        }
-      }
+      if (isSignedIn.value) onUserSignedIn();
     });
+
+    const onUserSignedIn = async () => {
+      const loginInfo: LoginInfo = getters["auth/loginInfo"];
+      const isTeacher: boolean = getters["auth/isTeacher"];
+      const isParent: boolean = getters["auth/isParent"];
+      if (isTeacher) onTeacherSignedIn(loginInfo);
+      if (isParent) onParentSignedIn(loginInfo);
+    };
+
+    const onTeacherSignedIn = async (loginInfo: LoginInfo) => {
+      await dispatch("teacher/setInfo", {
+        id: loginInfo.profile.sub,
+        name: loginInfo.profile.name,
+      });
+      await dispatch("teacher/loadClasses", {
+        teacherId: loginInfo.profile.sub,
+      });
+    };
+
+    const onParentSignedIn = async (loginInfo: LoginInfo) => {
+      await dispatch("parent/setInfo", {
+        id: loginInfo.profile.sub,
+        name: loginInfo.profile.name,
+      });
+      await dispatch("parent/loadChildren");
+    };
 
     return {
       appView,

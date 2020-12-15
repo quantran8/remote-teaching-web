@@ -6,70 +6,15 @@ import {
   LogLevel,
   HubConnection,
 } from "@microsoft/signalr";
+import { RoomWSEvent, RoomWSEventHandler } from "./room";
+import { StudentWSEvent, StudentWSEventHandler } from "./student";
+import { TeacherWSEvent, TeacherWSEventHandler } from "./teacher";
 
 export interface GLSocketOptions {
   url: string;
 }
 
-export enum RoomWSEvent {
-  EVENT_ROOM_INFO = "EVENT_ROOM_INFO",
-}
-
-export enum TeacherWSEvent {
-  JOIN_CLASS = "EVENT_TEACHER_JOIN_CLASS",
-  STREAM_CONNECT = "EVENT_TEACHER_STREAM_CONNECT",
-  MUTE_AUDIO = "EVENT_TEACHER_MUTE_AUDIO",
-  MUTE_VIDEO = "EVENT_TEACHER_MUTE_VIDEO",
-  MUTE_STUDENT_AUDIO = "EVENT_TEACHER_MUTE_AUDIO_STUDENT",
-  MUTE_STUDENT_VIDEO = "EVENT_TEACHER_MUTE_VIDEO_STUDENT",
-  MUTE_AUDIO_ALL_STUDENT = "EVENT_TEACHER_MUTE_AUDIO_ALL_STUDENT",
-  MUTE_VIDEO_ALL_STUDENT = "EVENT_TEACHER_MUTE_VIDEO_ALL_STUDENT",
-  END_CLASS = "EVENT_TEACHER_END_CLASS",
-  DISCONNECT = "EVENT_TEACHER_DISCONNECT",
-  SET_FOCUS_TAB = "EVENT_SET_FOCUS_TAB",
-
-  UPDATE_GLOBAL_STUDENT_AUDIO = "EVENT_UPDATE_GLOBAL_STUDENT_AUDIO",
-  UPDATE_STUDENT_AUDIO = "EVENT_UPDATE_STUDENT_AUDIO",
-  UPDATE_STUDENT_BADGE = "EVENT_UPDATE_STUDENT_BADGE",
-}
-export enum StudentWSEvent {
-  JOIN_CLASS = "EVENT_STUDENT_JOIN_CLASS",
-  STREAM_CONNECT = "EVENT_STUDENT_STREAM_CONNECT",
-  MUTE_AUDIO = "EVENT_STUDENT_MUTE_AUDIO",
-  MUTE_VIDEO = "EVENT_STUDENT_MUTE_VIDEO",
-  LEAVE = "EVENT_STUDENT_LEAVE",
-  DISCONNECT = "EVENT_STUDENT_DISCONNECT",
-}
 export type WSEvent = RoomWSEvent | StudentWSEvent | TeacherWSEvent;
-
-export interface RoomWSEventHandler {
-  onRoomInfo(payload: any): void;
-}
-export interface StudentWSEventHandler {
-  onStudentJoinClass(payload: any): void;
-  onStudentStreamConnect(payload: any): void;
-  onStudentMuteAudio(payload: any): void;
-  onStudentMuteVideo(payload: any): void;
-  onStudentLeave(payload: any): void;
-  onStudentDisconnected(payload: any): void;
-}
-
-export interface TeacherWSEventHandler {
-  onTeacherJoinClass(payload: any): void;
-  onTeacherStreamConnect(payload: any): void;
-  onTeacherMuteAudio(payload: any): void;
-  onTeacherMuteVideo(payload: any): void;
-  onTeacherMuteStudentVideo(payload: any): void;
-  onTeacherMuteStudentAudio(payload: any): void;
-  onTeacherMuteAllStudentVideo(payload: any): void;
-  onTeacherMuteAllStudentAudio(payload: any): void;
-  onTeacherEndClass(payload: any): void;
-  onTeacherDisconnect(payload: any): void;
-  onTeacherSetFocusTab(payload: any): void;
-  onTeacherUpdateGlobalStudentAudio(payload: any): void;
-  onTeacherUpdateStudentAudio(payload: any): void;
-  onTeacherUpdateStudentBadge(payload: any): void;
-}
 
 export type WSEventHandler = RoomWSEventHandler &
   StudentWSEventHandler &
@@ -82,15 +27,13 @@ export class GLSocketClient {
   constructor(options: GLSocketOptions) {
     this._options = options;
   }
-
   get hubConnection(): HubConnection {
     return this._hubConnection as HubConnection;
   }
   get options(): GLSocketOptions {
     return this._options as GLSocketOptions;
   }
-
-  init() {
+  async init() {
     const options = {
       skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
@@ -103,16 +46,16 @@ export class GLSocketClient {
       .build();
     this._isConnected = false;
   }
-
   get isConnected(): boolean {
     return this._isConnected;
   }
-  async disconnect() {
+  async disconnect(): Promise<void> {
     if (!this.isConnected) return;
     return this._hubConnection?.stop();
   }
-  async connect() {
+  async connect(): Promise<any> {
     if (this.isConnected) return Promise.resolve();
+    if (!this._hubConnection) await this.init();
     return new Promise((resolve, reject) => {
       this.hubConnection
         .start()
@@ -126,12 +69,9 @@ export class GLSocketClient {
         });
     });
   }
-  async send(command: string, payload: any) {
+  async send(command: string, payload: any): Promise<any> {
     Logger.log("SEND", command, payload);
-    if (!this.isConnected) {
-      console.log("NOT CONNECTED");
-      return;
-    }
+    if (!this.isConnected) await this.connect();
     return this.hubConnection.send(command, payload);
   }
 
@@ -169,12 +109,12 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.DISCONNECT, handler.onTeacherDisconnect);
     handlers.set(TeacherWSEvent.SET_FOCUS_TAB, handler.onTeacherSetFocusTab);
     handlers.set(
-      TeacherWSEvent.UPDATE_GLOBAL_STUDENT_AUDIO,
-      handler.onTeacherUpdateGlobalStudentAudio
+      TeacherWSEvent.UPDATE_GLOBAL_AUDIO,
+      handler.onTeacherUpdateGlobalAudio
     );
     handlers.set(
-      TeacherWSEvent.UPDATE_STUDENT_AUDIO,
-      handler.onTeacherUpdateStudentAudio
+      TeacherWSEvent.UPDATE_LOCAL_AUDIO,
+      handler.onTeacherUpdateLocalAudio
     );
     handlers.set(
       TeacherWSEvent.UPDATE_STUDENT_BADGE,
