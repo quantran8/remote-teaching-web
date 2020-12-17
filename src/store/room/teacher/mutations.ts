@@ -2,7 +2,7 @@ import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { MutationTree, useStore } from "vuex";
+import { MutationTree, Store, useStore } from "vuex";
 import {
   ClassView,
   ClassViewFromValue,
@@ -15,7 +15,9 @@ import {
   UserIdPayload,
 } from "../interface";
 import { TeacherRoomState } from "./state";
+
 type State = TeacherRoomState;
+
 export interface TeacherRoomMutation<S> extends MutationTree<S> {
   setCameraLock(s: S, p: DeviceMediaPayload): void;
   setMicrophoneLock(s: S, p: DeviceMediaPayload): void;
@@ -202,5 +204,25 @@ const mutations: TeacherRoomMutation<State> = {
     s.localAudios = [];
   },
 };
+
+export const useMuation = (
+  _store?: Store<any>
+): {
+  commit?: TeacherRoomMutation<State>;
+} => {
+  const keys = Object.keys(mutations);
+  console.log("XXXXXX",keys);
+
+  const module = {
+    commit: undefined,
+    // commit: {
+    //   setCameraLock: (s: any, p: any) => store.commit("setCameraLock", p),
+    // },
+  };
+
+  return module;
+};
+
+useMuation();
 
 export default mutations;

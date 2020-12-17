@@ -135,11 +135,11 @@ export const useStudentRoomHandler = (
     onTeacherSetFocusTab: (payload: any) => {
       console.log(payload);
     },
-    onTeacherUpdateGlobalStudentAudio: async (payload: Array<string>) => {
+    onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
       commit("setGlobalAudios", payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentAudio: (_payload: any) => {
+    onTeacherUpdateLocalAudio: (_payload: any) => {
       // do nothing
     },
     onTeacherUpdateStudentBadge: (payload: StudentModel) => {

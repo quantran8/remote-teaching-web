@@ -1,5 +1,5 @@
 import { StudentWSCommand as WSCmd } from "./command";
-import { GLSocketClient } from "../base.ws";
+import { GLSocketClient } from "../base";
 
 export class StudentWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, studentId: string) {

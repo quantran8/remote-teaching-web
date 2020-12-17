@@ -82,11 +82,11 @@ export const useTeacherRoomWSHandler = ({
         classView: ClassViewFromValue(payload.focusTab),
       });
     },
-    onTeacherUpdateGlobalStudentAudio: async (payload: Array<string>) => {
+    onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
       commit("setGlobalAudios", payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentAudio: async (payload: Array<string>) => {
+    onTeacherUpdateLocalAudio: async (payload: Array<string>) => {
       commit("setLocalAudios", payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },

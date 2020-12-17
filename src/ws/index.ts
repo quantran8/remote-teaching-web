@@ -1,3 +1,4 @@
-export * from "./base.ws";
-export * from "./teacher/client";
-export * from "./student/client";
+export * from "./room";
+export * from "./teacher";
+export * from "./student";
+export * from "./base";

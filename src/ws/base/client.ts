@@ -6,19 +6,13 @@ import {
   LogLevel,
   HubConnection,
 } from "@microsoft/signalr";
-import { RoomWSEvent, RoomWSEventHandler } from "./room";
-import { StudentWSEvent, StudentWSEventHandler } from "./student";
-import { TeacherWSEvent, TeacherWSEventHandler } from "./teacher";
+
+import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
+import { WSEvent, WSEventHandler } from "./event";
 
 export interface GLSocketOptions {
   url: string;
 }
-
-export type WSEvent = RoomWSEvent | StudentWSEvent | TeacherWSEvent;
-
-export type WSEventHandler = RoomWSEventHandler &
-  StudentWSEventHandler &
-  TeacherWSEventHandler;
 
 export class GLSocketClient {
   private _hubConnection?: HubConnection;

@@ -1,4 +1,4 @@
-import { GLSocketClient } from "../base.ws";
+import { GLSocketClient } from "../base";
 import { TeacherWSCommand as WSCmd } from "./command";
 
 export class TeacherWSClient extends GLSocketClient {
