@@ -83,7 +83,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
-  async initClassRoom({ commit }, payload: InitClassRoomPayload) {
+  async initClassRoom({ commit, dispatch }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
     let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     if (!roomResponse) {
@@ -106,6 +106,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       return;
     }
     commit("setRoomInfo", roomResponse.data);
+    await dispatch("lesson/setInfo", {}, { root: true });
   },
   async setStudentAudio({ state, commit }, payload: UserMediaPayload) {
     await state.manager?.WSClient.sendRequestMuteStudentAudio(
