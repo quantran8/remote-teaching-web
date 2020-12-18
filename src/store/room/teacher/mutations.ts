@@ -2,7 +2,7 @@ import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { MutationTree, Store, useStore } from "vuex";
+import { MutationTree } from "vuex";
 import {
   ClassView,
   ClassViewFromValue,
@@ -18,7 +18,7 @@ import { TeacherRoomState } from "./state";
 
 type State = TeacherRoomState;
 
-export interface TeacherRoomMutation<S> extends MutationTree<S> {
+export interface TeacherRoomMutationInterface<S> {
   setCameraLock(s: S, p: DeviceMediaPayload): void;
   setMicrophoneLock(s: S, p: DeviceMediaPayload): void;
   endClass(s: S, p: DefaultPayload): void;
@@ -46,6 +46,10 @@ export interface TeacherRoomMutation<S> extends MutationTree<S> {
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
 }
+
+export interface TeacherRoomMutation<S>
+  extends MutationTree<S>,
+    TeacherRoomMutationInterface<S> {}
 
 const mutations: TeacherRoomMutation<State> = {
   setCameraLock(s: State, p: DeviceMediaPayload): void {
@@ -139,22 +143,22 @@ const mutations: TeacherRoomMutation<State> = {
   setTeacherVideo(s: State, p: UserMediaPayload): void {
     if (s.teacher?.id === p.id) s.teacher.videoEnabled = p.enable;
   },
-  hideAllStudents(s: State): void {
+  hideAllStudents(s: State, _): void {
     s.students
       .filter((st) => st.status === InClassStatus.JOINED)
       .forEach((student) => (student.videoEnabled = false));
   },
-  showAllStudents(s: State): void {
+  showAllStudents(s: State, _): void {
     s.students
       .filter((st) => st.status === InClassStatus.JOINED)
       .forEach((student) => (student.videoEnabled = true));
   },
-  muteAllStudents(s: State): void {
+  muteAllStudents(s: State, _): void {
     s.students
       .filter((st) => st.status === InClassStatus.JOINED)
       .forEach((student) => (student.audioEnabled = false));
   },
-  unmuteAllStudents(s: State): void {
+  unmuteAllStudents(s: State, _): void {
     s.students
       .filter((st) => st.status === InClassStatus.JOINED)
       .forEach((student) => (student.audioEnabled = true));
@@ -184,7 +188,7 @@ const mutations: TeacherRoomMutation<State> = {
       }
     }
   },
-  clearGlobalAudio(s: State, p: DefaultPayload): void {
+  clearGlobalAudio(s: State, p_: DefaultPayload): void {
     s.globalAudios = [];
   },
   addStudentAudio(s: State, p: UserIdPayload): void {
@@ -200,29 +204,9 @@ const mutations: TeacherRoomMutation<State> = {
       .filter((st) => p.indexOf(st.id) !== -1)
       .map((s) => s.id);
   },
-  clearStudentAudio(s: State, p: DefaultPayload): void {
+  clearStudentAudio(s: State, _: DefaultPayload): void {
     s.localAudios = [];
   },
 };
-
-export const useMuation = (
-  _store?: Store<any>
-): {
-  commit?: TeacherRoomMutation<State>;
-} => {
-  const keys = Object.keys(mutations);
-  console.log("XXXXXX",keys);
-
-  const module = {
-    commit: undefined,
-    // commit: {
-    //   setCameraLock: (s: any, p: any) => store.commit("setCameraLock", p),
-    // },
-  };
-
-  return module;
-};
-
-useMuation();
 
 export default mutations;

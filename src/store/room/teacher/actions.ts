@@ -22,7 +22,6 @@ import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
-
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -92,19 +91,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
       const lessons = await LessonService.getLessonByUnit(11);
       let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
       if (!lesson) lesson = lessons[0];
-      const createRoomResponse = await RemoteTeachingService.teacherStartClassRoom(
+      roomResponse = await RemoteTeachingService.teacherStartClassRoom(
         payload.classId,
         lesson.id
       );
-      if (createRoomResponse) {
-        roomResponse = await RemoteTeachingService.getActiveClassRoom();
-        if (!roomResponse) {
-          // Cannot start class room
-          return;
-        }
-      } else {
-        return;
-      }
+      if (!roomResponse) throw new Error("Can not start class");
     }
     const roomInfo: RoomModel = roomResponse.data;
     if (!roomInfo || roomInfo.classId !== payload.classId) {

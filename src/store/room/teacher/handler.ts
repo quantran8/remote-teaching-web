@@ -7,7 +7,6 @@ import { TeacherRoomState } from "./state";
 export const useTeacherRoomWSHandler = ({
   commit,
   dispatch,
-  state,
 }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
