@@ -5,6 +5,7 @@ import {
   HttpTransportType,
   LogLevel,
   HubConnection,
+  HubConnectionState,
 } from "@microsoft/signalr";
 
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
@@ -13,7 +14,6 @@ import { WSEvent, WSEventHandler } from "./event";
 export interface GLSocketOptions {
   url: string;
 }
-
 export class GLSocketClient {
   private _hubConnection?: HubConnection;
   private _options?: GLSocketOptions;
@@ -59,13 +59,20 @@ export class GLSocketClient {
         })
         .catch((err) => {
           this._isConnected = false;
+          Logger.error("GLSOCKET", err);
           reject(err);
         });
     });
   }
   async send(command: string, payload: any): Promise<any> {
     Logger.log("SEND", command, payload);
-    if (!this.isConnected) await this.connect();
+    if (
+      !this.isConnected ||
+      this.hubConnection.state === HubConnectionState.Disconnected
+    ) {
+      this._isConnected = false;
+      await this.connect();
+    }
     return this.hubConnection.send(command, payload);
   }
 
