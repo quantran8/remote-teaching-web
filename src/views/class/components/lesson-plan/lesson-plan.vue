@@ -10,10 +10,12 @@
       ></div>
     </div>
     <div class="activities">
-      <ExposureDetail
-        v-if="currentExposure"
-        @click-back="onClickCloseExposure"
-      ></ExposureDetail>
+      <div v-if="currentExposure">
+        <ExposureDetail
+          :exposure="currentExposure"
+          @click-back="onClickCloseExposure"
+        />
+      </div>
       <div v-else>
         <LessonActivity
           class="lesson-activity"

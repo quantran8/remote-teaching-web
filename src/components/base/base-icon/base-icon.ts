@@ -5,7 +5,7 @@ export default defineComponent({
     name: String,
   },
   setup(props) {
-    const iconCssClass = computed(() => "rt-" + props.name);
+    const iconCssClass = computed(() => `rt-${props.name}`);
     return { iconCssClass };
   },
 });

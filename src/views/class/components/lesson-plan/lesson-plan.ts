@@ -32,7 +32,7 @@ export default defineComponent({
       totalActivities,
       remainingTime,
       setCurrentExposure,
-      onClickCloseExposure
+      onClickCloseExposure,
     };
   },
 });

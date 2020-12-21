@@ -1,0 +1,14 @@
+.header-container {
+  display: flex;
+  align-items: center;
+  border-bottom: solid 1px gray;
+  padding-left: 0.5rem;
+  .exposure-title {
+    flex: 1;
+    padding: 1rem;
+  }
+}
+.exposure-content {
+  background-color: white;
+  min-height: 100%;
+}

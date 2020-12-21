@@ -27,7 +27,6 @@ interface LessonActions<S, R>
 const actions: LessonActions<LessonState, any> = {
   setInfo(store: ActionContext<LessonState, any>, _: any) {
     // TODO
-
     const payload = {
       exposures: [
         {
@@ -40,7 +39,14 @@ const actions: LessonActions<LessonState, any> = {
             {
               id: "x1",
               name: "x1",
-              media: [{ url: "https://picsum.photos/400/300?random=1" }],
+              media: [
+                {
+                  id: "x11",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=1",
+                  },
+                },
+              ],
             },
           ],
         },
@@ -54,7 +60,50 @@ const actions: LessonActions<LessonState, any> = {
             {
               id: "x2",
               name: "x2",
-              media: [{ url: "https://picsum.photos/400/300?random=2" }],
+              media: [
+                {
+                  id: "x21",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=2",
+                  },
+                },
+              ],
+            },
+            {
+              id: "x3",
+              name: "x3",
+              media: [
+                {
+                  id: "x31",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=3",
+                  },
+                },
+                {
+                  id: "x32",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=4",
+                  },
+                },
+                {
+                  id: "x33",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=5",
+                  },
+                },
+                {
+                  id: "x34",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=6",
+                  },
+                },
+                {
+                  id: "x35",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=7",
+                  },
+                },
+              ],
             },
           ],
         },
@@ -66,24 +115,52 @@ const actions: LessonActions<LessonState, any> = {
           status: ExposureStatus.DEFAULT,
           items: [
             {
-              id: "x3",
-              name: "x3",
-              media: [{ url: "https://picsum.photos/400/300?random=3" }],
+              id: "3x2",
+              name: "3x2",
+              media: [
+                {
+                  id: "3x21",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=12",
+                  },
+                },
+              ],
             },
             {
-              id: "x4",
-              name: "x4",
-              media: [{ url: "https://picsum.photos/400/300?random=4" }],
-            },
-            {
-              id: "x5",
-              name: "x5",
-              media: [{ url: "https://picsum.photos/400/300?random=5" }],
-            },
-            {
-              id: "x6",
-              name: "x6",
-              media: [{ url: "https://picsum.photos/400/300?random=6" }],
+              id: "3x3",
+              name: "3x3",
+              media: [
+                {
+                  id: "3x31",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=13",
+                  },
+                },
+                {
+                  id: "3x32",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=14",
+                  },
+                },
+                {
+                  id: "3x33",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=15",
+                  },
+                },
+                {
+                  id: "3x34",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=16",
+                  },
+                },
+                {
+                  id: "3x35",
+                  image: {
+                    url: "https://picsum.photos/400/300?random=17",
+                  },
+                },
+              ],
             },
           ],
         },

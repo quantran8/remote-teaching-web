@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { Exposure, ExposureStatus, LessonState } from "./state";
+import { Exposure, ExposureStatus, ExposureType, LessonState } from "./state";
 
 interface LessonMutationInterface<S> {
   setExposures(s: S, p: { exposures: Exposure[] }): void;
@@ -17,7 +17,20 @@ const mutations: LessonMutation<LessonState> = {
     s.exposures = p.exposures;
   },
   setCurrentExposure(s: LessonState, p: { id: string }) {
-    s.currentExposure = s.exposures.find((e) => e.id === p.id);
+    const exposure = s.exposures.find((e) => e.id === p.id);
+    if (exposure?.type === ExposureType.TRANSITION) {
+      s.currentExposure = undefined;
+      s.currentExposureItemMedia = undefined;
+      return;
+    }
+    s.currentExposure = exposure;
+    if (s.currentExposure && s.currentExposure.items.length > 0) {
+      s.currentExposureItemMedia = undefined;
+      const firstItem = s.currentExposure.items[0];
+      if (firstItem.media.length > 0) {
+        s.currentExposureItemMedia = firstItem.media[0];
+      }
+    }
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;

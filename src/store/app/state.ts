@@ -10,12 +10,14 @@ export interface AppState {
   layout: LayoutType;
   appView: AppView;
   toast: string;
+  contentSignature: string;
 }
 
 const state: AppState = {
   layout: "main",
   appView: AppView.Blank,
   toast: "",
+  contentSignature: "",
 };
 
 export default state;

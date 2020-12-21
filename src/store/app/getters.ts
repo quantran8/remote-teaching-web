@@ -11,6 +11,9 @@ const getters: GetterTree<AppState, any> = {
   appToast(state: AppState): string {
     return state.toast;
   },
+  contentSignature(state: AppState): string {
+    return state.contentSignature;
+  },
 };
 
 export default getters;
