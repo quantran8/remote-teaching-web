@@ -6,6 +6,8 @@ interface LessonMutationInterface<S> {
   setCurrentExposure(s: S, p: { id: string }): void;
   setCurrentExposureItemMedia(s: S, p: { id: string }): void;
   setExposureStatus(s: S, p: { id: string; status: ExposureStatus }): void;
+  setTotalTime(s: S, payload: { time: string }): void;
+  setPlayedTime(s: S, payload: { time: string }): void;
 }
 
 interface LessonMutation<S>
@@ -49,6 +51,12 @@ const mutations: LessonMutation<LessonState> = {
         s.currentExposure = undefined;
       }
     }
+  },
+  setTotalTime(s: LessonState, payload: { time: string }) {
+    s.totalTime = payload.time;
+  },
+  setPlayedTime(s: LessonState, payload: { time: string }) {
+    s.playedTime = payload.time;
   },
 };
 

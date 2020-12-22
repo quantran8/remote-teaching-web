@@ -22,6 +22,7 @@ export interface ExposureContentModel {
   };
   unit: number;
   played: boolean;
+  maxDuration: string;
   contents: Array<ExposureItemModel>;
 }
 export interface LessonPlanModel {
@@ -29,6 +30,8 @@ export interface LessonPlanModel {
   contents: Array<ExposureContentModel>;
   contentStorageUrl: string;
   isBlackout: boolean;
+  totalTime: string;
+  playedTime: string;
 }
 export interface RoomModel {
   id: string;

@@ -1,7 +1,7 @@
 <template>
   <div class="lesson-container">
     <div class="title">Lesson Plan</div>
-    <p>- Activities: {{ 1 }}/{{ exposures.length }}</p>
+    <p>- Activities: {{ activityStatistic }}</p>
     <p>- Remaining times: {{ remainingTime }}</p>
     <div class="progress">
       <div

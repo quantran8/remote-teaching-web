@@ -8,14 +8,18 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const exposures = computed(() => getters["lesson/exposures"]);
+    const activityStatistic = computed(
+      () => getters["lesson/activityStatistic"]
+    );
     const currentExposure = computed(() => getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(
       () => getters["lesson/currentExposureItemMedia"]
     );
 
-    const totalActivities = 10;
-    const progress = 0.4;
-    const remainingTime = "42:00";
+    const progress = computed(() => getters["lesson/progressStatistic"]);
+    const remainingTime = computed(
+      () => getters["lesson/remainingTimeStatistic"]
+    );
 
     const onClickExposure = async (exposure: Exposure) => {
       if (exposure.status === ExposureStatus.COMPLETED) return;
@@ -45,11 +49,11 @@ export default defineComponent({
       currentExposure,
       currentExposureItemMedia,
       progress,
-      totalActivities,
       remainingTime,
       onClickExposure,
       onClickCloseExposure,
       isShowExposureDetail,
+      activityStatistic,
     };
   },
 });

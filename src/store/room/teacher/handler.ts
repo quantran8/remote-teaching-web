@@ -113,6 +113,11 @@ export const useTeacherRoomWSHandler = ({
         { id: payload.content.id, status: ExposureStatus.COMPLETED },
         { root: true }
       );
+      commit(
+        "lesson/setPlayedTime",
+        { time: payload.playedTime },
+        { root: true }
+      );
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
       commit(

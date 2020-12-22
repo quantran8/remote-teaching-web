@@ -56,7 +56,7 @@ const actions: LessonActions<LessonState, any> = {
       return {
         id: e.id,
         name: e.title,
-        duration: "",
+        duration: e.maxDuration,
         status: e.played ? ExposureStatus.COMPLETED : ExposureStatus.DEFAULT,
         type: ExposureTypeFromValue(e.contentType.id),
         items: items,
@@ -73,6 +73,8 @@ const actions: LessonActions<LessonState, any> = {
         id: exposure.pageSelected,
       });
     }
+    store.commit("setPlayedTime", { time: payload.playedTime });
+    store.commit("setTotalTime", { time: payload.totalTime });
   },
   setExposures(
     store: ActionContext<LessonState, any>,
@@ -100,7 +102,6 @@ const actions: LessonActions<LessonState, any> = {
   ) {
     store.commit("setExposureStatus", payload);
   },
-  
 };
 
 export default actions;
