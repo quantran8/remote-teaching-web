@@ -44,7 +44,7 @@ export default defineComponent({
       const isParent: boolean = getters["auth/isParent"];
       if (isTeacher) onTeacherSignedIn(loginInfo);
       if (isParent) onParentSignedIn(loginInfo);
-      dispatch("auth/loadContentSignature");
+      dispatch("loadContentSignature");
     };
 
     watch(isSignedIn, async () => {

@@ -14,4 +14,8 @@ export enum TeacherWSCommand {
   CLEAR_STUDENT_AUDIO = "TeacherClearStudentAudio",
   ADD_GLOBAL_STUDENT_AUDIO = "TeacherAddGlobalStudentAudio",
   CLEAR_GLOBAL_STUDENT_AUDIO = "TeacherClearGlobalStudentAudio",
+  START_LESSON_CONTENT = "TeacherSetContent",
+  END_LESSON_CONTENT = "TeacherEndContent",
+  SET_LESSON_ITEM_CONTENT = "TeacherSetItemContent",
+  BLACKOUT_LESSON_CONTENT = "BlackOutScreen",
 }

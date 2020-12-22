@@ -10,8 +10,23 @@ export enum ExposureType {
   WRITING = "writing",
   VPC = "vpc",
   STORY = "story",
-  Activity = "activity",
+  ACTIVITY = "activity",
 }
+
+export const ExposureTypeFromValue = (val: number) => {
+  if (val === 0) return ExposureType.TRANSITION;
+  if (val === 12) return ExposureType.WRITING;
+  if (val === 13) return ExposureType.READING;
+  if (val === 14) return ExposureType.SONG;
+  if (val === 15) return ExposureType.ACTIVITY;
+  if (val === 16) return ExposureType.STORY;
+  if (val === 17) return ExposureType.POEM;
+  if (val === 18) return ExposureType.PHONOGRAM;
+  if (val === 20) return ExposureType.VPC;
+  if (val === 23) return ExposureType.CHANT;
+  if (val === 25) return ExposureType.BIG_BOOK;
+  throw new Error("UnSupported Exposure Type " + val);
+};
 
 export enum ExposureStatus {
   DEFAULT = 0,
@@ -46,12 +61,14 @@ export interface LessonState {
   exposures: Exposure[];
   currentExposure?: Exposure;
   currentExposureItemMedia?: ExposureItemMedia;
+  isBlackout: boolean;
 }
 
 const state: LessonState = {
   exposures: [],
   currentExposure: undefined,
   currentExposureItemMedia: undefined,
+  isBlackout: false,
 };
 
 export default state;

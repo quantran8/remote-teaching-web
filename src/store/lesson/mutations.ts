@@ -13,6 +13,9 @@ interface LessonMutation<S>
     LessonMutationInterface<S> {}
 
 const mutations: LessonMutation<LessonState> = {
+  setIsBlackOut(s: LessonState, p: { IsBlackOut: boolean }) {
+    s.isBlackout = p.IsBlackOut;
+  },
   setExposures(s: LessonState, p: { exposures: Exposure[] }) {
     s.exposures = p.exposures;
   },
@@ -41,7 +44,12 @@ const mutations: LessonMutation<LessonState> = {
   },
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {
     const exposure = s.exposures.find((e) => e.id === p.id);
-    if (exposure) exposure.status = p.status;
+    if (exposure) {
+      exposure.status = p.status;
+      if (exposure === s.currentExposure) {
+        s.currentExposure = undefined;
+      }
+    }
   },
 };
 

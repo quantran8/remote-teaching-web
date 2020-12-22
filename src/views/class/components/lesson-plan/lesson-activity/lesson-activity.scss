@@ -4,7 +4,7 @@
   flex-direction: row;
   border-bottom: solid 1px gray;
   align-items: center;
-  :hover{
+  :hover {
     cursor: pointer;
   }
   .item-left {
@@ -12,7 +12,12 @@
     .icon {
       width: 32px;
       height: 32px;
-      background-color: lightgray;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .activity-icon::before{
+        font-size: 1.6rem;
+      }
     }
   }
   .item-content {
@@ -42,9 +47,9 @@
   }
 }
 
-.item-active{
-    background-color: #fff9c4;
-    .name {
-     color: black;
-    }
+.item-active {
+  background-color: #fff9c4;
+  .name {
+    color: black;
+  }
 }

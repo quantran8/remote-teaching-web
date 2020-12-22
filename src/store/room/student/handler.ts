@@ -13,6 +13,7 @@ export const useStudentRoomHandler = (
     onRoomInfo: (payload: RoomModel) => {
       commit("setRoomInfo", payload);
       dispatch("updateAudioAndVideoFeed", {});
+      dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -151,6 +152,18 @@ export const useStudentRoomHandler = (
         const message = `Congratulations! You got 1 more badge from your teacher!`;
         store.dispatch("setToast", message, { root: true });
       }
+    },
+    onTeacherUpdateBlackOut: (payload: any) => {
+      console.log(payload);
+    },
+    onTeacherStartLessonPlan: (payload: any) => {
+      console.log(payload);
+    },
+    onTeacherEndLessonPlan: (payload: any) => {
+      console.log(payload);
+    },
+    onTeacherSetLessonPlanItemContent: (payload: any) => {
+      console.log(payload);
     },
   };
   return handler;

@@ -1,4 +1,5 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue } from "../interface";
@@ -12,6 +13,7 @@ export const useTeacherRoomWSHandler = ({
     onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
       await dispatch("updateAudioAndVideoFeed", {});
+      dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
@@ -94,6 +96,30 @@ export const useTeacherRoomWSHandler = ({
         id: payload.id,
         badge: payload.badge,
       });
+    },
+    onTeacherUpdateBlackOut: (payload: any) => {
+      commit(
+        "lesson/setIsBlackOut",
+        { IsBlackOut: payload.isBlackOut },
+        { root: true }
+      );
+    },
+    onTeacherStartLessonPlan: (payload: any) => {
+      commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
+    },
+    onTeacherEndLessonPlan: (payload: any) => {
+      commit(
+        "lesson/setExposureStatus",
+        { id: payload.content.id, status: ExposureStatus.COMPLETED },
+        { root: true }
+      );
+    },
+    onTeacherSetLessonPlanItemContent: (payload: any) => {
+      commit(
+        "lesson/setCurrentExposureItemMedia",
+        { id: payload.pageSelected },
+        { root: true }
+      );
     },
   };
   return handler;

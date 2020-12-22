@@ -106,7 +106,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
       return;
     }
     commit("setRoomInfo", roomResponse.data);
-    await dispatch("lesson/setInfo", {}, { root: true });
   },
   async setStudentAudio({ state, commit }, payload: UserMediaPayload) {
     await state.manager?.WSClient.sendRequestMuteStudentAudio(
@@ -186,6 +185,20 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   clearStudentAudio({ state }, _payload: any) {
     state.manager?.WSClient.sendRequestClearStudentAudio();
+  },
+  setBlackOut({ state }, payload: { isBlackOut: boolean }) {
+    state.manager?.WSClient.sendRequestBlackOutLessonContent(
+      payload.isBlackOut
+    );
+  },
+  setCurrentExposure({ state }, payload: { id: string }) {
+    state.manager?.WSClient.sendRequestStartLessonContent(payload.id);
+  },
+  endExposure({ state }, payload: { id: string }) {
+    state.manager?.WSClient.sendRequestEndLessonContent(payload.id);
+  },
+  setCurrentExposureMediaItem({ state }, payload: { id: string }) {
+    state.manager?.WSClient.sendRequestSetLessonItemContent(payload.id);
   },
 };
 

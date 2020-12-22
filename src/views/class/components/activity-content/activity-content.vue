@@ -1,13 +1,12 @@
 <template>
   <div class="activity-content-container">
-    <div class="content">
-      <img
-        class="image-content"
-        v-if="currentExposureItemMedia"
-        :src="currentExposureItemMedia.image.url"
-        alt=""
-      />
-    </div>
+    <div
+      v-if="currentExposureItemMedia"
+      class="content-container"
+      :style="{
+        'background-image': `url('${currentExposureItemMedia.image.url}')`,
+      }"
+    ></div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>
     <div v-if="isFlipped" class="mask"></div>
     <div

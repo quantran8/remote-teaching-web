@@ -1,7 +1,9 @@
 <template>
   <div class="item-container">
     <div class="item-left">
-      <div class="icon"></div>
+      <div class="icon">
+        <BaseIcon :name="activityIcon" class="activity-icon"/>
+      </div>
     </div>
     <div class="item-content">
       <div class="name">{{ title }}</div>

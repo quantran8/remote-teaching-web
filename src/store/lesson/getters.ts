@@ -5,6 +5,7 @@ interface LessonGetterInterface<S> {
   currentExposure(s: S): Exposure | undefined;
   currentExposureItemMedia(s: S): ExposureItemMedia | undefined;
   exposures(s: S): Exposure[];
+  isBlackOut(s: S): boolean;
 }
 
 interface LessonGetters<S, R>
@@ -20,6 +21,9 @@ const getters: LessonGetters<LessonState, any> = {
   },
   exposures(s: LessonState): Exposure[] {
     return s.exposures;
+  },
+  isBlackOut(s: LessonState): boolean {
+    return s.isBlackout;
   },
 };
 

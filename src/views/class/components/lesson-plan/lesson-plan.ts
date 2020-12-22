@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
@@ -17,11 +17,13 @@ export default defineComponent({
     const remainingTime = "42:00";
 
     const setCurrentExposure = async (id: string) => {
-      await dispatch("lesson/setCurrentExposure", { id: id });
+      await dispatch("teacherRoom/setCurrentExposure", { id: id });
     };
 
     const onClickCloseExposure = async () => {
-      return setCurrentExposure("");
+      await dispatch("teacherRoom/endExposure", {
+        id: currentExposure.value.id,
+      });
     };
 
     return {
