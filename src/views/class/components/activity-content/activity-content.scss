@@ -54,6 +54,9 @@
       color: white;
     }
   }
+  .flip-button:hover {
+    cursor: pointer;
+  }
   .flipped {
     background-color: white;
     border-color: black;

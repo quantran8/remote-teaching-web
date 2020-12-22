@@ -3,9 +3,7 @@
     <div
       v-if="currentExposureItemMedia"
       class="content-container"
-      :style="{
-        'background-image': `url('${currentExposureItemMedia.image.url}')`,
-      }"
+      :style="contentImageStyle"
     ></div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>
     <div v-if="isFlipped" class="mask"></div>

@@ -1,5 +1,6 @@
 .item-container {
   padding: 6px;
+
   .item-header {
     padding: 0.5rem;
     display: flex;
@@ -15,6 +16,9 @@
       transform: rotate(-90deg);
     }
   }
+  .item-header:hover {
+    cursor: pointer;
+  }
   .item-content {
     .item-media {
       position: relative;
@@ -29,6 +33,9 @@
         object-fit: contain;
         object-position: center;
       }
+    }
+    .item-media:hover{
+      cursor: pointer;
     }
     .item-active {
       border: solid 2px blue;

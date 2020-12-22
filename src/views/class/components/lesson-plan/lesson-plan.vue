@@ -10,7 +10,7 @@
       ></div>
     </div>
     <div class="activities">
-      <div v-if="currentExposure">
+      <div v-if="isShowExposureDetail">
         <ExposureDetail
           :exposure="currentExposure"
           @click-back="onClickCloseExposure"
@@ -25,7 +25,8 @@
           :title="exposure.name"
           :type="exposure.type"
           :duration="exposure.duration"
-          @click="() => setCurrentExposure(exposure.id)"
+          :status="exposure.status"
+          @click="() => onClickExposure(exposure)"
         />
       </div>
     </div>

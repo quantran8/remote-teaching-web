@@ -4,9 +4,6 @@
   flex-direction: row;
   border-bottom: solid 1px gray;
   align-items: center;
-  :hover {
-    cursor: pointer;
-  }
   .item-left {
     padding: 0 16px;
     .icon {
@@ -15,7 +12,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      .activity-icon::before{
+      .activity-icon::before {
         font-size: 1.6rem;
       }
     }
@@ -43,7 +40,11 @@
     }
   }
   .item-right {
-    display: none;
+    .icon-done::before {
+      color: green;
+      padding: 0.8rem;
+      font-size: 2rem;
+    }
   }
 }
 
@@ -52,4 +53,15 @@
   .name {
     color: black;
   }
+}
+
+.item-container:hover {
+  cursor: pointer;
+}
+
+.item-done {
+  background-color: rgb(240, 240, 240);
+}
+.item-done:hover {
+  cursor: auto;
 }

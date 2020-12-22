@@ -1,4 +1,4 @@
-import { ExposureType } from "@/store/lesson/state";
+import { ExposureStatus, ExposureType } from "@/store/lesson/state";
 import { defineComponent } from "vue";
 
 const exposureIcon = (type: ExposureType) => {
@@ -7,9 +7,9 @@ const exposureIcon = (type: ExposureType) => {
     case ExposureType.ACTIVITY:
       icon = "icon-bigbook";
       break;
-      case ExposureType.POEM:
-        icon = "icon-bigbook";
-        break;
+    case ExposureType.POEM:
+      icon = "icon-bigbook";
+      break;
     case ExposureType.SONG:
       icon = "icon-song";
       break;
@@ -39,12 +39,13 @@ const exposureIcon = (type: ExposureType) => {
 };
 
 export default defineComponent({
-  props: ["id", "title", "type", "duration"],
+  props: ["id", "title", "type", "duration", "status"],
   setup(props) {
     const activityIcon = exposureIcon(props.type);
-
+    const isCompleted = props.status === ExposureStatus.COMPLETED;
     return {
       activityIcon,
+      isCompleted
     };
   },
 });

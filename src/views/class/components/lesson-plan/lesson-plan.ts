@@ -2,6 +2,7 @@ import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
+import { Exposure, ExposureStatus, ExposureType } from "@/store/lesson/state";
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
   setup() {
@@ -16,8 +17,16 @@ export default defineComponent({
     const progress = 0.4;
     const remainingTime = "42:00";
 
-    const setCurrentExposure = async (id: string) => {
-      await dispatch("teacherRoom/setCurrentExposure", { id: id });
+    const onClickExposure = async (exposure: Exposure) => {
+      if (exposure.status === ExposureStatus.COMPLETED) return;
+      if (
+        currentExposure.value &&
+        currentExposure.value.type === ExposureType.TRANSITION
+      )
+        await dispatch("teacherRoom/endExposure", {
+          id: currentExposure.value.id,
+        });
+      await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
     };
 
     const onClickCloseExposure = async () => {
@@ -26,6 +35,11 @@ export default defineComponent({
       });
     };
 
+    const isShowExposureDetail = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      return exposure && exposure.type !== ExposureType.TRANSITION;
+    });
+
     return {
       exposures,
       currentExposure,
@@ -33,8 +47,9 @@ export default defineComponent({
       progress,
       totalActivities,
       remainingTime,
-      setCurrentExposure,
+      onClickExposure,
       onClickCloseExposure,
+      isShowExposureDetail,
     };
   },
 });

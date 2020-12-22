@@ -13,6 +13,16 @@ export default defineComponent({
         isBlackOut: !isFlipped.value,
       });
     };
-    return { currentExposureItemMedia, isFlipped, toggleView };
+    const contentImageStyle = computed(() => {
+      return {
+        "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
+      };
+    });
+    return {
+      currentExposureItemMedia,
+      isFlipped,
+      toggleView,
+      contentImageStyle,
+    };
   },
 });
