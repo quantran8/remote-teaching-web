@@ -25,4 +25,5 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-component-template/
+component-template
+documents

@@ -64,4 +64,17 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearGlobalAudio() {
     return this.send(WSCmd.CLEAR_GLOBAL_STUDENT_AUDIO, {});
   }
+
+  sendRequestStartLessonContent(contentId: string) {
+    return this.send(WSCmd.START_LESSON_CONTENT, { ContentId: contentId });
+  }
+  sendRequestEndLessonContent(contentId: string) {
+    return this.send(WSCmd.END_LESSON_CONTENT, { ContentId: contentId });
+  }
+  sendRequestSetLessonItemContent(id: string) {
+    return this.send(WSCmd.SET_LESSON_ITEM_CONTENT, { ContentId: id });
+  }
+  sendRequestBlackOutLessonContent(isBlackOut: boolean) {
+    return this.send(WSCmd.BLACKOUT_LESSON_CONTENT, { IsBlackOut: isBlackOut });
+  }
 }

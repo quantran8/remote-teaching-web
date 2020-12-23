@@ -45,12 +45,12 @@
       v-if="showModal"
       @dismiss="onClickCloseModal"
       @leave="onClickLeave"
-    ></LeaveModal>
+    />
     <ErrorModal
       v-if="isClassNotActive"
       @dismiss="onClickCloseError"
       @confirm="onClickLeave"
-    ></ErrorModal>
+    />
   </div>
 </template>
 <style lang="scss" scoped src="./class.scss"></style>

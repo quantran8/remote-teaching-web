@@ -13,4 +13,8 @@ export interface TeacherWSEventHandler {
   onTeacherUpdateGlobalAudio(payload: any): void;
   onTeacherUpdateLocalAudio(payload: any): void;
   onTeacherUpdateStudentBadge(payload: any): void;
+  onTeacherUpdateBlackOut(payload: any): void;
+  onTeacherStartLessonPlan(payload: any): void;
+  onTeacherEndLessonPlan(payload: any): void;
+  onTeacherSetLessonPlanItemContent(payload: any): void;
 }

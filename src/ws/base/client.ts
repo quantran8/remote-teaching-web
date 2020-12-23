@@ -121,6 +121,22 @@ export class GLSocketClient {
       TeacherWSEvent.UPDATE_STUDENT_BADGE,
       handler.onTeacherUpdateStudentBadge
     );
+    handlers.set(
+      TeacherWSEvent.UPDATE_BLACK_OUT,
+      handler.onTeacherUpdateBlackOut
+    );
+    handlers.set(
+      TeacherWSEvent.START_LESSON_PLAN,
+      handler.onTeacherStartLessonPlan
+    );
+    handlers.set(
+      TeacherWSEvent.END_LESSON_PLAN,
+      handler.onTeacherEndLessonPlan
+    );
+    handlers.set(
+      TeacherWSEvent.SET_ITEM_CONTENT_LESSON_PLAN,
+      handler.onTeacherSetLessonPlanItemContent
+    );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         Logger.info("RECIEVE", key, payload);

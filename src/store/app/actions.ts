@@ -1,3 +1,4 @@
+import { ContentService } from "@/services";
 import { ActionTree } from "vuex";
 import { AppState, AppView, LayoutType } from "./state";
 
@@ -10,6 +11,12 @@ const actions: ActionTree<AppState, any> = {
   },
   setAppView(store, payload: { appView: AppView }) {
     store.commit("setAppView", payload);
+  },
+  async loadContentSignature(store, _: {}) {
+    const res = await ContentService.getSASUrl();
+    if (res && res.pageContainer) {
+      store.commit("setContentSignature", res.pageContainer);
+    }
   },
 };
 

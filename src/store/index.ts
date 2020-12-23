@@ -6,6 +6,7 @@ import ParentModule from "./parent";
 import TeacherModule from "./teacher";
 import TeacherRoomModule from "./room/teacher";
 import StudentRoomModule from "./room/student";
+import LessonModule from "./lesson";
 
 const store = createStore({
   state: {},
@@ -19,6 +20,7 @@ const store = createStore({
     teacher: TeacherModule,
     teacherRoom: TeacherRoomModule,
     studentRoom: StudentRoomModule,
+    lesson: LessonModule,
   },
 });
 
@@ -31,4 +33,5 @@ export {
   TeacherModule,
   TeacherRoomModule,
   StudentRoomModule,
+  LessonModule,
 };

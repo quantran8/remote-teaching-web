@@ -11,6 +11,9 @@ const mutations: MutationTree<AppState> = {
   setAppView(state, payload: { appView: AppView }) {
     state.appView = payload.appView;
   },
+  setContentSignature(state, payload: string) {
+    state.contentSignature = payload;
+  },
 };
 
 export default mutations;

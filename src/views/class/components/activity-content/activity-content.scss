@@ -1,10 +1,22 @@
 .activity-content-container {
   background-color: white;
-  padding: 5px;
   flex: 1;
   height: 100%;
   position: relative;
   border: solid 1px gray;
+  .content-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    .image-content {
+      width: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  }
   .skeleton {
     position: absolute;
     left: 0;
@@ -20,7 +32,6 @@
     right: 0;
     bottom: 0;
     background-color: black;
-    opacity: 0.9;
   }
   .flip-button {
     position: absolute;
@@ -42,6 +53,9 @@
     .icon-change::before {
       color: white;
     }
+  }
+  .flip-button:hover {
+    cursor: pointer;
   }
   .flipped {
     background-color: white;
