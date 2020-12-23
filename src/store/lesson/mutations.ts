@@ -2,6 +2,7 @@ import { MutationTree } from "vuex";
 import { Exposure, ExposureStatus, ExposureType, LessonState } from "./state";
 
 interface LessonMutationInterface<S> {
+  setIsBlackOut(s: S, p: { IsBlackOut: boolean }) :void;
   setExposures(s: S, p: { exposures: Exposure[] }): void;
   setCurrentExposure(s: S, p: { id: string }): void;
   setCurrentExposureItemMedia(s: S, p: { id: string }): void;

@@ -26,6 +26,7 @@ interface LessonActionsInterface<S, R> {
     store: ActionContext<S, R>,
     payload: { id: string; status: ExposureStatus }
   ): any;
+  setIsBlackOut(store: ActionContext<S, R>, p: { IsBlackOut: boolean }): any;
 }
 
 interface LessonActions<S, R>
@@ -101,6 +102,12 @@ const actions: LessonActions<LessonState, any> = {
     payload: { id: string; status: ExposureStatus }
   ) {
     store.commit("setExposureStatus", payload);
+  },
+  setIsBlackOut(
+    store: ActionContext<LessonState, any>,
+    payload: { IsBlackOut: boolean }
+  ) {
+    store.commit("setIsBlackOut", payload);
   },
 };
 
