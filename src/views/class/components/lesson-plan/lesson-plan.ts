@@ -22,15 +22,22 @@ export default defineComponent({
     );
 
     const onClickExposure = async (exposure: Exposure) => {
-      if (exposure.status === ExposureStatus.COMPLETED) return;
+      if (
+        exposure.id === currentExposure.value?.id ||
+        exposure.status === ExposureStatus.COMPLETED
+      )
+        return;
       if (
         currentExposure.value &&
         currentExposure.value.type === ExposureType.TRANSITION
-      )
+      ) {
         await dispatch("teacherRoom/endExposure", {
           id: currentExposure.value.id,
         });
-      await dispatch("lesson/setIsBlackOut", { IsBlackOut: true });
+      }
+      if (exposure.type === ExposureType.TRANSITION) {
+        await dispatch("lesson/setIsBlackOut", { IsBlackOut: true });
+      }
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
     };
 

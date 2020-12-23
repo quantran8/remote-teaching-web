@@ -3,7 +3,7 @@ import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, InClassStatus } from "../interface";
+import { ClassView, ClassViewPayload, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {

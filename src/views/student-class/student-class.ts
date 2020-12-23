@@ -1,5 +1,6 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLError, GLErrorCode } from "@/models/error.model";
+import { ClassView } from "@/store/room/interface";
 import { computed, ComputedRef, defineComponent, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -33,6 +34,9 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const teacher = computed(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
+    const isLessonPlan = computed(
+      () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
+    );
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
@@ -71,7 +75,19 @@ export default defineComponent({
         enable: !student.value.videoEnabled,
       });
     };
-
+    const isBlackOutContent = computed(
+      () => store.getters["lesson/isBlackOut"]
+    );
+    const currentExposureItemMedia = computed(
+      () => store.getters["lesson/currentExposureItemMedia"]
+    );
+    const contentImageStyle = computed(() => {
+      return currentExposureItemMedia.value
+        ? {
+            "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
+          }
+        : {};
+    });
     return {
       student,
       students,
@@ -80,6 +96,9 @@ export default defineComponent({
       videoIcon,
       toggleAudio,
       toggleVideo,
+      isLessonPlan,
+      isBlackOutContent,
+      contentImageStyle,
     };
   },
 });
