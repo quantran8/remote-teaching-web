@@ -171,6 +171,12 @@ const actions: ActionTree<StudentRoomState, any> = {
   setClassView(store, payload: ClassViewPayload) {
     store.commit("setClassView", payload);
   },
+  studentRaisingHand({ state }, _: any) {
+    state.manager?.WSClient.sendRequestRaisingHand();
+  },
+  studentLike({ state }, _: any) {
+    state.manager?.WSClient.sendRequestLike();
+  },
 };
 
 export default actions;

@@ -39,15 +39,19 @@
     </div>
     <div class="page-content">
       <div class="controls">
-        <div class="raise-question"></div>
-        <div class="like"></div>
+        <div class="raise-question" @click="onClickRaisingHand">
+          <img src="@/assets/icons/icon-action-raisehand.svg" alt="" />
+        </div>
+        <div class="like" @click="onClickLike">
+          <img src="@/assets/icons/icon-action-like.svg" alt="" />
+        </div>
       </div>
       <div class="teacher-view" v-if="teacher">
         <div :id="teacher.id" class="teacher-camera"></div>
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
       <div class="content-view" v-if="isLessonPlan">
-        <div class="exposure-content"  :style="contentImageStyle"></div>
+        <div class="exposure-content" :style="contentImageStyle"></div>
         <div class="mask" v-if="isBlackOutContent"></div>
       </div>
     </div>

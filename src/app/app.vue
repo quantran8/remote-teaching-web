@@ -21,6 +21,7 @@
     </template>
   </MainLayout>
   <Toast></Toast>
+  <Notification></Notification>
 </template>
 <script lang="ts" src="./app.ts"/>
 <style lang="scss" src="./app.scss"/>

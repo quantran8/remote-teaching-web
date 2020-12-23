@@ -3,7 +3,7 @@ import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, ClassViewPayload, InClassStatus } from "../interface";
+import { ClassView, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
@@ -71,6 +71,7 @@ const mutations: MutationTree<StudentRoomState> = {
         badge: st.badge,
         status: st.connectionStatus,
         index: state.students.length,
+        raisingHand: st.isRaisingHand,
       };
       if (st.id === state.user?.id) {
         student.index = 999;

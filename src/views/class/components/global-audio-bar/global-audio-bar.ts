@@ -11,6 +11,7 @@ export default defineComponent({
       await dispatch("teacherRoom/addGlobalAudio", {
         id: studentId,
       });
+      await dispatch("teacherRoom/clearStudentRaisingHand", { id: studentId });
     };
     const onDragOver = (event: any) => {
       event.preventDefault();

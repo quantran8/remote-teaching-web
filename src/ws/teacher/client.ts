@@ -77,4 +77,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestBlackOutLessonContent(isBlackOut: boolean) {
     return this.send(WSCmd.BLACKOUT_LESSON_CONTENT, { IsBlackOut: isBlackOut });
   }
+  sendRequestClearRaisingHand(id: string) {
+    return this.send(WSCmd.CLEAR_RAISING_HAND, { studentId: id });
+  }
 }

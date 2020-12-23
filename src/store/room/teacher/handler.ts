@@ -126,6 +126,24 @@ export const useTeacherRoomWSHandler = ({
         { root: true }
       );
     },
+    onStudentRaisingHand: async (student: StudentModel) => {
+      const payload = { id: student.id, raisingHand: student.isRaisingHand };
+      await dispatch("teacherRoom/studentRaisingHand", payload, { root: true });
+    },
+    onStudentLike: async (payload: StudentModel) => {
+      const notification = {
+        id: "" + Date.now,
+        message: `${payload.englishName} liked the content`,
+        duration: 5000,
+      };
+      await dispatch("notification/addNotification", notification, {
+        root: true,
+      });
+    },
+    onTeacherClearRaisingHand: async (student: StudentModel) => {
+      const payload = { id: student.id, raisingHand: student.isRaisingHand };
+      await dispatch("teacherRoom/studentRaisingHand", payload, { root: true });
+    },
   };
   return handler;
 };

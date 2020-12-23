@@ -188,6 +188,15 @@ export const useStudentRoomHandler = (
         { root: true }
       );
     },
+    onStudentRaisingHand: (payload: any) => {
+      console.log(payload);
+    },
+    onStudentLike: async (payload: StudentModel) => {
+      console.log(payload);
+    },
+    onTeacherClearRaisingHand: (payload: any) => {
+      console.log(payload);
+    },
   };
   return handler;
 };

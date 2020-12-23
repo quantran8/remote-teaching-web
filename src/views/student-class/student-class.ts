@@ -88,6 +88,13 @@ export default defineComponent({
           }
         : {};
     });
+
+    const onClickRaisingHand = async () => {
+      await store.dispatch("studentRoom/studentRaisingHand", {});
+    };
+    const onClickLike = async () => {
+      await store.dispatch("studentRoom/studentLike", {});
+    };
     return {
       student,
       students,
@@ -99,6 +106,8 @@ export default defineComponent({
       isLessonPlan,
       isBlackOutContent,
       contentImageStyle,
+      onClickRaisingHand,
+      onClickLike,
     };
   },
 });

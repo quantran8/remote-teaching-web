@@ -174,6 +174,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   studentLeaving(store, payload: UserIdPayload) {
     store.commit("studentLeaving", payload);
   },
+  studentRaisingHand(store, payload: { id: string; raisingHand: boolean }) {
+    store.commit("studentRaisingHand", payload);
+  },
   addGlobalAudio({ state }, payload: UserIdPayload) {
     state.manager?.WSClient.sendRequestAddGlobalAudio(payload.id);
   },
@@ -199,6 +202,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setCurrentExposureMediaItem({ state }, payload: { id: string }) {
     state.manager?.WSClient.sendRequestSetLessonItemContent(payload.id);
+  },
+  clearStudentRaisingHand({ state }, payload: { id: string }) {
+    const student = state.students.find(
+      (e) => e.id === payload.id && e.raisingHand
+    );
+    if (student)
+      state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
   },
 };
 
