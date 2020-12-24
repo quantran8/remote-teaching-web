@@ -2,7 +2,6 @@ import { useStore } from "vuex";
 import { AuthService, LoginInfo } from "@/commonui";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
-import { ContentService } from "@/services";
 
 export default defineComponent({
   components: {
@@ -42,9 +41,9 @@ export default defineComponent({
       const loginInfo: LoginInfo = getters["auth/loginInfo"];
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
-      if (isTeacher) onTeacherSignedIn(loginInfo);
-      if (isParent) onParentSignedIn(loginInfo);
-      dispatch("loadContentSignature");
+      if (isTeacher) await onTeacherSignedIn(loginInfo);
+      if (isParent) await onParentSignedIn(loginInfo);
+      await dispatch("loadContentSignature");
     };
 
     watch(isSignedIn, async () => {

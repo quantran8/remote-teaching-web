@@ -2,6 +2,7 @@
   <div class="item-container">
     <div class="video" :id="id"></div>
     <div class="mask" :class="{ masked: !videoEnabled && !isNotJoinned }">
+      <div class="raising-hand" v-if="raisingHand" @click="onClickClearRaisingHand"></div>
       <div class="name">{{ name }}</div>
       <div class="info">
         <BaseTag

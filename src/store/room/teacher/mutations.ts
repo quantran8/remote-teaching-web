@@ -39,6 +39,7 @@ export interface TeacherRoomMutationInterface<S> {
   studentJoinned(s: S, p: UserIdPayload): void;
   studentLeftClass(s: S, p: UserIdPayload): void;
   studentLeaving(s: S, p: UserIdPayload): void;
+  studentRaisingHand(s: S, p: { raisingHand: boolean }): void;
   setGlobalAudios(s: S, p: Array<string>): void;
   addGlobalAudio(s: S, p: UserIdPayload): void;
   clearGlobalAudio(s: S, p: DefaultPayload): void;
@@ -100,6 +101,7 @@ const mutations: TeacherRoomMutation<State> = {
         badge: st.badge,
         status: st.connectionStatus,
         index: index,
+        raisingHand: st.isRaisingHand,
       };
     });
     s.globalAudios = s.students
@@ -174,6 +176,10 @@ const mutations: TeacherRoomMutation<State> = {
   studentLeaving(s: State, p: UserIdPayload): void {
     const student = s.students.find((student) => student.id === p.id);
     if (student) student.status = InClassStatus.LEAVING;
+  },
+  studentRaisingHand(s: State, p: { id: string; raisingHand: boolean }): void {
+    const student = s.students.find((student) => student.id === p.id);
+    if (student) student.raisingHand = p.raisingHand;
   },
   setGlobalAudios(s: State, p: string[]): void {
     s.globalAudios = s.students

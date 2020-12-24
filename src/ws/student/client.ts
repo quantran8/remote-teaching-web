@@ -14,4 +14,11 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestMuteAudio(IsMute: boolean) {
     return this.send(WSCmd.MUTE_AUDIO, { IsMute: IsMute });
   }
+
+  sendRequestRaisingHand() {
+    return this.send(WSCmd.RAISING_HAND, {});
+  }
+  sendRequestLike() {
+    return this.send(WSCmd.LIKE, {});
+  }
 }

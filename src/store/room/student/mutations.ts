@@ -71,6 +71,7 @@ const mutations: MutationTree<StudentRoomState> = {
         badge: st.badge,
         status: st.connectionStatus,
         index: state.students.length,
+        raisingHand: st.isRaisingHand,
       };
       if (st.id === state.user?.id) {
         student.index = 999;

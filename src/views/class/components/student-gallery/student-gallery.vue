@@ -12,6 +12,7 @@
         :audioEnabled="student.audioEnabled"
         :videoEnabled="student.videoEnabled"
         :status="student.status"
+        :raisingHand="student.raisingHand"
       />
     </div>
   </div>

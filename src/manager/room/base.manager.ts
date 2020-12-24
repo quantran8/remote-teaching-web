@@ -27,7 +27,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   options!: RoomOptions;
   WSClient!: T;
 
-  abstract async join(options: {
+  abstract join(options: {
     classId: string;
     studentId?: string;
     teacherId?: string;

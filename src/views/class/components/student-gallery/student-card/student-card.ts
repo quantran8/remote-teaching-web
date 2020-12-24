@@ -29,6 +29,10 @@ export default defineComponent({
       type: Number,
       default: InClassStatus.DEFAULT,
     },
+    raisingHand: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     const isContextMenuVisible = ref(false);
@@ -71,6 +75,11 @@ export default defineComponent({
         badge: props.badge + 1,
       });
     };
+    const onClickClearRaisingHand = async () => {
+      await store.dispatch("teacherRoom/clearStudentRaisingHand", {
+        id: props.id,
+      });
+    };
 
     const toggleContextMenu = () => {
       isContextMenuVisible.value = !isContextMenuVisible.value;
@@ -82,7 +91,6 @@ export default defineComponent({
     const onDragStart = (event: any) => {
       event.dataTransfer.setData("studentId", props.id);
     };
-
     return {
       audioIcon,
       videoIcon,
@@ -95,6 +103,7 @@ export default defineComponent({
       isNotJoinned,
       onDragStart,
       isAudioHightlight,
+      onClickClearRaisingHand,
     };
   },
 });

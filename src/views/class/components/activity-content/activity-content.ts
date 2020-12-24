@@ -14,9 +14,11 @@ export default defineComponent({
       });
     };
     const contentImageStyle = computed(() => {
-      return {
-        "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
-      };
+      return currentExposureItemMedia.value
+        ? {
+            "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
+          }
+        : {};
     });
     return {
       currentExposureItemMedia,

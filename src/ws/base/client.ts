@@ -86,6 +86,12 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.LEAVE, handler.onStudentLeave);
     handlers.set(StudentWSEvent.DISCONNECT, handler.onStudentDisconnected);
 
+    handlers.set(
+      StudentWSEvent.STUDENT_RAISING_HAND,
+      handler.onStudentRaisingHand
+    );
+    handlers.set(StudentWSEvent.STUDENT_LIKE, handler.onStudentLike);
+
     handlers.set(TeacherWSEvent.JOIN_CLASS, handler.onTeacherJoinClass);
     handlers.set(TeacherWSEvent.STREAM_CONNECT, handler.onTeacherStreamConnect);
     handlers.set(TeacherWSEvent.MUTE_AUDIO, handler.onTeacherMuteAudio);
@@ -136,6 +142,10 @@ export class GLSocketClient {
     handlers.set(
       TeacherWSEvent.SET_ITEM_CONTENT_LESSON_PLAN,
       handler.onTeacherSetLessonPlanItemContent
+    );
+    handlers.set(
+      TeacherWSEvent.CLEAR_RAISING_HAND,
+      handler.onTeacherClearRaisingHand
     );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {

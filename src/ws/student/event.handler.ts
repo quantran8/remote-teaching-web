@@ -5,4 +5,6 @@ export interface StudentWSEventHandler {
   onStudentMuteVideo(payload: any): void;
   onStudentLeave(payload: any): void;
   onStudentDisconnected(payload: any): void;
+  onStudentRaisingHand(payload: any): void;
+  onStudentLike(payload: any): void;
 }

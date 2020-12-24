@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 import AppModule from "./app";
 import AuthModule from "./auth";
 import SpinModule from "./spin";
+import NotificationModule from "./notification";
 import ParentModule from "./parent";
 import TeacherModule from "./teacher";
 import TeacherRoomModule from "./room/teacher";
@@ -21,6 +22,7 @@ const store = createStore({
     teacherRoom: TeacherRoomModule,
     studentRoom: StudentRoomModule,
     lesson: LessonModule,
+    notification: NotificationModule,
   },
 });
 
@@ -34,4 +36,5 @@ export {
   TeacherRoomModule,
   StudentRoomModule,
   LessonModule,
+  NotificationModule,
 };

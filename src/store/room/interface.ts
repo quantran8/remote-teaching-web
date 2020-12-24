@@ -7,6 +7,7 @@ export interface StudentState {
   audioEnabled: boolean;
   videoEnabled: boolean;
   status: InClassStatus;
+  raisingHand: boolean;
 }
 
 export interface TeacherState {

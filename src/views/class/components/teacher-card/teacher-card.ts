@@ -81,12 +81,13 @@ export default defineComponent({
     };
 
     const localAudios = computed(() => getters["teacherRoom/localAudios"]);
-    const onDrop = (event: any) => {
+    const onDrop = async (event: any) => {
       event.preventDefault();
       const studentId = event.dataTransfer.getData("studentId");
-      dispatch("teacherRoom/addStudentAudio", {
+      await dispatch("teacherRoom/addStudentAudio", {
         id: studentId,
       });
+      await dispatch("teacherRoom/clearStudentRaisingHand", { id: studentId });
     };
     const onDragOver = (event: any) => {
       event.preventDefault();

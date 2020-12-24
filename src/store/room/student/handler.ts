@@ -1,8 +1,9 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
+import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
-import { InClassStatus } from "../interface";
+import { ClassViewFromValue, InClassStatus } from "../interface";
 import { StudentRoomState } from "./state";
 
 export const useStudentRoomHandler = (
@@ -10,10 +11,13 @@ export const useStudentRoomHandler = (
 ): WSEventHandler => {
   const { commit, dispatch, state } = store;
   const handler = {
-    onRoomInfo: (payload: RoomModel) => {
+    onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
-      dispatch("updateAudioAndVideoFeed", {});
-      dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
+      await dispatch("setClassView", {
+        classView: ClassViewFromValue(payload.focusTab),
+      });
+      await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -134,7 +138,9 @@ export const useStudentRoomHandler = (
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetFocusTab: (payload: any) => {
-      console.log(payload);
+      dispatch("setClassView", {
+        classView: ClassViewFromValue(payload.focusTab),
+      });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
       commit("setGlobalAudios", payload);
@@ -154,15 +160,41 @@ export const useStudentRoomHandler = (
       }
     },
     onTeacherUpdateBlackOut: (payload: any) => {
-      console.log(payload);
+      commit(
+        "lesson/setIsBlackOut",
+        { IsBlackOut: payload.isBlackOut },
+        { root: true }
+      );
     },
     onTeacherStartLessonPlan: (payload: any) => {
-      console.log(payload);
+      commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      console.log(payload);
+      commit(
+        "lesson/setExposureStatus",
+        { id: payload.content.id, status: ExposureStatus.COMPLETED },
+        { root: true }
+      );
+      commit(
+        "lesson/setPlayedTime",
+        { time: payload.playedTime },
+        { root: true }
+      );
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
+      commit(
+        "lesson/setCurrentExposureItemMedia",
+        { id: payload.pageSelected },
+        { root: true }
+      );
+    },
+    onStudentRaisingHand: (payload: any) => {
+      console.log(payload);
+    },
+    onStudentLike: async (payload: StudentModel) => {
+      console.log(payload);
+    },
+    onTeacherClearRaisingHand: (payload: any) => {
       console.log(payload);
     },
   };

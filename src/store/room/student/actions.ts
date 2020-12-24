@@ -10,7 +10,11 @@ import {
 } from "@/services";
 import { Logger } from "@/utils/logger";
 import { ActionTree } from "vuex";
-import { InClassStatus } from "../interface";
+import {
+  ClassViewFromValue,
+  ClassViewPayload,
+  InClassStatus,
+} from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 
@@ -42,6 +46,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       return;
     }
     commit("setRoomInfo", roomResponse.data);
+    commit("setClassView", {
+      classView: ClassViewFromValue(roomResponse.data.focusTab),
+    });
   },
 
   setUser({ commit }, payload: UserModel) {
@@ -160,6 +167,15 @@ const actions: ActionTree<StudentRoomState, any> = {
 
   setTeacherVideo(store, payload: { id: string; enable: boolean }) {
     store.commit("setTeacherVideo", payload);
+  },
+  setClassView(store, payload: ClassViewPayload) {
+    store.commit("setClassView", payload);
+  },
+  studentRaisingHand({ state }, _: any) {
+    state.manager?.WSClient.sendRequestRaisingHand();
+  },
+  studentLike({ state }, _: any) {
+    state.manager?.WSClient.sendRequestLike();
   },
 };
 
