@@ -14,6 +14,7 @@ import {
   StudentBadgePayload,
   UserIdPayload,
 } from "../interface";
+import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 
 type State = TeacherRoomState;
@@ -126,6 +127,7 @@ const mutations: TeacherRoomMutation<State> = {
         },
       });
     }
+    s.classAction = ClassActionFromValue(p.lessonPlan.lessonAction);
   },
   setStudentAudio(s: State, p: UserMediaPayload): void {
     const student = s.students.find((st) => st.id === p.id);
@@ -212,6 +214,9 @@ const mutations: TeacherRoomMutation<State> = {
   },
   clearStudentAudio(s: State, _: DefaultPayload): void {
     s.localAudios = [];
+  },
+  setClassAction(state: State, payload: { action: ClassAction }) {
+    state.classAction = payload.action;
   },
 };
 

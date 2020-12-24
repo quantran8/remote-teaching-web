@@ -1,6 +1,7 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
+import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -112,7 +113,33 @@ export default defineComponent({
       console.log(error.value);
     });
 
+    const actions = [
+      { id: ClassAction.DEFAULT, icon: "none" },
+      { id: ClassAction.INTERACTIVE, icon: "interactive" },
+      { id: ClassAction.LISTEN, icon: "listen" },
+      { id: ClassAction.QUESTION, icon: "question" },
+      { id: ClassAction.QUIET, icon: "quiet" },
+      { id: ClassAction.SING, icon: "sing" },
+      { id: ClassAction.SPEAK, icon: "speak" },
+    ];
+    const classAction = computed(() => {
+      let id: ClassAction = getters["teacherRoom/classAction"];
+      return actions.find((e) => e.id === id) || actions[0];
+    });
+    const onClickSelectAction = async (action: {
+      id: ClassAction;
+      icon: string;
+    }) => {
+      // classAction.value = action;
+      await dispatch("teacherRoom/setClassAction", {
+        action: ClassActionToValue(action.id),
+      });
+    };
+
     return {
+      actions,
+      classAction,
+      onClickSelectAction,
       showModal,
       onClickHideAll,
       onClickShowAll,

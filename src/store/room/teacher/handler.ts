@@ -3,6 +3,7 @@ import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue } from "../interface";
+import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 
 export const useTeacherRoomWSHandler = ({
@@ -143,6 +144,15 @@ export const useTeacherRoomWSHandler = ({
     onTeacherClearRaisingHand: async (student: StudentModel) => {
       const payload = { id: student.id, raisingHand: student.isRaisingHand };
       await dispatch("teacherRoom/studentRaisingHand", payload, { root: true });
+    },
+    onTeacherUpdateClassAction: (payload: { action: number }) => {
+      commit(
+        "teacherRoom/setClassAction",
+        {
+          action: ClassActionFromValue(payload.action),
+        },
+        { root: true }
+      );
     },
   };
   return handler;

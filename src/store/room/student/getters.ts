@@ -3,7 +3,7 @@ import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { GetterTree } from "vuex";
 import { ClassView, StudentState, TeacherState } from "../interface";
-import { StudentRoomState } from "./state";
+import { ClassAction, StudentRoomState } from "./state";
 
 const getters: GetterTree<StudentRoomState, any> = {
   globalAudios(state: StudentRoomState): Array<string> {
@@ -47,6 +47,9 @@ const getters: GetterTree<StudentRoomState, any> = {
       if (student.audioEnabled) return false;
     }
     return true;
+  },
+  classAction(state: StudentRoomState): ClassAction {
+    return state.classAction;
   },
 };
 

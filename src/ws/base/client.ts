@@ -147,6 +147,10 @@ export class GLSocketClient {
       TeacherWSEvent.CLEAR_RAISING_HAND,
       handler.onTeacherClearRaisingHand
     );
+    handlers.set(
+      TeacherWSEvent.UPDATE_LESSON_ACTION,
+      handler.onTeacherUpdateClassAction
+    );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         Logger.info("RECIEVE", key, payload);

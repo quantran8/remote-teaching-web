@@ -95,6 +95,9 @@ export default defineComponent({
     const onClickLike = async () => {
       await store.dispatch("studentRoom/studentLike", {});
     };
+    const classAction = computed(
+      () => store.getters["studentRoom/classAction"]
+    );
     return {
       student,
       students,
@@ -108,6 +111,7 @@ export default defineComponent({
       contentImageStyle,
       onClickRaisingHand,
       onClickLike,
+      classAction,
     };
   },
 });

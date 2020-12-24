@@ -32,6 +32,7 @@ export interface LessonPlanModel {
   isBlackout: boolean;
   totalTime: string;
   playedTime: string;
+  lessonAction: number;
 }
 export interface RoomModel {
   id: string;

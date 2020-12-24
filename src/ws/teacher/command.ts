@@ -19,4 +19,5 @@ export enum TeacherWSCommand {
   SET_LESSON_ITEM_CONTENT = "TeacherSetItemContent",
   BLACKOUT_LESSON_CONTENT = "BlackOutScreen",
   CLEAR_RAISING_HAND = "TeacherClearRaisingHand",
+  SET_CLASS_ACTION = "TeacherSetClassAction",
 }
