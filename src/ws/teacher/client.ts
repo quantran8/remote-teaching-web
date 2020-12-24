@@ -80,4 +80,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearRaisingHand(id: string) {
     return this.send(WSCmd.CLEAR_RAISING_HAND, { studentId: id });
   }
+  sendRequestSetClassAction(action: number){
+    return this.send(WSCmd.SET_CLASS_ACTION, {Action: action});
+  }
 }

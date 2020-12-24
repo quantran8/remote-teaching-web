@@ -19,8 +19,27 @@
       <div v-if="!isGalleryView" class="activity-content">
         <ActivityContent />
       </div>
-      <div v-if="!isGalleryView" class="audio-bar">
-        <GlobalAudioBar />
+      <div class="cta-container">
+        <div class="cta-button">
+          <img
+            :src="
+              require(`../../assets/icons/icon-action-${classAction.icon}.svg`)
+            "
+          />
+          <div class="cta-content">
+            <img
+              v-for="action of actions"
+              :key="action.icon"
+              :src="
+                require(`../../assets/icons/icon-action-${action.icon}.svg`)
+              "
+              @click="() => onClickSelectAction(action)"
+            />
+          </div>
+        </div>
+        <div v-if="!isGalleryView" class="audio-bar">
+          <GlobalAudioBar />
+        </div>
       </div>
       <div class="view-controls">
         <div

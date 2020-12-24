@@ -56,6 +56,13 @@
       </div>
     </div>
     <div class="page-footer">
+      <div class="class-action">
+        <img
+          v-if="classAction"
+          :src="require(`../../assets/icons/icon-action-${classAction}.svg`)"
+          alt=""
+        />
+      </div>
       <div class="fill-center">
         <StudentCard
           v-for="student in students.slice(5)"

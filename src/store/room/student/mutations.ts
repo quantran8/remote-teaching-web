@@ -4,7 +4,7 @@ import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
 import { ClassView, InClassStatus } from "../interface";
-import { StudentRoomState } from "./state";
+import { ClassAction, ClassActionFromValue, StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
   setCameraLock(
@@ -96,6 +96,8 @@ const mutations: MutationTree<StudentRoomState> = {
           },
         },
       });
+
+    state.classAction = ClassActionFromValue(room.lessonPlan.lessonAction);
   },
   setStudentAudio(
     state: StudentRoomState,
@@ -169,6 +171,9 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   unmuteAllStudents(state: StudentRoomState) {
     state.students.forEach((student) => (student.audioEnabled = true));
+  },
+  setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
+    state.classAction = payload.action;
   },
 };
 

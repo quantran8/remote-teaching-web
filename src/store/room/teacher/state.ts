@@ -4,6 +4,7 @@ import { RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { ClassView, StudentState, TeacherState } from "../interface";
+import { ClassAction } from "../student/state";
 
 export interface TeacherRoomState {
   info?: RoomModel;
@@ -18,6 +19,7 @@ export interface TeacherRoomState {
   localAudios: string[];
   cameraLock: boolean;
   microphoneLock: boolean;
+  classAction: ClassAction;
 }
 
 const state: TeacherRoomState = {
@@ -33,6 +35,7 @@ const state: TeacherRoomState = {
   localAudios: [],
   cameraLock: false,
   microphoneLock: false,
+  classAction: ClassAction.DEFAULT,
 };
 
 export default state;

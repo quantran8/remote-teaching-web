@@ -1,4 +1,3 @@
-import { LoginInfo } from "@/commonui";
 import { MutationTree } from "vuex";
 import { SpinState } from "./state";
 

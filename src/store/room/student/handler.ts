@@ -4,7 +4,7 @@ import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
-import { StudentRoomState } from "./state";
+import { ClassActionFromValue, StudentRoomState } from "./state";
 
 export const useStudentRoomHandler = (
   store: ActionContext<StudentRoomState, any>
@@ -196,6 +196,15 @@ export const useStudentRoomHandler = (
     },
     onTeacherClearRaisingHand: (payload: any) => {
       console.log(payload);
+    },
+    onTeacherUpdateClassAction: (payload: { action: number }) => {
+      commit(
+        "studentRoom/setClassAction",
+        {
+          action: ClassActionFromValue(payload.action),
+        },
+        { root: true }
+      );
     },
   };
   return handler;

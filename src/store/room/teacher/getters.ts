@@ -7,6 +7,7 @@ import {
   StudentState,
   TeacherState,
 } from "../interface";
+import { ClassAction } from "../student/state";
 import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
@@ -80,6 +81,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
       if (student.audioEnabled) return false;
     }
     return true;
+  },
+  classAction(state: TeacherRoomState): ClassAction {
+    return state.classAction;
   },
 };
 

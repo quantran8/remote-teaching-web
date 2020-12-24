@@ -210,6 +210,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (student)
       state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
   },
+  setClassAction({ state }, payload: { action: number }){
+    state.manager?.WSClient.sendRequestSetClassAction(payload.action);
+  }
 };
 
 export default actions;
