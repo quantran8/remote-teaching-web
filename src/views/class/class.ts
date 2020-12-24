@@ -123,7 +123,7 @@ export default defineComponent({
       { id: ClassAction.SPEAK, icon: "speak" },
     ];
     const classAction = computed(() => {
-      let id: ClassAction = getters["teacherRoom/classAction"];
+      const id: ClassAction = getters["teacherRoom/classAction"];
       return actions.find((e) => e.id === id) || actions[0];
     });
     const onClickSelectAction = async (action: {
