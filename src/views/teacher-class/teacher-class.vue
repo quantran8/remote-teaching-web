@@ -20,7 +20,7 @@
         <ActivityContent />
       </div>
       <div class="cta-container">
-        <div class="cta-button" @mouseover="onHoverCTAButton" @click="onClickToggleCTAContent">
+        <div class="cta-button" @mouseover="onHoverCTAButton">
           <img
             :src="
               require(`../../assets/icons/icon-action-${classAction.icon}.svg`)

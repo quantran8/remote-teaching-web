@@ -126,6 +126,9 @@ export default defineComponent({
       const id: ClassAction = getters["teacherRoom/classAction"];
       return actions.find((e) => e.id === id) || actions[0];
     });
+
+    const ctaVisible = ref(false);
+
     const onClickSelectAction = async (action: {
       id: ClassAction;
       icon: string;
@@ -134,8 +137,8 @@ export default defineComponent({
       await dispatch("teacherRoom/setClassAction", {
         action: ClassActionToValue(action.id),
       });
+      ctaVisible.value = false;
     };
-    const ctaVisible = ref(false);
 
     const onHoverCTAButton = () => {
       ctaVisible.value = true;
