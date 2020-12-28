@@ -25,12 +25,12 @@ export default defineComponent({
     const username = computed(() => store.getters["auth/username"]);
     const startClass = async (teacherClass: TeacherClassModel) => {
       try {
-        const lessons = await LessonService.getLessonByUnit(11);
-        let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
-        if (!lesson) lesson = lessons[0];
+        // const lessons = await LessonService.getLessonByUnit(11);
+        // let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
+        // if (!lesson) lesson = lessons[0];
         const response = await RemoteTeachingService.teacherStartClassRoom(
           teacherClass.schoolClassId,
-          lesson.id
+          ""
         );
         if (response && response.success) {
           router.push("/class/" + teacherClass.schoolClassId);
