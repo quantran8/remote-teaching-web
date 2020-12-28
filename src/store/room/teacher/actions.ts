@@ -93,7 +93,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       // if (!lesson) lesson = lessons[0];
       roomResponse = await RemoteTeachingService.teacherStartClassRoom(
         payload.classId,
-        ""
+        payload.classId
       );
       if (!roomResponse) throw new Error("Can not start class");
     }

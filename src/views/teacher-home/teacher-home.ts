@@ -30,7 +30,7 @@ export default defineComponent({
         // if (!lesson) lesson = lessons[0];
         const response = await RemoteTeachingService.teacherStartClassRoom(
           teacherClass.schoolClassId,
-          ""
+          teacherClass.schoolClassId
         );
         if (response && response.success) {
           router.push("/class/" + teacherClass.schoolClassId);
