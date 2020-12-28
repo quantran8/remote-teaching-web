@@ -26,8 +26,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/teacher",
-    name: "teacher",
-    component: () => import("../views/teacher/teacher.vue"),
+    name: "TeacherHome",
+    component: () => import("../views/teacher-home/teacher-home.vue"),
     meta: {
       layout: "main",
       requiresAuth: true,
@@ -35,34 +35,24 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/student",
-    name: "Student",
-    component: () => import("../views/student/student.vue"),
-    meta: {
-      layout: "main",
-      requiresAuth: true,
-      requireParent: true,
-    },
-  },
-  {
     path: "/class/:classId",
-    name: "Class",
-    component: () => import("../views/class/class.vue"),
+    name: "TeacherClass",
+    component: () => import("../views/teacher-class/teacher-class.vue"),
     meta: {
       layout: "full",
       requiresAuth: true,
     },
   },
   {
-    path: "/student-view/:id",
-    name: "StudentView",
-    component: () => import("../views/student-view/student-view.vue"),
+    path: "/parent",
+    name: "ParentHome",
+    component: () => import("../views/parent-home/parent-home.vue"),
     meta: {
       layout: "main",
       requiresAuth: true,
+      requireParent: true,
     },
   },
-
   {
     path: "/student/:studentId/class/:classId",
     name: "StudentClass",
@@ -72,7 +62,6 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true,
     },
   },
-
   {
     path: "/:catchAll(.*)",
     name: "NotFound",

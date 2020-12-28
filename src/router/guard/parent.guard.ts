@@ -11,7 +11,6 @@ export default (
     (record) => record.meta.requireParent
   );
   if (!requireParent) return;
-
   const loginInfo: LoginInfo = AuthService.getLoginInfo();
   if (loginInfo && loginInfo.profile) {
     const isParent = loginInfo.profile.roles.indexOf(RoleName.parent) !== -1;

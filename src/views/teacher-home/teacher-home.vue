@@ -19,5 +19,5 @@
     </div>
   </div>
 </template>
-<style lang="scss" scoped src="./teacher.scss"></style>
-<script lang="ts" src="./teacher.ts"></script>
+<style lang="scss" scoped src="./teacher-home.scss"></style>
+<script lang="ts" src="./teacher-home.ts"></script>

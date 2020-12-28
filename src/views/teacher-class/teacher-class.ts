@@ -135,7 +135,9 @@ export default defineComponent({
         action: ClassActionToValue(action.id),
       });
     };
-
+    const onMouseOver = ()=>{
+      console.log("OnMouse")
+    }
     return {
       actions,
       classAction,
@@ -155,6 +157,7 @@ export default defineComponent({
       onClickCloseModal,
       isClassNotActive,
       onClickCloseError,
+      onMouseOver
     };
   },
 });

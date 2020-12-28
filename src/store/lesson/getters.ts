@@ -7,7 +7,6 @@ import {
 } from "./state";
 
 const getSeconds = (time: string) => {
-  console.log("GET SECONDS", time);
   if (!time || time.indexOf(":") === -1) return 0;
   const totalSecondsArr: Array<number> = time.split(":").map((e, index) => {
     const val = parseInt(e);

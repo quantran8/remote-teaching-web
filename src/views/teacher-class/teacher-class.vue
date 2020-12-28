@@ -26,7 +26,7 @@
               require(`../../assets/icons/icon-action-${classAction.icon}.svg`)
             "
           />
-          <div class="cta-content">
+          <div class="cta-content" @mousedown="onMouseOver">
             <img
               v-for="action of actions"
               :key="action.icon"
@@ -72,5 +72,5 @@
     />
   </div>
 </template>
-<style lang="scss" scoped src="./class.scss"></style>
-<script lang="ts" src="./class.ts"></script>
+<style lang="scss" scoped src="./teacher-class.scss"></style>
+<script lang="ts" src="./teacher-class.ts"></script>

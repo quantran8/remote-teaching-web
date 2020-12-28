@@ -8,7 +8,7 @@ export default defineComponent({
     const isOnlyTeacher = store.getters["auth/isOnlyTeacher"];
     const router = useRouter();
     if (isOnlyParent) {
-      router.replace("/student");
+      router.replace("/parent");
     } else if (isOnlyTeacher) {
       router.replace("/teacher");
     }

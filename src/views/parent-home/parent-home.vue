@@ -17,5 +17,5 @@
   </div>
 </template>
 
-<style lang="scss" scoped src="./student.scss"></style>
-<script lang="ts" src="./student.ts"></script>
+<style lang="scss" scoped src="./parent-home.scss"></style>
+<script lang="ts" src="./parent-home.ts"></script>
