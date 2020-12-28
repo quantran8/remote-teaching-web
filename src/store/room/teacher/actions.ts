@@ -83,7 +83,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
-  async initClassRoom({ commit, dispatch }, payload: InitClassRoomPayload) {
+  async initClassRoom({ commit }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
     let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     if (!roomResponse) {
@@ -132,9 +132,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (state.microphoneLock) return;
     commit("setMicrophoneLock", { enable: true });
     await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
-    await state.manager?.setMicrophone({
-      enable: payload.enable,
-    });
+    await state.manager?.setMicrophone({ enable: payload.enable });
     commit("setTeacherAudio", payload);
     commit("setMicrophoneLock", { enable: false });
   },
@@ -143,9 +141,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (state.cameraLock) return;
     commit("setCameraLock", { enable: true });
     await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
-    await state.manager?.setCamera({
-      enable: payload.enable,
-    });
+    await state.manager?.setCamera({ enable: payload.enable });
     commit("setTeacherVideo", payload);
     commit("setCameraLock", { enable: false });
   },

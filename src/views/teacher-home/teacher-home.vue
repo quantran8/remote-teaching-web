@@ -4,7 +4,6 @@
     <h2>Welcome {{ username }}</h2>
     <p>Choose a class to start</p>
     <hr />
-    <p></p>
     <div>
       <ClassCard
         class="card-margin"
@@ -14,7 +13,7 @@
         :title="cl.schoolClassName"
         :description="cl.schoolName"
         :active="cl.isActive"
-        @btn-click="() => onClickClass(cl)"
+        @click="() => onClickClass(cl)"
       />
     </div>
   </div>

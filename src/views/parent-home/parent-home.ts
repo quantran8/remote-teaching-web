@@ -1,4 +1,8 @@
-import { RemoteTeachingService } from "@/services";
+import {
+  ChildModel,
+  RemoteTeachingService,
+  StudentGetRoomResponse,
+} from "@/services";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -12,7 +16,14 @@ export default defineComponent({
     const router = useRouter();
     const children = computed(() => store.getters["parent/children"]);
     const username = computed(() => store.getters["auth/username"]);
-    const onClickChild = async (student: any) => {
+    const onClickChild = async (student: ChildModel) => {
+      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
+        student.id
+      );
+      if (!roomResponse || !roomResponse.data) {
+        store.dispatch("setToast", `${student.name}'s class has not been started`);
+        return;
+      }
       router.push(`/student/${student.id}/class/${student.schoolClassId}`);
     };
     return { children, username, onClickChild };
