@@ -20,13 +20,13 @@
         <ActivityContent />
       </div>
       <div class="cta-container">
-        <div class="cta-button">
+        <div class="cta-button" @mouseover="onHoverCTAButton" @click="onClickToggleCTAContent">
           <img
             :src="
               require(`../../assets/icons/icon-action-${classAction.icon}.svg`)
             "
           />
-          <div class="cta-content" @mousedown="onMouseOver">
+          <div class="cta-content" :class="{'cta-content-show':ctaVisible}" v-click-outside="onClickOutSideCTAContent" @mouseout="onClickOutSideCTAContent">
             <img
               v-for="action of actions"
               :key="action.icon"

@@ -135,9 +135,17 @@ export default defineComponent({
         action: ClassActionToValue(action.id),
       });
     };
-    const onMouseOver = ()=>{
-      console.log("OnMouse")
-    }
+    const ctaVisible = ref(false);
+
+    const onHoverCTAButton = () => {
+      ctaVisible.value = true;
+    };
+    const onClickToggleCTAContent = () => {
+      ctaVisible.value = !ctaVisible.value;
+    };
+    const onClickOutSideCTAContent = () => {
+      ctaVisible.value = false;
+    };
     return {
       actions,
       classAction,
@@ -157,7 +165,10 @@ export default defineComponent({
       onClickCloseModal,
       isClassNotActive,
       onClickCloseError,
-      onMouseOver
+      onClickToggleCTAContent,
+      onHoverCTAButton,
+      onClickOutSideCTAContent,
+      ctaVisible,
     };
   },
 });
