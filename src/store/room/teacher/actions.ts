@@ -88,12 +88,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
     let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     if (!roomResponse) {
       // start class room
-      const lessons = await LessonService.getLessonByUnit(11);
-      let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
-      if (!lesson) lesson = lessons[0];
+      // const lessons = await LessonService.getLessonByUnit(11);
+      // let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
+      // if (!lesson) lesson = lessons[0];
       roomResponse = await RemoteTeachingService.teacherStartClassRoom(
         payload.classId,
-        lesson.id
+        ""
       );
       if (!roomResponse) throw new Error("Can not start class");
     }
@@ -210,9 +210,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (student)
       state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
   },
-  setClassAction({ state }, payload: { action: number }){
+  setClassAction({ state }, payload: { action: number }) {
     state.manager?.WSClient.sendRequestSetClassAction(payload.action);
-  }
+  },
 };
 
 export default actions;
