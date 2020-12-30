@@ -15,7 +15,16 @@
     <div class="locale-switcher">
       <select v-model="$i18n.locale">
         <option value="en">English</option>
-        <option value="ar-sa">Arabic</option>
+        <option value="ar-sa">العربية</option>
+        <option value="es">Español</option>
+        <option value="zh-cn">中文</option>
+        <option value="ms">中文(马来西亚)</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="ru">Русский</option>
+        <option value="vi">Tiếng Việt</option>
+        <option value="mn">Монгол</option>
+        <option value="th">ภาษาไทย</option>
       </select>
     </div>
     <slot name="actions">
