@@ -4,7 +4,7 @@
 
   <MainLayout v-else-if="appView === 2">
     <template v-slot:header>
-      <AppHeader title="Remote Teaching" />
+      <AppHeader :title="siteTitle" />      
     </template>
     <AccessDeniedPage />
     <template v-slot:footer>
@@ -13,7 +13,7 @@
   </MainLayout>
   <MainLayout v-else>
     <template v-if="isHeaderVisible" v-slot:header>
-      <AppHeader title="Remote Teaching" />
+      <AppHeader :title="siteTitle" />
     </template>
     <router-view />
     <template v-if="isFooterVisible" v-slot:footer>

@@ -12,6 +12,12 @@
       </slot>
       <slot />
     </div>
+    <div class="locale-switcher">
+      <select v-model="$i18n.locale">
+        <option value="en">English</option>
+        <option value="ar-sa">Arabic</option>
+      </select>
+    </div>
     <slot name="actions">
       <MenuItem class="user-container" v-if="isLoggedIn">
         <div class="user-container">

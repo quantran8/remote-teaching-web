@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./app/app.vue";
 import "./registerServiceWorker";
 import router from "./router";
+import i18n from "./commonui/locales/i18n";
 import {
   BaseButton,
   BaseCard,
@@ -33,4 +34,5 @@ app.component("Toast", Toast);
 app.component("Notification", Notification);
 app.use(router);
 app.use(store);
+app.use(i18n);
 app.mount("#app");

@@ -25,8 +25,7 @@ export function locationReplace(page: string) {
 }
 
 export const FormatMessage = (id: string, params?: {}): string => {
-	//import i18n from "./commonui/locales/i18n";
-	return i18n.global.t(id, params) as string;
+	return i18n.global.t(id) as string;
 };
 
 export const fmtMsg = FormatMessage;

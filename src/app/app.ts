@@ -2,6 +2,8 @@ import { useStore } from "vuex";
 import { AuthService, LoginInfo } from "@/commonui";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
+import { fmtMsg } from "@/commonui";
+import { CommonLocale } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -18,6 +20,7 @@ export default defineComponent({
     const isFooterVisible = computed(() => getters.appLayout !== "full");
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
+    const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
 
     const onTeacherSignedIn = async (loginInfo: LoginInfo) => {
       await dispatch("teacher/setInfo", {
@@ -51,6 +54,7 @@ export default defineComponent({
     });
 
     return {
+      siteTitle,
       appView,
       isSignedIn,
       isHeaderVisible,

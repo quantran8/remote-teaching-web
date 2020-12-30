@@ -37,6 +37,7 @@
 	"common.role.campusadmin": "Campus Admin",
 	"common.role.teacher": "Teacher",
 	"common.role.parent": "Parent",
+	"common.site.title": "Remote Teaching",
 
 	"appNavigation.dashboard": "Dashboard",
 	"appNavigation.wordCount": "Word Analysis",
