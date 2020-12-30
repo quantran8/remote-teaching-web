@@ -24,8 +24,8 @@ export function locationReplace(page: string) {
 	window.location.replace(buildUrl(page));
 }
 
-export const FormatMessage = (id: string, params?: {}): string => {
-	return i18n.global.t(id) as string;
+export const FormatMessage = (id: string, params?: any): string => {
+	return i18n.global.t(id, params) as string;
 };
 
 export const fmtMsg = FormatMessage;
