@@ -83,7 +83,6 @@ export default defineComponent({
             }
             const circle = circles.value.find((ele) => ele.id === targetId);
             if (circle) {
-              console.log(event.delta.x, event.delta.y);
               const x = event.rect.left - boundingBox().left;
               const y = event.rect.top - boundingBox().top;
               const diameter =
@@ -108,10 +107,9 @@ export default defineComponent({
             const ele =
               rectangles.value.find((ele) => ele.id === targetId) ||
               circles.value.find((ele) => ele.id === targetId);
-            if (ele) {
-              ele.x += event.dx;
-              ele.y += event.dy;
-            }
+            if (!ele) return;
+            ele.x += event.dx;
+            ele.y += event.dy;
           },
         },
       });
