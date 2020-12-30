@@ -13,6 +13,7 @@ import {
   GlobalAudioBar,
   LeaveModal,
   ErrorModal,
+  DesignateTarget
 } from "./components";
 export default defineComponent({
   components: {
@@ -23,6 +24,7 @@ export default defineComponent({
     StudentGallery,
     LeaveModal,
     ErrorModal,
+    DesignateTarget
   },
   async beforeUnmount() {
     const store = useStore();
@@ -47,6 +49,7 @@ export default defineComponent({
     const router = useRouter();
     const showModal = ref(false);
     const hasConfirmed = ref(false);
+    const isDesignatingTarget = computed(() => getters["teacherRoom/isDesignatingTarget"]);
     const teacher: ComputedRef<TeacherState> = computed(
       () => getters["teacherRoom/teacher"]
     );
@@ -172,6 +175,7 @@ export default defineComponent({
       onHoverCTAButton,
       onClickOutSideCTAContent,
       ctaVisible,
+      isDesignatingTarget
     };
   },
 });

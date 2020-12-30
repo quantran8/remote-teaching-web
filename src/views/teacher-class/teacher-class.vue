@@ -70,6 +70,7 @@
       @dismiss="onClickCloseError"
       @confirm="onClickLeave"
     />
+    <DesignateTarget v-if="isDesignatingTarget"></DesignateTarget>
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-class.scss"></style>
