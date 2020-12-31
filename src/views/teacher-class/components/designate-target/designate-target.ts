@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, Ref, ref } from "vue";
+import { computed, defineComponent, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
@@ -24,6 +24,9 @@ export default defineComponent({
     Circle,
     Rectangle,
   },
+  mounted() {
+    this.init();
+  },
   setup() {
     const store = useStore();
     const currentExposureItemMedia = computed(
@@ -38,22 +41,13 @@ export default defineComponent({
       const designBox = document.getElementById("designate-box");
       return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
     };
-    const shapes: Ref<Array<Shape>> = ref([]);
     const circles: Ref<Array<Circle>> = ref([]);
     const rectangles: Ref<Array<Rectangle>> = ref([]);
     const addingRect: Ref<Rectangle | null> = ref(null);
-    const previewRect: Ref<Rectangle | null> = ref(null);
-    const previewCircle: Ref<Circle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
 
-    const touchStart = ref({
-      x: 0,
-      y: 0,
-    });
-    const touchPosition = ref({
-      x: 0,
-      y: 0,
-    });
+    const touchStart = ref({ x: 0, y: 0 });
+    const touchPosition = ref({ x: 0, y: 0 });
 
     const distance = (
       p1: { x: number; y: number },
@@ -63,36 +57,59 @@ export default defineComponent({
       const dy = p1.y - p2.y;
       return Math.sqrt(dx * dx + dy * dy);
     };
+
+    const onClickCircle = (circle: any) => {
+      console.log(circle);
+    };
+    const onClickRectangle = (rect: any) => {
+      console.log(rect);
+    };
+
     const resizable = () => {
-      interact(`.resizable`).resizable({
+      interact(`.rectangle`).resizable({
         edges: { top: true, left: true, bottom: true, right: true },
         listeners: {
+          start(_) {
+            addingCircle.value = null;
+            addingRect.value = null;
+          },
           move: (event) => {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = event.target.id + "";
-            if (targetId === "mediaImage") {
-              return;
-            }
-            const rect = rectangles.value.find((ele) => ele.id === targetId);
-            if (rect) {
-              rect.x = event.rect.left - boundingBox().left;
-              rect.y = event.rect.top - boundingBox().top;
-              rect.width = event.rect.width;
-              rect.height = event.rect.height;
-            }
+            if (targetId === "mediaImage") return;
+            const rectangle = rectangles.value.find(
+              (ele) => ele.id === targetId
+            );
+            if (!rectangle) return;
+            rectangle.x = event.rect.left - boundingBox().left;
+            rectangle.y = event.rect.top - boundingBox().top;
+            rectangle.width = event.rect.width;
+            rectangle.height = event.rect.height;
+          },
+        },
+      });
+      interact(`.circle`).resizable({
+        edges: { top: true, left: true, bottom: true, right: true },
+        modifiers: [
+          interact.modifiers.aspectRatio({ enabled: true, equalDelta: true }),
+        ],
+        listeners: {
+          start(_) {
+            addingCircle.value = null;
+            addingRect.value = null;
+          },
+          move: (event) => {
+            addingCircle.value = null;
+            addingRect.value = null;
+            const targetId = `${event.target.id}`;
+            if (targetId === "mediaImage") return;
             const circle = circles.value.find((ele) => ele.id === targetId);
-            if (circle) {
-              const x = event.rect.left - boundingBox().left;
-              const y = event.rect.top - boundingBox().top;
-              const diameter =
-                Math.abs(event.delta.x) >= Math.abs(event.delta.y)
-                  ? event.rect.width
-                  : event.rect.height;
-              circle.x = x + diameter / 2;
-              circle.y = y + diameter / 2;
-              circle.radius = diameter / 2;
-            }
+            if (!circle) return;
+            const radius = event.rect.width / 2;
+            circle.radius = radius;
+            circle.x = event.rect.left - boundingBox().left + radius;
+            circle.y = event.rect.top - boundingBox().top + radius;
           },
         },
       });
@@ -100,10 +117,14 @@ export default defineComponent({
     const draggable = () => {
       interact(`.draggable`).draggable({
         listeners: {
+          start(_) {
+            addingCircle.value = null;
+            addingRect.value = null;
+          },
           move(event) {
             addingCircle.value = null;
             addingRect.value = null;
-            const targetId = event.target.id + "";
+            const targetId = `${event.target.id}`;
             const ele =
               rectangles.value.find((ele) => ele.id === targetId) ||
               circles.value.find((ele) => ele.id === targetId);
@@ -114,43 +135,21 @@ export default defineComponent({
         },
       });
     };
-    const onClickDesignBox = (event: any) => {
-      if (event.target.id === "mediaImage") {
-        const circle = {
-          id: Date.now() + "",
-          x: event.offsetX,
-          y: event.offsetY,
-          radius: 20,
-          color: "red",
-          type: "circle",
-        };
-        circles.value.push(circle);
-        resizable();
-        draggable();
-      }
-    };
-    const onClickCircle = (circle: any) => {
-      console.log(circle);
-    };
-    const onClickRectangle = (rect: any) => {
-      console.log(rect);
-    };
-
     const init = () => {
       const designBox = document.getElementById("designate-box");
       if (!designBox) return;
       const manager = new hammer(designBox);
       manager.on("tap", (event) => {
+        if (event.target.id !== "mediaImage") return;
         touchPosition.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchPosition.value.y = event.center.y - boundingBox().y - event.deltaY;
         const circle = {
           id: Date.now() + "",
           x: touchPosition.value.x,
           y: touchPosition.value.y,
-          radius: 20,
+          radius: 30,
           color: "red",
           type: "circle",
-          style: `transform: translate(${touchPosition.value.x}px,${touchPosition.value.y}px)`,
         };
         circles.value.push(circle);
       });
@@ -221,16 +220,14 @@ export default defineComponent({
           circles.value.push({ ...addingCircle.value });
           addingCircle.value = null;
         }
-        resizable();
-        draggable();
       });
-    };
 
-    setTimeout(init, 300);
+      resizable();
+      draggable();
+    };
 
     return {
       onClickCloseDesignate,
-      onClickDesignBox,
       currentExposureItemMedia,
       addingCircle,
       circles,
@@ -240,9 +237,7 @@ export default defineComponent({
       onClickRectangle,
       touchStart,
       touchPosition,
-      shapes,
-      previewRect,
-      previewCircle,
+      init,
     };
   },
 });

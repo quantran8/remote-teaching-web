@@ -1,14 +1,12 @@
-import { defineComponent, ref, watch } from "vue";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
-  props: ['id', "x", "y", "width", "height"],
+  props: ["id", "x", "y", "width", "height"],
   setup(props) {
-    const style = ref("");
-    const updateStyle = () => {
-      style.value = `width: ${props.width}px; height:${props.height}px; left: ${props.x}px; top: ${props.y}px`;
-    };
-    updateStyle();
-    watch(props, updateStyle);
+    const style = computed(
+      () =>
+        `width: ${props.width}px; height:${props.height}px; left: 0; top: 0; transform: translate(${props.x}px,${props.y}px);`
+    );
     return {
       style,
     };
