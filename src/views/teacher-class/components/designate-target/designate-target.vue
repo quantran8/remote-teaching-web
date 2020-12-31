@@ -4,7 +4,6 @@
       <div class="backdrop" @click="onClickCloseDesignate"></div>
       <div class="designate-box" id="designate-box">
         <img :src="currentExposureItemMedia.image.url" alt="" id="mediaImage" />
-
         <Rectangle
           v-for="shape of rectangles"
           :key="shape.id"
@@ -13,8 +12,8 @@
           :y="shape.y"
           :width="shape.width"
           :height="shape.height"
-        ></Rectangle>
-
+          :zIndex="shape.zIndex"
+        />
         <Circle
           v-for="shape of circles"
           :key="shape.id"
@@ -22,8 +21,8 @@
           :x="shape.x"
           :y="shape.y"
           :radius="shape.radius"
-        ></Circle>
-
+          :zIndex="shape.zIndex"
+        />
         <Rectangle
           v-if="addingRect"
           :id="addingRect.id"
@@ -31,14 +30,16 @@
           :y="addingRect.y"
           :width="addingRect.width"
           :height="addingRect.height"
-        ></Rectangle>
+          :zIndex="addingRect.zIndex"
+        />
         <Circle
           v-if="addingCircle"
           :id="addingCircle.id"
           :x="addingCircle.x"
           :y="addingCircle.y"
           :radius="addingCircle.radius"
-        ></Circle>
+          :zIndex="addingCircle.zIndex"
+        />
       </div>
     </div>
   </teleport>

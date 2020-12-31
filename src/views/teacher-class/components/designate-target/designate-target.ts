@@ -10,6 +10,7 @@ export interface Shape {
   y: number;
   color: string;
   type: string;
+  zIndex?: number;
 }
 export interface Circle extends Shape {
   radius: number;
@@ -69,9 +70,21 @@ export default defineComponent({
       interact(`.rectangle`).resizable({
         edges: { top: true, left: true, bottom: true, right: true },
         listeners: {
-          start(_) {
+          start(event) {
             addingCircle.value = null;
             addingRect.value = null;
+            const targetId = `${event.target.id}`;
+            const ele =
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
+            if (!ele) return;
+            for (const e of rectangles.value) {
+              e.zIndex = 0;
+            }
+            for (const e of circles.value) {
+              e.zIndex = 0;
+            }
+            ele.zIndex = 1;
           },
           move: (event) => {
             addingCircle.value = null;
@@ -95,9 +108,21 @@ export default defineComponent({
           interact.modifiers.aspectRatio({ enabled: true, equalDelta: true }),
         ],
         listeners: {
-          start(_) {
+          start(event) {
             addingCircle.value = null;
             addingRect.value = null;
+            const targetId = `${event.target.id}`;
+            const ele =
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
+            if (!ele) return;
+            for (const e of rectangles.value) {
+              e.zIndex = 0;
+            }
+            for (const e of circles.value) {
+              e.zIndex = 0;
+            }
+            ele.zIndex = 1;
           },
           move: (event) => {
             addingCircle.value = null;
@@ -117,9 +142,21 @@ export default defineComponent({
     const draggable = () => {
       interact(`.draggable`).draggable({
         listeners: {
-          start(_) {
+          start(event) {
             addingCircle.value = null;
             addingRect.value = null;
+            const targetId = `${event.target.id}`;
+            const ele =
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
+            if (!ele) return;
+            for (const e of rectangles.value) {
+              e.zIndex = 0;
+            }
+            for (const e of circles.value) {
+              e.zIndex = 0;
+            }
+            ele.zIndex = 1;
           },
           move(event) {
             addingCircle.value = null;
@@ -150,6 +187,7 @@ export default defineComponent({
           radius: 30,
           color: "red",
           type: "circle",
+          zIndex: 1,
         };
         circles.value.push(circle);
       });
@@ -170,6 +208,7 @@ export default defineComponent({
             radius: radius,
             color: "red",
             type: "circle",
+            zIndex: 1,
           };
         } else {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
@@ -184,6 +223,7 @@ export default defineComponent({
             height: height,
             color: "red",
             type: "rectangle",
+            zIndex: 1,
           };
         }
       });
