@@ -13,6 +13,7 @@ import {
   GlobalAudioBar,
   LeaveModal,
   ErrorModal,
+  DesignateTarget
 } from "./components";
 export default defineComponent({
   components: {
@@ -23,6 +24,7 @@ export default defineComponent({
     StudentGallery,
     LeaveModal,
     ErrorModal,
+    DesignateTarget
   },
   async beforeUnmount() {
     const store = useStore();
@@ -47,6 +49,7 @@ export default defineComponent({
     const router = useRouter();
     const showModal = ref(false);
     const hasConfirmed = ref(false);
+    const isDesignatingTarget = computed(() => getters["teacherRoom/isDesignatingTarget"]);
     const teacher: ComputedRef<TeacherState> = computed(
       () => getters["teacherRoom/teacher"]
     );
@@ -126,6 +129,9 @@ export default defineComponent({
       const id: ClassAction = getters["teacherRoom/classAction"];
       return actions.find((e) => e.id === id) || actions[0];
     });
+
+    const ctaVisible = ref(false);
+
     const onClickSelectAction = async (action: {
       id: ClassAction;
       icon: string;
@@ -134,8 +140,8 @@ export default defineComponent({
       await dispatch("teacherRoom/setClassAction", {
         action: ClassActionToValue(action.id),
       });
+      ctaVisible.value = false;
     };
-    const ctaVisible = ref(false);
 
     const onHoverCTAButton = () => {
       ctaVisible.value = true;
@@ -169,6 +175,7 @@ export default defineComponent({
       onHoverCTAButton,
       onClickOutSideCTAContent,
       ctaVisible,
+      isDesignatingTarget
     };
   },
 });
