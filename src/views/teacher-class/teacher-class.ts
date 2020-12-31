@@ -118,7 +118,6 @@ export default defineComponent({
     watch(error, () => {
       console.log(error.value);
     });
-
     const actions = [
       { id: ClassAction.DEFAULT, icon: "none" },
       { id: ClassAction.INTERACTIVE, icon: "interactive" },

@@ -1,4 +1,4 @@
-import { computed, defineComponent, Ref, ref } from "vue";
+import { computed, ComputedRef, defineComponent, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
@@ -6,6 +6,7 @@ import Circle from "./circle/circle.vue";
 import Rectangle from "./rectangle/rectangle.vue";
 import { randomUUID } from "@/utils/utils";
 import { Target } from "@/store/interactive/state";
+import { InClassStatus, StudentState } from "@/store/room/interface";
 export interface Shape {
   id: string;
   x: number;
@@ -39,7 +40,6 @@ export default defineComponent({
     const rectangles: Ref<Array<Rectangle>> = ref([]);
     const addingRect: Ref<Rectangle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
-    const manager = computed(()=>store.getters["teacherRoom/roomManager"]);
     const onClickCloseDesignate = async () => {
       await store.dispatch("interactive/setDesignatingTarget", {
         isDesignatingTarget: false,
@@ -48,11 +48,11 @@ export default defineComponent({
         .map((c) => {
           return {
             id: "",
-            x: c.x,
-            y: c.y,
+            x: Math.floor(c.x),
+            y: Math.floor(c.y),
             color: c.color,
             type: c.type,
-            radius: c.radius,
+            radius: Math.floor(c.radius),
             width: 0,
             height: 0,
             reveal: false,
@@ -62,24 +62,26 @@ export default defineComponent({
           rectangles.value.map((r) => {
             return {
               id: "",
-              x: r.x,
-              y: r.y,
+              x: Math.floor(r.x),
+              y: Math.floor(r.y),
               color: r.color,
               type: r.type,
               radius: 0,
-              width: r.width,
-              height: r.height,
+              width: Math.floor(r.width),
+              height: Math.floor(r.height),
               reveal: false,
             };
           })
         );
-      console.log(manager.value);
-      await manager.value?.WSClient.sendRequestDesignateTarget(
+      await store.getters[
+        "teacherRoom/roomManager"
+      ]?.WSClient.sendRequestDesignateTarget(
         currentExposureItemMedia.value.id,
         targets,
-        []
+        ["3d862662-bdce-4f6e-a5a2-31c52d2d8668"]
       );
     };
+
     const boundingBox = () => {
       const designBox = document.getElementById("designate-box");
       return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
