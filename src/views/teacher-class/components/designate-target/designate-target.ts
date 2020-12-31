@@ -1,9 +1,11 @@
-import { computed, defineComponent, Ref, ref, watch } from "vue";
+import { computed, defineComponent, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
 import Circle from "./circle/circle.vue";
 import Rectangle from "./rectangle/rectangle.vue";
+import { randomUUID } from "@/utils/utils";
+import { Target } from "@/store/interactive/state";
 export interface Shape {
   id: string;
   x: number;
@@ -33,19 +35,55 @@ export default defineComponent({
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
-    const onClickCloseDesignate = () => {
-      store.dispatch("teacherRoom/setDesignatingTarget", {
+    const circles: Ref<Array<Circle>> = ref([]);
+    const rectangles: Ref<Array<Rectangle>> = ref([]);
+    const addingRect: Ref<Rectangle | null> = ref(null);
+    const addingCircle: Ref<Circle | null> = ref(null);
+    const manager = computed(()=>store.getters["teacherRoom/roomManager"]);
+    const onClickCloseDesignate = async () => {
+      await store.dispatch("interactive/setDesignatingTarget", {
         isDesignatingTarget: false,
       });
+      const targets: Array<Target> = circles.value
+        .map((c) => {
+          return {
+            id: "",
+            x: c.x,
+            y: c.y,
+            color: c.color,
+            type: c.type,
+            radius: c.radius,
+            width: 0,
+            height: 0,
+            reveal: false,
+          };
+        })
+        .concat(
+          rectangles.value.map((r) => {
+            return {
+              id: "",
+              x: r.x,
+              y: r.y,
+              color: r.color,
+              type: r.type,
+              radius: 0,
+              width: r.width,
+              height: r.height,
+              reveal: false,
+            };
+          })
+        );
+      console.log(manager.value);
+      await manager.value?.WSClient.sendRequestDesignateTarget(
+        currentExposureItemMedia.value.id,
+        targets,
+        []
+      );
     };
     const boundingBox = () => {
       const designBox = document.getElementById("designate-box");
       return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
     };
-    const circles: Ref<Array<Circle>> = ref([]);
-    const rectangles: Ref<Array<Rectangle>> = ref([]);
-    const addingRect: Ref<Rectangle | null> = ref(null);
-    const addingCircle: Ref<Circle | null> = ref(null);
 
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
@@ -68,13 +106,6 @@ export default defineComponent({
       const dx = p1.x - p2.x;
       const dy = p1.y - p2.y;
       return Math.sqrt(dx * dx + dy * dy);
-    };
-
-    const onClickCircle = (circle: any) => {
-      console.log(circle);
-    };
-    const onClickRectangle = (rect: any) => {
-      console.log(rect);
     };
 
     const resizable = () => {
@@ -258,12 +289,11 @@ export default defineComponent({
         if (event.srcEvent.altKey) {
           const x = touchStart.value.x;
           const y = touchStart.value.y;
-          const radius = distance(touchStart.value, touchPosition.value);
           addingCircle.value = {
-            id: Date.now() + "",
+            id: randomUUID(),
             x: x,
             y: y,
-            radius: radius,
+            radius: 0,
             color: "red",
             type: "circle",
             zIndex: 1,
@@ -274,7 +304,7 @@ export default defineComponent({
           const width = Math.abs(touchPosition.value.x - touchStart.value.x);
           const height = Math.abs(touchPosition.value.y - touchStart.value.y);
           addingRect.value = {
-            id: Date.now() + "",
+            id: randomUUID(),
             x: x,
             y: y,
             width: width,
@@ -327,10 +357,8 @@ export default defineComponent({
       currentExposureItemMedia,
       addingCircle,
       circles,
-      onClickCircle,
       rectangles,
       addingRect,
-      onClickRectangle,
       touchStart,
       touchPosition,
       init,

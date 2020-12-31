@@ -1,3 +1,4 @@
+import { Target } from "@/store/interactive/state";
 import { GLSocketClient } from "../base";
 import { TeacherWSCommand as WSCmd } from "./command";
 
@@ -80,7 +81,18 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearRaisingHand(id: string) {
     return this.send(WSCmd.CLEAR_RAISING_HAND, { studentId: id });
   }
-  sendRequestSetClassAction(action: number){
-    return this.send(WSCmd.SET_CLASS_ACTION, {Action: action});
+  sendRequestSetClassAction(action: number) {
+    return this.send(WSCmd.SET_CLASS_ACTION, { Action: action });
+  }
+  sendRequestDesignateTarget(
+    contentId: string,
+    targets: Array<Target>,
+    studentIds: Array<string>
+  ) {
+    return this.send(WSCmd.DESIGNATE_TARGET, {
+      ContentId: contentId,
+      Targets: targets,
+      StudentIds: studentIds,
+    });
   }
 }

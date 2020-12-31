@@ -154,6 +154,9 @@ export const useTeacherRoomWSHandler = ({
         { root: true }
       );
     },
+    onTeacherDesignateTarget: (payload: any) => {
+      console.log("onTeacherDesignateTarget", payload);
+    },
   };
   return handler;
 };

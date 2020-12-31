@@ -2,6 +2,7 @@ import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
+import { Logger } from "@/utils/logger";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -13,7 +14,7 @@ import {
   GlobalAudioBar,
   LeaveModal,
   ErrorModal,
-  DesignateTarget
+  DesignateTarget,
 } from "./components";
 export default defineComponent({
   components: {
@@ -24,7 +25,7 @@ export default defineComponent({
     StudentGallery,
     LeaveModal,
     ErrorModal,
-    DesignateTarget
+    DesignateTarget,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -49,7 +50,9 @@ export default defineComponent({
     const router = useRouter();
     const showModal = ref(false);
     const hasConfirmed = ref(false);
-    const isDesignatingTarget = computed(() => getters["teacherRoom/isDesignatingTarget"]);
+    const isDesignatingTarget = computed(
+      () => getters["interactive/isDesignatingTarget"]
+    );
     const teacher: ComputedRef<TeacherState> = computed(
       () => getters["teacherRoom/teacher"]
     );
@@ -175,7 +178,7 @@ export default defineComponent({
       onHoverCTAButton,
       onClickOutSideCTAContent,
       ctaVisible,
-      isDesignatingTarget
+      isDesignatingTarget,
     };
   },
 });

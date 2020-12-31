@@ -20,7 +20,6 @@ import { TeacherRoomState } from "./state";
 type State = TeacherRoomState;
 
 export interface TeacherRoomMutationInterface<S> {
-  setDesignatingTarget(s: S, p: { isDesignatingTarget: boolean }): void;
   setCameraLock(s: S, p: DeviceMediaPayload): void;
   setMicrophoneLock(s: S, p: DeviceMediaPayload): void;
   endClass(s: S, p: DefaultPayload): void;
@@ -55,9 +54,6 @@ export interface TeacherRoomMutation<S>
     TeacherRoomMutationInterface<S> {}
 
 const mutations: TeacherRoomMutation<State> = {
-  setDesignatingTarget(s: State, p: { isDesignatingTarget: boolean }): void {
-    s.isDesignatingTarget = p.isDesignatingTarget;
-  },
   setCameraLock(s: State, p: DeviceMediaPayload): void {
     s.cameraLock = p.enable;
   },

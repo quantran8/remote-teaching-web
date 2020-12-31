@@ -3,7 +3,7 @@
     <div class="designate-target-container" v-if="currentExposureItemMedia">
       <div class="backdrop" @click="onClickCloseDesignate"></div>
       <div class="designate-box" id="designate-box">
-        <img :src="currentExposureItemMedia.image.url" alt="" id="mediaImage" />
+        <img :src="currentExposureItemMedia.image.url" id="mediaImage" />
         <Rectangle
           v-for="shape of rectangles"
           :key="shape.id"
