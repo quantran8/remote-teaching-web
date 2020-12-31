@@ -49,6 +49,17 @@ export default defineComponent({
 
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
+    const isIntersect = (
+      rect: { x: number; y: number; width: number; height: number },
+      position: { x: number; y: number }
+    ) => {
+      return !(
+        position.x < rect.x ||
+        position.y < rect.y ||
+        position.x > rect.x + rect.width ||
+        position.y > rect.y + rect.height
+      );
+    };
 
     const distance = (
       p1: { x: number; y: number },
@@ -169,6 +180,53 @@ export default defineComponent({
             ele.x += event.dx;
             ele.y += event.dy;
           },
+          end(event) {
+            const targetId = `${event.target.id}`;
+            const ele =
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
+            if (!ele) return;
+            const topleft = { x: 0, y: 0 };
+            const bottomRight = { x: 0, y: 0 };
+
+            const rectangleElement = ele as Rectangle;
+
+            if (rectangleElement) {
+              topleft.x = rectangleElement.x;
+              topleft.y = rectangleElement.y;
+              bottomRight.x = rectangleElement.x + rectangleElement.width;
+              bottomRight.y = rectangleElement.y + rectangleElement.height;
+            } else {
+              const circleElement = ele as Circle;
+              if (circleElement) {
+                topleft.x = circleElement.x - circleElement.radius;
+                topleft.y = circleElement.y - circleElement.radius;
+                bottomRight.x = circleElement.x + circleElement.radius;
+                bottomRight.y = circleElement.y + circleElement.radius;
+              }
+            }
+            const clientBoundingBox = boundingBox();
+            const rect = {
+              x: 0,
+              y: 0,
+              width: clientBoundingBox.width,
+              height: clientBoundingBox.height,
+            };
+
+            if (
+              !isIntersect(rect, topleft) ||
+              !isIntersect(rect, bottomRight)
+            ) {
+              const rectIndex = rectangles.value.findIndex(
+                (r) => r.id === targetId
+              );
+              if (rectIndex !== -1) rectangles.value.splice(rectIndex, 1);
+              const circleIndex = circles.value.findIndex(
+                (r) => r.id === targetId
+              );
+              if (circleIndex !== -1) circles.value.splice(circleIndex, 1);
+            }
+          },
         },
       });
     };
@@ -229,9 +287,8 @@ export default defineComponent({
       });
       manager.on("panmove", (event) => {
         if (!addingRect.value && !addingCircle.value) return;
-        const boundingBox = designBox.getBoundingClientRect();
-        touchPosition.value.x = event.center.x - boundingBox.x;
-        touchPosition.value.y = event.center.y - boundingBox.y;
+        touchPosition.value.x = event.center.x - boundingBox().x;
+        touchPosition.value.y = event.center.y - boundingBox().y;
         if (addingRect.value) {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
           const y = Math.min(touchStart.value.y, touchPosition.value.y);
@@ -261,7 +318,6 @@ export default defineComponent({
           addingCircle.value = null;
         }
       });
-
       resizable();
       draggable();
     };
