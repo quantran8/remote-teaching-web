@@ -6,6 +6,10 @@ import { ClassView, StudentState, TeacherState } from "../interface";
 import { ClassAction, StudentRoomState } from "./state";
 
 const getters: GetterTree<StudentRoomState, any> = {
+  isConnected(state: StudentRoomState): boolean {
+    if (!state.manager || !state.manager.WSClient) return false;
+    return state.manager.WSClient.isConnected;
+  },
   globalAudios(state: StudentRoomState): Array<string> {
     return state.globalAudios;
   },

@@ -98,6 +98,11 @@ export default defineComponent({
     const classAction = computed(
       () => store.getters["studentRoom/classAction"]
     );
+    const isConnected = computed(()=> store.getters["studentRoom/isConnected"]);
+    watch(isConnected, async () => {
+      if (!isConnected.value) return;
+      await store.dispatch("studentRoom/joinWSRoom");
+    })
     return {
       student,
       students,
