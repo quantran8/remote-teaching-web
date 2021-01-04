@@ -14,6 +14,9 @@
     >
       <BaseIcon name="icon-change" class="icon-change" />
     </div>
+    <BaseButton class="icon-designate" @click="onClickToggleDesignatingTarget">
+      <img src="@/assets/icons/icon-action-designate.svg" alt="" />
+    </BaseButton>
   </div>
 </template>
 <style lang="scss" scoped src="./activity-content.scss"></style>
