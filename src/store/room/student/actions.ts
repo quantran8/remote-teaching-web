@@ -76,6 +76,15 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
+  async joinWSRoom(store, _payload: any) {
+    if (!store.state.info || !store.state.manager || !store.state.user) return;
+    await store.state.manager?.WSClient.sendRequestJoinRoom(
+      store.state.info.id,
+      store.state.user.id
+    );
+    const eventHandler = useStudentRoomHandler(store);
+    store.state.manager?.registerEventHandler(eventHandler);
+  },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
     if (!state.info || !state.user) return;
@@ -87,12 +96,6 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    await state.manager?.WSClient.sendRequestJoinRoom(
-      state.info?.id,
-      state.user?.id
-    );
-    const eventHandler = useStudentRoomHandler(store);
-    state.manager?.registerEventHandler(eventHandler);
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: (_payload) => {
         dispatch("updateAudioAndVideoFeed", {});

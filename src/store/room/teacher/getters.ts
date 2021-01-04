@@ -11,6 +11,10 @@ import { ClassAction } from "../student/state";
 import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
+  isConnected(state : TeacherRoomState): boolean {
+    if(!state.manager || !state.manager.WSClient) return false;
+    return state.manager.WSClient.isConnected;
+  },
   enableAudios(state: TeacherRoomState): Array<string> {
     if (state.localAudios.length > 0) return state.localAudios;
     else if (state.globalAudios.length > 0) return state.globalAudios;
