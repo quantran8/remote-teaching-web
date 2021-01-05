@@ -72,6 +72,18 @@ export class GLSocketClient {
       this._isConnected = false;
       await this.connect();
     }
+    return this.hubConnection.send(command, payload);
+  }
+
+  async invoke(command: string, payload: any): Promise<any> {
+    Logger.log("INVOKE", command, payload);
+    if (
+        !this.isConnected ||
+        this.hubConnection.state === HubConnectionState.Disconnected
+    ) {
+      this._isConnected = false;
+      await this.connect();
+    }
     return this.hubConnection.invoke(command, payload);
   }
 
