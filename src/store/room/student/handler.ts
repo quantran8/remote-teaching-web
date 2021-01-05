@@ -206,6 +206,12 @@ export const useStudentRoomHandler = (
         { root: true }
       );
     },
+    onTeacherDesignateTarget: (payload: any) => {
+      console.log("onTeacherDesignateTarget", payload);
+    },
+    onTeacherUpdateDesignateTarget: async (payload: any) => {
+      console.log(payload);
+    },
   };
   return handler;
 };

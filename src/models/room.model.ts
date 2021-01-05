@@ -1,3 +1,4 @@
+import { Target } from "@/store/interactive/state";
 import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
 
@@ -25,6 +26,15 @@ export interface ExposureContentModel {
   maxDuration: string;
   contents: Array<ExposureItemModel>;
 }
+export interface InteractiveModel {
+  answerMode: number;
+  contentId: string;
+  studentInteractives: Array<{
+    studentId: string;
+    answerList: Array<string>;
+  }>;
+  targets: Array<Target>;
+}
 export interface LessonPlanModel {
   contentSelected: string;
   contents: Array<ExposureContentModel>;
@@ -33,6 +43,7 @@ export interface LessonPlanModel {
   totalTime: string;
   playedTime: string;
   lessonAction: number;
+  interactive: InteractiveModel;
 }
 export interface RoomModel {
   id: string;

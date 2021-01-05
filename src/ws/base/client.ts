@@ -75,6 +75,18 @@ export class GLSocketClient {
     return this.hubConnection.send(command, payload);
   }
 
+  async invoke(command: string, payload: any): Promise<any> {
+    Logger.log("INVOKE", command, payload);
+    if (
+        !this.isConnected ||
+        this.hubConnection.state === HubConnectionState.Disconnected
+    ) {
+      this._isConnected = false;
+      await this.connect();
+    }
+    return this.hubConnection.invoke(command, payload);
+  }
+
   registerEventHandler(handler: WSEventHandler) {
     const handlers: Map<WSEvent, Function> = new Map<WSEvent, Function>();
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
@@ -149,6 +161,14 @@ export class GLSocketClient {
     handlers.set(
       TeacherWSEvent.UPDATE_LESSON_ACTION,
       handler.onTeacherUpdateClassAction
+    );
+    handlers.set(
+      TeacherWSEvent.DESIGNATE_INTERACTIVE,
+      handler.onTeacherDesignateTarget
+    );
+    handlers.set(
+      TeacherWSEvent.UPDATE_INTERACTIVE,
+      handler.onTeacherUpdateDesignateTarget
     );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {

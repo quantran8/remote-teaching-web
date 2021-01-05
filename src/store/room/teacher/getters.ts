@@ -15,9 +15,6 @@ const getters: GetterTree<TeacherRoomState, any> = {
     if(!state.manager || !state.manager.WSClient) return false;
     return state.manager.WSClient.isConnected;
   },
-  isDesignatingTarget(state: TeacherRoomState): boolean{
-    return state.isDesignatingTarget;
-  },
   enableAudios(state: TeacherRoomState): Array<string> {
     if (state.localAudios.length > 0) return state.localAudios;
     else if (state.globalAudios.length > 0) return state.globalAudios;

@@ -23,9 +23,6 @@ import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
 const actions: ActionTree<TeacherRoomState, any> = {
-  setDesignatingTarget({ commit }, p: { isDesignatingTarget: boolean }) {
-    commit("setDesignatingTarget", p);
-  },
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);

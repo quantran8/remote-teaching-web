@@ -19,4 +19,6 @@ export interface TeacherWSEventHandler {
   onTeacherSetLessonPlanItemContent(payload: any): void;
   onTeacherClearRaisingHand(payload: any): void;
   onTeacherUpdateClassAction(payload: any): void;
+  onTeacherDesignateTarget(payload: any): void;
+  onTeacherUpdateDesignateTarget(payload: any): void;
 }

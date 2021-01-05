@@ -7,7 +7,9 @@ export default defineComponent({
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
-    const isDesignatingTarget = computed(() => store.getters["teacherRoom/isDesignatingTarget"]);
+    const isDesignatingTarget = computed(
+      () => store.getters["teacherRoom/isDesignatingTarget"]
+    );
     const isFlipped = computed(() => store.getters["lesson/isBlackOut"]);
     const toggleView = async () => {
       await store.dispatch("teacherRoom/setBlackOut", {
@@ -21,9 +23,11 @@ export default defineComponent({
           }
         : {};
     });
-    const onClickToggleDesignatingTarget = ()=>{
-      store.dispatch("teacherRoom/setDesignatingTarget",{isDesignatingTarget: !isDesignatingTarget.value});
-    }
+    const onClickToggleDesignatingTarget = () => {
+      store.dispatch("interactive/setDesignatingTarget", {
+        isDesignatingTarget: !isDesignatingTarget.value,
+      });
+    };
 
     return {
       currentExposureItemMedia,
@@ -31,7 +35,7 @@ export default defineComponent({
       toggleView,
       contentImageStyle,
       onClickToggleDesignatingTarget,
-      isDesignatingTarget
+      isDesignatingTarget,
     };
   },
 });

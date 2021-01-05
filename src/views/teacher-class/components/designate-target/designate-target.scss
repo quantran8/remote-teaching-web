@@ -15,15 +15,46 @@
     right: 0;
     top: 0;
     bottom: 0;
-  }
-  .designate-box {
-    background-color: white;
     z-index: 1;
+  }
+  .designate-wrap {
+    max-width: 1200px;
     position: relative;
-    overflow: hidden;
-    #mediaImage {
-      touch-action: none;
-      -webkit-user-drag: none;
+    display: flex;
+    z-index: 2;
+    .designate-box {
+      background-color: white;
+      width: 75%;
+      margin-right: 15px;
+      #mediaImage {
+        touch-action: none;
+        -webkit-user-drag: none;
+        max-width: 100%;
+      }
+    }
+    .designate-box-right {
+      width: 25%;
+      background: white;
+      margin-left: 15px;
+      h3 {
+        text-align: center;
+      }
+      &--student-list {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      &--button {
+        display: flex;
+        padding-top: 15px;
+        .base-button {
+          background: grey;
+          flex-grow: 1;
+          margin: 5px;
+          width: 50%;
+          text-align: center;
+        }
+      }
     }
   }
+
 }

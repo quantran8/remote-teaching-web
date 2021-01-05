@@ -1,9 +1,14 @@
-import { computed, defineComponent, Ref, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
 import Circle from "./circle/circle.vue";
 import Rectangle from "./rectangle/rectangle.vue";
+import { randomUUID } from "@/utils/utils";
+import { StudentId, Target } from "@/store/interactive/state";
+import StudentList from "./student-list/student-list.vue";
+import { InClassStatus, StudentState } from "@/store/room/interface";
+import { MathUtils } from "@/utils/math.utils";
 export interface Shape {
   id: string;
   x: number;
@@ -20,57 +25,158 @@ export interface Rectangle extends Shape {
   height: number;
 }
 
+interface StudentViewModel {
+  id: string;
+  selected?: boolean;
+  name: string;
+  status: InClassStatus;
+  index: number;
+}
+
 export default defineComponent({
   components: {
     Circle,
     Rectangle,
+    StudentList,
   },
   mounted() {
-    this.init();
+    const store = useStore();
+    const targets = store.getters["interactive/targets"];
+    if (!targets.length) this.init();
   },
   setup() {
     const store = useStore();
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
-    const onClickCloseDesignate = () => {
-      store.dispatch("teacherRoom/setDesignatingTarget", {
-        isDesignatingTarget: false,
-      });
-    };
-    const boundingBox = () => {
-      const designBox = document.getElementById("designate-box");
-      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
-    };
     const circles: Ref<Array<Circle>> = ref([]);
     const rectangles: Ref<Array<Rectangle>> = ref([]);
     const addingRect: Ref<Rectangle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
-
+    const studentIds: Ref<Array<StudentViewModel>> = ref([]);
+    const students: ComputedRef<Array<StudentState>> = computed(
+      () => store.getters["teacherRoom/students"]
+    );
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
 
-    const distance = (
-      p1: { x: number; y: number },
-      p2: { x: number; y: number }
-    ) => {
-      const dx = p1.x - p2.x;
-      const dy = p1.y - p2.y;
-      return Math.sqrt(dx * dx + dy * dy);
+    const updateTargets = () => {
+      const targets: Array<Target> = store.getters["interactive/targets"];
+      circles.value = targets
+        .filter((t) => t.type === "circle")
+        .map((c) => {
+          return {
+            id: c.id,
+            x: c.x,
+            y: c.y,
+            color: c.color,
+            radius: c.radius,
+            type: c.type,
+          };
+        });
+      rectangles.value = targets
+        .filter((t) => t.type === "rectangle")
+        .map((r) => {
+          return {
+            id: r.id,
+            x: r.x,
+            y: r.y,
+            color: r.color,
+            type: r.type,
+            width: r.width,
+            height: r.height,
+          };
+        });
+    };
+    watch(store.getters["interactive/targets"], updateTargets);
+    updateTargets();
+    const updateStudentSelected = () => {
+      const studentSelecteds: Array<StudentId> =
+        store.getters["interactive/studentsSelected"];
+      for (const st of studentSelecteds) {
+        const student = studentIds.value.find((s) => s.id === st.id);
+        if (student) student.selected = true;
+      }
     };
 
-    const onClickCircle = (circle: any) => {
-      console.log(circle);
+    watch(store.getters["interactive/studentsSelected"], updateStudentSelected);
+    const onStudentsChanged = () => {
+      if (studentIds.value.length) return;
+      studentIds.value = students.value.map((s) => {
+        return {
+          id: s.id,
+          index: s.index,
+          name: s.name,
+          status: s.status,
+          selected: false,
+        };
+      });
+      updateStudentSelected();
     };
-    const onClickRectangle = (rect: any) => {
-      console.log(rect);
+    watch(students, onStudentsChanged);
+    onStudentsChanged();
+
+    const onClickToggleStudent = (s: StudentViewModel) => {
+      const student = studentIds.value.find((ele) => ele.id === s.id);
+      if (student) student.selected = !student.selected;
+    };
+
+    const onClickCloseDesignate = async () => {
+      await store.dispatch("interactive/setDesignatingTarget", {
+        isDesignatingTarget: false,
+      });
+
+      const targets: Array<Target> = circles.value
+        .map((c) => {
+          return {
+            id: "",
+            x: Math.floor(c.x),
+            y: Math.floor(c.y),
+            color: c.color,
+            type: c.type,
+            radius: Math.floor(c.radius),
+            width: 0,
+            height: 0,
+            reveal: false,
+          };
+        })
+        .concat(
+          rectangles.value.map((r) => {
+            return {
+              id: "",
+              x: Math.floor(r.x),
+              y: Math.floor(r.y),
+              color: r.color,
+              type: r.type,
+              radius: 0,
+              width: Math.floor(r.width),
+              height: Math.floor(r.height),
+              reveal: false,
+            };
+          })
+        );
+
+      const selectedStudents = studentIds.value
+        .filter((s) => s.selected)
+        .map((s) => s.id);
+      const roomManager = await store.getters["teacherRoom/roomManager"];
+      roomManager?.WSClient.sendRequestDesignateTarget(
+        currentExposureItemMedia.value.id,
+        targets,
+        selectedStudents
+      );
+    };
+
+    const boundingBox = () => {
+      const designBox = document.getElementById("designate-box");
+      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
     };
 
     const resizable = () => {
       interact(`.rectangle`).resizable({
         edges: { top: true, left: true, bottom: true, right: true },
         listeners: {
-          start(event) {
+          start(event: any) {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
@@ -86,7 +192,7 @@ export default defineComponent({
             }
             ele.zIndex = 1;
           },
-          move: (event) => {
+          move: (event: any) => {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = event.target.id + "";
@@ -108,7 +214,7 @@ export default defineComponent({
           interact.modifiers.aspectRatio({ enabled: true, equalDelta: true }),
         ],
         listeners: {
-          start(event) {
+          start(event: any) {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
@@ -124,7 +230,7 @@ export default defineComponent({
             }
             ele.zIndex = 1;
           },
-          move: (event) => {
+          move: (event: any) => {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
@@ -142,7 +248,7 @@ export default defineComponent({
     const draggable = () => {
       interact(`.draggable`).draggable({
         listeners: {
-          start(event) {
+          start(event: any) {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
@@ -158,7 +264,7 @@ export default defineComponent({
             }
             ele.zIndex = 1;
           },
-          move(event) {
+          move(event: any) {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
@@ -169,14 +275,62 @@ export default defineComponent({
             ele.x += event.dx;
             ele.y += event.dy;
           },
+          end(event: any) {
+            const targetId = `${event.target.id}`;
+            const ele =
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
+            if (!ele) return;
+            const topleft = { x: 0, y: 0 };
+            const bottomRight = { x: 0, y: 0 };
+
+            const rectangleElement = ele as Rectangle;
+
+            if (rectangleElement) {
+              topleft.x = rectangleElement.x;
+              topleft.y = rectangleElement.y;
+              bottomRight.x = rectangleElement.x + rectangleElement.width;
+              bottomRight.y = rectangleElement.y + rectangleElement.height;
+            } else {
+              const circleElement = ele as Circle;
+              if (circleElement) {
+                topleft.x = circleElement.x - circleElement.radius;
+                topleft.y = circleElement.y - circleElement.radius;
+                bottomRight.x = circleElement.x + circleElement.radius;
+                bottomRight.y = circleElement.y + circleElement.radius;
+              }
+            }
+            const clientBoundingBox = boundingBox();
+            const rect = {
+              x: 0,
+              y: 0,
+              width: clientBoundingBox.width,
+              height: clientBoundingBox.height,
+            };
+
+            if (
+              !MathUtils.isIntersect(rect, topleft) ||
+              !MathUtils.isIntersect(rect, bottomRight)
+            ) {
+              const rectIndex = rectangles.value.findIndex(
+                (r) => r.id === targetId
+              );
+              if (rectIndex !== -1) rectangles.value.splice(rectIndex, 1);
+              const circleIndex = circles.value.findIndex(
+                (r) => r.id === targetId
+              );
+              if (circleIndex !== -1) circles.value.splice(circleIndex, 1);
+            }
+          },
         },
       });
     };
     const init = () => {
       const designBox = document.getElementById("designate-box");
       if (!designBox) return;
+
       const manager = new hammer(designBox);
-      manager.on("tap", (event) => {
+      manager.on("tap", (event: any) => {
         if (event.target.id !== "mediaImage") return;
         touchPosition.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchPosition.value.y = event.center.y - boundingBox().y - event.deltaY;
@@ -191,7 +345,7 @@ export default defineComponent({
         };
         circles.value.push(circle);
       });
-      manager.on("panstart", (event: HammerInput) => {
+      manager.on("panstart", (event: any) => {
         if (event.target.id !== "mediaImage") return;
         touchStart.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchStart.value.y = event.center.y - boundingBox().y - event.deltaY;
@@ -200,12 +354,11 @@ export default defineComponent({
         if (event.srcEvent.altKey) {
           const x = touchStart.value.x;
           const y = touchStart.value.y;
-          const radius = distance(touchStart.value, touchPosition.value);
           addingCircle.value = {
-            id: Date.now() + "",
+            id: randomUUID(),
             x: x,
             y: y,
-            radius: radius,
+            radius: 0,
             color: "red",
             type: "circle",
             zIndex: 1,
@@ -216,22 +369,21 @@ export default defineComponent({
           const width = Math.abs(touchPosition.value.x - touchStart.value.x);
           const height = Math.abs(touchPosition.value.y - touchStart.value.y);
           addingRect.value = {
-            id: Date.now() + "",
+            id: randomUUID(),
             x: x,
             y: y,
             width: width,
             height: height,
-            color: "red",
+            color: "green",
             type: "rectangle",
             zIndex: 1,
           };
         }
       });
-      manager.on("panmove", (event) => {
+      manager.on("panmove", (event: any) => {
         if (!addingRect.value && !addingCircle.value) return;
-        const boundingBox = designBox.getBoundingClientRect();
-        touchPosition.value.x = event.center.x - boundingBox.x;
-        touchPosition.value.y = event.center.y - boundingBox.y;
+        touchPosition.value.x = event.center.x - boundingBox().x;
+        touchPosition.value.y = event.center.y - boundingBox().y;
         if (addingRect.value) {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
           const y = Math.min(touchStart.value.y, touchPosition.value.y);
@@ -247,10 +399,10 @@ export default defineComponent({
           addingCircle.value.x = x;
           addingCircle.value.y = y;
           addingCircle.value.radius =
-            distance(touchStart.value, touchPosition.value) / 2;
+            MathUtils.distance(touchStart.value, touchPosition.value) / 2;
         }
       });
-      manager.on("panend", (_) => {
+      manager.on("panend", (_: any) => {
         if (!addingCircle.value && !addingRect.value) return;
         if (addingRect.value) {
           rectangles.value.push({ ...addingRect.value });
@@ -261,23 +413,29 @@ export default defineComponent({
           addingCircle.value = null;
         }
       });
-
       resizable();
       draggable();
     };
+    const onClickClearAllTargets = () => {
+      circles.value = [];
+      rectangles.value = [];
+      init();
+    };
 
     return {
+      students,
       onClickCloseDesignate,
       currentExposureItemMedia,
       addingCircle,
       circles,
-      onClickCircle,
       rectangles,
       addingRect,
-      onClickRectangle,
       touchStart,
       touchPosition,
       init,
+      studentIds,
+      onClickToggleStudent,
+      onClickClearAllTargets,
     };
   },
 });
