@@ -14,7 +14,8 @@ export const useTeacherRoomWSHandler = ({
     onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
       await dispatch("updateAudioAndVideoFeed", {});
-      dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
+      await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
+      await dispatch("interactive/setInfo", payload.lessonPlan.interactive, { root: true });
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
@@ -155,7 +156,10 @@ export const useTeacherRoomWSHandler = ({
       );
     },
     onTeacherDesignateTarget: (payload: any) => {
-      console.log("onTeacherDesignateTarget", payload);
+      commit("interactive/setInfo", payload, { root: true });
+    },
+    onTeacherUpdateDesignateTarget: async (payload: any) => {
+      await dispatch("interactive/setInfo", payload, { root: true });
     },
   };
   return handler;

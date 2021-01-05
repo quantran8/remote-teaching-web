@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { InteractiveState, Target } from "./state";
+import {InteractiveState, StudentId, Target} from "./state";
 
 const getters: GetterTree<InteractiveState, any> = {
   isDesignatingTarget(state: InteractiveState): boolean {
@@ -8,6 +8,9 @@ const getters: GetterTree<InteractiveState, any> = {
   targets(state: InteractiveState): Array<Target> {
     return state.targets;
   },
+  studentsSelected(state: InteractiveState): Array<StudentId> {
+    return state.studentsSelected;
+  }
 };
 
 export default getters;

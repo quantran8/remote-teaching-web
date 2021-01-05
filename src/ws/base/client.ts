@@ -73,7 +73,7 @@ export class GLSocketClient {
       this._isConnected = false;
       await this.connect();
     }
-    return this.hubConnection.send(command, payload);
+    return this.hubConnection.invoke(command, payload);
   }
 
   registerEventHandler(handler: WSEventHandler) {
@@ -154,6 +154,10 @@ export class GLSocketClient {
     handlers.set(
       TeacherWSEvent.DESIGNATE_INTERACTIVE,
       handler.onTeacherDesignateTarget
+    );
+    handlers.set(
+      TeacherWSEvent.UPDATE_INTERACTIVE,
+      handler.onTeacherUpdateDesignateTarget
     );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
