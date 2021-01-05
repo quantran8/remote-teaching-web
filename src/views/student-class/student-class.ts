@@ -5,9 +5,11 @@ import { computed, ComputedRef, defineComponent, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
+import ContentView from "./components/content-view/content-view.vue";
 export default defineComponent({
   components: {
     StudentCard,
+    ContentView
   },
   async created() {
     const { getters, dispatch } = useStore();

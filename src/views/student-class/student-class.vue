@@ -50,10 +50,7 @@
         <div :id="teacher.id" class="teacher-camera"></div>
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
-      <div class="content-view" v-if="isLessonPlan">
-        <div class="exposure-content" :style="contentImageStyle"></div>
-        <div class="mask" v-if="isBlackOutContent"></div>
-      </div>
+      <ContentView/>
     </div>
     <div class="page-footer">
       <div class="class-action">
