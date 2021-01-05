@@ -28,6 +28,7 @@ export class GLSocketClient {
     return this._options as GLSocketOptions;
   }
   async init() {
+    if (this._hubConnection) return;
     const options = {
       skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
@@ -36,8 +37,13 @@ export class GLSocketClient {
     };
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
+      .withAutomaticReconnect()
       .configureLogging(LogLevel.Debug)
       .build();
+    this._hubConnection.onclose(this.onClosed);
+    this._isConnected = false;
+  }
+  onClosed(){
     this._isConnected = false;
   }
   get isConnected(): boolean {
@@ -49,20 +55,13 @@ export class GLSocketClient {
   }
   async connect(): Promise<any> {
     if (this.isConnected) return Promise.resolve();
-    if (!this._hubConnection) await this.init();
-    return new Promise((resolve, reject) => {
-      this.hubConnection
-        .start()
-        .then((res) => {
-          this._isConnected = true;
-          resolve(res);
-        })
-        .catch((err) => {
-          this._isConnected = false;
-          Logger.error("GLSOCKET", err);
-          reject(err);
-        });
-    });
+    try {
+      await this.init();
+      await this.hubConnection.start();
+      this._isConnected = true;
+    } catch (error) {
+      this._isConnected = false;
+    }
   }
   async send(command: string, payload: any): Promise<any> {
     Logger.log("SEND", command, payload);

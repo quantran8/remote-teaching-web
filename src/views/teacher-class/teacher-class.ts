@@ -154,6 +154,11 @@ export default defineComponent({
     const onClickOutSideCTAContent = () => {
       ctaVisible.value = false;
     };
+    const isConnected = computed(()=> getters['teacherRoom/isConnected']);
+    watch(isConnected, async ()=>{
+      if(!isConnected.value) return;
+      await dispatch("teacherRoom/joinWSRoom");
+    });
     return {
       actions,
       classAction,
