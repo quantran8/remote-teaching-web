@@ -25,4 +25,19 @@
     z-index: 1;
     background-color: black;
   }
+
+  .touchPreview {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: solid 2px red;
+    position: absolute;
+    left: -10px;
+    top: -10px;
+  }
+  .rectPreview {
+    border: solid 2px green;
+    position: absolute;
+    touch-action: none;
+  }
 }

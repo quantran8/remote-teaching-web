@@ -4,6 +4,8 @@
       <div class="backdrop" @click="onClickCloseDesignate"></div>
       <div class="designate-wrap">
         <div class="designate-box" id="designate-box">
+          <ContentView    :image="currentExposureItemMedia.image" :targets="designateTargets"></ContentView>
+<!--           
           <img :src="currentExposureItemMedia.image.url" id="mediaImage" />
           <Rectangle
               v-for="shape of rectangles"
@@ -40,7 +42,7 @@
               :y="addingCircle.y"
               :radius="addingCircle.radius"
               :zIndex="addingCircle.zIndex"
-          />
+          /> -->
         </div>
         <div class="designate-box-right">
           <h3>Students</h3>

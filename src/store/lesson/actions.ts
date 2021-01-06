@@ -41,7 +41,7 @@ const actions: LessonActions<LessonState, any> = {
     if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
-      await store.dispatch("loadContentSignature",{},{root: true});
+      await store.dispatch("loadContentSignature", {}, { root: true });
       signalture = store.rootGetters["contentSignature"];
     }
     console.log("signature", signalture);
@@ -52,6 +52,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id,
             image: {
               url: payload.contentStorageUrl + p.url + signalture,
+              width: parseInt(p.resolution.split("X")[0]),
+              height: parseInt(p.resolution.split("X")[1]),
             },
           };
         });

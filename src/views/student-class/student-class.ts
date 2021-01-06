@@ -5,11 +5,9 @@ import { computed, ComputedRef, defineComponent, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
-import ContentView from "./components/content-view/content-view.vue";
 export default defineComponent({
   components: {
     StudentCard,
-    ContentView
   },
   async created() {
     const { getters, dispatch } = useStore();
@@ -36,6 +34,9 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const teacher = computed(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
+    const designateTargets = computed(
+      () => store.getters["interactive/targets"]
+    );
     const isLessonPlan = computed(
       () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
     );
@@ -100,11 +101,13 @@ export default defineComponent({
     const classAction = computed(
       () => store.getters["studentRoom/classAction"]
     );
-    const isConnected = computed(()=> store.getters["studentRoom/isConnected"]);
+    const isConnected = computed(
+      () => store.getters["studentRoom/isConnected"]
+    );
     watch(isConnected, async () => {
       if (!isConnected.value) return;
       await store.dispatch("studentRoom/joinWSRoom");
-    })
+    });
     return {
       student,
       students,
@@ -119,6 +122,8 @@ export default defineComponent({
       onClickRaisingHand,
       onClickLike,
       classAction,
+      currentExposureItemMedia,
+      designateTargets,
     };
   },
 });

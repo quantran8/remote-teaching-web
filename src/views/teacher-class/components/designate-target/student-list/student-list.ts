@@ -1,5 +1,5 @@
 import { InClassStatus } from "@/store/room/interface";
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 export default defineComponent({
   props: {

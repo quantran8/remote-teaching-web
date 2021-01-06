@@ -18,12 +18,14 @@ export interface InteractiveState {
   isDesignatingTarget: boolean;
   targets: Array<Target>;
   studentsSelected: Array<StudentId>;
+  currentUserId: string;
 }
 
 const state: InteractiveState = {
   isDesignatingTarget: false,
   targets: [],
-  studentsSelected: []
+  studentsSelected: [],
+  currentUserId: "",
 };
 
 export default state;

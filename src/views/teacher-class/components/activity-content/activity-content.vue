@@ -1,12 +1,13 @@
 <template>
   <div class="activity-content-container">
-    <div
-      v-if="currentExposureItemMedia"
-      class="content-container"
-      :style="contentImageStyle"
-    ></div>
+    <div v-if="currentExposureItemMedia" class="content-container">
+      <ContentView
+        :masked="isFlipped"
+        :image="currentExposureItemMedia.image"
+        :targets="designateTargets"
+      ></ContentView>
+    </div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>
-    <div v-if="isFlipped" class="mask"></div>
     <div
       class="flip-button"
       :class="{ flipped: isFlipped }"

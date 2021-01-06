@@ -7,6 +7,7 @@ export interface InteractiveMutationInterface<S> {
   setTargets(s: S, p: { targets: Array<Target> }): void;
   setInfo(s: S, p: InteractiveModel): void;
   setStudentsSelected(s: S, p: { studentsSelected: Array<StudentId> }): void;
+  setCurrentUserId(s: S, userId: string): void;
 }
 
 export interface InteractiveMutation<S>
@@ -41,6 +42,9 @@ const mutations: InteractiveMutation<InteractiveState> = {
     p: { studentsSelected: Array<StudentId> }
   ) {
     s.studentsSelected = p.studentsSelected;
+  },
+  setCurrentUserId(s: InteractiveState, userId: string) {
+    s.currentUserId = userId;
   },
 };
 

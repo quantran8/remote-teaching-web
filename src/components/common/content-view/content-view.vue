@@ -1,16 +1,10 @@
 <template>
-  <div
-    class="content-view"
-    v-if="isLessonPlan"
-    id="content-view"
-    @click="onClickExposureContent"
-  >
+  <div class="content-view" id="content-view">
     <div
       class="exposure-content"
       :style="contentImageStyle"
       id="exposure-content"
     ></div>
-    <div class="mask" v-if="isBlackOutContent"></div>
     <DesignateRectangle
       v-for="shape of rectangles"
       :key="shape.id"
@@ -30,6 +24,8 @@
       :radius="shape.radius"
       :zIndex="shape.zIndex"
     />
+
+    <div class="mask" v-if="masked"></div>
   </div>
 </template>
 <style lang="scss" scoped src="./content-view.scss"></style>

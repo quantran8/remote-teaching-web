@@ -4,6 +4,9 @@ import { useStore } from "vuex";
 export default defineComponent({
   setup() {
     const store = useStore();
+    const designateTargets = computed(
+      () => store.getters["interactive/targets"]
+    );
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
@@ -31,6 +34,7 @@ export default defineComponent({
 
     return {
       currentExposureItemMedia,
+      designateTargets,
       isFlipped,
       toggleView,
       contentImageStyle,

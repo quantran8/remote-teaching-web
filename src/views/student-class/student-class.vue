@@ -50,7 +50,13 @@
         <div :id="teacher.id" class="teacher-camera"></div>
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
-      <ContentView/>
+      <!-- <ContentView/> -->
+      <div class="content-view-container" v-if="currentExposureItemMedia">
+        <ContentView :masked="isBlackOutContent" :image="currentExposureItemMedia.image" :targets="designateTargets"></ContentView>
+      </div>
+
+
+
     </div>
     <div class="page-footer">
       <div class="class-action">

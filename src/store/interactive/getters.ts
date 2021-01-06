@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import {InteractiveState, StudentId, Target} from "./state";
+import { InteractiveState, StudentId, Target } from "./state";
 
 const getters: GetterTree<InteractiveState, any> = {
   isDesignatingTarget(state: InteractiveState): boolean {
@@ -10,7 +10,16 @@ const getters: GetterTree<InteractiveState, any> = {
   },
   studentsSelected(state: InteractiveState): Array<StudentId> {
     return state.studentsSelected;
-  }
+  },
+  isAssigned(state: InteractiveState): boolean {
+    return (
+      state.studentsSelected.find((s) => s.id === state.currentUserId) !==
+      undefined
+    );
+  },
+  currentUserId(state: InteractiveState): string {
+    return state.currentUserId;
+  },
 };
 
 export default getters;

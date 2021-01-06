@@ -2,8 +2,6 @@ import { computed, ComputedRef, defineComponent, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
-import Circle from "./circle/circle.vue";
-import Rectangle from "./rectangle/rectangle.vue";
 import { randomUUID } from "@/utils/utils";
 import { StudentId, Target } from "@/store/interactive/state";
 import StudentList from "./student-list/student-list.vue";
@@ -35,9 +33,7 @@ interface StudentViewModel {
 
 export default defineComponent({
   components: {
-    Circle,
-    Rectangle,
-    StudentList,
+    StudentList
   },
   mounted() {
     const store = useStore();
@@ -48,6 +44,10 @@ export default defineComponent({
     const store = useStore();
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
+    );
+    const designateTargets = computed(()=>store.getters["interactive/targets"]);
+    const designateBoxElement = computed(() =>
+      document.getElementById("designate-box")
     );
     const circles: Ref<Array<Circle>> = ref([]);
     const rectangles: Ref<Array<Rectangle>> = ref([]);
@@ -61,7 +61,7 @@ export default defineComponent({
     const touchPosition = ref({ x: 0, y: 0 });
 
     const updateTargets = () => {
-      const targets: Array<Target> = store.getters["interactive/targets"];
+      const targets: Array<Target> = designateTargets.value;
       circles.value = targets
         .filter((t) => t.type === "circle")
         .map((c) => {
@@ -120,6 +120,8 @@ export default defineComponent({
       const student = studentIds.value.find((ele) => ele.id === s.id);
       if (student) student.selected = !student.selected;
     };
+
+    const scaleRatio = ref(1);
 
     const onClickCloseDesignate = async () => {
       await store.dispatch("interactive/setDesignatingTarget", {
@@ -205,6 +207,14 @@ export default defineComponent({
             rectangle.y = event.rect.top - boundingBox().top;
             rectangle.width = event.rect.width;
             rectangle.height = event.rect.height;
+            rectangle.x = MathUtils.clamp(rectangle.x, 0, boundingBox().width);
+            rectangle.y = MathUtils.clamp(rectangle.y, 0, boundingBox().height);
+            if (rectangle.x + rectangle.width > boundingBox().width) {
+              rectangle.width = boundingBox().width - rectangle.x;
+            }
+            if (rectangle.y + rectangle.height > boundingBox().height) {
+              rectangle.height = boundingBox().height - rectangle.y;
+            }
           },
         },
       });
@@ -328,12 +338,12 @@ export default defineComponent({
     const init = () => {
       const designBox = document.getElementById("designate-box");
       if (!designBox) return;
-
       const manager = new hammer(designBox);
       manager.on("tap", (event: any) => {
         if (event.target.id !== "mediaImage") return;
         touchPosition.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchPosition.value.y = event.center.y - boundingBox().y - event.deltaY;
+        touchPosition.value.y = Math.max(touchPosition.value.y, 30);
         const circle = {
           id: Date.now() + "",
           x: touchPosition.value.x,
@@ -346,6 +356,8 @@ export default defineComponent({
         circles.value.push(circle);
       });
       manager.on("panstart", (event: any) => {
+        addingRect.value = null;
+        addingCircle.value = null;
         if (event.target.id !== "mediaImage") return;
         touchStart.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchStart.value.y = event.center.y - boundingBox().y - event.deltaY;
@@ -378,12 +390,21 @@ export default defineComponent({
             type: "rectangle",
             zIndex: 1,
           };
+          console.log(addingRect.value, "addingRect");
         }
       });
       manager.on("panmove", (event: any) => {
         if (!addingRect.value && !addingCircle.value) return;
-        touchPosition.value.x = event.center.x - boundingBox().x;
-        touchPosition.value.y = event.center.y - boundingBox().y;
+        touchPosition.value.x = MathUtils.clamp(
+          event.center.x - boundingBox().x,
+          0,
+          boundingBox().width
+        );
+        touchPosition.value.y = MathUtils.clamp(
+          event.center.y - boundingBox().y,
+          0,
+          boundingBox().height
+        );
         if (addingRect.value) {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
           const y = Math.min(touchStart.value.y, touchPosition.value.y);
@@ -403,7 +424,6 @@ export default defineComponent({
         }
       });
       manager.on("panend", (_: any) => {
-        if (!addingCircle.value && !addingRect.value) return;
         if (addingRect.value) {
           rectangles.value.push({ ...addingRect.value });
           addingRect.value = null;
@@ -422,6 +442,26 @@ export default defineComponent({
       init();
     };
 
+    const calcRatio = () => {
+      console.log("calcRatio");
+      const designBox = document.getElementById("designate-box");
+      if (!designBox) return;
+      console.log(designBox, "designBox");
+
+      const { width, height } = currentExposureItemMedia.value.image;
+      const wRatio = boundingBox().width / width;
+      const hRatio = boundingBox().height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      scaleRatio.value = ratio;
+      console.log(scaleRatio.value, "sr");
+    };
+
+    calcRatio();
+
+    watch([currentExposureItemMedia, designateBoxElement], () => {
+      calcRatio();
+    });
+
     return {
       students,
       onClickCloseDesignate,
@@ -436,6 +476,7 @@ export default defineComponent({
       studentIds,
       onClickToggleStudent,
       onClickClearAllTargets,
+      designateTargets
     };
   },
 });

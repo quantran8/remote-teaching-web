@@ -13,6 +13,7 @@ export interface InteractiveActionInterface<S, R> {
     p: { studentsSelected: Array<StudentId> }
   ): void;
   setInfo(s: ActionContext<S, R>, p: InteractiveModel): void;
+  setCurrentUserId(s: ActionContext<S, R>, p: string): void;
 }
 
 export interface InteractiveAction<S, R>
@@ -31,6 +32,9 @@ const actions: ActionTree<InteractiveState, any> = {
   },
   setInfo({ commit }, p: InteractiveModel) {
     commit("setInfo", p);
+  },
+  setCurrentUserId({ commit }, p: string) {
+    commit("setCurrentUserId", p);
   },
 };
 

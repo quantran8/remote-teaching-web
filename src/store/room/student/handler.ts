@@ -18,6 +18,12 @@ export const useStudentRoomHandler = (
       });
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
+      await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch("interactive/setCurrentUserId", state.user?.id, {
+        root: true,
+      });
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -206,11 +212,11 @@ export const useStudentRoomHandler = (
         { root: true }
       );
     },
-    onTeacherDesignateTarget: (payload: any) => {
-      console.log("onTeacherDesignateTarget", payload);
+    onTeacherDesignateTarget: async (payload: any) => {
+      await dispatch("interactive/setInfo", payload, { root: true });
     },
     onTeacherUpdateDesignateTarget: async (payload: any) => {
-      console.log(payload);
+      await dispatch("interactive/setInfo", payload, { root: true });
     },
   };
   return handler;

@@ -1,18 +1,14 @@
-import { Target, StudentId } from "@/store/interactive/state";
-import { ExposureItemMedia } from "@/store/lesson/state";
-import { ClassView } from "@/store/room/interface";
-import { useRoute } from "vue-router";
+import { Target } from "@/store/interactive/state";
 import {
   Circle as CircleModel,
   Rectangle as RectangleModel,
 } from "@/views/teacher-class/components/designate-target/designate-target";
 
-import Circle from "@/views/teacher-class/components/designate-target/circle/circle.vue";
-import Rectangle from "@/views/teacher-class/components/designate-target/rectangle/rectangle.vue";
+import Circle from "../designate-circle/designate-circle.vue";
+import Rectangle from "../designate-rectangle/designate-rectangle.vue";
 
 import {
   computed,
-  ComputedRef,
   defineComponent,
   onMounted,
   onUnmounted,
@@ -20,45 +16,19 @@ import {
   ref,
   watch,
 } from "vue";
-import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
     Circle,
     Rectangle,
   },
-  setup() {
-    const store = useStore();
-    const route = useRoute();
-    const { studentId } = route.params;
-    const isLessonPlan = computed(
-      () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
-    );
-    const isBlackOutContent = computed(
-      () => store.getters["lesson/isBlackOut"]
-    );
-    const contentViewElement = computed(() =>
-      document.getElementById("content-view")
-    );
-
-    const updateStudentSelected = () => {
-      const studentSelecteds: Array<StudentId> =
-        store.getters["interactive/studentsSelected"];
-      const student = studentSelecteds.find((s) => s.id === studentId);
-      if (student) console.log(studentId, "assigned");
-    };
-
-    updateStudentSelected();
-
+  props: ["targets", "image", "masked"],
+  setup(props) {
     const scaleRatio = ref(1);
-
-    const currentExposureItemMedia: ComputedRef<
-      ExposureItemMedia | undefined
-    > = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const contentImageStyle = computed(() => {
-      return currentExposureItemMedia.value
+      return props.image
         ? {
-            "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
+            "background-image": `url("${props.image.url}")`,
           }
         : {};
     });
@@ -76,18 +46,10 @@ export default defineComponent({
 
     const circles: Ref<Array<CircleModel>> = ref([]);
     const rectangles: Ref<Array<RectangleModel>> = ref([]);
-    const targets: ComputedRef<Array<Target>> = computed(
-      () => store.getters["interactive/targets"]
-    );
-    const isAssigned = computed(() => store.getters["interactive/isAssigned"]);
 
     const updateTargets = () => {
-      if (!isAssigned.value) {
-        circles.value = [];
-        rectangles.value = [];
-        return;
-      }
-      circles.value = targets.value
+      const targets: Array<Target> = props.targets;
+      circles.value = targets
         .filter((t) => t.type === "circle")
         .map((c) => {
           return {
@@ -99,7 +61,7 @@ export default defineComponent({
             type: c.type,
           };
         });
-      rectangles.value = targets.value
+      rectangles.value = targets
         .filter((t) => t.type === "rectangle")
         .map((r) => {
           return {
@@ -112,8 +74,6 @@ export default defineComponent({
             height: r.height * scaleRatio.value,
           };
         });
-
-      console.log("updateTarget", rectangles.value, circles.value);
     };
 
     const updateTouchPosition = (x: number, y: number) => {
@@ -143,11 +103,10 @@ export default defineComponent({
     });
 
     const updateRectPreview = () => {
-      if (!currentExposureItemMedia.value) return;
       const parentElement = document.getElementById("exposure-content");
       if (!parentElement) return;
       const boundingBox = parentElement.getBoundingClientRect();
-      const { width, height } = currentExposureItemMedia.value.image;
+      const { width, height } = props.image;
 
       if (!width || !height) return;
       const wRatio = boundingBox.width / width;
@@ -166,8 +125,8 @@ export default defineComponent({
 
     updateRectPreview();
 
-    watch([currentExposureItemMedia, contentViewElement, targets], () => {
-      if (currentExposureItemMedia.value) updateRectPreview();
+    watch(props, () => {
+      updateRectPreview();
     });
 
     onMounted(() => {
@@ -178,9 +137,7 @@ export default defineComponent({
     });
 
     return {
-      isBlackOutContent,
       contentImageStyle,
-      isLessonPlan,
       touchPosition,
       onClickExposureContent,
       touchStyle,
