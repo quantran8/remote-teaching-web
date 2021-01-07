@@ -17,13 +17,17 @@ export interface StudentId {
 export interface InteractiveState {
   isDesignatingTarget: boolean;
   targets: Array<Target>;
+  localTargets: Array<string>;
   studentsSelected: Array<StudentId>;
+  currentUserId: string;
 }
 
 const state: InteractiveState = {
   isDesignatingTarget: false,
   targets: [],
-  studentsSelected: []
+  localTargets: [],
+  studentsSelected: [],
+  currentUserId: "",
 };
 
 export default state;

@@ -1,5 +1,6 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
+import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
@@ -9,7 +10,7 @@ import { ClassActionFromValue, StudentRoomState } from "./state";
 export const useStudentRoomHandler = (
   store: ActionContext<StudentRoomState, any>
 ): WSEventHandler => {
-  const { commit, dispatch, state } = store;
+  const { commit, dispatch, state, getters } = store;
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
@@ -18,6 +19,12 @@ export const useStudentRoomHandler = (
       });
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
+      await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch("interactive/setCurrentUserId", state.user?.id, {
+        root: true,
+      });
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -206,11 +213,29 @@ export const useStudentRoomHandler = (
         { root: true }
       );
     },
-    onTeacherDesignateTarget: (payload: any) => {
-      console.log("onTeacherDesignateTarget", payload);
+    onTeacherDesignateTarget: async (payload: any) => {
+      await dispatch("interactive/setInfo", payload, { root: true });
+      const isAssigned = store.rootGetters['interactive/isAssigned'];
+      if (isAssigned) {
+        const message = `Please click on the board to answer.`;
+        await store.dispatch("setToast", message, { root: true });
+      }
+      
     },
     onTeacherUpdateDesignateTarget: async (payload: any) => {
-      console.log(payload);
+      await dispatch("interactive/setInfo", payload, { root: true });
+    },
+    onStudentAnswerSelf: async (payload: Array<Target>) => {
+      await dispatch(
+        "interactive/setRevealedLocalTarget",
+        payload.map((s) => s.id),
+        { root: true }
+      );
+    },
+    onStudentAnswerAll: async (payload: Target) => {
+      await dispatch("interactive/setRevealedTarget", payload.id, {
+        root: true,
+      });
     },
   };
   return handler;

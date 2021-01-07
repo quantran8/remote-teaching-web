@@ -17,7 +17,7 @@
         />
       </div>
       <div v-if="!isGalleryView" class="activity-content">
-        <ActivityContent />
+        <ActivityContent @on-click-content-view="onClickContentView"/>
       </div>
       <div class="cta-container">
         <div class="cta-button" @mouseover="onHoverCTAButton">
@@ -70,7 +70,7 @@
       @dismiss="onClickCloseError"
       @confirm="onClickLeave"
     />
-    <DesignateTarget v-if="isDesignatingTarget"></DesignateTarget>
+    <DesignateTarget v-if="isDesignatingTarget" :editable="allowDesignate"></DesignateTarget>
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-class.scss"></style>

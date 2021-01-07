@@ -1,9 +1,16 @@
-import { computed, ComputedRef, defineComponent, Ref, ref, watch } from "vue";
+import {
+  computed,
+  ComputedRef,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  Ref,
+  ref,
+  watch,
+} from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
-import Circle from "./circle/circle.vue";
-import Rectangle from "./rectangle/rectangle.vue";
 import { randomUUID } from "@/utils/utils";
 import { StudentId, Target } from "@/store/interactive/state";
 import StudentList from "./student-list/student-list.vue";
@@ -35,42 +42,70 @@ interface StudentViewModel {
 
 export default defineComponent({
   components: {
-    Circle,
-    Rectangle,
     StudentList,
   },
-  mounted() {
-    const store = useStore();
-    const targets = store.getters["interactive/targets"];
-    if (!targets.length) this.init();
+  props: {
+    editable: {
+      type: Boolean,
+      default: true,
+    },
   },
-  setup() {
+  setup(props) {
     const store = useStore();
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
+    );
+    const designateTargets = computed(
+      () => store.getters["interactive/targets"]
+    );
+    const designateBoxElement = computed(() =>
+      document.getElementById("designate-box")
     );
     const circles: Ref<Array<Circle>> = ref([]);
     const rectangles: Ref<Array<Rectangle>> = ref([]);
     const addingRect: Ref<Rectangle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
     const studentIds: Ref<Array<StudentViewModel>> = ref([]);
+    const editing : Ref<boolean> = ref(false);
     const students: ComputedRef<Array<StudentState>> = computed(
       () => store.getters["teacherRoom/students"]
     );
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
+    const boundingBox = () => {
+      const designBox = document.getElementById("designate-box");
+      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+    };
+
+    const calScaleRatio = () => {
+      const { width, height } = currentExposureItemMedia.value.image;
+      if (!width || !height) return 1;
+      const boundingBoxRect = boundingBox();
+      if (!boundingBoxRect.width) return 1;
+      const wRatio = boundingBoxRect.width / width;
+      const hRatio = boundingBoxRect.height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      return ratio;
+    };
 
     const updateTargets = () => {
-      const targets: Array<Target> = store.getters["interactive/targets"];
+      const { width, height } = currentExposureItemMedia.value.image;
+      const boundingBoxRect = boundingBox();
+      const wRatio = boundingBoxRect.width / width;
+      const hRatio = boundingBoxRect.height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      const offsetX = (boundingBoxRect.width - ratio * width) / 2;
+      const offsetY = (boundingBoxRect.height - ratio * height) / 2;
+      const targets: Array<Target> = designateTargets.value;
       circles.value = targets
         .filter((t) => t.type === "circle")
         .map((c) => {
           return {
             id: c.id,
-            x: c.x,
-            y: c.y,
+            x: offsetX + c.x * ratio,
+            y: offsetY + c.y * ratio,
             color: c.color,
-            radius: c.radius,
+            radius: c.radius * ratio,
             type: c.type,
           };
         });
@@ -79,17 +114,16 @@ export default defineComponent({
         .map((r) => {
           return {
             id: r.id,
-            x: r.x,
-            y: r.y,
+            x: offsetX + r.x * ratio,
+            y: offsetY + r.y * ratio,
             color: r.color,
             type: r.type,
-            width: r.width,
-            height: r.height,
+            width: r.width * ratio,
+            height: r.height * ratio,
           };
         });
     };
-    watch(store.getters["interactive/targets"], updateTargets);
-    updateTargets();
+
     const updateStudentSelected = () => {
       const studentSelecteds: Array<StudentId> =
         store.getters["interactive/studentsSelected"];
@@ -122,54 +156,51 @@ export default defineComponent({
     };
 
     const onClickCloseDesignate = async () => {
-      await store.dispatch("interactive/setDesignatingTarget", {
-        isDesignatingTarget: false,
-      });
-
-      const targets: Array<Target> = circles.value
-        .map((c) => {
-          return {
-            id: "",
-            x: Math.floor(c.x),
-            y: Math.floor(c.y),
-            color: c.color,
-            type: c.type,
-            radius: Math.floor(c.radius),
-            width: 0,
-            height: 0,
-            reveal: false,
-          };
-        })
-        .concat(
-          rectangles.value.map((r) => {
+      if (props.editable || editing.value) {
+        const ratio = calScaleRatio();
+        const targets: Array<Target> = circles.value
+          .map((c) => {
             return {
               id: "",
-              x: Math.floor(r.x),
-              y: Math.floor(r.y),
-              color: r.color,
-              type: r.type,
-              radius: 0,
-              width: Math.floor(r.width),
-              height: Math.floor(r.height),
+              x: Math.floor(c.x / ratio),
+              y: Math.floor(c.y / ratio),
+              color: c.color,
+              type: c.type,
+              radius: Math.floor(c.radius / ratio),
+              width: 0,
+              height: 0,
               reveal: false,
             };
           })
+          .concat(
+            rectangles.value.map((r) => {
+              return {
+                id: "",
+                x: Math.floor(r.x / ratio),
+                y: Math.floor(r.y / ratio),
+                color: r.color,
+                type: r.type,
+                radius: 0,
+                width: Math.floor(r.width / ratio),
+                height: Math.floor(r.height / ratio),
+                reveal: false,
+              };
+            })
+          );
+
+        const selectedStudents = studentIds.value
+          .filter((s) => s.selected)
+          .map((s) => s.id);
+        const roomManager = await store.getters["teacherRoom/roomManager"];
+        roomManager?.WSClient.sendRequestDesignateTarget(
+          currentExposureItemMedia.value.id,
+          targets,
+          selectedStudents
         );
-
-      const selectedStudents = studentIds.value
-        .filter((s) => s.selected)
-        .map((s) => s.id);
-      const roomManager = await store.getters["teacherRoom/roomManager"];
-      roomManager?.WSClient.sendRequestDesignateTarget(
-        currentExposureItemMedia.value.id,
-        targets,
-        selectedStudents
-      );
-    };
-
-    const boundingBox = () => {
-      const designBox = document.getElementById("designate-box");
-      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+      }
+      await store.dispatch("interactive/setDesignatingTarget", {
+        isDesignatingTarget: false,
+      });
     };
 
     const resizable = () => {
@@ -205,6 +236,14 @@ export default defineComponent({
             rectangle.y = event.rect.top - boundingBox().top;
             rectangle.width = event.rect.width;
             rectangle.height = event.rect.height;
+            rectangle.x = MathUtils.clamp(rectangle.x, 0, boundingBox().width);
+            rectangle.y = MathUtils.clamp(rectangle.y, 0, boundingBox().height);
+            if (rectangle.x + rectangle.width > boundingBox().width) {
+              rectangle.width = boundingBox().width - rectangle.x;
+            }
+            if (rectangle.y + rectangle.height > boundingBox().height) {
+              rectangle.height = boundingBox().height - rectangle.y;
+            }
           },
         },
       });
@@ -328,12 +367,12 @@ export default defineComponent({
     const init = () => {
       const designBox = document.getElementById("designate-box");
       if (!designBox) return;
-
       const manager = new hammer(designBox);
       manager.on("tap", (event: any) => {
         if (event.target.id !== "mediaImage") return;
         touchPosition.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchPosition.value.y = event.center.y - boundingBox().y - event.deltaY;
+        touchPosition.value.y = Math.max(touchPosition.value.y, 30);
         const circle = {
           id: Date.now() + "",
           x: touchPosition.value.x,
@@ -346,6 +385,8 @@ export default defineComponent({
         circles.value.push(circle);
       });
       manager.on("panstart", (event: any) => {
+        addingRect.value = null;
+        addingCircle.value = null;
         if (event.target.id !== "mediaImage") return;
         touchStart.value.x = event.center.x - boundingBox().x - event.deltaX;
         touchStart.value.y = event.center.y - boundingBox().y - event.deltaY;
@@ -378,12 +419,21 @@ export default defineComponent({
             type: "rectangle",
             zIndex: 1,
           };
+          console.log(addingRect.value, "addingRect");
         }
       });
       manager.on("panmove", (event: any) => {
         if (!addingRect.value && !addingCircle.value) return;
-        touchPosition.value.x = event.center.x - boundingBox().x;
-        touchPosition.value.y = event.center.y - boundingBox().y;
+        touchPosition.value.x = MathUtils.clamp(
+          event.center.x - boundingBox().x,
+          0,
+          boundingBox().width
+        );
+        touchPosition.value.y = MathUtils.clamp(
+          event.center.y - boundingBox().y,
+          0,
+          boundingBox().height
+        );
         if (addingRect.value) {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
           const y = Math.min(touchStart.value.y, touchPosition.value.y);
@@ -403,7 +453,6 @@ export default defineComponent({
         }
       });
       manager.on("panend", (_: any) => {
-        if (!addingCircle.value && !addingRect.value) return;
         if (addingRect.value) {
           rectangles.value.push({ ...addingRect.value });
           addingRect.value = null;
@@ -419,8 +468,23 @@ export default defineComponent({
     const onClickClearAllTargets = () => {
       circles.value = [];
       rectangles.value = [];
+      editing.value = true;
       init();
     };
+    const onClickRevealAllTargets = async () => {
+      const roomManager = await store.getters["teacherRoom/roomManager"];
+        roomManager?.WSClient.sendRequestAnswerAll();
+    };
+    const onLoaded = (evt: any) => {
+      updateTargets();
+    };
+    onMounted(() => {
+      if (props.editable) init();
+      window.addEventListener("resize", updateTargets);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("resize", updateTargets);
+    });
 
     return {
       students,
@@ -436,6 +500,10 @@ export default defineComponent({
       studentIds,
       onClickToggleStudent,
       onClickClearAllTargets,
+      designateTargets,
+      updateTargets,
+      onLoaded,
+      onClickRevealAllTargets
     };
   },
 });

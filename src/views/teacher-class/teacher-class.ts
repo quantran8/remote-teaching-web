@@ -53,6 +53,9 @@ export default defineComponent({
     const isDesignatingTarget = computed(
       () => getters["interactive/isDesignatingTarget"]
     );
+    const allowDesignate = computed(
+      () => getters["interactive/targets"].length === 0
+    );
     const teacher: ComputedRef<TeacherState> = computed(
       () => getters["teacherRoom/teacher"]
     );
@@ -145,6 +148,12 @@ export default defineComponent({
       ctaVisible.value = false;
     };
 
+    const onClickContentView = async (payload: {
+      x: number, y: number, contentId: string})=>{
+      console.log("onClickContentView", payload);
+      await dispatch("teacherRoom/teacherAnswer", payload);
+    };
+
     const onHoverCTAButton = () => {
       ctaVisible.value = true;
     };
@@ -183,6 +192,8 @@ export default defineComponent({
       onClickOutSideCTAContent,
       ctaVisible,
       isDesignatingTarget,
+      allowDesignate,
+      onClickContentView
     };
   },
 });

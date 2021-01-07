@@ -5,7 +5,7 @@
   height: 100vh;
 
   .page-header {
-    padding: .5rem;
+    padding: 0.5rem;
     display: flex;
     .media-button {
       width: 2.4rem;
@@ -76,7 +76,8 @@
         z-index: 1;
       }
     }
-    .content-view {
+
+    .content-view-container{
       height: 58vh;
       width: 70vh;
       border: solid 2px black;
@@ -84,29 +85,11 @@
       display: inline-block;
       position: relative;
       margin: 0 1rem;
-
-      .exposure-content {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-      }
-
-      .mask {
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        position: absolute;
-        z-index: 1;
-        background-color: black;
-      }
     }
   }
+
   .page-footer {
-    padding: .5rem;
+    padding: 0.5rem;
     display: flex;
 
     .class-action {

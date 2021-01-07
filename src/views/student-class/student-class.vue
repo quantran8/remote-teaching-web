@@ -50,9 +50,17 @@
         <div :id="teacher.id" class="teacher-camera"></div>
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
-      <div class="content-view" v-if="isLessonPlan">
-        <div class="exposure-content" :style="contentImageStyle"></div>
-        <div class="mask" v-if="isBlackOutContent"></div>
+      <!-- <ContentView/> -->
+      <div class="content-view-container" v-if="currentExposureItemMedia && isLessonPlan">
+        <ContentView
+          @on-tap="onClickContentView"
+          :masked="isBlackOutContent"
+          :image="currentExposureItemMedia.image"
+          :contentId="currentExposureItemMedia.id"
+          :targets="designateTargets"
+          :isAssigned="isAssigned"
+          :localTargets="localTargets"
+        ></ContentView>
       </div>
     </div>
     <div class="page-footer">

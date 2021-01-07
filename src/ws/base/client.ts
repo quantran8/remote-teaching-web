@@ -96,6 +96,9 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.MUTE_VIDEO, handler.onStudentMuteVideo);
     handlers.set(StudentWSEvent.LEAVE, handler.onStudentLeave);
     handlers.set(StudentWSEvent.DISCONNECT, handler.onStudentDisconnected);
+    handlers.set(StudentWSEvent.EVENT_STUDENT_ANSWER_TARGET, handler.onStudentAnswerAll);
+    handlers.set(StudentWSEvent.EVENT_STUDENT_ANSWER_CORRECT, handler.onStudentAnswerSelf);
+    handlers.set(StudentWSEvent.EVENT_TEACHER_ANSWER_TARGET, handler.onStudentAnswerAll);
 
     handlers.set(
       StudentWSEvent.STUDENT_RAISING_HAND,

@@ -21,4 +21,6 @@ export enum TeacherWSCommand {
   CLEAR_RAISING_HAND = "TeacherClearRaisingHand",
   SET_CLASS_ACTION = "TeacherSetClassAction",
   DESIGNATE_TARGET = "TeacherDesignate",
+  TEACHER_ANSWER_INTERACTIVE = "TeacherAnswerInteractive",
+  TEACHER_ANSWER_ALL = "TeacherAnswerAllTarget",
 }

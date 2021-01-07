@@ -34,6 +34,15 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const teacher = computed(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
+    const designateTargets = computed(
+      () => store.getters["interactive/targets"]
+    );
+    const localTargets = computed(
+      () => store.getters["interactive/localTargets"]
+    );
+    const isAssigned = computed(
+      () => store.getters["interactive/isAssigned"]
+    );
     const isLessonPlan = computed(
       () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
     );
@@ -98,11 +107,19 @@ export default defineComponent({
     const classAction = computed(
       () => store.getters["studentRoom/classAction"]
     );
-    const isConnected = computed(()=> store.getters["studentRoom/isConnected"]);
+    const isConnected = computed(
+      () => store.getters["studentRoom/isConnected"]
+    );
     watch(isConnected, async () => {
       if (!isConnected.value) return;
       await store.dispatch("studentRoom/joinWSRoom");
-    })
+    });
+
+    const onClickContentView = async (payload: {
+      x: number, y: number, contentId: string})=>{
+      await store.dispatch("studentRoom/studentAnswer", payload);
+    }
+
     return {
       student,
       students,
@@ -117,6 +134,11 @@ export default defineComponent({
       onClickRaisingHand,
       onClickLike,
       classAction,
+      currentExposureItemMedia,
+      designateTargets,
+      onClickContentView,
+      isAssigned,
+      localTargets,      
     };
   },
 });

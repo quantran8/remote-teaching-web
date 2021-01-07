@@ -1,0 +1,24 @@
+.content-view {
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  display: block;
+  position: relative;
+  .exposure-content {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  .mask {
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    z-index: 2;
+    background-color: black;
+  }
+}

@@ -18,7 +18,14 @@ const distance = (
   return Math.sqrt(dx * dx + dy * dy);
 };
 
+const clamp = (val: number, min: number, max: number) => {
+  if (val < min) return min;
+  if (val > max) return max;
+  return val;
+};
+
 export const MathUtils = {
   isIntersect,
   distance,
+  clamp
 };
