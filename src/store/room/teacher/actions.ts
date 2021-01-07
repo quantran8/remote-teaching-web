@@ -212,6 +212,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setClassAction({ state }, payload: { action: number }) {
     state.manager?.WSClient.sendRequestSetClassAction(payload.action);
   },
+  async teacherAnswer(
+    { state },
+    payload: {
+      x: number;
+      y: number;
+      contentId: string;
+    }
+  ) {
+    await state.manager?.WSClient.sendRequestAnswer(payload);
+  },
 };
 
 export default actions;

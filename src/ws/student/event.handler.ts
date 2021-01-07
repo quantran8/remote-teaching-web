@@ -7,4 +7,6 @@ export interface StudentWSEventHandler {
   onStudentDisconnected(payload: any): void;
   onStudentRaisingHand(payload: any): void;
   onStudentLike(payload: any): void;
+  onStudentAnswerSelf(payload: any): void;
+  onStudentAnswerAll(payload: any): void;
 }

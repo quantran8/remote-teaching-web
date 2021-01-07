@@ -469,6 +469,10 @@ export default defineComponent({
       rectangles.value = [];
       init();
     };
+    const onClickRevealAllTargets = async () => {
+      const roomManager = await store.getters["teacherRoom/roomManager"];
+        roomManager?.WSClient.sendRequestAnswerAll();
+    };
     const onLoaded = (evt: any) => {
       updateTargets();
     };
@@ -497,6 +501,7 @@ export default defineComponent({
       designateTargets,
       updateTargets,
       onLoaded,
+      onClickRevealAllTargets
     };
   },
 });

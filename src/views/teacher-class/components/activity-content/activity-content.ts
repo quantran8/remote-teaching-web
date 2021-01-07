@@ -2,7 +2,8 @@ import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
-  setup() {
+  emits:['on-click-content-view'],
+  setup(props, {emit}) {
     const store = useStore();
     const designateTargets = computed(
       () => store.getters["interactive/targets"]
@@ -13,6 +14,7 @@ export default defineComponent({
     const isDesignatingTarget = computed(
       () => store.getters["teacherRoom/isDesignatingTarget"]
     );
+    const localTargets: Array<string> = [];
     const isFlipped = computed(() => store.getters["lesson/isBlackOut"]);
     const toggleView = async () => {
       await store.dispatch("teacherRoom/setBlackOut", {
@@ -32,6 +34,12 @@ export default defineComponent({
       });
     };
 
+    const onClickContentView = async (payload: {
+      x: number, y: number, contentId: string})=>{
+        emit('on-click-content-view', payload);
+    }
+
+
     return {
       currentExposureItemMedia,
       designateTargets,
@@ -40,6 +48,8 @@ export default defineComponent({
       contentImageStyle,
       onClickToggleDesignatingTarget,
       isDesignatingTarget,
+      localTargets,
+      onClickContentView
     };
   },
 });

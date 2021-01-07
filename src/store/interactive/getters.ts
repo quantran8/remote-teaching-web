@@ -8,6 +8,9 @@ const getters: GetterTree<InteractiveState, any> = {
   targets(state: InteractiveState): Array<Target> {
     return state.targets;
   },
+  localTargets(state: InteractiveState): Array<string> {
+    return state.localTargets;
+  },
   studentsSelected(state: InteractiveState): Array<StudentId> {
     return state.studentsSelected;
   },

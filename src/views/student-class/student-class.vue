@@ -51,13 +51,15 @@
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
       <!-- <ContentView/> -->
-      <div class="content-view-container" v-if="currentExposureItemMedia">
+      <div class="content-view-container" v-if="currentExposureItemMedia && isLessonPlan">
         <ContentView
           @on-tap="onClickContentView"
           :masked="isBlackOutContent"
           :image="currentExposureItemMedia.image"
           :contentId="currentExposureItemMedia.id"
           :targets="designateTargets"
+          :isAssigned="isAssigned"
+          :localTargets="localTargets"
         ></ContentView>
       </div>
     </div>

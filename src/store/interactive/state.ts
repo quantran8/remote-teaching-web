@@ -17,6 +17,7 @@ export interface StudentId {
 export interface InteractiveState {
   isDesignatingTarget: boolean;
   targets: Array<Target>;
+  localTargets: Array<string>;
   studentsSelected: Array<StudentId>;
   currentUserId: string;
 }
@@ -24,6 +25,7 @@ export interface InteractiveState {
 const state: InteractiveState = {
   isDesignatingTarget: false,
   targets: [],
+  localTargets: [],
   studentsSelected: [],
   currentUserId: "",
 };

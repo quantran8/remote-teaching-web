@@ -60,7 +60,7 @@
             <BaseButton class="btn-primary" @click="onClickClearAllTargets"
               >Clear All Targets</BaseButton
             >
-            <BaseButton class="btn-primary">Reveal All Targets</BaseButton>
+            <BaseButton class="btn-primary" @click="onClickRevealAllTargets">Reveal All Targets</BaseButton>
           </div>
         </div>
       </div>

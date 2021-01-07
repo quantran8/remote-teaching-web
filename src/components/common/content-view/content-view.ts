@@ -22,7 +22,14 @@ export default defineComponent({
     Circle,
     Rectangle,
   },
-  props: ["targets", "image", "masked", "contentId"],
+  props: [
+    "targets",
+    "localTargets",
+    "image",
+    "masked",
+    "contentId",
+    "isAssigned",
+  ],
   emits: ["on-tap"],
   setup(props, { emit }) {
     const scaleRatio = ref(1);
@@ -50,7 +57,10 @@ export default defineComponent({
 
     const updateTargets = () => {
       const targets: Array<Target> = props.targets;
-      circles.value = targets
+      const revealedTargets = targets.filter(
+        (t) => t.reveal || props.localTargets.indexOf(t.id) !== -1
+      );
+      circles.value = revealedTargets
         .filter((t) => t.type === "circle")
         .map((c) => {
           return {
@@ -62,7 +72,7 @@ export default defineComponent({
             type: c.type,
           };
         });
-      rectangles.value = targets
+      rectangles.value = revealedTargets
         .filter((t) => t.type === "rectangle")
         .map((r) => {
           return {
@@ -78,7 +88,7 @@ export default defineComponent({
     };
 
     const updateTouchPosition = (x: number, y: number, contentId: string) => {
-      if (props.masked) return;
+      if (props.masked || !props.isAssigned) return;
       emit("on-tap", {
         x,
         y,

@@ -37,6 +37,12 @@ export default defineComponent({
     const designateTargets = computed(
       () => store.getters["interactive/targets"]
     );
+    const localTargets = computed(
+      () => store.getters["interactive/localTargets"]
+    );
+    const isAssigned = computed(
+      () => store.getters["interactive/isAssigned"]
+    );
     const isLessonPlan = computed(
       () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
     );
@@ -111,7 +117,6 @@ export default defineComponent({
 
     const onClickContentView = async (payload: {
       x: number, y: number, contentId: string})=>{
-      console.log("onClickContentView", payload);
       await store.dispatch("studentRoom/studentAnswer", payload);
     }
 
@@ -131,7 +136,9 @@ export default defineComponent({
       classAction,
       currentExposureItemMedia,
       designateTargets,
-      onClickContentView
+      onClickContentView,
+      isAssigned,
+      localTargets,      
     };
   },
 });

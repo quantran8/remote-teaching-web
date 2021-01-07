@@ -2,9 +2,12 @@
   <div class="activity-content-container">
     <div v-if="currentExposureItemMedia" class="content-container">
       <ContentView
+        @on-tap="onClickContentView"
         :masked="isFlipped"
         :image="currentExposureItemMedia.image"
         :targets="designateTargets"
+        :localTargets="localTargets"
+        :isAssigned="true"
       ></ContentView>
     </div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>

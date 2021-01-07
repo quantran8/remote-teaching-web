@@ -17,7 +17,7 @@
         />
       </div>
       <div v-if="!isGalleryView" class="activity-content">
-        <ActivityContent />
+        <ActivityContent @on-click-content-view="onClickContentView"/>
       </div>
       <div class="cta-container">
         <div class="cta-button" @mouseover="onHoverCTAButton">

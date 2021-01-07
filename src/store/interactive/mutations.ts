@@ -5,9 +5,12 @@ import { InteractiveState, StudentId, Target } from "./state";
 export interface InteractiveMutationInterface<S> {
   setDesignatingTarget(s: S, p: { isDesignatingTarget: boolean }): void;
   setTargets(s: S, p: { targets: Array<Target> }): void;
+  setLocalTargets(s: S, p: { targets: Array<string> }): void;
   setInfo(s: S, p: InteractiveModel): void;
   setStudentsSelected(s: S, p: { studentsSelected: Array<StudentId> }): void;
   setCurrentUserId(s: S, userId: string): void;
+  setRevealedTarget(s: S, targetId: string): void;
+  setRevealedLocalTarget(s: S, p: Array<string>): void;
 }
 
 export interface InteractiveMutation<S>
@@ -37,6 +40,9 @@ const mutations: InteractiveMutation<InteractiveState> = {
   setTargets(s: InteractiveState, p: { targets: Array<Target> }) {
     s.targets = p.targets;
   },
+  setLocalTargets(s: InteractiveState, p: { targets: Array<string> }) {
+    s.localTargets = p.targets;
+  },
   setStudentsSelected(
     s: InteractiveState,
     p: { studentsSelected: Array<StudentId> }
@@ -45,6 +51,13 @@ const mutations: InteractiveMutation<InteractiveState> = {
   },
   setCurrentUserId(s: InteractiveState, userId: string) {
     s.currentUserId = userId;
+  },
+  setRevealedTarget(s: InteractiveState, targetId: string) {
+    const selectedTarget = s.targets.find((t) => t.id === targetId);
+    if (selectedTarget) selectedTarget.reveal = true;
+  },
+  setRevealedLocalTarget(s: InteractiveState, p: Array<string>) {
+    s.localTargets = s.localTargets.concat(p);
   },
 };
 

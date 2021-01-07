@@ -148,6 +148,12 @@ export default defineComponent({
       ctaVisible.value = false;
     };
 
+    const onClickContentView = async (payload: {
+      x: number, y: number, contentId: string})=>{
+      console.log("onClickContentView", payload);
+      await dispatch("teacherRoom/teacherAnswer", payload);
+    };
+
     const onHoverCTAButton = () => {
       ctaVisible.value = true;
     };
@@ -186,7 +192,8 @@ export default defineComponent({
       onClickOutSideCTAContent,
       ctaVisible,
       isDesignatingTarget,
-      allowDesignate
+      allowDesignate,
+      onClickContentView
     };
   },
 });
