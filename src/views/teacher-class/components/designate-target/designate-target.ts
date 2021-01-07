@@ -66,6 +66,7 @@ export default defineComponent({
     const addingRect: Ref<Rectangle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
     const studentIds: Ref<Array<StudentViewModel>> = ref([]);
+    const editing : Ref<boolean> = ref(false);
     const students: ComputedRef<Array<StudentState>> = computed(
       () => store.getters["teacherRoom/students"]
     );
@@ -155,7 +156,7 @@ export default defineComponent({
     };
 
     const onClickCloseDesignate = async () => {
-      if (props.editable) {
+      if (props.editable || editing.value) {
         const ratio = calScaleRatio();
         const targets: Array<Target> = circles.value
           .map((c) => {
@@ -467,6 +468,7 @@ export default defineComponent({
     const onClickClearAllTargets = () => {
       circles.value = [];
       rectangles.value = [];
+      editing.value = true;
       init();
     };
     const onClickRevealAllTargets = async () => {
