@@ -52,11 +52,14 @@
       </div>
       <!-- <ContentView/> -->
       <div class="content-view-container" v-if="currentExposureItemMedia">
-        <ContentView :masked="isBlackOutContent" :image="currentExposureItemMedia.image" :targets="designateTargets"></ContentView>
+        <ContentView
+          @on-tap="onClickContentView"
+          :masked="isBlackOutContent"
+          :image="currentExposureItemMedia.image"
+          :contentId="currentExposureItemMedia.id"
+          :targets="designateTargets"
+        ></ContentView>
       </div>
-
-
-
     </div>
     <div class="page-footer">
       <div class="class-action">

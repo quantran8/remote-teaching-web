@@ -1,4 +1,13 @@
-import { computed, ComputedRef, defineComponent, Ref, ref, watch } from "vue";
+import {
+  computed,
+  ComputedRef,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  Ref,
+  ref,
+  watch,
+} from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
@@ -33,19 +42,22 @@ interface StudentViewModel {
 
 export default defineComponent({
   components: {
-    StudentList
+    StudentList,
   },
-  mounted() {
-    const store = useStore();
-    const targets = store.getters["interactive/targets"];
-    if (!targets.length) this.init();
+  props: {
+    editable: {
+      type: Boolean,
+      default: true,
+    },
   },
-  setup() {
+  setup(props) {
     const store = useStore();
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
-    const designateTargets = computed(()=>store.getters["interactive/targets"]);
+    const designateTargets = computed(
+      () => store.getters["interactive/targets"]
+    );
     const designateBoxElement = computed(() =>
       document.getElementById("designate-box")
     );
@@ -59,18 +71,40 @@ export default defineComponent({
     );
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
+    const boundingBox = () => {
+      const designBox = document.getElementById("designate-box");
+      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+    };
+
+    const calScaleRatio = () => {
+      const { width, height } = currentExposureItemMedia.value.image;
+      if (!width || !height) return 1;
+      const boundingBoxRect = boundingBox();
+      if (!boundingBoxRect.width) return 1;
+      const wRatio = boundingBoxRect.width / width;
+      const hRatio = boundingBoxRect.height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      return ratio;
+    };
 
     const updateTargets = () => {
+      const { width, height } = currentExposureItemMedia.value.image;
+      const boundingBoxRect = boundingBox();
+      const wRatio = boundingBoxRect.width / width;
+      const hRatio = boundingBoxRect.height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      const offsetX = (boundingBoxRect.width - ratio * width) / 2;
+      const offsetY = (boundingBoxRect.height - ratio * height) / 2;
       const targets: Array<Target> = designateTargets.value;
       circles.value = targets
         .filter((t) => t.type === "circle")
         .map((c) => {
           return {
             id: c.id,
-            x: c.x,
-            y: c.y,
+            x: offsetX + c.x * ratio,
+            y: offsetY + c.y * ratio,
             color: c.color,
-            radius: c.radius,
+            radius: c.radius * ratio,
             type: c.type,
           };
         });
@@ -79,17 +113,16 @@ export default defineComponent({
         .map((r) => {
           return {
             id: r.id,
-            x: r.x,
-            y: r.y,
+            x: offsetX + r.x * ratio,
+            y: offsetY + r.y * ratio,
             color: r.color,
             type: r.type,
-            width: r.width,
-            height: r.height,
+            width: r.width * ratio,
+            height: r.height * ratio,
           };
         });
     };
-    watch(store.getters["interactive/targets"], updateTargets);
-    updateTargets();
+
     const updateStudentSelected = () => {
       const studentSelecteds: Array<StudentId> =
         store.getters["interactive/studentsSelected"];
@@ -121,57 +154,52 @@ export default defineComponent({
       if (student) student.selected = !student.selected;
     };
 
-    const scaleRatio = ref(1);
-
     const onClickCloseDesignate = async () => {
-      await store.dispatch("interactive/setDesignatingTarget", {
-        isDesignatingTarget: false,
-      });
-
-      const targets: Array<Target> = circles.value
-        .map((c) => {
-          return {
-            id: "",
-            x: Math.floor(c.x),
-            y: Math.floor(c.y),
-            color: c.color,
-            type: c.type,
-            radius: Math.floor(c.radius),
-            width: 0,
-            height: 0,
-            reveal: false,
-          };
-        })
-        .concat(
-          rectangles.value.map((r) => {
+      if (props.editable) {
+        const ratio = calScaleRatio();
+        const targets: Array<Target> = circles.value
+          .map((c) => {
             return {
               id: "",
-              x: Math.floor(r.x),
-              y: Math.floor(r.y),
-              color: r.color,
-              type: r.type,
-              radius: 0,
-              width: Math.floor(r.width),
-              height: Math.floor(r.height),
+              x: Math.floor(c.x / ratio),
+              y: Math.floor(c.y / ratio),
+              color: c.color,
+              type: c.type,
+              radius: Math.floor(c.radius / ratio),
+              width: 0,
+              height: 0,
               reveal: false,
             };
           })
+          .concat(
+            rectangles.value.map((r) => {
+              return {
+                id: "",
+                x: Math.floor(r.x / ratio),
+                y: Math.floor(r.y / ratio),
+                color: r.color,
+                type: r.type,
+                radius: 0,
+                width: Math.floor(r.width / ratio),
+                height: Math.floor(r.height / ratio),
+                reveal: false,
+              };
+            })
+          );
+
+        const selectedStudents = studentIds.value
+          .filter((s) => s.selected)
+          .map((s) => s.id);
+        const roomManager = await store.getters["teacherRoom/roomManager"];
+        roomManager?.WSClient.sendRequestDesignateTarget(
+          currentExposureItemMedia.value.id,
+          targets,
+          selectedStudents
         );
-
-      const selectedStudents = studentIds.value
-        .filter((s) => s.selected)
-        .map((s) => s.id);
-      const roomManager = await store.getters["teacherRoom/roomManager"];
-      roomManager?.WSClient.sendRequestDesignateTarget(
-        currentExposureItemMedia.value.id,
-        targets,
-        selectedStudents
-      );
-    };
-
-    const boundingBox = () => {
-      const designBox = document.getElementById("designate-box");
-      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+      }
+      await store.dispatch("interactive/setDesignatingTarget", {
+        isDesignatingTarget: false,
+      });
     };
 
     const resizable = () => {
@@ -441,25 +469,15 @@ export default defineComponent({
       rectangles.value = [];
       init();
     };
-
-    const calcRatio = () => {
-      console.log("calcRatio");
-      const designBox = document.getElementById("designate-box");
-      if (!designBox) return;
-      console.log(designBox, "designBox");
-
-      const { width, height } = currentExposureItemMedia.value.image;
-      const wRatio = boundingBox().width / width;
-      const hRatio = boundingBox().height / height;
-      const ratio = Math.min(wRatio, hRatio);
-      scaleRatio.value = ratio;
-      console.log(scaleRatio.value, "sr");
+    const onLoaded = (evt: any) => {
+      updateTargets();
     };
-
-    calcRatio();
-
-    watch([currentExposureItemMedia, designateBoxElement], () => {
-      calcRatio();
+    onMounted(() => {
+      if (props.editable) init();
+      window.addEventListener("resize", updateTargets);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("resize", updateTargets);
     });
 
     return {
@@ -476,7 +494,9 @@ export default defineComponent({
       studentIds,
       onClickToggleStudent,
       onClickClearAllTargets,
-      designateTargets
+      designateTargets,
+      updateTargets,
+      onLoaded,
     };
   },
 });

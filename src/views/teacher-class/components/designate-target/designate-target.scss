@@ -31,6 +31,8 @@
       background-color: white;
       width: 75%;
       margin-right: 15px;
+      display: flex;
+      align-items: center;
       #mediaImage {
         touch-action: none;
         -webkit-user-drag: none;

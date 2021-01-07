@@ -108,6 +108,13 @@ export default defineComponent({
       if (!isConnected.value) return;
       await store.dispatch("studentRoom/joinWSRoom");
     });
+
+    const onClickContentView = async (payload: {
+      x: number, y: number, contentId: string})=>{
+      console.log("onClickContentView", payload);
+      await store.dispatch("studentRoom/studentAnswer", payload);
+    }
+
     return {
       student,
       students,
@@ -124,6 +131,7 @@ export default defineComponent({
       classAction,
       currentExposureItemMedia,
       designateTargets,
+      onClickContentView
     };
   },
 });

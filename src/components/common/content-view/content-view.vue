@@ -1,5 +1,5 @@
 <template>
-  <div class="content-view" id="content-view">
+  <div class="content-view" id="content-view" @click="onClickExposureContent">
     <div
       class="exposure-content"
       :style="contentImageStyle"
@@ -24,7 +24,6 @@
       :radius="shape.radius"
       :zIndex="shape.zIndex"
     />
-
     <div class="mask" v-if="masked"></div>
   </div>
 </template>

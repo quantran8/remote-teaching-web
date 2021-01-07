@@ -22,8 +22,9 @@ export default defineComponent({
     Circle,
     Rectangle,
   },
-  props: ["targets", "image", "masked"],
-  setup(props) {
+  props: ["targets", "image", "masked", "contentId"],
+  emits: ["on-tap"],
+  setup(props, { emit }) {
     const scaleRatio = ref(1);
     const contentImageStyle = computed(() => {
       return props.image
@@ -76,8 +77,13 @@ export default defineComponent({
         });
     };
 
-    const updateTouchPosition = (x: number, y: number) => {
-      console.log("updateTouchPosition", x, y);
+    const updateTouchPosition = (x: number, y: number, contentId: string) => {
+      if (props.masked) return;
+      emit("on-tap", {
+        x,
+        y,
+        contentId,
+      });
     };
 
     const onClickExposureContent = (event: any) => {
@@ -89,9 +95,18 @@ export default defineComponent({
           (event.x - boundingBox.left - rectPreview.value.x) / scaleRatio.value,
         y: (event.y - boundingBox.top - rectPreview.value.y) / scaleRatio.value,
       };
+      if (
+        touchPosition.value.x < 0 ||
+        touchPosition.value.x > rectPreview.value.width / scaleRatio.value ||
+        touchPosition.value.y < 0 ||
+        touchPosition.value.y > rectPreview.value.height / scaleRatio.value
+      )
+        return;
+
       updateTouchPosition(
         Math.floor(touchPosition.value.x),
-        Math.floor(touchPosition.value.y)
+        Math.floor(touchPosition.value.y),
+        props.contentId
       );
     };
 

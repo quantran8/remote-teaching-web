@@ -174,11 +174,21 @@ const actions: ActionTree<StudentRoomState, any> = {
   setClassView(store, payload: ClassViewPayload) {
     store.commit("setClassView", payload);
   },
-  studentRaisingHand({ state }, _: any) {
-    state.manager?.WSClient.sendRequestRaisingHand();
+  async studentRaisingHand({ state }, _: any) {
+    await state.manager?.WSClient.sendRequestRaisingHand();
   },
-  studentLike({ state }, _: any) {
-    state.manager?.WSClient.sendRequestLike();
+  async studentLike({ state }, _: any) {
+    await state.manager?.WSClient.sendRequestLike();
+  },
+  async studentAnswer(
+    { state },
+    payload: {
+      x: number;
+      y: number;
+      contentId: string;
+    }
+  ) {
+    await state.manager?.WSClient.sendRequestAnswer(payload);
   },
 };
 
