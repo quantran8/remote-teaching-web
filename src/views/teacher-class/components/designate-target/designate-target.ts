@@ -58,15 +58,13 @@ export default defineComponent({
     const designateTargets = computed(
       () => store.getters["interactive/targets"]
     );
-    const designateBoxElement = computed(() =>
-      document.getElementById("designate-box")
-    );
     const circles: Ref<Array<Circle>> = ref([]);
     const rectangles: Ref<Array<Rectangle>> = ref([]);
     const addingRect: Ref<Rectangle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
     const studentIds: Ref<Array<StudentViewModel>> = ref([]);
     const editing : Ref<boolean> = ref(false);
+    const assignAll: Ref<boolean> = ref(false);
     const students: ComputedRef<Array<StudentState>> = computed(
       () => store.getters["teacherRoom/students"]
     );
@@ -122,6 +120,13 @@ export default defineComponent({
             height: r.height * ratio,
           };
         });
+    };
+
+    const onClickToggleAssignAllStudents = () => {
+      assignAll.value = !assignAll.value;
+      studentIds.value.map((s) => {
+        s.selected = assignAll.value;
+      });
     };
 
     const updateStudentSelected = () => {
@@ -503,7 +508,9 @@ export default defineComponent({
       designateTargets,
       updateTargets,
       onLoaded,
-      onClickRevealAllTargets
+      onClickRevealAllTargets,
+      onClickToggleAssignAllStudents,
+      assignAll
     };
   },
 });
