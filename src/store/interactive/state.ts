@@ -12,6 +12,7 @@ export interface Target {
 
 export interface StudentId {
   id: string;
+  answerList: Array<string>;
 }
 
 export interface InteractiveState {
