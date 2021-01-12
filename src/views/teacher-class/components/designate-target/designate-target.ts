@@ -63,10 +63,15 @@ export default defineComponent({
     const addingRect: Ref<Rectangle | null> = ref(null);
     const addingCircle: Ref<Circle | null> = ref(null);
     const studentIds: Ref<Array<StudentViewModel>> = ref([]);
-    const editing : Ref<boolean> = ref(false);
+    const editing: Ref<boolean> = ref(false);
     const assignAll: Ref<boolean> = ref(false);
     const students: ComputedRef<Array<StudentState>> = computed(
       () => store.getters["teacherRoom/students"]
+    );
+    const textAssignAll = computed(() =>
+      assignAll.value
+        ? "Click to unassigned all students"
+        : "Click to assign all students"
     );
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
@@ -124,8 +129,10 @@ export default defineComponent({
 
     const onClickToggleAssignAllStudents = () => {
       assignAll.value = !assignAll.value;
-      studentIds.value.map((s) => {
-        s.selected = assignAll.value;
+      studentIds.value = studentIds.value.map((s) => {
+        return {
+          ...s, selected: assignAll.value
+        };
       });
     };
 
@@ -478,7 +485,7 @@ export default defineComponent({
     };
     const onClickRevealAllTargets = async () => {
       const roomManager = await store.getters["teacherRoom/roomManager"];
-        roomManager?.WSClient.sendRequestAnswerAll();
+      roomManager?.WSClient.sendRequestAnswerAll();
     };
     const onLoaded = (evt: any) => {
       updateTargets();
@@ -510,7 +517,7 @@ export default defineComponent({
       onLoaded,
       onClickRevealAllTargets,
       onClickToggleAssignAllStudents,
-      assignAll
+      textAssignAll,
     };
   },
 });

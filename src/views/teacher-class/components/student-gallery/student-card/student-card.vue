@@ -11,7 +11,7 @@
         {{ name }}
       </div>
       <div class="interactive" v-if="interactive.status !== 0 && interactive.multiAssign">
-        <BaseIcon :name="checkMarkIcon" v-if="interactive.status === 2"></BaseIcon>
+        <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
         <StudentBadge
           class="interactive-badge"
           :badge="interactive.correct"

@@ -60,7 +60,6 @@ export default defineComponent({
     const videoIcon = computed(() =>
       props.videoEnabled ? "icon-video-on" : "icon-video-off"
     );
-    const checkMarkIcon = "icon-check-mark";
 
     const isAudioHightlight = computed(() => {
       const enableAudios: Array<string> =
@@ -121,7 +120,6 @@ export default defineComponent({
       onDragStart,
       isAudioHightlight,
       onClickClearRaisingHand,
-      checkMarkIcon
     };
   },
 });
