@@ -2,6 +2,13 @@ import { InClassStatus } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
+
+export enum InteractiveStatus {
+  DEFAULT = 0,
+  ASSIGNED = 1,
+  COMPLETED = 2,
+}
+
 export default defineComponent({
   components: {
     StudentBadge,
@@ -32,6 +39,15 @@ export default defineComponent({
     raisingHand: {
       type: Boolean,
       default: false,
+    },
+    interactive: {
+      type: Object,
+      default: () => {
+        return {
+          correct: 0,
+          status: InteractiveStatus.DEFAULT,
+        };
+      },
     },
   },
   setup(props) {

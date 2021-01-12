@@ -61,6 +61,13 @@
           text-align: center;
         }
       }
+      &__button {
+        &--assign-all {
+          color: black;
+          margin: 0 5px 15px;
+          text-decoration: underline;
+        }
+      }
     }
   }
 }

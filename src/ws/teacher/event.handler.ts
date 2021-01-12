@@ -21,4 +21,5 @@ export interface TeacherWSEventHandler {
   onTeacherUpdateClassAction(payload: any): void;
   onTeacherDesignateTarget(payload: any): void;
   onTeacherUpdateDesignateTarget(payload: any): void;
+  onStudentUpdateAnswers(payload: any): void;
 }

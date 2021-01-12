@@ -167,10 +167,12 @@ export const useTeacherRoomWSHandler = ({
       console.log(payload);
     },
     onStudentAnswerAll : async (payload: any) => {
-      console.log(payload);
       await dispatch("interactive/setRevealedTarget", payload.id, {
         root: true,
       });
+    },
+    onStudentUpdateAnswers : async (payload: any) => {
+      await dispatch("interactive/setUpdateStudentsAnswerForTeacher", payload, {root: true})
     }
   };
   return handler;

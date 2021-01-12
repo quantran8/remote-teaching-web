@@ -11,6 +11,10 @@ export interface InteractiveMutationInterface<S> {
   setCurrentUserId(s: S, userId: string): void;
   setRevealedTarget(s: S, targetId: string): void;
   setRevealedLocalTarget(s: S, p: Array<string>): void;
+  setUpdateStudentsAnswerForTeacher(
+    s: S,
+    p: { studentId: string; answerList: Array<string> }
+  ): void;
 }
 
 export interface InteractiveMutation<S>
@@ -28,7 +32,7 @@ const mutations: InteractiveMutation<InteractiveState> = {
     const { studentInteractives, targets } = p;
     s.targets = targets;
     s.studentsSelected = studentInteractives.map((s: any) => {
-      return { id: s.studentId };
+      return { id: s.studentId, answerList: s.answerList };
     });
   },
   setDesignatingTarget(
@@ -53,11 +57,36 @@ const mutations: InteractiveMutation<InteractiveState> = {
     s.currentUserId = userId;
   },
   setRevealedTarget(s: InteractiveState, targetId: string) {
-    const selectedTarget = s.targets.find((t) => t.id === targetId);
-    if (selectedTarget) selectedTarget.reveal = true;
+    s.targets = [
+      ...s.targets.map((t) => {
+        if (t.id === targetId) {
+          return {
+            ...t,
+            reveal: true,
+          };
+        }
+        return t;
+      }),
+    ];
   },
   setRevealedLocalTarget(s: InteractiveState, p: Array<string>) {
     s.localTargets = s.localTargets.concat(p);
+  },
+  setUpdateStudentsAnswerForTeacher(
+    s: InteractiveState,
+    p: { studentId: string; answerList: Array<string> }
+  ) {
+    s.studentsSelected = [
+      ...s.studentsSelected.map((s) => {
+        if (s.id === p.studentId) {
+          return {
+            ...s,
+            answerList: p.answerList,
+          };
+        }
+        return s;
+      }),
+    ];
   },
 };
 

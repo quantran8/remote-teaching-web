@@ -44,6 +44,9 @@
         </div>
         <div class="designate-box-right">
           <h3>Students</h3>
+          <BaseButton mode="clear" class="btn-primary designate-box-right__button--assign-all" @click="onClickToggleAssignAllStudents">
+            {{textAssignAll}}
+          </BaseButton>
           <div class="designate-box-right--student-list">
             <StudentList
               v-for="student in studentIds"

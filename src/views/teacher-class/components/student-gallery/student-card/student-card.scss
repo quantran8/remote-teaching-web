@@ -45,6 +45,14 @@ $border-radius: 4px;
       background-color: gray;
       padding: 0.4rem 0.8rem;
     }
+
+    .interactive {
+      position: absolute;
+      left: 0px;
+      top: 3rem;
+      padding: 0.4rem 0.8rem;
+      z-index: 3;
+    }
     .info {
       position: absolute;
       top: $padding;
@@ -80,6 +88,9 @@ $border-radius: 4px;
 
   .masked {
     background-color: black !important;
+    .interactive {
+      color: green;
+    }
   }
 
   .hasNotJoinned {

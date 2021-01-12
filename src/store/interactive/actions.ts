@@ -48,5 +48,8 @@ const actions: ActionTree<InteractiveState, any> = {
   setRevealedLocalTarget({ commit }, p: Array<string>) {
     commit("setRevealedLocalTarget", p);
   },
+  setUpdateStudentsAnswerForTeacher({commit}, p: {studentId: string, answerList: Array<string>}) {
+    commit("setUpdateStudentsAnswerForTeacher", p);
+  },
 };
 export default actions;

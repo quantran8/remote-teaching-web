@@ -2,8 +2,22 @@
   <div class="item-container">
     <div class="video" :id="id"></div>
     <div class="mask" :class="{ masked: !videoEnabled && !isNotJoinned }">
-      <div class="raising-hand" v-if="raisingHand" @click="onClickClearRaisingHand"></div>
-      <div class="name">{{ name }}</div>
+      <div
+        class="raising-hand"
+        v-if="raisingHand"
+        @click="onClickClearRaisingHand"
+      ></div>
+      <div class="name">
+        {{ name }}
+      </div>
+      <div class="interactive" v-if="interactive.status !== 0 && interactive.multiAssign">
+        <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
+        <StudentBadge
+          class="interactive-badge"
+          :badge="interactive.correct"
+          v-else-if="interactive.status === 1"
+        />
+      </div>
       <div class="info">
         <BaseTag
           draggable="true"

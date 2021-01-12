@@ -173,6 +173,10 @@ export class GLSocketClient {
       TeacherWSEvent.UPDATE_INTERACTIVE,
       handler.onTeacherUpdateDesignateTarget
     );
+    handlers.set(
+      TeacherWSEvent.EVENT_STUDENT_UPDATE_ANSWER_LIST,
+      handler.onStudentUpdateAnswers
+    );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         Logger.info("RECIEVE", key, payload);

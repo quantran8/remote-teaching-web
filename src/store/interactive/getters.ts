@@ -17,7 +17,7 @@ const getters: GetterTree<InteractiveState, any> = {
   isAssigned(state: InteractiveState): boolean {
     return (
       state.targets.length > 0 && state.studentsSelected.find((s) => s.id === state.currentUserId) !==
-      undefined
+        undefined
     );
   },
   currentUserId(state: InteractiveState): string {

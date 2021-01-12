@@ -220,7 +220,6 @@ export const useStudentRoomHandler = (
         const message = `Please click on the board to answer.`;
         await store.dispatch("setToast", message, { root: true });
       }
-      
     },
     onTeacherUpdateDesignateTarget: async (payload: any) => {
       await dispatch("interactive/setInfo", payload, { root: true });
@@ -237,6 +236,9 @@ export const useStudentRoomHandler = (
         root: true,
       });
     },
+    onStudentUpdateAnswers: async (payload: any) => {
+      console.log(payload);
+    }
   };
   return handler;
 };
