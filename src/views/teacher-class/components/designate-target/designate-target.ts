@@ -64,7 +64,7 @@ export default defineComponent({
     const addingCircle: Ref<Circle | null> = ref(null);
     const studentIds: Ref<Array<StudentViewModel>> = ref([]);
     const editing: Ref<boolean> = ref(false);
-    const assignAll: Ref<boolean> = ref(false);
+    const assignAll: Ref<boolean> = ref(true);
     const students: ComputedRef<Array<StudentState>> = computed(
       () => store.getters["teacherRoom/students"]
     );
@@ -154,7 +154,7 @@ export default defineComponent({
           index: s.index,
           name: s.name,
           status: s.status,
-          selected: false,
+          selected: true,
         };
       });
       updateStudentSelected();
@@ -163,8 +163,11 @@ export default defineComponent({
     onStudentsChanged();
 
     const onClickToggleStudent = (s: StudentViewModel) => {
-      const student = studentIds.value.find((ele) => ele.id === s.id);
-      if (student) student.selected = !student.selected;
+      studentIds.value = studentIds.value.map(st =>{
+        return {
+          ...st, selected: s.id ===st.id
+        }
+      })
     };
 
     const onClickCloseDesignate = async () => {

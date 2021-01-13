@@ -1,10 +1,10 @@
 <template>
   <div class="activity-content-container">
-    <div v-if="currentExposureItemMedia" class="content-container">
+    <div class="content-container">
       <ContentView
         @on-tap="onClickContentView"
         :masked="isFlipped"
-        :image="currentExposureItemMedia.image"
+        :image="currentExposureItemMedia?.image"
         :targets="designateTargets"
         :localTargets="localTargets"
         :isAssigned="true"

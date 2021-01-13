@@ -35,9 +35,9 @@ export default defineComponent({
           id: currentExposure.value.id,
         });
       }
-      if (exposure.type === ExposureType.TRANSITION) {
-        await dispatch("teacherRoom/setBlackOut", { isBlackOut: true });
-      }
+      await dispatch("teacherRoom/setBlackOut", {
+        isBlackOut: exposure.type === ExposureType.TRANSITION,
+      });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
     };
 

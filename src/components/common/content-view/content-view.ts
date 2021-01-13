@@ -123,11 +123,13 @@ export default defineComponent({
     const touchStyle = computed(() => {
       return `transform: translate(${touchPosition.value.x}px,${touchPosition.value.y}px)`;
     });
+
     const rectPreviewStyle = computed(() => {
       return `left: ${rectPreview.value.x}px; top: ${rectPreview.value.y}px; width: ${rectPreview.value.width}px; height: ${rectPreview.value.height}px`;
     });
 
     const updateRectPreview = () => {
+      if(!props.image) return;
       const parentElement = document.getElementById("exposure-content");
       if (!parentElement) return;
       const boundingBox = parentElement.getBoundingClientRect();
