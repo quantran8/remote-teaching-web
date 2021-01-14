@@ -17,45 +17,11 @@ export default defineComponent({
   },
   setup() {
     const { getters } = useStore();
-    const studentViewModels: Ref<StudentViewModel[]> = ref([]);
     const students: ComputedRef<Array<StudentState>> = computed(
       () => getters["teacherRoom/students"]
     );
-    const studentSelecteds: ComputedRef<Array<StudentId>> = computed(
-      () => getters["interactive/studentsSelected"]
-    );
-    const targets: ComputedRef<Array<Target>> = computed(
-      () => getters["interactive/targets"]
-    );
-
-    watch([students, studentSelecteds, targets], () => {
-      studentViewModels.value = students.value.map((s) => {
-        let status = InteractiveStatus.DEFAULT;
-        let correct = 0;
-        let multiAssign = false;
-        const selectedStudent = studentSelecteds.value.find(
-          (st) => st.id === s.id
-        );
-        if (selectedStudent) {
-          correct = selectedStudent.answerList.length;
-          status =
-            correct === targets.value.length
-              ? InteractiveStatus.COMPLETED
-              : InteractiveStatus.ASSIGNED;
-          multiAssign = studentSelecteds.value.length > 1;
-        }
-        return {
-          ...s,
-          interactive: {
-            correct: correct,
-            status: status,
-            multiAssign: multiAssign
-          },
-        };
-      });
-    });
     return {
-      studentViewModels,
+      students,
     };
   },
 });

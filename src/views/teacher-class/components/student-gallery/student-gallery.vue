@@ -2,7 +2,7 @@
   <div>
     <div class="container">
       <StudentCard
-        v-for="student in studentViewModels"
+        v-for="student in students"
         :key="student.id"
         class="student-card"
         :name="student.name"
@@ -13,7 +13,6 @@
         :videoEnabled="student.videoEnabled"
         :status="student.status"
         :raisingHand="student.raisingHand"
-        :interactive="student.interactive"
       />
     </div>
   </div>

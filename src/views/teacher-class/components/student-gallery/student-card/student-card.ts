@@ -40,15 +40,6 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    interactive: {
-      type: Object,
-      default: () => {
-        return {
-          correct: 0,
-          status: InteractiveStatus.DEFAULT,
-        };
-      },
-    },
   },
   setup(props) {
     const isContextMenuVisible = ref(false);
@@ -60,6 +51,7 @@ export default defineComponent({
     const videoIcon = computed(() =>
       props.videoEnabled ? "icon-video-on" : "icon-video-off"
     );
+    const interactive = computed(()=> store.getters['interactive/interactiveStatus'](props.id));
 
     const isAudioHightlight = computed(() => {
       const enableAudios: Array<string> =
@@ -120,6 +112,7 @@ export default defineComponent({
       onDragStart,
       isAudioHightlight,
       onClickClearRaisingHand,
+      interactive
     };
   },
 });
