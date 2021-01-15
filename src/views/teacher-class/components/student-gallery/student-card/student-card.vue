@@ -10,7 +10,7 @@
       <div class="name">
         {{ name }}
       </div>
-      <div class="interactive" v-if="interactive.status !== 0 && interactive.multiAssign">
+      <div class="interactive" v-if="showCorrectAnswer">
         <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
         <StudentBadge
           class="interactive-badge"

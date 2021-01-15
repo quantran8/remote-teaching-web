@@ -58,6 +58,10 @@ export default defineComponent({
         store.getters["teacherRoom/enableAudios"];
       return props.id && enableAudios.indexOf(props.id) !== -1;
     });
+    
+    const showCorrectAnswer = computed(() => {
+      return interactive.value.status !== 0 && interactive.value.multiAssign && !isNotJoinned.value;
+    })
 
     watch(props, () => {
       isContextMenuVisible.value = false;
@@ -112,7 +116,8 @@ export default defineComponent({
       onDragStart,
       isAudioHightlight,
       onClickClearRaisingHand,
-      interactive
+      interactive,
+      showCorrectAnswer
     };
   },
 });

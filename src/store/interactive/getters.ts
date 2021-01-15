@@ -30,7 +30,7 @@ const getters: GetterTree<InteractiveState, any> = {
       const selectedStudent = state.studentsSelected.find(
         (st) => st.id === studentId
       );
-      if (selectedStudent) {
+      if (selectedStudent && state.targets.length > 0) {
         correct = selectedStudent.answerList.length;
         status =
           correct === state.targets.length
@@ -41,7 +41,7 @@ const getters: GetterTree<InteractiveState, any> = {
       return {
         correct,
         status,
-        multiAssign
+        multiAssign,
       };
     };
   },

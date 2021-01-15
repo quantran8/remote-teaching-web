@@ -52,6 +52,12 @@ $border-radius: 4px;
       top: 3rem;
       padding: 0.4rem 0.8rem;
       z-index: 3;
+      .interactive-badge {
+        border-radius: 50%;
+        font-weight: bold;
+        background-color: gray;
+        color: black;
+      }
     }
     .info {
       position: absolute;
@@ -90,6 +96,11 @@ $border-radius: 4px;
     background-color: black !important;
     .interactive {
       color: green;
+      .rt-icon {
+        &:before {
+          font-size: 32px;
+        }
+      }
     }
   }
 
