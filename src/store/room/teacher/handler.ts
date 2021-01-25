@@ -163,17 +163,22 @@ export const useTeacherRoomWSHandler = ({
     onTeacherUpdateDesignateTarget: async (payload: any) => {
       await dispatch("interactive/setInfo", payload, { root: true });
     },
-    onStudentAnswerSelf :(payload: any) => {
+    onStudentAnswerSelf: (payload: any) => {
       console.log(payload);
     },
-    onStudentAnswerAll : async (payload: any) => {
+    onStudentAnswerAll: async (payload: any) => {
       await dispatch("interactive/setRevealedTarget", payload.id, {
         root: true,
       });
     },
-    onStudentUpdateAnswers : async (payload: any) => {
-      await dispatch("interactive/setUpdateStudentsAnswerForTeacher", payload, {root: true})
-    }
+    onStudentUpdateAnswers: async (payload: any) => {
+      await dispatch("interactive/setUpdateStudentsAnswerForTeacher", payload, {
+        root: true,
+      });
+    },
+    onTeacherSetPointer: async (payload: any) => {
+      console.log(payload);
+    },
   };
   return handler;
 };

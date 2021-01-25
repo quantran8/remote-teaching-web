@@ -222,6 +222,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
   },
+  async setPointer({ state }, payload: { x: number, y: number }) {
+    await state.manager?.WSClient.sendRequestSetPointer(payload);
+  },
 };
 
 export default actions;

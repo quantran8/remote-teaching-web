@@ -1,0 +1,56 @@
+.tools {
+  padding: 5px;
+  min-width: 290px;
+  &__item {
+    position: relative;
+    padding: 5px;
+    border: 1px solid black;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    &.selected {
+      background-color: #f0f0f0;
+      border-width: 3px;
+    }
+    &__icon {
+      &__stroke-line {
+        background-color: black;
+      }
+      &__stroke-color {
+        height: 5px;
+      }
+    }
+    &__name {
+      margin: 0;
+      text-align: center;
+      font-weight: 500;
+      padding: 5px 0;
+    }
+    &__submenu {
+      display: none;
+      &.open {
+        display: block;
+      }
+      &__content {
+        &.stroke {
+          .stroke-item {
+            margin-bottom: 5px;
+            padding: 10px;
+            cursor: pointer;
+            .stroke-item-line {
+              background-color: black;
+            }
+          }
+        }
+        &.stroke-color {
+          display: flex;
+          flex-wrap: wrap;
+          .color-item {
+            width: 20%;
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+}

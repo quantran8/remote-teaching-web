@@ -25,6 +25,9 @@ export const useStudentRoomHandler = (
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
         root: true,
       });
+      await dispatch("annotation/setInfo", payload.lessonPlan.annotation, {
+        root: true,
+      });
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -215,7 +218,7 @@ export const useStudentRoomHandler = (
     },
     onTeacherDesignateTarget: async (payload: any) => {
       await dispatch("interactive/setInfo", payload, { root: true });
-      const isAssigned = store.rootGetters['interactive/isAssigned'];
+      const isAssigned = store.rootGetters["interactive/isAssigned"];
       if (isAssigned) {
         const message = `Please click on the board to answer.`;
         await store.dispatch("setToast", message, { root: true });
@@ -238,7 +241,12 @@ export const useStudentRoomHandler = (
     },
     onStudentUpdateAnswers: async (payload: any) => {
       console.log(payload);
-    }
+    },
+    onTeacherSetPointer: async (payload: any) => {
+      await dispatch("annotation/setPointer", payload, {
+        root: true,
+      });
+    },
   };
   return handler;
 };

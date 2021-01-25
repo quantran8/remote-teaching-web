@@ -23,6 +23,7 @@
     "agora-rtc-sdk-ng": "^4.1.1",
     "bowser": "^2.11.0",
     "core-js": "^3.6.5",
+    "fabric": "^4.3.0",
     "hammerjs": "^2.0.8",
     "interactjs": "^1.10.1",
     "js-cookie": "^2.2.1",

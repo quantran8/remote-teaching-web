@@ -95,11 +95,13 @@ export class TeacherWSClient extends GLSocketClient {
       StudentIds: studentIds,
     });
   }
-  sendRequestAnswer(payload: {
-    x: number, y: number, contentId: string}) {
+  sendRequestAnswer(payload: { x: number; y: number; contentId: string }) {
     return this.invoke(WSCmd.TEACHER_ANSWER_INTERACTIVE, payload);
   }
   sendRequestAnswerAll(payload: {}) {
     return this.invoke(WSCmd.TEACHER_ANSWER_ALL, payload);
+  }
+  sendRequestSetPointer(payload: { x: number; y: number }) {
+    return this.invoke(WSCmd.TEACHER_SET_POINTER, payload);
   }
 }

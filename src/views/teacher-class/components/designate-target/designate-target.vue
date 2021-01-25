@@ -3,8 +3,12 @@
     <div class="designate-target-container" v-if="currentExposureItemMedia">
       <div class="backdrop" @click="onClickCloseDesignate"></div>
       <div class="designate-wrap">
-        <div class="designate-box" id="designate-box">
-          <img :src="currentExposureItemMedia.image.url" id="mediaImage" @load="onLoaded" />
+        <div class="designate-box" id="designate-box" :class="{'active': isTabActive('designate-target-action')}">
+          <img
+            :src="currentExposureItemMedia.image.url"
+            id="mediaImage"
+            @load="onLoaded"
+          />
           <DesignateRectangle
             v-for="shape of rectangles"
             :key="shape.id"
@@ -42,28 +46,60 @@
             :zIndex="addingCircle.zIndex"
           />
         </div>
+        <div id="canvas-container" @mousemove="cursorPosition" :class="{'active': isTabActive('annotation-action')}">
+          <canvas id="canvas"/>
+        </div>
         <div class="designate-box-right">
-          <h3>Students</h3>
-          <BaseButton mode="clear" class="btn-primary designate-box-right__button--assign-all" @click="onClickToggleAssignAllStudents">
-            {{textAssignAll}}
-          </BaseButton>
-          <div class="designate-box-right--student-list">
-            <StudentList
-              v-for="student in studentIds"
-              :key="student.id"
-              :id="student.id"
-              :name="student.name"
-              :index="student.index"
-              :status="student.status"
-              :selected="student.selected"
-              @click="onClickToggleStudent(student)"
-            />
+          <div class="designate-box-right--tab">
+            <BaseButton class="btn-primary" @click.prevent="setTabActive('designate-target-action')" :class="{'active': isTabActive('designate-target-action')}">Designate Target</BaseButton>
+            <BaseButton class="btn-primary" @click.prevent="setTabActive('annotation-action')" :class="{'active': isTabActive('annotation-action')}">Annotation</BaseButton>
           </div>
-          <div class="designate-box-right--button">
-            <BaseButton class="btn-primary" @click="onClickClearAllTargets"
-              >Clear All Targets</BaseButton
+          <div class="designate-box-right--tab-content">
+            <div
+              class="designate-box-right--tab-pane"
+              id="designate-target-action"
+              :class="{'active': isTabActive('designate-target-action')}"
             >
-            <BaseButton class="btn-primary" @click="onClickRevealAllTargets">Reveal All Targets</BaseButton>
+              <h3>Students</h3>
+              <BaseButton
+                mode="clear"
+                class="btn-primary designate-box-right__button--assign-all"
+                @click="onClickToggleAssignAllStudents"
+              >
+                {{ textAssignAll }}
+              </BaseButton>
+              <div class="designate-box-right--student-list">
+                <StudentList
+                  v-for="student in studentIds"
+                  :key="student.id"
+                  :id="student.id"
+                  :name="student.name"
+                  :index="student.index"
+                  :status="student.status"
+                  :selected="student.selected"
+                  @click="onClickToggleStudent(student)"
+                />
+              </div>
+              <div class="designate-box-right--button">
+                <BaseButton class="btn-primary" @click="onClickClearAllTargets"
+                  >Clear All Targets</BaseButton
+                >
+                <BaseButton class="btn-primary" @click="onClickRevealAllTargets"
+                  >Reveal All Targets</BaseButton
+                >
+              </div>
+            </div>
+            <div class="designate-box-right--tab-pane" id="annotation-action" :class="{'active': isTabActive('annotation-action')}">
+              <ToolsCanvas
+                :selector-open="selectorOpen"
+                :tool-selected="toolSelected"
+                :stroke-width="strokeWidth"
+                :stroke-color="strokeColor"
+                @tool-selected="clickedTool"
+                @update-color="updateColorValue"
+                @update-stroke="updateStrokeWidth"
+              />
+            </div>
           </div>
         </div>
       </div>

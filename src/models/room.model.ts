@@ -35,6 +35,13 @@ export interface InteractiveModel {
   }>;
   targets: Array<Target>;
 }
+
+export interface AnnotationModel {
+  mode: number;
+  pointer: { x: number; y: number };
+  drawing?: Array<string>;
+}
+
 export interface LessonPlanModel {
   contentSelected: string;
   contents: Array<ExposureContentModel>;
@@ -44,6 +51,7 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
+  annotation: AnnotationModel;
 }
 export interface RoomModel {
   id: string;

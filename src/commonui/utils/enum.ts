@@ -584,3 +584,11 @@ export enum VersionGroupLicenseType {
 	GrapeSEED = 0,
 	LittleSEED = 1
 }
+
+export enum Tools {
+	Pen = 'pen',
+	Stroke = 'stroke',
+	StrokeColor = 'stroke-color',
+	Delete = 'delete',
+	Clear = 'clear',
+}

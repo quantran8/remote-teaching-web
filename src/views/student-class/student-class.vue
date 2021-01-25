@@ -51,7 +51,10 @@
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
       <!-- <ContentView/> -->
-      <div class="content-view-container" v-if="currentExposureItemMedia && isLessonPlan">
+      <div
+        class="content-view-container"
+        v-if="currentExposureItemMedia && isLessonPlan"
+      >
         <ContentView
           @on-tap="onClickContentView"
           :masked="isBlackOutContent"
@@ -61,6 +64,7 @@
           :isAssigned="isAssigned"
           :localTargets="localTargets"
         ></ContentView>
+        <AnnotationView></AnnotationView>
       </div>
     </div>
     <div class="page-footer">

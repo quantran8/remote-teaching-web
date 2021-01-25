@@ -23,4 +23,5 @@ export enum TeacherWSCommand {
   DESIGNATE_TARGET = "TeacherDesignate",
   TEACHER_ANSWER_INTERACTIVE = "TeacherAnswerInteractive",
   TEACHER_ANSWER_ALL = "TeacherAnswerAllTarget",
+  TEACHER_SET_POINTER = "TeacherSetPointer"
 }
