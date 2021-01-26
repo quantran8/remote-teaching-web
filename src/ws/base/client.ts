@@ -181,9 +181,13 @@ export class GLSocketClient {
       TeacherWSEvent.EVENT_UPDATE_POINTER,
       handler.onTeacherSetPointer
     );
+    handlers.set(
+      TeacherWSEvent.EVENT_ANNOTATION_UPDATE_MODE,
+      handler.onTeacherUpdateAnnotationMode
+    );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
-        Logger.info("RECIEVE", key, payload);
+        Logger.info("RECEIVE", key, payload);
         func(payload);
       });
     });

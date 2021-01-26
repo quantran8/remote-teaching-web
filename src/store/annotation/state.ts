@@ -10,7 +10,7 @@ export interface AnnotationState {
 
 const state: AnnotationState = {
   mode: 0,
-  pointer: {x: 0, y: 0},
+  pointer: { x: 0, y: 0 },
   drawing: undefined
 };
 

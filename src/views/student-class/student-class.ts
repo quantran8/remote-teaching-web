@@ -49,6 +49,7 @@ export default defineComponent({
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
+    const annotationMode = computed(() => store.getters["annotation/mode"]);
 
     watch(errors, () => {
       if (errors.value) {
@@ -138,7 +139,8 @@ export default defineComponent({
       designateTargets,
       onClickContentView,
       isAssigned,
-      localTargets,      
+      localTargets,
+      annotationMode
     };
   },
 });

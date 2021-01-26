@@ -225,6 +225,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setPointer({ state }, payload: { x: number, y: number }) {
     await state.manager?.WSClient.sendRequestSetPointer(payload);
   },
+  async setMode({ state }, payload: { mode: number }) {
+    await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
+  }
 };
 
 export default actions;

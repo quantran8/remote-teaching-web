@@ -3,7 +3,8 @@ import { MutationTree } from "vuex";
 import { AnnotationState, Pointer } from "./state";
 
 export interface AnnotationMutationInterface<S> {
-  setPointer(s: S, p: { pointer: Pointer }): void;
+  setPointer(s: S, pointer: Pointer): void;
+  setMode(s: S, p: { mode: number }): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -12,8 +13,11 @@ export interface AnnotationMutation<S>
     AnnotationMutationInterface<S> {}
 
 const mutations: AnnotationMutation<AnnotationState> = {
-  setPointer(s: AnnotationState, p: { pointer: Pointer }) {
-    s.pointer = p.pointer;
+  setPointer(s: AnnotationState, p: Pointer) {
+    s.pointer = p;
+  },
+  setMode(s: AnnotationState, p: { mode: number }) {
+    s.mode = p.mode;
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;

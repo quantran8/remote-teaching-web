@@ -4,6 +4,7 @@ import { AnnotationState, Pointer } from "./state";
 
 export interface AnnotationActionInterface<S, R> {
   setPointer(s: ActionContext<S, R>, p: Pointer): void;
+  setMode(s: ActionContext<S, R>, p: { mode: number }): void;
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
@@ -14,6 +15,9 @@ export interface AnnotationAction<S, R>
 const actions: ActionTree<AnnotationState, any> = {
   setPointer({ commit }, p: Pointer) {
     commit("setPointer", p);
+  },
+  setMode({ commit }, p: { mode: number }) {
+    commit("setMode", p);
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);

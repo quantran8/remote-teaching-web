@@ -179,6 +179,9 @@ export const useTeacherRoomWSHandler = ({
     onTeacherSetPointer: async (payload: any) => {
       console.log(payload);
     },
+    onTeacherUpdateAnnotationMode: async (payload: any) => {
+      console.log(payload)
+    }
   };
   return handler;
 };

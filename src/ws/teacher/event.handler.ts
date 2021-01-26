@@ -22,5 +22,6 @@ export interface TeacherWSEventHandler {
   onTeacherDesignateTarget(payload: any): void;
   onTeacherUpdateDesignateTarget(payload: any): void;
   onTeacherSetPointer(payload: any): void;
+  onTeacherUpdateAnnotationMode(payload: any): void;
   onStudentUpdateAnswers(payload: any): void;
 }

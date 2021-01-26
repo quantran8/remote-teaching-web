@@ -102,6 +102,9 @@ export class TeacherWSClient extends GLSocketClient {
     return this.invoke(WSCmd.TEACHER_ANSWER_ALL, payload);
   }
   sendRequestSetPointer(payload: { x: number; y: number }) {
-    return this.invoke(WSCmd.TEACHER_SET_POINTER, payload);
+    return this.send(WSCmd.TEACHER_SET_POINTER, payload);
+  }
+  sendRequestUpdateAnnotationMode(mode: number) {
+    return this.invoke(WSCmd.TEACHER_UPDATE_ANNOTATION_MODE, mode);
   }
 }

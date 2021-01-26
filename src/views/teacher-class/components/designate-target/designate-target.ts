@@ -6,7 +6,7 @@ import {
   onUnmounted,
   Ref,
   ref,
-  watch
+  watch,
 } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
@@ -46,13 +46,13 @@ interface StudentViewModel {
 export default defineComponent({
   components: {
     StudentList,
-    ToolsCanvas
+    ToolsCanvas,
   },
   props: {
     editable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   setup(props) {
     const store = useStore();
@@ -80,30 +80,44 @@ export default defineComponent({
     const strokeColor: Ref<string> = ref("#000000");
     const strokeWidth: Ref<number> = ref(1);
     const selectorOpen: Ref<boolean> = ref(false);
+    const modeAnnotation: Ref<number> = ref(-1);
     const isTabActive = (menuItem: any) => {
       return activeTab.value === menuItem;
     };
-    const setTabActive = (menuItem: any) => {
+    const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
+      modeAnnotation.value = 0;
+      await store.dispatch("teacherRoom/setMode", {
+        mode: modeAnnotation.value
+      });
+      if (menuItem === "annotation-action") {
+        modeAnnotation.value = 1;
+        await store.dispatch("teacherRoom/setMode", {
+          mode: modeAnnotation.value
+        });
+      }
     };
     watch(isTabActive, setTabActive);
     const cursorPosition = async (e: any) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      // console.log(x, y);
-      await store.dispatch("teacherRoom/setPointer", {
-        x: x,
-        y: y
-      });
+      if (modeAnnotation.value === 1) {
+        await store.dispatch("teacherRoom/setPointer", {
+          x: e.clientX,
+          y: e.clientY
+        });
+      }
     };
     const objectsCanvas = () => {
       const canvasAsJSON = canvas.value.toJSON();
       console.log(canvasAsJSON);
     };
     watch(canvas, objectsCanvas);
-    const clickedTool = (tool: string) => {
+    const clickedTool = async (tool: string) => {
       canvas.value.selection = false;
-      canvas.value.isDrawingMode = (tool === Tools.Pen);
+      canvas.value.isDrawingMode = tool === Tools.Pen;
+      modeAnnotation.value = 2;
+      await store.dispatch("teacherRoom/setMode", {
+        mode: modeAnnotation.value
+      });
 
       if (toolSelected.value !== tool) {
         toolSelected.value = tool;
@@ -206,7 +220,7 @@ export default defineComponent({
         const oImg = img
           .set({
             selectable: false,
-            hoverCursor: "cursor"
+            hoverCursor: "cursor",
           })
           .scale(Math.min((width - 146) / width, (height - 104) / height));
         canvas.value.centerObject(oImg);
@@ -251,20 +265,20 @@ export default defineComponent({
       const offsetY = (boundingBoxRect.height - ratio * height) / 2;
       const targets: Array<Target> = designateTargets.value;
       circles.value = targets
-        .filter(t => t.type === "circle")
-        .map(c => {
+        .filter((t) => t.type === "circle")
+        .map((c) => {
           return {
             id: c.id,
             x: offsetX + c.x * ratio,
             y: offsetY + c.y * ratio,
             color: c.color,
             radius: c.radius * ratio,
-            type: c.type
+            type: c.type,
           };
         });
       rectangles.value = targets
-        .filter(t => t.type === "rectangle")
-        .map(r => {
+        .filter((t) => t.type === "rectangle")
+        .map((r) => {
           return {
             id: r.id,
             x: offsetX + r.x * ratio,
@@ -272,17 +286,17 @@ export default defineComponent({
             color: r.color,
             type: r.type,
             width: r.width * ratio,
-            height: r.height * ratio
+            height: r.height * ratio,
           };
         });
     };
 
     const onClickToggleAssignAllStudents = () => {
       assignAll.value = !assignAll.value;
-      studentIds.value = studentIds.value.map(s => {
+      studentIds.value = studentIds.value.map((s) => {
         return {
           ...s,
-          selected: assignAll.value
+          selected: assignAll.value,
         };
       });
     };
@@ -291,7 +305,7 @@ export default defineComponent({
       const studentSelecteds: Array<StudentId> =
         store.getters["interactive/studentsSelected"];
       for (const st of studentSelecteds) {
-        const student = studentIds.value.find(s => s.id === st.id);
+        const student = studentIds.value.find((s) => s.id === st.id);
         if (student) student.selected = true;
       }
     };
@@ -299,13 +313,13 @@ export default defineComponent({
     watch(store.getters["interactive/studentsSelected"], updateStudentSelected);
     const onStudentsChanged = () => {
       if (studentIds.value.length) return;
-      studentIds.value = students.value.map(s => {
+      studentIds.value = students.value.map((s) => {
         return {
           id: s.id,
           index: s.index,
           name: s.name,
           status: s.status,
-          selected: true
+          selected: true,
         };
       });
       updateStudentSelected();
@@ -314,10 +328,10 @@ export default defineComponent({
     onStudentsChanged();
 
     const onClickToggleStudent = (s: StudentViewModel) => {
-      studentIds.value = studentIds.value.map(st => {
+      studentIds.value = studentIds.value.map((st) => {
         return {
           ...st,
-          selected: s.id === st.id
+          selected: s.id === st.id,
         };
       });
     };
@@ -326,7 +340,7 @@ export default defineComponent({
       if (props.editable || editing.value) {
         const ratio = calScaleRatio();
         const targets: Array<Target> = circles.value
-          .map(c => {
+          .map((c) => {
             return {
               id: "",
               x: Math.floor(c.x / ratio),
@@ -336,11 +350,11 @@ export default defineComponent({
               radius: Math.floor(c.radius / ratio),
               width: 0,
               height: 0,
-              reveal: false
+              reveal: false,
             };
           })
           .concat(
-            rectangles.value.map(r => {
+            rectangles.value.map((r) => {
               return {
                 id: "",
                 x: Math.floor(r.x / ratio),
@@ -350,14 +364,14 @@ export default defineComponent({
                 radius: 0,
                 width: Math.floor(r.width / ratio),
                 height: Math.floor(r.height / ratio),
-                reveal: false
+                reveal: false,
               };
             })
           );
 
         const selectedStudents = studentIds.value
-          .filter(s => s.selected)
-          .map(s => s.id);
+          .filter((s) => s.selected)
+          .map((s) => s.id);
         const roomManager = await store.getters["teacherRoom/roomManager"];
         roomManager?.WSClient.sendRequestDesignateTarget(
           currentExposureItemMedia.value.id,
@@ -366,7 +380,7 @@ export default defineComponent({
         );
       }
       await store.dispatch("interactive/setDesignatingTarget", {
-        isDesignatingTarget: false
+        isDesignatingTarget: false,
       });
     };
 
@@ -379,8 +393,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -395,7 +409,9 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = event.target.id + "";
             if (targetId === "mediaImage") return;
-            const rectangle = rectangles.value.find(ele => ele.id === targetId);
+            const rectangle = rectangles.value.find(
+              (ele) => ele.id === targetId
+            );
             if (!rectangle) return;
             rectangle.x = event.rect.left - boundingBox().left;
             rectangle.y = event.rect.top - boundingBox().top;
@@ -409,13 +425,13 @@ export default defineComponent({
             if (rectangle.y + rectangle.height > boundingBox().height) {
               rectangle.height = boundingBox().height - rectangle.y;
             }
-          }
-        }
+          },
+        },
       });
       interact(`.circle`).resizable({
         edges: { top: true, left: true, bottom: true, right: true },
         modifiers: [
-          interact.modifiers.aspectRatio({ enabled: true, equalDelta: true })
+          interact.modifiers.aspectRatio({ enabled: true, equalDelta: true }),
         ],
         listeners: {
           start(event: any) {
@@ -423,8 +439,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -439,14 +455,14 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             if (targetId === "mediaImage") return;
-            const circle = circles.value.find(ele => ele.id === targetId);
+            const circle = circles.value.find((ele) => ele.id === targetId);
             if (!circle) return;
             const radius = event.rect.width / 2;
             circle.radius = radius;
             circle.x = event.rect.left - boundingBox().left + radius;
             circle.y = event.rect.top - boundingBox().top + radius;
-          }
-        }
+          },
+        },
       });
     };
     const draggable = () => {
@@ -457,8 +473,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -473,8 +489,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             ele.x += event.dx;
             ele.y += event.dy;
@@ -482,8 +498,8 @@ export default defineComponent({
           end(event: any) {
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+              rectangles.value.find((ele) => ele.id === targetId) ||
+              circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             const topleft = { x: 0, y: 0 };
             const bottomRight = { x: 0, y: 0 };
@@ -509,7 +525,7 @@ export default defineComponent({
               x: 0,
               y: 0,
               width: clientBoundingBox.width,
-              height: clientBoundingBox.height
+              height: clientBoundingBox.height,
             };
 
             if (
@@ -517,16 +533,16 @@ export default defineComponent({
               !MathUtils.isIntersect(rect, bottomRight)
             ) {
               const rectIndex = rectangles.value.findIndex(
-                r => r.id === targetId
+                (r) => r.id === targetId
               );
               if (rectIndex !== -1) rectangles.value.splice(rectIndex, 1);
               const circleIndex = circles.value.findIndex(
-                r => r.id === targetId
+                (r) => r.id === targetId
               );
               if (circleIndex !== -1) circles.value.splice(circleIndex, 1);
             }
-          }
-        }
+          },
+        },
       });
     };
     const init = () => {
@@ -545,7 +561,7 @@ export default defineComponent({
           radius: 30,
           color: "red",
           type: "circle",
-          zIndex: 1
+          zIndex: 1,
         };
         circles.value.push(circle);
       });
@@ -567,7 +583,7 @@ export default defineComponent({
             radius: 0,
             color: "red",
             type: "circle",
-            zIndex: 1
+            zIndex: 1,
           };
         } else {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
@@ -582,7 +598,7 @@ export default defineComponent({
             height: height,
             color: "green",
             type: "rectangle",
-            zIndex: 1
+            zIndex: 1,
           };
           console.log(addingRect.value, "addingRect");
         }
@@ -682,7 +698,7 @@ export default defineComponent({
       strokeWidth,
       strokeColor,
       updateColorValue,
-      updateStrokeWidth
+      updateStrokeWidth,
     };
-  }
+  },
 });
