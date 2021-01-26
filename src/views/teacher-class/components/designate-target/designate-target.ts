@@ -86,12 +86,13 @@ export default defineComponent({
     };
     const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
-      modeAnnotation.value = 0;
-      await store.dispatch("teacherRoom/setMode", {
-        mode: modeAnnotation.value
-      });
       if (menuItem === "annotation-action") {
         modeAnnotation.value = 1;
+        await store.dispatch("teacherRoom/setMode", {
+          mode: modeAnnotation.value
+        });
+      } else {
+        modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
           mode: modeAnnotation.value
         });

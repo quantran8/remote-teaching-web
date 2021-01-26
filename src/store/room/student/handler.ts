@@ -6,7 +6,7 @@ import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
-import {Pointer} from "@/store/annotation/state";
+import { Pointer } from "@/store/annotation/state";
 
 export const useStudentRoomHandler = (
   store: ActionContext<StudentRoomState, any>
@@ -245,14 +245,20 @@ export const useStudentRoomHandler = (
     },
     onTeacherSetPointer: async (payload: Pointer) => {
       await dispatch("annotation/setPointer", payload, {
-        root: true
+        root: true,
       });
     },
-    onTeacherUpdateAnnotationMode: async (payload: any) => {
-      await dispatch("annotation/setMode", payload, {
-        root: true
-      });
-    }
+    onTeacherUpdateAnnotationMode: async (payload: number) => {
+      await dispatch(
+        "annotation/setMode",
+        {
+          mode: payload,
+        },
+        {
+          root: true,
+        }
+      );
+    },
   };
   return handler;
 };

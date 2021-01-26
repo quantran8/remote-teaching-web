@@ -28,16 +28,19 @@ export default defineComponent({
           }
         : {};
     });
-    const onClickToggleDesignatingTarget = () => {
-      store.dispatch("interactive/setDesignatingTarget", {
+    const onClickToggleDesignatingTarget = async () => {
+      await store.dispatch("interactive/setDesignatingTarget", {
         isDesignatingTarget: !isDesignatingTarget.value,
+      });
+      await store.dispatch("teacherRoom/setMode", {
+        mode: 0
       });
     };
 
     const onClickContentView = async (payload: {
       x: number, y: number, contentId: string})=>{
-        emit('on-click-content-view', payload);
-    }
+      emit("on-click-content-view", payload);
+    };
 
 
     return {

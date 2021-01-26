@@ -1,7 +1,7 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, watch } from "vue";
+import {computed, ComputedRef, defineComponent, ref, Ref, watch} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
@@ -49,7 +49,7 @@ export default defineComponent({
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
-    const annotationMode = computed(() => store.getters["annotation/mode"]);
+    const isAnnotationMode = computed(() => store.getters["annotation/isAnnotationMode"]);
 
     watch(errors, () => {
       if (errors.value) {
@@ -140,7 +140,7 @@ export default defineComponent({
       onClickContentView,
       isAssigned,
       localTargets,
-      annotationMode
+      isAnnotationMode
     };
   },
 });

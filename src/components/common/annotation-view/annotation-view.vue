@@ -1,8 +1,7 @@
 <template>
   <div class="annotation-view">
-    <div class="wrapper">
-      <div class="cursor" :style="pointerStyle"></div>
-    </div>
+    <img :src="imageUrl" id="annotation-img"/>
+    <div class="cursor" :style="pointerStyle"></div>
   </div>
 </template>
 <style lang="scss" scoped src="./annotation-view.scss"></style>

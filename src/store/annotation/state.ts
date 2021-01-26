@@ -2,10 +2,14 @@ export interface Pointer {
   x: number;
   y: number;
 }
+export interface Pencil {
+  size: number;
+  color: string;
+}
 export interface AnnotationState {
-  mode: number,
-  pointer: Pointer,
-  drawing?: Array<string>
+  mode: number;
+  pointer: Pointer;
+  drawing?: Array<string>;
 }
 
 const state: AnnotationState = {
