@@ -39,7 +39,7 @@ export interface InteractiveModel {
 export interface AnnotationModel {
   mode: number;
   pointer: { x: number; y: number };
-  drawing?: Array<string>;
+  drawing: Array<string>;
 }
 
 export interface LessonPlanModel {

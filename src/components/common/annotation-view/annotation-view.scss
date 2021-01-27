@@ -6,6 +6,8 @@
   transform: translateY(-50%);
   img {
     max-width: 100%;
+    position: relative;
+    z-index: 11;
   }
   .cursor {
     display: inline-block;
@@ -15,6 +17,15 @@
     left: -16px;
     top: -16px;
     border-radius: 50%;
-    background-color: green;
+    background: transparent;
+    border: 3px solid red;
+    z-index: 13;
+  }
+  .canvas-container {
+    position: absolute;
+    z-index: 12;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }

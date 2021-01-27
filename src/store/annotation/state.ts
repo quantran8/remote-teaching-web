@@ -9,13 +9,13 @@ export interface Pencil {
 export interface AnnotationState {
   mode: number;
   pointer: Pointer;
-  drawing?: Array<string>;
+  drawing: Array<string>;
 }
 
 const state: AnnotationState = {
   mode: 0,
   pointer: { x: 0, y: 0 },
-  drawing: undefined
+  drawing: []
 };
 
 export default state;

@@ -56,7 +56,7 @@
         v-if="currentExposureItemMedia && isLessonPlan"
       >
         <ContentView
-          v-if="!isAnnotationMode"
+          v-if="!isPointerMode && !isDrawMode"
           @on-tap="onClickContentView"
           :masked="isBlackOutContent"
           :image="currentExposureItemMedia.image"
@@ -65,7 +65,7 @@
           :isAssigned="isAssigned"
           :localTargets="localTargets"
         ></ContentView>
-        <AnnotationView v-if="isAnnotationMode" :image="currentExposureItemMedia.image"></AnnotationView>
+        <AnnotationView v-if="isPointerMode || isDrawMode" :image="currentExposureItemMedia.image"></AnnotationView>
       </div>
     </div>
     <div class="page-footer">

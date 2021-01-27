@@ -46,8 +46,13 @@
       display: none;
       margin-right: 15px;
       background: #f0f0f0;
+      position: relative;
       &.active {
         display: block;
+      }
+      img {
+        max-width: 100%;
+        position: absolute;
       }
       .canvas-container {
         border: 1px solid green;

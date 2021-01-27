@@ -180,7 +180,10 @@ export const useTeacherRoomWSHandler = ({
       console.log(payload);
     },
     onTeacherUpdateAnnotationMode: async (payload: any) => {
-      console.log(payload)
+      console.log(payload);
+    },
+    onTeacherAddBrush: async (payload: any) => {
+      console.log(payload);
     }
   };
   return handler;

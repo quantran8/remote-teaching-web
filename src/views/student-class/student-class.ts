@@ -49,7 +49,8 @@ export default defineComponent({
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
-    const isAnnotationMode = computed(() => store.getters["annotation/isAnnotationMode"]);
+    const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
+    const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
 
     watch(errors, () => {
       if (errors.value) {
@@ -140,7 +141,8 @@ export default defineComponent({
       onClickContentView,
       isAssigned,
       localTargets,
-      isAnnotationMode
+      isPointerMode,
+      isDrawMode
     };
   },
 });

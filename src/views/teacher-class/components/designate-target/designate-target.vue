@@ -46,7 +46,12 @@
             :zIndex="addingCircle.zIndex"
           />
         </div>
-        <div id="canvas-container" @mousemove="cursorPosition" :class="{'active': isTabActive('annotation-action')}">
+        <div
+          id="canvas-container"
+          @mousemove="cursorPosition"
+          :class="{ active: isTabActive('annotation-action') }"
+        >
+<!--          <img :src="currentExposureItemMedia.image.url" id="annotation-img" />-->
           <canvas id="canvas"/>
         </div>
         <div class="designate-box-right">

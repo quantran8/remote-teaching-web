@@ -185,6 +185,10 @@ export class GLSocketClient {
       TeacherWSEvent.EVENT_ANNOTATION_UPDATE_MODE,
       handler.onTeacherUpdateAnnotationMode
     );
+    handlers.set(
+      TeacherWSEvent.EVENT_TEACHER_ANNOTATION_ADD_BRUSHSTROKE,
+      handler.onTeacherAddBrush
+    );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         Logger.info("RECEIVE", key, payload);

@@ -101,9 +101,18 @@ export default defineComponent({
     watch(isTabActive, setTabActive);
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === 1) {
+        const { width, height } = currentExposureItemMedia.value.image;
+        const rect = document.getElementById("canvas-container");
+        if (!rect) return;
+        const rectBounding = rect.getBoundingClientRect();
+        const wRatio = rectBounding.width / width;
+        const hRatio = rectBounding.height / height;
+        const ratio = Math.min(wRatio, hRatio);
+        const x = (e.clientX - rectBounding.left) / ratio;
+        const y = (e.clientY - rectBounding.top) / ratio;
         await store.dispatch("teacherRoom/setPointer", {
-          x: e.clientX,
-          y: e.clientY
+          x: Math.floor(x),
+          y: Math.floor(y)
         });
       }
     };

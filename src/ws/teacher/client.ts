@@ -107,4 +107,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestUpdateAnnotationMode(mode: number) {
     return this.send(WSCmd.TEACHER_UPDATE_ANNOTATION_MODE, mode);
   }
+  sendRequestAddBrush(payload: any) {
+    return this.send(WSCmd.TEACHER_ADD_BRUSH_STROKES, payload);
+  }
 }

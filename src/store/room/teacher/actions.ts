@@ -227,6 +227,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async setMode({ state }, payload: { mode: number }) {
     await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
+  },
+  async setBrush({ state }, payload: {drawing: []}) {
+    await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
   }
 };
 
