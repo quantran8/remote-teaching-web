@@ -228,8 +228,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setMode({ state }, payload: { mode: number }) {
     await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
   },
-  async setBrush({ state }, payload: {drawing: []}) {
+  async setBrush({ state }, payload: {drawing: string}) {
     await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
+  },
+  async setClearBrush({state}, payload: {}) {
+    await state.manager?.WSClient.sendRequestClearAllBrush(payload);
   }
 };
 

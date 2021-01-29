@@ -5,7 +5,8 @@ import { AnnotationState, Pointer } from "./state";
 export interface AnnotationMutationInterface<S> {
   setPointer(s: S, pointer: Pointer): void;
   setMode(s: S, p: { mode: number }): void;
-  setBrush(s: S, p: { drawing: Array<string> }): void;
+  addShape(s: S, p: string): void;
+  setClearBrush(s: S, p: {}): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -20,8 +21,16 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setMode(s: AnnotationState, p: { mode: number }) {
     s.mode = p.mode;
   },
-  setBrush(s: AnnotationState, p: { drawing: Array<string> }) {
-    s.drawing = p.drawing;
+
+  addShape(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.drawing.brushstrokes = [...s.drawing.brushstrokes, p];
+  },
+  setClearBrush(s: AnnotationState, p: any) {
+    s.drawing = {
+      pencil: null,
+      brushstrokes: [],
+    };
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;

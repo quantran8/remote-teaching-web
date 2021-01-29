@@ -51,8 +51,10 @@
           @mousemove="cursorPosition"
           :class="{ active: isTabActive('annotation-action') }"
         >
-<!--          <img :src="currentExposureItemMedia.image.url" id="annotation-img" />-->
-          <canvas id="canvas"/>
+          <img :src="currentExposureItemMedia.image.url" id="annotation-img" />
+          <div class="wrap-canvas">
+            <canvas id="canvas"/>
+          </div>
         </div>
         <div class="designate-box-right">
           <div class="designate-box-right--tab">

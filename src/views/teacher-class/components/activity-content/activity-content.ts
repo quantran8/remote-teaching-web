@@ -35,6 +35,7 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setMode", {
         mode: 0
       });
+      await store.dispatch("teacherRoom/setClearBrush", {});
     };
 
     const onClickContentView = async (payload: {

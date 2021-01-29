@@ -14,9 +14,9 @@ const getters: GetterTree<AnnotationState, any> = {
   isDrawMode(state: AnnotationState): boolean {
     return state.mode === 2;
   },
-  brush(state: AnnotationState): Array<string> {
-    return state.drawing;
-  }
+  shapes(state: AnnotationState): Array<string> {
+    return state.drawing.brushstrokes;
+  },
 };
 
 export default getters;

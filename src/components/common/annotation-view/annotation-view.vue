@@ -1,9 +1,11 @@
 <template>
   <div class="annotation-view">
     <img :src="imageUrl" id="annotation-img"/>
-    <div class="cursor" v-if="isPointerMode" :style="pointerStyle"></div>
+    <div class="cursor" v-if="isPointerMode" :style="pointerStyle">
+      <img src="@/assets/icon-select.png" alt="" />
+    </div>
     <div class="canvas-container">
-      <canvas id="canvas"/>
+      <canvas id="canvas" ref="canvasRef"/>
     </div>
   </div>
 </template>

@@ -91,6 +91,7 @@ export default defineComponent({
         await store.dispatch("teacherRoom/setMode", {
           mode: modeAnnotation.value
         });
+        await store.dispatch("teacherRoom/setClearBrush", {});
       } else {
         modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
@@ -116,11 +117,27 @@ export default defineComponent({
         });
       }
     };
-    const objectsCanvas = () => {
+    const objectsCanvas = async () => {
+      const { width, height } = currentExposureItemMedia.value.image;
+      const rect = document.getElementById("canvas-container");
+      if (!rect) return;
+      const rectBounding = rect.getBoundingClientRect();
+      const wRatio = rectBounding.width / width;
+      const hRatio = rectBounding.height / height;
+      const ratio = Math.min(wRatio, hRatio);
       const canvasAsJSON = canvas.value.toJSON();
-      console.log(canvasAsJSON);
+      const lastObject = canvasAsJSON.objects[canvasAsJSON.objects.length - 1];
+      lastObject.width =lastObject.width / ratio;
+      lastObject.height = lastObject.height / ratio;
+      lastObject.top = lastObject.top / ratio;
+      lastObject.left = lastObject.left / ratio;
+      lastObject.scaleX = lastObject.scaleX / ratio;
+      lastObject.scaleY = lastObject.scaleY / ratio;
+      await store.dispatch("teacherRoom/setBrush", {
+        drawing: lastObject
+      });
     };
-    watch(canvas, objectsCanvas);
+    // watch(canvas, objectsCanvas);
     const clickedTool = async (tool: string) => {
       canvas.value.selection = false;
       canvas.value.isDrawingMode = tool === Tools.Pen;
@@ -159,14 +176,15 @@ export default defineComponent({
           if (canvas.value.getObjects("path").length) {
             const itemDelete = canvas.value.getObjects("path").pop();
             canvas.value.remove(itemDelete);
-            objectsCanvas();
+            // await objectsCanvas();
           }
           return;
         }
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
           canvas.value.remove(...canvas.value.getObjects("path"));
-          objectsCanvas();
+          // await objectsCanvas();
+          await store.dispatch("teacherRoom/setClearBrush", {});
           return;
       }
     };
@@ -187,12 +205,12 @@ export default defineComponent({
       canvas.value.on("mouse:up", async (event: any) => {
         // const mouse = canvas.value.getPointer(event.e);
         canvas.value.renderAll();
-        objectsCanvas();
+        await objectsCanvas();
       });
     };
     const listenToObjectModified = () => {
       canvas.value.on("object:modified", () => {
-        objectsCanvas();
+        // objectsCanvas();
       });
     };
     // LISTENING TO CANVAS EVENTS
@@ -224,18 +242,6 @@ export default defineComponent({
     const boardSetup = () => {
       canvas.value = new fabric.Canvas("canvas");
       const { width, height } = currentExposureItemMedia.value.image;
-      fabric.Image.fromURL(currentExposureItemMedia.value.image.url, function(
-        img: any
-      ) {
-        const oImg = img
-          .set({
-            selectable: false,
-            hoverCursor: "cursor",
-          })
-          .scale(Math.min((width - 146) / width, (height - 104) / height));
-        canvas.value.centerObject(oImg);
-        canvas.value.add(oImg);
-      });
       canvas.value.setWidth(width - 146);
       canvas.value.setHeight(height - 104);
       canvas.value.selectionFullyContained = false;

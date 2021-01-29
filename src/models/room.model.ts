@@ -36,10 +36,20 @@ export interface InteractiveModel {
   targets: Array<Target>;
 }
 
+export interface PencilModel {
+  size: number;
+  color: string;
+}
+
+export interface DrawingModel {
+  pencil: PencilModel | null;
+  brushstrokes: Array<string>;
+}
+
 export interface AnnotationModel {
   mode: number;
   pointer: { x: number; y: number };
-  drawing: Array<string>;
+  drawing: DrawingModel;
 }
 
 export interface LessonPlanModel {

@@ -184,6 +184,9 @@ export const useTeacherRoomWSHandler = ({
     },
     onTeacherAddBrush: async (payload: any) => {
       console.log(payload);
+    },
+    onTeacherClearAllBrush(payload: any) {
+      console.log(payload);
     }
   };
   return handler;

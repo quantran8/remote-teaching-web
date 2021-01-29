@@ -16,10 +16,13 @@
     height: 32px;
     left: -16px;
     top: -16px;
-    border-radius: 50%;
-    background: transparent;
-    border: 3px solid red;
     z-index: 13;
+    text-align: right;
+    padding-top: 16px;
+    img {
+      z-index: 13;
+      max-width: 25px;
+    }
   }
   .canvas-container {
     position: absolute;

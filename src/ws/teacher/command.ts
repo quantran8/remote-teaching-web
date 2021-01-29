@@ -25,5 +25,7 @@ export enum TeacherWSCommand {
   TEACHER_ANSWER_ALL = "TeacherAnswerAllTarget",
   TEACHER_SET_POINTER = "TeacherSetPointer",
   TEACHER_UPDATE_ANNOTATION_MODE = "TeacherUpdateAnnotationMode",
-  TEACHER_ADD_BRUSH_STROKES = "TeacherAddBrushstrokes"
+  TEACHER_ADD_BRUSH_STROKES = "TeacherAddBrushstrokes",
+  TEACHER_SET_BRUSH_STROKES = "TeacherSetBrushstrokes",
+  TEACHER_CLEAR_ALL_BRUSH_STROKES = "TeacherClearAllBrushstrokes"
 }

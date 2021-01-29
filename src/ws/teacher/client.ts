@@ -108,6 +108,10 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.TEACHER_UPDATE_ANNOTATION_MODE, mode);
   }
   sendRequestAddBrush(payload: any) {
-    return this.send(WSCmd.TEACHER_ADD_BRUSH_STROKES, payload);
+    const data = JSON.stringify(payload);
+    return this.send(WSCmd.TEACHER_ADD_BRUSH_STROKES, data);
+  }
+  sendRequestClearAllBrush(payload: any) {
+    return this.send(WSCmd.TEACHER_CLEAR_ALL_BRUSH_STROKES, {});
   }
 }

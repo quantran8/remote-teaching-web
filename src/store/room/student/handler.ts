@@ -259,12 +259,14 @@ export const useStudentRoomHandler = (
         }
       );
     },
-    onTeacherAddBrush: async (payload: Array<string>) => {
-      await dispatch("annotation/setBrush", { drawing: payload }, {
-          root: true
-        }
-      );
-    }
+    onTeacherAddBrush: async (payload: string) => {
+      await dispatch("annotation/addShape", payload, {
+        root: true,
+      });
+    },
+    onTeacherClearAllBrush: async (payload: any) => {
+      await dispatch("annotation/setClearBrush", {}, { root: true });
+    },
   };
   return handler;
 };
