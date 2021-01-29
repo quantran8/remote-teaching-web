@@ -15,7 +15,7 @@ const getters: GetterTree<AnnotationState, any> = {
     return state.mode === 2;
   },
   shapes(state: AnnotationState): Array<string> {
-    return state.drawing.brushstrokes;
+    return state.drawing?.brushstrokes;
   },
 };
 

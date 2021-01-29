@@ -17,7 +17,12 @@
         background-color: black;
       }
       &__stroke-color {
-        height: 5px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        position: absolute;
+        left: 10px;
+        top: 5px;
       }
     }
     &__name {

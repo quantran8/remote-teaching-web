@@ -78,7 +78,7 @@ export default defineComponent({
     const toolNames: string[] = Object.values(tools);
     const toolSelected: Ref<string> = ref("");
     const strokeColor: Ref<string> = ref("#000000");
-    const strokeWidth: Ref<number> = ref(1);
+    const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
     const isTabActive = (menuItem: any) => {
@@ -87,11 +87,19 @@ export default defineComponent({
     const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
       if (menuItem === "annotation-action") {
-        modeAnnotation.value = 1;
-        await store.dispatch("teacherRoom/setMode", {
-          mode: modeAnnotation.value
-        });
-        await store.dispatch("teacherRoom/setClearBrush", {});
+        console.log(selectorOpen.value, canvas.value.isDrawingMode, 'click tab');
+        if (selectorOpen.value && canvas.value.isDrawingMode) {
+          modeAnnotation.value = 2;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+        } else {
+          modeAnnotation.value = 1;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+          await store.dispatch("teacherRoom/setClearBrush", {});
+        }
       } else {
         modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
@@ -183,27 +191,14 @@ export default defineComponent({
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
           canvas.value.remove(...canvas.value.getObjects("path"));
-          // await objectsCanvas();
           await store.dispatch("teacherRoom/setClearBrush", {});
+          toolSelected.value = Tools.Pen;
+          canvas.value.isDrawingMode = true;
           return;
       }
     };
-    // const listenToMouseDown = () => {
-    //   canvas.value.on("mouse:down", (event: any) => {
-    //     const mouse = canvas.value.getPointer(event.e);
-    //     return mouse;
-    //   });
-    // };
-    //
-    // const listenToMouseMove = () => {
-    //   canvas.value.on("mouse:move", (event: any) => {
-    //     const mouse = canvas.value.getPointer(event.e);
-    //     return mouse;
-    //   });
-    // };
     const listenToMouseUp = () => {
       canvas.value.on("mouse:up", async (event: any) => {
-        // const mouse = canvas.value.getPointer(event.e);
         canvas.value.renderAll();
         await objectsCanvas();
       });
@@ -215,14 +210,13 @@ export default defineComponent({
     };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
-      // listenToMouseDown();
-      // listenToMouseMove();
       listenToMouseUp();
       listenToObjectModified();
     };
     const updateColorValue = (value: any) => {
       if (toolSelected.value === Tools.StrokeColor) {
         strokeColor.value = value;
+        clickedTool(Tools.Pen).then();
         if (canvas.value.getActiveObject()) {
           canvas.value.getActiveObject().set("stroke", strokeColor.value);
           canvas.value.renderAll();
@@ -234,6 +228,8 @@ export default defineComponent({
     };
     const updateStrokeWidth = (value: number) => {
       strokeWidth.value = value;
+      selectorOpen.value = false;
+      clickedTool(Tools.Pen).then();
       if (canvas.value.getActiveObject()) {
         canvas.value.getActiveObject().set("strokeWidth", strokeWidth.value);
         canvas.value.renderAll();

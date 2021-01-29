@@ -24,6 +24,10 @@ export default defineComponent({
     const isPointerMode = computed(
       () => store.getters["annotation/isPointerMode"]
     );
+    console.log(isPointerMode.value);
+
+    const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
+    console.log(isDrawMode.value);
 
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } =
@@ -37,6 +41,7 @@ export default defineComponent({
     });
 
     const canvasData = computed(() => store.getters["annotation/shapes"]);
+    console.log(canvasData.value);
 
     const renderCanvas = () => {
       if (!canvas.value || !canvasData.value) return;
@@ -71,19 +76,22 @@ export default defineComponent({
       canvas.value.setWidth(boundingBox.width);
       canvas.value.setHeight(boundingBox.height);
       canvas.value.selectionFullyContained = false;
+      canvas.value.getObjects().forEach((obj: any) => {
+        obj.selectable = false;
+      });
 
       renderCanvas();
     };
     const canvasRef = ref(null);
     onMounted(() => {
+      boardSetup();
       calcScaleRatio();
       window.addEventListener("resize", calcScaleRatio);
-      boardSetup();
     });
     onUnmounted(() => {
       window.removeEventListener("resize", calcScaleRatio);
     });
 
-    return { pointerStyle, imageUrl, isPointerMode, canvasRef };
+    return { pointerStyle, imageUrl, isPointerMode,isDrawMode, canvasRef };
   }
 });

@@ -33,7 +33,18 @@ export default defineComponent({
       [Tools.Clear]: "Clear"
     };
     const colors: any = {};
-    const colorsList = ["black", "brown", "red", "orange", "yellow", "green", "blue", "purple", "gray", "white"];
+    const colorsList = [
+      "black",
+      "brown",
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "blue",
+      "purple",
+      "gray",
+      "white"
+    ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
