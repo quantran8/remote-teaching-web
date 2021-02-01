@@ -233,6 +233,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async setClearBrush({state}, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
+  },
+  async setDeleteBrush({state}, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteBrush(payload);
   }
 };
 

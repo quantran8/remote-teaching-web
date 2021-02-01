@@ -7,6 +7,7 @@ export interface AnnotationMutationInterface<S> {
   setMode(s: S, p: { mode: number }): void;
   addShape(s: S, p: string): void;
   setClearBrush(s: S, p: {}): void;
+  setDeleteBrush(s: S, p: {}): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -29,15 +30,19 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setClearBrush(s: AnnotationState, p: any) {
     s.drawing = {
       pencil: null,
-      brushstrokes: [],
+      brushstrokes: []
     };
+  },
+  setDeleteBrush(s: AnnotationState, p: {}) {
+    s.drawing.brushstrokes.pop();
+    s.drawing.brushstrokes = [...s.drawing.brushstrokes];
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;
     s.drawing = p.drawing;
-  },
+  }
 };
 
 export default mutations;

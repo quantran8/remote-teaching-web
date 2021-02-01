@@ -17,6 +17,9 @@ const getters: GetterTree<AnnotationState, any> = {
   shapes(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },
+  undoShape(state: AnnotationState): Array<string> {
+    return state.drawing?.brushstrokes;
+  }
 };
 
 export default getters;

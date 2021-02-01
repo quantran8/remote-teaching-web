@@ -193,6 +193,10 @@ export class GLSocketClient {
       TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_BRUSHSTROKE,
       handler.onTeacherClearAllBrush
     );
+    handlers.set(
+      TeacherWSEvent.EVENT_TEACHER_ANNOTATION_DELETE_BRUSHSTROKE,
+      handler.onTeacherDeleteBrush
+    );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         Logger.info("RECEIVE", key, payload);

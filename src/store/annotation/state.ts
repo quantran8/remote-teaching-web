@@ -22,8 +22,8 @@ const state: AnnotationState = {
   pointer: { x: 0, y: 0 },
   drawing: {
     pencil: null,
-    brushstrokes: [],
-  },
+    brushstrokes: []
+  }
 };
 
 export default state;

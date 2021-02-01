@@ -87,7 +87,6 @@ export default defineComponent({
     const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
       if (menuItem === "annotation-action") {
-        console.log(selectorOpen.value, canvas.value.isDrawingMode, 'click tab');
         if (selectorOpen.value && canvas.value.isDrawingMode) {
           modeAnnotation.value = 2;
           await store.dispatch("teacherRoom/setMode", {
@@ -149,10 +148,12 @@ export default defineComponent({
     const clickedTool = async (tool: string) => {
       canvas.value.selection = false;
       canvas.value.isDrawingMode = tool === Tools.Pen;
-      modeAnnotation.value = 2;
-      await store.dispatch("teacherRoom/setMode", {
-        mode: modeAnnotation.value
-      });
+      if (modeAnnotation.value !== 2) {
+        modeAnnotation.value = 2;
+        await store.dispatch("teacherRoom/setMode", {
+          mode: modeAnnotation.value
+        });
+      }
 
       if (toolSelected.value !== tool) {
         toolSelected.value = tool;
@@ -184,7 +185,12 @@ export default defineComponent({
           if (canvas.value.getObjects("path").length) {
             const itemDelete = canvas.value.getObjects("path").pop();
             canvas.value.remove(itemDelete);
-            // await objectsCanvas();
+            await store.dispatch("teacherRoom/setDeleteBrush", {});
+            toolSelected.value = Tools.Pen;
+            canvas.value.isDrawingMode = true;
+          } else {
+            toolSelected.value = Tools.Pen;
+            canvas.value.isDrawingMode = true;
           }
           return;
         }

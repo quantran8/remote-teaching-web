@@ -267,6 +267,9 @@ export const useStudentRoomHandler = (
     onTeacherClearAllBrush: async (payload: any) => {
       await dispatch("annotation/setClearBrush", {}, { root: true });
     },
+    onTeacherDeleteBrush: async (payload: any) => {
+      await dispatch("annotation/setDeleteBrush", {}, { root: true });
+    }
   };
   return handler;
 };

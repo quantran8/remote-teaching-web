@@ -25,5 +25,6 @@ export interface TeacherWSEventHandler {
   onTeacherUpdateAnnotationMode(payload: any): void;
   onTeacherAddBrush(payload: any): void;
   onTeacherClearAllBrush(payload: any): void;
+  onTeacherDeleteBrush(payload: any): void;
   onStudentUpdateAnswers(payload: any): void;
 }

@@ -7,6 +7,7 @@ export interface AnnotationActionInterface<S, R> {
   setMode(s: ActionContext<S, R>, p: { mode: number }): void;
   addShape(s: ActionContext<S, R>, p: string): void;
   setClearBrush(s: ActionContext<S, R>, p: {}): void;
+  setDeleteBrush(s: ActionContext<S, R>, p: {}): void;
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
@@ -27,8 +28,11 @@ const actions: ActionTree<AnnotationState, any> = {
   setClearBrush({ commit }, p: {}) {
     commit("setClearBrush", p);
   },
+  setDeleteBrush({ commit }, p: {}) {
+    commit("setDeleteBrush", p);
+  },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);
-  },
+  }
 };
 export default actions;

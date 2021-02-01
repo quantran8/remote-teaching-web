@@ -24,10 +24,8 @@ export default defineComponent({
     const isPointerMode = computed(
       () => store.getters["annotation/isPointerMode"]
     );
-    console.log(isPointerMode.value);
 
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
-    console.log(isDrawMode.value);
 
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } =
@@ -39,9 +37,8 @@ export default defineComponent({
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
     });
-
+    const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
-    console.log(canvasData.value);
 
     const renderCanvas = () => {
       if (!canvas.value || !canvasData.value) return;
@@ -66,6 +63,7 @@ export default defineComponent({
       );
     };
     watch(canvasData, renderCanvas);
+    watch(undoCanvas, renderCanvas);
 
     const boardSetup = () => {
       canvas.value = new fabric.Canvas("canvas");
