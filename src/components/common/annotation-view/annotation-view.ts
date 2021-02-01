@@ -57,13 +57,14 @@ export default defineComponent({
           })
           .filter((s) => s !== null),
       };
+
       canvas.value.loadFromJSON(
         JSON.stringify(canvasJsonData),
         canvas.value.renderAll.bind(canvas.value)
       );
     };
-    watch(canvasData, renderCanvas);
     watch(undoCanvas, renderCanvas);
+    watch(canvasData, renderCanvas);
 
     const boardSetup = () => {
       canvas.value = new fabric.Canvas("canvas");
@@ -80,16 +81,17 @@ export default defineComponent({
 
       renderCanvas();
     };
+
     const canvasRef = ref(null);
     onMounted(() => {
-      boardSetup();
       calcScaleRatio();
+      boardSetup();
       window.addEventListener("resize", calcScaleRatio);
     });
     onUnmounted(() => {
       window.removeEventListener("resize", calcScaleRatio);
     });
 
-    return { pointerStyle, imageUrl, isPointerMode,isDrawMode, canvasRef };
+    return { pointerStyle, imageUrl, isPointerMode, isDrawMode, canvasRef };
   }
 });

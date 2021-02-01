@@ -144,7 +144,6 @@ export default defineComponent({
         drawing: lastObject
       });
     };
-    // watch(canvas, objectsCanvas);
     const clickedTool = async (tool: string) => {
       canvas.value.selection = false;
       canvas.value.isDrawingMode = tool === Tools.Pen;
@@ -209,15 +208,9 @@ export default defineComponent({
         await objectsCanvas();
       });
     };
-    const listenToObjectModified = () => {
-      canvas.value.on("object:modified", () => {
-        // objectsCanvas();
-      });
-    };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
-      listenToObjectModified();
     };
     const updateColorValue = (value: any) => {
       if (toolSelected.value === Tools.StrokeColor) {
@@ -400,6 +393,7 @@ export default defineComponent({
       await store.dispatch("interactive/setDesignatingTarget", {
         isDesignatingTarget: false,
       });
+      await store.dispatch("teacherRoom/setClearBrush", {});
     };
 
     const resizable = () => {

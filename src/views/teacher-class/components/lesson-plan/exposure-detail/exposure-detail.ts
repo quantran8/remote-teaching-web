@@ -20,6 +20,7 @@ export default defineComponent({
       await dispatch("teacherRoom/setCurrentExposureMediaItem", {
         id: item.id,
       });
+      await dispatch("teacherRoom/setClearBrush", {});
     };
     return { onClickItem, onClickBack, onClickMedia };
   },
