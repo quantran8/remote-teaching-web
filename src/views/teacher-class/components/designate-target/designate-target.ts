@@ -59,6 +59,8 @@ export default defineComponent({
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
+    const nextExposureItemMedia = computed(() => store.getters["lesson/nextExposureItemMedia"]);
+    const prevExposureItemMedia = computed(() => store.getters["lesson/prevExposureItemMedia"]);
     const designateTargets = computed(
       () => store.getters["interactive/targets"]
     );
@@ -347,6 +349,50 @@ export default defineComponent({
       });
     };
 
+    const onClickAssignDesignate = async () => {
+      if (props.editable || editing.value) {
+        const ratio = calScaleRatio();
+        const targets: Array<Target> = circles.value
+          .map((c) => {
+            return {
+              id: "",
+              x: Math.floor(c.x / ratio),
+              y: Math.floor(c.y / ratio),
+              color: c.color,
+              type: c.type,
+              radius: Math.floor(c.radius / ratio),
+              width: 0,
+              height: 0,
+              reveal: false,
+            };
+          })
+          .concat(
+            rectangles.value.map((r) => {
+              return {
+                id: "",
+                x: Math.floor(r.x / ratio),
+                y: Math.floor(r.y / ratio),
+                color: r.color,
+                type: r.type,
+                radius: 0,
+                width: Math.floor(r.width / ratio),
+                height: Math.floor(r.height / ratio),
+                reveal: false,
+              };
+            })
+          );
+
+        const selectedStudents = studentIds.value
+          .filter((s) => s.selected)
+          .map((s) => s.id);
+        const roomManager = await store.getters["teacherRoom/roomManager"];
+        roomManager?.WSClient.sendRequestDesignateTarget(
+          currentExposureItemMedia.value.id,
+          targets,
+          selectedStudents
+        );
+      }
+    };
     const onClickCloseDesignate = async () => {
       if (props.editable || editing.value) {
         const ratio = calScaleRatio();
@@ -612,7 +658,6 @@ export default defineComponent({
             type: "rectangle",
             zIndex: 1,
           };
-          console.log(addingRect.value, "addingRect");
         }
       });
       manager.on("panmove", (event: any) => {
@@ -668,6 +713,33 @@ export default defineComponent({
       const roomManager = await store.getters["teacherRoom/roomManager"];
       roomManager?.WSClient.sendRequestAnswerAll();
     };
+    const onClickNextPrevMedia = async (nextPrev: number) => {
+      onClickClearAllTargets();
+      await store.dispatch("interactive/setTargets", {
+        targets: []
+      });
+      await setTabActive("designate-target-action");
+      toolSelected.value = "";
+      selectorOpen.value = false;
+      strokeWidth.value = 2;
+      strokeColor.value = "#000000";
+      canvas.value.isDrawingMode = false;
+      canvas.value.remove(...canvas.value.getObjects("path"));
+      await store.dispatch("teacherRoom/setClearBrush", {});
+      if (nextPrev === 1) {
+        if (nextExposureItemMedia.value !== undefined) {
+          await store.dispatch("teacherRoom/setCurrentExposureMediaItem", {
+            id: nextExposureItemMedia.value.id
+          });
+        }
+      } else {
+        if (prevExposureItemMedia.value !== undefined) {
+          await store.dispatch("teacherRoom/setCurrentExposureMediaItem", {
+            id: prevExposureItemMedia.value.id
+          });
+        }
+      }
+    };
     const onLoaded = (evt: any) => {
       updateTargets();
     };
@@ -684,6 +756,8 @@ export default defineComponent({
       students,
       onClickCloseDesignate,
       currentExposureItemMedia,
+      nextExposureItemMedia,
+      prevExposureItemMedia,
       addingCircle,
       circles,
       rectangles,
@@ -711,6 +785,8 @@ export default defineComponent({
       strokeColor,
       updateColorValue,
       updateStrokeWidth,
+      onClickAssignDesignate,
+      onClickNextPrevMedia,
     };
   },
 });

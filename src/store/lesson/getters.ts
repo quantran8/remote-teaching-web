@@ -31,7 +31,10 @@ const secondsToTimeStr = (time: number): string => {
 
 interface LessonGetterInterface<S> {
   currentExposure(s: S): Exposure | undefined;
+  nextExposure(s: S): Exposure | undefined;
   currentExposureItemMedia(s: S): ExposureItemMedia | undefined;
+  nextExposureItemMedia(s: S): ExposureItemMedia | undefined;
+  prevExposureItemMedia(s: S): ExposureItemMedia | undefined;
   exposures(s: S): Exposure[];
   isBlackOut(s: S): boolean;
   activityStatistic(s: S): string;
@@ -47,8 +50,41 @@ const getters: LessonGetters<LessonState, any> = {
   currentExposure(s: LessonState): Exposure | undefined {
     return s.currentExposure;
   },
+  nextExposure(s: LessonState): Exposure | undefined {
+    return s.nextExposure;
+  },
   currentExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
     return s.currentExposureItemMedia;
+  },
+  nextExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
+    if (!s.currentExposure) return;
+    const groupMedia = [];
+    for (const item of s.currentExposure?.items) {
+      groupMedia.push(item.media);
+    }
+    const allMedia = groupMedia.flat();
+    if (!s.currentExposureItemMedia) return;
+    const indexOfMedia = allMedia.indexOf(s.currentExposureItemMedia);
+    if (indexOfMedia + 1 < allMedia.length) {
+      return (s.nextExposureItemMedia = allMedia[indexOfMedia + 1]);
+    } else {
+      return s.nextExposureItemMedia = undefined;
+    }
+  },
+  prevExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
+    if (!s.currentExposure) return;
+    const groupMedia = [];
+    for (const item of s.currentExposure?.items) {
+      groupMedia.push(item.media);
+    }
+    const allMedia = groupMedia.flat();
+    if (!s.currentExposureItemMedia) return;
+    const indexOfMedia = allMedia.indexOf(s.currentExposureItemMedia);
+    if (indexOfMedia - 1 >= 0) {
+      return (s.nextExposureItemMedia = allMedia[indexOfMedia - 1]);
+    } else {
+      return s.nextExposureItemMedia = undefined;
+    }
   },
   exposures(s: LessonState): Exposure[] {
     return s.exposures;

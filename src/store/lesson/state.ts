@@ -60,7 +60,10 @@ export interface ExposureItemMedia {
 export interface LessonState {
   exposures: Exposure[];
   currentExposure?: Exposure;
+  nextExposure?: Exposure;
   currentExposureItemMedia?: ExposureItemMedia;
+  nextExposureItemMedia?: ExposureItemMedia;
+  prevExposureItemMedia?: ExposureItemMedia;
   isBlackout: boolean;
   totalTime: string;
   playedTime: string;
@@ -69,7 +72,10 @@ export interface LessonState {
 const state: LessonState = {
   exposures: [],
   currentExposure: undefined,
+  nextExposure: undefined,
   currentExposureItemMedia: undefined,
+  nextExposureItemMedia: undefined,
+  prevExposureItemMedia: undefined,
   isBlackout: false,
   totalTime: "",
   playedTime: "",

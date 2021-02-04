@@ -87,6 +87,9 @@
                   @click="onClickToggleStudent(student)"
                 />
               </div>
+<!--              <div class="designate-box-right&#45;&#45;button">-->
+<!--                <BaseButton class="btn-primary green" @click="onClickAssignDesignate">Assign All Targets</BaseButton>-->
+<!--              </div>-->
               <div class="designate-box-right--button">
                 <BaseButton class="btn-primary" @click="onClickClearAllTargets"
                   >Clear All Targets</BaseButton
@@ -107,6 +110,10 @@
                 @update-stroke="updateStrokeWidth"
               />
             </div>
+          </div>
+          <div class="designate-box-right__navigation">
+            <BaseButton class="btn-primary" v-if="prevExposureItemMedia !== undefined" @click="onClickNextPrevMedia(0)">Previous Content</BaseButton>
+            <BaseButton class="btn-primary" v-if="nextExposureItemMedia !== undefined" @click="onClickNextPrevMedia(1)">Next Content</BaseButton>
           </div>
         </div>
       </div>
