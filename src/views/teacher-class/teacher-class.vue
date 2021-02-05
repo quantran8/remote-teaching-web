@@ -70,7 +70,7 @@
       @dismiss="onClickCloseError"
       @confirm="onClickLeave"
     />
-    <DesignateTarget v-if="isDesignatingTarget" :editable="allowDesignate"></DesignateTarget>
+    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-class.scss"></style>

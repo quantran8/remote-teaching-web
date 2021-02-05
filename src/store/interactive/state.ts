@@ -21,6 +21,7 @@ export interface InteractiveState {
   localTargets: Array<string>;
   studentsSelected: Array<StudentId>;
   currentUserId: string;
+  modalDesignateTarget: boolean;
 }
 
 const state: InteractiveState = {
@@ -29,6 +30,7 @@ const state: InteractiveState = {
   localTargets: [],
   studentsSelected: [],
   currentUserId: "",
+  modalDesignateTarget: false
 };
 
 export default state;

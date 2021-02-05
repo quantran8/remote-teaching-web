@@ -394,50 +394,8 @@ export default defineComponent({
       }
     };
     const onClickCloseDesignate = async () => {
-      if (props.editable || editing.value) {
-        const ratio = calScaleRatio();
-        const targets: Array<Target> = circles.value
-          .map((c) => {
-            return {
-              id: "",
-              x: Math.floor(c.x / ratio),
-              y: Math.floor(c.y / ratio),
-              color: c.color,
-              type: c.type,
-              radius: Math.floor(c.radius / ratio),
-              width: 0,
-              height: 0,
-              reveal: false,
-            };
-          })
-          .concat(
-            rectangles.value.map((r) => {
-              return {
-                id: "",
-                x: Math.floor(r.x / ratio),
-                y: Math.floor(r.y / ratio),
-                color: r.color,
-                type: r.type,
-                radius: 0,
-                width: Math.floor(r.width / ratio),
-                height: Math.floor(r.height / ratio),
-                reveal: false,
-              };
-            })
-          );
-
-        const selectedStudents = studentIds.value
-          .filter((s) => s.selected)
-          .map((s) => s.id);
-        const roomManager = await store.getters["teacherRoom/roomManager"];
-        roomManager?.WSClient.sendRequestDesignateTarget(
-          currentExposureItemMedia.value.id,
-          targets,
-          selectedStudents
-        );
-      }
-      await store.dispatch("interactive/setDesignatingTarget", {
-        isDesignatingTarget: false,
+      await store.dispatch("interactive/setModalDesignateTarget", {
+        modalDesignateTarget: false
       });
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
@@ -716,6 +674,9 @@ export default defineComponent({
     const onClickNextPrevMedia = async (nextPrev: number) => {
       onClickClearAllTargets();
       await store.dispatch("interactive/setTargets", {
+        targets: []
+      });
+      await store.dispatch("interactive/setLocalTargets", {
         targets: []
       });
       await setTabActive("designate-target-action");

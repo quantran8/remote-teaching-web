@@ -87,9 +87,9 @@
                   @click="onClickToggleStudent(student)"
                 />
               </div>
-<!--              <div class="designate-box-right&#45;&#45;button">-->
-<!--                <BaseButton class="btn-primary green" @click="onClickAssignDesignate">Assign All Targets</BaseButton>-->
-<!--              </div>-->
+              <div class="designate-box-right--button">
+                <BaseButton class="btn-primary green" @click="onClickAssignDesignate">Assign All Targets</BaseButton>
+              </div>
               <div class="designate-box-right--button">
                 <BaseButton class="btn-primary" @click="onClickClearAllTargets"
                   >Clear All Targets</BaseButton

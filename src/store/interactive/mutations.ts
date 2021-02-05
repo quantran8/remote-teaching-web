@@ -4,6 +4,7 @@ import { InteractiveState, StudentId, Target } from "./state";
 
 export interface InteractiveMutationInterface<S> {
   setDesignatingTarget(s: S, p: { isDesignatingTarget: boolean }): void;
+  setModalDesignateTarget(s: S, p: { modalDesignateTarget: boolean }): void;
   setTargets(s: S, p: { targets: Array<Target> }): void;
   setLocalTargets(s: S, p: { targets: Array<string> }): void;
   setInfo(s: S, p: InteractiveModel): void;
@@ -40,6 +41,12 @@ const mutations: InteractiveMutation<InteractiveState> = {
     p: { isDesignatingTarget: boolean }
   ): void {
     s.isDesignatingTarget = p.isDesignatingTarget;
+  },
+  setModalDesignateTarget(
+    s: InteractiveState,
+    p: { modalDesignateTarget: boolean }
+  ): void {
+    s.modalDesignateTarget = p.modalDesignateTarget;
   },
   setTargets(s: InteractiveState, p: { targets: Array<Target> }) {
     s.targets = p.targets;

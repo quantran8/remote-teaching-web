@@ -7,6 +7,7 @@ export interface InteractiveActionInterface<S, R> {
     s: ActionContext<S, R>,
     p: { isDesignatingTarget: boolean }
   ): void;
+  setModalDesignateTarget(s: ActionContext<S, R>, p: { modalDesignateTarget: boolean }): void;
   setTargets(s: ActionContext<S, R>, p: { targets: Array<Target> }): void;
   setLocalTargets(s: ActionContext<S, R>, p: { targets: Array<string> }): void;
   setStudentsSelected(
@@ -26,6 +27,9 @@ export interface InteractiveAction<S, R>
 const actions: ActionTree<InteractiveState, any> = {
   setDesignatingTarget({ commit }, p: { isDesignatingTarget: boolean }) {
     commit("setDesignatingTarget", p);
+  },
+  setModalDesignateTarget({ commit }, p: { modalDesignateTarget: boolean }) {
+    commit("setModalDesignateTarget", p);
   },
   setTargets({ commit }, p: { targets: Array<Target> }) {
     commit("setTargets", p);

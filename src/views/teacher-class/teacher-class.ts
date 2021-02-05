@@ -53,6 +53,7 @@ export default defineComponent({
     const isDesignatingTarget = computed(
       () => getters["interactive/isDesignatingTarget"]
     );
+    const modalDesignateTarget = computed(() => getters["interactive/modalDesignateTarget"]);
     const allowDesignate = computed(
       () => getters["interactive/targets"].length === 0
     );
@@ -193,7 +194,8 @@ export default defineComponent({
       ctaVisible,
       isDesignatingTarget,
       allowDesignate,
-      onClickContentView
+      onClickContentView,
+      modalDesignateTarget
     };
   },
 });

@@ -6,6 +6,9 @@ const getters: GetterTree<InteractiveState, any> = {
   isDesignatingTarget(state: InteractiveState): boolean {
     return state.isDesignatingTarget;
   },
+  modalDesignateTarget(state: InteractiveState): boolean {
+    return state.modalDesignateTarget;
+  },
   targets(state: InteractiveState): Array<Target> {
     return state.targets;
   },

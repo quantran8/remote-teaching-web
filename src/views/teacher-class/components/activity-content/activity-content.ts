@@ -14,6 +14,9 @@ export default defineComponent({
     const isDesignatingTarget = computed(
       () => store.getters["teacherRoom/isDesignatingTarget"]
     );
+    const modalDesignateTarget = computed(
+      () => store.getters["interactive/modalDesignateTarget"]
+    );
     const localTargets: Array<string> = [];
     const isFlipped = computed(() => store.getters["lesson/isBlackOut"]);
     const toggleView = async () => {
@@ -29,8 +32,8 @@ export default defineComponent({
         : {};
     });
     const onClickToggleDesignatingTarget = async () => {
-      await store.dispatch("interactive/setDesignatingTarget", {
-        isDesignatingTarget: !isDesignatingTarget.value,
+      await store.dispatch("interactive/setModalDesignateTarget", {
+        modalDesignateTarget: !modalDesignateTarget.value
       });
       await store.dispatch("teacherRoom/setMode", {
         mode: 0
