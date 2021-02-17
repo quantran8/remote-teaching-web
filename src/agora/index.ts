@@ -133,6 +133,10 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._cameraTrack) return;
     try {
       this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
+
+      // Set resolution to 240x180. See `VideoEncoderConfigurationPreset` for more presets.
+      await this._cameraTrack.setEncoderConfiguration("180p_4");
+
       this.cameraTrack.on("track-ended", () => {
         this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
       });
