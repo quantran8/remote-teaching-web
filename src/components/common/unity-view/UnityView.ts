@@ -9,7 +9,7 @@ export interface UnityLoaderInterface {
 }
 
 export interface UnityInstanceInterface {
-  SendMessage(connection: string, command: string, mesage: string): void;
+  SendMessage(connection: string, command: string, message: string): void;
 }
 
 export default defineComponent({
