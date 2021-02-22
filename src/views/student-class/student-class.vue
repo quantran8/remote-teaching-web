@@ -46,14 +46,24 @@
           <img src="@/assets/icons/icon-action-like.svg" alt="" />
         </div>
       </div>
-      <div class="teacher-view" v-if="teacher">
+      <div class="teacher-view" v-if="teacher" :class="{ 'teacher-game': isGameView }">
         <div :id="teacher.id" class="teacher-camera"></div>
         <div class="teacher-name">{{ teacher.name }}</div>
+      </div>
+      <div v-if="isGameView" class="unityWrapper">
+        <UnityView
+          src="/games/writting_book/Build/UnityLoader.js"
+          json="/games/writting_book/Build/Writing_Book_Activity.json"
+          class="unityView"
+          @on-loader-loaded="onUnityLoaderLoaded"
+          @on-progress="onUnityViewLoading"
+          @on-loaded="onUnityViewLoaded"
+        ></UnityView>
       </div>
       <!-- <ContentView/> -->
       <div
         class="content-view-container"
-        v-if="currentExposureItemMedia && isLessonPlan"
+        v-if="currentExposureItemMedia && isLessonPlan && !isGameView"
       >
         <ContentView
           v-if="!isPointerMode && !isDrawMode"
@@ -65,7 +75,10 @@
           :isAssigned="isAssigned"
           :localTargets="localTargets"
         ></ContentView>
-        <AnnotationView v-if="isPointerMode || isDrawMode" :image="currentExposureItemMedia.image"></AnnotationView>
+        <AnnotationView
+          v-if="isPointerMode || isDrawMode"
+          :image="currentExposureItemMedia.image"
+        ></AnnotationView>
       </div>
     </div>
     <div class="page-footer">

@@ -1,7 +1,10 @@
 <template>
   <div class="container">
     <div class="content">
-      <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
+      <div
+        class="teacher"
+        :class="{ 'teacher-full': isGalleryView, 'teacher-game': isGameView }"
+      >
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -16,8 +19,18 @@
           @end="onClickEnd"
         />
       </div>
-      <div v-if="!isGalleryView" class="activity-content">
-        <ActivityContent @on-click-content-view="onClickContentView"/>
+      <div v-if="!isGalleryView && !isGameView" class="activity-content">
+        <ActivityContent @on-click-content-view="onClickContentView" />
+      </div>
+      <div v-if="!isGalleryView && isGameView" class="unityWrapper">
+        <UnityView
+          src="/games/writting_book/Build/UnityLoader.js"
+          json="/games/writting_book/Build/Writing_Book_Activity.json"
+          class="unityView"
+          @on-loader-loaded="onUnityLoaderLoaded"
+          @on-progress="onUnityViewLoading"
+          @on-loaded="onUnityViewLoaded"
+        ></UnityView>
       </div>
       <div class="cta-container">
         <div class="cta-button" @mouseover="onHoverCTAButton">
@@ -26,7 +39,12 @@
               require(`../../assets/icons/icon-action-${classAction.icon}.svg`)
             "
           />
-          <div class="cta-content" :class="{'cta-content-show':ctaVisible}" v-click-outside="onClickOutSideCTAContent" @mouseout="onClickOutSideCTAContent">
+          <div
+            class="cta-content"
+            :class="{ 'cta-content-show': ctaVisible }"
+            v-click-outside="onClickOutSideCTAContent"
+            @mouseout="onClickOutSideCTAContent"
+          >
             <img
               v-for="action of actions"
               :key="action.icon"
@@ -54,7 +72,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!isGalleryView" class="lesson-plan">
+    <div v-if="!isGalleryView && !isGameView" class="lesson-plan">
       <LessonPlan />
     </div>
     <div class="gallery">
@@ -70,7 +88,10 @@
       @dismiss="onClickCloseError"
       @confirm="onClickLeave"
     />
-    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>
+    <DesignateTarget
+      v-if="modalDesignateTarget"
+      :editable="allowDesignate"
+    ></DesignateTarget>
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-class.scss"></style>

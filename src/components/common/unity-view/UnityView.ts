@@ -1,0 +1,92 @@
+import { defineComponent, onMounted, ref } from "vue";
+
+export interface UnityLoaderInterface {
+  instantiate(
+    container: string,
+    jsonPath: string,
+    options: { onProgress: (instance: any, progress: number) => void }
+  ): UnityInstanceInterface;
+}
+
+export interface UnityInstanceInterface {
+  SendMessage(connection: string, command: string, mesage: string): void;
+}
+
+export default defineComponent({
+  props: {
+    src: {
+      type: String,
+      required: true,
+    },
+    json: {
+      type: String,
+      required: true,
+    },
+  },
+  emits: ["on-loader-loaded", "on-progress", "on-loaded"],
+  setup(props, { emit }) {
+    const containerId = `unity-wrapper-${Date.now()}`;
+    const unityLoader = ref<UnityLoaderInterface | null>(null);
+    const unityInstance = ref<UnityInstanceInterface | null>(null);
+    const receiveMessageFromUnity = (message: string) => {
+      console.log("receiveMessageFromUnity", message);
+    };
+    const sendMessageToUnity = (command: string, message: string) => {
+      if (unityInstance.value === null) return;
+      console.log("sendMessageToUnity", command, message);
+      unityInstance.value.SendMessage("[Bridge]", command, message);
+    };
+    const _sendTestMessage = () => {
+      setTimeout(() => {
+        sendMessageToUnity("ReceiveMessageFromPage", "Brandon lon");
+      }, 3000);
+    };
+    const _onLoaded = () => {
+      emit("on-loaded");
+      _sendTestMessage();
+    };
+    const _onProgress = (_: any, progress: number) => {
+      emit("on-progress", progress);
+      if (progress === 1) _onLoaded();
+    };
+    const initBridge = () => {
+      (window as any)["receiveMessageFromUnity"] = receiveMessageFromUnity;
+    };
+    const init = () => {
+      if (!unityLoader.value) return;
+      initBridge();
+      unityInstance.value = unityLoader.value.instantiate(
+        containerId,
+        props.json,
+        {
+          onProgress: _onProgress,
+        }
+      );
+    };
+
+    const _onLoadedUnityLoader = () => {
+      unityLoader.value = UnityLoader;
+      emit("on-loader-loaded");
+      init();
+    };
+    const importUnityLoader = () => {
+      const script = document.createElement("SCRIPT");
+      script.setAttribute("src", props.src);
+      script.setAttribute("async", "");
+      script.setAttribute("defer", "");
+      document.body.appendChild(script);
+      script.onload = _onLoadedUnityLoader;
+    };
+
+    onMounted(() => {
+      importUnityLoader();
+    });
+
+    return {
+      importUnityLoader,
+      init,
+      unityLoader,
+      containerId,
+    };
+  },
+});
