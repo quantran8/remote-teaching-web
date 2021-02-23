@@ -23,6 +23,6 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     if (!options.teacherId || !options.classId)
       throw new Error("Missing Params");
     await this.WSClient.connect();
-    await this.agoraClient.joinRTCRoom(options);
+    await this.agoraClient.joinRTCRoom({...options, videoEncoderConfigurationPreset: '480p'});
   }
 }

@@ -144,7 +144,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (state.cameraLock) return;
     commit("setCameraLock", { enable: true });
     await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
-    await state.manager?.setCamera({ enable: payload.enable });
+    await state.manager?.setCamera({enable: payload.enable, videoEncoderConfigurationPreset: '480p'});
     commit("setTeacherVideo", payload);
     commit("setCameraLock", { enable: false });
   },

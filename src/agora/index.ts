@@ -1,4 +1,4 @@
-import { Logger } from "@/utils/logger";
+import {Logger} from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -8,12 +8,13 @@ import AgoraRTC, {
   ILocalTrack,
   IMicrophoneAudioTrack,
   IRemoteTrack,
+  VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
-import { isEqual } from "lodash";
+import {isEqual} from "lodash";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
-  joinRTCRoom(payload: { camera: boolean; microphone: boolean }): void;
+  joinRTCRoom(payload: { camera: boolean; videoEncoderConfigurationPreset?: string; microphone: boolean }): void;
 }
 
 export interface AgoraUser {
@@ -76,7 +77,7 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
-  async joinRTCRoom(options: { camera?: boolean; microphone?: boolean }) {
+  async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.agoraRTC.setLogLevel(4);
@@ -87,7 +88,9 @@ export class AgoraClient implements AgoraClientSDK {
       this.user.username
     );
     this.joined = true;
-    if (options.camera) await this.openCamera();
+    if (options.camera) {
+      await this.openCamera(options.videoEncoderConfigurationPreset);
+    }
     if (options.microphone) await this.openMicrophone();
     await this._publish();
   }
@@ -129,13 +132,19 @@ export class AgoraClient implements AgoraClientSDK {
     code: string;
     message: string;
   } | null = null;
-  async openCamera(): Promise<any> {
+
+  /**
+   * Opens camera with the resolution is set to 240x180 for every user by default.
+   * See {VideoEncoderConfigurationPreset} for more presets.
+   * @param {string} videoEncoderConfigurationPreset
+   */
+  async openCamera(videoEncoderConfigurationPreset: string = '180p_4'): Promise<any> {
     if (this._cameraTrack) return;
     try {
       this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
 
-      // Set resolution to 240x180. See `VideoEncoderConfigurationPreset` for more presets.
-      await this._cameraTrack.setEncoderConfiguration("180p_4");
+      const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
+      await this._cameraTrack.setEncoderConfiguration(preset);
 
       this.cameraTrack.on("track-ended", () => {
         this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
@@ -195,9 +204,9 @@ export class AgoraClient implements AgoraClientSDK {
     this.microphoneError = null;
   }
 
-  async setCamera(options: { enable: boolean }) {
+  async setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
     if (options.enable) {
-      await this.openCamera();
+      await this.openCamera(options.videoEncoderConfigurationPreset);
       await this._publish();
     } else {
       await this.client?.unpublish(this.cameraTrack);

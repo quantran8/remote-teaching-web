@@ -46,7 +46,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     return this.agoraClient.joined;
   }
 
-  setCamera(options: { enable: boolean }) {
+  setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
     return this.agoraClient.setCamera(options);
   }
 
