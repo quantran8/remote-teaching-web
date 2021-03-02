@@ -6,6 +6,12 @@ export interface Pencil {
   size: number;
   color: string;
 }
+export interface Sticker {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
 
 export interface Drawing {
   brushstrokes: Array<string>;
@@ -15,6 +21,7 @@ export interface AnnotationState {
   mode: number;
   pointer: Pointer;
   drawing: Drawing;
+  stickers: Array<Sticker>;
 }
 
 const state: AnnotationState = {
@@ -23,7 +30,8 @@ const state: AnnotationState = {
   drawing: {
     pencil: null,
     brushstrokes: []
-  }
+  },
+  stickers: []
 };
 
 export default state;

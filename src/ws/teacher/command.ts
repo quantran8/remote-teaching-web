@@ -28,5 +28,7 @@ export enum TeacherWSCommand {
   TEACHER_ADD_BRUSH_STROKES = "TeacherAddBrushstrokes",
   TEACHER_SET_BRUSH_STROKES = "TeacherSetBrushstrokes",
   TEACHER_CLEAR_ALL_BRUSH_STROKES = "TeacherClearAllBrushstrokes",
-  TEACHER_UNDO_BRUSH = "TeacherUndoBrushs"
+  TEACHER_UNDO_BRUSH = "TeacherUndoBrushs",
+  TEACHER_SET_STICKERS = "TeacherSetStickers",
+  TEACHER_CLEAR_STICKERS = "TeacherClearStickers"
 }

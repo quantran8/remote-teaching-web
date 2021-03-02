@@ -591,4 +591,6 @@ export enum Tools {
 	StrokeColor = 'stroke-color',
 	Delete = 'delete',
 	Clear = 'clear',
+	AddSticker = 'add-sticker',
+	AssignSticker = 'assign-sticker'
 }

@@ -1,4 +1,5 @@
 import { Target } from "@/store/interactive/state";
+import { Sticker } from "@/store/annotation/state";
 import { GLSocketClient } from "../base";
 import { TeacherWSCommand as WSCmd } from "./command";
 
@@ -116,5 +117,11 @@ export class TeacherWSClient extends GLSocketClient {
   }
   sendRequestDeleteBrush(payload: any) {
     return this.send(WSCmd.TEACHER_UNDO_BRUSH, {});
+  }
+  sendRequestSetStickers(stickers: Array<Sticker>) {
+    return this.send(WSCmd.TEACHER_SET_STICKERS, { stickers: stickers });
+  }
+  sendRequestClearStickers(payload: any) {
+    return this.send(WSCmd.TEACHER_CLEAR_STICKERS, {});
   }
 }
