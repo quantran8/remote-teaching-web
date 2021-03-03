@@ -149,7 +149,7 @@ export class AgoraClient implements AgoraClientSDK {
       this.cameraTrack.on("track-ended", () => {
         this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
       });
-      this.cameraTrack.play(this.user.username, { mirror: false });
+      this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
     } catch (err) {
       this.cameraError = err;
