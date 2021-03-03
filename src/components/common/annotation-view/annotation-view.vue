@@ -19,7 +19,7 @@
         @click="changeColorSticker(stickerColor)"
       ></div>
     </div>
-    <div class="sticker-control--check" @click="checkStickerAdded">
+    <div class="sticker-control--check" :class="{ 'sticker-control--check-correct': checkStickers }" @click="checkStickerAdded">
       <img src="@/assets/icon-check.svg" alt="" />
     </div>
   </div>

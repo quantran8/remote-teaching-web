@@ -95,7 +95,7 @@ export default defineComponent({
     const modeAnnotation: Ref<number> = ref(-1);
     const hasStickerTool: Ref<boolean> = ref(false);
     if (
-      currentExposure.value.type == "poems" ||
+      currentExposure.value.type == "poem" ||
       currentExposure.value.type == "bigbook"
     ) {
       hasStickerTool.value = true;

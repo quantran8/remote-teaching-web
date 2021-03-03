@@ -18,6 +18,7 @@ export default defineComponent({
     let canvas: any;
     const stickerColors = ["red", "yellow", "blue", "green", "pink"];
     const scaleRatio = ref(1);
+    const checkStickers = ref(false);
     const calcScaleRatio = () => {
       if (!props.image) return;
       const imgAnnotation = document.getElementById("annotation-img");
@@ -95,6 +96,7 @@ export default defineComponent({
           });
           canvas.add(rectSticker);
           canvas.renderAll();
+          checkStickers.value = false;
         });
       } else {
         canvas.remove(...canvas.getObjects("rect"));
@@ -155,6 +157,9 @@ export default defineComponent({
               });
               canvas.add(obj);
               canvas.renderAll();
+              checkStickers.value = false;
+            } else {
+              checkStickers.value = true;
             }
           }
         });
@@ -180,7 +185,8 @@ export default defineComponent({
       stickerColors,
       checkStickerAdded,
       changeColorSticker,
-      isStickerMode
+      isStickerMode,
+      checkStickers
     };
   }
 });
