@@ -1,4 +1,12 @@
-import {computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  Ref,
+  ref,
+  watch
+} from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import * as R from "ramda/";
@@ -25,6 +33,9 @@ export default defineComponent({
 
     const isPointerMode = computed(
       () => store.getters["annotation/isPointerMode"]
+    );
+    const isStickerMode = computed(
+      () => store.getters["annotation/isStickerMode"]
     );
 
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
@@ -69,7 +80,7 @@ export default defineComponent({
     watch(canvasData, renderCanvas);
     const stickersData = computed(() => store.getters["annotation/stickers"]);
     const stickerRender = () => {
-      if (stickersData.value.length) {
+      if (stickersData.value && stickersData.value.length) {
         stickersData.value.forEach((obj: any) => {
           const rectSticker = new fabric.Rect({
             top: 10 * scaleRatio.value,
@@ -83,13 +94,15 @@ export default defineComponent({
             hasBorders: false
           });
           canvas.add(rectSticker);
+          canvas.renderAll();
         });
+      } else {
+        canvas.remove(...canvas.getObjects("rect"));
       }
     };
-    if (canvas) {
+    watch(stickersData, () => {
       stickerRender();
-    }
-    watch(stickersData, stickerRender);
+    });
 
     const boardSetup = () => {
       canvas = new fabric.Canvas("canvas");
@@ -109,7 +122,7 @@ export default defineComponent({
     };
 
     const changeColorSticker = (stickerColor: string) => {
-      if (stickersData.value.length) {
+      if (stickersData.value) {
         canvas.getObjects("rect").forEach((obj: any) => {
           obj.fill = stickerColor;
         });
@@ -166,7 +179,8 @@ export default defineComponent({
       canvasRef,
       stickerColors,
       checkStickerAdded,
-      changeColorSticker
+      changeColorSticker,
+      isStickerMode
     };
   }
 });

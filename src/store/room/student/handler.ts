@@ -271,12 +271,20 @@ export const useStudentRoomHandler = (
       await dispatch("annotation/setDeleteBrush", {}, { root: true });
     },
     onTeacherSetStickers: async (payload: any) => {
-      await dispatch("annotation/setStickers", payload, {
-        root: true
-      });
+      await dispatch(
+        "annotation/setStickers",
+        { stickers: payload },
+        {
+          root: true
+        }
+      );
     },
     onTeacherClearStickers: async (payload: any) => {
-      await dispatch("annotation/setClearStickers", {}, { root: true });
+      await dispatch(
+        "annotation/setClearStickers",
+        { stickers: [] },
+        { root: true }
+      );
     }
   };
   return handler;

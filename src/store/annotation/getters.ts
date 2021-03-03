@@ -14,6 +14,9 @@ const getters: GetterTree<AnnotationState, any> = {
   isDrawMode(state: AnnotationState): boolean {
     return state.mode === 2;
   },
+  isStickerMode(state: AnnotationState): boolean {
+    return state.mode === 3;
+  },
   shapes(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },

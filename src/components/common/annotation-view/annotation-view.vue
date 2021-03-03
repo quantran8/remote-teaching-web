@@ -8,7 +8,7 @@
       <canvas id="canvas" ref="canvasRef"/>
     </div>
   </div>
-  <div class="sticker-control">
+  <div v-if="isStickerMode" class="sticker-control">
     <div class="sticker-control--list">
       <div
         class="sticker-control--list--item"

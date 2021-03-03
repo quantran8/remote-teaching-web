@@ -65,8 +65,6 @@ export default defineComponent({
     const currentExposure = computed(
       () => store.getters["lesson/currentExposure"]
     );
-    // current exposure is `bigbook` and `poems` will add function sticker
-    console.log(currentExposure.value.type, "currentExposure");
     const nextExposureItemMedia = computed(
       () => store.getters["lesson/nextExposureItemMedia"]
     );
@@ -90,7 +88,7 @@ export default defineComponent({
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
-    const toolSelected: Ref<string> = ref("");
+    const toolSelected: Ref<string> = ref("cursor");
     const strokeColor: Ref<string> = ref("#000000");
     const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
@@ -262,12 +260,6 @@ export default defineComponent({
     const clickedTool = async (tool: string) => {
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
-      if (modeAnnotation.value !== 2) {
-        modeAnnotation.value = 2;
-        await store.dispatch("teacherRoom/setMode", {
-          mode: modeAnnotation.value
-        });
-      }
 
       if (toolSelected.value !== tool) {
         toolSelected.value = tool;
@@ -277,8 +269,26 @@ export default defineComponent({
       }
 
       switch (tool) {
+        case Tools.Cursor:
+          toolSelected.value = Tools.Cursor;
+          modeAnnotation.value = 1;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+          canvas.getObjects().forEach((obj: any) => {
+            obj.selectable = false;
+            obj.hasControls = false;
+            obj.hasBorders = false;
+          });
+          return;
         case Tools.Pen:
           toolSelected.value = Tools.Pen;
+          canvas.remove(...canvas.getObjects("rect"));
+          await store.dispatch("teacherRoom/setClearStickers", {});
+          modeAnnotation.value = 2;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
           canvas.freeDrawingBrush.color = strokeColor.value;
           canvas.freeDrawingBrush.width = strokeWidth.value;
           return;
@@ -315,8 +325,11 @@ export default defineComponent({
           canvas.isDrawingMode = true;
           return;
         case Tools.AddSticker:
+          canvas.remove(...canvas.getObjects("path"));
+          await store.dispatch("teacherRoom/setClearBrush", {});
+          modeAnnotation.value = 3;
           await store.dispatch("teacherRoom/setMode", {
-            mode: 3
+            mode: modeAnnotation.value
           });
           fabric.Rect.prototype.controls.deleteControl = new fabric.Control({
             x: 0.5,
@@ -331,7 +344,9 @@ export default defineComponent({
           return;
         case Tools.AssignSticker:
           canvas.renderAll();
-          await assignSticker();
+          if (modeAnnotation.value === 3) {
+            await assignSticker();
+          }
           return;
         default:
           return;
@@ -496,10 +511,13 @@ export default defineComponent({
       await store.dispatch("interactive/setModalDesignateTarget", {
         modalDesignateTarget: false
       });
+      modeAnnotation.value = 0;
       await store.dispatch("teacherRoom/setMode", {
-        mode: 0
+        mode: modeAnnotation.value
       });
+      canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
+      await store.dispatch("teacherRoom/setClearStickers", {});
     };
 
     const resizable = () => {
@@ -785,8 +803,9 @@ export default defineComponent({
       strokeWidth.value = 2;
       strokeColor.value = "#000000";
       canvas.isDrawingMode = false;
-      canvas.remove(...canvas.getObjects("path"));
+      canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
+      await store.dispatch("teacherRoom/setClearStickers", {});
       if (nextPrev === 1) {
         if (nextExposureItemMedia.value !== undefined) {
           await store.dispatch("teacherRoom/setCurrentExposureMediaItem", {

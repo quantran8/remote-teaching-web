@@ -6,7 +6,7 @@ export default defineComponent({
   props: {
     toolSelected: {
       type: String,
-      default: ""
+      default: "cursor"
     },
     selectorOpen: {
       type: Boolean,
@@ -30,6 +30,7 @@ export default defineComponent({
     const toolNames: string[] = Object.values(tools);
     const toolsWithDropdown = [Tools.Stroke, Tools.StrokeColor];
     const toolNameMap = {
+      [Tools.Cursor]: "Cursor",
       [Tools.Pen]: "Pen",
       [Tools.Stroke]: "Size",
       [Tools.StrokeColor]: "Color",
@@ -71,7 +72,7 @@ export default defineComponent({
       clickedTool,
       updateColor,
       updateStrokeSize,
-      strokeSize
+      strokeSize,
     };
   }
 });

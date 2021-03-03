@@ -50,6 +50,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.pointer = p.pointer;
     s.mode = p.mode;
     s.drawing = p.drawing;
+    s.stickers = p.stickers;
   }
 };
 

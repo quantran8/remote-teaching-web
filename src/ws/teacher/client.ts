@@ -119,7 +119,7 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.TEACHER_UNDO_BRUSH, {});
   }
   sendRequestSetStickers(stickers: Array<Sticker>) {
-    return this.send(WSCmd.TEACHER_SET_STICKERS, { stickers: stickers });
+    return this.send(WSCmd.TEACHER_SET_STICKERS, stickers);
   }
   sendRequestClearStickers(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_STICKERS, {});
