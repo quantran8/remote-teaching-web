@@ -27,6 +27,7 @@
           src="/games/writting_book/Build/UnityLoader.js"
           json="/games/writting_book/Build/Writing_Book_Activity.json"
           class="unityView"
+          message-text="Brandon Tokuda text"
           @on-loader-loaded="onUnityLoaderLoaded"
           @on-progress="onUnityViewLoading"
           @on-loaded="onUnityViewLoaded"

@@ -16,12 +16,17 @@ export default defineComponent({
   props: {
     src: {
       type: String,
-      required: true,
+      required: true
     },
     json: {
       type: String,
-      required: true,
+      required: true
     },
+    messageText: {
+      type: String,
+      required: true,
+      default: ""
+    }
   },
   emits: ["on-loader-loaded", "on-progress", "on-loaded"],
   setup(props, { emit }) {
@@ -38,7 +43,7 @@ export default defineComponent({
     };
     const _sendTestMessage = () => {
       setTimeout(() => {
-        sendMessageToUnity("ReceiveMessageFromPage", "Brandon lon");
+        sendMessageToUnity("ReceiveMessageFromPage", props.messageText);
       }, 3000);
     };
     const _onLoaded = () => {
