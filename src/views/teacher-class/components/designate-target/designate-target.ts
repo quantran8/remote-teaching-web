@@ -521,8 +521,9 @@ export default defineComponent({
       selectorOpen.value = false;
       strokeWidth.value = 2;
       strokeColor.value = "#000000";
-      canvas.isDrawingMode = false;
-      canvas.remove(...canvas.getObjects());
+      // canvas.isDrawingMode = false;
+      // canvas.remove(...canvas.getObjects());
+      canvas.dispose();
       await store.dispatch("teacherRoom/setClearBrush", {});
       await store.dispatch("teacherRoom/setClearStickers", {});
     };
