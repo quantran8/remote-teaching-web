@@ -515,6 +515,11 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setMode", {
         mode: modeAnnotation.value
       });
+      toolSelected.value = "cursor";
+      selectorOpen.value = false;
+      strokeWidth.value = 2;
+      strokeColor.value = "#000000";
+      canvas.isDrawingMode = false;
       canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
       await store.dispatch("teacherRoom/setClearStickers", {});
@@ -798,7 +803,7 @@ export default defineComponent({
         targets: []
       });
       await setTabActive("designate-target-action");
-      toolSelected.value = "";
+      toolSelected.value = "cursor";
       selectorOpen.value = false;
       strokeWidth.value = 2;
       strokeColor.value = "#000000";
