@@ -100,6 +100,9 @@ export default defineComponent({
     ) {
       hasStickerTool.value = true;
     }
+    console.log(canvas, "canvas");
+    console.log(modeAnnotation.value, "modeAnnotation");
+    console.log(toolSelected.value, "toolSelected");
     const boundingBox = () => {
       const designBox = document.getElementById("designate-box");
       return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
@@ -130,18 +133,23 @@ export default defineComponent({
     const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
       if (menuItem === "annotation-action") {
-        if (selectorOpen.value && canvas.isDrawingMode) {
-          modeAnnotation.value = 2;
-          await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
-          });
-        } else {
-          modeAnnotation.value = 1;
-          await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
-          });
-          await store.dispatch("teacherRoom/setClearBrush", {});
-        }
+        // if (selectorOpen.value && canvas.isDrawingMode) {
+        //   modeAnnotation.value = 2;
+        //   await store.dispatch("teacherRoom/setMode", {
+        //     mode: modeAnnotation.value
+        //   });
+        // } else {
+        //   modeAnnotation.value = 1;
+        //   await store.dispatch("teacherRoom/setMode", {
+        //     mode: modeAnnotation.value
+        //   });
+        //   await store.dispatch("teacherRoom/setClearBrush", {});
+        // }
+        modeAnnotation.value = 1;
+        await store.dispatch("teacherRoom/setMode", {
+          mode: modeAnnotation.value
+        });
+        await store.dispatch("teacherRoom/setClearBrush", {});
       } else {
         modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
@@ -271,6 +279,7 @@ export default defineComponent({
       switch (tool) {
         case Tools.Cursor:
           toolSelected.value = Tools.Cursor;
+          canvas.isDrawingMode = false;
           modeAnnotation.value = 1;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value
