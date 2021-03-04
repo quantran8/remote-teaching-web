@@ -130,27 +130,19 @@ export default defineComponent({
     const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
       if (menuItem === "annotation-action") {
-        // if (selectorOpen.value && canvas.isDrawingMode) {
-        //   modeAnnotation.value = 2;
-        //   await store.dispatch("teacherRoom/setMode", {
-        //     mode: modeAnnotation.value
-        //   });
-        // } else {
-        //   modeAnnotation.value = 1;
-        //   await store.dispatch("teacherRoom/setMode", {
-        //     mode: modeAnnotation.value
-        //   });
-        //   await store.dispatch("teacherRoom/setClearBrush", {});
-        // }
-        canvas.isDrawingMode = false;
-        modeAnnotation.value = 1;
-        await store.dispatch("teacherRoom/setMode", {
-          mode: modeAnnotation.value
-        });
-        await store.dispatch("teacherRoom/setClearBrush", {});
-        console.log(canvas, "canvas");
-        console.log(modeAnnotation.value, "modeAnnotation");
-        console.log(toolSelected.value, "toolSelected");
+        if (selectorOpen.value && canvas.isDrawingMode) {
+          modeAnnotation.value = 2;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+        } else {
+          canvas.isDrawingMode = false;
+          modeAnnotation.value = 1;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+          await store.dispatch("teacherRoom/setClearBrush", {});
+        }
       } else {
         modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
@@ -292,7 +284,6 @@ export default defineComponent({
           });
           return;
         case Tools.Pen:
-          console.log(canvas,'can vat');
           toolSelected.value = Tools.Pen;
           canvas.remove(...canvas.getObjects("rect"));
           await store.dispatch("teacherRoom/setClearStickers", {});
