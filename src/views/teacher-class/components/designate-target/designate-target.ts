@@ -100,9 +100,6 @@ export default defineComponent({
     ) {
       hasStickerTool.value = true;
     }
-    console.log(canvas, "canvas");
-    console.log(modeAnnotation.value, "modeAnnotation");
-    console.log(toolSelected.value, "toolSelected");
     const boundingBox = () => {
       const designBox = document.getElementById("designate-box");
       return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
@@ -145,11 +142,15 @@ export default defineComponent({
         //   });
         //   await store.dispatch("teacherRoom/setClearBrush", {});
         // }
+        canvas.isDrawingMode = false;
         modeAnnotation.value = 1;
         await store.dispatch("teacherRoom/setMode", {
           mode: modeAnnotation.value
         });
         await store.dispatch("teacherRoom/setClearBrush", {});
+        console.log(canvas, "canvas");
+        console.log(modeAnnotation.value, "modeAnnotation");
+        console.log(toolSelected.value, "toolSelected");
       } else {
         modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
@@ -291,6 +292,7 @@ export default defineComponent({
           });
           return;
         case Tools.Pen:
+          console.log(canvas,'can vat');
           toolSelected.value = Tools.Pen;
           canvas.remove(...canvas.getObjects("rect"));
           await store.dispatch("teacherRoom/setClearStickers", {});
