@@ -5,7 +5,7 @@ import {
   HttpTransportType,
   LogLevel,
   HubConnection,
-  HubConnectionState,
+  HubConnectionState
 } from "@microsoft/signalr";
 
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
@@ -33,7 +33,7 @@ export class GLSocketClient {
       skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
       logging: LogLevel.Trace,
-      accessTokenFactory: () => GLGlobal.loginInfo().access_token,
+      accessTokenFactory: () => GLGlobal.loginInfo().access_token
     };
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
@@ -43,7 +43,7 @@ export class GLSocketClient {
     this._hubConnection.onclose(this.onClosed);
     this._isConnected = false;
   }
-  onClosed(){
+  onClosed() {
     this._isConnected = false;
   }
   get isConnected(): boolean {
@@ -78,8 +78,8 @@ export class GLSocketClient {
   async invoke(command: string, payload: any): Promise<any> {
     Logger.log("INVOKE", command, payload);
     if (
-        !this.isConnected ||
-        this.hubConnection.state === HubConnectionState.Disconnected
+      !this.isConnected ||
+      this.hubConnection.state === HubConnectionState.Disconnected
     ) {
       this._isConnected = false;
       await this.connect();
@@ -96,9 +96,18 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.MUTE_VIDEO, handler.onStudentMuteVideo);
     handlers.set(StudentWSEvent.LEAVE, handler.onStudentLeave);
     handlers.set(StudentWSEvent.DISCONNECT, handler.onStudentDisconnected);
-    handlers.set(StudentWSEvent.EVENT_STUDENT_ANSWER_TARGET, handler.onStudentAnswerAll);
-    handlers.set(StudentWSEvent.EVENT_STUDENT_ANSWER_CORRECT, handler.onStudentAnswerSelf);
-    handlers.set(StudentWSEvent.EVENT_TEACHER_ANSWER_TARGET, handler.onStudentAnswerAll);
+    handlers.set(
+      StudentWSEvent.EVENT_STUDENT_ANSWER_TARGET,
+      handler.onStudentAnswerAll
+    );
+    handlers.set(
+      StudentWSEvent.EVENT_STUDENT_ANSWER_CORRECT,
+      handler.onStudentAnswerSelf
+    );
+    handlers.set(
+      StudentWSEvent.EVENT_TEACHER_ANSWER_TARGET,
+      handler.onStudentAnswerAll
+    );
 
     handlers.set(
       StudentWSEvent.STUDENT_RAISING_HAND,
@@ -196,6 +205,14 @@ export class GLSocketClient {
     handlers.set(
       TeacherWSEvent.EVENT_TEACHER_ANNOTATION_DELETE_BRUSHSTROKE,
       handler.onTeacherDeleteBrush
+    );
+    handlers.set(
+      TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_STICKER,
+      handler.onTeacherSetStickers
+    );
+    handlers.set(
+      TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_STICKER,
+      handler.onTeacherClearStickers
     );
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {

@@ -26,5 +26,7 @@ export interface TeacherWSEventHandler {
   onTeacherAddBrush(payload: any): void;
   onTeacherClearAllBrush(payload: any): void;
   onTeacherDeleteBrush(payload: any): void;
+  onTeacherSetStickers(payload: any): void;
+  onTeacherClearStickers(payload: any): void;
   onStudentUpdateAnswers(payload: any): void;
 }

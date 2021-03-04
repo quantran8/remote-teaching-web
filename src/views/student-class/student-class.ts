@@ -49,8 +49,13 @@ export default defineComponent({
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
-    const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
+    const isPointerMode = computed(
+      () => store.getters["annotation/isPointerMode"]
+    );
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
+    const isStickerMode = computed(
+      () => store.getters["annotation/isStickerMode"]
+    );
 
     watch(errors, () => {
       if (errors.value) {
@@ -142,7 +147,8 @@ export default defineComponent({
       isAssigned,
       localTargets,
       isPointerMode,
-      isDrawMode
+      isDrawMode,
+      isStickerMode
     };
   },
 });

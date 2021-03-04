@@ -6,7 +6,7 @@ export default defineComponent({
   props: {
     toolSelected: {
       type: String,
-      default: ""
+      default: "cursor"
     },
     selectorOpen: {
       type: Boolean,
@@ -19,6 +19,10 @@ export default defineComponent({
     strokeColor: {
       type: String,
       default: "#000000"
+    },
+    stickerTool: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props, { emit }) {
@@ -26,11 +30,14 @@ export default defineComponent({
     const toolNames: string[] = Object.values(tools);
     const toolsWithDropdown = [Tools.Stroke, Tools.StrokeColor];
     const toolNameMap = {
+      [Tools.Cursor]: "Cursor",
       [Tools.Pen]: "Pen",
       [Tools.Stroke]: "Size",
       [Tools.StrokeColor]: "Color",
-      [Tools.Delete]: "Delete",
-      [Tools.Clear]: "Clear"
+      [Tools.Delete]: "Delete Brush Stroke",
+      [Tools.Clear]: "Clear Brush Strokes",
+      [Tools.AddSticker]: "Add Sticker",
+      [Tools.AssignSticker]: "Assign Sticker"
     };
     const colors: any = {};
     const colorsList = [
@@ -65,7 +72,7 @@ export default defineComponent({
       clickedTool,
       updateColor,
       updateStrokeSize,
-      strokeSize
+      strokeSize,
     };
   }
 });

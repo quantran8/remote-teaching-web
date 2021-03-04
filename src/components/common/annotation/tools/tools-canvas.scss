@@ -1,6 +1,13 @@
 .tools {
   padding: 5px;
   min-width: 290px;
+  &--has-sticker {
+    .tools__item {
+      &--sticker {
+        display: block;
+      }
+    }
+  }
   &__item {
     position: relative;
     padding: 5px;
@@ -11,6 +18,9 @@
     &.selected {
       background-color: #f0f0f0;
       border-width: 3px;
+    }
+    &--sticker {
+      display: none;
     }
     &__icon {
       &__stroke-line {

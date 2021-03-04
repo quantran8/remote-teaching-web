@@ -4,7 +4,7 @@ import { UserModel } from "@/models/user.model";
 import {
   LessonService,
   RemoteTeachingService,
-  TeacherGetRoomResponse,
+  TeacherGetRoomResponse
 } from "@/services";
 import { ActionTree } from "vuex";
 import {
@@ -16,12 +16,13 @@ import {
   StudentBadgePayload,
   UserIdPayload,
   UserMediaPayload,
-  ValueOfClassView,
+  ValueOfClassView
 } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
+import { Sticker } from "@/store/annotation/state";
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -43,11 +44,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     const { globalAudios, localAudios, manager, students } = state;
     if (!manager) return;
     const cameras = students
-      .filter((s) => s.videoEnabled && s.status === InClassStatus.JOINED)
-      .map((s) => s.id);
+      .filter(s => s.videoEnabled && s.status === InClassStatus.JOINED)
+      .map(s => s.id);
     let audios = students
-      .filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED)
-      .map((s) => s.id);
+      .filter(s => s.audioEnabled && s.status === InClassStatus.JOINED)
+      .map(s => s.id);
     if (localAudios.length > 0) {
       audios = [...localAudios];
     } else if (globalAudios.length > 0) {
@@ -71,18 +72,18 @@ const actions: ActionTree<TeacherRoomState, any> = {
       camera: state.teacher.videoEnabled,
       microphone: state.teacher.audioEnabled,
       classId: state.info.id,
-      teacherId: state.user?.id,
+      teacherId: state.user?.id
     });
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: (_payload) => {
+      onUserUnPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
         Logger.error("Exception", payload);
-      },
+      }
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
@@ -104,7 +105,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (!roomInfo || roomInfo.classId !== payload.classId) {
       commit("setError", {
         errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-        message: "Your class has not been started!",
+        message: "Your class has not been started!"
       });
       return;
     }
@@ -204,7 +205,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   clearStudentRaisingHand({ state }, payload: { id: string }) {
     const student = state.students.find(
-      (e) => e.id === payload.id && e.raisingHand
+      e => e.id === payload.id && e.raisingHand
     );
     if (student)
       state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
@@ -222,20 +223,26 @@ const actions: ActionTree<TeacherRoomState, any> = {
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
   },
-  async setPointer({ state }, payload: { x: number, y: number }) {
+  async setPointer({ state }, payload: { x: number; y: number }) {
     await state.manager?.WSClient.sendRequestSetPointer(payload);
   },
   async setMode({ state }, payload: { mode: number }) {
     await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
   },
-  async setBrush({ state }, payload: {drawing: string}) {
+  async setBrush({ state }, payload: { drawing: string }) {
     await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
   },
-  async setClearBrush({state}, payload: {}) {
+  async setClearBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
   },
-  async setDeleteBrush({state}, payload: {}) {
+  async setDeleteBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestDeleteBrush(payload);
+  },
+  async setStickers({ state }, payload: { stickers: Array<Sticker> }) {
+    await state.manager?.WSClient.sendRequestSetStickers(payload.stickers);
+  },
+  async setClearStickers({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestClearStickers(payload);
   }
 };
 

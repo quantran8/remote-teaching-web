@@ -189,7 +189,13 @@ export const useTeacherRoomWSHandler = ({
       console.log(payload);
     },
     onTeacherDeleteBrush(payload: any) {
-      console.log(payload)
+      console.log(payload);
+    },
+    onTeacherSetStickers(payload: any) {
+      console.log(payload);
+    },
+    onTeacherClearStickers(payload: any) {
+      console.log(payload);
     }
   };
   return handler;
