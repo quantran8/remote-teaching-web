@@ -58,6 +58,9 @@ export default defineComponent({
       () => store.getters["annotation/isPointerMode"]
     );
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
+    const isStickerMode = computed(
+      () => store.getters["annotation/isStickerMode"]
+    );
 
     watch(errors, () => {
       if (errors.value) {
@@ -166,7 +169,8 @@ export default defineComponent({
       isGameView,
       onUnityLoaderLoaded,
       onUnityViewLoading,
-      onUnityViewLoaded
+      onUnityViewLoaded,
+      isStickerMode
     };
   }
 });

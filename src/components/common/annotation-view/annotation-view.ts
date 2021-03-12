@@ -1,13 +1,24 @@
-import {computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  Ref,
+  ref,
+  watch
+} from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
+import * as R from "ramda/";
 
 export default defineComponent({
   props: ["image"],
   setup(props) {
     const store = useStore();
-    const canvas: Ref<any> = ref(null);
+    let canvas: any;
+    const stickerColors = ["red", "yellow", "blue", "green", "pink"];
     const scaleRatio = ref(1);
+    const checkStickers = ref(false);
     const calcScaleRatio = () => {
       if (!props.image) return;
       const imgAnnotation = document.getElementById("annotation-img");
@@ -23,6 +34,9 @@ export default defineComponent({
 
     const isPointerMode = computed(
       () => store.getters["annotation/isPointerMode"]
+    );
+    const isStickerMode = computed(
+      () => store.getters["annotation/isStickerMode"]
     );
 
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
@@ -41,7 +55,7 @@ export default defineComponent({
     const canvasData = computed(() => store.getters["annotation/shapes"]);
 
     const renderCanvas = () => {
-      if (!canvas.value || !canvasData.value) return;
+      if (!canvas || !canvasData.value) return;
       const shapes: Array<string> = canvasData.value;
       const canvasJsonData = {
         objects: shapes
@@ -58,28 +72,98 @@ export default defineComponent({
           .filter((s) => s !== null),
       };
 
-      canvas.value.loadFromJSON(
+      canvas.loadFromJSON(
         JSON.stringify(canvasJsonData),
-        canvas.value.renderAll.bind(canvas.value)
+        canvas.renderAll.bind(canvas)
       );
     };
     watch(undoCanvas, renderCanvas);
     watch(canvasData, renderCanvas);
+    const stickersData = computed(() => store.getters["annotation/stickers"]);
+    const stickerRender = () => {
+      if (stickersData.value && stickersData.value.length) {
+        stickersData.value.forEach((obj: any) => {
+          const rectSticker = new fabric.Rect({
+            top: 10 * scaleRatio.value,
+            left: 10 * scaleRatio.value,
+            width: obj.width * scaleRatio.value,
+            height: obj.height * scaleRatio.value,
+            objectCaching: false,
+            fill: "#000",
+            opacity: 0.35,
+            hasControls: false,
+            hasBorders: false
+          });
+          canvas.add(rectSticker);
+          canvas.renderAll();
+          checkStickers.value = false;
+        });
+      } else {
+        canvas.remove(...canvas.getObjects("rect"));
+      }
+    };
+    watch(stickersData, () => {
+      stickerRender();
+    });
 
     const boardSetup = () => {
-      canvas.value = new fabric.Canvas("canvas");
+      canvas = new fabric.Canvas("canvas");
       if (!props.image) return;
       const imgAnnotation = document.getElementById("annotation-img");
       if (!imgAnnotation) return;
       const boundingBox = imgAnnotation.getBoundingClientRect();
-      canvas.value.setWidth(boundingBox.width);
-      canvas.value.setHeight(boundingBox.height);
-      canvas.value.selectionFullyContained = false;
-      canvas.value.getObjects().forEach((obj: any) => {
+      canvas.setWidth(boundingBox.width);
+      canvas.setHeight(boundingBox.height);
+      canvas.selectionFullyContained = false;
+      canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
 
       renderCanvas();
+      stickerRender();
+    };
+
+    const changeColorSticker = (stickerColor: string) => {
+      if (stickersData.value) {
+        canvas.getObjects("rect").forEach((obj: any) => {
+          obj.fill = stickerColor;
+        });
+        canvas.renderAll();
+      }
+    };
+
+    const checkStickerAdded = () => {
+      canvas.renderAll();
+      stickersData.value.forEach((data: any) => {
+        canvas.getObjects("rect").forEach((obj: any) => {
+          if (
+            data.width === Math.round(obj.width / scaleRatio.value) &&
+            data.height === Math.round(obj.height / scaleRatio.value)
+          ) {
+            if (
+              !(
+                data.top * 0.95 <= Math.round(obj.top / scaleRatio.value) &&
+                Math.round(obj.top / scaleRatio.value) <=
+                  data.top + data.top * 0.15 &&
+                data.left * 0.95 <= Math.round(obj.left / scaleRatio.value) &&
+                Math.round(obj.left / scaleRatio.value) <=
+                  data.left + data.left * 0.15
+              )
+            ) {
+              canvas.remove(obj);
+              obj.set({
+                top: 10 * scaleRatio.value,
+                left: 10 * scaleRatio.value
+              });
+              canvas.add(obj);
+              canvas.renderAll();
+              checkStickers.value = false;
+            } else {
+              checkStickers.value = true;
+            }
+          }
+        });
+      });
     };
 
     const canvasRef = ref(null);
@@ -92,6 +176,17 @@ export default defineComponent({
       window.removeEventListener("resize", calcScaleRatio);
     });
 
-    return { pointerStyle, imageUrl, isPointerMode, isDrawMode, canvasRef };
+    return {
+      pointerStyle,
+      imageUrl,
+      isPointerMode,
+      isDrawMode,
+      canvasRef,
+      stickerColors,
+      checkStickerAdded,
+      changeColorSticker,
+      isStickerMode,
+      checkStickers
+    };
   }
 });

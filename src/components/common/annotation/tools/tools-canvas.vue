@@ -1,19 +1,21 @@
 <template>
-  <div class="component tools">
+  <div class="component tools"
+    :class="{ 'tools--has-sticker': stickerTool}"
+  >
     <template v-for="(toolName, index) in toolNames" :key="index">
       <div
         class="tools__item"
-        :class="{ selected: toolSelected === toolName }"
+        :class="{
+          selected: toolSelected === toolName,
+          'tools__item--sticker':
+            toolName === tools.AddSticker || toolName === tools.AssignSticker
+        }"
         @click="clickedTool(toolName)"
       >
         <div
           class="tools__item__icon"
           :class="[toolName, { selected: toolSelected === toolName }]"
         >
-          <div
-            v-if="toolName === tools.Pen"
-            class="tools__item__icon__pen"
-          ></div>
           <div
             v-if="toolName === tools.Stroke"
             class="tools__item__icon__stroke-line"
@@ -23,10 +25,6 @@
             v-if="toolName === tools.StrokeColor"
             class="tools__item__icon__stroke-color"
             :style="`background-color: ${strokeColor}`"
-          ></div>
-          <div
-            v-if="toolName === tools.Clear"
-            class="tools__item__icon__clear"
           ></div>
         </div>
 
@@ -64,7 +62,10 @@
               :key="index"
             >
               <div class="stroke-item" @click="updateStrokeSize(size)">
-                <div class="stroke-item-line" :style="`height: ${size * 1.2}px`"></div>
+                <div
+                  class="stroke-item-line"
+                  :style="`height: ${size * 1.2}px`"
+                ></div>
               </div>
             </template>
           </div>
