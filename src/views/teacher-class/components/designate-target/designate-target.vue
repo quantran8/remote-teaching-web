@@ -53,7 +53,7 @@
         >
           <img :src="currentExposureItemMedia.image.url" id="annotation-img" />
           <div class="wrap-canvas">
-            <canvas id="canvas"/>
+            <canvas id="canvasDesignate"/>
           </div>
         </div>
         <div class="designate-box-right">
@@ -105,6 +105,7 @@
                 :tool-selected="toolSelected"
                 :stroke-width="strokeWidth"
                 :stroke-color="strokeColor"
+                :sticker-tool="hasStickerTool"
                 @tool-selected="clickedTool"
                 @update-color="updateColorValue"
                 @update-stroke="updateStrokeWidth"

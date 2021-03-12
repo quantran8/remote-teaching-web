@@ -1,6 +1,7 @@
 import { Target } from "@/store/interactive/state";
 import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
+import { Sticker } from "@/store/annotation/state";
 
 export interface ExposureItemMediaModel {
   id: string;
@@ -50,6 +51,7 @@ export interface AnnotationModel {
   mode: number;
   pointer: { x: number; y: number };
   drawing: DrawingModel;
+  stickers: Array<Sticker>;
 }
 
 export interface LessonPlanModel {

@@ -6,7 +6,7 @@ import {
   onUnmounted,
   Ref,
   ref,
-  watch,
+  watch
 } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
@@ -19,6 +19,9 @@ import { MathUtils } from "@/utils/math.utils";
 import { fabric } from "fabric";
 import { Tools } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
+import { Sticker } from "@/store/annotation/state";
+import * as R from "ramda/";
+
 export interface Shape {
   id: string;
   x: number;
@@ -46,21 +49,28 @@ interface StudentViewModel {
 export default defineComponent({
   components: {
     StudentList,
-    ToolsCanvas,
+    ToolsCanvas
   },
   props: {
     editable: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   setup(props) {
     const store = useStore();
     const currentExposureItemMedia = computed(
       () => store.getters["lesson/currentExposureItemMedia"]
     );
-    const nextExposureItemMedia = computed(() => store.getters["lesson/nextExposureItemMedia"]);
-    const prevExposureItemMedia = computed(() => store.getters["lesson/prevExposureItemMedia"]);
+    const currentExposure = computed(
+      () => store.getters["lesson/currentExposure"]
+    );
+    const nextExposureItemMedia = computed(
+      () => store.getters["lesson/nextExposureItemMedia"]
+    );
+    const prevExposureItemMedia = computed(
+      () => store.getters["lesson/prevExposureItemMedia"]
+    );
     const designateTargets = computed(
       () => store.getters["interactive/targets"]
     );
@@ -75,26 +85,58 @@ export default defineComponent({
     const students: ComputedRef<Array<StudentState>> = computed(
       () => store.getters["teacherRoom/students"]
     );
-    const canvas: Ref<any> = ref(null);
+    let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
-    const toolSelected: Ref<string> = ref("");
+    const toolSelected: Ref<string> = ref("cursor");
     const strokeColor: Ref<string> = ref("#000000");
     const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
+    const hasStickerTool: Ref<boolean> = ref(false);
+    if (
+      currentExposure.value.type == "poem" ||
+      currentExposure.value.type == "bigbook"
+    ) {
+      hasStickerTool.value = true;
+    }
+    const boundingBox = () => {
+      const designBox = document.getElementById("designate-box");
+      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+    };
+    const calScaleRatio = () => {
+      const { width, height } = currentExposureItemMedia.value.image;
+      if (!width || !height) return 1;
+      const boundingBoxRect = boundingBox();
+      if (!boundingBoxRect.width) return 1;
+      const wRatio = boundingBoxRect.width / width;
+      const hRatio = boundingBoxRect.height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      return ratio;
+    };
+    const calScaleRatioCanvas = () => {
+      const { width, height } = currentExposureItemMedia.value.image;
+      const rect = document.getElementById("canvas-container");
+      if (!rect) return;
+      const rectBounding = rect.getBoundingClientRect();
+      const wRatio = rectBounding.width / width;
+      const hRatio = rectBounding.height / height;
+      const ratio = Math.min(wRatio, hRatio);
+      return ratio;
+    };
     const isTabActive = (menuItem: any) => {
       return activeTab.value === menuItem;
     };
     const setTabActive = async (menuItem: any) => {
       activeTab.value = menuItem;
       if (menuItem === "annotation-action") {
-        if (selectorOpen.value && canvas.value.isDrawingMode) {
+        if (selectorOpen.value && canvas.isDrawingMode) {
           modeAnnotation.value = 2;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value
           });
         } else {
+          canvas.isDrawingMode = false;
           modeAnnotation.value = 1;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value
@@ -134,9 +176,9 @@ export default defineComponent({
       const wRatio = rectBounding.width / width;
       const hRatio = rectBounding.height / height;
       const ratio = Math.min(wRatio, hRatio);
-      const canvasAsJSON = canvas.value.toJSON();
+      const canvasAsJSON = canvas.toJSON();
       const lastObject = canvasAsJSON.objects[canvasAsJSON.objects.length - 1];
-      lastObject.width =lastObject.width / ratio;
+      lastObject.width = lastObject.width / ratio;
       lastObject.height = lastObject.height / ratio;
       lastObject.top = lastObject.top / ratio;
       lastObject.left = lastObject.left / ratio;
@@ -146,15 +188,79 @@ export default defineComponent({
         drawing: lastObject
       });
     };
+    const deleteIcon =
+      "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' id='Ebene_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='595.275px' height='595.275px' viewBox='200 215 230 470' xml:space='preserve'%3E%3Ccircle style='fill:%23F44336;' cx='299.76' cy='439.067' r='218.516'/%3E%3Cg%3E%3Crect x='267.162' y='307.978' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -222.6202 340.6915)' style='fill:white;' width='65.545' height='262.18'/%3E%3Crect x='266.988' y='308.153' transform='matrix(0.7071 0.7071 -0.7071 0.7071 398.3889 -83.3116)' style='fill:white;' width='65.544' height='262.179'/%3E%3C/g%3E%3C/svg%3E";
+    const img = document.createElement("img");
+    img.src = deleteIcon;
+    const deleteObject = (eventData: any, transform: any) => {
+      const target = transform.target;
+      const canvas = target.canvas;
+      canvas.remove(target);
+      canvas.requestRenderAll();
+    };
+    const renderIcon = (ctx: any, left: any, top: any, fabricObject: any) => {
+      const size = 24;
+      ctx.save();
+      ctx.translate(left, top);
+      ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+      ctx.drawImage(img, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    };
+    const listenToMouseUp = () => {
+      canvas.on("mouse:up", async () => {
+        canvas.renderAll();
+        if (toolSelected.value === "pen") {
+          await objectsCanvas();
+        }
+      });
+    };
+    // LISTENING TO CANVAS EVENTS
+    const listenToCanvasEvents = () => {
+      listenToMouseUp();
+    };
+    const boardSetup = () => {
+      canvas = new fabric.Canvas("canvasDesignate");
+      const { width, height } = currentExposureItemMedia.value.image;
+      canvas.setWidth(width - 146);
+      canvas.setHeight(height - 104);
+      canvas.selectionFullyContained = false;
+
+      listenToCanvasEvents();
+    };
+    const addSticker = () => {
+      const rect = new fabric.Rect({
+        left: 10,
+        top: 10,
+        fill: strokeColor.value,
+        width: 50,
+        height: 75,
+        objectCaching: false,
+        opacity: 0.35,
+        hasBorders: false,
+        lockRotation: true
+      });
+      canvas.add(rect);
+      canvas.setActiveObject(rect);
+    };
+    const assignSticker = async () => {
+      const ratio = calScaleRatioCanvas();
+      if (!ratio) return;
+      const stickerFunc = R.pipe(
+        R.map((obj: any) => R.assoc("width", obj.getScaledWidth())(obj)),
+        R.map((obj: any) => R.assoc("height", obj.getScaledHeight())(obj)),
+        R.project(["top", "left", "width", "height"]),
+        R.map((obj: any) =>
+          R.map((x: number) => Math.floor(x / ratio) - 1)(obj)
+        )
+      );
+      const stickers = stickerFunc(canvas.getObjects("rect"));
+      await store.dispatch("teacherRoom/setStickers", {
+        stickers: stickers
+      });
+    };
     const clickedTool = async (tool: string) => {
-      canvas.value.selection = false;
-      canvas.value.isDrawingMode = tool === Tools.Pen;
-      if (modeAnnotation.value !== 2) {
-        modeAnnotation.value = 2;
-        await store.dispatch("teacherRoom/setMode", {
-          mode: modeAnnotation.value
-        });
-      }
+      canvas.selection = false;
+      canvas.isDrawingMode = tool === Tools.Pen;
 
       if (toolSelected.value !== tool) {
         toolSelected.value = tool;
@@ -164,86 +270,111 @@ export default defineComponent({
       }
 
       switch (tool) {
+        case Tools.Cursor:
+          toolSelected.value = Tools.Cursor;
+          canvas.isDrawingMode = false;
+          modeAnnotation.value = 1;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+          canvas.getObjects().forEach((obj: any) => {
+            obj.selectable = false;
+            obj.hasControls = false;
+            obj.hasBorders = false;
+          });
+          return;
         case Tools.Pen:
           toolSelected.value = Tools.Pen;
-          canvas.value.freeDrawingBrush.color = strokeColor.value;
-          canvas.value.freeDrawingBrush.width = strokeWidth.value;
+          canvas.remove(...canvas.getObjects("rect"));
+          await store.dispatch("teacherRoom/setClearStickers", {});
+          modeAnnotation.value = 2;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+          canvas.freeDrawingBrush.color = strokeColor.value;
+          canvas.freeDrawingBrush.width = strokeWidth.value;
           return;
         case Tools.Stroke:
           toolSelected.value = Tools.Stroke;
-          canvas.value.getObjects().forEach((obj: any) => {
+          canvas.getObjects().forEach((obj: any) => {
             obj.selectable = false;
           });
           return;
         case Tools.StrokeColor:
           toolSelected.value = Tools.StrokeColor;
-          canvas.value.getObjects().forEach((obj: any) => {
+          canvas.getObjects().forEach((obj: any) => {
             obj.selectable = false;
           });
           return;
-        case Tools.Delete: {
+        case Tools.Delete:
           toolSelected.value = Tools.Delete;
-          if (canvas.value.getObjects("path").length) {
-            const itemDelete = canvas.value.getObjects("path").pop();
-            canvas.value.remove(itemDelete);
+          if (canvas.getObjects("path").length) {
+            const itemDelete = canvas.getObjects("path").pop();
+            canvas.remove(itemDelete);
             await store.dispatch("teacherRoom/setDeleteBrush", {});
             toolSelected.value = Tools.Pen;
-            canvas.value.isDrawingMode = true;
+            canvas.isDrawingMode = true;
           } else {
             toolSelected.value = Tools.Pen;
-            canvas.value.isDrawingMode = true;
+            canvas.isDrawingMode = true;
           }
           return;
-        }
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.value.remove(...canvas.value.getObjects("path"));
+          canvas.remove(...canvas.getObjects("path"));
           await store.dispatch("teacherRoom/setClearBrush", {});
           toolSelected.value = Tools.Pen;
-          canvas.value.isDrawingMode = true;
+          canvas.isDrawingMode = true;
+          return;
+        case Tools.AddSticker:
+          canvas.remove(...canvas.getObjects("path"));
+          await store.dispatch("teacherRoom/setClearBrush", {});
+          modeAnnotation.value = 3;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value
+          });
+          fabric.Rect.prototype.controls.deleteControl = new fabric.Control({
+            x: 0.5,
+            y: -0.5,
+            offsetY: 16,
+            cursorStyle: "pointer",
+            mouseUpHandler: deleteObject,
+            render: renderIcon,
+            cornerSize: 24
+          });
+          addSticker();
+          return;
+        case Tools.AssignSticker:
+          canvas.renderAll();
+          if (modeAnnotation.value === 3) {
+            await assignSticker();
+          }
+          return;
+        default:
           return;
       }
-    };
-    const listenToMouseUp = () => {
-      canvas.value.on("mouse:up", async (event: any) => {
-        canvas.value.renderAll();
-        await objectsCanvas();
-      });
-    };
-    // LISTENING TO CANVAS EVENTS
-    const listenToCanvasEvents = () => {
-      listenToMouseUp();
     };
     const updateColorValue = (value: any) => {
       if (toolSelected.value === Tools.StrokeColor) {
         strokeColor.value = value;
         clickedTool(Tools.Pen).then();
-        if (canvas.value.getActiveObject()) {
-          canvas.value.getActiveObject().set("stroke", strokeColor.value);
-          canvas.value.renderAll();
+        if (canvas.getActiveObject()) {
+          canvas.getActiveObject().set("stroke", strokeColor.value);
+          canvas.renderAll();
         }
       }
-      if (canvas.value.isDrawingMode) {
-        canvas.value.freeDrawingBrush.color = strokeColor.value;
+      if (canvas.isDrawingMode) {
+        canvas.freeDrawingBrush.color = strokeColor.value;
       }
     };
     const updateStrokeWidth = (value: number) => {
       strokeWidth.value = value;
       selectorOpen.value = false;
       clickedTool(Tools.Pen).then();
-      if (canvas.value.getActiveObject()) {
-        canvas.value.getActiveObject().set("strokeWidth", strokeWidth.value);
-        canvas.value.renderAll();
+      if (canvas.getActiveObject()) {
+        canvas.getActiveObject().set("strokeWidth", strokeWidth.value);
+        canvas.renderAll();
       }
-    };
-    const boardSetup = () => {
-      canvas.value = new fabric.Canvas("canvas");
-      const { width, height } = currentExposureItemMedia.value.image;
-      canvas.value.setWidth(width - 146);
-      canvas.value.setHeight(height - 104);
-      canvas.value.selectionFullyContained = false;
-
-      listenToCanvasEvents();
     };
     const textAssignAll = computed(() =>
       assignAll.value
@@ -252,21 +383,6 @@ export default defineComponent({
     );
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
-    const boundingBox = () => {
-      const designBox = document.getElementById("designate-box");
-      return designBox?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
-    };
-
-    const calScaleRatio = () => {
-      const { width, height } = currentExposureItemMedia.value.image;
-      if (!width || !height) return 1;
-      const boundingBoxRect = boundingBox();
-      if (!boundingBoxRect.width) return 1;
-      const wRatio = boundingBoxRect.width / width;
-      const hRatio = boundingBoxRect.height / height;
-      const ratio = Math.min(wRatio, hRatio);
-      return ratio;
-    };
 
     const updateTargets = () => {
       const { width, height } = currentExposureItemMedia.value.image;
@@ -278,20 +394,20 @@ export default defineComponent({
       const offsetY = (boundingBoxRect.height - ratio * height) / 2;
       const targets: Array<Target> = designateTargets.value;
       circles.value = targets
-        .filter((t) => t.type === "circle")
-        .map((c) => {
+        .filter(t => t.type === "circle")
+        .map(c => {
           return {
             id: c.id,
             x: offsetX + c.x * ratio,
             y: offsetY + c.y * ratio,
             color: c.color,
             radius: c.radius * ratio,
-            type: c.type,
+            type: c.type
           };
         });
       rectangles.value = targets
-        .filter((t) => t.type === "rectangle")
-        .map((r) => {
+        .filter(t => t.type === "rectangle")
+        .map(r => {
           return {
             id: r.id,
             x: offsetX + r.x * ratio,
@@ -299,17 +415,17 @@ export default defineComponent({
             color: r.color,
             type: r.type,
             width: r.width * ratio,
-            height: r.height * ratio,
+            height: r.height * ratio
           };
         });
     };
 
     const onClickToggleAssignAllStudents = () => {
       assignAll.value = !assignAll.value;
-      studentIds.value = studentIds.value.map((s) => {
+      studentIds.value = studentIds.value.map(s => {
         return {
           ...s,
-          selected: assignAll.value,
+          selected: assignAll.value
         };
       });
     };
@@ -318,7 +434,7 @@ export default defineComponent({
       const studentSelecteds: Array<StudentId> =
         store.getters["interactive/studentsSelected"];
       for (const st of studentSelecteds) {
-        const student = studentIds.value.find((s) => s.id === st.id);
+        const student = studentIds.value.find(s => s.id === st.id);
         if (student) student.selected = true;
       }
     };
@@ -326,13 +442,13 @@ export default defineComponent({
     watch(store.getters["interactive/studentsSelected"], updateStudentSelected);
     const onStudentsChanged = () => {
       if (studentIds.value.length) return;
-      studentIds.value = students.value.map((s) => {
+      studentIds.value = students.value.map(s => {
         return {
           id: s.id,
           index: s.index,
           name: s.name,
           status: s.status,
-          selected: true,
+          selected: true
         };
       });
       updateStudentSelected();
@@ -341,10 +457,10 @@ export default defineComponent({
     onStudentsChanged();
 
     const onClickToggleStudent = (s: StudentViewModel) => {
-      studentIds.value = studentIds.value.map((st) => {
+      studentIds.value = studentIds.value.map(st => {
         return {
           ...st,
-          selected: s.id === st.id,
+          selected: s.id === st.id
         };
       });
     };
@@ -353,7 +469,7 @@ export default defineComponent({
       if (props.editable || editing.value) {
         const ratio = calScaleRatio();
         const targets: Array<Target> = circles.value
-          .map((c) => {
+          .map(c => {
             return {
               id: "",
               x: Math.floor(c.x / ratio),
@@ -363,11 +479,11 @@ export default defineComponent({
               radius: Math.floor(c.radius / ratio),
               width: 0,
               height: 0,
-              reveal: false,
+              reveal: false
             };
           })
           .concat(
-            rectangles.value.map((r) => {
+            rectangles.value.map(r => {
               return {
                 id: "",
                 x: Math.floor(r.x / ratio),
@@ -377,14 +493,14 @@ export default defineComponent({
                 radius: 0,
                 width: Math.floor(r.width / ratio),
                 height: Math.floor(r.height / ratio),
-                reveal: false,
+                reveal: false
               };
             })
           );
 
         const selectedStudents = studentIds.value
-          .filter((s) => s.selected)
-          .map((s) => s.id);
+          .filter(s => s.selected)
+          .map(s => s.id);
         const roomManager = await store.getters["teacherRoom/roomManager"];
         roomManager?.WSClient.sendRequestDesignateTarget(
           currentExposureItemMedia.value.id,
@@ -397,7 +513,19 @@ export default defineComponent({
       await store.dispatch("interactive/setModalDesignateTarget", {
         modalDesignateTarget: false
       });
+      modeAnnotation.value = 0;
+      await store.dispatch("teacherRoom/setMode", {
+        mode: modeAnnotation.value
+      });
+      toolSelected.value = "cursor";
+      selectorOpen.value = false;
+      strokeWidth.value = 2;
+      strokeColor.value = "#000000";
+      // canvas.isDrawingMode = false;
+      // canvas.remove(...canvas.getObjects());
+      canvas.dispose();
       await store.dispatch("teacherRoom/setClearBrush", {});
+      await store.dispatch("teacherRoom/setClearStickers", {});
     };
 
     const resizable = () => {
@@ -409,8 +537,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find((ele) => ele.id === targetId) ||
-              circles.value.find((ele) => ele.id === targetId);
+              rectangles.value.find(ele => ele.id === targetId) ||
+              circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -425,9 +553,7 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = event.target.id + "";
             if (targetId === "mediaImage") return;
-            const rectangle = rectangles.value.find(
-              (ele) => ele.id === targetId
-            );
+            const rectangle = rectangles.value.find(ele => ele.id === targetId);
             if (!rectangle) return;
             rectangle.x = event.rect.left - boundingBox().left;
             rectangle.y = event.rect.top - boundingBox().top;
@@ -441,13 +567,13 @@ export default defineComponent({
             if (rectangle.y + rectangle.height > boundingBox().height) {
               rectangle.height = boundingBox().height - rectangle.y;
             }
-          },
-        },
+          }
+        }
       });
       interact(`.circle`).resizable({
         edges: { top: true, left: true, bottom: true, right: true },
         modifiers: [
-          interact.modifiers.aspectRatio({ enabled: true, equalDelta: true }),
+          interact.modifiers.aspectRatio({ enabled: true, equalDelta: true })
         ],
         listeners: {
           start(event: any) {
@@ -455,8 +581,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find((ele) => ele.id === targetId) ||
-              circles.value.find((ele) => ele.id === targetId);
+              rectangles.value.find(ele => ele.id === targetId) ||
+              circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -471,14 +597,14 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             if (targetId === "mediaImage") return;
-            const circle = circles.value.find((ele) => ele.id === targetId);
+            const circle = circles.value.find(ele => ele.id === targetId);
             if (!circle) return;
             const radius = event.rect.width / 2;
             circle.radius = radius;
             circle.x = event.rect.left - boundingBox().left + radius;
             circle.y = event.rect.top - boundingBox().top + radius;
-          },
-        },
+          }
+        }
       });
     };
     const draggable = () => {
@@ -489,8 +615,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find((ele) => ele.id === targetId) ||
-              circles.value.find((ele) => ele.id === targetId);
+              rectangles.value.find(ele => ele.id === targetId) ||
+              circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -505,8 +631,8 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find((ele) => ele.id === targetId) ||
-              circles.value.find((ele) => ele.id === targetId);
+              rectangles.value.find(ele => ele.id === targetId) ||
+              circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             ele.x += event.dx;
             ele.y += event.dy;
@@ -514,8 +640,8 @@ export default defineComponent({
           end(event: any) {
             const targetId = `${event.target.id}`;
             const ele =
-              rectangles.value.find((ele) => ele.id === targetId) ||
-              circles.value.find((ele) => ele.id === targetId);
+              rectangles.value.find(ele => ele.id === targetId) ||
+              circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             const topleft = { x: 0, y: 0 };
             const bottomRight = { x: 0, y: 0 };
@@ -541,7 +667,7 @@ export default defineComponent({
               x: 0,
               y: 0,
               width: clientBoundingBox.width,
-              height: clientBoundingBox.height,
+              height: clientBoundingBox.height
             };
 
             if (
@@ -549,16 +675,16 @@ export default defineComponent({
               !MathUtils.isIntersect(rect, bottomRight)
             ) {
               const rectIndex = rectangles.value.findIndex(
-                (r) => r.id === targetId
+                r => r.id === targetId
               );
               if (rectIndex !== -1) rectangles.value.splice(rectIndex, 1);
               const circleIndex = circles.value.findIndex(
-                (r) => r.id === targetId
+                r => r.id === targetId
               );
               if (circleIndex !== -1) circles.value.splice(circleIndex, 1);
             }
-          },
-        },
+          }
+        }
       });
     };
     const init = () => {
@@ -577,7 +703,7 @@ export default defineComponent({
           radius: 30,
           color: "red",
           type: "circle",
-          zIndex: 1,
+          zIndex: 1
         };
         circles.value.push(circle);
       });
@@ -599,7 +725,7 @@ export default defineComponent({
             radius: 0,
             color: "red",
             type: "circle",
-            zIndex: 1,
+            zIndex: 1
           };
         } else {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
@@ -614,7 +740,7 @@ export default defineComponent({
             height: height,
             color: "green",
             type: "rectangle",
-            zIndex: 1,
+            zIndex: 1
           };
         }
       });
@@ -680,13 +806,14 @@ export default defineComponent({
         targets: []
       });
       await setTabActive("designate-target-action");
-      toolSelected.value = "";
+      toolSelected.value = "cursor";
       selectorOpen.value = false;
       strokeWidth.value = 2;
       strokeColor.value = "#000000";
-      canvas.value.isDrawingMode = false;
-      canvas.value.remove(...canvas.value.getObjects("path"));
+      canvas.isDrawingMode = false;
+      canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
+      await store.dispatch("teacherRoom/setClearStickers", {});
       if (nextPrev === 1) {
         if (nextExposureItemMedia.value !== undefined) {
           await store.dispatch("teacherRoom/setCurrentExposureMediaItem", {
@@ -748,6 +875,7 @@ export default defineComponent({
       updateStrokeWidth,
       onClickAssignDesignate,
       onClickNextPrevMedia,
+      hasStickerTool
     };
-  },
+  }
 });

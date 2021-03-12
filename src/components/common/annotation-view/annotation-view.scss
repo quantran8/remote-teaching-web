@@ -32,3 +32,39 @@
     transform: translateY(-50%);
   }
 }
+.sticker-control {
+  position: absolute;
+  right: -45px;
+  top: 0;
+  width: 45px;
+  padding-left: 5px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  &--list {
+    display: flex;
+    flex-direction: column;
+    &--item {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+  }
+  &--check {
+    width: 40px;
+    height: 40px;
+    border: 2px solid;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      max-width: 25px;
+    }
+    &-correct {
+      background-color: lightgreen;
+    }
+  }
+}
