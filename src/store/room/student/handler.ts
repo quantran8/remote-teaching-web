@@ -285,6 +285,17 @@ export const useStudentRoomHandler = (
         { stickers: [] },
         { root: true }
       );
+    },
+    onTeacherSendUnity: async (payload: any) => {
+      console.log(payload);
+      
+      await dispatch(
+        "unity/setMessage",
+        { message: payload },
+        {
+          root: true
+        }
+      );
     }
   };
   return handler;

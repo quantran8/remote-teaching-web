@@ -1,4 +1,5 @@
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
 
 export interface UnityLoaderInterface {
   instantiate(
@@ -30,16 +31,30 @@ export default defineComponent({
   },
   emits: ["on-loader-loaded", "on-progress", "on-loaded"],
   setup(props, { emit }) {
+    const store = useStore();
     const containerId = `unity-wrapper-${Date.now()}`;
     const unityLoader = ref<UnityLoaderInterface | null>(null);
     const unityInstance = ref<UnityInstanceInterface | null>(null);
-    const receiveMessageFromUnity = (message: string) => {
-      console.log("receiveMessageFromUnity", message);
-    };
+
+    const receivedMessage = computed(
+      () => store.getters["unity/message"]
+    );
+      
     const sendMessageToUnity = (command: string, message: string) => {
       if (unityInstance.value === null) return;
       console.log("sendMessageToUnity", command, message);
       unityInstance.value.SendMessage("[Bridge]", command, message);
+    };
+    watch(receivedMessage, () => {
+      sendMessageToUnity("ReceiveMessageFromPage", receivedMessage.value);
+    })
+    const receiveMessageFromUnity = async (message: string) => {
+      console.log("receiveMessageFromUnity", message);
+      if (props.messageText == "Teacher"){
+        await store.dispatch("teacherRoom/sendUnity", {
+          message: message
+        });
+      }
     };
     const _sendTestMessage = () => {
       setTimeout(() => {
