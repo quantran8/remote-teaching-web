@@ -36,8 +36,12 @@ export default defineComponent({
     const unityLoader = ref<UnityLoaderInterface | null>(null);
     const unityInstance = ref<UnityInstanceInterface | null>(null);
 
-    const receivedMessage = computed(
-      () => store.getters["unity/message"]
+    const receivedMessageTeacher = computed(
+      () => store.getters["unity/messageTeacher"]
+    );
+
+    const receivedMessageStudent = computed(
+      () => store.getters["unity/messageStudent"]
     );
       
     const sendMessageToUnity = (command: string, message: string) => {
@@ -45,13 +49,20 @@ export default defineComponent({
       console.log("sendMessageToUnity", command, message);
       unityInstance.value.SendMessage("[Bridge]", command, message);
     };
-    watch(receivedMessage, () => {
-      sendMessageToUnity("ReceiveMessageFromPage", receivedMessage.value);
+    watch(receivedMessageTeacher, () => {
+      sendMessageToUnity("ReceiveMessageFromPage", receivedMessageTeacher.value);
+    })
+    watch(receivedMessageStudent, () => {
+      sendMessageToUnity("ReceiveMessageFromPage", receivedMessageStudent.value);
     })
     const receiveMessageFromUnity = async (message: string) => {
       console.log("receiveMessageFromUnity", message);
-      if (props.messageText == "Teacher"){
+      if (props.messageText === "Teacher"){
         await store.dispatch("teacherRoom/sendUnity", {
+          message: message
+        });
+      } else {
+        await store.dispatch("studentRoom/sendUnity", {
           message: message
         });
       }

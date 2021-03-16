@@ -1,9 +1,11 @@
 export interface UnityState {
-  message: string;
+  messageTeacher: string;
+  messageStudent: string;
 }
 
 const state: UnityState = {
-  message: ''
+  messageTeacher: '',
+  messageStudent: ''
 };
 
 export default state;

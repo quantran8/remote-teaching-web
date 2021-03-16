@@ -48,8 +48,14 @@ export const useTeacherRoomWSHandler = ({
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentReceived: (payload: any) => {
-      console.log(payload);
+    onStudentSendUnity: async (payload: any) => {
+      await dispatch(
+        "unity/setStudentMessage",
+        { message: payload },
+        {
+          root: true
+        }
+      );
     },
     onTeacherJoinClass: (payload: any) => {
       console.log(payload);

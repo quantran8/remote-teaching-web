@@ -54,6 +54,9 @@ export const useStudentRoomHandler = (
     onStudentStreamConnect: (_payload: any) => {
       console.log(_payload);
     },
+    onStudentSendUnity: (payload: any) => {
+      console.log(payload);
+    },
     onStudentMuteAudio: (payload: StudentModel) => {
       commit("setStudentAudio", {
         id: payload.id,
@@ -286,11 +289,9 @@ export const useStudentRoomHandler = (
         { root: true }
       );
     },
-    onTeacherSendUnity: async (payload: any) => {
-      console.log(payload);
-      
+    onTeacherSendUnity: async (payload: any) => {  
       await dispatch(
-        "unity/setMessage",
+        "unity/setTeacherMessage",
         { message: payload },
         {
           root: true
