@@ -10,6 +10,9 @@ $border-radius: 4px;
   flex-direction: row;
   align-self: center;
   justify-self: center;
+  .teacher-game & {
+    height: 300px;
+  }
   .item-container {
     position: relative;
     border: solid 2px gray;

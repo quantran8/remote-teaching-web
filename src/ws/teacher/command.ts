@@ -30,5 +30,6 @@ export enum TeacherWSCommand {
   TEACHER_CLEAR_ALL_BRUSH_STROKES = "TeacherClearAllBrushstrokes",
   TEACHER_UNDO_BRUSH = "TeacherUndoBrushs",
   TEACHER_SET_STICKERS = "TeacherSetStickers",
-  TEACHER_CLEAR_STICKERS = "TeacherClearStickers"
+  TEACHER_CLEAR_STICKERS = "TeacherClearStickers",
+  TEACHER_ACTION_GAME = "TeacherActionGame",
 }

@@ -4,5 +4,6 @@ export enum StudentWSCommand {
   MUTE_AUDIO = "StudentMuteAudio",
   RAISING_HAND = "StudentRaisingHand",
   LIKE = "StudentLike",
-  ANSWER = "StudentAnswerInteractive"
+  ANSWER = "StudentAnswerInteractive",
+  STUDENT_ACTION_GAME = "StudentActionGame",
 }

@@ -5,9 +5,11 @@ import {computed, ComputedRef, defineComponent, ref, Ref, watch} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
+import UnityView from "@/components/common/unity-view/UnityView.vue";
 export default defineComponent({
   components: {
     StudentCard,
+    UnityView
   },
   async created() {
     const { getters, dispatch } = useStore();
@@ -19,7 +21,7 @@ export default defineComponent({
       userId: loginInfo.profile.sub,
       userName: loginInfo.profile.name,
       studentId: studentId,
-      role: RoleName.parent,
+      role: RoleName.parent
     });
     await dispatch("studentRoom/joinRoom");
   },
@@ -45,6 +47,9 @@ export default defineComponent({
     );
     const isLessonPlan = computed(
       () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
+    );
+    const isGameView = computed(
+      () => store.getters["studentRoom/classView"] === ClassView.GAME
     );
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
@@ -81,14 +86,14 @@ export default defineComponent({
     const toggleAudio = async () => {
       await store.dispatch("studentRoom/setStudentAudio", {
         id: student.value.id,
-        enable: !student.value.audioEnabled,
+        enable: !student.value.audioEnabled
       });
     };
 
     const toggleVideo = async () => {
       await store.dispatch("studentRoom/setStudentVideo", {
         id: student.value.id,
-        enable: !student.value.videoEnabled,
+        enable: !student.value.videoEnabled
       });
     };
     const isBlackOutContent = computed(
@@ -123,9 +128,22 @@ export default defineComponent({
     });
 
     const onClickContentView = async (payload: {
-      x: number, y: number, contentId: string})=>{
+      x: number;
+      y: number;
+      contentId: string;
+    }) => {
       await store.dispatch("studentRoom/studentAnswer", payload);
-    }
+    };
+
+    const onUnityLoaderLoaded = () => {
+      console.info("onUnityLoaderLoaded");
+    };
+    const onUnityViewLoading = (progress: number) => {
+      console.info("onUnityViewLoading", progress);
+    };
+    const onUnityViewLoaded = () => {
+      console.info("onUnityViewLoaded");
+    };
 
     return {
       student,
@@ -148,7 +166,11 @@ export default defineComponent({
       localTargets,
       isPointerMode,
       isDrawMode,
+      isGameView,
+      onUnityLoaderLoaded,
+      onUnityViewLoading,
+      onUnityViewLoaded,
       isStickerMode
     };
-  },
+  }
 });

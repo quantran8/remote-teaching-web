@@ -48,6 +48,15 @@ export const useTeacherRoomWSHandler = ({
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
     },
+    onStudentSendUnity: async (payload: any) => {
+      await dispatch(
+        "unity/setStudentMessage",
+        { message: payload },
+        {
+          root: true
+        }
+      );
+    },
     onTeacherJoinClass: (payload: any) => {
       console.log(payload);
     },
@@ -195,6 +204,9 @@ export const useTeacherRoomWSHandler = ({
       console.log(payload);
     },
     onTeacherClearStickers(payload: any) {
+      console.log(payload);
+    },
+    onTeacherSendUnity(payload: any) {
       console.log(payload);
     }
   };

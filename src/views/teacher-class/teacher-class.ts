@@ -16,6 +16,7 @@ import {
   ErrorModal,
   DesignateTarget,
 } from "./components";
+import UnityView from "@/components/common/unity-view/UnityView.vue";
 export default defineComponent({
   components: {
     TeacherCard,
@@ -26,6 +27,7 @@ export default defineComponent({
     LeaveModal,
     ErrorModal,
     DesignateTarget,
+    UnityView
   },
   async beforeUnmount() {
     const store = useStore();
@@ -81,6 +83,11 @@ export default defineComponent({
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
     });
+
+    const isGameView = computed(() => {
+      return getters["teacherRoom/isGameView"];
+    });
+    console.log(isGameView.value, 'game view');
 
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
@@ -164,6 +171,15 @@ export default defineComponent({
     const onClickOutSideCTAContent = () => {
       ctaVisible.value = false;
     };
+    const onUnityLoaderLoaded = () => {
+      console.info("onUnityLoaderLoaded");
+    };
+    const onUnityViewLoading = (progress: number) => {
+      console.info("onUnityViewLoading", progress);
+    };
+    const onUnityViewLoaded = () => {
+      console.info("onUnityViewLoaded");
+    };
     const isConnected = computed(()=> getters['teacherRoom/isConnected']);
     watch(isConnected, async ()=>{
       if(!isConnected.value) return;
@@ -195,7 +211,11 @@ export default defineComponent({
       isDesignatingTarget,
       allowDesignate,
       onClickContentView,
-      modalDesignateTarget
+      modalDesignateTarget,
+      isGameView,
+      onUnityLoaderLoaded,
+      onUnityViewLoading,
+      onUnityViewLoaded
     };
   },
 });

@@ -6,7 +6,6 @@ import GlobalAudioBar from "./global-audio-bar/global-audio-bar.vue";
 import LeaveModal from "./leave-modal/leave-modal.vue";
 import ErrorModal from "./error-modal/error-modal.vue";
 import DesignateTarget from "./designate-target/designate-target.vue";
-
 export {
   TeacherCard,
   LessonPlan,

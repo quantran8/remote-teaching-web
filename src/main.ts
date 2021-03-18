@@ -10,7 +10,7 @@ import {
   BaseModal,
   BaseTag,
 } from "./components/base";
-import { LiveCircle, Toast, Notification, ContentView, DesignateCircle, DesignateRectangle, AnnotationView } from "./components/common";
+import { LiveCircle, Toast, Notification, ContentView, DesignateCircle, DesignateRectangle, AnnotationView, UnityView } from "./components/common";
 
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
@@ -36,6 +36,7 @@ app.component("ContentView", ContentView);
 app.component("AnnotationView", AnnotationView);
 app.component("DesignateCircle", DesignateCircle);
 app.component("DesignateRectangle", DesignateRectangle);
+app.component("UnityView", UnityView);
 app.use(router);
 app.use(store);
 app.use(i18n);
