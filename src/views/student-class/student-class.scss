@@ -1,3 +1,120 @@
+.sc-header {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  height: 85px;
+  &__left {
+    display: grid;
+    grid-template-columns: auto max-content;
+    align-items: center;
+    background-color: #00a1ed;
+    color: #fff;
+    padding: 0 30px;
+    border-radius: 0 0 60px 0;
+  }
+  &__right {
+    position: relative;
+    padding: 0 30px;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+  }
+  &__icon {
+    max-width: 70px;
+    height: auto;
+  }
+  &__trainer {
+    margin: 0;
+  }
+  &__title {
+    margin: 0;
+  }
+  &__exit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-decoration: none !important;
+    background: #fff;
+    box-shadow: 0 3px 0 #00000029;
+    padding: 5px 20px 12px 30px;
+    font-size: 24px;
+    border-radius: 0 0 0 50px;
+    border-left: 1px solid #00000029;
+    .material-icons {
+      background: #f00;
+      color: #fff;
+      border-radius: 50%;
+      padding: 3px;
+      font-size: 18px;
+      margin-right: 5px;
+    }
+  }
+}
+@mixin circle($item-count, $container-size, $item-size) {
+  $angle: (360 / $item-count);
+  $rot: 0;
+
+  > * {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -($item-size / 2);
+    width: $item-size;
+    height: $item-size;
+    @for $i from 1 to $item-count + 1 {
+      &:nth-of-type(#{$i}) {
+        transform: rotate($rot * 1deg) translate($container-size / 2) rotate($rot * -1deg);
+      }
+      $rot: $rot + $angle;
+    }
+  }
+}
+.sc-gallery {
+  $gallery-size: 500px;
+  $gallery-item-size: 100px;
+  position: relative;
+  min-width: $gallery-size;
+  height: $gallery-size;
+  border-radius: 50%;
+  margin: $gallery-item-size;
+  @include circle($item-count: 10, $container-size: $gallery-size, $item-size: $gallery-item-size);
+
+  &__item {
+    width: $gallery-item-size;
+    height: $gallery-item-size;
+    background-color: #ccc;
+    border-radius: 50%;
+    &--large {
+      width: $gallery-item-size * 2;
+      height: $gallery-item-size * 2;
+      transform: translate(-50%, -50%);
+      margin: auto;
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &__title {
+    color: #0b0b0b;
+    font-size: 18px;
+    font-weight: 600;
+    position: absolute;
+    margin: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.sc-body {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -83,7 +200,7 @@
     .unityWrapper {
       width: 900px;
     }
-    .content-view-container{
+    .content-view-container {
       height: 58vh;
       width: 70vh;
       border: solid 2px black;

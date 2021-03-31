@@ -1,4 +1,70 @@
 <template>
+  <div class="sc">
+    <div class="sc-header">
+      <div class="sc-header__left">
+        <h2 class="sc-header__trainer">Mr. Chapman</h2>
+        <div>
+          <img class="sc-header__icon" src="@/assets/student-class/class-icon.svg" alt="Icon" />
+        </div>
+      </div>
+      <div class="sc-header__right">
+        <h1 class="sc-header__title">Butterfly class</h1>
+        <a class="sc-header__exit" href="#">
+          <MatIcon type="close" />
+          <span>Exit</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="sc-body">
+    <div class="sc-video"></div>
+    <div class="sc-gallery" ref="galleryRef">
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+      <div class="sc-gallery__item sc-gallery__item--large" @click="animate">
+        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
+        <h3 class="sc-gallery__title">Hello</h3>
+      </div>
+    </div>
+  </div>
   <div class="page-container">
     <div class="page-header">
       <div class="media-buttons">
@@ -62,10 +128,7 @@
         ></UnityView>
       </div>
       <!-- <ContentView/> -->
-      <div
-        class="content-view-container"
-        v-if="currentExposureItemMedia && isLessonPlan && !isGameView"
-      >
+      <div class="content-view-container" v-if="currentExposureItemMedia && isLessonPlan && !isGameView">
         <ContentView
           v-if="!isPointerMode && !isDrawMode && !isStickerMode"
           @on-tap="onClickContentView"
@@ -76,16 +139,15 @@
           :isAssigned="isAssigned"
           :localTargets="localTargets"
         ></ContentView>
-        <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia.image"></AnnotationView>
+        <AnnotationView
+          v-if="isPointerMode || isDrawMode || isStickerMode"
+          :image="currentExposureItemMedia.image"
+        ></AnnotationView>
       </div>
     </div>
     <div class="page-footer">
       <div class="class-action">
-        <img
-          v-if="classAction"
-          :src="require(`../../assets/icons/icon-action-${classAction}.svg`)"
-          alt=""
-        />
+        <img v-if="classAction" :src="require(`../../assets/icons/icon-action-${classAction}.svg`)" alt="" />
       </div>
       <div class="fill-center">
         <StudentCard
