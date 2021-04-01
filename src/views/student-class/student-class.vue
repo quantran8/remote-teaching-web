@@ -2,7 +2,7 @@
   <div class="sc">
     <div class="sc-header">
       <div class="sc-header__left">
-        <h2 class="sc-header__trainer">Mr. Chapman</h2>
+        <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
         <div>
           <img class="sc-header__icon" src="@/assets/student-class/class-icon.svg" alt="Icon" />
         </div>
@@ -17,52 +17,23 @@
     </div>
   </div>
   <div class="sc-body">
-    <div class="sc-video"></div>
-    <div class="sc-gallery" ref="galleryRef">
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
-      <div class="sc-gallery__item sc-gallery__item--large" @click="animate">
-        <img class="sc-gallery__img" src="@/assets/student-class/attendee-photo.jpg" />
-        <h3 class="sc-gallery__title">Hello</h3>
-      </div>
+    <div class="sc-content">
+      <div :id="teacher?.id" class="sc-content__video"></div>
+      <div v-if="isGameView" class="sc-unity"></div>
+      <div v-else-if="currentExposureItemMedia && isLessonPlan" class="sc-whiteboard"></div>
+      <div v-else-if="isDrawMode" class="sc-content"></div>
+    </div>
+    <StudentGallery :currentStudent="student" :students="students" />
+    <div class="sc-action">
+      <a href="javascript:void(0)" class="sc-action__item">
+        <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
+      </a>
+      <a href="javascript:void(0)" class="sc-action__item">
+        <img src="@/assets/student-class/speaker.svg" class="sc-action__icon" />
+      </a>
+      <a href="javascript:void(0)" class="sc-action__item">
+        <img src="@/assets/student-class/eye-cut.svg" class="sc-action__icon" />
+      </a>
     </div>
   </div>
   <div class="page-container">

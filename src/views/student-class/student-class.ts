@@ -1,19 +1,20 @@
 import { LoginInfo, MatIcon, RoleName } from "@/commonui";
+import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { GLError, GLErrorCode } from "@/models/error.model";
-import { ClassView } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref, Ref, watch } from "vue";
+import { ClassView, StudentState } from "@/store/room/interface";
+import gsap from "gsap";
+import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
-import UnityView from "@/components/common/unity-view/UnityView.vue";
-
-import gsap from "gsap";
+import { StudentGallery } from "./components/student-gallery";
 
 export default defineComponent({
   components: {
     StudentCard,
     UnityView,
-    MatIcon
+    MatIcon,
+    StudentGallery,
   },
   async created() {
     const { getters, dispatch } = useStore();
@@ -25,7 +26,7 @@ export default defineComponent({
       userId: loginInfo.profile.sub,
       userName: loginInfo.profile.name,
       studentId: studentId,
-      role: RoleName.parent
+      role: RoleName.parent,
     });
     await dispatch("studentRoom/joinRoom");
   },
@@ -37,7 +38,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const student = computed(() => store.getters["studentRoom/student"]);
+    const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const teacher = computed(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
@@ -49,8 +50,6 @@ export default defineComponent({
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
-
-    const galleryRef = ref<HTMLDivElement | null>(null);
 
     watch(errors, () => {
       if (errors.value) {
@@ -70,14 +69,14 @@ export default defineComponent({
     const toggleAudio = async () => {
       await store.dispatch("studentRoom/setStudentAudio", {
         id: student.value.id,
-        enable: !student.value.audioEnabled
+        enable: !student.value.audioEnabled,
       });
     };
 
     const toggleVideo = async () => {
       await store.dispatch("studentRoom/setStudentVideo", {
         id: student.value.id,
-        enable: !student.value.videoEnabled
+        enable: !student.value.videoEnabled,
       });
     };
     const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
@@ -85,7 +84,7 @@ export default defineComponent({
     const contentImageStyle = computed(() => {
       return currentExposureItemMedia.value
         ? {
-            "background-image": `url("${currentExposureItemMedia.value.image.url}")`
+            "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
           }
         : {};
     });
@@ -117,14 +116,14 @@ export default defineComponent({
       console.info("onUnityViewLoaded");
     };
 
-    const animate = (event: MouseEvent) => {
-      const timeline = gsap.timeline();
-      galleryRef.value?.childNodes.forEach(node => {
-        timeline.to(node, { scale: 1, duration: 0.3 });
-      });
-      // galleryRef.value?.childNodes
-      //   gsap.to(, { scale: 0 });
-    };
+    // const animate = (event: MouseEvent) => {
+    //   const timeline = gsap.timeline();
+    //   galleryRef.value?.childNodes.forEach(node => {
+    //     timeline.to(node, { scale: 1, duration: 0.3 });
+    //   });
+    //   // galleryRef.value?.childNodes
+    //   //   gsap.to(, { scale: 0 });
+    // };
 
     return {
       student,
@@ -152,8 +151,6 @@ export default defineComponent({
       onUnityViewLoading,
       onUnityViewLoaded,
       isStickerMode,
-      animate,
-      galleryRef
     };
-  }
+  },
 });
