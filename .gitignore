@@ -27,3 +27,5 @@ pnpm-debug.log*
 
 component-template
 documents
+
+package-lock.json
