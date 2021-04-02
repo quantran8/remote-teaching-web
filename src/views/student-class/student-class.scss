@@ -60,10 +60,10 @@
       display: inline-block;
       margin: 0 1rem;
       position: relative;
-      &.teacher-game {
-        width: 240px;
-        height: 240px;
-      }
+      //&.teacher-game {
+      //  width: 240px;
+      //  height: 240px;
+      //}
       .teacher-camera {
         position: absolute;
         left: 0;
@@ -80,9 +80,9 @@
         z-index: 1;
       }
     }
-    .unityWrapper {
-      width: 900px;
-    }
+    //.unityWrapper {
+    //  width: 900px;
+    //}
     .content-view-container{
       height: 58vh;
       width: 70vh;

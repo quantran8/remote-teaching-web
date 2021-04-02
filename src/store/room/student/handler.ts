@@ -289,7 +289,7 @@ export const useStudentRoomHandler = (
         { root: true }
       );
     },
-    onTeacherSendUnity: async (payload: any) => {  
+    onTeacherSendUnity: async (payload: any) => {
       await dispatch(
         "unity/setTeacherMessage",
         { message: payload },

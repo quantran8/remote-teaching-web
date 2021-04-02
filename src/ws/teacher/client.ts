@@ -58,9 +58,9 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearStudentAudio() {
     return this.send(WSCmd.CLEAR_STUDENT_AUDIO, {});
   }
-  sendRequestUnity(message: string) {
-    return this.send(WSCmd.TEACHER_ACTION_GAME, message);
-  }
+  // sendRequestUnity(message: string) {
+  //   return this.send(WSCmd.TEACHER_ACTION_GAME, message);
+  // }
   sendRequestAddGlobalAudio(StudentId: string) {
     return this.send(WSCmd.ADD_GLOBAL_STUDENT_AUDIO, {
       StudentId: StudentId,

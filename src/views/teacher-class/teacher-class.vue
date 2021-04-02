@@ -3,7 +3,7 @@
     <div class="content">
       <div
         class="teacher"
-        :class="{ 'teacher-full': isGalleryView, 'teacher-game': isGameView }"
+        :class="{ 'teacher-full': isGalleryView }"
       >
         <TeacherCard
           v-if="teacher"
@@ -19,20 +19,20 @@
           @end="onClickEnd"
         />
       </div>
-      <div v-if="!isGalleryView && !isGameView" class="activity-content">
-        <ActivityContent @on-click-content-view="onClickContentView" />
-      </div>
-      <div v-if="!isGalleryView && isGameView" class="unityWrapper">
-        <UnityView
-          src="/games/writting_book/Build/UnityLoader.js"
-          json="/games/writting_book/Build/Writing_Book_Activity.json"
-          class="unityView"
-          message-text="Teacher"
-          @on-loader-loaded="onUnityLoaderLoaded"
-          @on-progress="onUnityViewLoading"
-          @on-loaded="onUnityViewLoaded"
-        ></UnityView>
-      </div>
+<!--      <div v-if="!isGalleryView && !isGameView" class="activity-content">-->
+<!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
+<!--      </div>-->
+<!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
+<!--        <UnityView-->
+<!--          src="/games/writting_book/Build/UnityLoader.js"-->
+<!--          json="/games/writting_book/Build/Writing_Book_Activity.json"-->
+<!--          class="unityView"-->
+<!--          message-text="Teacher"-->
+<!--          @on-loader-loaded="onUnityLoaderLoaded"-->
+<!--          @on-progress="onUnityViewLoading"-->
+<!--          @on-loaded="onUnityViewLoaded"-->
+<!--        ></UnityView>-->
+<!--      </div>-->
       <div class="cta-container">
         <div class="cta-button" @mouseover="onHoverCTAButton">
           <img
@@ -73,7 +73,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!isGalleryView && !isGameView" class="lesson-plan">
+    <div v-if="!isGalleryView" class="lesson-plan">
       <LessonPlan />
     </div>
     <div class="gallery">
