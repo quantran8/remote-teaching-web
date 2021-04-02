@@ -7,7 +7,7 @@
         v-if="raisingHand"
         @click="onClickClearRaisingHand"
       ></div>
-      <div class="name">
+      <div class="name" @click="onOneAndOne">
         {{ name }}
       </div>
       <div class="interactive" v-if="showCorrectAnswer">

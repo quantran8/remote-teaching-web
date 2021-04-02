@@ -13,6 +13,7 @@ import {
   UserMediaPayload,
   StudentBadgePayload,
   UserIdPayload,
+  ModeOneAndOne,
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
@@ -47,6 +48,7 @@ export interface TeacherRoomMutationInterface<S> {
   addStudentAudio(s: S, p: UserIdPayload): void;
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
+  oneAndOne(s: S, p: DefaultPayload): void;
 }
 
 export interface TeacherRoomMutation<S>
@@ -217,6 +219,10 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setClassAction(state: State, payload: { action: ClassAction }) {
     state.classAction = payload.action;
+  },
+  oneAndOne(s: State, p: ModeOneAndOne): void {
+    s.oneAndOne = p.status;
+    s.studentOneAndOneId = p.id;
   },
 };
 
