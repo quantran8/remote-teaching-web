@@ -16,7 +16,6 @@ import {
   ErrorModal,
   DesignateTarget,
 } from "./components";
-import UnityView from "@/components/common/unity-view/UnityView.vue";
 export default defineComponent({
   components: {
     TeacherCard,
@@ -26,8 +25,7 @@ export default defineComponent({
     StudentGallery,
     LeaveModal,
     ErrorModal,
-    DesignateTarget,
-    UnityView
+    DesignateTarget
   },
   async beforeUnmount() {
     const store = useStore();
@@ -84,10 +82,10 @@ export default defineComponent({
       return getters["teacherRoom/isGalleryView"];
     });
 
-    const isGameView = computed(() => {
-      return getters["teacherRoom/isGameView"];
-    });
-    console.log(isGameView.value, 'game view');
+    // const isGameView = computed(() => {
+    //   return getters["teacherRoom/isGameView"];
+    // });
+    // console.log(isGameView.value, 'game view');
 
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
@@ -171,15 +169,15 @@ export default defineComponent({
     const onClickOutSideCTAContent = () => {
       ctaVisible.value = false;
     };
-    const onUnityLoaderLoaded = () => {
-      console.info("onUnityLoaderLoaded");
-    };
-    const onUnityViewLoading = (progress: number) => {
-      console.info("onUnityViewLoading", progress);
-    };
-    const onUnityViewLoaded = () => {
-      console.info("onUnityViewLoaded");
-    };
+    // const onUnityLoaderLoaded = () => {
+    //   console.info("onUnityLoaderLoaded");
+    // };
+    // const onUnityViewLoading = (progress: number) => {
+    //   console.info("onUnityViewLoading", progress);
+    // };
+    // const onUnityViewLoaded = () => {
+    //   console.info("onUnityViewLoaded");
+    // };
     const isConnected = computed(()=> getters['teacherRoom/isConnected']);
     watch(isConnected, async ()=>{
       if(!isConnected.value) return;
@@ -212,10 +210,10 @@ export default defineComponent({
       allowDesignate,
       onClickContentView,
       modalDesignateTarget,
-      isGameView,
-      onUnityLoaderLoaded,
-      onUnityViewLoading,
-      onUnityViewLoaded
+      // isGameView,
+      // onUnityLoaderLoaded,
+      // onUnityViewLoading,
+      // onUnityViewLoaded
     };
   },
 });

@@ -10,7 +10,6 @@ import StudentRoomModule from "./room/student";
 import LessonModule from "./lesson";
 import InteractiveModule from "./interactive";
 import AnnotationModule from "./annotation";
-import UnityModule from "./unity";
 
 const store = createStore({
   state: {},
@@ -28,7 +27,7 @@ const store = createStore({
     notification: NotificationModule,
     interactive: InteractiveModule,
     annotation: AnnotationModule,
-    unity: UnityModule,
+    //unity: UnityModule,
   },
 });
 
@@ -45,5 +44,5 @@ export {
   NotificationModule,
   InteractiveModule,
   AnnotationModule,
-  UnityModule,
+  //UnityModule,
 };

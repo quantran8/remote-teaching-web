@@ -245,9 +245,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setClearStickers({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearStickers(payload);
   },
-  async sendUnity({ state }, payload: {message: string}) {
-    await state.manager?.WSClient.sendRequestUnity(payload.message);
-  },
+  // async sendUnity({ state }, payload: {message: string}) {
+  //   await state.manager?.WSClient.sendRequestUnity(payload.message);
+  // },
   async sendOneAndOne({ state }, payload: {status: boolean, id: string}) {
     await state.manager?.WSClient.sendRequestSetOneToOne(payload);
   },

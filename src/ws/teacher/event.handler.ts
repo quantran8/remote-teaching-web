@@ -29,6 +29,6 @@ export interface TeacherWSEventHandler {
   onTeacherSetStickers(payload: any): void;
   onTeacherClearStickers(payload: any): void;
   onStudentUpdateAnswers(payload: any): void;
-  onTeacherSendUnity(payload: any): void;
+  // onTeacherSendUnity(payload: any): void;
   onTeacherSetOneToOne(payload: any): void;
 }

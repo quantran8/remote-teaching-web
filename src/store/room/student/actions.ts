@@ -190,9 +190,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
   },
-  async sendUnity({ state }, payload: {message : string}) {
-    await state.manager?.WSClient.sendRequestUnity(payload.message);
-  }
+  // async sendUnity({ state }, payload: {message : string}) {
+  //   await state.manager?.WSClient.sendRequestUnity(payload.message);
+  // }
 };
 
 export default actions;

@@ -113,10 +113,10 @@ export class GLSocketClient {
       handler.onStudentRaisingHand
     );
     handlers.set(StudentWSEvent.STUDENT_LIKE, handler.onStudentLike);
-    handlers.set(
-      StudentWSEvent.EVENT_STUDENT_SEND_UNITY,
-      handler.onStudentSendUnity
-    );
+    // handlers.set(
+    //   StudentWSEvent.EVENT_STUDENT_SEND_UNITY,
+    //   handler.onStudentSendUnity
+    // );
 
     handlers.set(TeacherWSEvent.JOIN_CLASS, handler.onTeacherJoinClass);
     handlers.set(TeacherWSEvent.STREAM_CONNECT, handler.onTeacherStreamConnect);
@@ -217,10 +217,10 @@ export class GLSocketClient {
       TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_STICKER,
       handler.onTeacherClearStickers
     );
-    handlers.set(
-      TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
-      handler.onTeacherSendUnity
-    );
+    // handlers.set(
+    //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
+    //   handler.onTeacherSendUnity
+    // );
     handlers.set(
       TeacherWSEvent.EVENT_TEACHER_SET_ONE_TO_ONE,
       handler.onTeacherSetOneToOne

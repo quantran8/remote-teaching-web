@@ -5,7 +5,6 @@ import DesignateCircle from "./designate-circle/designate-circle.vue";
 import DesignateRectangle from "./designate-rectangle/designate-rectangle.vue";
 import ContentView from "./content-view/content-view.vue";
 import AnnotationView from "./annotation-view/annotation-view.vue";
-import UnityView from "@/components/common/unity-view/UnityView";
 export {
   LiveCircle,
   Toast,
@@ -14,5 +13,4 @@ export {
   DesignateRectangle,
   ContentView,
   AnnotationView,
-  UnityView
 };
