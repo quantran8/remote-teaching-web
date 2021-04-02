@@ -127,4 +127,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearStickers(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_STICKERS, {});
   }
+  sendRequestSetOneToOne(payload: {status: boolean, id: string}) {
+    return this.send(WSCmd.TEACHER_SET_ONE_TO_ONE, { StudentId: payload.id });
+  }
 }

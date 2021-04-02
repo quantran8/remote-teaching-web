@@ -297,6 +297,9 @@ export const useStudentRoomHandler = (
           root: true
         }
       );
+    },
+    onTeacherSetOneToOne: async (payload: {status: boolean, id: string} ) => {
+      console.log(payload);
     }
   };
   return handler;

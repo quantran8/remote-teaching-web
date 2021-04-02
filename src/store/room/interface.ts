@@ -2,7 +2,7 @@ export interface StudentState {
   id: string;
   index: number;
   name: string;
-  avatar: string;
+  avatar?: string;
   badge: number;
   audioEnabled: boolean;
   videoEnabled: boolean;
@@ -83,6 +83,11 @@ export interface UserMediaPayload {
 }
 export interface DeviceMediaPayload {
   enable: boolean;
+}
+
+export interface ModeOneAndOne {
+  status : boolean;
+  id: string;
 }
 
 export interface StudentBadgePayload {
