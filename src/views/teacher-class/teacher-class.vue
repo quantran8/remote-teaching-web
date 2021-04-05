@@ -1,10 +1,11 @@
 <template>
+  <teacher-page-header v-if="teacher" :teacher-name="teacher.name" @end="onClickEnd"></teacher-page-header>
   <div class="container">
+    <div v-if="!isGalleryView" class="lesson-plan">
+      <LessonPlan @open-gallery-mode="toggleView"/>
+    </div>
     <div class="content">
-      <div
-        class="teacher"
-        :class="{ 'teacher-full': isGalleryView }"
-      >
+      <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -60,21 +61,11 @@
           <GlobalAudioBar />
         </div>
       </div>
-      <div class="view-controls">
-        <div
-          v-for="item in views"
-          class="view-item"
-          :class="{ 'item-active': currentView === item.id }"
-          :key="item.name"
-          @click="() => setClassView(item.id)"
-        >
-          <div class="icon"></div>
-          <div class="item-name">{{ item.name }}</div>
-        </div>
+      <div class="view-controls" v-show="isGalleryView">
+        <span class="view-controls__arrow" @click="() => toggleView()">
+          &rsaquo;
+        </span>
       </div>
-    </div>
-    <div v-if="!isGalleryView" class="lesson-plan">
-      <LessonPlan />
     </div>
     <div class="gallery">
       <StudentGallery />

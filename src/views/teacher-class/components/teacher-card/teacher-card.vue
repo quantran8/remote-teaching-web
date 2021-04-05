@@ -6,7 +6,7 @@
         <div class="mask">
           <BaseTag class="tag" tag="T"></BaseTag>
           <div class="info">
-            <div class="name">{{ name }}</div>
+<!--            <div class="name">{{ name }}</div>-->
             <BaseButton class="media-button" @click="toggleAudio">
               <BaseIcon :name="audioIcon"></BaseIcon>
             </BaseButton>

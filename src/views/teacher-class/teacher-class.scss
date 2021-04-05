@@ -1,13 +1,18 @@
 .container {
   display: flex;
   flex: 1;
-  height: 100vh;
+  height: calc(100vh - 90px);
+  margin-top: 90px;
+  background: #fdf9e8;
+
   .content {
     flex: 1;
     display: flex;
     flex-direction: column;
+
     .teacher-full {
       flex: 1;
+
       .teacher-card {
         display: flex;
         height: 100%;
@@ -15,14 +20,17 @@
         align-items: center;
       }
     }
+
     .activity-content {
       flex: 1;
       margin: 10px;
     }
+
     .cta-container {
       display: flex;
       align-items: center;
       margin: 10px;
+
       .cta-button {
         height: 100%;
         width: 44px;
@@ -32,14 +40,17 @@
         align-items: center;
         justify-content: center;
         position: relative;
+
         img {
           width: 44px;
           height: 44px;
         }
+
         img:hover {
           cursor: pointer;
           opacity: 0.8;
         }
+
         .cta-content {
           display: none;
           background-color: rgba($color: black, $alpha: 0.8);
@@ -52,6 +63,7 @@
           color: white;
           white-space: nowrap;
           z-index: 999;
+
           img {
             width: 40px;
             height: 40px;
@@ -59,66 +71,49 @@
             margin-right: 5px;
           }
         }
+
         .cta-content-show {
           display: block;
         }
       }
+
       .audio-bar {
         flex: 1;
       }
     }
+
     .view-controls {
-      margin: 10px;
-      background: lightgray;
-      border: solid 1px gray;
-      border-radius: 4px;
-      display: grid;
-      grid-template-columns: auto auto;
-      grid-template-rows: auto auto;
-      grid-gap: 10px;
-      padding: 10px;
-      align-self: baseline;
-      .view-item {
-        background: white;
-        display: flex;
-        align-items: center;
-        max-width: 240px;
-        border: solid 1px white;
-        .icon {
-          width: 32px;
-          height: 32px;
-          margin: 16px;
-          display: inline-block;
-          background-color: gray;
-        }
-        .item-name {
-          flex: 1;
-          font-size: 16px;
-          padding-right: 16px;
-        }
-      }
-      .view-item:hover {
+      position: fixed;
+      left: 0;
+      top: 90px;
+      width: 80px;
+      bottom: 0;
+      background: #fff;
+      -webkit-box-shadow: 1px 3px 8px 1px rgba(0,0,0,0.45);
+      -moz-box-shadow: 1px 3px 8px 1px rgba(0,0,0,0.45);
+      box-shadow: 1px 3px 8px 1px rgba(0,0,0,0.45);
+
+      .view-controls__arrow {
+        font-size: 5em;
+        font-weight: bold;
+        background: #b62424;
+        color: #fff;
+        position: absolute;
+        top: -25px;
+        left: 0;
+        right: 0px;
         cursor: pointer;
-        background: lightgray;
-        border: solid 1px blue;
-      }
-      .item-active {
-        background: gray;
-        border: solid 1px blue;
-        .icon {
-          background-color: white;
-        }
-        .item-name {
-          color: white;
-        }
+        text-align: right;
+        padding-right: 20px;
       }
     }
   }
+
   .lesson-plan {
     flex-basis: 20%;
-    background-color: lightgray;
-    margin: 10px;
+    background-color: #fff;
   }
+
   .gallery {
     margin: 10px;
     flex-basis: 50%;
