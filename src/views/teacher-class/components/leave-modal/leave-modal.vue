@@ -1,8 +1,9 @@
 <template>
   <BaseModal @close="onClickDismiss">
     <div class="modal-boxshadow leave-modal">
-      <div class="header">Leave page?</div>
-      <div class="body"></div>
+      <div class="body">
+        Do you want to end the lesson?
+      </div>
       <div class="footer">
         <BaseButton class="btn-secondary" @click="onClickDismiss" mode="outline"
           >Stay</BaseButton
