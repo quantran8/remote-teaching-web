@@ -2,7 +2,6 @@ import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
-import { Logger } from "@/utils/logger";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -15,6 +14,8 @@ import {
   LeaveModal,
   ErrorModal,
   DesignateTarget,
+  TeacherPageHeader
+
 } from "./components";
 export default defineComponent({
   components: {
@@ -25,7 +26,8 @@ export default defineComponent({
     StudentGallery,
     LeaveModal,
     ErrorModal,
-    DesignateTarget
+    DesignateTarget,
+    TeacherPageHeader
   },
   async beforeUnmount() {
     const store = useStore();
@@ -66,13 +68,17 @@ export default defineComponent({
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
       );
     });
-
-    const views = [
-      { id: ClassView.GALLERY, name: "Gallery", icon: "" },
-      { id: ClassView.LESSON_PLAN, name: "LessonPlan", icon: "" },
-      { id: ClassView.WHITE_BOARD, name: "Whiteboard", icon: "" },
-      { id: ClassView.GAME, name: "Game", icon: "" },
-    ];
+    const selectedView = ref(ClassView.GALLERY);
+    const classViews = {
+      gallery: ClassView.GALLERY,
+      lessonPlan: ClassView.LESSON_PLAN
+    };
+    // const views = [
+    //   { id: ClassView.GALLERY, name: "Gallery", icon: "" },
+    //   { id: ClassView.LESSON_PLAN, name: "LessonPlan", icon: "" },
+    //   { id: ClassView.WHITE_BOARD, name: "Whiteboard", icon: "" },
+    //   { id: ClassView.GAME, name: "Game", icon: "" },
+    // ];
 
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
@@ -88,6 +94,8 @@ export default defineComponent({
     // console.log(isGameView.value, 'game view');
 
     const setClassView = async (newView: ClassView) => {
+      selectedView.value = newView;
+      console.error("SELECTED VIEW",selectedView);
       await dispatch("teacherRoom/setClassView", { classView: newView });
     };
 
@@ -156,7 +164,6 @@ export default defineComponent({
 
     const onClickContentView = async (payload: {
       x: number, y: number, contentId: string})=>{
-      console.log("onClickContentView", payload);
       await dispatch("teacherRoom/teacherAnswer", payload);
     };
 
@@ -179,8 +186,8 @@ export default defineComponent({
     //   console.info("onUnityViewLoaded");
     // };
     const isConnected = computed(()=> getters['teacherRoom/isConnected']);
-    watch(isConnected, async ()=>{
-      if(!isConnected.value) return;
+    watch(isConnected, async () => {
+      if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
     });
     return {
@@ -196,7 +203,9 @@ export default defineComponent({
       currentView,
       isGalleryView,
       setClassView,
-      views,
+      // views,
+      selectedView,
+      classViews,
       teacher,
       onClickLeave,
       onClickCloseModal,
