@@ -5,11 +5,9 @@ import {computed, ComputedRef, defineComponent, ref, Ref, watch} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
-import UnityView from "@/components/common/unity-view/UnityView.vue";
 export default defineComponent({
   components: {
     StudentCard,
-    UnityView
   },
   async created() {
     const { getters, dispatch } = useStore();
@@ -48,9 +46,9 @@ export default defineComponent({
     const isLessonPlan = computed(
       () => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN
     );
-    const isGameView = computed(
-      () => store.getters["studentRoom/classView"] === ClassView.GAME
-    );
+    // const isGameView = computed(
+    //   () => store.getters["studentRoom/classView"] === ClassView.GAME
+    // );
     const errors: ComputedRef<GLError> = computed(
       () => store.getters["studentRoom/error"]
     );
@@ -135,15 +133,15 @@ export default defineComponent({
       await store.dispatch("studentRoom/studentAnswer", payload);
     };
 
-    const onUnityLoaderLoaded = () => {
-      console.info("onUnityLoaderLoaded");
-    };
-    const onUnityViewLoading = (progress: number) => {
-      console.info("onUnityViewLoading", progress);
-    };
-    const onUnityViewLoaded = () => {
-      console.info("onUnityViewLoaded");
-    };
+    // const onUnityLoaderLoaded = () => {
+    //   console.info("onUnityLoaderLoaded");
+    // };
+    // const onUnityViewLoading = (progress: number) => {
+    //   console.info("onUnityViewLoading", progress);
+    // };
+    // const onUnityViewLoaded = () => {
+    //   console.info("onUnityViewLoaded");
+    // };
 
     const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
     const notOneToOne = ref(true);
@@ -176,10 +174,6 @@ export default defineComponent({
       localTargets,
       isPointerMode,
       isDrawMode,
-      isGameView,
-      onUnityLoaderLoaded,
-      onUnityViewLoading,
-      onUnityViewLoaded,
       isStickerMode,
       studentOneAndOneId,
       notOneToOne

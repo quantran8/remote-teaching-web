@@ -1,31 +1,54 @@
 .lesson-container {
-  border: solid 2px gray;
   height: 100%;
-  padding: 5px;
-  overflow: auto;
-  .progress {
-    background: white;
-    border: solid 1px gray;
-    height: 16px;
-    width: 100%;
-    .indicator {
-      width: 100%;
-      height: 100%;
-      transform-origin: 0;
-      background-color: black;
-      transition: transform 0.3s ease-in-out;
-      transform: scaleX(0);
+  overflow: hidden;
+
+  .lesson-container__header {
+    background: #b62424;
+    color: #fff;
+    position: relative;
+
+    .lesson-container__header-title {
+      padding: 10px 15px;
+      font-size: 24px;
+    }
+
+    .lesson-container__header-back {
+      font-size: 3em;
+      font-weight: bold;
+      text-decoration: none;
+      position: absolute;
+      top: -13px;
+      right: 10px;
     }
   }
-  .title {
-    padding: 10px 0;
-    font-size: 24px;
-  }
-  .activities {
-    flex: 1;
-    margin-top: 10px;
-    background-color: #f8f8f8;
-    border: solid 1px gray;
-    overflow-y: auto;
+
+  .lesson-container__body {
+    overflow: auto;
+    height: calc(100% - 60px);
+    padding-left: 10px;
+    padding-right: 10px;
+    .progress {
+      background: white;
+      border: solid 1px gray;
+      height: 16px;
+      width: 100%;
+
+      .indicator {
+        width: 100%;
+        height: 100%;
+        transform-origin: 0;
+        background-color: black;
+        transition: transform 0.3s ease-in-out;
+        transform: scaleX(0);
+      }
+    }
+
+    .activities {
+      flex: 1;
+      margin-top: 10px;
+      background-color: #f8f8f8;
+      border: solid 1px gray;
+      overflow-y: auto;
+    }
   }
 }

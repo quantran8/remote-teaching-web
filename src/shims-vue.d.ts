@@ -5,4 +5,4 @@ declare module '*.vue' {
 }
 
 declare module 'fabric';
-declare const UnityLoader;
+// declare const UnityLoader;
