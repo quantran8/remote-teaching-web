@@ -109,6 +109,10 @@ export default defineComponent({
     };
     const onOneAndOne = async () => {
       if (props.setModeOne) {
+        await store.dispatch(
+          "modeOne/setStudentOneId",
+          { id: props.id }
+        );
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.id,

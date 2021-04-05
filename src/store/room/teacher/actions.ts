@@ -251,9 +251,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async sendOneAndOne({ state }, payload: {status: boolean, id: string}) {
     await state.manager?.WSClient.sendRequestSetOneToOne(payload);
   },
-  async setOneAndOne(store, payload: {status: boolean, id: string}) {
-    store.commit("oneAndOne", payload);
-  }
 };
 
 export default actions;

@@ -20,7 +20,7 @@ export default defineComponent({
       () => store.getters["teacherRoom/students"]
     );
     const studentOneAndOneId = computed(
-      () => store.getters["teacherRoom/studentOneAndOneId"]
+      () => store.getters["modeOne/getStudentModeOneId"]
     );
     const studentOne = students.value.filter(student => { return student.id === studentOneAndOneId.value }).shift();
 
@@ -50,6 +50,7 @@ export default defineComponent({
         setTimeout(()=> {
           setDefault(true, studentOne.id);
         },200)
+        await store.dispatch("modeOne/clearStudentOneId", { id: '' });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: false,
           id: null,

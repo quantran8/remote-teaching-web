@@ -85,11 +85,6 @@ export interface DeviceMediaPayload {
   enable: boolean;
 }
 
-export interface ModeOneAndOne {
-  status : boolean;
-  id: string;
-}
-
 export interface StudentBadgePayload {
   id: string;
   badge: number;

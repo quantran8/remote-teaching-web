@@ -299,8 +299,18 @@ export const useStudentRoomHandler = (
       );
     },
     onTeacherSetOneToOne: async (payload: {status: boolean, id: string} ) => {
-      console.log(payload);
-    }
+      if(payload) {
+        await dispatch(
+          "modeOne/setStudentOneId",
+          { id: payload.id },
+          {
+            root: true
+          }
+        );
+      } else {
+        await store.dispatch("modeOne/clearStudentOneId", { id: '' }, {root: true});
+      }
+    },
   };
   return handler;
 };
