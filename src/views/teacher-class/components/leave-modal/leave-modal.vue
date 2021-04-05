@@ -2,7 +2,7 @@
   <BaseModal @close="onClickDismiss">
     <div class="modal-boxshadow leave-modal">
       <div class="body">
-        Do you want to end the lesson?
+        Are you sure to end this lesson?
       </div>
       <div class="footer">
         <BaseButton class="btn-secondary" @click="onClickDismiss" mode="outline"
