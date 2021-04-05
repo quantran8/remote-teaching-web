@@ -4,7 +4,15 @@ export default defineComponent({
     teacherName: String,
     className: String
   },
-  setup(props) {
-    return {};
+  emits: ["end"],
+  setup(props, { emit }) {
+
+    const onClickEnd = () => {
+      emit("end");
+    };
+
+    return {
+      onClickEnd
+    };
   }
 });

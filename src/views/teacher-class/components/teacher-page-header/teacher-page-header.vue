@@ -7,7 +7,7 @@
     <div id="header__class-name">
       Butterfly class
     </div>
-    <a href="javascript:" id="app-exit">Exit</a>
+    <a href="javascript:" id="app-exit" @click="onClickEnd">Exit</a>
   </div>
 </template>
 <script lang="ts" src="./teacher-page-header.ts"></script>
