@@ -2,7 +2,7 @@
   <teacher-page-header v-if="teacher" :teacher-name="teacher.name" @end="onClickEnd"></teacher-page-header>
   <div class="container">
     <div v-if="!isGalleryView" class="lesson-plan">
-      <LessonPlan />
+      <LessonPlan @open-gallery-mode="toggleView"/>
     </div>
     <div class="content">
       <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
