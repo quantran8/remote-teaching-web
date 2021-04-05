@@ -16,6 +16,12 @@ $font-size: 2.2em;
     line-height: $header-height;
     color: #fff;
     font-size: $font-size;
+    position: relative;
+    img{
+      position: absolute;
+      right: 20px;
+      top: 5px;
+    }
   }
 
   &__class-name {

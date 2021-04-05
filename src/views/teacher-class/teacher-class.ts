@@ -68,17 +68,6 @@ export default defineComponent({
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
       );
     });
-    const selectedView = ref(ClassView.GALLERY);
-    const classViews = {
-      gallery: ClassView.GALLERY,
-      lessonPlan: ClassView.LESSON_PLAN
-    };
-    // const views = [
-    //   { id: ClassView.GALLERY, name: "Gallery", icon: "" },
-    //   { id: ClassView.LESSON_PLAN, name: "LessonPlan", icon: "" },
-    //   { id: ClassView.WHITE_BOARD, name: "Whiteboard", icon: "" },
-    //   { id: ClassView.GAME, name: "Game", icon: "" },
-    // ];
 
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
@@ -94,9 +83,15 @@ export default defineComponent({
     // console.log(isGameView.value, 'game view');
 
     const setClassView = async (newView: ClassView) => {
-      selectedView.value = newView;
-      console.error("SELECTED VIEW",selectedView);
       await dispatch("teacherRoom/setClassView", { classView: newView });
+    };
+
+    const toggleView = async () => {
+      if (isGalleryView.value) {
+        await setClassView(ClassView.LESSON_PLAN);
+      } else {
+        await setClassView(ClassView.GALLERY);
+      }
     };
 
     const onClickHideAll = async () => {
@@ -203,9 +198,7 @@ export default defineComponent({
       currentView,
       isGalleryView,
       setClassView,
-      // views,
-      selectedView,
-      classViews,
+      toggleView,
       teacher,
       onClickLeave,
       onClickCloseModal,

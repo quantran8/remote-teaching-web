@@ -1,14 +1,11 @@
 <template>
-  <teacher-page-header :teacher-name="teacher.name"></teacher-page-header>
+  <teacher-page-header v-if="teacher" :teacher-name="teacher.name"></teacher-page-header>
   <div class="container">
     <div v-if="!isGalleryView" class="lesson-plan">
       <LessonPlan />
     </div>
-    <div class="content" :class='[selectedView === classViews.lessonPlan ? "lesson-plan":"gallery-view"]'>
-      <div
-        class="teacher"
-        :class="{ 'teacher-full': isGalleryView }"
-      >
+    <div class="content">
+      <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -64,19 +61,10 @@
           <GlobalAudioBar />
         </div>
       </div>
-      <div class="view-controls">
-        <div @click="() => setClassView(classViews.gallery)">Gallery ne</div>
-        <div @click="() => setClassView(classViews.lessonPlan)">Lesson plan ne</div>
-<!--        <div-->
-<!--          v-for="item in views"-->
-<!--          class="view-item"-->
-<!--          :class="{ 'item-active': currentView === item.id }"-->
-<!--          :key="item.name"-->
-<!--          @click="() => setClassView(item.id)"-->
-<!--        >-->
-<!--          <div class="icon"></div>-->
-<!--          <div class="item-name">{{ item.name }} {{ item.id }}</div>-->
-<!--        </div>-->
+      <div class="view-controls" v-show="isGalleryView">
+        <span class="view-controls__arrow" @click="() => toggleView()">
+          &rsaquo;
+        </span>
       </div>
     </div>
     <div class="gallery">
