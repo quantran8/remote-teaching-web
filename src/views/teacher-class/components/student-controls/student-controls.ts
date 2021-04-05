@@ -14,6 +14,13 @@ export default defineComponent({
       () => getters["teacherRoom/isAllAudioMuted"]
     );
 
+    const globalAudioText = computed(() =>
+      getters["teacherRoom/isAllAudioMuted"] ? "Unmute All" : "Mute All"
+    );
+    const globalVideoText = computed(() =>
+      getters["teacherRoom/isAllVideoHidden"] ? "Show All" : "Hide All"
+    );
+
     const onClickToggleVideo = () => {
       emit(isAllVideoHidden.value ? "show-all" : "hide-all");
     };
@@ -25,7 +32,9 @@ export default defineComponent({
       onClickToggleVideo,
       onClickToggleAudio,
       isAllVideoHidden,
-      isAllAudioMuted
+      isAllAudioMuted,
+      globalAudioText,
+      globalVideoText
     };
   }
 });

@@ -7,13 +7,11 @@
     </div>
 
     <div class="student-controls__button" @click="onClickToggleAudio">
-      <span v-if="isAllAudioMuted">Unmute all</span>
-      <span v-else>Mute all</span>
+      {{globalAudioText}}
     </div>
 
     <div class="student-controls__button" @click="onClickToggleVideo">
-      <span v-if="isAllVideoHidden">Show all</span>
-      <span v-else>Hide all</span>
+      {{globalVideoText}}
     </div>
   </div>
 </template>
