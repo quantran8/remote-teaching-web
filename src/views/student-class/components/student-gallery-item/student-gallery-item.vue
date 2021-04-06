@@ -1,6 +1,12 @@
 <template>
-  <div :class="['sc-gallery-item', isCurrent && 'sc-gallery-item--large']">
-    <img v-if="student.avatar" class="sc-gallery-item__img" :src="student.avatar" />
+  <div
+    :class="[
+      'sc-gallery-item',
+      isCurrent && 'sc-gallery-item--large',
+      isAudioHightlight && 'sc-gallery-item--speaking',
+    ]"
+  >
+    <div v-if="student.videoEnabled" class="sc-gallery-item__video" :id="student.id"></div>
     <img v-else class="sc-gallery-item__img" src="@/assets/student-class/no-avatar.png" />
     <h3 class="sc-gallery-item__title">{{ student.name }}</h3>
     <span class="sc-gallery-item__star" v-if="isCurrent">

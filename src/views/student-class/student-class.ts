@@ -1,17 +1,16 @@
 import { LoginInfo, MatIcon, RoleName } from "@/commonui";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
+import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
 import gsap from "gsap";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
-import StudentCard from "./components/student-card/student-card.vue";
 import { StudentGallery } from "./components/student-gallery";
 
 export default defineComponent({
   components: {
-    StudentCard,
     UnityView,
     MatIcon,
     StudentGallery,
@@ -39,7 +38,8 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
-    const teacher = computed(() => store.getters["studentRoom/teacher"]);
+    const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
     const localTargets = computed(() => store.getters["interactive/localTargets"]);
@@ -51,6 +51,9 @@ export default defineComponent({
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
 
+    const contentSectionRef = ref<HTMLDivElement>();
+    const videoContainerRef = ref<HTMLDivElement>();
+
     watch(errors, () => {
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
@@ -59,6 +62,19 @@ export default defineComponent({
         } else if (errors.value.errorCode === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           window.confirm(errors.value.message);
           router.replace("/");
+        }
+      }
+    });
+
+    // Left section animation
+    watch([isLessonPlan, isGameView], values => {
+      if (videoContainerRef.value) {
+        const isOtherSectionVisible = values.find(check => check);
+        const timeline = gsap.timeline();
+        if (isOtherSectionVisible) {
+          timeline.to(videoContainerRef.value, { width: 250, height: 160 });
+        } else {
+          timeline.to(videoContainerRef.value, { width: "100%", height: "100%" });
         }
       }
     });
@@ -116,15 +132,6 @@ export default defineComponent({
       console.info("onUnityViewLoaded");
     };
 
-    // const animate = (event: MouseEvent) => {
-    //   const timeline = gsap.timeline();
-    //   galleryRef.value?.childNodes.forEach(node => {
-    //     timeline.to(node, { scale: 1, duration: 0.3 });
-    //   });
-    //   // galleryRef.value?.childNodes
-    //   //   gsap.to(, { scale: 0 });
-    // };
-
     return {
       student,
       students,
@@ -151,6 +158,9 @@ export default defineComponent({
       onUnityViewLoading,
       onUnityViewLoaded,
       isStickerMode,
+      videoContainerRef,
+      contentSectionRef,
+      classInfo,
     };
   },
 });

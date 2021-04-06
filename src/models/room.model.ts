@@ -76,10 +76,16 @@ export interface RoomModel {
     userId: string;
     appId: string;
   };
+  classInfo: RoomClassInfoModel;
   lessonPlan: LessonPlanModel;
   students: Array<StudentModel>;
   contents: Array<any>;
   focusTab: number;
   studentsAudio: Array<string>;
   globalStudentsAudio: Array<string>;
+}
+
+export interface RoomClassInfoModel {
+  id: string;
+  name: string;
 }
