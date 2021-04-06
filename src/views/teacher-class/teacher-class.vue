@@ -1,7 +1,7 @@
 <template>
   <teacher-page-header v-if="teacher" :teacher-name="teacher.name" :className="roomInfo.classInfo.name"   @end="onClickEnd"></teacher-page-header>
   <div class="container">
-    <div v-if="!isGalleryView" class="lesson-plan">
+    <div class="lesson-plan" :class="{'lesson-plan--expanded':!isGalleryView}">
       <LessonPlan @open-gallery-mode="toggleView"/>
     </div>
     <div class="content">
@@ -37,11 +37,7 @@
 <!--      </div>-->
       <div class="cta-container">
         <div class="cta-button" @mouseover="onHoverCTAButton">
-          <img
-            :src="
-              require(`../../assets/icons/icon-action-${classAction.icon}.svg`)
-            "
-          />
+          <img :src="require(`../../assets/icons/icon-action-${classAction.icon}.svg`)" />
           <div
             class="cta-content"
             :class="{ 'cta-content-show': ctaVisible }"
@@ -61,11 +57,6 @@
         <div v-if="!isGalleryView" class="audio-bar">
           <GlobalAudioBar />
         </div>
-      </div>
-      <div class="view-controls" v-show="isGalleryView">
-        <span class="view-controls__arrow" @click="() => toggleView()">
-          &rsaquo;
-        </span>
       </div>
     </div>
     <div class="gallery">

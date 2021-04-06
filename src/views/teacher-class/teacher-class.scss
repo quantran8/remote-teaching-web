@@ -81,37 +81,15 @@
         flex: 1;
       }
     }
-
-    .view-controls {
-      position: fixed;
-      left: 0;
-      top: 90px;
-      width: 80px;
-      bottom: 0;
-      background: #fff;
-      -webkit-box-shadow: 1px 3px 8px 1px rgba(0,0,0,0.45);
-      -moz-box-shadow: 1px 3px 8px 1px rgba(0,0,0,0.45);
-      box-shadow: 1px 3px 8px 1px rgba(0,0,0,0.45);
-
-      .view-controls__arrow {
-        font-size: 5em;
-        font-weight: bold;
-        background: #b62424;
-        color: #fff;
-        position: absolute;
-        top: -25px;
-        left: 0;
-        right: 0px;
-        cursor: pointer;
-        text-align: right;
-        padding-right: 20px;
-      }
-    }
   }
 
   .lesson-plan {
     flex-basis: 20%;
     background-color: #fff;
+    margin-left: -325px;
+    &.lesson-plan--expanded{
+      margin-left: 0;
+    }
   }
 
   .gallery {
