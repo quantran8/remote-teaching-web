@@ -104,10 +104,12 @@ export const useTeacherRoomWSHandler = ({
       commit("setLocalAudios", payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentBadge: (payload: StudentModel) => {
-      commit("setStudentBadge", {
-        id: payload.id,
-        badge: payload.badge,
+    onTeacherUpdateStudentBadge: (payload: StudentModel[]) => {
+      payload.map(item => {
+        commit("setStudentBadge", {
+          id: item.id,
+          badge: item.badge,
+        });
       });
     },
     onTeacherUpdateBlackOut: (payload: any) => {
@@ -209,15 +211,9 @@ export const useTeacherRoomWSHandler = ({
     onTeacherSendUnity(payload: any) {
       console.log(payload);
     },
-    onTeacherSetOneToOne: async (payload: {status: boolean, id: string}) => {
-      await dispatch(
-        "teacherRoom/setOneAndOne",
-        { status: payload != null, id: payload != null ? payload.id : '' },
-        {
-          root: true
-        }
-      );
-    }
+    onTeacherSetOneToOne: async (payload: any) => {
+      console.log(payload);
+    },
   };
   return handler;
 };

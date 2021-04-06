@@ -1,4 +1,4 @@
-import { StudentState } from "@/store/room/interface";
+import { StudentState, TeacherState } from "@/store/room/interface";
 import { computed, ComputedRef, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { InteractiveStatus } from "../student-card/student-card";
@@ -20,11 +20,14 @@ export default defineComponent({
       () => store.getters["teacherRoom/students"]
     );
     const studentOneAndOneId = computed(
-      () => store.getters["teacherRoom/studentOneAndOneId"]
+      () => store.getters["modeOne/getStudentModeOneId"]
+    );
+    const teacher: ComputedRef<TeacherState> = computed(
+      () => store.getters["teacherRoom/teacher"]
     );
     const studentOne = students.value.filter(student => { return student.id === studentOneAndOneId.value }).shift();
 
-    const setDefault = async (status: boolean, id: string) => {
+    const setVideoStudent = async (status: boolean, id: string) => {
       if (studentOne) {
         await store.dispatch("teacherRoom/setStudentAudio", {
           id: id,
@@ -37,19 +40,33 @@ export default defineComponent({
       }
     }
 
+    const setVideoTeacher = async (status: boolean) => {
+      if (!teacher.value) {
+        return;
+      }
+      await store.dispatch("teacherRoom/setTeacherAudio", {
+        id: teacher.value.id,
+        enable: status,
+      });
+      await store.dispatch("teacherRoom/setTeacherVideo", {
+        id: teacher.value.id,
+        enable: status,
+      });
+    }
+
     students.value.map(student => {
-      console.log(student.id !== studentOneAndOneId.value);
       if (student.id !== studentOneAndOneId.value) {
-        setDefault(false, student.id);
+        setVideoStudent(false, student.id);
       }
     })
 
     const backToClass = async () => {
       if (studentOne) {
-        setDefault(false, studentOne.id);
-        setTimeout(()=> {
-          setDefault(true, studentOne.id);
-        },200)
+        await setVideoStudent(true, studentOne.id);
+        await setVideoStudent(false, studentOne.id);
+        await setVideoTeacher(false);
+        await setVideoTeacher(true);
+        await store.dispatch("modeOne/clearStudentOneId", { id: '' });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: false,
           id: null,

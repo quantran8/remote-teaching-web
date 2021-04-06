@@ -96,12 +96,16 @@ export default defineComponent({
       });
     }
 
+    /**
+     * Add badge for a student
+     */
     const addABadge = async () => {
       await store.dispatch("teacherRoom/setStudentBadge", {
-        id: props.id,
-        badge: props.badge + 1,
+        id: props.id, // studentId
+        badge: 1 // increase by 1
       });
     };
+
     const onClickClearRaisingHand = async () => {
       await store.dispatch("teacherRoom/clearStudentRaisingHand", {
         id: props.id,
@@ -109,14 +113,16 @@ export default defineComponent({
     };
     const onOneAndOne = async () => {
       if (props.setModeOne) {
+        await store.dispatch(
+          "modeOne/setStudentOneId",
+          { id: props.id }
+        );
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.id,
         });
-        setDefault(false);
-        setTimeout(()=> {
-          setDefault(true);
-        },300)
+        await setDefault(false);
+        await setDefault(true);
       }
     };
 
