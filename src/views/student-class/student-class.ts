@@ -122,15 +122,31 @@ export default defineComponent({
       await store.dispatch("studentRoom/studentAnswer", payload);
     };
 
-    const onUnityLoaderLoaded = () => {
-      console.info("onUnityLoaderLoaded");
-    };
-    const onUnityViewLoading = (progress: number) => {
-      console.info("onUnityViewLoading", progress);
-    };
-    const onUnityViewLoaded = () => {
-      console.info("onUnityViewLoaded");
-    };
+    // const onUnityLoaderLoaded = () => {
+    //   console.info("onUnityLoaderLoaded");
+    // };
+    // const onUnityViewLoading = (progress: number) => {
+    //   console.info("onUnityViewLoading", progress);
+    // };
+    // const onUnityViewLoaded = () => {
+    //   console.info("onUnityViewLoaded");
+    // };
+
+    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const isOneToOne = ref(false);
+    const studentIsOneToOne = ref(true);
+    watch(studentOneAndOneId, () => {
+      if (studentOneAndOneId.value) {
+        isOneToOne.value = true;
+      } else {
+        isOneToOne.value = false;
+      }
+      if (student.value) {
+        studentIsOneToOne.value = student.value.id == studentOneAndOneId.value;
+      } else {
+        studentIsOneToOne.value = true;
+      }
+    });
 
     return {
       student,
@@ -153,14 +169,14 @@ export default defineComponent({
       localTargets,
       isPointerMode,
       isDrawMode,
-      isGameView,
-      onUnityLoaderLoaded,
-      onUnityViewLoading,
-      onUnityViewLoaded,
       isStickerMode,
+      studentOneAndOneId,
+      studentIsOneToOne,
+      isOneToOne,
       videoContainerRef,
       contentSectionRef,
       classInfo,
+      isGameView,
     };
   },
 });

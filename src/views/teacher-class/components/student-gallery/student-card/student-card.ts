@@ -40,6 +40,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    setModeOne: {
+      type: Boolean,
+      default: false,
+    }
   },
   setup(props) {
     const isContextMenuVisible = ref(false);
@@ -81,16 +85,45 @@ export default defineComponent({
       });
     };
 
+    const setDefault = async (status: boolean) => {
+      await store.dispatch("teacherRoom/setStudentAudio", {
+        id: props.id,
+        enable: status,
+      });
+      await store.dispatch("teacherRoom/setStudentVideo", {
+        id: props.id,
+        enable: status,
+      });
+    }
+
+    /**
+     * Add badge for a student
+     */
     const addABadge = async () => {
       await store.dispatch("teacherRoom/setStudentBadge", {
-        id: props.id,
-        badge: props.badge + 1,
+        id: props.id, // studentId
+        badge: 1 // increase by 1
       });
     };
+
     const onClickClearRaisingHand = async () => {
       await store.dispatch("teacherRoom/clearStudentRaisingHand", {
         id: props.id,
       });
+    };
+    const onOneAndOne = async () => {
+      if (props.setModeOne) {
+        await store.dispatch(
+          "modeOne/setStudentOneId",
+          { id: props.id }
+        );
+        await store.dispatch("teacherRoom/sendOneAndOne", {
+          status: true,
+          id: props.id,
+        });
+        await setDefault(false);
+        await setDefault(true);
+      }
     };
 
     const toggleContextMenu = () => {
@@ -116,6 +149,7 @@ export default defineComponent({
       onDragStart,
       isAudioHightlight,
       onClickClearRaisingHand,
+      onOneAndOne,
       interactive,
       showCorrectAnswer
     };

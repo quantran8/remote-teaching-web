@@ -2,7 +2,6 @@ import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
-import { Logger } from "@/utils/logger";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -15,8 +14,10 @@ import {
   LeaveModal,
   ErrorModal,
   DesignateTarget,
+  TeacherPageHeader,
+  StudentControls
+
 } from "./components";
-import UnityView from "@/components/common/unity-view/UnityView.vue";
 export default defineComponent({
   components: {
     TeacherCard,
@@ -27,7 +28,8 @@ export default defineComponent({
     LeaveModal,
     ErrorModal,
     DesignateTarget,
-    UnityView
+    TeacherPageHeader,
+    StudentControls
   },
   async beforeUnmount() {
     const store = useStore();
@@ -68,14 +70,9 @@ export default defineComponent({
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
       );
     });
-
-    const views = [
-      { id: ClassView.GALLERY, name: "Gallery", icon: "" },
-      { id: ClassView.LESSON_PLAN, name: "LessonPlan", icon: "" },
-      { id: ClassView.WHITE_BOARD, name: "Whiteboard", icon: "" },
-      { id: ClassView.GAME, name: "Game", icon: "" },
-    ];
-
+    const roomInfo = computed(()=> {
+      return getters["teacherRoom/info"];
+    })
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
     });
@@ -84,13 +81,21 @@ export default defineComponent({
       return getters["teacherRoom/isGalleryView"];
     });
 
-    const isGameView = computed(() => {
-      return getters["teacherRoom/isGameView"];
-    });
-    console.log(isGameView.value, 'game view');
+    // const isGameView = computed(() => {
+    //   return getters["teacherRoom/isGameView"];
+    // });
+    // console.log(isGameView.value, 'game view');
 
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
+    };
+
+    const toggleView = async () => {
+      if (isGalleryView.value) {
+        await setClassView(ClassView.LESSON_PLAN);
+      } else {
+        await setClassView(ClassView.GALLERY);
+      }
     };
 
     const onClickHideAll = async () => {
@@ -158,7 +163,6 @@ export default defineComponent({
 
     const onClickContentView = async (payload: {
       x: number, y: number, contentId: string})=>{
-      console.log("onClickContentView", payload);
       await dispatch("teacherRoom/teacherAnswer", payload);
     };
 
@@ -171,18 +175,18 @@ export default defineComponent({
     const onClickOutSideCTAContent = () => {
       ctaVisible.value = false;
     };
-    const onUnityLoaderLoaded = () => {
-      console.info("onUnityLoaderLoaded");
-    };
-    const onUnityViewLoading = (progress: number) => {
-      console.info("onUnityViewLoading", progress);
-    };
-    const onUnityViewLoaded = () => {
-      console.info("onUnityViewLoaded");
-    };
+    // const onUnityLoaderLoaded = () => {
+    //   console.info("onUnityLoaderLoaded");
+    // };
+    // const onUnityViewLoading = (progress: number) => {
+    //   console.info("onUnityViewLoading", progress);
+    // };
+    // const onUnityViewLoaded = () => {
+    //   console.info("onUnityViewLoaded");
+    // };
     const isConnected = computed(()=> getters['teacherRoom/isConnected']);
-    watch(isConnected, async ()=>{
-      if(!isConnected.value) return;
+    watch(isConnected, async () => {
+      if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
     });
     return {
@@ -198,7 +202,7 @@ export default defineComponent({
       currentView,
       isGalleryView,
       setClassView,
-      views,
+      toggleView,
       teacher,
       onClickLeave,
       onClickCloseModal,
@@ -212,10 +216,11 @@ export default defineComponent({
       allowDesignate,
       onClickContentView,
       modalDesignateTarget,
-      isGameView,
-      onUnityLoaderLoaded,
-      onUnityViewLoading,
-      onUnityViewLoaded
+      roomInfo
+      // isGameView,
+      // onUnityLoaderLoaded,
+      // onUnityViewLoading,
+      // onUnityViewLoaded
     };
   },
 });

@@ -30,32 +30,6 @@ export default defineComponent({
     const videoIcon = computed(() =>
       props.videoEnabled ? "icon-video-on" : "icon-video-off"
     );
-
-    const isAllVideoHidden = computed(
-      () => getters["teacherRoom/isAllVideoHidden"]
-    );
-    const isAllAudioMuted = computed(
-      () => getters["teacherRoom/isAllAudioMuted"]
-    );
-
-    const globalAudioText = computed(() =>
-      getters["teacherRoom/isAllAudioMuted"] ? "Unmute All" : "Mute All"
-    );
-    const globalVideoText = computed(() =>
-      getters["teacherRoom/isAllVideoHidden"] ? "Show All" : "Hide All"
-    );
-
-    const globalAudioIcon = computed(() =>
-      getters["teacherRoom/isAllAudioMuted"]
-        ? "icon-audio-on"
-        : "icon-audio-off"
-    );
-    const globalVideoIcon = computed(() =>
-      getters["teacherRoom/isAllVideoHidden"]
-        ? "icon-video-on"
-        : "icon-video-off"
-    );
-
     const toggleAudio = () => {
       dispatch("teacherRoom/setTeacherAudio", {
         id: props.id,
@@ -68,16 +42,6 @@ export default defineComponent({
         id: props.id,
         enable: !props.videoEnabled,
       });
-    };
-
-    const onClickToggleVideo = () => {
-      emit(isAllVideoHidden.value ? "show-all" : "hide-all");
-    };
-    const onClickToggleAudio = () => {
-      emit(isAllAudioMuted.value ? "unmute-all" : "mute-all");
-    };
-    const onClickEnd = () => {
-      emit("end");
     };
 
     const localAudios = computed(() => getters["teacherRoom/localAudios"]);
@@ -103,13 +67,6 @@ export default defineComponent({
       contextMenuVisibility,
       toggleContextMenu,
       hideContextMenu,
-      onClickToggleVideo,
-      onClickToggleAudio,
-      onClickEnd,
-      globalAudioText,
-      globalVideoText,
-      globalAudioIcon,
-      globalVideoIcon,
       localAudios,
       onDrop,
       onDragOver,

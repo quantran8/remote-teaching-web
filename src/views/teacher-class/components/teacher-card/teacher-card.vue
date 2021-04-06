@@ -6,7 +6,7 @@
         <div class="mask">
           <BaseTag class="tag" tag="T"></BaseTag>
           <div class="info">
-            <div class="name">{{ name }}</div>
+<!--            <div class="name">{{ name }}</div>-->
             <BaseButton class="media-button" @click="toggleAudio">
               <BaseIcon :name="audioIcon"></BaseIcon>
             </BaseButton>
@@ -17,35 +17,6 @@
         </div>
       </div>
       <div class="setting">
-        <BaseButton
-          class="button-setting"
-          @click="toggleContextMenu"
-          v-click-outside="hideContextMenu"
-        >
-          <BaseIcon class="icon-setting" name="icon-setting"></BaseIcon>
-          <div v-if="contextMenuVisibility" class="context-menu">
-            <BaseButton class="menu-item" @click="onClickToggleVideo">
-              <BaseIcon :name="globalVideoIcon" class="menu-icon"></BaseIcon>
-              <div class="item-title">
-                {{ globalVideoText }}
-              </div>
-            </BaseButton>
-
-            <BaseButton class="menu-item" @click="onClickToggleAudio">
-              <BaseIcon :name="globalAudioIcon" class="menu-icon"></BaseIcon>
-              <div class="item-title">
-                {{ globalAudioText }}
-              </div>
-            </BaseButton>
-
-            <div class="menu-item spacer"></div>
-            <BaseButton class="menu-item" @click="onClickEnd">
-              <BaseIcon name="icon-close" class="menu-icon"></BaseIcon>
-              <div class="item-title">End</div>
-            </BaseButton>
-          </div>
-        </BaseButton>
-
         <div class="sound" @dragover="onDragOver" @drop="onDrop">
           <BaseButton mode="fill">
             <BaseIcon name="icon-audio-on"></BaseIcon>

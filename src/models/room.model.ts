@@ -54,6 +54,11 @@ export interface AnnotationModel {
   stickers: Array<Sticker>;
 }
 
+export interface ClassRoomModel {
+  id: string;
+  name: string;
+}
+
 export interface LessonPlanModel {
   contentSelected: string;
   contents: Array<ExposureContentModel>;
@@ -76,16 +81,11 @@ export interface RoomModel {
     userId: string;
     appId: string;
   };
-  classInfo: RoomClassInfoModel;
+  classInfo: ClassRoomModel;
   lessonPlan: LessonPlanModel;
   students: Array<StudentModel>;
   contents: Array<any>;
   focusTab: number;
   studentsAudio: Array<string>;
   globalStudentsAudio: Array<string>;
-}
-
-export interface RoomClassInfoModel {
-  id: string;
-  name: string;
 }

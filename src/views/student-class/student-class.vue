@@ -23,7 +23,7 @@
       </div>
       <div class="sc-content__bottom">
         <div v-show="isGameView" class="sc-unity">
-          <UnityView
+          <!-- <UnityView
             v-if="isGameView"
             src="/games/writting_book/Build/UnityLoader.js"
             json="/games/writting_book/Build/Writing_Book_Activity.json"
@@ -32,7 +32,7 @@
             @on-loader-loaded="onUnityLoaderLoaded"
             @on-progress="onUnityViewLoading"
             @on-loaded="onUnityViewLoaded"
-          ></UnityView>
+          ></UnityView> -->
         </div>
         <div v-show="currentExposureItemMedia && isLessonPlan" class="sc-lessonplan">
           <ContentView

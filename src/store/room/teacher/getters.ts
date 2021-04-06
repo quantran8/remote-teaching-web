@@ -1,5 +1,5 @@
 import {TeacherRoomManager} from "@/manager/room/teacher.manager";
-import {ClassModel, RoomModel} from "@/models";
+import {ClassRoomModel, ClassModel, RoomModel} from "@/models";
 import {GetterTree} from "vuex";
 import {ClassView, InClassStatus, StudentState, TeacherState,} from "../interface";
 import {ClassAction} from "../student/state";
@@ -63,9 +63,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   isGalleryView(state: TeacherRoomState) {
     return state.classView === ClassView.GALLERY;
   },
-  isGameView(state: TeacherRoomState) {
-    return state.classView === ClassView.GAME;
-  },
+  // isGameView(state: TeacherRoomState) {
+  //   return state.classView === ClassView.GAME;
+  // },
   isAllVideoHidden(state: TeacherRoomState) {
     const allStudents = state.students.filter(
       (s) => s.status === InClassStatus.JOINED

@@ -5,7 +5,8 @@ import ExposureDetail from "./exposure-detail/exposure-detail.vue";
 import { Exposure, ExposureStatus, ExposureType } from "@/store/lesson/state";
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
-  setup() {
+  emits: ["open-gallery-mode"],
+  setup(props,{emit}) {
     const { getters, dispatch } = useStore();
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(
@@ -20,6 +21,10 @@ export default defineComponent({
     const remainingTime = computed(
       () => getters["lesson/remainingTimeStatistic"]
     );
+
+    const backToGalleryMode = () => {
+      emit("open-gallery-mode");
+    }
 
     const onClickExposure = async (exposure: Exposure) => {
       if (
@@ -60,6 +65,7 @@ export default defineComponent({
       remainingTime,
       onClickExposure,
       onClickCloseExposure,
+      backToGalleryMode,
       isShowExposureDetail,
       activityStatistic,
     };
