@@ -70,8 +70,8 @@ export default defineComponent({
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
       );
     });
-    const classInfo = computed(()=> {
-      return getters["teacherRoom/className"];
+    const roomInfo = computed(()=> {
+      return getters["teacherRoom/info"];
     })
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
@@ -216,7 +216,7 @@ export default defineComponent({
       allowDesignate,
       onClickContentView,
       modalDesignateTarget,
-      classInfo
+      roomInfo
       // isGameView,
       // onUnityLoaderLoaded,
       // onUnityViewLoading,

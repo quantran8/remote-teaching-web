@@ -1,5 +1,5 @@
 <template>
-  <teacher-page-header v-if="teacher" :teacher-name="teacher.name" :className="classInfo"   @end="onClickEnd"></teacher-page-header>
+  <teacher-page-header v-if="teacher" :teacher-name="teacher.name" :className="roomInfo.classInfo.name"   @end="onClickEnd"></teacher-page-header>
   <div class="container">
     <div v-if="!isGalleryView" class="lesson-plan">
       <LessonPlan @open-gallery-mode="toggleView"/>
