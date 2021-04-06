@@ -209,15 +209,9 @@ export const useTeacherRoomWSHandler = ({
     onTeacherSendUnity(payload: any) {
       console.log(payload);
     },
-    onTeacherSetOneToOne: async (payload: {status: boolean, id: string}) => {
-      await dispatch(
-        "teacherRoom/setOneAndOne",
-        { status: payload != null, id: payload != null ? payload.id : '' },
-        {
-          root: true
-        }
-      );
-    }
+    onTeacherSetOneToOne: async (payload: any) => {
+      console.log(payload);
+    },
   };
   return handler;
 };
