@@ -27,7 +27,7 @@ export default defineComponent({
     );
     const studentOne = students.value.filter(student => { return student.id === studentOneAndOneId.value }).shift();
 
-    const setDefaultStudent = async (status: boolean, id: string) => {
+    const setVideoStudent = async (status: boolean, id: string) => {
       if (studentOne) {
         await store.dispatch("teacherRoom/setStudentAudio", {
           id: id,
@@ -40,31 +40,32 @@ export default defineComponent({
       }
     }
 
-    const setDefaultTeacher = async (status: boolean) => {
-      if (teacher.value) {
-        await store.dispatch("teacherRoom/setTeacherAudio", {
-          id: teacher.value.id,
-          enable: status,
-        });
-        await store.dispatch("teacherRoom/setTeacherVideo", {
-          id: teacher.value.id,
-          enable: status,
-        });
+    const setVideoTeacher = async (status: boolean) => {
+      if (!teacher.value) {
+        return;
       }
+      await store.dispatch("teacherRoom/setTeacherAudio", {
+        id: teacher.value.id,
+        enable: status,
+      });
+      await store.dispatch("teacherRoom/setTeacherVideo", {
+        id: teacher.value.id,
+        enable: status,
+      });
     }
 
     students.value.map(student => {
       if (student.id !== studentOneAndOneId.value) {
-        setDefaultStudent(false, student.id);
+        setVideoStudent(false, student.id);
       }
     })
 
     const backToClass = async () => {
       if (studentOne) {
-        await setDefaultStudent(true, studentOne.id);
-        await setDefaultStudent(false, studentOne.id);
-        await setDefaultTeacher(false);
-        await setDefaultTeacher(true);
+        await setVideoStudent(true, studentOne.id);
+        await setVideoStudent(false, studentOne.id);
+        await setVideoTeacher(false);
+        await setVideoTeacher(true);
         await store.dispatch("modeOne/clearStudentOneId", { id: '' });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: false,
