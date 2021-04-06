@@ -144,12 +144,18 @@ export default defineComponent({
     // };
 
     const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
-    const notOneToOne = ref(true);
+    const isOneToOne = ref(false);
+    const studentIsOneToOne = ref(true);
     watch(studentOneAndOneId, () => {
-      if (student.value) {
-        notOneToOne.value = student.value.id != studentOneAndOneId.value;
+      if (studentOneAndOneId.value) {
+        isOneToOne.value = true;
       } else {
-        notOneToOne.value = true;
+        isOneToOne.value = false;
+      }
+      if (student.value) {
+        studentIsOneToOne.value = student.value.id == studentOneAndOneId.value;
+      } else {
+        studentIsOneToOne.value = true;
       }
     });
 
@@ -176,7 +182,8 @@ export default defineComponent({
       isDrawMode,
       isStickerMode,
       studentOneAndOneId,
-      notOneToOne
+      studentIsOneToOne,
+      isOneToOne,
     };
   }
 });
