@@ -42,6 +42,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   info(state: TeacherRoomState): RoomModel {
     return state.info as RoomModel;
   },
+  className(state: TeacherRoomState): string {
+    return state.info ? state.info.classInfo.name : "" ;
+  },
   error(state: TeacherRoomState): any {
     return state.error;
   },

@@ -5,7 +5,7 @@
       <img src="@/assets/images/teacher-header-icon.png" alt="" />
     </div>
     <div id="header__class-name">
-      Butterfly class
+      {{className}}
     </div>
     <a href="javascript:" id="app-exit" @click="onClickEnd">Exit</a>
   </div>
