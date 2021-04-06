@@ -45,7 +45,6 @@ export default defineComponent({
     const localTargets = computed(() => store.getters["interactive/localTargets"]);
     const isAssigned = computed(() => store.getters["interactive/isAssigned"]);
     const isLessonPlan = computed(() => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN);
-    const isGameView = computed(() => store.getters["studentRoom/classView"] === ClassView.GAME);
     const errors: ComputedRef<GLError> = computed(() => store.getters["studentRoom/error"]);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
@@ -67,7 +66,7 @@ export default defineComponent({
     });
 
     // Left section animation
-    watch([isLessonPlan, isGameView], values => {
+    watch([isLessonPlan], values => {
       if (videoContainerRef.value) {
         const isOtherSectionVisible = values.find(check => check);
         const timeline = gsap.timeline();
@@ -176,7 +175,6 @@ export default defineComponent({
       videoContainerRef,
       contentSectionRef,
       classInfo,
-      isGameView,
     };
   },
 });

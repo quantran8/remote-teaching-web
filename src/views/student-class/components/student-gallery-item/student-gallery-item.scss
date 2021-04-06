@@ -1,16 +1,9 @@
 .sc-gallery-item {
+  $self: &;
   $gallery-item-size: 100px;
   background-color: #ccc;
   border-radius: 50%;
-  &--large {
-    width: $gallery-item-size * 2;
-    height: $gallery-item-size * 2;
-    transform: translate(-50%, -50%);
-    margin: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-  }
+
   &::before {
     content: "";
     position: absolute;
@@ -85,6 +78,36 @@
       display: block;
       line-height: 38px;
       font-weight: 600;
+    }
+  }
+  &--large,
+  &--xlarge {
+    transform: translate(-50%, -50%);
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+  &--large {
+    width: $gallery-item-size * 2;
+    height: $gallery-item-size * 2;
+  }
+  &--xlarge {
+    width: $gallery-item-size * 4;
+    height: $gallery-item-size * 4;
+    #{$self}__title {
+      padding-top: 30px;
+      font-size: 32px;
+    }
+    #{$self}__star {
+      width: 50px;
+      height: 50px;
+      right: 50px;
+      bottom: 40px;
+      &__content {
+        font-size: 24px;
+        line-height: 50px;
+      }
     }
   }
 }

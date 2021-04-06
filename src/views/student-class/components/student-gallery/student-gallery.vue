@@ -1,7 +1,9 @@
 <template>
   <div class="sc-gallery">
-    <StudentGalleryItem v-for="student in topStudents" :key="student.id" :student="student" />
-    <StudentGalleryItem v-if="currentStudent" :student="currentStudent" :isCurrent="true" />
+    <template v-if="!isOneToOne">
+      <StudentGalleryItem v-for="student in topStudents" :key="student.id" :student="student" />
+    </template>
+    <StudentGalleryItem v-if="currentStudent" :student="currentStudent" :isCurrent="true" :isOneToOne="isOneToOne" />
   </div>
 </template>
 

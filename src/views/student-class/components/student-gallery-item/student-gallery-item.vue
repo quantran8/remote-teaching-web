@@ -4,6 +4,7 @@
       'sc-gallery-item',
       isCurrent && 'sc-gallery-item--large',
       isAudioHightlight && 'sc-gallery-item--speaking',
+      isOneToOne && 'sc-gallery-item--xlarge',
     ]"
   >
     <div v-if="student.videoEnabled" class="sc-gallery-item__video" :id="student.id"></div>

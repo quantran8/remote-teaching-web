@@ -22,8 +22,8 @@
         <div :id="teacher?.id" class="sc-teacher__video"></div>
       </div>
       <div class="sc-content__bottom">
-        <div v-show="isGameView" class="sc-unity">
-          <!-- <UnityView
+        <!-- <div v-show="isGameView" class="sc-unity">
+          <UnityView
             v-if="isGameView"
             src="/games/writting_book/Build/UnityLoader.js"
             json="/games/writting_book/Build/Writing_Book_Activity.json"
@@ -32,8 +32,8 @@
             @on-loader-loaded="onUnityLoaderLoaded"
             @on-progress="onUnityViewLoading"
             @on-loaded="onUnityViewLoaded"
-          ></UnityView> -->
-        </div>
+          ></UnityView>
+        </div> -->
         <div v-show="currentExposureItemMedia && isLessonPlan" class="sc-lessonplan">
           <ContentView
             v-if="!isPointerMode && !isDrawMode && !isStickerMode"
@@ -53,7 +53,7 @@
         <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
     </div>
-    <StudentGallery :currentStudent="student" :students="students" />
+    <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
     <div class="sc-action">
       <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
         <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />

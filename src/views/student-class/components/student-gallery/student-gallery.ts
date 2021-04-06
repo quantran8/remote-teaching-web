@@ -4,20 +4,21 @@ import { StudentGalleryItem } from "../student-gallery-item";
 
 export default defineComponent({
   components: {
-    StudentGalleryItem
+    StudentGalleryItem,
   },
   props: {
     currentStudent: {
       type: Object as () => StudentState,
-      required: true
+      required: true,
     },
     students: {
       type: Object as () => StudentState[],
-      required: true
-    }
+      required: true,
+    },
+    isOneToOne: Boolean,
   },
   setup(props) {
     const topStudents = computed(() => props.students.slice(0, 10));
     return { topStudents };
-  }
+  },
 });

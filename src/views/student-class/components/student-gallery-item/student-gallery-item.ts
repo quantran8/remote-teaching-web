@@ -8,6 +8,7 @@ export default defineComponent({
   props: {
     student: { type: Object as () => StudentState, required: true },
     isCurrent: Boolean,
+    isOneToOne: Boolean,
   },
   setup: props => {
     const student = computed(() => props.student).value;
