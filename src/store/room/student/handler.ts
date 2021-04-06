@@ -163,15 +163,17 @@ export const useStudentRoomHandler = (
     onTeacherUpdateLocalAudio: (_payload: any) => {
       // do nothing
     },
-    onTeacherUpdateStudentBadge: (payload: StudentModel) => {
-      commit("setStudentBadge", {
-        id: payload.id,
-        badge: payload.badge,
+    onTeacherUpdateStudentBadge: (payload: StudentModel[]) => {
+      payload.map(item => {
+        commit("setStudentBadge", {
+          id: item.id,
+          badge: item.badge
+        });
+        if (item.id === state.student?.id) {
+          const message = `Congratulations! You got 1 more badge from your teacher!`;
+          store.dispatch("setToast", message, { root: true });
+        }
       });
-      if (payload.id === state.student?.id) {
-        const message = `Congratulations! You got 1 more badge from your teacher!`;
-        store.dispatch("setToast", message, { root: true });
-      }
     },
     onTeacherUpdateBlackOut: (payload: any) => {
       commit(

@@ -44,10 +44,11 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestEndRoom(roomId: string) {
     return this.send(WSCmd.END_CLASS, { roomId: roomId });
   }
-  sendRequestSetStudentBadge(StudentId: string, Badge: number) {
+
+  sendRequestSetStudentBadge(StudentIds: string[], Badge: number) {
     return this.send(WSCmd.SET_STUDENT_BADGE, {
-      StudentId: StudentId,
-      Badge: Badge,
+      StudentIds: StudentIds,
+      Badge: Badge
     });
   }
   sendRequestAddStudentAudio(StudentId: string) {

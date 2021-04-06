@@ -3,40 +3,41 @@
     <div class="video" :id="id"></div>
     <div class="mask" :class="{ masked: !videoEnabled && !isNotJoinned }">
       <div
-        class="raising-hand"
-        v-if="raisingHand"
-        @click="onClickClearRaisingHand"
+          class="raising-hand"
+          v-if="raisingHand"
+          @click="onClickClearRaisingHand"
       ></div>
       <div class="name" @click="onOneAndOne">
         {{ name }}
       </div>
       <div class="interactive" v-if="showCorrectAnswer">
         <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
+
         <StudentBadge
-          class="interactive-badge"
-          :badge="interactive.correct"
-          v-else-if="interactive.status === 1"
+            class="interactive-badge"
+            :badge="interactive.correct"
+            v-else-if="interactive.status === 1"
         />
       </div>
       <div class="info">
         <BaseTag
-          draggable="true"
-          @dragstart="onDragStart"
-          :tag="`${index + 1}`"
-          @click="toggleContextMenu"
-          v-click-outside="hideContextMenu"
+            draggable="true"
+            @dragstart="onDragStart"
+            :tag="`${index + 1}`"
+            @click="toggleContextMenu"
+            v-click-outside="hideContextMenu"
         />
         <BaseButton
-          class="media-button"
-          :class="{ hightlight: isAudioHightlight }"
-          @click="toggleAudio"
-          draggable="true"
-          @dragstart="onDragStart"
+            class="media-button"
+            :class="{ hightlight: isAudioHightlight }"
+            @click="toggleAudio"
+            draggable="true"
+            @dragstart="onDragStart"
         >
-          <BaseIcon :name="audioIcon"></BaseIcon>
+          <BaseIcon :name="audioIcon"/>
         </BaseButton>
         <BaseButton class="media-button" @click="toggleVideo">
-          <BaseIcon :name="videoIcon"></BaseIcon>
+          <BaseIcon :name="videoIcon"/>
         </BaseButton>
       </div>
       <StudentBadge class="badge" :badge="badge" @click="addABadge" />
