@@ -117,10 +117,8 @@ export default defineComponent({
           status: true,
           id: props.id,
         });
-        setDefault(false);
-        setTimeout(()=> {
-          setDefault(true);
-        },300)
+        await setDefault(false);
+        await setDefault(true);
       }
     };
 

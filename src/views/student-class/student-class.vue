@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <div class="media-buttons">
+      <div class="media-buttons" v-if="studentIsOneToOne || !isOneToOne">
         <BaseButton class="media-button" @click="toggleAudio" draggable="true">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
@@ -23,7 +23,7 @@
           :showBadge="true"
         />
       </div>
-      <div class="fill-center" v-if="notOneToOne">
+      <div class="fill-center" v-if="!isOneToOne">
         <StudentCard
           v-for="student in students.slice(0, 5)"
           :key="student.id"
@@ -46,10 +46,11 @@
           <img src="@/assets/icons/icon-action-like.svg" alt="" />
         </div>
       </div>
-      <div class="teacher-view" v-if="teacher">
+      <div class="teacher-view" v-if="(teacher && studentIsOneToOne) || (teacher && !isOneToOne)">
         <div :id="teacher.id" class="teacher-camera"></div>
         <div class="teacher-name">{{ teacher.name }}</div>
       </div>
+      <div class="teacher-view one-to-one" v-else />
 <!--      <div v-if="isGameView" class="unityWrapper">-->
 <!--        <UnityView-->
 <!--          src="/games/writting_book/Build/UnityLoader.js"-->
@@ -87,7 +88,7 @@
           alt=""
         />
       </div>
-      <div class="fill-center" v-if="notOneToOne">
+      <div class="fill-center" v-if="!isOneToOne">
         <StudentCard
           v-for="student in students.slice(5)"
           :key="student.id"
