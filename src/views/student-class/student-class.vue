@@ -23,7 +23,7 @@
           :showBadge="true"
         />
       </div>
-      <div class="fill-center">
+      <div class="fill-center" v-if="notOneToOne">
         <StudentCard
           v-for="student in students.slice(0, 5)"
           :key="student.id"
@@ -87,7 +87,7 @@
           alt=""
         />
       </div>
-      <div class="fill-center">
+      <div class="fill-center" v-if="notOneToOne">
         <StudentCard
           v-for="student in students.slice(5)"
           :key="student.id"

@@ -87,12 +87,6 @@ const getters: GetterTree<TeacherRoomState, any> = {
   classAction(state: TeacherRoomState): ClassAction {
     return state.classAction;
   },
-  oneAndOneStatus(state: TeacherRoomState): boolean {
-    return state.oneAndOne;
-  },
-  studentOneAndOneId(state: TeacherRoomState): string {
-    return state.studentOneAndOneId;
-  },
 };
 
 export default getters;
