@@ -5,10 +5,7 @@
       <div class="name">{{ name }}</div>
       <StudentBadge class="badge" :badge="badge" v-if="showBadge" />
       <div class="info" v-if="!showBadge && isAudioHightlight">
-        <BaseButton
-          class="media-button"
-          :class="{ hightlight: isAudioHightlight }"
-        >
+        <BaseButton class="media-button" :class="{ hightlight: isAudioHightlight }">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
       </div>

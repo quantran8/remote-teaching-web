@@ -128,7 +128,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setStudentBadge({ state }, payload: StudentBadgePayload) {
     state.manager?.WSClient.sendRequestSetStudentBadge(
-      payload.id,
+      [payload.id],
       payload.badge
     );
   },

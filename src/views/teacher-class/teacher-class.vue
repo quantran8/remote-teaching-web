@@ -20,9 +20,10 @@
           @end="onClickEnd"
         />
       </div>
-<!--      <div v-if="!isGalleryView && !isGameView" class="activity-content">-->
-<!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
-<!--      </div>-->
+      <div v-if="!isGalleryView" class="activity-content">
+        <ActivityContent @on-click-content-view="onClickContentView" />
+      </div>
+
 <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
 <!--        <UnityView-->
 <!--          src="/games/writting_book/Build/UnityLoader.js"-->
@@ -68,6 +69,11 @@
       </div>
     </div>
     <div class="gallery">
+      <StudentControls
+          @hide-all="onClickHideAll"
+          @mute-all="onClickMuteAll"
+          @show-all="onClickShowAll"
+          @unmute-all="onClickUnmuteAll" />
       <StudentGallery />
     </div>
     <LeaveModal

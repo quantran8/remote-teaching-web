@@ -14,7 +14,8 @@ import {
   LeaveModal,
   ErrorModal,
   DesignateTarget,
-  TeacherPageHeader
+  TeacherPageHeader,
+  StudentControls
 
 } from "./components";
 export default defineComponent({
@@ -27,7 +28,8 @@ export default defineComponent({
     LeaveModal,
     ErrorModal,
     DesignateTarget,
-    TeacherPageHeader
+    TeacherPageHeader,
+    StudentControls
   },
   async beforeUnmount() {
     const store = useStore();
