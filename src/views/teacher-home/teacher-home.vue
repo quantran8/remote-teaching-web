@@ -5,16 +5,23 @@
     <p>Choose a class to start</p>
     <hr />
     <div>
-      <ClassCard
-        class="card-margin"
-        v-for="cl in classes"
-        :key="cl.schoolClassId"
-        :id="cl.schoolClassId"
-        :title="cl.schoolClassName"
-        :description="cl.schoolName"
-        :active="cl.isActive"
-        @click="() => onClickClass(cl)"
-      />
+      <div class="teacher-page__school-select">
+        <select>
+          <!-- <option @change="" :key="school.id" v-for="school in schools">{{ school }}</option> -->
+        </select>
+      </div>
+      <div>
+        <ClassCard
+          class="card-margin"
+          v-for="cl in classes"
+          :key="cl.schoolClassId"
+          :id="cl.schoolClassId"
+          :title="cl.schoolClassName"
+          :description="cl.schoolName"
+          :active="cl.isActive"
+          @click="() => onClickClass(cl)"
+        />
+      </div>
     </div>
   </div>
 </template>

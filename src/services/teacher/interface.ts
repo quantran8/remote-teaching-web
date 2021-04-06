@@ -1,5 +1,8 @@
-import { GetClassesModel } from ".";
+import { ResourceModel } from "@/models/resource.model";
+import { GetClassesModel, AccessibleSchoolQueryParam, AccessibleClassModel, AccessibleClassQueryParam } from ".";
 
 export interface TeacherServiceInterface {
   getClasses(teacherId: string): Promise<GetClassesModel>;
+  getAccessibleSchools(params: AccessibleSchoolQueryParam): Promise<ResourceModel[]>;
+  getAccessibleClasses(params: AccessibleClassQueryParam): Promise<AccessibleClassModel[]>;
 }

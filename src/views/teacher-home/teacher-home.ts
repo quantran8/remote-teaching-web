@@ -1,6 +1,6 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import { LessonService, RemoteTeachingService } from "@/services";
+import { AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -16,11 +16,16 @@ export default defineComponent({
       await store.dispatch("teacher/loadClasses", {
         teacherId: logginInfo.profile.sub,
       });
+
+      await store.dispatch("teacher/loadAccessibleSchools", {
+        disabled: true,
+      } as AccessibleSchoolQueryParam);
     }
   },
   setup() {
     const store = useStore();
     const router = useRouter();
+    const schools = computed(() => store.getters["teacher/schools"]);
     const classes = computed(() => store.getters["teacher/classes"]);
     const username = computed(() => store.getters["auth/username"]);
     const startClass = async (teacherClass: TeacherClassModel) => {
@@ -60,6 +65,9 @@ export default defineComponent({
         startClass(teacherClass);
       }
     };
-    return { classes, username, onClickClass };
+    const onSchoolChange = () => {
+      
+    };
+    return { schools, classes, username, onClickClass };
   },
 });
