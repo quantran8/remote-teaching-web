@@ -22,12 +22,18 @@ export interface AccessibleClassQueryParam {
   campusId?: string;
   ignoreFutureClass?: boolean;
   isDetail?: boolean;
+  isCampusDetail?: boolean;
   disabled?: boolean;
 }
 
+export interface GetAccessibleClassResponseModel {
+  data: Array<AccessibleClassModel>;
+  totalCount: number;
+}
+
 export interface AccessibleClassModel {
-  id: string;
-  name: string;
+  schoolClassId: string;
+  schoolClassName: string;
   campusId: string;
   campusName: string;
 }

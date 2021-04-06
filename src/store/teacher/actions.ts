@@ -27,9 +27,10 @@ const actions: ActionTree<TeacherState, any> = {
   },
   async loadAccessibleClasses({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleClassQueryParam) {
     if (!state.info) return;
-    const response = await TeacherService.getAccessibleClasses(payload) as unknown[] as ClassModel[];
+    const response = await TeacherService.getAccessibleClasses(payload);
+
     const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
-    commit("setClasses", response);
+    commit("setClasses", response.data as unknown[] as ClassModel[]);
     commit("setClassRoom", responseActive.data);
   },
 };

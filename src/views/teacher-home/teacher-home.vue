@@ -6,8 +6,8 @@
     <hr />
     <div>
       <div class="teacher-page__school-select">
-        <select>
-          <!-- <option @change="" :key="school.id" v-for="school in schools">{{ school }}</option> -->
+        <select @change="onSchoolChange($event)">
+          <option :value="school.id" :key="school.id" v-for="school in schools">{{ school.name }}</option>
         </select>
       </div>
       <div>
@@ -17,7 +17,7 @@
           :key="cl.schoolClassId"
           :id="cl.schoolClassId"
           :title="cl.schoolClassName"
-          :description="cl.schoolName"
+          :description="cl.campusName"
           :active="cl.isActive"
           @click="() => onClickClass(cl)"
         />

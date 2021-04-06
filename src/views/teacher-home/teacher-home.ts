@@ -1,10 +1,12 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import { AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
-import { computed, defineComponent } from "vue";
+import { ResourceModel } from "@/models/resource.model";
+import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
+import { computed, defineComponent, onUpdated } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
+
 export default defineComponent({
   components: {
     ClassCard,
@@ -13,13 +15,20 @@ export default defineComponent({
     const store = useStore();
     const logginInfo: LoginInfo = store.getters["auth/loginInfo"];
     if (logginInfo && logginInfo.loggedin) {
-      await store.dispatch("teacher/loadClasses", {
-        teacherId: logginInfo.profile.sub,
-      });
-
       await store.dispatch("teacher/loadAccessibleSchools", {
-        disabled: true,
+        disabled: false,
       } as AccessibleSchoolQueryParam);
+
+      const schools: ResourceModel[] = store.getters["teacher/schools"];
+
+      if (schools && schools.length) {
+        store.dispatch("teacher/loadAccessibleClasses", {
+          schoolId: schools[0].id,
+          disabled: false,
+          isDetail: false,
+          isCampusDetail: true
+        } as AccessibleClassQueryParam);
+      }
     }
   },
   setup() {
@@ -58,6 +67,17 @@ export default defineComponent({
         }
       }
     };
+    const onSchoolChange = (e: any) => {
+      const schoolId = e.target.value;
+      
+      store.dispatch("teacher/loadAccessibleClasses", {
+        schoolId,
+        disabled: false,
+        isDetail: false,
+        isCampusDetail: true
+      } as AccessibleClassQueryParam);
+    };
+
     const onClickClass = (teacherClass: TeacherClassModel) => {
       if (teacherClass.isActive) {
         router.push("/class/" + teacherClass.schoolClassId);
@@ -65,9 +85,7 @@ export default defineComponent({
         startClass(teacherClass);
       }
     };
-    const onSchoolChange = () => {
-      
-    };
-    return { schools, classes, username, onClickClass };
+
+    return { schools, classes, username, onClickClass, onSchoolChange };
   },
 });
