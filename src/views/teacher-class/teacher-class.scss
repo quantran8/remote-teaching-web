@@ -84,10 +84,10 @@
   }
 
   .lesson-plan {
-    flex-basis: 20%;
+    flex-basis: 375px;
     background-color: #fff;
     margin-left: -325px;
-    &.lesson-plan--expanded{
+    &--expanded {
       margin-left: 0;
     }
   }
