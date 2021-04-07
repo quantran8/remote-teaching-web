@@ -29,6 +29,17 @@ export const useStudentRoomHandler = (
       await dispatch("annotation/setInfo", payload.lessonPlan.annotation, {
         root: true,
       });
+      if(payload.studentOneToOne) {
+        await dispatch(
+          "modeOne/setStudentOneId",
+          { id: payload.studentOneToOne },
+          {
+            root: true
+          }
+        );
+      } else {
+        await store.dispatch("modeOne/clearStudentOneId", { id: '' }, {root: true});
+      }
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {

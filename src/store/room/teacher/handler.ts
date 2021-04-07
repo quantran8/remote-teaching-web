@@ -18,6 +18,17 @@ export const useTeacherRoomWSHandler = ({
       await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
         root: true,
       });
+      if(payload.studentOneToOne) {
+        await dispatch(
+          "modeOne/setStudentOneId",
+          { id: payload.studentOneToOne },
+          {
+            root: true
+          }
+        );
+      } else {
+        await dispatch("modeOne/clearStudentOneId", { id: '' }, {root: true});
+      }
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });

@@ -1,5 +1,5 @@
 import { StudentState, TeacherState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent } from "vue";
+import { computed, ComputedRef, defineComponent, watch } from "vue";
 import { useStore } from "vuex";
 import { InteractiveStatus } from "../student-card/student-card";
 import StudentCard from "../student-card/student-card.vue";
@@ -25,53 +25,77 @@ export default defineComponent({
     const teacher: ComputedRef<TeacherState> = computed(
       () => store.getters["teacherRoom/teacher"]
     );
-    const studentOne = students.value.filter(student => { return student.id === studentOneAndOneId.value }).shift();
+    const studentOne = students.value.filter(student => { return student.id === studentOneAndOneId.value })[0];
 
-    const setVideoStudent = async (status: boolean, id: string) => {
-      if (studentOne) {
-        await store.dispatch("teacherRoom/setStudentAudio", {
-          id: id,
-          enable: status,
-        });
-        await store.dispatch("teacherRoom/setStudentVideo", {
-          id: id,
-          enable: status,
-        });
-      }
+    const setVideoAudioStudent = async (audioStatus: boolean, videoStatus: boolean, id: string) => {
+      await store.dispatch("teacherRoom/setStudentAudio", {
+        id: id,
+        enable: audioStatus,
+      });
+      await store.dispatch("teacherRoom/setStudentVideo", {
+        id: id,
+        enable: videoStatus,
+      });
     }
 
-    const setVideoTeacher = async (status: boolean) => {
+    const setDefaultVideoStudent = () => {
+      students.value.map(student => {
+        if (student.id !== studentOneAndOneId.value) {
+          setVideoAudioStudent(false, true, student.id);
+        }
+      })
+    }
+
+    const toggleVideoAudioTeacher = async (audioStatus: boolean, videoStatus: boolean, id: string) => {
+      await store.dispatch("teacherRoom/setTeacherAudio", {
+        id: id,
+        enable: audioStatus,
+      });
+      await store.dispatch("teacherRoom/setTeacherVideo", {
+        id: id,
+        enable: videoStatus,
+      });
+    }
+
+    const setVideoTeacher = async () => {
       if (!teacher.value) {
         return;
       }
-      await store.dispatch("teacherRoom/setTeacherAudio", {
-        id: teacher.value.id,
-        enable: status,
-      });
-      await store.dispatch("teacherRoom/setTeacherVideo", {
-        id: teacher.value.id,
-        enable: status,
-      });
+      const teacherInfo = teacher.value;
+      if (teacherInfo.audioEnabled && teacherInfo.videoEnabled){
+        await toggleVideoAudioTeacher(false, false, teacherInfo.id);
+        await toggleVideoAudioTeacher(true, true, teacherInfo.id);
+      } else {
+        await toggleVideoAudioTeacher(true, true, teacherInfo.id);
+      }
     }
 
-    students.value.map(student => {
-      if (student.id !== studentOneAndOneId.value) {
-        setVideoStudent(false, student.id);
+    let turnOnCurrentStudent = false;
+    watch(studentOne, async () => {
+      if (turnOnCurrentStudent) {
+        return;
+      }
+      if (studentOne && studentOne.audioEnabled && studentOne.videoEnabled){
+        await setVideoAudioStudent(false, false, studentOne.id);
+        setTimeout(async () => {
+          await setVideoAudioStudent(true, true, studentOne.id);
+        }, 200)
+        turnOnCurrentStudent = true;
+      } else {
+        turnOnCurrentStudent = false;
       }
     })
 
+    setDefaultVideoStudent();
+    setVideoTeacher();
+
     const backToClass = async () => {
-      if (studentOne) {
-        await setVideoStudent(true, studentOne.id);
-        await setVideoStudent(false, studentOne.id);
-        await setVideoTeacher(false);
-        await setVideoTeacher(true);
-        await store.dispatch("modeOne/clearStudentOneId", { id: '' });
-        await store.dispatch("teacherRoom/sendOneAndOne", {
-          status: false,
-          id: null,
-        });
-      }
+      await setVideoTeacher();
+      await store.dispatch("modeOne/clearStudentOneId", { id: '' });
+      await store.dispatch("teacherRoom/sendOneAndOne", {
+        status: false,
+        id: null,
+      });
     };
 
     return {

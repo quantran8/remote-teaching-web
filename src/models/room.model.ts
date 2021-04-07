@@ -76,6 +76,7 @@ export interface RoomModel {
     userId: string;
     appId: string;
   };
+  studentOneToOne: string;
   lessonPlan: LessonPlanModel;
   students: Array<StudentModel>;
   contents: Array<any>;

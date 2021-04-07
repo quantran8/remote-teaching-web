@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <div class="media-buttons" v-if="studentIsOneToOne || !isOneToOne">
+      <div class="media-buttons">
         <BaseButton class="media-button" @click="toggleAudio" draggable="true">
           <BaseIcon :name="audioIcon"></BaseIcon>
         </BaseButton>
