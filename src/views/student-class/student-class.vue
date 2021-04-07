@@ -19,8 +19,8 @@
   <div class="sc-body">
     <div class="sc-content" ref="contentSectionRef">
       <div class="sc-content__top sc-teacher" ref="videoContainerRef">
-        <div :id="teacher?.id" :class="studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'"></div>
-		<div :class="!studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'">
+        <div :id="teacher?.id" :class="!isOneToOne || studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'"></div>
+		<div :class="isOneToOne && !studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'">
 			<img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
 		</div>
       </div>
