@@ -7,7 +7,7 @@ import AgoraRTC, {
   ICameraVideoTrack,
   ILocalTrack,
   IMicrophoneAudioTrack,
-  IRemoteTrack,
+  IRemoteTrack, UID,
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import {isEqual} from "lodash";
@@ -39,6 +39,12 @@ export interface AgoraEventHandler {
     mediaType: "audio" | "video"
   ): void;
   onException(payload: any): void;
+  onVolumeIndicator(
+      result: {
+        level: number;
+        uid: UID;
+      }[]
+  ): void;
 }
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
@@ -92,6 +98,7 @@ export class AgoraClient implements AgoraClientSDK {
       await this.openCamera(options.videoEncoderConfigurationPreset);
     }
     if (options.microphone) await this.openMicrophone();
+    this.client.enableAudioVolumeIndicator();
     await this._publish();
   }
 
@@ -99,6 +106,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("user-published", handler.onUserPublished);
     this.client.on("user-unpublished", handler.onUserUnPublished);
     this.client.on("exception", handler.onException);
+    this.client.on("volume-indicator", handler.onVolumeIndicator);
   }
 
   subscribedVideos: Array<{

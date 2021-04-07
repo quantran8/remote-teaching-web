@@ -53,6 +53,23 @@ export default defineComponent({
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
 
+    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const isOneToOne = ref(false);
+    const studentIsOneToOne = ref(true);
+
+    watch(studentOneAndOneId, () => {
+      if (studentOneAndOneId.value) {
+        isOneToOne.value = true;
+      } else {
+        isOneToOne.value = false;
+      }
+      if (student.value) {
+        studentIsOneToOne.value = student.value.id == studentOneAndOneId.value;
+      } else {
+        studentIsOneToOne.value = true;
+      }
+    });
+
     watch(errors, () => {
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
@@ -82,6 +99,9 @@ export default defineComponent({
     const videoIcon = computed(() => (student.value?.videoEnabled ? "icon-video-on" : "icon-video-off"));
 
     const toggleAudio = async () => {
+      if (!studentIsOneToOne.value) {
+        return;
+      }
       await store.dispatch("studentRoom/setStudentAudio", {
         id: student.value.id,
         enable: !student.value.audioEnabled,
@@ -130,22 +150,6 @@ export default defineComponent({
     // const onUnityViewLoaded = () => {
     //   console.info("onUnityViewLoaded");
     // };
-
-    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
-    const isOneToOne = ref(false);
-    const studentIsOneToOne = ref(true);
-    watch(studentOneAndOneId, () => {
-      if (studentOneAndOneId.value) {
-        isOneToOne.value = true;
-      } else {
-        isOneToOne.value = false;
-      }
-      if (student.value) {
-        studentIsOneToOne.value = student.value.id == studentOneAndOneId.value;
-      } else {
-        studentIsOneToOne.value = true;
-      }
-    });
 
     return {
       student,

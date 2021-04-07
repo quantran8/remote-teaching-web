@@ -81,6 +81,7 @@ export interface RoomModel {
     userId: string;
     appId: string;
   };
+  studentOneToOne: string;
   classInfo: ClassRoomModel;
   lessonPlan: LessonPlanModel;
   students: Array<StudentModel>;
