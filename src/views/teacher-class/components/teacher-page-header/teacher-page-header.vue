@@ -17,7 +17,7 @@
             :key="action.icon"
           >
             <img :src="require(`@/assets/icons/icon-action-${action.icon}.svg`)" />
-            <span class="legend-reaction">{{action.icon}}</span>
+            <span class="action-text">{{action.icon}}</span>
           </button>
         </div>
       </div>

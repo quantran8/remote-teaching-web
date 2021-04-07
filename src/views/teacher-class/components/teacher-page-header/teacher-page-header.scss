@@ -51,15 +51,8 @@ Reaction
 $icon-size: 50px;
 $action-icon-container-size:70px;
 
-.field-reactions:checked:focus ~ .text-desc, .field-reactions, [class*=reaction-], .text-desc {
-  clip: rect(1px, 1px, 1px, 1px);
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
 
-.field-reactions:checked ~ [class*=reaction-], .box:hover [class*=reaction-], .field-reactions:focus ~ .text-desc {
+.box:hover [class*=reaction-] {
   clip: auto;
   overflow: visible;
   opacity: 1;
@@ -100,14 +93,6 @@ $action-icon-container-size:70px;
   visibility: hidden;
 }
 
-.field-reactions:focus ~ .label-reactions {
-  border-color: rgba(88, 144, 255, 0.3);
-}
-
-.field-reactions:checked:focus ~ .label-reactions {
-  border-color: transparent;
-}
-
 .label-reactions {
   display: block;
   height: $action-icon-container-size;
@@ -138,7 +123,7 @@ $action-icon-container-size:70px;
   transition: opacity 0.15s;
 }
 
-.legend-reaction {
+.action-text {
   background: rgba(0, 0, 0, 0.75);
   border-radius: 10px;
   box-sizing: border-box;
@@ -168,82 +153,28 @@ $action-icon-container-size:70px;
   transform: scale(1) translateY(95px);
 }
 
-.box:hover [class*=reaction-]:hover .legend-reaction, .box:hover [class*=reaction-]:focus .legend-reaction {
+.box:hover [class*=reaction-]:hover .action-text, .box:hover [class*=reaction-]:focus .action-text {
   opacity: 1;
-}
-
-.box:hover .toolbox {
-  opacity: 1;
-}
-
-.box:hover .toolbox {
-  visibility: visible;
-}
-
-.box:hover .reaction-love {
-  transition-delay: 0.06s;
-}
-
-.box:hover .reaction-haha {
-  transition-delay: 0.09s;
-}
-
-.box:hover .reaction-wow {
-  transition-delay: 0.12s;
-}
-
-.box:hover .reaction-sad {
-  transition-delay: 0.15s;
-}
-
-.box:hover .reaction-angry {
-  transition-delay: 0.18s;
-}
-
-.field-reactions:checked ~ [class*=reaction-] {
-  transform: scale(0.8) translateY(100px);
-}
-
-.field-reactions:checked ~ [class*=reaction-]:hover, .field-reactions:checked ~ [class*=reaction-]:focus {
-  transition: all 0.2s ease-in;
-  transform: scale(1) translateY(95px);
-}
-
-.field-reactions:checked ~ [class*=reaction-]:hover .legend-reaction, .field-reactions:checked ~ [class*=reaction-]:focus .legend-reaction {
-  opacity: 1;
-}
-
-.field-reactions:checked ~ .toolbox {
-  opacity: 1;
-}
-
-.field-reactions:checked ~ .toolbox,
-.field-reactions:checked ~ .overlay {
-  visibility: visible;
-}
-
-.field-reactions:checked ~ .reaction-love {
-  transition-delay: 0.03s;
-}
-
-.field-reactions:checked ~ .reaction-haha {
-  transition-delay: 0.09s;
-}
-
-.field-reactions:checked ~ .reaction-wow {
-  transition-delay: 0.12s;
-}
-
-.field-reactions:checked ~ .reaction-sad {
-  transition-delay: 0.15s;
-}
-
-.field-reactions:checked ~ .reaction-angry {
-  transition-delay: 0.18s;
 }
 
 .box {
+
+  &:hover {
+    .toolbox {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
   .actions {
+    .reaction-icon {
+      @for $i from 1 through 8 {
+        &:nth-child(#{$i}) {
+          transition-delay: $i * 0.04s;
+        }
+      }
+    }
+
     button {
       img {
         width: $icon-size;
