@@ -19,6 +19,7 @@
         :title="group.name"
         :studentCount="group.studentCount"
         :nextSchedule="group.nextSchedule"
+        :canStartSession="canStartSession"
       />
     </div>
   </div>

@@ -1,11 +1,14 @@
 <template>
   <BaseCard>
     <div class="container">
-      <div class="group-title">
+      <div class="g-card__title">
         <h3>{{ title }}</h3>
       </div>
       <p>Members: {{ studentCount }}</p>
-      <div>Next: {{ formatDate(nextSchedule) }}</div>
+      <div class="g-card__schedule">
+        <div>Next: {{ formatDate(nextSchedule) }}</div>
+        <PlayCircleOutlined v-if="canStartSession(nextSchedule)" />
+      </div>
     </div>
   </BaseCard>
 </template>

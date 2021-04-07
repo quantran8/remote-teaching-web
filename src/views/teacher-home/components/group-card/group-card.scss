@@ -1,8 +1,14 @@
 .container {
-	padding: 10px 20px;
+	padding: 10px 10px;
 	max-width: 200px;
-	.group-title {
-		display: flex;
-		align-items: center;
+	.g-card {
+		&__schedule {
+			display: flex;
+			justify-content: space-between;
+		}
+	}
+
+	.anticon-play-circle {
+		align-self: center;
 	}
 }

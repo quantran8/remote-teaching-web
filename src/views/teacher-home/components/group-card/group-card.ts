@@ -1,12 +1,12 @@
-import { formatDate4Y2M2D } from "@/utils/utils";
 import { defineComponent } from "vue";
+import { PlayCircleOutlined } from "@ant-design/icons-vue";
+import { formatDate4Y2M2D } from "@/utils/utils";
 
 export default defineComponent({
+	components: {
+		PlayCircleOutlined
+	},
 	props: {
-		id: {
-			type: String,
-			required: true,
-		},
 		title: {
 			type: String,
 			required: true,
@@ -19,6 +19,10 @@ export default defineComponent({
 			type: Date,
 			required: true,
 		},
+		canStartSession: {
+			type: Function,
+			required: true
+		}
 	},
 	setup() {
 		return { formatDate: formatDate4Y2M2D };

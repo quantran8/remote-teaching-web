@@ -1,42 +1,66 @@
+import { computed, defineComponent, ref, onMounted, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { Select, Button } from "ant-design-vue";
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
-import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, onUpdated } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import ClassGroupItem from "./components/class-group-item/class-group-item.vue";
 
 export default defineComponent({
 	components: {
-		ClassGroupItem
-	},
-	async created() {
-		const store = useStore();
-		const logginInfo: LoginInfo = store.getters["auth/loginInfo"];
-		if (logginInfo && logginInfo.loggedin) {
-			await store.dispatch("teacher/loadAccessibleSchools", {
-				disabled: false,
-			} as AccessibleSchoolQueryParam);
-
-			const schools: ResourceModel[] = store.getters["teacher/schools"];
-
-			if (schools && schools.length) {
-				store.dispatch("teacher/loadAccessibleClasses", {
-					schoolId: schools[0].id,
-					disabled: false,
-					isDetail: false,
-					isCampusDetail: true
-				} as AccessibleClassQueryParam);
-			}
-		}
+		ClassGroupItem,
+		Select,
+		Option: Select.Option,
+		Button
 	},
 	setup() {
 		const store = useStore();
 		const router = useRouter();
-		const schools = computed(() => store.getters["teacher/schools"]);
+		const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
 		const classes = computed(() => store.getters["teacher/classes"]);
 		const username = computed(() => store.getters["auth/username"]);
+		const logginInfo: LoginInfo = store.getters["auth/loginInfo"];
+		const loading = ref<boolean>(false);
+		const disabled = ref<boolean>(false);
+
+		const getSchools = async () => {
+			loading.value = true;
+			await store.dispatch("teacher/loadAccessibleSchools", {
+				disabled: false,
+			} as AccessibleSchoolQueryParam);
+
+			loading.value = false;
+		};
+
+		const onSchoolChange = async (schoolId: string) => {
+			loading.value = true;
+
+			await store.dispatch("teacher/loadAccessibleClasses", {
+				schoolId,
+				disabled: false,
+				isDetail: false,
+				isCampusDetail: true
+			} as AccessibleClassQueryParam);
+
+			loading.value = false;
+		};
+
+		onMounted(async () => {
+			if (logginInfo && logginInfo.loggedin) {
+				await getSchools();
+
+				if (schools.value?.length) {
+					onSchoolChange(schools.value[0].id);
+
+					if (schools.value.length === 1) {
+						disabled.value = true;
+					}
+				}
+			}
+		});
+
 		const startClass = async (teacherClass: TeacherClassModel) => {
 			try {
 				// const lessons = await LessonService.getLessonByUnit(11);
@@ -67,16 +91,6 @@ export default defineComponent({
 				}
 			}
 		};
-		const onSchoolChange = (e: any) => {
-			const schoolId = e.target.value;
-
-			store.dispatch("teacher/loadAccessibleClasses", {
-				schoolId,
-				disabled: false,
-				isDetail: false,
-				isCampusDetail: true
-			} as AccessibleClassQueryParam);
-		};
 
 		const onClickClass = (teacherClass: TeacherClassModel) => {
 			if (teacherClass.isActive) {
@@ -86,6 +100,18 @@ export default defineComponent({
 			}
 		};
 
-		return { schools, classes, username, onClickClass, onSchoolChange };
-	},
+		const canStartSession = (nextSchedule: any) => {
+			const now: any = new Date();
+			const diff = (now - nextSchedule) / (1000 * 60);
+			let canStart = false;
+
+			if (diff <= 15) {
+				canStart = true;
+			}
+
+			return canStart;
+		};
+
+		return { schools, classes, username, loading, disabled, onClickClass, onSchoolChange, canStartSession };
+	}
 });

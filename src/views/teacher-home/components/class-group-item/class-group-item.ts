@@ -18,6 +18,10 @@ export default defineComponent({
 		onClickClass: {
 			type: Function,
 			required: true
+		},
+		canStartSession: {
+			type: Function,
+			required: true
 		}
 	},
 
