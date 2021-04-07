@@ -1,6 +1,6 @@
 import { StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
