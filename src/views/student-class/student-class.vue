@@ -10,7 +10,7 @@
       <div class="sc-header__right">
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <router-link class="sc-header__exit" :to="$paths.Parent">
-          <MatIcon type="close" />
+          <MatIcon type="close" class="red-close" />
           <span>Exit</span>
         </router-link>
       </div>

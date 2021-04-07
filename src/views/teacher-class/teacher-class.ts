@@ -15,8 +15,7 @@ import {
   ErrorModal,
   DesignateTarget,
   TeacherPageHeader,
-  StudentControls
-
+  StudentControls,
 } from "./components";
 export default defineComponent({
   components: {
@@ -29,7 +28,7 @@ export default defineComponent({
     ErrorModal,
     DesignateTarget,
     TeacherPageHeader,
-    StudentControls
+    StudentControls,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -54,25 +53,17 @@ export default defineComponent({
     const router = useRouter();
     const showModal = ref(false);
     const hasConfirmed = ref(false);
-    const isDesignatingTarget = computed(
-      () => getters["interactive/isDesignatingTarget"]
-    );
+    const isDesignatingTarget = computed(() => getters["interactive/isDesignatingTarget"]);
     const modalDesignateTarget = computed(() => getters["interactive/modalDesignateTarget"]);
-    const allowDesignate = computed(
-      () => getters["interactive/targets"].length === 0
-    );
-    const teacher: ComputedRef<TeacherState> = computed(
-      () => getters["teacherRoom/teacher"]
-    );
+    const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
+    const teacher: ComputedRef<TeacherState> = computed(() => getters["teacherRoom/teacher"]);
     const error = computed(() => getters["teacherRoom/error"]);
     const isClassNotActive = computed(() => {
-      return (
-        error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
-      );
+      return error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE;
     });
-    const roomInfo = computed(()=> {
+    const roomInfo = computed(() => {
       return getters["teacherRoom/info"];
-    })
+    });
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
     });
@@ -134,47 +125,13 @@ export default defineComponent({
     watch(error, () => {
       console.log(error.value);
     });
-    const actions = [
-      { id: ClassAction.DEFAULT, icon: "none" },
-      { id: ClassAction.INTERACTIVE, icon: "interactive" },
-      { id: ClassAction.LISTEN, icon: "listen" },
-      { id: ClassAction.QUESTION, icon: "question" },
-      { id: ClassAction.QUIET, icon: "quiet" },
-      { id: ClassAction.SING, icon: "sing" },
-      { id: ClassAction.SPEAK, icon: "speak" },
-    ];
-    const classAction = computed(() => {
-      const id: ClassAction = getters["teacherRoom/classAction"];
-      return actions.find((e) => e.id === id) || actions[0];
-    });
 
     const ctaVisible = ref(false);
 
-    const onClickSelectAction = async (action: {
-      id: ClassAction;
-      icon: string;
-    }) => {
-      // classAction.value = action;
-      await dispatch("teacherRoom/setClassAction", {
-        action: ClassActionToValue(action.id),
-      });
-      ctaVisible.value = false;
-    };
-
-    const onClickContentView = async (payload: {
-      x: number, y: number, contentId: string})=>{
+    const onClickContentView = async (payload: { x: number; y: number; contentId: string }) => {
       await dispatch("teacherRoom/teacherAnswer", payload);
     };
 
-    const onHoverCTAButton = () => {
-      ctaVisible.value = true;
-    };
-    const onClickToggleCTAContent = () => {
-      ctaVisible.value = !ctaVisible.value;
-    };
-    const onClickOutSideCTAContent = () => {
-      ctaVisible.value = false;
-    };
     // const onUnityLoaderLoaded = () => {
     //   console.info("onUnityLoaderLoaded");
     // };
@@ -184,15 +141,12 @@ export default defineComponent({
     // const onUnityViewLoaded = () => {
     //   console.info("onUnityViewLoaded");
     // };
-    const isConnected = computed(()=> getters['teacherRoom/isConnected']);
+    const isConnected = computed(() => getters["teacherRoom/isConnected"]);
     watch(isConnected, async () => {
       if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
     });
     return {
-      actions,
-      classAction,
-      onClickSelectAction,
       showModal,
       onClickHideAll,
       onClickShowAll,
@@ -208,15 +162,12 @@ export default defineComponent({
       onClickCloseModal,
       isClassNotActive,
       onClickCloseError,
-      onClickToggleCTAContent,
-      onHoverCTAButton,
-      onClickOutSideCTAContent,
       ctaVisible,
       isDesignatingTarget,
       allowDesignate,
       onClickContentView,
       modalDesignateTarget,
-      roomInfo
+      roomInfo,
       // isGameView,
       // onUnityLoaderLoaded,
       // onUnityViewLoading,
