@@ -1,15 +1,20 @@
+import {  MatIcon } from "@/commonui";
 import { computed, defineComponent, ref } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";
+import UnityView from "@/components/common/unity-view/UnityView.vue";
+import { StudentGallery } from "@/views/student-class/components/student-gallery";
 export default defineComponent({
   props: {
     teacherName: String,
     className: String
   },
   emits: ["end"],
+  components: {
+    MatIcon
+  },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
-    const ctaVisible = ref(false);
     const actions = [
       { id: ClassAction.DEFAULT, icon: "none" },
       { id: ClassAction.INTERACTIVE, icon: "interactive" },
@@ -28,21 +33,9 @@ export default defineComponent({
       id: ClassAction;
       icon: string;
     }) => {
-      // classAction.value = action;
       await dispatch("teacherRoom/setClassAction", {
         action: ClassActionToValue(action.id),
       });
-      ctaVisible.value = false;
-    };
-
-    const onHoverCTAButton = () => {
-      ctaVisible.value = true;
-    };
-    const onClickToggleCTAContent = () => {
-      ctaVisible.value = !ctaVisible.value;
-    };
-    const onClickOutSideCTAContent = () => {
-      ctaVisible.value = false;
     };
 
     const onClickEnd = () => {
@@ -53,9 +46,6 @@ export default defineComponent({
       actions,
       classAction,
       onClickEnd,
-      onHoverCTAButton,
-      ctaVisible,
-      onClickOutSideCTAContent,
       onClickSelectAction,
       ClassAction
     };

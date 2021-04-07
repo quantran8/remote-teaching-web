@@ -25,62 +25,6 @@
       flex: 1;
       margin: 10px;
     }
-
-    .cta-container {
-      display: flex;
-      align-items: center;
-      margin: 10px;
-
-      .cta-button {
-        height: 100%;
-        width: 44px;
-        min-height: 44px;
-        margin-right: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-
-        img {
-          width: 44px;
-          height: 44px;
-        }
-
-        img:hover {
-          cursor: pointer;
-          opacity: 0.8;
-        }
-
-        .cta-content {
-          display: none;
-          background-color: rgba($color: black, $alpha: 0.8);
-          border: solid 1px white;
-          border-radius: 4px;
-          position: absolute;
-          bottom: 99%;
-          left: 50%;
-          padding: 10px;
-          color: white;
-          white-space: nowrap;
-          z-index: 999;
-
-          img {
-            width: 40px;
-            height: 40px;
-            margin-left: 5px;
-            margin-right: 5px;
-          }
-        }
-
-        .cta-content-show {
-          display: block;
-        }
-      }
-
-      .audio-bar {
-        flex: 1;
-      }
-    }
   }
 
   .lesson-plan {

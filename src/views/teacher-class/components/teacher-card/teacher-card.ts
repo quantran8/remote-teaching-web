@@ -5,6 +5,7 @@ export default defineComponent({
   props: {
     id: String,
     name: String,
+    isGalleryView: Boolean,
     audioEnabled: {
       type: Boolean,
       default: true,
@@ -24,12 +25,8 @@ export default defineComponent({
     const hideContextMenu = () => {
       contextMenuVisibility.value = false;
     };
-    const audioIcon = computed(() =>
-      props.audioEnabled ? "icon-audio-on" : "icon-audio-off"
-    );
-    const videoIcon = computed(() =>
-      props.videoEnabled ? "icon-video-on" : "icon-video-off"
-    );
+    const audioIcon = computed(() => (props.audioEnabled ? "icon-audio-on" : "icon-audio-off"));
+    const videoIcon = computed(() => (props.videoEnabled ? "icon-video-on" : "icon-video-off"));
     const toggleAudio = () => {
       dispatch("teacherRoom/setTeacherAudio", {
         id: props.id,
