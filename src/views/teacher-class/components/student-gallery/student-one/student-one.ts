@@ -77,7 +77,7 @@ export default defineComponent({
       }
       if (studentOne && studentOne.audioEnabled && studentOne.videoEnabled){
 		// Turn on student video and audio.
-		// Set only true video and audio not turn on so need to false and set true again with setTimeout.
+		// Actually this is a trick to make this function work around. Need to optimize later.
         await setVideoAudioStudent(false, false, studentOne.id);
         setTimeout(async () => {
           await setVideoAudioStudent(true, true, studentOne.id);

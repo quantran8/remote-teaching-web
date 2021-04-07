@@ -26,7 +26,7 @@ export default defineComponent({
 
     const setDefaultVideoStudent = async () => {
 	  // Turn on student video and audio.
-	  // Set only true video and audio not turn on so need to false and set true again with setTimeout.
+	  // Actually this is a trick to make this function work around. Need to optimize later.
       students.value.map(student => {
         toggleVideoAudio(student.id, false, false);
         setTimeout(() => {
