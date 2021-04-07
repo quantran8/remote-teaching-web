@@ -4,7 +4,8 @@
       {{ teacherName }}
       <div class="box">
         <label class="label-reactions">
-          <img src="@/assets/student-class/class-icon.svg">
+          <img v-if="classAction.icon" :src="require(`@/assets/icons/icon-action-${classAction.icon}.svg`)" />
+          <img v-else src="@/assets/student-class/class-icon.svg">
         </label>
         <div class="toolbox"></div>
         <label class="overlay"></label>
