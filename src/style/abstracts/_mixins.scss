@@ -17,7 +17,7 @@
     width: $item-size;
     height: $item-size;
     @for $i from 1 to $item-count + 1 {
-      &:nth-of-type(#{$i}) {
+      &:nth-of-type(#{$i}) > * {
         transform: rotate($rot * 1deg) translate($container-size / 2) rotate($rot * -1deg);
       }
       $rot: $rot + $angle;

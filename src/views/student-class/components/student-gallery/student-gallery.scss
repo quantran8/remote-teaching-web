@@ -1,13 +1,17 @@
 @import "../../../../style/abstracts/mixins";
 
 .sc-gallery {
-  $gallery-size: 500px;
+  $gallery-size: 550px;
   $gallery-item-size: 100px;
   user-select: none;
+
   @include draw-items-on-circle(
     $item-count: 10,
     $container-size: $gallery-size,
     $item-size: $gallery-item-size,
-    $item-selector: "&::v-deep .sc-gallery-item:not(.sc-gallery-item--large)"
+    $item-selector: "&::v-deep .sc-gallery__item",
+    $item-start-position: 8
   );
+  margin-top: ($gallery-item-size / 2) + 30px;
+  margin-bottom: ($gallery-item-size / 2) + 50px;
 }

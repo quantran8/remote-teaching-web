@@ -4,7 +4,7 @@
       <div class="sc-header__left">
         <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
         <div>
-          <img class="sc-header__icon" src="@/assets/student-class/class-icon.svg" alt="Icon" />
+          <img v-if="classAction" class="sc-header__icon" :src="require(`@/assets/icons/icon-action-${classAction}.svg`)" alt="Icon" />
         </div>
       </div>
       <div class="sc-header__right">
