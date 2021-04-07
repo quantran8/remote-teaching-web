@@ -1,11 +1,28 @@
 <template>
   <div id="header">
     <div id="header__teacher">
-      {{teacherName}}
-      <img src="@/assets/images/teacher-header-icon.png" alt="" />
+      {{ teacherName }}
+      <div class="box">
+        <label class="label-reactions">
+          <img src="@/assets/student-class/class-icon.svg">
+        </label>
+        <div class="toolbox"></div>
+        <label class="overlay"></label>
+        <div class="actions">
+          <button
+            class="reaction-icon"
+            @click="() => onClickSelectAction(action)"
+            v-for="action of actions"
+            :key="action.icon"
+          >
+            <img :src="require(`@/assets/icons/icon-action-${action.icon}.svg`)" />
+            <span class="legend-reaction">{{action.icon}}</span>
+          </button>
+        </div>
+      </div>
     </div>
     <div id="header__class-name">
-      {{className}}
+      {{ className }}
     </div>
     <a href="javascript:" id="app-exit" @click="onClickEnd">Exit</a>
   </div>

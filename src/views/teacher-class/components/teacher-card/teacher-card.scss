@@ -16,7 +16,6 @@ $border-radius: 4px;
   .item-container {
     position: relative;
     flex: 1;
-    margin-right: 20px;
     background-color: gray;
 
     .video {
@@ -40,7 +39,7 @@ $border-radius: 4px;
       .tag {
         position: absolute;
         right: 0px;
-        top: .2rem;
+        top: 0.2rem;
         margin: 0 $margin;
       }
       .info {

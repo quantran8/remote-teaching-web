@@ -54,9 +54,9 @@
             />
           </div>
         </div>
-        <div v-if="!isGalleryView" class="audio-bar">
-          <GlobalAudioBar />
-        </div>
+<!--        <div v-if="!isGalleryView" class="audio-bar">-->
+<!--          <GlobalAudioBar />-->
+<!--        </div>-->
       </div>
     </div>
     <div class="gallery">

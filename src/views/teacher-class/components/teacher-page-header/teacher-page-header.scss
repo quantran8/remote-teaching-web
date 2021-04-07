@@ -17,11 +17,6 @@ $font-size: 2.2em;
     color: #fff;
     font-size: $font-size;
     position: relative;
-    img{
-      position: absolute;
-      right: 20px;
-      top: 5px;
-    }
   }
 
   &__class-name {
@@ -47,5 +42,236 @@ $font-size: 2.2em;
     text-decoration: none;
     font-size: 16px;
     font-weight: bold;
+  }
+}
+
+/**
+Reaction
+ */
+$icon-size: 50px;
+$action-icon-container-size:70px;
+
+.field-reactions:checked:focus ~ .text-desc, .field-reactions, [class*=reaction-], .text-desc {
+  clip: rect(1px, 1px, 1px, 1px);
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.field-reactions:checked ~ [class*=reaction-], .box:hover [class*=reaction-], .field-reactions:focus ~ .text-desc {
+  clip: auto;
+  overflow: visible;
+  opacity: 1;
+}
+
+//.main-title {
+//  background: #3a5795;
+//  padding: 10px;
+//  color: #fff;
+//  text-align: center;
+//  font-size: 16px;
+//  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+//}
+//
+//.text-desc {
+//  font-weight: normal;
+//  text-align: center;
+//  transform: translateY(-50px);
+//  white-space: nowrap;
+//  font-size: 13px;
+//  width: 100%;
+//}
+
+
+.reaction-icon {
+  border: none;
+  background-color: transparent;
+  display: block;
+  cursor: pointer;
+  height: $icon-size;
+  position: absolute;
+  width: $icon-size;
+  z-index: 11;
+  top: -22px;
+  transform-origin: 50% 100%;
+  transform: scale(0.1);
+  transition: all 0.3s;
+  outline: none;
+  will-change: transform;
+  opacity: 0;
+}
+
+.box {
+  position: absolute;
+  right: 10px;
+  width: 100px;
+  top: 0;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  visibility: hidden;
+}
+
+.field-reactions:focus ~ .label-reactions {
+  border-color: rgba(88, 144, 255, 0.3);
+}
+
+.field-reactions:checked:focus ~ .label-reactions {
+  border-color: transparent;
+}
+
+.label-reactions {
+  display: block;
+  height: $action-icon-container-size;
+  width: $action-icon-container-size;
+  cursor: pointer;
+  position: absolute;
+  top: -4px;
+  right: 0;
+  img{
+    width: $action-icon-container-size;
+    height: $action-icon-container-size;
+  }
+}
+
+.toolbox {
+  background: #fff;
+  height: 52px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgba(0, 0, 0, 0.15);
+  width: 400px;
+  border-radius: 40px;
+  bottom: -135px;
+  left: 0;
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.legend-reaction {
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #fff;
+  display: inline-block;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  line-height: 20px;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 6px;
+  transition: opacity 50ms ease;
+  left: 5px;
+  position: absolute;
+  text-align: center;
+  top: -28px;
+  transform: translateX(-50%);
+}
+
+.box:hover [class*=reaction-] {
+  transform: scale(0.8) translateY(100px);
+}
+
+.box:hover [class*=reaction-]:hover, .box:hover [class*=reaction-]:focus {
+  transition: all 0.2s ease-in;
+  transform: scale(1) translateY(95px);
+}
+
+.box:hover [class*=reaction-]:hover .legend-reaction, .box:hover [class*=reaction-]:focus .legend-reaction {
+  opacity: 1;
+}
+
+.box:hover .toolbox {
+  opacity: 1;
+}
+
+.box:hover .toolbox {
+  visibility: visible;
+}
+
+.box:hover .reaction-love {
+  transition-delay: 0.06s;
+}
+
+.box:hover .reaction-haha {
+  transition-delay: 0.09s;
+}
+
+.box:hover .reaction-wow {
+  transition-delay: 0.12s;
+}
+
+.box:hover .reaction-sad {
+  transition-delay: 0.15s;
+}
+
+.box:hover .reaction-angry {
+  transition-delay: 0.18s;
+}
+
+.field-reactions:checked ~ [class*=reaction-] {
+  transform: scale(0.8) translateY(100px);
+}
+
+.field-reactions:checked ~ [class*=reaction-]:hover, .field-reactions:checked ~ [class*=reaction-]:focus {
+  transition: all 0.2s ease-in;
+  transform: scale(1) translateY(95px);
+}
+
+.field-reactions:checked ~ [class*=reaction-]:hover .legend-reaction, .field-reactions:checked ~ [class*=reaction-]:focus .legend-reaction {
+  opacity: 1;
+}
+
+.field-reactions:checked ~ .toolbox {
+  opacity: 1;
+}
+
+.field-reactions:checked ~ .toolbox,
+.field-reactions:checked ~ .overlay {
+  visibility: visible;
+}
+
+.field-reactions:checked ~ .reaction-love {
+  transition-delay: 0.03s;
+}
+
+.field-reactions:checked ~ .reaction-haha {
+  transition-delay: 0.09s;
+}
+
+.field-reactions:checked ~ .reaction-wow {
+  transition-delay: 0.12s;
+}
+
+.field-reactions:checked ~ .reaction-sad {
+  transition-delay: 0.15s;
+}
+
+.field-reactions:checked ~ .reaction-angry {
+  transition-delay: 0.18s;
+}
+
+.box {
+  .actions {
+    button {
+      img {
+        width: $icon-size;
+        height: $icon-size;
+      }
+
+      @for $i from 1 through 8 {
+        &:nth-child(#{$i}) {
+          left: $i * 55px - 55px;
+        }
+      }
+    }
   }
 }

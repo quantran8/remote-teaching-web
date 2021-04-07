@@ -16,29 +16,30 @@
           </div>
         </div>
       </div>
-      <div class="setting">
-        <div class="sound" @dragover="onDragOver" @drop="onDrop">
-          <BaseButton mode="fill">
-            <BaseIcon name="icon-audio-on"></BaseIcon>
-          </BaseButton>
-          <div class="content">
-            <div
-              class="student-audio"
-              v-for="studentAudio in localAudios"
-              :key="studentAudio.studentId"
-            >
-              <BaseTag :tag="studentAudio.tag" />
-            </div>
-          </div>
-          <BaseButton
-            mode="clear"
-            @click="onClickClearAll"
-            v-if="localAudios.length"
-          >
-            <BaseIcon class="close" name="icon-close" />
-          </BaseButton>
-        </div>
-      </div>
+<!--      Temporary hide, do not delete-->
+<!--      <div class="setting" style="display: none">-->
+<!--        <div class="sound" @dragover="onDragOver" @drop="onDrop">-->
+<!--          <BaseButton mode="fill">-->
+<!--            <BaseIcon name="icon-audio-on"></BaseIcon>-->
+<!--          </BaseButton>-->
+<!--          <div class="content">-->
+<!--            <div-->
+<!--              class="student-audio"-->
+<!--              v-for="studentAudio in localAudios"-->
+<!--              :key="studentAudio.studentId"-->
+<!--            >-->
+<!--              <BaseTag :tag="studentAudio.tag" />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <BaseButton-->
+<!--            mode="clear"-->
+<!--            @click="onClickClearAll"-->
+<!--            v-if="localAudios.length"-->
+<!--          >-->
+<!--            <BaseIcon class="close" name="icon-close" />-->
+<!--          </BaseButton>-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
