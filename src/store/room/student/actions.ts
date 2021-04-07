@@ -17,6 +17,7 @@ import {
 } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
+import {UID} from "agora-rtc-sdk-ng";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -105,6 +106,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onException: (payload: any) => {
         Logger.error("Exception", payload);
+      },
+      onVolumeIndicator(result: { level: number; uid: UID }[]) {
+        console.log("speaking", JSON.stringify(result));
       },
     });
   },
