@@ -6,6 +6,7 @@ import {
   TeacherGetRoomResponse,
   TeacherService,
 } from "@/services";
+import { createMockGroups } from "@/utils/utils";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
@@ -27,10 +28,12 @@ const actions: ActionTree<TeacherState, any> = {
   },
   async loadAccessibleClasses({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleClassQueryParam) {
     if (!state.info) return;
-    const response = await TeacherService.getAccessibleClasses(payload);
-
+    const response = await TeacherService.getAccessibleClasses(payload);  
     const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
-    commit("setClasses", response.data as unknown[] as ClassModel[]);
+    commit("setClasses", response.data.map(item => ({
+      ...item,
+      groups: createMockGroups(item.schoolClassId)
+    }) as unknown as ClassModel));
     commit("setClassRoom", responseActive.data);
   },
 };

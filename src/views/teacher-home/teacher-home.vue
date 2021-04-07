@@ -11,15 +11,11 @@
         </select>
       </div>
       <div>
-        <ClassCard
-          class="card-margin"
+        <ClassGroupItem
           v-for="cl in classes"
           :key="cl.schoolClassId"
-          :id="cl.schoolClassId"
-          :title="cl.schoolClassName"
-          :description="cl.campusName"
-          :active="cl.isActive"
-          @click="() => onClickClass(cl)"
+          :schoolClass="cl"
+          @onClickClass="() => onClickClass(cl)"
         />
       </div>
     </div>
