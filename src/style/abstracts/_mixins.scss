@@ -1,0 +1,26 @@
+@mixin draw-items-on-circle($item-count, $container-size, $item-size, $item-selector: "> *") {
+  position: relative;
+  min-width: $container-size;
+  height: $container-size;
+  border-radius: 50%;
+  margin: $item-size;
+
+  $angle: (360 / $item-count);
+  $rot: 0;
+
+  #{$item-selector} {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -($item-size / 2);
+    width: $item-size;
+    height: $item-size;
+    @for $i from 1 to $item-count + 1 {
+      &:nth-of-type(#{$i}) {
+        transform: rotate($rot * 1deg) translate($container-size / 2) rotate($rot * -1deg);
+      }
+      $rot: $rot + $angle;
+    }
+  }
+}

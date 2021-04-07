@@ -115,10 +115,12 @@ export const useTeacherRoomWSHandler = ({
       commit("setLocalAudios", payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherUpdateStudentBadge: (payload: StudentModel) => {
-      commit("setStudentBadge", {
-        id: payload.id,
-        badge: payload.badge,
+    onTeacherUpdateStudentBadge: (payload: StudentModel[]) => {
+      payload.map(item => {
+        commit("setStudentBadge", {
+          id: item.id,
+          badge: item.badge,
+        });
       });
     },
     onTeacherUpdateBlackOut: (payload: any) => {

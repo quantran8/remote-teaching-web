@@ -14,7 +14,8 @@ import {
   LeaveModal,
   ErrorModal,
   DesignateTarget,
-  TeacherPageHeader
+  TeacherPageHeader,
+  StudentControls
 
 } from "./components";
 export default defineComponent({
@@ -27,7 +28,8 @@ export default defineComponent({
     LeaveModal,
     ErrorModal,
     DesignateTarget,
-    TeacherPageHeader
+    TeacherPageHeader,
+    StudentControls
   },
   async beforeUnmount() {
     const store = useStore();
@@ -68,7 +70,9 @@ export default defineComponent({
         error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE
       );
     });
-
+    const roomInfo = computed(()=> {
+      return getters["teacherRoom/info"];
+    })
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
     });
@@ -212,6 +216,7 @@ export default defineComponent({
       allowDesignate,
       onClickContentView,
       modalDesignateTarget,
+      roomInfo
       // isGameView,
       // onUnityLoaderLoaded,
       // onUnityViewLoading,

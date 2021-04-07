@@ -1,0 +1,9 @@
+#student-controls {
+  display: flex;
+  margin: 20px auto;
+
+  .student-controls__button {
+    flex: 1;
+    text-align: center;
+  }
+}

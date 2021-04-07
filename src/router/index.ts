@@ -1,5 +1,6 @@
 import { store } from "@/store";
 import { AppView } from "@/store/app/state";
+import { Paths } from "@/utils/paths";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home/home.vue";
 import { RequireParentError, RequireTeacherError } from "./error";
@@ -7,7 +8,7 @@ import { LayoutGuard, AuthGuard, TeacherGuard, ParentGuard } from "./guard";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
+    path: Paths.Home,
     name: "Home",
     component: Home,
     meta: {
@@ -44,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/parent",
+    path: Paths.Parent,
     name: "ParentHome",
     component: () => import("../views/parent-home/parent-home.vue"),
     meta: {

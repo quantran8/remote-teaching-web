@@ -24,6 +24,7 @@ import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
+import {UID} from "agora-rtc-sdk-ng";
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -84,7 +85,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
       },
       onException: (payload: any) => {
         Logger.error("Exception", payload);
-      }
+      },
+      onVolumeIndicator(result: { level: number; uid: UID }[]) {
+        console.log("speaking", JSON.stringify(result))
+      },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
@@ -128,7 +132,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setStudentBadge({ state }, payload: StudentBadgePayload) {
     state.manager?.WSClient.sendRequestSetStudentBadge(
-      payload.id,
+      [payload.id],
       payload.badge
     );
   },

@@ -1,106 +1,69 @@
 <template>
-  <div class="page-container">
-    <div class="page-header">
-      <div class="media-buttons">
-        <BaseButton class="media-button" @click="toggleAudio" draggable="true">
-          <BaseIcon :name="audioIcon"></BaseIcon>
-        </BaseButton>
-        <BaseButton class="media-button" @click="toggleVideo">
-          <BaseIcon :name="videoIcon"></BaseIcon>
-        </BaseButton>
-      </div>
-
-      <div class="current-student">
-        <StudentCard
-          v-if="student"
-          class="student-card"
-          :name="student.name"
-          :id="student.id"
-          :index="student.index"
-          :badge="student.badge"
-          :audioEnabled="student.audioEnabled"
-          :videoEnabled="student.videoEnabled"
-          :showBadge="true"
-        />
-      </div>
-      <div class="fill-center" v-if="!isOneToOne">
-        <StudentCard
-          v-for="student in students.slice(0, 5)"
-          :key="student.id"
-          class="student-card"
-          :name="student.name"
-          :id="student.id"
-          :index="student.index"
-          :badge="student.badge"
-          :audioEnabled="student.audioEnabled"
-          :videoEnabled="student.videoEnabled"
-        />
-      </div>
-    </div>
-    <div class="page-content">
-      <div class="controls">
-        <div class="raise-question" @click="onClickRaisingHand">
-          <img src="@/assets/icons/icon-action-raisehand.svg" alt="" />
-        </div>
-        <div class="like" @click="onClickLike">
-          <img src="@/assets/icons/icon-action-like.svg" alt="" />
+  <div class="sc">
+    <div class="sc-header">
+      <div class="sc-header__left">
+        <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
+        <div>
+          <img class="sc-header__icon" src="@/assets/student-class/class-icon.svg" alt="Icon" />
         </div>
       </div>
-      <div class="teacher-view" v-if="(teacher && studentIsOneToOne) || (teacher && !isOneToOne)">
-        <div :id="teacher.id" class="teacher-camera"></div>
-        <div class="teacher-name">{{ teacher.name }}</div>
-      </div>
-      <div class="teacher-view one-to-one" v-else />
-<!--      <div v-if="isGameView" class="unityWrapper">-->
-<!--        <UnityView-->
-<!--          src="/games/writting_book/Build/UnityLoader.js"-->
-<!--          json="/games/writting_book/Build/Writing_Book_Activity.json"-->
-<!--          class="unityView"-->
-<!--          message-text="Student"-->
-<!--          @on-loader-loaded="onUnityLoaderLoaded"-->
-<!--          @on-progress="onUnityViewLoading"-->
-<!--          @on-loaded="onUnityViewLoaded"-->
-<!--        ></UnityView>-->
-<!--      </div>-->
-      <!-- <ContentView/> -->
-      <div
-        class="content-view-container"
-        v-if="currentExposureItemMedia && isLessonPlan"
-      >
-        <ContentView
-          v-if="!isPointerMode && !isDrawMode && !isStickerMode"
-          @on-tap="onClickContentView"
-          :masked="isBlackOutContent"
-          :image="currentExposureItemMedia.image"
-          :contentId="currentExposureItemMedia.id"
-          :targets="designateTargets"
-          :isAssigned="isAssigned"
-          :localTargets="localTargets"
-        ></ContentView>
-        <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia.image"></AnnotationView>
+      <div class="sc-header__right">
+        <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
+        <router-link class="sc-header__exit" :to="$paths.Parent">
+          <MatIcon type="close" />
+          <span>Exit</span>
+        </router-link>
       </div>
     </div>
-    <div class="page-footer">
-      <div class="class-action">
-        <img
-          v-if="classAction"
-          :src="require(`../../assets/icons/icon-action-${classAction}.svg`)"
-          alt=""
-        />
+  </div>
+  <div class="sc-body">
+    <div class="sc-content" ref="contentSectionRef">
+      <div class="sc-content__top sc-teacher" ref="videoContainerRef">
+        <div :id="teacher?.id" class="sc-teacher__video"></div>
       </div>
-      <div class="fill-center" v-if="!isOneToOne">
-        <StudentCard
-          v-for="student in students.slice(5)"
-          :key="student.id"
-          class="student-card"
-          :name="student.name"
-          :id="student.id"
-          :index="student.index"
-          :badge="student.badge"
-          :audioEnabled="student.audioEnabled"
-          :videoEnabled="student.videoEnabled"
-        />
+      <div class="sc-content__bottom">
+        <!-- <div v-show="isGameView" class="sc-unity">
+          <UnityView
+            v-if="isGameView"
+            src="/games/writting_book/Build/UnityLoader.js"
+            json="/games/writting_book/Build/Writing_Book_Activity.json"
+            class="unityView"
+            message-text="Student"
+            @on-loader-loaded="onUnityLoaderLoaded"
+            @on-progress="onUnityViewLoading"
+            @on-loaded="onUnityViewLoaded"
+          ></UnityView>
+        </div> -->
+        <div v-show="currentExposureItemMedia && isLessonPlan" class="sc-lessonplan">
+          <ContentView
+            v-if="!isPointerMode && !isDrawMode && !isStickerMode"
+            @on-tap="onClickContentView"
+            :masked="isBlackOutContent"
+            :image="currentExposureItemMedia?.image"
+            :contentId="currentExposureItemMedia?.id"
+            :targets="designateTargets"
+            :isAssigned="isAssigned"
+            :localTargets="localTargets"
+          ></ContentView>
+          <AnnotationView
+            v-if="isPointerMode || isDrawMode || isStickerMode"
+            :image="currentExposureItemMedia?.image"
+          ></AnnotationView>
+        </div>
+        <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
+    </div>
+    <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
+    <div class="sc-action">
+      <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
+        <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
+      </a>
+      <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
+        <img src="@/assets/student-class/speaker.svg" class="sc-action__icon" />
+      </a>
+      <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
+        <img src="@/assets/student-class/eye-cut.svg" class="sc-action__icon" />
+      </a>
     </div>
   </div>
 </template>

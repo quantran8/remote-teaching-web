@@ -1,5 +1,5 @@
 import {TeacherRoomManager} from "@/manager/room/teacher.manager";
-import {ClassModel, RoomModel} from "@/models";
+import {ClassRoomModel, ClassModel, RoomModel} from "@/models";
 import {GetterTree} from "vuex";
 import {ClassView, InClassStatus, StudentState, TeacherState,} from "../interface";
 import {ClassAction} from "../student/state";
