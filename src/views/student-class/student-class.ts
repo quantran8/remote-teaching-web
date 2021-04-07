@@ -8,6 +8,10 @@ import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
+import IconAudioOn from "@/assets/student-class/audio-on.svg";
+import IconAudioOff from "@/assets/student-class/audio-off.svg";
+import IconVideoOn from "@/assets/student-class/video-on.svg";
+import IconVideoOff from "@/assets/student-class/video-off.svg";
 
 export default defineComponent({
   components: {
@@ -78,8 +82,8 @@ export default defineComponent({
       }
     });
 
-    const audioIcon = computed(() => (student.value?.audioEnabled ? "icon-audio-on" : "icon-audio-off"));
-    const videoIcon = computed(() => (student.value?.videoEnabled ? "icon-video-on" : "icon-video-off"));
+    const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
+    const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
 
     const toggleAudio = async () => {
       await store.dispatch("studentRoom/setStudentAudio", {

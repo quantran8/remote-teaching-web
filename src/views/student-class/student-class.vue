@@ -45,10 +45,7 @@
             :isAssigned="isAssigned"
             :localTargets="localTargets"
           ></ContentView>
-          <AnnotationView
-            v-if="isPointerMode || isDrawMode || isStickerMode"
-            :image="currentExposureItemMedia?.image"
-          ></AnnotationView>
+          <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia?.image"></AnnotationView>
         </div>
         <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
@@ -59,10 +56,10 @@
         <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
       </a>
       <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
-        <img src="@/assets/student-class/speaker.svg" class="sc-action__icon" />
+        <img :src="audioIcon" class="sc-action__icon" />
       </a>
       <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
-        <img src="@/assets/student-class/eye-cut.svg" class="sc-action__icon" />
+        <img :src="videoIcon" class="sc-action__icon" />
       </a>
     </div>
   </div>
