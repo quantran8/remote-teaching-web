@@ -37,7 +37,7 @@
 <!--      </div>-->
       <div class="cta-container">
         <div class="cta-button" @mouseover="onHoverCTAButton">
-          <img :src="require(`../../assets/icons/icon-action-${classAction.icon}.svg`)" />
+          <img :src="require(`@/assets/icons/icon-action-${classAction.icon}.svg`)" />
           <div
             class="cta-content"
             :class="{ 'cta-content-show': ctaVisible }"
