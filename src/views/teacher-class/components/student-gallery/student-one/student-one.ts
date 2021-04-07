@@ -79,7 +79,7 @@ export default defineComponent({
         await setVideoAudioStudent(false, false, studentOne.id);
         setTimeout(async () => {
           await setVideoAudioStudent(true, true, studentOne.id);
-        }, 200)
+        },300)
         turnOnCurrentStudent = true;
       } else {
         turnOnCurrentStudent = false;

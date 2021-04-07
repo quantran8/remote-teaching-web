@@ -29,7 +29,7 @@ export default defineComponent({
         toggleVideoAudio(student.id, false, false);
         setTimeout(() => {
           toggleVideoAudio(student.id, true, true);
-        },200)
+        },300)
       })
     }
 
