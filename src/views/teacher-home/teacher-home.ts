@@ -8,6 +8,7 @@ import { TeacherClassModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import ClassGroupItem from "./components/class-group-item/class-group-item.vue";
+import { CAMPUS_NAME, SESSION_START_MINUTE_DIFF } from "@/utils/constants";
 
 export default defineComponent({
 	components: {
@@ -45,7 +46,8 @@ export default defineComponent({
 				schoolId,
 				disabled: false,
 				isDetail: false,
-				isCampusDetail: true
+				isCampusDetail: true,
+				sortBy: CAMPUS_NAME
 			} as AccessibleClassQueryParam);
 
 			filteredSchools.value = schools.value;
@@ -118,7 +120,7 @@ export default defineComponent({
 			const diff = (nextSchedule - now) / (1000 * 60);
 			let canStart = false;
 
-			if (diff <= 15) {
+			if (diff <= SESSION_START_MINUTE_DIFF) {
 				canStart = true;
 			}
 
