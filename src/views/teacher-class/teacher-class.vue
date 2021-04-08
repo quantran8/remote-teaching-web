@@ -52,6 +52,7 @@
         @mute-all="onClickMuteAll"
         @show-all="onClickShowAll"
         @unmute-all="onClickUnmuteAll"
+        @add-sticker-all="onClickStickerAll"
       />
       <StudentGallery />
     </div>

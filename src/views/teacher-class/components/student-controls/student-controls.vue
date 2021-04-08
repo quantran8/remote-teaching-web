@@ -1,7 +1,7 @@
 <template>
   <div id="student-controls">
     <div class="student-controls__button">
-      <span class="student-controls__button--clickable">
+      <span @click="clickStickerAll" class="student-controls__button--clickable">
         <img class="sticker-icon" :src="require(`@/assets/sticker.svg`)" />
         <span>Sticker all</span>
       </span>

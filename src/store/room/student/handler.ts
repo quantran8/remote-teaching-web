@@ -115,7 +115,7 @@ export const useStudentRoomHandler = (
         const message = `Your video has been turn ${
           payload.isMuteVideo ? "off" : "on"
         } by your teacher!`;
-        store.dispatch("setToast", message, { root: true });
+        store.dispatch("setToast", {message: message}, {root: true });
       }
     },
     onTeacherMuteStudentAudio: async (payload: StudentModel) => {
@@ -127,7 +127,7 @@ export const useStudentRoomHandler = (
         const message = `Your microphone has been turn ${
           payload.isMuteAudio ? "off" : "on"
         } by your teacher!`;
-        store.dispatch("setToast", message, { root: true });
+        store.dispatch("setToast", {message: message}, {root: true });
       }
     },
     onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
@@ -182,7 +182,7 @@ export const useStudentRoomHandler = (
         });
         if (item.id === state.student?.id) {
           const message = `Congratulations! You got 1 more badge from your teacher!`;
-          store.dispatch("setToast", message, { root: true });
+          store.dispatch("setToast", {message: message, isPlaySound:true}, {root: true });
         }
       });
     },
@@ -238,7 +238,7 @@ export const useStudentRoomHandler = (
       const isAssigned = store.rootGetters["interactive/isAssigned"];
       if (isAssigned) {
         const message = `Please click on the board to answer.`;
-        await store.dispatch("setToast", message, { root: true });
+        await store.dispatch("setToast", {message: message}, {root: true });
       }
     },
     onTeacherUpdateDesignateTarget: async (payload: any) => {
