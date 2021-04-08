@@ -13,15 +13,15 @@ export interface AppState {
   contentSignature: string;
 }
 
-export interface ToastData{
+export interface ToastData {
   message: string;
-  isPlaySound?: boolean;
+  isPlayingSound?: boolean;
 }
 
 const state: AppState = {
   layout: "main",
   appView: AppView.Blank,
-  toast: {message: "", isPlaySound: false},
+  toast: { message: "", isPlayingSound: false },
   contentSignature: "",
 };
 

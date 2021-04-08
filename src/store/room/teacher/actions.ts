@@ -136,7 +136,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       payload.badge
     );
   },
-  async setAllStudentBadge({ state }, payload: any) {
+  async setAllStudentBadge({ state }) {
     state.manager?.WSClient.sendRequestSetStudentBadge(
         [],
         1

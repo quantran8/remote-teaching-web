@@ -8,9 +8,7 @@ import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
 import { Pointer } from "@/store/annotation/state";
 
-export const useStudentRoomHandler = (
-  store: ActionContext<StudentRoomState, any>
-): WSEventHandler => {
+export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
   const { commit, dispatch, state, getters } = store;
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
@@ -29,16 +27,16 @@ export const useStudentRoomHandler = (
       await dispatch("annotation/setInfo", payload.lessonPlan.annotation, {
         root: true,
       });
-      if(payload.studentOneToOne) {
+      if (payload.studentOneToOne) {
         await dispatch(
           "modeOne/setStudentOneId",
           { id: payload.studentOneToOne },
           {
-            root: true
-          }
+            root: true,
+          },
         );
       } else {
-        await store.dispatch("modeOne/clearStudentOneId", { id: '' }, {root: true});
+        await store.dispatch("modeOne/clearStudentOneId", { id: "" }, { root: true });
       }
     },
     onStudentJoinClass: (payload: StudentModel) => {
@@ -112,10 +110,8 @@ export const useStudentRoomHandler = (
         enable: !payload.isMuteVideo,
       });
       if (payload.id === state.student?.id) {
-        const message = `Your video has been turn ${
-          payload.isMuteVideo ? "off" : "on"
-        } by your teacher!`;
-        store.dispatch("setToast", {message: message}, {root: true });
+        const message = `Your video has been turn ${payload.isMuteVideo ? "off" : "on"} by your teacher!`;
+        store.dispatch("setToast", { message: message }, { root: true });
       }
     },
     onTeacherMuteStudentAudio: async (payload: StudentModel) => {
@@ -124,10 +120,8 @@ export const useStudentRoomHandler = (
         enable: !payload.isMuteAudio,
       });
       if (payload.id === state.student?.id) {
-        const message = `Your microphone has been turn ${
-          payload.isMuteAudio ? "off" : "on"
-        } by your teacher!`;
-        store.dispatch("setToast", {message: message}, {root: true });
+        const message = `Your microphone has been turn ${payload.isMuteAudio ? "off" : "on"} by your teacher!`;
+        store.dispatch("setToast", { message: message }, { root: true });
       }
     },
     onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
@@ -178,42 +172,26 @@ export const useStudentRoomHandler = (
       payload.map(item => {
         commit("setStudentBadge", {
           id: item.id,
-          badge: item.badge
+          badge: item.badge,
         });
         if (item.id === state.student?.id) {
           const message = `Congratulations! You got 1 more badge from your teacher!`;
-          store.dispatch("setToast", {message: message, isPlaySound:true}, {root: true });
+          store.dispatch("setToast", { message: message, isPlayingSound: true }, { root: true });
         }
       });
     },
     onTeacherUpdateBlackOut: (payload: any) => {
-      commit(
-        "lesson/setIsBlackOut",
-        { IsBlackOut: payload.isBlackOut },
-        { root: true }
-      );
+      commit("lesson/setIsBlackOut", { IsBlackOut: payload.isBlackOut }, { root: true });
     },
     onTeacherStartLessonPlan: (payload: any) => {
       commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      commit(
-        "lesson/setExposureStatus",
-        { id: payload.content.id, status: ExposureStatus.COMPLETED },
-        { root: true }
-      );
-      commit(
-        "lesson/setPlayedTime",
-        { time: payload.playedTime },
-        { root: true }
-      );
+      commit("lesson/setExposureStatus", { id: payload.content.id, status: ExposureStatus.COMPLETED }, { root: true });
+      commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
-      commit(
-        "lesson/setCurrentExposureItemMedia",
-        { id: payload.pageSelected },
-        { root: true }
-      );
+      commit("lesson/setCurrentExposureItemMedia", { id: payload.pageSelected }, { root: true });
     },
     onStudentRaisingHand: (payload: any) => {
       console.log(payload);
@@ -230,7 +208,7 @@ export const useStudentRoomHandler = (
         {
           action: ClassActionFromValue(payload.action),
         },
-        { root: true }
+        { root: true },
       );
     },
     onTeacherDesignateTarget: async (payload: any) => {
@@ -238,7 +216,7 @@ export const useStudentRoomHandler = (
       const isAssigned = store.rootGetters["interactive/isAssigned"];
       if (isAssigned) {
         const message = `Please click on the board to answer.`;
-        await store.dispatch("setToast", {message: message}, {root: true });
+        await store.dispatch("setToast", { message: message }, { root: true });
       }
     },
     onTeacherUpdateDesignateTarget: async (payload: any) => {
@@ -247,8 +225,8 @@ export const useStudentRoomHandler = (
     onStudentAnswerSelf: async (payload: Array<Target>) => {
       await dispatch(
         "interactive/setRevealedLocalTarget",
-        payload.map((s) => s.id),
-        { root: true }
+        payload.map(s => s.id),
+        { root: true },
       );
     },
     onStudentAnswerAll: async (payload: Target) => {
@@ -272,7 +250,7 @@ export const useStudentRoomHandler = (
         },
         {
           root: true,
-        }
+        },
       );
     },
     onTeacherAddBrush: async (payload: string) => {
@@ -291,37 +269,33 @@ export const useStudentRoomHandler = (
         "annotation/setStickers",
         { stickers: payload },
         {
-          root: true
-        }
+          root: true,
+        },
       );
     },
     onTeacherClearStickers: async (payload: any) => {
-      await dispatch(
-        "annotation/setClearStickers",
-        { stickers: [] },
-        { root: true }
-      );
+      await dispatch("annotation/setClearStickers", { stickers: [] }, { root: true });
     },
     onTeacherSendUnity: async (payload: any) => {
       await dispatch(
         "unity/setTeacherMessage",
         { message: payload },
         {
-          root: true
-        }
+          root: true,
+        },
       );
     },
-    onTeacherSetOneToOne: async (payload: {status: boolean, id: string} ) => {
-      if(payload) {
+    onTeacherSetOneToOne: async (payload: { status: boolean; id: string }) => {
+      if (payload) {
         await dispatch(
           "modeOne/setStudentOneId",
           { id: payload.id },
           {
-            root: true
-          }
+            root: true,
+          },
         );
       } else {
-        await store.dispatch("modeOne/clearStudentOneId", { id: '' }, {root: true});
+        await store.dispatch("modeOne/clearStudentOneId", { id: "" }, { root: true });
       }
     },
   };
