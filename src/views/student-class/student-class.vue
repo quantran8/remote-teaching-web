@@ -10,7 +10,7 @@
       <div class="sc-header__right">
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <router-link class="sc-header__exit" :to="$paths.Parent">
-          <MatIcon type="close" />
+          <MatIcon type="close" class="red-close" />
           <span>Exit</span>
         </router-link>
       </div>
@@ -19,7 +19,10 @@
   <div class="sc-body">
     <div class="sc-content" ref="contentSectionRef">
       <div class="sc-content__top sc-teacher" ref="videoContainerRef">
-        <div :id="teacher?.id" class="sc-teacher__video"></div>
+        <div :id="teacher?.id" :class="!isOneToOne || studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'"></div>
+		<div :class="isOneToOne && !studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'">
+			<img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
+		</div>
       </div>
       <div class="sc-content__bottom">
         <!-- <div v-show="isGameView" class="sc-unity">

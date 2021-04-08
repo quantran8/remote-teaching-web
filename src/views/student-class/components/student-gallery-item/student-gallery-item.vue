@@ -7,8 +7,8 @@
       isOneToOne && 'sc-gallery-item--xlarge',
     ]"
   >
-    <div v-if="student.videoEnabled" class="sc-gallery-item__video" :id="student.id"></div>
-    <img v-else class="sc-gallery-item__img" src="@/assets/student-class/no-avatar.png" />
+    <div :class="student.videoEnabled ? 'sc-gallery-item__video sc-gallery-item__visible' : 'sc-gallery-item__not-visible'" :id="student.id"></div>
+    <img :class="!student.videoEnabled ? 'sc-gallery-item__img sc-gallery-item__visible' : 'sc-gallery-item__not-visible'" src="@/assets/student-class/no-avatar.png" />
     <h3 class="sc-gallery-item__title">{{ student.name }}</h3>
     <span class="sc-gallery-item__star" v-if="isCurrent">
       <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
