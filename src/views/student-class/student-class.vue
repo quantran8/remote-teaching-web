@@ -15,17 +15,16 @@
         </router-link>
       </div>
     </div>
-  </div>
-  <div class="sc-body">
-    <div class="sc-content" ref="contentSectionRef">
-      <div class="sc-content__top sc-teacher" ref="videoContainerRef">
-        <div class="sc-teacher__video" :id="teacher?.id" v-show="!isOneToOne || studentIsOneToOne"></div>
-        <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
-          <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
+    <div class="sc-body">
+      <div class="sc-content" ref="contentSectionRef">
+        <div class="sc-content__top sc-teacher" ref="videoContainerRef">
+          <div class="sc-teacher__video" :id="teacher?.id" v-show="!isOneToOne || studentIsOneToOne"></div>
+          <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
+            <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
+          </div>
         </div>
-      </div>
-      <div class="sc-content__bottom">
-        <!-- <div v-show="isGameView" class="sc-unity">
+        <div class="sc-content__bottom">
+          <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
             v-if="isGameView"
             src="/games/writting_book/Build/UnityLoader.js"
@@ -37,33 +36,34 @@
             @on-loaded="onUnityViewLoaded"
           ></UnityView>
         </div> -->
-        <div v-show="currentExposureItemMedia && isLessonPlan" class="sc-lessonplan">
-          <ContentView
-            v-if="!isPointerMode && !isDrawMode && !isStickerMode"
-            @on-tap="onClickContentView"
-            :masked="isBlackOutContent"
-            :image="currentExposureItemMedia?.image"
-            :contentId="currentExposureItemMedia?.id"
-            :targets="designateTargets"
-            :isAssigned="isAssigned"
-            :localTargets="localTargets"
-          ></ContentView>
-          <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia?.image"></AnnotationView>
+          <div v-show="currentExposureItemMedia && isLessonPlan" class="sc-lessonplan">
+            <ContentView
+              v-if="!isPointerMode && !isDrawMode && !isStickerMode"
+              @on-tap="onClickContentView"
+              :masked="isBlackOutContent"
+              :image="currentExposureItemMedia?.image"
+              :contentId="currentExposureItemMedia?.id"
+              :targets="designateTargets"
+              :isAssigned="isAssigned"
+              :localTargets="localTargets"
+            ></ContentView>
+            <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia?.image"></AnnotationView>
+          </div>
+          <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>
-        <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
-    </div>
-    <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
-    <div class="sc-action">
-      <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
-        <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
-      </a>
-      <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
-        <img :src="audioIcon" class="sc-action__icon" />
-      </a>
-      <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
-        <img :src="videoIcon" class="sc-action__icon" />
-      </a>
+      <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
+      <div class="sc-action">
+        <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
+          <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
+        </a>
+        <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
+          <img :src="audioIcon" class="sc-action__icon" />
+        </a>
+        <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
+          <img :src="videoIcon" class="sc-action__icon" />
+        </a>
+      </div>
     </div>
   </div>
 </template>
