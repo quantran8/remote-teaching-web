@@ -21,7 +21,8 @@ export default defineComponent({
         student.id
       );
       if (!roomResponse || !roomResponse.data) {
-        store.dispatch("setToast", `${student.name}'s class has not been started`);
+        const message = `${student.name}'s class has not been started`;
+        store.dispatch("setToast", {message: message});
         return;
       }
       router.push(`/student/${student.id}/class/${student.schoolClassId}`);

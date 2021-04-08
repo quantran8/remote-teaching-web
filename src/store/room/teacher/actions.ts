@@ -136,7 +136,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
       payload.badge
     );
   },
-
+  async setAllStudentBadge({ state }) {
+    state.manager?.WSClient.sendRequestSetStudentBadge(
+        [],
+        1
+    );
+  },
   async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;
     commit("setMicrophoneLock", { enable: true });

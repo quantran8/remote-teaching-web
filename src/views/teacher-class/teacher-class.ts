@@ -107,6 +107,10 @@ export default defineComponent({
       await dispatch("teacherRoom/unmuteAllStudents");
     };
 
+    const onClickStickerAll = async () => {
+      await dispatch("teacherRoom/setAllStudentBadge");
+    };
+
     const onClickEnd = () => {
       showModal.value = true;
     };
@@ -170,6 +174,7 @@ export default defineComponent({
       onClickContentView,
       modalDesignateTarget,
       roomInfo,
+      onClickStickerAll
       // isGameView,
       // onUnityLoaderLoaded,
       // onUnityViewLoading,

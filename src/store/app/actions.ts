@@ -1,9 +1,9 @@
 import { ContentService } from "@/services";
 import { ActionTree } from "vuex";
-import { AppState, AppView, LayoutType } from "./state";
+import {AppState, AppView, LayoutType, ToastData} from "./state";
 
 const actions: ActionTree<AppState, any> = {
-  setToast(store, payload: string) {
+  setToast(store, payload: ToastData) {
     store.commit("setToast", payload);
   },
   setLayout(store, payload: { layout: LayoutType }) {
