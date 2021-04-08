@@ -1,7 +1,8 @@
-import { computed, defineComponent, ref, onMounted, reactive } from "vue";
+import { computed, defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { Select, Button } from "ant-design-vue";
+import { debounce } from "lodash";
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
@@ -24,12 +25,15 @@ export default defineComponent({
 		const logginInfo: LoginInfo = store.getters["auth/loginInfo"];
 		const loading = ref<boolean>(false);
 		const disabled = ref<boolean>(false);
+		const filteredSchools = ref<ResourceModel[]>(schools.value);
 
 		const getSchools = async () => {
 			loading.value = true;
 			await store.dispatch("teacher/loadAccessibleSchools", {
 				disabled: false,
 			} as AccessibleSchoolQueryParam);
+
+			filteredSchools.value = schools.value;
 
 			loading.value = false;
 		};
@@ -44,6 +48,7 @@ export default defineComponent({
 				isCampusDetail: true
 			} as AccessibleClassQueryParam);
 
+			filteredSchools.value = schools.value;
 			loading.value = false;
 		};
 
@@ -112,6 +117,14 @@ export default defineComponent({
 			return canStart;
 		};
 
-		return { schools, classes, username, loading, disabled, onClickClass, onSchoolChange, canStartSession };
+		const filterSchools = debounce((input: string) => {
+			if (input) {
+				filteredSchools.value = schools.value.filter(school => school.name.toLowerCase().indexOf(input.toLowerCase()) >= 0);
+			} else {
+				filteredSchools.value = schools.value;
+			}
+		}, 500);
+
+		return { schools, filteredSchools, classes, username, loading, disabled, onClickClass, onSchoolChange, canStartSession, filterSchools };
 	}
 });

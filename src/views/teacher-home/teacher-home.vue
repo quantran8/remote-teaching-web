@@ -8,12 +8,15 @@
       <div class="teacher-page__school-select">
         <Select
           placeholder="School"
+          showSearch
           :disabled="disabled"
           :loading="loading"
           :value="schools[0]?.id"
+          :filterOption="false"
+          @search="filterSchools"
           @change="onSchoolChange"
         >
-          <Option :value="school.id" :key="school.id" v-for="school in schools">{{ school.name }}</Option>
+          <Option :value="school.id" :key="school.id" v-for="school in filteredSchools">{{ school.name }}</Option>
         </Select>
       </div>
       <div>
