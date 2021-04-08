@@ -56,6 +56,8 @@ export default defineComponent({
       props.videoEnabled ? "icon-video-on" : "icon-video-off"
     );
     const interactive = computed(()=> store.getters['interactive/interactiveStatus'](props.id));
+	const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
+	const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
 
     const isAudioHightlight = computed(() => {
       const enableAudios: Array<string> =
@@ -113,6 +115,8 @@ export default defineComponent({
     };
     const onOneAndOne = async () => {
       if (props.setModeOne) {
+		await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+		await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         await store.dispatch(
           "modeOne/setStudentOneId",
           { id: props.id }

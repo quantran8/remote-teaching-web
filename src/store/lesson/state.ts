@@ -67,6 +67,8 @@ export interface LessonState {
   isBlackout: boolean;
   totalTime: string;
   playedTime: string;
+  previousExposure?: Exposure;
+  previousExposureItemMedia?: ExposureItemMedia;
 }
 
 const state: LessonState = {
@@ -79,6 +81,8 @@ const state: LessonState = {
   isBlackout: false,
   totalTime: "",
   playedTime: "",
+  previousExposure: undefined,
+  previousExposureItemMedia: undefined,
 };
 
 export default state;

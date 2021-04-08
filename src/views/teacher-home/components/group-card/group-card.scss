@@ -1,0 +1,23 @@
+.container {
+	padding: 5px 10px;
+	max-width: 200px;
+	.g-card {
+		display: flex;
+		&__schedule {
+			display: flex;
+		}
+
+		&__highlight {
+			border: 1px solid #ff0;
+		}
+	}
+
+	.highlight {
+		border: 1px solid #ff0;
+	}
+
+	.anticon-play-circle {
+		align-self: center;
+		margin-left: 5px;
+	}
+}

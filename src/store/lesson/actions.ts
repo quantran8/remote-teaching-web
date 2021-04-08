@@ -119,6 +119,18 @@ const actions: LessonActions<LessonState, any> = {
   ) {
     store.commit("setIsBlackOut", payload);
   },
+  setPreviousExposure(
+	store: ActionContext<LessonState, any>,
+    payload: { id: string }
+  ) {
+	store.commit("setPreviousExposure", payload);
+  },
+  setPreviousExposureItemMedia(
+    store: ActionContext<LessonState, any>,
+    payload: { id: string }
+  ) {
+    store.commit("setPreviousExposureItemMedia", payload);
+  },
 };
 
 export default actions;

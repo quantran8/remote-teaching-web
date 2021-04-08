@@ -59,6 +59,28 @@ const mutations: LessonMutation<LessonState> = {
   setPlayedTime(s: LessonState, payload: { time: string }) {
     s.playedTime = payload.time;
   },
+  setPreviousExposure(s: LessonState, p: { id: string }) {
+    const exposure = s.exposures.find((e) => e.id === p.id);
+    s.previousExposure = exposure;
+    if (exposure?.type === ExposureType.TRANSITION) {
+      s.previousExposureItemMedia = undefined;
+      return;
+    }
+    if (s.previousExposure && s.previousExposure.items.length > 0) {
+      s.previousExposureItemMedia = undefined;
+      const firstItem = s.previousExposure.items[0];
+      if (firstItem.media.length > 0) {
+        s.previousExposureItemMedia = firstItem.media[0];
+      }
+    }
+  },
+  setPreviousExposureItemMedia(s: LessonState, p: { id: string }) {
+    if (!s.previousExposure) return;
+    for (const item of s.previousExposure.items) {
+      s.previousExposureItemMedia = item.media.find((m) => m.id === p.id);
+      if (s.previousExposureItemMedia) break;
+    }
+  },
 };
 
 export default mutations;

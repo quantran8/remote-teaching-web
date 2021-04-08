@@ -16,6 +16,8 @@ import {
   ref,
   watch,
 } from "vue";
+import { useStore } from "vuex";
+import { StudentState } from "@/store/room/interface";
 
 export default defineComponent({
   components: {
@@ -32,6 +34,7 @@ export default defineComponent({
   ],
   emits: ["on-tap"],
   setup(props, { emit }) {
+	const store = useStore();
     const scaleRatio = ref(1);
     const contentImageStyle = computed(() => {
       return props.image
@@ -39,6 +42,29 @@ export default defineComponent({
             "background-image": `url("${props.image.url}")`,
           }
         : {};
+    });
+	
+	const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
+	const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const isOneToOne = ref(false);
+    const studentIsOneToOne = ref(true);
+
+	const previousImage = ref({});
+
+    watch(studentOneAndOneId, () => {
+      if (studentOneAndOneId.value) {
+        isOneToOne.value = true;
+      } else {
+        isOneToOne.value = false;
+      }
+      if (student.value) {
+        studentIsOneToOne.value = student.value.id == studentOneAndOneId.value;
+		previousImage.value = {
+            "background-image": `url("${props.image.url}")`,
+		}
+      } else {
+        studentIsOneToOne.value = true;
+      }
     });
 
     const touchPosition = ref({
@@ -171,6 +197,9 @@ export default defineComponent({
       rectPreviewStyle,
       circles,
       rectangles,
+	  previousImage,
+	  isOneToOne,
+	  studentIsOneToOne,
     };
   },
 });

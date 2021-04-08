@@ -106,6 +106,12 @@ const getters: LessonGetters<LessonState, any> = {
   progressStatistic(s: LessonState): number {
     return getSeconds(s.playedTime) / getSeconds(s.totalTime);
   },
+  previousExposure(s: LessonState): Exposure | undefined {
+    return s.previousExposure;
+  },
+  previousExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
+    return s.previousExposureItemMedia;
+  },
 };
 
 export default getters;

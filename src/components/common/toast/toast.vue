@@ -1,6 +1,6 @@
 <template>
   <teleport to="body" v-if="toast">
-    <div :class="cssClass">{{ toast }}</div>
+    <div :class="cssClass">{{ toast.message }}</div>
   </teleport>
 </template>
 <style lang="scss" scoped src="./toast.scss"></style>

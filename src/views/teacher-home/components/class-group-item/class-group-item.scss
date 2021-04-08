@@ -1,0 +1,19 @@
+.cg-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	&__between {
+		display: flex;
+	}
+
+	&__g-cards  {
+		.card + .card {
+			margin-left: 5px;
+		}
+	}
+}
+
+.cg-row + .cg-row {
+	margin-top: 20px;
+}

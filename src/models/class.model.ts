@@ -1,3 +1,5 @@
+import { GroupModel } from "./group.model";
+
 export interface ClassModel {
   schoolId: string;
   schoolName: string;
@@ -19,6 +21,7 @@ export interface ClassModel {
   regionId: string;
   regionName: string;
   regionEnglishName: string;
+  groups?: GroupModel[];
 }
 
 export interface TeacherClassModel extends ClassModel {

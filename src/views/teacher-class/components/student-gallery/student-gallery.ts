@@ -32,12 +32,17 @@ export default defineComponent({
 		await dispatch("teacherRoom/unmuteAllStudents");
 	};
 
+	const onClickStickerAll = async () => {
+		await dispatch("teacherRoom/setAllStudentBadge");
+	};
+
     return {
       oneAndOneStatus,
 	  onClickHideAll,
 	  onClickShowAll,
 	  onClickMuteAll,
 	  onClickUnmuteAll,
+	  onClickStickerAll,
     };
   },
 });

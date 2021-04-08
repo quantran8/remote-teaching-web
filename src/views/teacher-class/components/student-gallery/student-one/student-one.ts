@@ -1,3 +1,4 @@
+import { ExposureType } from "@/store/lesson/state";
 import { StudentState, TeacherState } from "@/store/room/interface";
 import { computed, ComputedRef, defineComponent, watch } from "vue";
 import { useStore } from "vuex";
@@ -91,13 +92,21 @@ export default defineComponent({
     setDefaultVideoStudent();
     setVideoTeacher();
 
+	const previousExposure = computed(() => store.getters["lesson/previousExposure"]);
+	const previousExposureMediaItem = computed(() => store.getters["lesson/previousExposureItemMedia"]);
     const backToClass = async () => {
-      await setVideoTeacher();
-      await store.dispatch("modeOne/clearStudentOneId", { id: '' });
-      await store.dispatch("teacherRoom/sendOneAndOne", {
-        status: false,
-        id: null,
-      });
+		if (previousExposure.value) {
+			await store.dispatch("teacherRoom/setCurrentExposure", { id: previousExposure.value.id });
+		}
+		if (previousExposureMediaItem.value){
+			await store.dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
+		}
+		await setVideoTeacher();
+		await store.dispatch("modeOne/clearStudentOneId", { id: '' });
+		await store.dispatch("teacherRoom/sendOneAndOne", {
+			status: false,
+			id: null,
+		});
     };
 
     return {
