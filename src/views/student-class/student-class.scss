@@ -80,12 +80,8 @@
     transition: 0.3s;
   }
 
-  &__visible {
-    opacity: 1;
-  }
-
   &__not-visible {
-    opacity: 0;
+    display: none;
   }
 
   &__one-to-one {

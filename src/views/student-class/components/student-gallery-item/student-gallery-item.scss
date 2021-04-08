@@ -24,12 +24,8 @@
     transform: translate(-50%, -50%) scale(1);
   }
 
-  &__visible {
-    opacity: 1;
-  }
-
   &__not-visible {
-    opacity: 0;
+    display: none;
   }
 
   &__img {
