@@ -2,7 +2,10 @@
   <div class="lesson-container">
     <div class="lesson-container__header">
       <div class="lesson-container__header-title">Lesson Plan</div>
-      <a href="javascript:" @click="backToGalleryMode" class="lesson-container__header-back">&rsaquo;</a>
+      <a href="javascript:" @click="backToGalleryMode" class="lesson-container__header-back">
+        <span v-if="isGalleryView">&#8250;</span>
+        <span v-else>&#8249;</span>
+      </a>
     </div>
     <div class="lesson-container__body nice-scroll">
       <p>- Activities: {{ activityStatistic }}</p>
