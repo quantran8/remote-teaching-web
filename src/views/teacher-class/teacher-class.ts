@@ -1,7 +1,7 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
-import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
+import { gsap } from "gsap";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -83,8 +83,10 @@ export default defineComponent({
 
     const toggleView = async () => {
       if (isGalleryView.value) {
+        gsap.fromTo(".lesson-plan", { x: -100, duration: 1 },{ x: 0, duration: 1 });
         await setClassView(ClassView.LESSON_PLAN);
       } else {
+        gsap.fromTo(".lesson-plan", { x: 200, duration: 1 },{ x: 10, duration: 1 });
         await setClassView(ClassView.GALLERY);
       }
     };
