@@ -9,7 +9,10 @@
     $item-count: 10,
     $container-size: $gallery-size,
     $item-size: $gallery-item-size,
-    $item-selector: "&::v-deep .sc-gallery__item",
+    $item-selector: (
+      #{"&::v-deep .sc-gallery__item"},
+      #{".sc-gallery-item"},
+    ),
     $item-start-position: 8
   );
   margin-top: ($gallery-item-size / 2) + 30px;

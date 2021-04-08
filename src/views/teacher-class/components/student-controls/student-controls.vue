@@ -1,17 +1,36 @@
 <template>
   <div id="student-controls">
     <div class="student-controls__button">
-      <span>
-        Sticker all
+      <span class="student-controls__button--clickable">
+        <img class="sticker-icon" :src="require(`@/assets/sticker.svg`)" />
+        <span>Sticker all</span>
       </span>
     </div>
 
-    <div class="student-controls__button" @click="onClickToggleAudio">
-      {{globalAudioText}}
+    <div class="student-controls__button">
+      <span @click="onClickToggleAudio" class="student-controls__button--clickable">
+        <span v-if="isAllAudioMuted">
+          <img class="audio-icon" :src="require(`@/assets/unmute.png`)" />
+          <span>Unmute all</span>
+        </span>
+        <span v-else>
+          <img class="audio-icon" :src="require(`@/assets/mute.svg`)" />
+          <span>Mute all</span>
+        </span>
+      </span>
     </div>
 
-    <div class="student-controls__button" @click="onClickToggleVideo">
-      {{globalVideoText}}
+    <div class="student-controls__button">
+      <span @click="onClickToggleVideo" class="student-controls__button--clickable">
+        <span v-if="isAllVideoHidden">
+          <img class="video-icon" :src="require(`@/assets/show-all.png`)" />
+          <span>Show All</span>
+        </span>
+        <span v-else>
+          <img class="video-icon" :src="require(`@/assets/hide-all.svg`)" />
+          <span>Hide All</span>
+        </span>
+      </span>
     </div>
   </div>
 </template>

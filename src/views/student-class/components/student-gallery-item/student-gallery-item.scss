@@ -5,8 +5,7 @@
   border-radius: 50%;
   width: 100%;
   height: 100%;
-  transition: 0.2s;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -97,6 +96,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
+    transition: 0.2s;
   }
   &--large {
     width: $gallery-item-size * 3;
