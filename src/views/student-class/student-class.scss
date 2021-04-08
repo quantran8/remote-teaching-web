@@ -19,8 +19,9 @@
     justify-content: center;
   }
   &__icon {
-    max-width: 70px;
-    height: auto;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
   }
   &__trainer {
     margin: 0;
@@ -39,14 +40,6 @@
     font-size: 24px;
     border-radius: 0 0 0 50px;
     border-left: 1px solid #00000029;
-    .material-icons {
-      background: #f00;
-      color: #fff;
-      border-radius: 50%;
-      padding: 3px;
-      font-size: 18px;
-      margin-right: 5px;
-    }
   }
 }
 
@@ -89,7 +82,7 @@
   }
 
   &__visible {
-    opacity: 100%;
+    opacity: 1;
   }
 
   &__not-visible {
@@ -110,6 +103,7 @@
   grid-auto-flow: column;
   justify-content: center;
   grid-column-gap: 30px;
+  margin-top: 30px;
   &__item {
     display: block;
   }

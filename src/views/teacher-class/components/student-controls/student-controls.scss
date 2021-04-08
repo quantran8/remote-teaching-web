@@ -5,5 +5,23 @@
   .student-controls__button {
     flex: 1;
     text-align: center;
+
+    .student-controls__button--clickable {
+      cursor: pointer;
+      img {
+        margin-right: 6px;
+      }
+
+      .sticker-icon {
+        height: 28px;
+      }
+
+      .audio-icon {
+        height: 18px;
+      }
+      .video-icon {
+        height: 16px;
+      }
+    }
   }
 }

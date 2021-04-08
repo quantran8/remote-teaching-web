@@ -7,19 +7,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
 
-    const isAllVideoHidden = computed(
-      () => getters["teacherRoom/isAllVideoHidden"]
-    );
-    const isAllAudioMuted = computed(
-      () => getters["teacherRoom/isAllAudioMuted"]
-    );
-
-    const globalAudioText = computed(() =>
-      getters["teacherRoom/isAllAudioMuted"] ? "Unmute All" : "Mute All"
-    );
-    const globalVideoText = computed(() =>
-      getters["teacherRoom/isAllVideoHidden"] ? "Show All" : "Hide All"
-    );
+    const isAllVideoHidden = computed(() => getters["teacherRoom/isAllVideoHidden"]);
+    const isAllAudioMuted = computed(() => getters["teacherRoom/isAllAudioMuted"]);
 
     const onClickToggleVideo = () => {
       emit(isAllVideoHidden.value ? "show-all" : "hide-all");
@@ -33,8 +22,6 @@ export default defineComponent({
       onClickToggleAudio,
       isAllVideoHidden,
       isAllAudioMuted,
-      globalAudioText,
-      globalVideoText
     };
-  }
+  },
 });

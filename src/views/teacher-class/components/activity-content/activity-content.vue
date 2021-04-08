@@ -8,7 +8,7 @@
         :targets="designateTargets"
         :localTargets="localTargets"
         :isAssigned="true"
-      ></ContentView>
+      />
     </div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>
     <div

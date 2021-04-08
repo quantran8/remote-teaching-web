@@ -4,13 +4,13 @@
       <div class="sc-header__left">
         <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
         <div>
-          <img class="sc-header__icon" src="@/assets/student-class/class-icon.svg" alt="Icon" />
+          <img v-if="classAction" class="sc-header__icon" :src="require(`@/assets/icons/icon-action-${classAction}.svg`)" alt="Icon" />
         </div>
       </div>
       <div class="sc-header__right">
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <router-link class="sc-header__exit" :to="$paths.Parent">
-          <MatIcon type="close" />
+          <MatIcon type="close" class="red-close" />
           <span>Exit</span>
         </router-link>
       </div>
@@ -19,10 +19,10 @@
   <div class="sc-body">
     <div class="sc-content" ref="contentSectionRef">
       <div class="sc-content__top sc-teacher" ref="videoContainerRef">
-        <div :id="teacher?.id" :class="!isOneToOne || studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'"></div>
-		<div :class="isOneToOne && !studentIsOneToOne ? 'sc-teacher__video sc-teacher__visible' : 'sc-teacher__not-visible'">
-			<img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
-		</div>
+        <div class="sc-teacher__video" :id="teacher?.id" v-show="!isOneToOne || studentIsOneToOne"></div>
+        <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
+          <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
+        </div>
       </div>
       <div class="sc-content__bottom">
         <!-- <div v-show="isGameView" class="sc-unity">
@@ -48,10 +48,7 @@
             :isAssigned="isAssigned"
             :localTargets="localTargets"
           ></ContentView>
-          <AnnotationView
-            v-if="isPointerMode || isDrawMode || isStickerMode"
-            :image="currentExposureItemMedia?.image"
-          ></AnnotationView>
+          <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia?.image"></AnnotationView>
         </div>
         <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
@@ -62,10 +59,10 @@
         <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
       </a>
       <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
-        <img src="@/assets/student-class/speaker.svg" class="sc-action__icon" />
+        <img :src="audioIcon" class="sc-action__icon" />
       </a>
       <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
-        <img src="@/assets/student-class/eye-cut.svg" class="sc-action__icon" />
+        <img :src="videoIcon" class="sc-action__icon" />
       </a>
     </div>
   </div>
