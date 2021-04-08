@@ -108,7 +108,6 @@ export default defineComponent({
     };
 
     const onClickStickerAll = async () => {
-      console.log("click sticker all");
       await dispatch("teacherRoom/setAllStudentBadge");
     };
 

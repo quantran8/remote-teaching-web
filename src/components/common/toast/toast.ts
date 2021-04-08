@@ -13,7 +13,6 @@ export default defineComponent({
       if (timeoutId.value) clearTimeout(timeoutId.value);
       if (toast.value && toast.value.message) {
         setTimeout(() => {
-          console.log(toast.value);
           if (toast.value.isPlaySound)
             audio.play();
           cssClass.value = toast.value.message ? "snackbar show" : "snackbar";
