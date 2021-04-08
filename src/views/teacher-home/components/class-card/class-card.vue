@@ -2,7 +2,7 @@
   <BaseCard>
     <div class="container">
       <div class="class-title">
-        <LiveCircle class="live-dot" v-if="active"></LiveCircle>
+        <LiveCircle class="live-dot" v-if="active"/>
         <h3>{{ title }}</h3>
       </div>
       <p>{{ description }}</p>

@@ -1,3 +1,4 @@
+// these are from RemoteTeachingHub.cs at server side
 export enum TeacherWSCommand {
   STREAM_CONNECT = "TeacherStreamConnect",
   JOIN_CLASS = "TeacherJoinClass",

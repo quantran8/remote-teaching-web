@@ -48,7 +48,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestSetStudentBadge(StudentIds: string[], Badge: number) {
     return this.send(WSCmd.SET_STUDENT_BADGE, {
       StudentIds: StudentIds,
-      Badge: Badge
+      Badge: Badge,
     });
   }
   sendRequestAddStudentAudio(StudentId: string) {
@@ -89,11 +89,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestSetClassAction(action: number) {
     return this.send(WSCmd.SET_CLASS_ACTION, { Action: action });
   }
-  sendRequestDesignateTarget(
-    contentId: string,
-    targets: Array<Target>,
-    studentIds: Array<string>
-  ) {
+  sendRequestDesignateTarget(contentId: string, targets: Array<Target>, studentIds: Array<string>) {
     return this.send(WSCmd.DESIGNATE_TARGET, {
       ContentId: contentId,
       Targets: targets,
@@ -128,7 +124,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearStickers(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_STICKERS, {});
   }
-  sendRequestSetOneToOne(payload: {status: boolean, id: string}) {
+  sendRequestSetOneToOne(payload: { status: boolean; id: string }) {
     return this.send(WSCmd.TEACHER_SET_ONE_TO_ONE, { StudentId: payload.id });
   }
 }
