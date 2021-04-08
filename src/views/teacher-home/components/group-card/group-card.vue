@@ -1,8 +1,8 @@
 <template>
-  <BaseCard>
+  <BaseCard class="g-card" :style="style">
     <div class="container">
       <div class="g-card__title">
-        <h3>{{ title }}</h3>
+        <h4>{{ title }}</h4>
       </div>
       <p>Members: {{ studentCount }}</p>
       <div class="g-card__schedule">
@@ -12,5 +12,5 @@
     </div>
   </BaseCard>
 </template>
-<style lang="scss" src="./group-card.scss" scoped></style>
+<style lang="scss" src="./group-card.scss"></style>
 <script lang="ts" src="./group-card.ts"></script>

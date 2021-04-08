@@ -22,9 +22,14 @@ export default defineComponent({
 		canStartSession: {
 			type: Function,
 			required: true
-		}
+		},
+		isHighlight: {
+			type: Boolean
+		},
 	},
-	setup() {
-		return { formatDate: formatDate4Y2M2D };
+	setup(props) {
+		const style = props.isHighlight ? "border: 1px solid #ff0;" : null;
+
+		return { formatDate: formatDate4Y2M2D, style };
 	},
 });

@@ -6,7 +6,6 @@
         <h3>{{ title }}</h3>
       </div>
       <p>{{ description }}</p>
-      <!-- <BaseButton mode="clear" color="primary">{{ btnText }}</BaseButton> -->
     </div>
   </BaseCard>
 </template>

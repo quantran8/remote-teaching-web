@@ -19,12 +19,13 @@
           <Option :value="school.id" :key="school.id" v-for="school in filteredSchools">{{ school.name }}</Option>
         </Select>
       </div>
-      <div>
+      <div class="teacher-page__classgroup">
         <ClassGroupItem
           v-for="cl in classes"
           :key="cl.schoolClassId"
           :schoolClass="cl"
-          :onClickClass="() => onClickClass(cl)"
+          :onClickClass="(cls) => onClickClass(cls)"
+          :onClickGroup="(classId) => onClickGroup(classId)"
           :canStartSession="canStartSession"
         />
       </div>

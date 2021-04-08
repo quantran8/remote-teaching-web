@@ -20,7 +20,7 @@ export default defineComponent({
 		const store = useStore();
 		const router = useRouter();
 		const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
-		const classes = computed(() => store.getters["teacher/classes"]);
+		const classes = computed<TeacherClassModel[]>(() => store.getters["teacher/classes"]);
 		const username = computed(() => store.getters["auth/username"]);
 		const logginInfo: LoginInfo = store.getters["auth/loginInfo"];
 		const loading = ref<boolean>(false);
@@ -105,9 +105,17 @@ export default defineComponent({
 			}
 		};
 
+		const onClickGroup = (schoolClassId: string) => {
+			const schoolClass = classes.value.find(cl => cl.schoolClassId === schoolClassId);
+
+			if (schoolClass) {
+				onClickClass(schoolClass);
+			}
+		};
+
 		const canStartSession = (nextSchedule: any) => {
 			const now: any = new Date();
-			const diff = (now - nextSchedule) / (1000 * 60);
+			const diff = (nextSchedule - now) / (1000 * 60);
 			let canStart = false;
 
 			if (diff <= 15) {
@@ -125,6 +133,18 @@ export default defineComponent({
 			}
 		}, 500);
 
-		return { schools, filteredSchools, classes, username, loading, disabled, onClickClass, onSchoolChange, canStartSession, filterSchools };
+		return {
+			schools,
+			filteredSchools,
+			classes,
+			username,
+			loading,
+			disabled,
+			onClickClass,
+			onClickGroup,
+			onSchoolChange,
+			canStartSession,
+			filterSchools
+		};
 	}
 });

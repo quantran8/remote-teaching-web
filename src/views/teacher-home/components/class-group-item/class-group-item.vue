@@ -20,6 +20,8 @@
         :studentCount="group.studentCount"
         :nextSchedule="group.nextSchedule"
         :canStartSession="canStartSession"
+        :isHighlight="isHighlight(group, schoolClass.groups || [])"
+        @click="() => onClickGroup(group.schoolClassId)"
       />
     </div>
   </div>
