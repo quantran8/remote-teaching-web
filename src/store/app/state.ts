@@ -9,14 +9,19 @@ export enum AppView {
 export interface AppState {
   layout: LayoutType;
   appView: AppView;
-  toast: string;
+  toast: ToastData;
   contentSignature: string;
+}
+
+export interface ToastData {
+  message: string;
+  isPlayingSound?: boolean;
 }
 
 const state: AppState = {
   layout: "main",
   appView: AppView.Blank,
-  toast: "",
+  toast: { message: "", isPlayingSound: false },
   contentSignature: "",
 };
 
