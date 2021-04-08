@@ -1,6 +1,10 @@
 import { computed, defineComponent } from "vue";
+import { Card } from "ant-design-vue";
 
 export default defineComponent({
+  components: {
+	Card,
+  },
   props: {
     id: {
       type: String,
