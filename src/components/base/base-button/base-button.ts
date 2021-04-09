@@ -12,9 +12,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const cssClass = computed(
-      () => `button-${props.mode} color-${props.color}`
-    );
+    const cssClass = computed(() => `button-${props.mode} color-${props.color}`);
     return { cssClass };
   },
 });

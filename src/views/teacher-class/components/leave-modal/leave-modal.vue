@@ -5,10 +5,8 @@
         Are you sure to end this lesson?
       </div>
       <div class="footer">
-        <BaseButton class="btn-secondary" @click="onClickDismiss" mode="outline"
-          >Stay</BaseButton
-        >
-        <BaseButton class="btn-primary" @click="onClickLeave">Leave</BaseButton>
+        <BaseButton class="btn-primary" @click="onClickDismiss" mode="primary">Stay</BaseButton>
+        <BaseButton class="btn-secondary" mode="outline" @click="onClickLeave">Leave</BaseButton>
       </div>
     </div>
   </BaseModal>

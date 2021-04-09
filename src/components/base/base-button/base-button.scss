@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   color: white;
+  border-radius: 4px;
 }
 
 .base-button:hover {
@@ -12,13 +13,15 @@
 
 .button-fill {
   background-color: #00000069;
-  border-radius: 4px;
+}
+
+.button-primary {
+  background: #00a1ed;
 }
 
 .button-outline {
   background: none;
   border: solid 1px;
-  border-radius: 4px;
 }
 
 .color-primary {
