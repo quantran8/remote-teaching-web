@@ -10,7 +10,7 @@
     <div class="student-controls__button">
       <span @click="onClickToggleAudio" class="student-controls__button--clickable">
         <span v-if="isAllAudioMuted">
-          <img class="audio-icon" :src="require(`@/assets/unmute.png`)" />
+          <img class="audio-icon" :src="require(`@/assets/unmuted.svg`)" />
           <span>Unmute all</span>
         </span>
         <span v-else>
@@ -23,7 +23,7 @@
     <div class="student-controls__button">
       <span @click="onClickToggleVideo" class="student-controls__button--clickable">
         <span v-if="isAllVideoHidden">
-          <img class="video-icon" :src="require(`@/assets/show-all.png`)" />
+          <img class="video-icon" :src="require(`@/assets/show-all.svg`)" />
           <span>Show All</span>
         </span>
         <span v-else>
