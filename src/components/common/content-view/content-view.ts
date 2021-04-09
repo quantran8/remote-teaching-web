@@ -52,11 +52,7 @@ export default defineComponent({
 	const previousImage = ref({});
 
     watch(studentOneAndOneId, () => {
-      if (studentOneAndOneId.value) {
-        isOneToOne.value = true;
-      } else {
-        isOneToOne.value = false;
-      }
+	  isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentNotOneToOne.value = student.value.id !== studentOneAndOneId.value;
 		previousImage.value = {
