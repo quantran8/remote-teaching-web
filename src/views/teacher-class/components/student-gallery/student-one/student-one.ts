@@ -17,16 +17,12 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const students: ComputedRef<Array<StudentState>> = computed(
-      () => store.getters["teacherRoom/students"]
-    );
-    const studentOneAndOneId = computed(
-      () => store.getters["modeOne/getStudentModeOneId"]
-    );
-    const teacher: ComputedRef<TeacherState> = computed(
-      () => store.getters["teacherRoom/teacher"]
-    );
-    const studentOne = students.value.filter(student => { return student.id === studentOneAndOneId.value })[0];
+    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const teacher: ComputedRef<TeacherState> = computed(() => store.getters["teacherRoom/teacher"]);
+    const studentOne = students.value.filter(student => {
+      return student.id === studentOneAndOneId.value;
+    })[0];
 
     const setVideoAudioStudent = async (audioStatus: boolean, videoStatus: boolean, id: string) => {
       await store.dispatch("teacherRoom/setStudentAudio", {
@@ -37,15 +33,15 @@ export default defineComponent({
         id: id,
         enable: videoStatus,
       });
-    }
+    };
 
     const setDefaultVideoStudent = () => {
       students.value.map(student => {
         if (student.id !== studentOneAndOneId.value) {
           setVideoAudioStudent(false, true, student.id);
         }
-      })
-    }
+      });
+    };
 
     const toggleVideoAudioTeacher = async (audioStatus: boolean, videoStatus: boolean, id: string) => {
       await store.dispatch("teacherRoom/setTeacherAudio", {
@@ -56,62 +52,62 @@ export default defineComponent({
         id: id,
         enable: videoStatus,
       });
-    }
+    };
 
     const setVideoTeacher = async () => {
       if (!teacher.value) {
         return;
       }
       const teacherInfo = teacher.value;
-      if (teacherInfo.audioEnabled && teacherInfo.videoEnabled){
+      if (teacherInfo.audioEnabled && teacherInfo.videoEnabled) {
         await toggleVideoAudioTeacher(false, false, teacherInfo.id);
         await toggleVideoAudioTeacher(true, true, teacherInfo.id);
       } else {
         await toggleVideoAudioTeacher(true, true, teacherInfo.id);
       }
-    }
+    };
 
     let turnOnCurrentStudent = false;
     watch(studentOne, async () => {
       if (turnOnCurrentStudent) {
         return;
       }
-      if (studentOne && studentOne.audioEnabled && studentOne.videoEnabled){
-		// Turn on student video and audio.
-		// Actually this is a trick to make this function work around. Need to optimize later.
+      if (studentOne && studentOne.audioEnabled && studentOne.videoEnabled) {
+        // Turn on student video and audio.
+        // Actually this is a trick to make this function work around. Need to optimize later.
         await setVideoAudioStudent(false, false, studentOne.id);
         setTimeout(async () => {
           await setVideoAudioStudent(true, true, studentOne.id);
-        },300)
+        }, 300);
         turnOnCurrentStudent = true;
       } else {
         turnOnCurrentStudent = false;
       }
-    })
+    });
 
     setDefaultVideoStudent();
     setVideoTeacher();
 
-	const previousExposure = computed(() => store.getters["lesson/previousExposure"]);
-	const previousExposureMediaItem = computed(() => store.getters["lesson/previousExposureItemMedia"]);
+    const previousExposure = computed(() => store.getters["lesson/previousExposure"]);
+    const previousExposureMediaItem = computed(() => store.getters["lesson/previousExposureItemMedia"]);
     const backToClass = async () => {
-		if (previousExposure.value) {
-			await store.dispatch("teacherRoom/setCurrentExposure", { id: previousExposure.value.id });
-		}
-		if (previousExposureMediaItem.value){
-			await store.dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
-		}
-		await setVideoTeacher();
-		await store.dispatch("modeOne/clearStudentOneId", { id: '' });
-		await store.dispatch("teacherRoom/sendOneAndOne", {
-			status: false,
-			id: null,
-		});
+      if (previousExposure.value) {
+        await store.dispatch("teacherRoom/setCurrentExposure", { id: previousExposure.value.id });
+      }
+      if (previousExposureMediaItem.value) {
+        await store.dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
+      }
+      await setVideoTeacher();
+      await store.dispatch("modeOne/clearStudentOneId", { id: "" });
+      await store.dispatch("teacherRoom/sendOneAndOne", {
+        status: false,
+        id: null,
+      });
     };
 
     return {
       backToClass,
-      studentOne
+      studentOne,
     };
   },
 });

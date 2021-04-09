@@ -43,31 +43,26 @@ export default defineComponent({
     setModeOne: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   setup(props) {
     const isContextMenuVisible = ref(false);
     const store = useStore();
     const isNotJoinned = computed(() => props.status !== InClassStatus.JOINED);
-    const audioIcon = computed(() =>
-      props.audioEnabled ? "icon-audio-on" : "icon-audio-off"
-    );
-    const videoIcon = computed(() =>
-      props.videoEnabled ? "icon-video-on" : "icon-video-off"
-    );
-    const interactive = computed(()=> store.getters['interactive/interactiveStatus'](props.id));
-	const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
-	const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const audioIcon = computed(() => (props.audioEnabled ? "icon-audio-on" : "icon-audio-off"));
+    const videoIcon = computed(() => (props.videoEnabled ? "icon-video-on" : "icon-video-off"));
+    const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.id));
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
 
     const isAudioHightlight = computed(() => {
-      const enableAudios: Array<string> =
-        store.getters["teacherRoom/enableAudios"];
+      const enableAudios: Array<string> = store.getters["teacherRoom/enableAudios"];
       return props.id && enableAudios.indexOf(props.id) !== -1;
     });
-    
+
     const showCorrectAnswer = computed(() => {
       return interactive.value.status !== 0 && interactive.value.multiAssign && !isNotJoinned.value;
-    })
+    });
 
     watch(props, () => {
       isContextMenuVisible.value = false;
@@ -96,7 +91,7 @@ export default defineComponent({
         id: props.id,
         enable: status,
       });
-    }
+    };
 
     /**
      * Add badge for a student
@@ -104,7 +99,7 @@ export default defineComponent({
     const addABadge = async () => {
       await store.dispatch("teacherRoom/setStudentBadge", {
         id: props.id, // studentId
-        badge: 1 // increase by 1
+        badge: 1, // increase by 1
       });
     };
 
@@ -115,12 +110,9 @@ export default defineComponent({
     };
     const onOneAndOne = async () => {
       if (props.setModeOne) {
-		await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-		await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
-        await store.dispatch(
-          "modeOne/setStudentOneId",
-          { id: props.id }
-        );
+        await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+        await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+        await store.dispatch("modeOne/setStudentOneId", { id: props.id });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.id,
@@ -155,7 +147,7 @@ export default defineComponent({
       onClickClearRaisingHand,
       onOneAndOne,
       interactive,
-      showCorrectAnswer
+      showCorrectAnswer,
     };
   },
 });
