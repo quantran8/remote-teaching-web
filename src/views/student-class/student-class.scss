@@ -34,7 +34,7 @@
     img{
       width: 55px;
       height: 55px;
-      transform: scale(1.2);
+      transform: scale(1.04);
     }
   }
   &__trainer {
@@ -115,15 +115,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     transition: 0.3s;
-  }
-
-  &__visible {
-    opacity: 1;
-  }
-
-  &__not-visible {
-    opacity: 0;
-    display: none;
   }
 
   &__one-to-one {

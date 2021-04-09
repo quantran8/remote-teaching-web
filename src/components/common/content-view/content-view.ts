@@ -1,37 +1,22 @@
 import { Target } from "@/store/interactive/state";
-import {
-  Circle as CircleModel,
-  Rectangle as RectangleModel,
-} from "@/views/teacher-class/components/designate-target/designate-target";
+import { Circle as CircleModel, Rectangle as RectangleModel } from "@/views/teacher-class/components/designate-target/designate-target";
 
 import Circle from "../designate-circle/designate-circle.vue";
 import Rectangle from "../designate-rectangle/designate-rectangle.vue";
 
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch,
-} from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { useStore } from "vuex";
+import { StudentState } from "@/store/room/interface";
 
 export default defineComponent({
   components: {
     Circle,
     Rectangle,
   },
-  props: [
-    "targets",
-    "localTargets",
-    "image",
-    "masked",
-    "contentId",
-    "isAssigned",
-  ],
+  props: ["targets", "localTargets", "image", "masked", "contentId", "isAssigned"],
   emits: ["on-tap"],
   setup(props, { emit }) {
+    const store = useStore();
     const scaleRatio = ref(1);
     const contentImageStyle = computed(() => {
       return props.image
@@ -39,6 +24,25 @@ export default defineComponent({
             "background-image": `url("${props.image.url}")`,
           }
         : {};
+    });
+
+    const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
+    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const isOneToOne = ref(false);
+    const studentIsOneToOne = ref(false);
+
+    const previousImage = ref({});
+
+    watch(studentOneAndOneId, () => {
+      isOneToOne.value = !!studentOneAndOneId.value;
+      if (student.value) {
+        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+        previousImage.value = {
+          "background-image": `url("${props.image.url}")`,
+        };
+      } else {
+        studentIsOneToOne.value = false;
+      }
     });
 
     const touchPosition = ref({
@@ -57,12 +61,10 @@ export default defineComponent({
 
     const updateTargets = () => {
       const targets: Array<Target> = props.targets;
-      const revealedTargets = targets.filter(
-        (t) => t.reveal || props.localTargets.indexOf(t.id) !== -1
-      );
+      const revealedTargets = targets.filter(t => t.reveal || props.localTargets.indexOf(t.id) !== -1);
       circles.value = revealedTargets
-        .filter((t) => t.type === "circle")
-        .map((c) => {
+        .filter(t => t.type === "circle")
+        .map(c => {
           return {
             id: c.id,
             x: rectPreview.value.x + c.x * scaleRatio.value,
@@ -73,8 +75,8 @@ export default defineComponent({
           };
         });
       rectangles.value = revealedTargets
-        .filter((t) => t.type === "rectangle")
-        .map((r) => {
+        .filter(t => t.type === "rectangle")
+        .map(r => {
           return {
             id: r.id,
             x: rectPreview.value.x + r.x * scaleRatio.value,
@@ -101,8 +103,7 @@ export default defineComponent({
       if (!parentElement) return;
       const boundingBox = parentElement.getBoundingClientRect();
       touchPosition.value = {
-        x:
-          (event.x - boundingBox.left - rectPreview.value.x) / scaleRatio.value,
+        x: (event.x - boundingBox.left - rectPreview.value.x) / scaleRatio.value,
         y: (event.y - boundingBox.top - rectPreview.value.y) / scaleRatio.value,
       };
       if (
@@ -113,11 +114,7 @@ export default defineComponent({
       )
         return;
 
-      updateTouchPosition(
-        Math.floor(touchPosition.value.x),
-        Math.floor(touchPosition.value.y),
-        props.contentId
-      );
+      updateTouchPosition(Math.floor(touchPosition.value.x), Math.floor(touchPosition.value.y), props.contentId);
     };
 
     const touchStyle = computed(() => {
@@ -129,7 +126,7 @@ export default defineComponent({
     });
 
     const updateRectPreview = () => {
-      if(!props.image) return;
+      if (!props.image) return;
       const parentElement = document.getElementById("exposure-content");
       if (!parentElement) return;
       const boundingBox = parentElement.getBoundingClientRect();
@@ -171,6 +168,9 @@ export default defineComponent({
       rectPreviewStyle,
       circles,
       rectangles,
+      previousImage,
+      isOneToOne,
+      studentIsOneToOne,
     };
   },
 });

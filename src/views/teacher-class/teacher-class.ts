@@ -15,7 +15,6 @@ import {
   ErrorModal,
   DesignateTarget,
   TeacherPageHeader,
-  StudentControls,
 } from "./components";
 export default defineComponent({
   components: {
@@ -28,7 +27,6 @@ export default defineComponent({
     ErrorModal,
     DesignateTarget,
     TeacherPageHeader,
-    StudentControls,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -107,10 +105,6 @@ export default defineComponent({
       await dispatch("teacherRoom/unmuteAllStudents");
     };
 
-    const onClickStickerAll = async () => {
-      await dispatch("teacherRoom/setAllStudentBadge");
-    };
-
     const onClickEnd = () => {
       showModal.value = true;
     };
@@ -174,7 +168,6 @@ export default defineComponent({
       onClickContentView,
       modalDesignateTarget,
       roomInfo,
-      onClickStickerAll
       // isGameView,
       // onUnityLoaderLoaded,
       // onUnityViewLoading,

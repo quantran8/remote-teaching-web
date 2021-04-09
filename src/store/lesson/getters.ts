@@ -1,10 +1,5 @@
 import { GetterTree } from "vuex";
-import {
-  Exposure,
-  ExposureItemMedia,
-  ExposureStatus,
-  LessonState,
-} from "./state";
+import { Exposure, ExposureItemMedia, ExposureStatus, LessonState } from "./state";
 
 const getSeconds = (time: string) => {
   if (!time || time.indexOf(":") === -1) return 0;
@@ -42,9 +37,7 @@ interface LessonGetterInterface<S> {
   progressStatistic(s: S): number;
 }
 
-interface LessonGetters<S, R>
-  extends GetterTree<S, R>,
-    LessonGetterInterface<S> {}
+interface LessonGetters<S, R> extends GetterTree<S, R>, LessonGetterInterface<S> {}
 
 const getters: LessonGetters<LessonState, any> = {
   currentExposure(s: LessonState): Exposure | undefined {
@@ -68,7 +61,7 @@ const getters: LessonGetters<LessonState, any> = {
     if (indexOfMedia + 1 < allMedia.length) {
       return (s.nextExposureItemMedia = allMedia[indexOfMedia + 1]);
     } else {
-      return s.nextExposureItemMedia = undefined;
+      return (s.nextExposureItemMedia = undefined);
     }
   },
   prevExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
@@ -83,7 +76,7 @@ const getters: LessonGetters<LessonState, any> = {
     if (indexOfMedia - 1 >= 0) {
       return (s.nextExposureItemMedia = allMedia[indexOfMedia - 1]);
     } else {
-      return s.nextExposureItemMedia = undefined;
+      return (s.nextExposureItemMedia = undefined);
     }
   },
   exposures(s: LessonState): Exposure[] {
@@ -93,18 +86,20 @@ const getters: LessonGetters<LessonState, any> = {
     return s.isBlackout;
   },
   activityStatistic(s: LessonState): string {
-    const activityCompleted = s.exposures.filter(
-      (e) => e.status === ExposureStatus.COMPLETED
-    ).length;
-    return s.exposures.length
-      ? `${activityCompleted}/${s.exposures.length}`
-      : "0";
+    const activityCompleted = s.exposures.filter(e => e.status === ExposureStatus.COMPLETED).length;
+    return s.exposures.length ? `${activityCompleted}/${s.exposures.length}` : "0";
   },
   remainingTimeStatistic(s: LessonState): string {
     return secondsToTimeStr(getSeconds(s.totalTime) - getSeconds(s.playedTime));
   },
   progressStatistic(s: LessonState): number {
     return getSeconds(s.playedTime) / getSeconds(s.totalTime);
+  },
+  previousExposure(s: LessonState): Exposure | undefined {
+    return s.previousExposure;
+  },
+  previousExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
+    return s.previousExposureItemMedia;
   },
 };
 

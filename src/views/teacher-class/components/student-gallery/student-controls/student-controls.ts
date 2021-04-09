@@ -13,19 +13,21 @@ export default defineComponent({
     const onClickToggleVideo = () => {
       emit(isAllVideoHidden.value ? "show-all" : "hide-all");
     };
+
     const onClickToggleAudio = () => {
       emit(isAllAudioMuted.value ? "unmute-all" : "mute-all");
     };
-    const clickStickerAll = () => {
 
+    const clickStickerAll = () => {
       emit("add-sticker-all");
     };
+
     return {
+      clickStickerAll,
       onClickToggleVideo,
       onClickToggleAudio,
       isAllVideoHidden,
       isAllAudioMuted,
-      clickStickerAll
     };
   },
 });

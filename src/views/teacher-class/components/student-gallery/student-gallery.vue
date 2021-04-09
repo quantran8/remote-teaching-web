@@ -1,9 +1,16 @@
 <template>
     <div v-if="oneAndOneStatus" class="align">
-      <StudentOne />
+      	<StudentOne />
     </div>
     <div v-else>
-      <StudentAll />
+		<StudentControls
+			@hide-all="onClickHideAll"
+			@mute-all="onClickMuteAll"
+			@show-all="onClickShowAll"
+			@unmute-all="onClickUnmuteAll"
+			@add-sticker-all="onClickStickerAll"
+		/>
+      	<StudentAll />
     </div>
 </template>
 <style lang="scss" scoped src="./student-gallery.scss"></style>

@@ -2,7 +2,7 @@ import { MutationTree } from "vuex";
 import { Exposure, ExposureStatus, ExposureType, LessonState } from "./state";
 
 interface LessonMutationInterface<S> {
-  setIsBlackOut(s: S, p: { IsBlackOut: boolean }) :void;
+  setIsBlackOut(s: S, p: { IsBlackOut: boolean }): void;
   setExposures(s: S, p: { exposures: Exposure[] }): void;
   setCurrentExposure(s: S, p: { id: string }): void;
   setCurrentExposureItemMedia(s: S, p: { id: string }): void;
@@ -11,9 +11,7 @@ interface LessonMutationInterface<S> {
   setPlayedTime(s: S, payload: { time: string }): void;
 }
 
-interface LessonMutation<S>
-  extends MutationTree<S>,
-    LessonMutationInterface<S> {}
+interface LessonMutation<S> extends MutationTree<S>, LessonMutationInterface<S> {}
 
 const mutations: LessonMutation<LessonState> = {
   setIsBlackOut(s: LessonState, p: { IsBlackOut: boolean }) {
@@ -23,7 +21,7 @@ const mutations: LessonMutation<LessonState> = {
     s.exposures = p.exposures;
   },
   setCurrentExposure(s: LessonState, p: { id: string }) {
-    const exposure = s.exposures.find((e) => e.id === p.id);
+    const exposure = s.exposures.find(e => e.id === p.id);
     s.currentExposure = exposure;
     if (exposure?.type === ExposureType.TRANSITION) {
       s.currentExposureItemMedia = undefined;
@@ -40,12 +38,12 @@ const mutations: LessonMutation<LessonState> = {
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
     for (const item of s.currentExposure.items) {
-      s.currentExposureItemMedia = item.media.find((m) => m.id === p.id);
+      s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
       if (s.currentExposureItemMedia) break;
     }
   },
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {
-    const exposure = s.exposures.find((e) => e.id === p.id);
+    const exposure = s.exposures.find(e => e.id === p.id);
     if (exposure) {
       exposure.status = p.status;
       if (exposure === s.currentExposure) {
@@ -58,6 +56,28 @@ const mutations: LessonMutation<LessonState> = {
   },
   setPlayedTime(s: LessonState, payload: { time: string }) {
     s.playedTime = payload.time;
+  },
+  setPreviousExposure(s: LessonState, p: { id: string }) {
+    const exposure = s.exposures.find(e => e.id === p.id);
+    s.previousExposure = exposure;
+    if (exposure?.type === ExposureType.TRANSITION) {
+      s.previousExposureItemMedia = undefined;
+      return;
+    }
+    if (s.previousExposure && s.previousExposure.items.length > 0) {
+      s.previousExposureItemMedia = undefined;
+      const firstItem = s.previousExposure.items[0];
+      if (firstItem.media.length > 0) {
+        s.previousExposureItemMedia = firstItem.media[0];
+      }
+    }
+  },
+  setPreviousExposureItemMedia(s: LessonState, p: { id: string }) {
+    if (!s.previousExposure) return;
+    for (const item of s.previousExposure.items) {
+      s.previousExposureItemMedia = item.media.find(m => m.id === p.id);
+      if (s.previousExposureItemMedia) break;
+    }
   },
 };
 
