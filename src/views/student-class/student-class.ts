@@ -64,13 +64,9 @@ export default defineComponent({
     const breakpoint = breakpointChange();
 
     watch(studentOneAndOneId, () => {
-      if (studentOneAndOneId.value) {
-        isOneToOne.value = true;
-      } else {
-        isOneToOne.value = false;
-      }
+	  isOneToOne.value = !!studentOneAndOneId.value
       if (student.value) {
-        studentNotOneToOne.value = student.value.id != studentOneAndOneId.value;
+        studentNotOneToOne.value = student.value.id !== studentOneAndOneId.value;
       } else {
         studentNotOneToOne.value = false;
       }
