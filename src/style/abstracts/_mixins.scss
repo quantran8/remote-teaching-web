@@ -1,9 +1,12 @@
-@mixin draw-items-on-circle($item-count, $container-size, $item-size, $item-selector: (#{"> *"}, #{""}), $item-start-position: 0) {
+@mixin draw-items-on-circle($item-count, $container-sizes, $item-sizes, $item-selector: (#{"> *"}, #{""}), $item-start-position: 0) {
+  $container-size-xs: nth(nth($container-sizes, 1), 2);
+  $item-size-xs: nth(nth($item-sizes, 1), 2);
+
   position: relative;
-  min-width: $container-size;
-  height: $container-size;
+  min-width: $container-size-xs;
+  height: $container-size-xs;
   border-radius: 50%;
-  margin: $item-size / 2;
+  margin: $item-size-xs / 2;
 
   $angle: (360 / $item-count);
   $rot: $angle * $item-start-position;
@@ -16,15 +19,45 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      margin: -($item-size / 2);
-      width: $item-size;
-      height: $item-size;
+      margin: -($item-size-xs / 2);
+      width: $item-size-xs;
+      height: $item-size-xs;
     }
     @for $i from 1 to $item-count + 1 {
       &:nth-of-type(#{$i}) #{$level-2} {
-        transform: rotate($rot * 1deg) translate($container-size / 2) rotate($rot * -1deg);
+        transform: rotate($rot * 1deg) translate($container-size-xs / 2) rotate($rot * -1deg);
       }
       $rot: $rot + $angle;
     }
+  }
+
+  $index: 1;
+  @each $breakpoint, $container-size in $container-sizes {
+    @if $index > 1 and $container-size {
+      $item-size: nth(nth($item-sizes, $index), 2);
+      @media (min-width: $breakpoint) {
+        min-width: $container-size;
+        height: $container-size;
+        margin: $item-size / 2;
+
+        $rot: $angle * $item-start-position;
+
+        #{$level-1} {
+          #{$level-2} {
+            margin: -($item-size / 2);
+            width: $item-size;
+            height: $item-size;
+          }
+          @for $i from 1 to $item-count + 1 {
+            &:nth-of-type(#{$i}) #{$level-2} {
+              transform: rotate($rot * 1deg) translate($container-size / 2) rotate($rot * -1deg);
+            }
+            $rot: $rot + $angle;
+          }
+        }
+      }
+    }
+
+    $index: $index + 1;
   }
 }

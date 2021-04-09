@@ -1,3 +1,9 @@
+.sc {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: auto 1fr;
+}
+
 .sc-header {
   display: grid;
   grid-template-columns: 50% 50%;
@@ -14,6 +20,7 @@
   &__right {
     position: relative;
     padding: 0 30px;
+    padding-right: 90px;
     display: grid;
     align-items: center;
     justify-content: center;
@@ -41,27 +48,46 @@
     border-radius: 0 0 0 50px;
     border-left: 1px solid #00000029;
   }
+  @media (min-width: 992px) {
+    &__right {
+      padding-right: 30px;
+    }
+  }
 }
 
 .sc-body {
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 1fr 180px;
+  grid-template-rows: 0.9fr 1fr;
+  @media (min-width: 992px) {
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 1fr 150px;
+  }
+  @media (min-width: 1200px) {
+    grid-template-rows: 1fr 160px;
+  }
 }
 
 .sc-content {
-  grid-row-start: 1;
-  grid-row-end: 3;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 40px;
-  &__top {
-  }
+  grid-column-end: 3;
+  grid-column-start: 1;
+
   &__bottom {
     padding-top: 20px;
     flex: auto;
     & > * {
       height: 100%;
     }
+  }
+  @media (min-width: 992px) {
+    flex-direction: column;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-end: unset;
+    grid-column-start: unset;
   }
 }
 
@@ -71,18 +97,17 @@
     background: #eaeaea;
     width: 100%;
     height: 100%;
-    max-height: 500px;
+    max-height: 320px;
+    max-width: 600px;
+
     border-radius: 30px;
     overflow: hidden;
 
     position: relative;
     top: 50%;
-    transform: translateY(-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     transition: 0.3s;
-  }
-
-  &__not-visible {
-    display: none;
   }
 
   &__one-to-one {
@@ -91,22 +116,42 @@
     background-size: cover;
     opacity: 50%;
   }
+
+  @media (min-width: 1200px) {
+    &__video {
+      max-height: 500px;
+    }
+  }
 }
 
 .sc-action {
   grid-column-start: 2;
   display: grid;
-  grid-auto-flow: column;
-  justify-content: center;
-  grid-column-gap: 30px;
-  margin-top: 30px;
+  grid-auto-flow: row;
+  align-content: center;
+  row-gap: 20px;
+
+  padding-left: 40px;
   &__item {
     display: block;
   }
   &__icon {
     -webkit-user-drag: none;
-    max-width: 100px;
+    max-width: 70px;
     height: auto;
+  }
+
+  @media (min-width: 992px) {
+    grid-auto-flow: column;
+    justify-content: center;
+    column-gap: 15px;
+  }
+
+  @media (min-width: 1200px) {
+    grid-column-gap: 30px;
+    &__icon {
+      max-width: 100px;
+    }
   }
 }
 
