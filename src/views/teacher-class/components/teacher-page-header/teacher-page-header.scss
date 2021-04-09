@@ -32,12 +32,12 @@ $font-size: 2.2em;
     position: absolute;
     top: 0;
     right: 0;
-    width: 90px;
+    width: 105px;
     line-height: 50px;
     text-align: center;
     height: 50px;
     background: #fff;
-    border-bottom-left-radius: 20px;
+    border-bottom-left-radius: 50px;
     color: #000;
     text-decoration: none;
     font-size: 16px;
@@ -49,10 +49,9 @@ $font-size: 2.2em;
 Reaction
  */
 $icon-size: 50px;
-$action-icon-container-size:70px;
+$action-icon-container-size: 70px;
 
-
-.box:hover [class*=reaction-] {
+.box:hover [class*="reaction-"] {
   clip: auto;
   overflow: visible;
   opacity: 1;
@@ -94,18 +93,25 @@ $action-icon-container-size:70px;
 }
 
 .label-reactions {
-  display: block;
   height: $action-icon-container-size;
   width: $action-icon-container-size;
+  display: block;
   cursor: pointer;
   position: absolute;
-  top: -4px;
+  top: 10px;
   right: 0;
-  img{
+  overflow: hidden;
+  border-radius: 50%;
+  border: 1px solid #000;
+  img {
     width: $action-icon-container-size;
     height: $action-icon-container-size;
-    border-radius: 50%;
-    border: 2px solid #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: scale(1.2);
   }
 }
 
@@ -116,7 +122,7 @@ $action-icon-container-size:70px;
   width: 400px;
   border-radius: 40px;
   bottom: -135px;
-  left: 0;
+  left: -5px;
   position: absolute;
   visibility: hidden;
   opacity: 0;
@@ -124,41 +130,38 @@ $action-icon-container-size:70px;
 }
 
 .action-text {
-  background: rgba(0, 0, 0, 0.75);
-  border-radius: 10px;
-  box-sizing: border-box;
-  color: #fff;
+  background: #fff;
+  border-radius: 4px;
+  color: #000;
   display: inline-block;
-  font-size: 11px;
-  text-overflow: ellipsis;
+  font-size: 12px;
   font-weight: bold;
   line-height: 20px;
   opacity: 0;
-  overflow: hidden;
   padding: 0 6px;
   transition: opacity 50ms ease;
-  left: 5px;
+  left: 6px;
   position: absolute;
+  top: 0;
   text-align: center;
-  top: -28px;
-  transform: translateX(-50%);
 }
 
-.box:hover [class*=reaction-] {
+.box:hover [class*="reaction-"] {
   transform: scale(0.8) translateY(100px);
 }
 
-.box:hover [class*=reaction-]:hover, .box:hover [class*=reaction-]:focus {
+.box:hover [class*="reaction-"]:hover,
+.box:hover [class*="reaction-"]:focus {
   transition: all 0.2s ease-in;
   transform: scale(1) translateY(95px);
 }
 
-.box:hover [class*=reaction-]:hover .action-text, .box:hover [class*=reaction-]:focus .action-text {
+.box:hover [class*="reaction-"]:hover .action-text,
+.box:hover [class*="reaction-"]:focus .action-text {
   opacity: 1;
 }
 
 .box {
-
   &:hover {
     .toolbox {
       opacity: 1;

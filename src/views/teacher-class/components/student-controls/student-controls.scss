@@ -8,19 +8,31 @@
 
     .student-controls__button--clickable {
       cursor: pointer;
+      display: inline-block;
+      vertical-align: middle;
       img {
         margin-right: 6px;
       }
 
       .sticker-icon {
-        height: 28px;
+        height: 34px;
+        position: relative;
+        top: 4px;
       }
 
       .audio-icon {
-        height: 18px;
+        height: 20px;
+        position: relative;
+        top: -1px;
       }
       .video-icon {
-        height: 16px;
+        position: relative;
+        height: 19px;
+        top: -2px;
+        &--open {
+          height: 15px;
+          top: -1px;
+        }
       }
     }
   }
