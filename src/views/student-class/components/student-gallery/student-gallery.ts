@@ -22,7 +22,7 @@ export default defineComponent({
     const topStudents = computed(() => props.students.slice(0, 10));
 
     const onEnter = (el: HTMLDivElement) => {
-      gsap.from(el.querySelector(".sc-gallery-item"), { translateX: 0, translateY: 0, duration: 1, ease: "Power2.easeInOut" });
+      gsap.from(el.querySelector(".sc-gallery-item"), { translateX: 0, clearProps: "all", translateY: 0, duration: 1, ease: "Power2.easeInOut" });
     };
     const onLeave = (el: HTMLDivElement, done: any) => {
       gsap.to(el.querySelector(".sc-gallery-item"), { translateX: 0, translateY: 0, onComplete: done });

@@ -12,6 +12,7 @@ import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
+import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 
 export default defineComponent({
   components: {
@@ -60,6 +61,7 @@ export default defineComponent({
     const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(true);
+    const breakpoint = breakpointChange();
 
     watch(studentOneAndOneId, () => {
       if (studentOneAndOneId.value) {
@@ -87,17 +89,22 @@ export default defineComponent({
     });
 
     // Left section animation
-    watch([isLessonPlan], values => {
+    const animate = () => {
       if (videoContainerRef.value) {
-        const isOtherSectionVisible = values.find(check => check);
+        const isOtherSectionVisible = [isLessonPlan.value].find(check => check);
         const timeline = gsap.timeline();
         if (isOtherSectionVisible) {
-          timeline.to(videoContainerRef.value, { width: 250, height: 160 });
+          const width = breakpoint.value < Breackpoint.Large ? 120 : 250;
+          const height = breakpoint.value < Breackpoint.Large ? 100 : 160;
+          timeline.to(videoContainerRef.value, { width, height });
         } else {
           timeline.to(videoContainerRef.value, { width: "100%", height: "100%" });
         }
       }
-    });
+    };
+
+    watch(breakpoint, animate);
+    watch([isLessonPlan], animate);
 
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));

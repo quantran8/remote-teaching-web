@@ -1,20 +1,36 @@
 @import "../../../../style/abstracts/mixins";
+@import "../../../../style/abstracts/variables";
 
 .sc-gallery {
-  $gallery-size: 550px;
-  $gallery-item-size: 100px;
+  $gallery-size: (
+    $xs: 350px,
+    $sm: false,
+    $md: false,
+    $lg: false,
+    $xl: 450px,
+    $xxl: 550px,
+  );
+  $gallery-item-size: (
+    $xs: 70px,
+    $sm: false,
+    $md: false,
+    $lg: false,
+    $xl: 80px,
+    $xxl: 100px,
+  );
   user-select: none;
 
   @include draw-items-on-circle(
     $item-count: 10,
-    $container-size: $gallery-size,
-    $item-size: $gallery-item-size,
+    $container-sizes: $gallery-size,
+    $item-sizes: $gallery-item-size,
     $item-selector: (
       #{"&::v-deep .sc-gallery__item"},
       #{".sc-gallery-item"},
     ),
     $item-start-position: 8
   );
-  margin-top: ($gallery-item-size / 2) + 30px;
-  margin-bottom: ($gallery-item-size / 2) + 50px;
+  @media (min-width: 992px) {
+    align-self: center;
+  }
 }

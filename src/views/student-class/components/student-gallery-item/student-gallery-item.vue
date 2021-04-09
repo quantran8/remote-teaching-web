@@ -2,9 +2,9 @@
   <div
     :class="[
       'sc-gallery-item',
-      isCurrent && 'sc-gallery-item--large',
+      isCurrent && 'sc-gallery-item--current',
       isAudioHightlight && 'sc-gallery-item--speaking',
-      isOneToOne && 'sc-gallery-item--xlarge',
+      isOneToOne && 'sc-gallery-item--one-on-one',
     ]"
   >
     <div class="sc-gallery-item__video" v-show="student.videoEnabled" :id="student.id"></div>
