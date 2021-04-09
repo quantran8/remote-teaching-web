@@ -60,15 +60,15 @@ export default defineComponent({
 
     const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
     const isOneToOne = ref(false);
-    const studentNotOneToOne = ref(false);
+    const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
 
     watch(studentOneAndOneId, () => {
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
-        studentNotOneToOne.value = student.value.id !== studentOneAndOneId.value;
+        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
       } else {
-        studentNotOneToOne.value = false;
+        studentIsOneToOne.value = false;
       }
     });
 
@@ -106,7 +106,7 @@ export default defineComponent({
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
 
     const toggleAudio = async () => {
-      if (studentNotOneToOne.value) {
+      if (studentIsOneToOne.value) {
         return;
       }
       await store.dispatch("studentRoom/setStudentAudio", {
@@ -181,7 +181,7 @@ export default defineComponent({
       isDrawMode,
       isStickerMode,
       studentOneAndOneId,
-      studentNotOneToOne,
+      studentIsOneToOne,
       isOneToOne,
       videoContainerRef,
       contentSectionRef,
