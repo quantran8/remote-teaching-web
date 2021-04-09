@@ -18,8 +18,8 @@
     <div class="sc-body">
       <div class="sc-content" ref="contentSectionRef">
         <div class="sc-content__top sc-teacher" ref="videoContainerRef">
-          <div class="sc-teacher__video" :id="teacher?.id" v-show="!isOneToOne || !studentNotOneToOne"></div>
-          <div class="sc-teacher__video" v-show="isOneToOne && studentNotOneToOne">
+          <div class="sc-teacher__video" :id="teacher?.id" v-show="!isOneToOne || studentIsOneToOne"></div>
+          <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
         </div>

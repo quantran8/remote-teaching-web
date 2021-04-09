@@ -29,19 +29,19 @@ export default defineComponent({
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
     const isOneToOne = ref(false);
-    const studentNotOneToOne = ref(false);
+    const studentIsOneToOne = ref(false);
 
     const previousImage = ref({});
 
     watch(studentOneAndOneId, () => {
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
-        studentNotOneToOne.value = student.value.id !== studentOneAndOneId.value;
+        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
         previousImage.value = {
           "background-image": `url("${props.image.url}")`,
         };
       } else {
-        studentNotOneToOne.value = false;
+        studentIsOneToOne.value = false;
       }
     });
 
@@ -170,7 +170,7 @@ export default defineComponent({
       rectangles,
       previousImage,
       isOneToOne,
-      studentNotOneToOne,
+      studentIsOneToOne,
     };
   },
 });
