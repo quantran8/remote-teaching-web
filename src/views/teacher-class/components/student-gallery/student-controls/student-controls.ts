@@ -2,7 +2,7 @@ import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
-  emits: ["hide-all", "show-all", "mute-all", "unmute-all"],
+  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all"],
 
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -16,8 +16,12 @@ export default defineComponent({
     const onClickToggleAudio = () => {
       emit(isAllAudioMuted.value ? "unmute-all" : "mute-all");
     };
+	const clickStickerAll = () => {
+		emit("add-sticker-all");
+	};
 
     return {
+	  clickStickerAll,
       onClickToggleVideo,
       onClickToggleAudio,
       isAllVideoHidden,
