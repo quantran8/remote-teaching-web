@@ -23,7 +23,7 @@
     <div class="student-controls__button">
       <span @click="onClickToggleVideo" class="student-controls__button--clickable">
         <span v-if="isAllVideoHidden">
-          <img class="video-icon" :src="require(`@/assets/show-all.svg`)" />
+          <img class="video-icon video-icon--open" :src="require(`@/assets/show-all.svg`)" />
           <span>Show All</span>
         </span>
         <span v-else>
