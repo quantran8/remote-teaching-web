@@ -2,7 +2,7 @@
   <div class="content-view" id="content-view" @click="onClickExposureContent">
     <div
       class="exposure-content"
-      :style="isOneToOne && !studentIsOneToOne ? previousImage : contentImageStyle"
+      :style="isOneToOne && studentNotOneToOne ? previousImage : contentImageStyle"
       id="exposure-content"
     ></div>
     <DesignateRectangle
