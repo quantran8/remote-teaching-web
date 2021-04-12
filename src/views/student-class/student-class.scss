@@ -56,7 +56,7 @@
     font-size: 24px;
     border-radius: 0 0 0 50px;
     border-left: 1px solid #00000029;
-	color: #0B0B0B;
+    color: #0b0b0b;
   }
   @media (min-width: 992px) {
     &__right {
@@ -132,6 +132,7 @@
   @media (min-width: 1200px) {
     &__video {
       max-height: 500px;
+      max-width: 800px;
     }
   }
 }
