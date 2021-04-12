@@ -11,12 +11,12 @@
 
 .ringring {
   border: 3px solid #00591b;
-  height: 1.2rem;
-  width: 1.2rem;
+  height: 1.4rem;
+  width: 1.4rem;
   border-radius: 50%;
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: 7px;
+  top: 7px;
   opacity: 0;
   animation: pulsate 1s ease-out;
   animation-iteration-count: infinite;
