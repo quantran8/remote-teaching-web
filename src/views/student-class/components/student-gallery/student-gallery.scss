@@ -19,6 +19,7 @@
     $xxl: 100px,
   );
   user-select: none;
+  align-self: center;
 
   @include draw-items-on-circle(
     $item-count: 10,
@@ -30,7 +31,4 @@
     ),
     $item-start-position: 8
   );
-  @media (min-width: 992px) {
-    align-self: center;
-  }
 }
