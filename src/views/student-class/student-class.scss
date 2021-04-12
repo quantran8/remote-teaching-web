@@ -85,6 +85,7 @@
   &__bottom {
     padding-top: 20px;
     flex: auto;
+	display: grid;
     & > * {
       height: 100%;
     }
@@ -137,6 +138,7 @@
   display: grid;
   grid-auto-flow: row;
   align-content: center;
+  justify-content: start;
   row-gap: 20px;
 
   padding-left: 40px;
