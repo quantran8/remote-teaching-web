@@ -19,10 +19,16 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(props) {
+  emits: ["click-to-access"],
+  setup(props, { emit }) {
     const btnText = computed(() => {
       return props.active ? "Join now" : "Start";
     });
-    return { btnText };
+
+    const clickToAccess = () => {
+      emit("click-to-access");
+    };
+
+    return { btnText, clickToAccess };
   },
 });
