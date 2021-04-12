@@ -6,6 +6,7 @@
       isAudioHightlight && 'sc-gallery-item--speaking',
       isOneToOne && 'sc-gallery-item--one-on-one',
     ]"
+    ref="containerRef"
   >
     <div class="sc-gallery-item__video" v-show="student.videoEnabled" :id="student.id"></div>
     <img class="sc-gallery-item__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
