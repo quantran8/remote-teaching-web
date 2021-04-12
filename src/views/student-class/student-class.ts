@@ -4,7 +4,7 @@ import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
 import gsap from "gsap";
-import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
@@ -101,6 +101,7 @@ export default defineComponent({
 
     watch(breakpoint, animate);
     watch([isLessonPlan], animate);
+    onMounted(animate);
 
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
