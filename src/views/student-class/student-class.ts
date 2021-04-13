@@ -12,7 +12,11 @@ import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
+import IconHandRaised from "@/assets/student-class/hand-raised.svg";
+import IconHand from "@/assets/student-class/hand.svg";
 import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
+import { Modal } from "ant-design-vue";
+import { Paths } from "@/utils/paths";
 
 export default defineComponent({
   components: {
@@ -54,14 +58,40 @@ export default defineComponent({
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
+    const classAction = computed(() => store.getters["studentRoom/classAction"]);
+    const isConnected = computed(() => store.getters["studentRoom/isConnected"]);
+    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
+    const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
+    const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
 
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
 
-    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
+
+    const raisedHand = ref<boolean>(false);
+
+    const classActionImageRef = ref<HTMLDivElement | null>(null);
+
+    // Left section animation
+    const animate = () => {
+      if (videoContainerRef.value) {
+        const isOtherSectionVisible = [isLessonPlan.value].find(check => check);
+        const timeline = gsap.timeline();
+        if (isOtherSectionVisible) {
+          const width = breakpoint.value < Breackpoint.Large ? 120 : 250;
+          const height = breakpoint.value < Breackpoint.Large ? 100 : 160;
+          timeline.to(videoContainerRef.value, { width, height });
+        } else {
+          timeline.to(videoContainerRef.value, { width: "100%", height: "100%" });
+        }
+      }
+    };
+
+    onMounted(animate);
 
     watch(studentOneAndOneId, () => {
       isOneToOne.value = !!studentOneAndOneId.value;
@@ -84,30 +114,25 @@ export default defineComponent({
       }
     });
 
-    // Left section animation
-    const animate = () => {
-      if (videoContainerRef.value) {
-        const isOtherSectionVisible = [isLessonPlan.value].find(check => check);
-        const timeline = gsap.timeline();
-        if (isOtherSectionVisible) {
-          const width = breakpoint.value < Breackpoint.Large ? 120 : 250;
-          const height = breakpoint.value < Breackpoint.Large ? 100 : 160;
-          timeline.to(videoContainerRef.value, { width, height });
-        } else {
-          timeline.to(videoContainerRef.value, { width: "100%", height: "100%" });
-        }
-      }
-    };
-
     watch(breakpoint, animate);
-    watch([isLessonPlan], animate);
-    onMounted(animate);
 
-    const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
-    const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
+    watch([isLessonPlan], animate);
+
+    watch(isConnected, async () => {
+      if (!isConnected.value) return;
+      await store.dispatch("studentRoom/joinWSRoom");
+    });
+
+    watch(classAction, () => {
+      if (classActionImageRef.value) {
+        const timeline = gsap.timeline();
+        timeline.to(classActionImageRef.value, { scale: 2.5, transformOrigin: "top" });
+        timeline.to(classActionImageRef.value, { delay: 3, scale: 1 });
+      }
+    });
 
     const toggleAudio = async () => {
-      if (studentIsOneToOne.value) {
+      if (!studentIsOneToOne.value) {
         return;
       }
       await store.dispatch("studentRoom/setStudentAudio", {
@@ -133,20 +158,27 @@ export default defineComponent({
     });
 
     const onClickRaisingHand = async () => {
+      raisedHand.value = true;
       await store.dispatch("studentRoom/studentRaisingHand", {});
     };
     const onClickLike = async () => {
       await store.dispatch("studentRoom/studentLike", {});
     };
-    const classAction = computed(() => store.getters["studentRoom/classAction"]);
-    const isConnected = computed(() => store.getters["studentRoom/isConnected"]);
-    watch(isConnected, async () => {
-      if (!isConnected.value) return;
-      await store.dispatch("studentRoom/joinWSRoom");
-    });
 
     const onClickContentView = async (payload: { x: number; y: number; contentId: string }) => {
       await store.dispatch("studentRoom/studentAnswer", payload);
+    };
+
+    const onLeave = () => {
+      Modal.confirm({
+        title: "Are you sure you wish to leave the session?",
+        okText: "Yes",
+        cancelText: "No",
+        okButtonProps: { type: "danger" },
+        onOk: () => {
+          router.push(Paths.Home);
+        },
+      });
     };
 
     // const onUnityLoaderLoaded = () => {
@@ -165,6 +197,7 @@ export default defineComponent({
       teacher,
       audioIcon,
       videoIcon,
+      handIcon,
       toggleAudio,
       toggleVideo,
       isLessonPlan,
@@ -173,6 +206,7 @@ export default defineComponent({
       onClickRaisingHand,
       onClickLike,
       classAction,
+      classActionImageRef,
       currentExposureItemMedia,
       designateTargets,
       onClickContentView,
@@ -187,6 +221,8 @@ export default defineComponent({
       videoContainerRef,
       contentSectionRef,
       classInfo,
+      onLeave,
+      raisedHand,
     };
   },
 });

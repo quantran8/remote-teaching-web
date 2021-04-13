@@ -1,6 +1,6 @@
 import { ExposureType } from "@/store/lesson/state";
 import { StudentState, TeacherState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, watch } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { InteractiveStatus } from "../student-card/student-card";
 import StudentCard from "../student-card/student-card.vue";
@@ -67,6 +67,20 @@ export default defineComponent({
       }
     };
 
+    const minute = ref(0);
+    const second = ref(0);
+    const timeCount = ref("");
+
+    setInterval(() => {
+      if (second.value < 60) {
+        second.value = second.value + 1;
+      } else {
+        minute.value = minute.value + 1;
+        second.value = 0;
+      }
+      timeCount.value = `${minute.value < 10 ? "0" + minute.value : minute.value}:${second.value < 10 ? "0" + second.value : second.value}`;
+    }, 1000);
+
     let turnOnCurrentStudent = false;
     watch(studentOne, async () => {
       if (turnOnCurrentStudent) {
@@ -108,6 +122,7 @@ export default defineComponent({
     return {
       backToClass,
       studentOne,
+      timeCount,
     };
   },
 });

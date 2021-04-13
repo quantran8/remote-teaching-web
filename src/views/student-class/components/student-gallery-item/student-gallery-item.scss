@@ -18,9 +18,9 @@
   &::before {
     content: "";
     position: absolute;
-    width: calc(100% + 20px);
-    height: calc(100% + 20px);
-    background: rgba(0, 161, 237, 0.15);
+    width: 100%;
+    height: 100%;
+    background: #00a1ed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%) scale(0);
@@ -29,7 +29,24 @@
     transition: 0.1s;
   }
   &--speaking::before {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+
+  &--help::before {
+    background: rgba(255, 0, 0, 0.658);
+    animation: help-animate 0.5s;
+    animation-iteration-count: 4;
+    animation-direction: alternate;
+    @keyframes help-animate {
+      from {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1;
+      }
+    }
   }
 
   &__img {
@@ -50,20 +67,22 @@
     }
   }
 
+  &__title-container {
+    margin: 0;
+    padding-top: 5px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    min-width: 100%;
+  }
+
   &__title {
     color: #0b0b0b;
     font-size: 14px;
-    line-height: 14px;
     font-weight: 600;
     margin: 0;
-    padding-top: 5px;
-
-    white-space: nowrap;
-    text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
-    min-width: 150%;
-    transform: translateX(-15%);
   }
 
   &__star {
@@ -121,7 +140,7 @@
     #{$self}__title {
       padding-top: 30px;
       font-size: 32px;
-      line-height: 32px;
+      line-height: 37px;
     }
     #{$self}__star {
       width: 50px;
