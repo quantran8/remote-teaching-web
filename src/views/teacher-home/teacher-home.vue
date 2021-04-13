@@ -19,7 +19,11 @@
     </div>
     <hr />
     <div>
+      <div v-if="loading">
+        Loading
+      </div>
       <ClassCard
+        v-else
         class="card-margin"
         v-for="cl in classes"
         :key="cl.schoolClassId"
