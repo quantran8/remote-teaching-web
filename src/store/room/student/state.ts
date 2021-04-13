@@ -68,6 +68,7 @@ export interface StudentRoomState {
   cameraLock: boolean;
   microphoneLock: boolean;
   classAction: ClassAction;
+  speakingUsers: Array<string>;
 }
 
 const state: StudentRoomState = {
@@ -83,6 +84,7 @@ const state: StudentRoomState = {
   cameraLock: false,
   microphoneLock: false,
   classAction: ClassAction.DEFAULT,
+  speakingUsers: [],
 };
 
 export default state;

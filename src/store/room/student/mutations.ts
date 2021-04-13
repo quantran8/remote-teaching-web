@@ -11,7 +11,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state: StudentRoomState,
     payload: {
       enable: boolean;
-    }
+    },
   ) {
     state.cameraLock = payload.enable;
   },
@@ -19,7 +19,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state: StudentRoomState,
     payload: {
       enable: boolean;
-    }
+    },
   ) {
     state.microphoneLock = payload.enable;
   },
@@ -99,81 +99,49 @@ const mutations: MutationTree<StudentRoomState> = {
 
     state.classAction = ClassActionFromValue(room.lessonPlan.lessonAction);
   },
-  setStudentAudio(
-    state: StudentRoomState,
-    payload: { id: string; enable: boolean }
-  ) {
-    const student =
-      payload.id === state.student?.id
-        ? state.student
-        : state.students.find((st) => st.id === payload.id);
+  setStudentAudio(state: StudentRoomState, payload: { id: string; enable: boolean }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.audioEnabled = payload.enable;
   },
-  setStudentStatus(
-    state: StudentRoomState,
-    payload: { id: string; status: InClassStatus }
-  ) {
-    const student =
-      payload.id === state.student?.id
-        ? state.student
-        : state.students.find((st) => st.id === payload.id);
+  setStudentStatus(state: StudentRoomState, payload: { id: string; status: InClassStatus }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.status = payload.status;
   },
-  setStudentVideo(
-    state: StudentRoomState,
-    payload: { id: string; enable: boolean }
-  ) {
-    const student =
-      payload.id === state.student?.id
-        ? state.student
-        : state.students.find((st) => st.id === payload.id);
+  setStudentVideo(state: StudentRoomState, payload: { id: string; enable: boolean }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.videoEnabled = payload.enable;
   },
-  setStudentBadge(
-    state: StudentRoomState,
-    payload: { id: string; badge: number }
-  ) {
-    const student =
-      payload.id === state.student?.id
-        ? state.student
-        : state.students.find((st) => st.id === payload.id);
+  setStudentBadge(state: StudentRoomState, payload: { id: string; badge: number }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.badge = payload.badge;
   },
-  setTeacherAudio(
-    state: StudentRoomState,
-    payload: { id: string; enable: boolean }
-  ) {
-    if (state.teacher?.id === payload.id)
-      state.teacher.audioEnabled = payload.enable;
+  setTeacherAudio(state: StudentRoomState, payload: { id: string; enable: boolean }) {
+    if (state.teacher?.id === payload.id) state.teacher.audioEnabled = payload.enable;
   },
-  setTeacherVideo(
-    state: StudentRoomState,
-    payload: { id: string; enable: boolean }
-  ) {
-    if (state.teacher?.id === payload.id)
-      state.teacher.videoEnabled = payload.enable;
+  setTeacherVideo(state: StudentRoomState, payload: { id: string; enable: boolean }) {
+    if (state.teacher?.id === payload.id) state.teacher.videoEnabled = payload.enable;
   },
-  setTeacherStatus(
-    state: StudentRoomState,
-    payload: { id: string; status: InClassStatus }
-  ) {
+  setTeacherStatus(state: StudentRoomState, payload: { id: string; status: InClassStatus }) {
     if (state.teacher?.id === payload.id) state.teacher.status = payload.status;
   },
 
   hideAllStudents(state: StudentRoomState) {
-    state.students.forEach((student) => (student.videoEnabled = false));
+    state.students.forEach(student => (student.videoEnabled = false));
   },
   showAllStudents(state: StudentRoomState) {
-    state.students.forEach((student) => (student.videoEnabled = true));
+    state.students.forEach(student => (student.videoEnabled = true));
   },
   muteAllStudents(state: StudentRoomState) {
-    state.students.forEach((student) => (student.audioEnabled = false));
+    state.students.forEach(student => (student.audioEnabled = false));
   },
   unmuteAllStudents(state: StudentRoomState) {
-    state.students.forEach((student) => (student.audioEnabled = true));
+    state.students.forEach(student => (student.audioEnabled = true));
   },
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
     state.classAction = payload.action;
+  },
+  setSpeakingUsers(state: StudentRoomState, payload: { userIds: Array<string> }) {
+    state.speakingUsers = payload.userIds;
   },
 };
 
