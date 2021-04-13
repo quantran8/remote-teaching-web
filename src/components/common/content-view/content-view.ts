@@ -13,7 +13,7 @@ export default defineComponent({
     Circle,
     Rectangle,
   },
-  props: ["targets", "localTargets", "image", "masked", "contentId", "isAssigned", "isTeacherView"],
+  props: ["targets", "localTargets", "image", "masked", "contentId", "isAssigned"],
   emits: ["on-tap"],
   setup(props, { emit }) {
     const store = useStore();
