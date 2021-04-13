@@ -4,7 +4,7 @@
       <div class="class__title">
         <LiveCircle class="class__live-dot" v-if="active"/>
         <h5>{{ title }}</h5>
-        sample campus
+        {{description}}
       </div>
       <BaseButton mode="clear" color="primary">{{ btnText }}</BaseButton>
     </div>

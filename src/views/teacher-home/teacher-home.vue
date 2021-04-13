@@ -3,18 +3,20 @@
     <p></p>
     <h2>Welcome {{ username }}</h2>
     <p>Choose a class to start</p>
+    <div class="teacher-page__school-select">
     <Select
       placeholder="School"
       showSearch
+      :optionFilterProp="children"
       :disabled="disabled"
       :loading="loading"
       :value="schools[0]?.id"
-      :filterOption="false"
-      @search="filterSchools"
+      :filterOption="filterSchools"
       @change="onSchoolChange"
     >
-      <Option :value="school.id" :key="school.id" v-for="school in filteredSchools">{{ school.name }}</Option>
+      <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
     </Select>
+    </div>
     <hr />
     <div>
       <ClassCard
@@ -23,7 +25,7 @@
         :key="cl.schoolClassId"
         :id="cl.schoolClassId"
         :title="cl.schoolClassName"
-        :description="cl.schoolName"
+        :description="cl.campusName"
         :active="cl.isActive"
         @click-to-access="() => onClickClass(cl)"
       />
