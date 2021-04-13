@@ -107,7 +107,7 @@ export default defineComponent({
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
 
     const toggleAudio = async () => {
-      if (studentIsOneToOne.value) {
+      if (!studentIsOneToOne.value) {
         return;
       }
       await store.dispatch("studentRoom/setStudentAudio", {

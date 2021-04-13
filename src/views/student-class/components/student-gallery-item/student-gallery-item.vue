@@ -9,7 +9,9 @@
   >
     <div class="sc-gallery-item__video" v-show="student.videoEnabled" :id="student.id"></div>
     <img class="sc-gallery-item__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
-    <h3 class="sc-gallery-item__title">{{ student.name }}</h3>
+    <div class="sc-gallery-item__title-container">
+      <h3 class="sc-gallery-item__title">{{ student.name }}</h3>
+    </div>
     <span class="sc-gallery-item__star" v-if="isCurrent">
       <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
     </span>

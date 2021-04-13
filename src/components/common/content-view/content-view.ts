@@ -4,9 +4,9 @@ import { Circle as CircleModel, Rectangle as RectangleModel } from "@/views/teac
 import Circle from "../designate-circle/designate-circle.vue";
 import Rectangle from "../designate-rectangle/designate-rectangle.vue";
 
-import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { StudentState } from "@/store/room/interface";
+import { StudentState, TeacherState } from "@/store/room/interface";
 
 export default defineComponent({
   components: {
@@ -26,6 +26,7 @@ export default defineComponent({
         : {};
     });
 
+    const teacher: ComputedRef<TeacherState> = computed(() => store.getters["teacherRoom/teacher"]);
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
     const isOneToOne = ref(false);
@@ -171,6 +172,7 @@ export default defineComponent({
       previousImage,
       isOneToOne,
       studentIsOneToOne,
+      teacher,
     };
   },
 });
