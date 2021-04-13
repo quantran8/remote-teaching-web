@@ -18,9 +18,14 @@ export default defineComponent({
 
     const containerRef = ref<HTMLDivElement>();
 
-    const isAudioHightlight = computed(() => {
+    const isAudioHighlight = computed(() => {
       const enableAudios: Array<string> = store.getters["studentRoom/globalAudios"];
       return student.id && enableAudios.indexOf(student.id) !== -1;
+    });
+
+    const isSpeaking = computed(() => {
+      const speakingUsers: Array<string> = store.getters["studentRoom/speakingUsers"];
+      return speakingUsers.indexOf(student.id) >= 0;
     });
 
     watch(raisedHand, value => {
@@ -32,8 +37,9 @@ export default defineComponent({
     });
 
     return {
-      isAudioHightlight,
+      isAudioHighlight,
       containerRef,
+      isSpeaking,
     };
   },
 });

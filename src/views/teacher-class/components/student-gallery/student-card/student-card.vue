@@ -5,12 +5,12 @@
     @mouseleave="onMouseChange(false)"
   >
     <figure class="student__figure">
-      <div class="student__video" v-show="videoEnabled" :id="id"></div>
-      <img class="student__img" v-show="!videoEnabled" src="@/assets/student-class/no-avatar.png" />
-      <img v-if="raisingHand" @click="onClickClearRaisingHand" class="student__hand" src="@/assets/student-class/hand.svg" />
+      <div class="student__video" v-show="student.videoEnabled" :id="student.id"></div>
+      <img class="student__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
+      <img v-if="student.raisingHand" @click="onClickClearRaisingHand" class="student__hand" src="@/assets/student-class/hand.svg" />
     </figure>
     <div class="student__info">
-      <h4 class="student__name" @click="onOneAndOne">{{ name }}</h4>
+      <h4 class="student__name" @click="onOneAndOne">{{ student.name }}</h4>
       <span v-if="isNotJoinned" class="student__not-joined">(not joined)</span>
     </div>
     <StudentCardActions :student="student" :show="isMouseEntered" />

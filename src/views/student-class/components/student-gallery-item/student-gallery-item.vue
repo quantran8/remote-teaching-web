@@ -3,12 +3,12 @@
     :class="[
       'sc-gallery-item',
       isCurrent && 'sc-gallery-item--current',
-      isAudioHightlight && 'sc-gallery-item--speaking',
+      isAudioHighlight && 'sc-gallery-item--highlight',
       isOneToOne && 'sc-gallery-item--one-on-one',
     ]"
     ref="containerRef"
   >
-    <div class="sc-gallery-item__video" v-show="student.videoEnabled" :id="student.id"></div>
+    <div class="sc-gallery-item__video" :class="[isSpeaking && 'sc-gallery-item--speaking']" v-show="student.videoEnabled" :id="student.id"></div>
     <img class="sc-gallery-item__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
     <div class="sc-gallery-item__title-container">
       <h3 class="sc-gallery-item__title">{{ student.name }}</h3>

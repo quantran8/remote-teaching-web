@@ -30,7 +30,7 @@
     z-index: -1;
     transition: 0.1s;
   }
-  &--speaking::before {
+  &--highlight::before {
     transform: translate(-50%, -50%) scale(1.2);
   }
 
@@ -180,4 +180,8 @@
       max-height: 500px;
     }
   }
+}
+
+.sc-gallery-item--speaking {
+  border: 4px solid #00a1ed;
 }

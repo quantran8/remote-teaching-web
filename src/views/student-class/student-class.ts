@@ -60,7 +60,7 @@ export default defineComponent({
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
     const classAction = computed(() => store.getters["studentRoom/classAction"]);
     const isConnected = computed(() => store.getters["studentRoom/isConnected"]);
-    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
@@ -132,9 +132,6 @@ export default defineComponent({
     });
 
     const toggleAudio = async () => {
-      if (!studentIsOneToOne.value) {
-        return;
-      }
       await store.dispatch("studentRoom/setStudentAudio", {
         id: student.value.id,
         enable: !student.value.audioEnabled,

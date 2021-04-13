@@ -8,6 +8,7 @@
         :targets="designateTargets"
         :localTargets="localTargets"
         :isAssigned="true"
+        :studentOneId="studentOneId"
       />
     </div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>

@@ -18,7 +18,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
-    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const teacher: ComputedRef<TeacherState> = computed(() => store.getters["teacherRoom/teacher"]);
     const studentOne = students.value.filter(student => {
       return student.id === studentOneAndOneId.value;
@@ -111,8 +111,9 @@ export default defineComponent({
       if (previousExposureMediaItem.value) {
         await store.dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
       }
+      await store.dispatch("updateAudioAndVideoFeed", {});
       await setVideoTeacher();
-      await store.dispatch("modeOne/clearStudentOneId", { id: "" });
+      await store.dispatch("teacherRoom/clearStudentOneId", { id: "" });
       await store.dispatch("teacherRoom/sendOneAndOne", {
         status: false,
         id: null,
