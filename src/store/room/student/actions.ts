@@ -8,6 +8,7 @@ import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interfac
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
+import { MIN_SPEAKING_LEVEL } from '@/utils/constant';
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -89,7 +90,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        console.log("speaking", JSON.stringify(result));
+        // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
     });
@@ -98,7 +99,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     const validSpeakings: Array<string> = [];
     if (payload) {
       payload.map(item => {
-        if (item.level > 6) { // should check by a level
+        if (item.level >= MIN_SPEAKING_LEVEL) { // should check by a level
           validSpeakings.push(item.uid.toString());
         }
       });
