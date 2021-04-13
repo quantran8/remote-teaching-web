@@ -11,11 +11,7 @@
       />
     </div>
     <div class="skeleton" v-if="!currentExposureItemMedia"></div>
-    <div
-      class="flip-button"
-      :class="{ flipped: isFlipped }"
-      @click="toggleView"
-    >
+    <div class="flip-button" :class="{ flipped: isFlipped }" @click="toggleView">
       <BaseIcon name="icon-change" class="icon-change" />
     </div>
     <BaseButton class="icon-designate" @click="onClickToggleDesignatingTarget">
