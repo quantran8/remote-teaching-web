@@ -1,5 +1,5 @@
-import { InClassStatus } from "@/store/room/interface";
-import { computed, defineComponent, ref, watch } from "vue";
+import { InClassStatus, StudentState } from "@/store/room/interface";
+import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 
@@ -54,6 +54,7 @@ export default defineComponent({
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.id));
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
 
     const isAudioHightlight = computed(() => {
       const enableAudios: Array<string> = store.getters["teacherRoom/enableAudios"];
@@ -108,11 +109,13 @@ export default defineComponent({
         id: props.id,
       });
     };
+
     const onOneAndOne = async () => {
       if (props.setModeOne) {
         await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
         await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         await store.dispatch("modeOne/setStudentOneId", { id: props.id });
+        await store.dispatch("updateAudioAndVideoFeed", {});
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.id,

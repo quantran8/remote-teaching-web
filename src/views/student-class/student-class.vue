@@ -46,6 +46,7 @@
               :targets="designateTargets"
               :isAssigned="isAssigned"
               :localTargets="localTargets"
+              :studentOneId="studentOneAndOneId"
             ></ContentView>
             <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia?.image"></AnnotationView>
           </div>

@@ -29,14 +29,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       if (payload.studentOneToOne) {
         await dispatch(
-          "modeOne/setStudentOneId",
+          "studentRoom/setStudentOneId",
           { id: payload.studentOneToOne },
           {
             root: true,
           },
         );
       } else {
-        await store.dispatch("modeOne/clearStudentOneId", { id: "" }, { root: true });
+        await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
     },
     onStudentJoinClass: (payload: StudentModel) => {
@@ -288,14 +288,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherSetOneToOne: async (payload: { status: boolean; id: string }) => {
       if (payload) {
         await dispatch(
-          "modeOne/setStudentOneId",
+          "studentRoom/setStudentOneId",
           { id: payload.id },
           {
             root: true,
           },
         );
       } else {
-        await store.dispatch("modeOne/clearStudentOneId", { id: "" }, { root: true });
+        await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
     },
   };

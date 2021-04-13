@@ -1,23 +1,13 @@
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import {
-  GetClassesModel,
-  RemoteTeachingService,
-  StudentGetRoomResponse,
-  TeacherGetRoomResponse,
-  TeacherService,
-} from "@/services";
+import { GetClassesModel, RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { Logger } from "@/utils/logger";
 import { ActionTree } from "vuex";
-import {
-  ClassViewFromValue,
-  ClassViewPayload,
-  InClassStatus,
-} from "../interface";
+import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
-import {UID} from "agora-rtc-sdk-ng";
+import { UID } from "agora-rtc-sdk-ng";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -28,15 +18,13 @@ const actions: ActionTree<StudentRoomState, any> = {
       userName: string;
       studentId: string;
       role: string;
-    }
+    },
   ) {
     commit("setUser", {
       id: payload.studentId,
       name: payload.userName,
     });
-    const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
-      payload.studentId
-    );
+    const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId);
     if (!roomResponse) return;
     const roomInfo: RoomModel = roomResponse.data;
     if (!roomInfo || roomInfo.classId !== payload.classId) {
@@ -56,14 +44,10 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setUser", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, manager, students, teacher } = state;
+    const { globalAudios, manager, students, teacher, idOne } = state;
     if (!manager) return;
-    const cameras = students
-      .filter((s) => s.videoEnabled && s.status === InClassStatus.JOINED)
-      .map((s) => s.id);
-    let audios = students
-      .filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED)
-      .map((s) => s.id);
+    const cameras = idOne ? [idOne] : students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = idOne ? [idOne] : students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -79,10 +63,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
-    await store.state.manager?.WSClient.sendRequestJoinRoom(
-      store.state.info.id,
-      store.state.user.id
-    );
+    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id);
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },
@@ -98,7 +79,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
     }
     state.manager?.agoraClient.registerEventHandler({
-      onUserPublished: (_payload) => {
+      onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: () => {
@@ -119,24 +100,17 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
-    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
-      state.user.id
-    );
+    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },
   async loadClasses({ commit }, { teacherId }: { teacherId: string }) {
-    const response: GetClassesModel = await TeacherService.getClasses(
-      teacherId
-    );
+    const response: GetClassesModel = await TeacherService.getClasses(teacherId);
     if (!response) return;
     commit("setClasses", response.data);
   },
 
-  async setStudentAudio(
-    { commit, state },
-    payload: { id: string; enable: boolean }
-  ) {
+  async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
       commit("setMicrophoneLock", { enable: true });
@@ -148,10 +122,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setStudentAudio", payload);
     }
   },
-  async setStudentVideo(
-    { state, commit },
-    payload: { id: string; enable: boolean }
-  ) {
+  async setStudentVideo({ state, commit }, payload: { id: string; enable: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.cameraLock) return;
       commit("setCameraLock", { enable: true });
@@ -190,9 +161,15 @@ const actions: ActionTree<StudentRoomState, any> = {
       x: number;
       y: number;
       contentId: string;
-    }
+    },
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
+  },
+  setStudentOneId({ commit }, p: { id: string }) {
+    commit("setStudentOneId", p);
+  },
+  clearStudentOneId({ commit }, p: { id: string }) {
+    commit("clearStudentOneId", p);
   },
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);

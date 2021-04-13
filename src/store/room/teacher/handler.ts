@@ -6,10 +6,7 @@ import { ClassViewFromValue } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 
-export const useTeacherRoomWSHandler = ({
-  commit,
-  dispatch,
-}: ActionContext<TeacherRoomState, any>): WSEventHandler => {
+export const useTeacherRoomWSHandler = ({ commit, dispatch }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
@@ -18,16 +15,16 @@ export const useTeacherRoomWSHandler = ({
       await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
         root: true,
       });
-      if(payload.studentOneToOne) {
+      if (payload.studentOneToOne) {
         await dispatch(
-          "modeOne/setStudentOneId",
+          "teacherRoom/setStudentOneId",
           { id: payload.studentOneToOne },
           {
-            root: true
-          }
+            root: true,
+          },
         );
       } else {
-        await dispatch("modeOne/clearStudentOneId", { id: '' }, {root: true});
+        await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
     },
     onStudentJoinClass: async (payload: StudentModel) => {
@@ -64,8 +61,8 @@ export const useTeacherRoomWSHandler = ({
         "unity/setStudentMessage",
         { message: payload },
         {
-          root: true
-        }
+          root: true,
+        },
       );
     },
     onTeacherJoinClass: (payload: any) => {
@@ -124,33 +121,17 @@ export const useTeacherRoomWSHandler = ({
       });
     },
     onTeacherUpdateBlackOut: (payload: any) => {
-      commit(
-        "lesson/setIsBlackOut",
-        { IsBlackOut: payload.isBlackOut },
-        { root: true }
-      );
+      commit("lesson/setIsBlackOut", { IsBlackOut: payload.isBlackOut }, { root: true });
     },
     onTeacherStartLessonPlan: (payload: any) => {
       commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      commit(
-        "lesson/setExposureStatus",
-        { id: payload.content.id, status: ExposureStatus.COMPLETED },
-        { root: true }
-      );
-      commit(
-        "lesson/setPlayedTime",
-        { time: payload.playedTime },
-        { root: true }
-      );
+      commit("lesson/setExposureStatus", { id: payload.content.id, status: ExposureStatus.COMPLETED }, { root: true });
+      commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
-      commit(
-        "lesson/setCurrentExposureItemMedia",
-        { id: payload.pageSelected },
-        { root: true }
-      );
+      commit("lesson/setCurrentExposureItemMedia", { id: payload.pageSelected }, { root: true });
     },
     onStudentRaisingHand: async (student: StudentModel) => {
       const payload = { id: student.id, raisingHand: student.isRaisingHand };
@@ -176,7 +157,7 @@ export const useTeacherRoomWSHandler = ({
         {
           action: ClassActionFromValue(payload.action),
         },
-        { root: true }
+        { root: true },
       );
     },
     onTeacherDesignateTarget: async (payload: any) => {
@@ -223,7 +204,17 @@ export const useTeacherRoomWSHandler = ({
       console.log(payload);
     },
     onTeacherSetOneToOne: async (payload: any) => {
-      console.log(payload);
+      if (payload) {
+        await dispatch(
+          "teacherRoom/setStudentOneId",
+          { id: payload.id },
+          {
+            root: true,
+          },
+        );
+      } else {
+        await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
+      }
     },
   };
   return handler;

@@ -20,6 +20,7 @@ export interface TeacherRoomState {
   cameraLock: boolean;
   microphoneLock: boolean;
   classAction: ClassAction;
+  idOne: string;
 }
 
 const state: TeacherRoomState = {
@@ -36,6 +37,7 @@ const state: TeacherRoomState = {
   cameraLock: false,
   microphoneLock: false,
   classAction: ClassAction.DEFAULT,
+  idOne: "",
 };
 
 export default state;

@@ -58,6 +58,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   classAction(state: StudentRoomState): ClassAction {
     return state.classAction;
   },
+  getStudentModeOneId(state: StudentRoomState): string {
+    return state.idOne;
+  },
 };
 
 export default getters;
