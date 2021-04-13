@@ -1,11 +1,7 @@
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import {
-  LessonService,
-  RemoteTeachingService,
-  TeacherGetRoomResponse
-} from "@/services";
+import { LessonService, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
 import {
   ClassViewPayload,
@@ -17,14 +13,14 @@ import {
   StudentState,
   UserIdPayload,
   UserMediaPayload,
-  ValueOfClassView
+  ValueOfClassView,
 } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
-import {UID} from "agora-rtc-sdk-ng";
+import { UID } from "agora-rtc-sdk-ng";
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -43,14 +39,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.commit("setError", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, localAudios, manager, students } = state;
+    const { globalAudios, localAudios, manager, students, idOne } = state;
     if (!manager) return;
-    const cameras = students
-      .filter(s => s.videoEnabled && s.status === InClassStatus.JOINED)
-      .map(s => s.id);
-    let audios = students
-      .filter(s => s.audioEnabled && s.status === InClassStatus.JOINED)
-      .map(s => s.id);
+    const cameras = idOne ? [idOne] : students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = idOne ? [idOne] : students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (localAudios.length > 0) {
       audios = [...localAudios];
     } else if (globalAudios.length > 0) {
@@ -74,7 +66,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       camera: state.teacher.videoEnabled,
       microphone: state.teacher.audioEnabled,
       classId: state.info.id,
-      teacherId: state.user?.id
+      teacherId: state.user?.id,
     });
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
@@ -87,7 +79,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        console.log("speaking", JSON.stringify(result))
+        console.log("speaking", JSON.stringify(result));
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
@@ -100,47 +92,32 @@ const actions: ActionTree<TeacherRoomState, any> = {
       // const lessons = await LessonService.getLessonByUnit(11);
       // let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
       // if (!lesson) lesson = lessons[0];
-      roomResponse = await RemoteTeachingService.teacherStartClassRoom(
-        payload.classId,
-        payload.classId
-      );
+      roomResponse = await RemoteTeachingService.teacherStartClassRoom(payload.classId, payload.classId);
       if (!roomResponse) throw new Error("Can not start class");
     }
     const roomInfo: RoomModel = roomResponse.data;
     if (!roomInfo || roomInfo.classId !== payload.classId) {
       commit("setError", {
         errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-        message: "Your class has not been started!"
+        message: "Your class has not been started!",
       });
       return;
     }
     commit("setRoomInfo", roomResponse.data);
   },
   async setStudentAudio({ state, commit }, payload: UserMediaPayload) {
-    await state.manager?.WSClient.sendRequestMuteStudentAudio(
-      payload.id,
-      !payload.enable
-    );
+    await state.manager?.WSClient.sendRequestMuteStudentAudio(payload.id, !payload.enable);
     commit("setStudentAudio", payload);
   },
   async setStudentVideo({ state, commit }, payload: UserMediaPayload) {
     commit("setStudentVideo", payload);
-    state.manager?.WSClient.sendRequestMuteStudentVideo(
-      payload.id,
-      !payload.enable
-    );
+    state.manager?.WSClient.sendRequestMuteStudentVideo(payload.id, !payload.enable);
   },
   setStudentBadge({ state }, payload: StudentBadgePayload) {
-    state.manager?.WSClient.sendRequestSetStudentBadge(
-      [payload.id],
-      payload.badge
-    );
+    state.manager?.WSClient.sendRequestSetStudentBadge([payload.id], payload.badge);
   },
   async setAllStudentBadge({ state }) {
-    state.manager?.WSClient.sendRequestSetStudentBadge(
-        [],
-        1
-    );
+    state.manager?.WSClient.sendRequestSetStudentBadge([], 1);
   },
   async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;
@@ -155,7 +132,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     if (state.cameraLock) return;
     commit("setCameraLock", { enable: true });
     await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
-    await state.manager?.setCamera({enable: payload.enable, videoEncoderConfigurationPreset: '480p'});
+    await state.manager?.setCamera({ enable: payload.enable, videoEncoderConfigurationPreset: "480p" });
     commit("setTeacherVideo", payload);
     commit("setCameraLock", { enable: false });
   },
@@ -200,9 +177,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.WSClient.sendRequestClearStudentAudio();
   },
   setBlackOut({ state }, payload: { isBlackOut: boolean }) {
-    state.manager?.WSClient.sendRequestBlackOutLessonContent(
-      payload.isBlackOut
-    );
+    state.manager?.WSClient.sendRequestBlackOutLessonContent(payload.isBlackOut);
   },
   setCurrentExposure({ state }, payload: { id: string }) {
     state.manager?.WSClient.sendRequestStartLessonContent(payload.id);
@@ -214,11 +189,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.WSClient.sendRequestSetLessonItemContent(payload.id);
   },
   clearStudentRaisingHand({ state }, payload: { id: string }) {
-    const student = state.students.find(
-      e => e.id === payload.id && e.raisingHand
-    );
-    if (student)
-      state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
+    const student = state.students.find(e => e.id === payload.id && e.raisingHand);
+    if (student) state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
   },
   setClassAction({ state }, payload: { action: number }) {
     state.manager?.WSClient.sendRequestSetClassAction(payload.action);
@@ -229,7 +201,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       x: number;
       y: number;
       contentId: string;
-    }
+    },
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
   },
@@ -257,8 +229,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
   // async sendUnity({ state }, payload: {message: string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);
   // },
-  async sendOneAndOne({ state }, payload: {status: boolean, id: string}) {
+  async sendOneAndOne({ state }, payload: { status: boolean; id: string }) {
     await state.manager?.WSClient.sendRequestSetOneToOne(payload);
+  },
+  setStudentOneId({ commit }, p: { id: string }) {
+    commit("setStudentOneId", p);
+  },
+  clearStudentOneId({ commit }, p: { id: string }) {
+    commit("clearStudentOneId", p);
   },
 };
 

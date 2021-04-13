@@ -68,6 +68,7 @@ export interface StudentRoomState {
   cameraLock: boolean;
   microphoneLock: boolean;
   classAction: ClassAction;
+  idOne: string;
   speakingUsers: Array<string>;
 }
 
@@ -84,6 +85,7 @@ const state: StudentRoomState = {
   cameraLock: false,
   microphoneLock: false,
   classAction: ClassAction.DEFAULT,
+  idOne: "",
   speakingUsers: [],
 };
 

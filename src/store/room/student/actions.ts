@@ -8,7 +8,7 @@ import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interfac
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
-import { MIN_SPEAKING_LEVEL } from '@/utils/constant';
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -45,10 +45,10 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setUser", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, manager, students, teacher } = state;
+    const { globalAudios, manager, students, teacher, idOne } = state;
     if (!manager) return;
-    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
-    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = idOne ? [idOne] : students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = idOne ? [idOne] : students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -99,7 +99,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     const validSpeakings: Array<string> = [];
     if (payload) {
       payload.map(item => {
-        if (item.level >= MIN_SPEAKING_LEVEL) { // should check by a level
+        if (item.level >= MIN_SPEAKING_LEVEL) {
+          // should check by a level
           validSpeakings.push(item.uid.toString());
         }
       });
@@ -176,6 +177,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     },
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
+  },
+  setStudentOneId({ commit }, p: { id: string }) {
+    commit("setStudentOneId", p);
+  },
+  clearStudentOneId({ commit }, p: { id: string }) {
+    commit("clearStudentOneId", p);
   },
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);

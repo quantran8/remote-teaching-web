@@ -1,13 +1,13 @@
-import {TeacherRoomManager} from "@/manager/room/teacher.manager";
-import {ClassRoomModel, ClassModel, RoomModel} from "@/models";
-import {GetterTree} from "vuex";
-import {ClassView, InClassStatus, StudentState, TeacherState,} from "../interface";
-import {ClassAction} from "../student/state";
-import {TeacherRoomState} from "./state";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
+import { ClassRoomModel, ClassModel, RoomModel } from "@/models";
+import { GetterTree } from "vuex";
+import { ClassView, InClassStatus, StudentState, TeacherState } from "../interface";
+import { ClassAction } from "../student/state";
+import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
-  isConnected(state : TeacherRoomState): boolean {
-    if(!state.manager || !state.manager.WSClient) return false;
+  isConnected(state: TeacherRoomState): boolean {
+    if (!state.manager || !state.manager.WSClient) return false;
     return state.manager.WSClient.isConnected;
   },
   enableAudios(state: TeacherRoomState): Array<string> {
@@ -15,24 +15,20 @@ const getters: GetterTree<TeacherRoomState, any> = {
     else if (state.globalAudios.length > 0) return state.globalAudios;
     return [];
   },
-  globalAudios(
-    state: TeacherRoomState
-  ): Array<{ studentId: string; tag: string }> {
+  globalAudios(state: TeacherRoomState): Array<{ studentId: string; tag: string }> {
     return state.students
-      .filter((s) => state.globalAudios.indexOf(s.id) !== -1)
-      .map((s) => {
+      .filter(s => state.globalAudios.indexOf(s.id) !== -1)
+      .map(s => {
         return {
           studentId: s.id,
           tag: `${s.index + 1}`,
         };
       });
   },
-  localAudios(
-    state: TeacherRoomState
-  ): Array<{ studentId: string; tag: string }> {
+  localAudios(state: TeacherRoomState): Array<{ studentId: string; tag: string }> {
     return state.students
-      .filter((s) => state.localAudios.indexOf(s.id) !== -1)
-      .map((s) => {
+      .filter(s => state.localAudios.indexOf(s.id) !== -1)
+      .map(s => {
         return {
           studentId: s.id,
           tag: `${s.index + 1}`,
@@ -67,18 +63,14 @@ const getters: GetterTree<TeacherRoomState, any> = {
   //   return state.classView === ClassView.GAME;
   // },
   isAllVideoHidden(state: TeacherRoomState) {
-    const allStudents = state.students.filter(
-      (s) => s.status === InClassStatus.JOINED
-    );
+    const allStudents = state.students.filter(s => s.status === InClassStatus.JOINED);
     for (const student of allStudents) {
       if (student.videoEnabled) return false;
     }
     return true;
   },
   isAllAudioMuted(state: TeacherRoomState) {
-    const allStudents = state.students.filter(
-      (s) => s.status === InClassStatus.JOINED
-    );
+    const allStudents = state.students.filter(s => s.status === InClassStatus.JOINED);
     for (const student of allStudents) {
       if (student.audioEnabled) return false;
     }
@@ -86,6 +78,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   classAction(state: TeacherRoomState): ClassAction {
     return state.classAction;
+  },
+  getStudentModeOneId(state: TeacherRoomState): string {
+    return state.idOne;
   },
 };
 

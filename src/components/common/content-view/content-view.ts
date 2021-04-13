@@ -13,7 +13,7 @@ export default defineComponent({
     Circle,
     Rectangle,
   },
-  props: ["targets", "localTargets", "image", "masked", "contentId", "isAssigned"],
+  props: ["targets", "localTargets", "image", "masked", "contentId", "isAssigned", "studentOneId"],
   emits: ["on-tap"],
   setup(props, { emit }) {
     const store = useStore();
@@ -28,11 +28,16 @@ export default defineComponent({
 
     const teacher: ComputedRef<TeacherState> = computed(() => store.getters["teacherRoom/teacher"]);
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
-    const studentOneAndOneId = computed(() => store.getters["modeOne/getStudentModeOneId"]);
+    const studentOneAndOneId = ref("");
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
 
     const previousImage = ref({});
+
+    watch(props, () => {
+      const { studentOneId } = props;
+      studentOneAndOneId.value = studentOneId;
+    });
 
     watch(studentOneAndOneId, () => {
       isOneToOne.value = !!studentOneAndOneId.value;

@@ -140,6 +140,12 @@ const mutations: MutationTree<StudentRoomState> = {
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
     state.classAction = payload.action;
   },
+  setStudentOneId(s: StudentRoomState, p: { id: string }) {
+    s.idOne = p.id;
+  },
+  clearStudentOneId(s: StudentRoomState, p: { id: string }) {
+    s.idOne = p.id;
+  },
   setSpeakingUsers(state: StudentRoomState, payload: { userIds: Array<string> }) {
     state.speakingUsers = payload.userIds;
   },

@@ -2,47 +2,45 @@ import { computed, defineComponent, watch } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentOne from "./student-one/student-one.vue";
-import StudentControls from "./student-controls/student-controls.vue"
+import StudentControls from "./student-controls/student-controls.vue";
 
 export default defineComponent({
   components: {
     StudentAll,
     StudentOne,
-	StudentControls,
+    StudentControls,
   },
   setup() {
     const { getters, dispatch } = useStore();
-    const oneAndOneStatus = computed(
-      () => getters["modeOne/getStudentModeOneId"]
-    );
+    const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
 
-	const onClickHideAll = async () => {
-		await dispatch("teacherRoom/hideAllStudents");
-	};
+    const onClickHideAll = async () => {
+      await dispatch("teacherRoom/hideAllStudents");
+    };
 
-	const onClickShowAll = async () => {
-		await dispatch("teacherRoom/showAllStudents");
-	};
+    const onClickShowAll = async () => {
+      await dispatch("teacherRoom/showAllStudents");
+    };
 
-	const onClickMuteAll = async () => {
-		await dispatch("teacherRoom/muteAllStudents");
-	};
+    const onClickMuteAll = async () => {
+      await dispatch("teacherRoom/muteAllStudents");
+    };
 
-	const onClickUnmuteAll = async () => {
-		await dispatch("teacherRoom/unmuteAllStudents");
-	};
+    const onClickUnmuteAll = async () => {
+      await dispatch("teacherRoom/unmuteAllStudents");
+    };
 
-	const onClickStickerAll = async () => {
-		await dispatch("teacherRoom/setAllStudentBadge");
-	};
+    const onClickStickerAll = async () => {
+      await dispatch("teacherRoom/setAllStudentBadge");
+    };
 
     return {
       oneAndOneStatus,
-	  onClickHideAll,
-	  onClickShowAll,
-	  onClickMuteAll,
-	  onClickUnmuteAll,
-	  onClickStickerAll,
+      onClickHideAll,
+      onClickShowAll,
+      onClickMuteAll,
+      onClickUnmuteAll,
+      onClickStickerAll,
     };
   },
 });
