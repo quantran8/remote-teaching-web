@@ -1,47 +1,35 @@
 <template>
-  <div class="item-container">
-    <div class="video" :id="id"></div>
-    <div class="mask" :class="{ masked: !videoEnabled && !isNotJoinned }">
-      <div class="raising-hand" v-if="raisingHand" @click="onClickClearRaisingHand"></div>
-      <div class="name" @click="onOneAndOne">
-        {{ name }}
-      </div>
-      <div class="interactive" v-if="showCorrectAnswer">
-        <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
-
-        <StudentBadge class="interactive-badge" :badge="interactive.correct" v-else-if="interactive.status === 1" />
-      </div>
-      <div class="info">
-<!--        Comment BaseTag but DO NOT remove this-->
-<!--        <BaseTag-->
-<!--          draggable="true"-->
-<!--          @dragstart="onDragStart"-->
-<!--          :tag="`${index + 1}`"-->
-<!--          @click="toggleContextMenu"-->
-<!--          v-click-outside="hideContextMenu"-->
-<!--        />-->
-        <BaseButton
-          class="media-button"
-          :class="{ hightlight: isAudioHightlight }"
-          @click="toggleAudio"
-          draggable="true"
-          @dragstart="onDragStart"
-        >
-          <BaseIcon :name="audioIcon" />
-        </BaseButton>
-        <BaseButton class="media-button" @click="toggleVideo">
-          <BaseIcon :name="videoIcon" />
-        </BaseButton>
-      </div>
-      <StudentBadge class="badge" :badge="badge" @click="addABadge" />
-      <div v-if="isContextMenuVisible" class="context-menu">
-        <div>Context Menu</div>
-      </div>
+  <div
+    :class="['student', false && 'student--speaking', false && 'student--hand-raised']"
+    @mouseover="onMouseChange(true)"
+    @mouseleave="onMouseChange(false)"
+  >
+    <figure class="student__figure">
+      <div class="student__video" v-show="videoEnabled" :id="id"></div>
+      <img class="student__img" v-show="!videoEnabled" src="@/assets/student-class/no-avatar.png" />
+      <img v-if="raisingHand" @click="onClickClearRaisingHand" class="student__hand" src="@/assets/student-class/hand.svg" />
+    </figure>
+    <div class="student__info">
+      <h4 class="student__name" @click="onOneAndOne">{{ name }}</h4>
+      <span v-if="isNotJoinned" class="student__not-joined">(not joined)</span>
     </div>
-    <div class="hasNotJoinned" v-if="isNotJoinned">
-      Student has not been joined
-    </div>
+    <StudentCardActions :student="student" :show="isMouseEntered" />
   </div>
+
+  <!--        Comment BaseTag but DO NOT remove this-->
+  <!--        <BaseTag-->
+  <!--          draggable="true"-->
+  <!--          @dragstart="onDragStart"-->
+  <!--          :tag="`${index + 1}`"-->
+  <!--          @click="toggleContextMenu"-->
+  <!--          v-click-outside="hideContextMenu"-->
+  <!--        />-->
+
+  <!-- <div class="interactive" v-if="showCorrectAnswer">
+    <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
+
+    <StudentBadge class="interactive-badge" :badge="interactive.correct" v-else-if="interactive.status === 1" />
+  </div> -->
 </template>
 <style lang="scss" scoped src="./student-card.scss"></style>
 <script lang="ts" src="./student-card.ts"></script>
