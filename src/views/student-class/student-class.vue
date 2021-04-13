@@ -3,16 +3,16 @@
     <div class="sc-header">
       <div class="sc-header__left">
         <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
-        <div class="sc-header__icon">
+        <div class="sc-header__icon" ref="classActionImageRef">
           <img v-if="classAction" :src="require(`@/assets/icons/icon-action-${classAction}.svg`)" alt="Icon" />
         </div>
       </div>
       <div class="sc-header__right">
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
-        <router-link class="sc-header__exit" :to="$paths.Parent">
+        <a class="sc-header__exit" @click="onLeave">
           <MatIcon type="close" class="red-close" />
           <span>Exit</span>
-        </router-link>
+        </a>
       </div>
     </div>
     <div class="sc-body">
@@ -53,10 +53,10 @@
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>
       </div>
-      <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
+      <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
       <div class="sc-action">
         <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
-          <img src="@/assets/student-class/hand.svg" class="sc-action__icon" />
+          <img :src="handIcon" class="sc-action__icon" />
         </a>
         <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
           <img :src="audioIcon" class="sc-action__icon" />

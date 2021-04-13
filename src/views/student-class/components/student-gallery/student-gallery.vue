@@ -7,7 +7,7 @@
         </div>
       </transition-group>
     </template>
-    <StudentGalleryItem v-if="currentStudent" :student="currentStudent" :isCurrent="true" :isOneToOne="isOneToOne" />
+    <StudentGalleryItem v-if="currentStudent" :student="currentStudent" :isCurrent="true" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
   </div>
 </template>
 

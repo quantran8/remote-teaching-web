@@ -17,6 +17,7 @@ export default defineComponent({
       required: true,
     },
     isOneToOne: Boolean,
+    raisedHand: Boolean,
   },
   setup(props) {
     const topStudents = computed(() => props.students.slice(0, 10));

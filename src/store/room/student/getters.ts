@@ -61,6 +61,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   getStudentModeOneId(state: StudentRoomState): string {
     return state.idOne;
   },
+  speakingUsers(state: StudentRoomState): Array<string> {
+    return state.speakingUsers;
+  },
 };
 
 export default getters;

@@ -146,6 +146,9 @@ const mutations: MutationTree<StudentRoomState> = {
   clearStudentOneId(s: StudentRoomState, p: { id: string }) {
     s.idOne = p.id;
   },
+  setSpeakingUsers(state: StudentRoomState, payload: { userIds: Array<string> }) {
+    state.speakingUsers = payload.userIds;
+  },
 };
 
 export default mutations;
