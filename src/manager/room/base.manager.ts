@@ -1,4 +1,5 @@
 import { AgoraClient, AgoraClientOptions, AgoraEventHandler } from "@/agora";
+import { StudentState, TeacherState } from "@/store/room/interface";
 import { GLSocketClient, WSEventHandler } from "@/ws";
 
 export interface RoomOptions {
@@ -27,13 +28,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   options!: RoomOptions;
   WSClient!: T;
 
-  abstract join(options: {
-    classId: string;
-    studentId?: string;
-    teacherId?: string;
-    camera?: boolean;
-    microphone?: boolean;
-  }): Promise<any>;
+  abstract join(options: { classId: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }): Promise<any>;
 
   registerEventHandler(eventHandler: WSEventHandler) {
     return this.WSClient.registerEventHandler(eventHandler);
@@ -56,6 +51,16 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 
   updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
     return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+  }
+
+  oneToOneSubscribeAudio(
+    cameras: Array<string>,
+    audios: Array<string>,
+    idOne: string,
+    teacher?: TeacherState | undefined,
+    student?: StudentState | undefined,
+  ) {
+    return this.agoraClient.oneToOneSubscribeAudio(cameras, audios, idOne, teacher, student);
   }
 
   async close() {
