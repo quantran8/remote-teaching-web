@@ -36,7 +36,9 @@
   }
 
   .gallery {
-    margin: 10px;
-    flex-basis: 50%;
+    overflow: auto;
+    flex-basis: 35%;
+    padding-bottom: 20px;
+    padding-right: 10px;
   }
 }

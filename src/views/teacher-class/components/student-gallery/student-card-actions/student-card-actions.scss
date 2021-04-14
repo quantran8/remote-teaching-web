@@ -1,0 +1,56 @@
+@import "../../../../../style/abstracts/mixins";
+@import "../../../../../style/abstracts/variables";
+@import "../../../../../style/abstracts/animation";
+
+.student-action {
+  $gallery-size: (
+    $xs: 170px,
+    $sm: false,
+    $md: false,
+    $lg: false,
+    $xl: false,
+    $xxl: false,
+  );
+  $gallery-item-size: (
+    $xs: 50px,
+    $sm: false,
+    $md: false,
+    $lg: false,
+    $xl: false,
+    $xxl: false,
+  );
+  $selector2: &__btn;
+  @include draw-items-on-circle(
+    $item-count: 10,
+    $container-sizes: $gallery-size,
+    $item-sizes: $gallery-item-size,
+    $item-selector: (
+      #{"&::v-deep .student-action__item"},
+      #{".student-action__btn"},
+    ),
+    $item-start-position: -2
+  );
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  margin: 0;
+
+  &__btn {
+    img {
+      max-width: 100%;
+      height: auto;
+      -webkit-user-drag: none;
+    }
+  }
+  &__badge-count {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    color: #fff;
+    font-weight: 600;
+    padding-bottom: 4px;
+  }
+}

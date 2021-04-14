@@ -126,7 +126,7 @@ export default defineComponent({
     watch(classAction, () => {
       if (classActionImageRef.value) {
         const timeline = gsap.timeline();
-        timeline.to(classActionImageRef.value, { scale: 2.5, transformOrigin: "top" });
+        timeline.to(classActionImageRef.value, { scale: 2.5, transformOrigin: "top", zIndex: 99 });
         timeline.to(classActionImageRef.value, { delay: 3, scale: 1 });
       }
     });

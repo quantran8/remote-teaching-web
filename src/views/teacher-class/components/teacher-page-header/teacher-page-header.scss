@@ -20,7 +20,7 @@ $font-size: 2.2em;
   }
 
   &__class-name {
-    flex: 1;
+    flex-basis: 35%;
     font-size: $font-size;
     background: #1a1818;
     padding-left: 60px;

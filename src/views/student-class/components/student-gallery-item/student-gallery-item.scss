@@ -1,3 +1,5 @@
+@import "../../../../style/abstracts/animation";
+
 .sc-gallery-item {
   $self: &;
 
@@ -34,19 +36,9 @@
 
   &--help::before {
     background: rgba(255, 0, 0, 0.658);
-    animation: help-animate 0.5s;
+    animation: pulsate 0.5s;
     animation-iteration-count: 4;
     animation-direction: alternate;
-    @keyframes help-animate {
-      from {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0;
-      }
-      to {
-        transform: translate(-50%, -50%) scale(1.15);
-        opacity: 1;
-      }
-    }
   }
 
   &__img {

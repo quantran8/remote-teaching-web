@@ -61,3 +61,13 @@
     $index: $index + 1;
   }
 }
+
+@mixin ellipse($line, $line-height) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+  line-height: $line-height;
+  max-height: $line-height * $line;
+  min-height: $line-height * $line;
+  overflow: hidden;
+}

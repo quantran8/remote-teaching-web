@@ -1,3 +1,5 @@
+@import "../../style/abstracts/mixins";
+
 .sc {
   display: grid;
   height: 100vh;
@@ -19,7 +21,7 @@
   }
   &__right {
     position: relative;
-    padding: 0 30px;
+    padding: 0 20px;
     padding-right: 90px;
     display: grid;
     align-items: center;
@@ -44,6 +46,8 @@
   }
   &__title {
     margin: 0;
+    font-size: 28px;
+    @include ellipse(1, 56px);
   }
   &__exit {
     position: absolute;
@@ -60,7 +64,16 @@
   }
   @media (min-width: 992px) {
     &__right {
+      padding: 0 30px;
       padding-right: 30px;
+    }
+    &__title {
+      font-size: 30px;
+    }
+  }
+  @media (min-width: 1200px) {
+    &__title {
+      font-size: 36px;
     }
   }
 }
