@@ -4,18 +4,18 @@
     <h2>Welcome {{ username }}</h2>
     <p>Choose a class to start</p>
     <div class="teacher-page__school-select">
-    <Select
-      placeholder="School"
-      showSearch
-      :optionFilterProp="children"
-      :disabled="disabled"
-      :loading="loading"
-      :value="schools[0]?.id"
-      :filterOption="filterSchools"
-      @change="onSchoolChange"
-    >
-      <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
-    </Select>
+      <Select
+        placeholder="School"
+        showSearch
+        :optionFilterProp="children"
+        :disabled="disabled"
+        :loading="loading"
+        :value="schools[0]?.id"
+        :filterOption="filterSchools"
+        @change="onSchoolChange"
+      >
+        <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
+      </Select>
     </div>
     <hr />
     <div>

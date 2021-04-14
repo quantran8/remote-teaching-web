@@ -1,11 +1,5 @@
-import {ClassModel, Parent} from "@/models";
-import {
-  AccessibleClassQueryParam,
-  AccessibleSchoolQueryParam,
-  RemoteTeachingService,
-  TeacherGetRoomResponse,
-  TeacherService
-} from "@/services";
+import { ClassModel, Parent } from "@/models";
+import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, RemoteTeachingService, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
@@ -29,12 +23,14 @@ const actions: ActionTree<TeacherState, any> = {
     if (!state.info) return;
     const response = await TeacherService.getAccessibleClasses(payload);
     const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
-    const classes = response.data.map(item => ({
-      ...item,
-    }) as unknown as ClassModel);
+    const classes = response.data.map(
+      item =>
+        (({
+          ...item,
+        } as unknown) as ClassModel),
+    );
     commit("setClasses", classes);
     commit("setClassRoom", responseActive.data);
-    console.log(classes);
   },
 };
 

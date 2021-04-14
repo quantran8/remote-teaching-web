@@ -5,7 +5,6 @@ import { TeacherState } from "./state";
 
 const getters: GetterTree<TeacherState, any> = {
   classes(state: TeacherState): Array<ClassModel> {
-    console.log("classes",state.classes);
     return state.classes;
   },
   schools(state: TeacherState): Array<ResourceModel> {

@@ -16,25 +16,25 @@ export interface AccessibleSchoolQueryParam {
 }
 
 export interface AccessibleClassQueryParam {
-	offset?: number;
-	limit?: number;
-	schoolId?: string;
-	campusId?: string;
-	ignoreFutureClass?: boolean;
-	isDetail?: boolean;
-	isCampusDetail?: boolean;
-	disabled?: boolean;
-	sortBy?: string;
+  offset?: number;
+  limit?: number;
+  schoolId?: string;
+  campusId?: string;
+  ignoreFutureClass?: boolean;
+  isDetail?: boolean;
+  isCampusDetail?: boolean;
+  disabled?: boolean;
+  sortBy?: string;
 }
 
 export interface GetAccessibleClassResponseModel {
-	data: Array<AccessibleClassModel>;
-	totalCount: number;
+  data: Array<AccessibleClassModel>;
+  totalCount: number;
 }
 
 export interface AccessibleClassModel {
-	schoolClassId: string;
-	schoolClassName: string;
-	campusId: string;
-	campusName: string;
+  schoolClassId: string;
+  schoolClassName: string;
+  campusId: string;
+  campusName: string;
 }
