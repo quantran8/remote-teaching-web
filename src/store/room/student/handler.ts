@@ -168,15 +168,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherUpdateLocalAudio: (_payload: any) => {
       // do nothing
     },
-    onTeacherUpdateStudentBadge: (payload: StudentModel[]) => {
+    onTeacherUpdateStudentBadge: async (payload: StudentModel[]) => {
       payload.map(item => {
         commit("setStudentBadge", {
           id: item.id,
           badge: item.badge,
         });
         if (item.id === state.student?.id) {
-          const message = `Congratulations! You got 1 more badge from your teacher!`;
-          store.dispatch("setToast", { message: message, isPlayingSound: true }, { root: true });
+          store.dispatch("setToast", { message: "", isPlayingSound: true, bigIcon: "sticker" }, { root: true });
         }
       });
     },
