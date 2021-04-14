@@ -22,13 +22,13 @@
   align-self: center;
 
   @include draw-items-on-circle(
-    $item-count: 10,
+    $item-count: 11,
     $container-sizes: $gallery-size,
     $item-sizes: $gallery-item-size,
     $item-selector: (
       #{"&::v-deep .sc-gallery__item"},
       #{".sc-gallery-item"},
     ),
-    $item-start-position: 8
+    $item-start-position: -2
   );
 }

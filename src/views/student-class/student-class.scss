@@ -1,4 +1,5 @@
 @import "../../style/abstracts/mixins";
+@import "../../style/abstracts/variables";
 
 .sc {
   display: grid;
@@ -62,7 +63,7 @@
     border-left: 1px solid #00000029;
     color: #0b0b0b;
   }
-  @media (min-width: 992px) {
+  @media (min-width: $lg) {
     &__right {
       padding: 0 30px;
       padding-right: 30px;
@@ -71,7 +72,7 @@
       font-size: 30px;
     }
   }
-  @media (min-width: 1200px) {
+  @media (min-width: $xl) {
     &__title {
       font-size: 36px;
     }
@@ -82,11 +83,11 @@
   display: grid;
   grid-template-columns: 1fr 180px;
   grid-template-rows: 0.8fr 1fr;
-  @media (min-width: 992px) {
+  @media (min-width: $lg) {
     grid-template-columns: 50% 50%;
     grid-template-rows: 1fr 150px;
   }
-  @media (min-width: 1200px) {
+  @media (min-width: $xl) {
     grid-template-rows: 1fr 160px;
   }
 }
@@ -106,7 +107,7 @@
       height: 100%;
     }
   }
-  @media (min-width: 992px) {
+  @media (min-width: $lg) {
     padding: 40px;
     flex-direction: column;
     grid-row-start: 1;
@@ -142,7 +143,7 @@
     opacity: 50%;
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: $xl) {
     &__video {
       max-height: 500px;
       max-width: 800px;
@@ -168,13 +169,13 @@
     height: auto;
   }
 
-  @media (min-width: 992px) {
+  @media (min-width: $lg) {
     grid-auto-flow: column;
     justify-content: center;
     column-gap: 15px;
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: $xl) {
     grid-column-gap: 30px;
     &__icon {
       max-width: 100px;
