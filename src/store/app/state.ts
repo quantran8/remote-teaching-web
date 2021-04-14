@@ -16,6 +16,7 @@ export interface AppState {
 export interface ToastData {
   message: string;
   isPlayingSound?: boolean;
+  bigIcon?: "sticker";
 }
 
 const state: AppState = {
