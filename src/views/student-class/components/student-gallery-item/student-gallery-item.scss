@@ -1,4 +1,5 @@
 @import "../../../../style/abstracts/animation";
+@import "../../../../style/abstracts/variables";
 
 .sc-gallery-item {
   $self: &;
@@ -146,7 +147,7 @@
     }
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: $xl) {
     &__title {
       font-size: 16px;
       line-height: 16px;
@@ -167,7 +168,7 @@
       }
     }
   }
-  @media (min-width: 1400px) {
+  @media (min-width: $xxl) {
     &__title {
       font-size: 16px;
       line-height: 16px;
