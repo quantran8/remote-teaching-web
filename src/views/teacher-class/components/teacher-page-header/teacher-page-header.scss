@@ -1,47 +1,45 @@
-$header-height: 90px;
+@import "../../../../style/abstracts/variables";
+$header-height: 85px;
 $font-size: 2.2em;
-#header {
+.header {
   height: $header-height;
-  display: flex;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  color: #fff;
+  font-size: 32px;
 
-  &__teacher {
-    flex: 1;
+  &__left {
     background: #00a1ed;
-    padding-left: 60px;
-    line-height: $header-height;
-    color: #fff;
-    font-size: $font-size;
+    padding: 0 30px;
     position: relative;
-  }
-
-  &__class-name {
-    flex-basis: 35%;
-    font-size: $font-size;
-    background: #1a1818;
-    padding-left: 60px;
     line-height: $header-height;
-    color: #fff;
   }
 
-  #app-exit {
+  &__right {
+    background: #1a1818;
+    padding: 0 30px;
+    line-height: $header-height;
+  }
+
+  &__exit {
     position: absolute;
     top: 0;
     right: 0;
-    width: 105px;
-    line-height: 50px;
-    text-align: center;
-    height: 50px;
+    text-decoration: none !important;
     background: #fff;
-    border-bottom-left-radius: 50px;
-    color: #000;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
+    box-shadow: 0 3px 0 #00000029;
+    padding: 5px 20px 12px 30px;
+    font-size: 24px;
+    border-radius: 0 0 0 50px;
+    border-left: 1px solid #00000029;
+    color: #0b0b0b;
+    font-weight: 600;
+  }
+  @media (min-width: $xl) {
+    grid-template-columns: 1fr 40%;
+  }
+  @media (min-width: $xxl) {
+    grid-template-columns: 1fr 35%;
   }
 }
 
@@ -122,11 +120,13 @@ $action-icon-container-size: 70px;
   width: 400px;
   border-radius: 40px;
   bottom: -135px;
-  left: -5px;
+  left: 50%;
+  transform: translateX(-50%);
   position: absolute;
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.15s;
+  z-index: 9;
 }
 
 .action-text {
@@ -170,6 +170,11 @@ $action-icon-container-size: 70px;
   }
 
   .actions {
+    width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    position: relative;
     .reaction-icon {
       @for $i from 1 through 8 {
         &:nth-child(#{$i}) {

@@ -1,6 +1,10 @@
+@import "../../../../../style/abstracts/variables";
+
 #student-controls {
-  display: flex;
-  margin: 20px auto;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-around;
+  padding: 10px 0 0;
 
   .student-controls__button {
     flex: 1;
@@ -35,5 +39,12 @@
         }
       }
     }
+  }
+
+  @media (min-width: $xl) {
+    padding: 20px 0 0;
+  }
+  @media (min-width: $xxl) {
+    padding: 30px 0 0;
   }
 }
