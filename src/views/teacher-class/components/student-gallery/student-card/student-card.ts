@@ -67,6 +67,7 @@ export default defineComponent({
           status: true,
           id: props.student.id,
         });
+        await store.dispatch("updateAudioAndVideoFeed", {});
         await setDefault(false);
         await setDefault(true);
       }

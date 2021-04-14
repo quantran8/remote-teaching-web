@@ -39,14 +39,17 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.commit("setError", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, localAudios, manager, students, idOne } = state;
+    const { globalAudios, localAudios, manager, students, idOne, teacher } = state;
     if (!manager) return;
-    const cameras = idOne ? [idOne] : students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
-    let audios = idOne ? [idOne] : students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (localAudios.length > 0) {
       audios = [...localAudios];
     } else if (globalAudios.length > 0) {
       audios = [...globalAudios];
+    }
+    if (idOne) {
+      return manager?.oneToOneSubscribeAudio(cameras, audios, idOne, teacher);
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },

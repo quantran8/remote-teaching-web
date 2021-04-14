@@ -1,4 +1,5 @@
-import {Logger} from "@/utils/logger";
+import { StudentState, TeacherState } from "@/store/room/interface";
+import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -7,10 +8,11 @@ import AgoraRTC, {
   ICameraVideoTrack,
   ILocalTrack,
   IMicrophoneAudioTrack,
-  IRemoteTrack, UID,
+  IRemoteTrack,
+  UID,
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
-import {isEqual} from "lodash";
+import { isEqual } from "lodash";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -30,20 +32,14 @@ export interface AgoraClientOptions {
   user?: AgoraUser;
 }
 export interface AgoraEventHandler {
-  onUserPublished(
-    user: IAgoraRTCRemoteUser,
-    mediaType: "audio" | "video"
-  ): void;
-  onUserUnPublished(
-    user: IAgoraRTCRemoteUser,
-    mediaType: "audio" | "video"
-  ): void;
+  onUserPublished(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video"): void;
+  onUserUnPublished(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video"): void;
   onException(payload: any): void;
   onVolumeIndicator(
-      result: {
-        level: number;
-        uid: UID;
-      }[]
+    result: {
+      level: number;
+      uid: UID;
+    }[],
   ): void;
 }
 export class AgoraClient implements AgoraClientSDK {
@@ -87,12 +83,7 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.agoraRTC.setLogLevel(4);
-    await this.client.join(
-      this.options.appId,
-      this.user.channel,
-      this.user.token,
-      this.user.username
-    );
+    await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
       await this.openCamera(options.videoEncoderConfigurationPreset);
@@ -146,7 +137,7 @@ export class AgoraClient implements AgoraClientSDK {
    * See {VideoEncoderConfigurationPreset} for more presets.
    * @param {string} videoEncoderConfigurationPreset
    */
-  async openCamera(videoEncoderConfigurationPreset: string = '180p_4'): Promise<any> {
+  async openCamera(videoEncoderConfigurationPreset: string = "180p_4"): Promise<any> {
     if (this._cameraTrack) return;
     try {
       this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
@@ -234,17 +225,12 @@ export class AgoraClient implements AgoraClientSDK {
 
   private _getRemoteUser(userId: string): IAgoraRTCRemoteUser | undefined {
     if (!this.client) return undefined;
-    return this.client.remoteUsers.find((e) => isEqual(e.uid + "", userId));
+    return this.client.remoteUsers.find(e => isEqual(e.uid + "", userId));
   }
 
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
-    const unSubscribeVideos = this.subscribedVideos
-      .filter((s) => videos.indexOf(s.userId) === -1)
-      .map((s) => s.userId);
-    const unSubscribeAudios = this.subscribedAudios
-      .filter((s) => audios.indexOf(s.userId) === -1)
-      .map((s) => s.userId);
-
+    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
+    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
     for (let studentId of unSubscribeVideos) {
       await this._unSubscribe(studentId, "video");
     }
@@ -262,10 +248,39 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
+  async oneToOneSubscribeAudio(
+    videos: Array<string>,
+    audios: Array<string>,
+    idOne: string,
+    teacher?: TeacherState | undefined,
+    student?: StudentState | undefined,
+  ) {
+    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
+    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
+
+    for (let studentId of unSubscribeVideos) {
+      await this._unSubscribe(studentId, "video");
+    }
+
+    for (let studentId of unSubscribeAudios) {
+      await this._unSubscribe(studentId, "audio");
+    }
+
+    for (let studentId of videos) {
+      await this._subscribeVideo(studentId);
+    }
+
+    if (student) {
+      if (teacher && student.id === idOne) await this._subscribeAudio(teacher.id);
+      if (student.id === idOne) await this._subscribeAudio(student.id);
+    } else {
+      if (teacher) await this._subscribeAudio(teacher.id);
+      await this._subscribeAudio(idOne);
+    }
+  }
+
   async _subscribeAudio(userId: string) {
-    const subscribed = this.subscribedAudios.find(
-      (ele) => ele.userId === userId
-    );
+    const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasAudio) return;
@@ -279,9 +294,7 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async _subscribeVideo(userId: string) {
-    const subscribed = this.subscribedVideos.find(
-      (ele) => ele.userId === userId
-    );
+    const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasVideo) return;
@@ -302,16 +315,12 @@ export class AgoraClient implements AgoraClientSDK {
 
   private _removeMediaTrack(studentId: string, mediaType: "audio" | "video") {
     if (mediaType === "video") {
-      const trackIndex = this.subscribedVideos.findIndex(
-        (ele) => ele.userId === studentId
-      );
+      const trackIndex = this.subscribedVideos.findIndex(ele => ele.userId === studentId);
       if (trackIndex === -1) return;
       this.subscribedVideos[trackIndex].track.stop();
       this.subscribedVideos.splice(trackIndex, 1);
     } else {
-      const trackIndex = this.subscribedAudios.findIndex(
-        (ele) => ele.userId === studentId
-      );
+      const trackIndex = this.subscribedAudios.findIndex(ele => ele.userId === studentId);
       if (trackIndex === -1) return;
       this.subscribedAudios[trackIndex].track.stop();
       this.subscribedAudios.splice(trackIndex, 1);
