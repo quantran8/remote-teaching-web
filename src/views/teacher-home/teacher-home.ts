@@ -1,15 +1,19 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import { AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
+import {AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService} from "@/services";
 import { computed, defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { debounce } from "lodash";
+import { Select, Button } from "ant-design-vue";
+
 export default defineComponent({
   components: {
     ClassCard,
+    Select,
+    Option: Select.Option,
   },
   async created() {
     const store = useStore();
@@ -70,20 +74,20 @@ export default defineComponent({
 
     const onSchoolChange = async (schoolId: string) => {
       console.error(schoolId);
-      // loading.value = true;
-      // await store.dispatch("teacher/loadAccessibleClasses", {
-      //   schoolId,
-      //
-      //   disabled: false,
-      //
-      //   isDetail: false,
-      //
-      //   isCampusDetail: true,
-      // } as AccessibleClassQueryParam);
-      //
-      // filteredSchools.value = schools.value;
-      //
-      // loading.value = false;
+      loading.value = true;
+      await store.dispatch("teacher/loadAccessibleClasses", {
+        schoolId,
+
+        disabled: false,
+
+        isDetail: false,
+
+        isCampusDetail: true,
+      } as AccessibleClassQueryParam);
+
+      filteredSchools.value = schools.value;
+
+      loading.value = false;
     };
 
     onMounted(async () => {
@@ -108,13 +112,7 @@ export default defineComponent({
       }
     };
 
-    const filterSchools = (input: string) => {
-      if (input) {
-        filteredSchools.value = schools.value.filter(school => school.name.toLowerCase().indexOf(input.toLowerCase()) >= 0);
-      } else {
-        filteredSchools.value = schools.value;
-      }
-    };
+    const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
     return { schools, classes, username, onClickClass, filterSchools, onSchoolChange, loading, disabled, filteredSchools };
   },

@@ -3,27 +3,33 @@
     <p></p>
     <h2>Welcome {{ username }}</h2>
     <p>Choose a class to start</p>
-    <Select
-      placeholder="School"
-      showSearch
-      :disabled="disabled"
-      :loading="loading"
-      :value="schools[0]?.id"
-      :filterOption="false"
-      @search="filterSchools"
-      @change="onSchoolChange"
-    >
-      <Option :value="school.id" :key="school.id" v-for="school in filteredSchools">{{ school.name }}</Option>
-    </Select>
+    <div class="teacher-page__school-select">
+      <Select
+        placeholder="School"
+        showSearch
+        :optionFilterProp="children"
+        :disabled="disabled"
+        :loading="loading"
+        :value="schools[0]?.id"
+        :filterOption="filterSchools"
+        @change="onSchoolChange"
+      >
+        <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
+      </Select>
+    </div>
     <hr />
     <div>
+      <div v-if="loading">
+        Loading
+      </div>
       <ClassCard
+        v-else
         class="card-margin"
         v-for="cl in classes"
         :key="cl.schoolClassId"
         :id="cl.schoolClassId"
         :title="cl.schoolClassName"
-        :description="cl.schoolName"
+        :description="cl.campusName"
         :active="cl.isActive"
         @click-to-access="() => onClickClass(cl)"
       />
