@@ -66,7 +66,6 @@
         </a>
       </div>
     </div>
-    <LeaveModal v-if="showModal" @dismiss="onClickCloseModal" @leave="onClickLeave" />
   </div>
 </template>
 <style lang="scss" scoped src="./student-class.scss"></style>
