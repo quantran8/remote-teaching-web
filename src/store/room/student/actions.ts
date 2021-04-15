@@ -93,7 +93,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        console.log("speaking", JSON.stringify(result));
+        // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
     });

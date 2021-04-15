@@ -206,6 +206,9 @@ const mutations: TeacherRoomMutation<State> = {
   clearStudentOneId(s: State, p: { id: string }) {
     s.idOne = p.id;
   },
+  setSpeakingUsers(s: State, p: { userIds: Array<string> }) {
+    s.speakingUsers = p.userIds;
+  },
 };
 
 export default mutations;

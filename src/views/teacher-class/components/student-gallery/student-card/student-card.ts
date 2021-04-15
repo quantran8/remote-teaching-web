@@ -82,6 +82,11 @@ export default defineComponent({
       isMouseEntered.value = entered;
     };
 
+    const isSpeaking = computed(() => {
+      const speakingUsers: Array<string> = store.getters["teacherRoom/speakingUsers"];
+      return speakingUsers.indexOf(props.student.id) >= 0;
+    });
+
     return {
       isNotJoinned,
       onDragStart,
@@ -92,6 +97,7 @@ export default defineComponent({
       showCorrectAnswer,
       onMouseChange,
       isMouseEntered,
+      isSpeaking,
     };
   },
 });
