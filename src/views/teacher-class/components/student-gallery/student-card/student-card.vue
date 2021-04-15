@@ -7,7 +7,6 @@
     <figure class="student__figure" :class="student.raisingHand && 'student__is-question'">
       <div class="student__video" :class="[isSpeaking && 'student__is-speaking']" v-show="student.videoEnabled" :id="student.id"></div>
       <img class="student__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
-      <img v-if="student.raisingHand" @click="onClickClearRaisingHand" class="student__hand" src="@/assets/student-class/hand.svg" />
     </figure>
     <div class="student__info">
       <h4 class="student__name" @click="onOneAndOne">{{ student.name }}</h4>

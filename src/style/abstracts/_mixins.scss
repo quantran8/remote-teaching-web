@@ -71,3 +71,13 @@
   min-height: $line-height * $line;
   overflow: hidden;
 }
+
+@mixin cycle($color, $animation: none) {
+  border: 4px solid $color;
+  @if $animation {
+    -webkit-animation: $animation 1s infinite;
+    -moz-animation: $animation 1s infinite;
+    -o-animation: $animation 1s infinite;
+    animation: $animation 1s infinite;
+  }
+}
