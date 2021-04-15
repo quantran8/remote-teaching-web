@@ -36,11 +36,8 @@
     transform: translate(-50%, -50%) scale(1.2);
   }
 
-  &--help::before {
-    background: rgba(255, 0, 0, 0.658);
-    animation: pulsate 0.5s;
-    animation-iteration-count: 4;
-    animation-direction: alternate;
+  &--help {
+    @include cycle(#dd0d0d, flickerAnimation);
   }
 
   &__img {
