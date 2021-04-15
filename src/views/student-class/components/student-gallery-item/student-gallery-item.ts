@@ -28,14 +28,6 @@ export default defineComponent({
       return speakingUsers.indexOf(student.id) >= 0;
     });
 
-    watch(raisedHand, value => {
-      if (value) {
-        containerRef.value?.classList.add("sc-gallery-item--help");
-      } else {
-        containerRef.value?.classList.remove("sc-gallery-item--help");
-      }
-    });
-
     return {
       isAudioHighlight,
       containerRef,
