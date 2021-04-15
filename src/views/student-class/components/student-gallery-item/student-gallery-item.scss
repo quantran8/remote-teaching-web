@@ -134,11 +134,11 @@
 
     #{$self}__title-container {
       margin-top: 30px;
+      height: 50px;
     }
 
     #{$self}__title {
       font-size: 32px;
-      height: 30px;
     }
 
     #{$self}__star {
@@ -155,7 +155,7 @@
 
   @media (min-width: $xl) {
     &__title-container {
-      height: 30px;
+      height: 50px;
     }
 
     &__title {
@@ -179,7 +179,7 @@
   }
   @media (min-width: $xxl) {
     &__title-container {
-      height: 30px;
+      height: 50px;
     }
 
     &__title {
