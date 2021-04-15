@@ -199,7 +199,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       console.log(payload);
     },
     onTeacherClearRaisingHand: (payload: any) => {
-      console.log(payload);
+      commit("setStudentRaisingHand", {
+        id: payload.id,
+        raisingHand: payload.isRaisingHand,
+      });
     },
     onTeacherUpdateClassAction: (payload: { action: number }) => {
       commit(
