@@ -5,7 +5,7 @@
       isCurrent && 'sc-gallery-item--current',
       isAudioHighlight && 'sc-gallery-item--highlight',
       isOneToOne && 'sc-gallery-item--one-on-one',
-      raisedHand && 'sc-gallery-item--help',
+      isRaisingHand && 'sc-gallery-item--help',
     ]"
     ref="containerRef"
   >

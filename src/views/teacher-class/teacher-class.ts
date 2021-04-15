@@ -1,6 +1,8 @@
 import { LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
+import { Paths } from "@/utils/paths";
+import { Modal } from "ant-design-vue";
 import { gsap } from "gsap";
 import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -11,7 +13,6 @@ import {
   ActivityContent,
   StudentGallery,
   GlobalAudioBar,
-  LeaveModal,
   ErrorModal,
   DesignateTarget,
   TeacherPageHeader,
@@ -23,7 +24,6 @@ export default defineComponent({
     ActivityContent,
     GlobalAudioBar,
     StudentGallery,
-    LeaveModal,
     ErrorModal,
     DesignateTarget,
     TeacherPageHeader,
@@ -49,8 +49,8 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const router = useRouter();
-    const showModal = ref(false);
     const hasConfirmed = ref(false);
+
     const isDesignatingTarget = computed(() => getters["interactive/isDesignatingTarget"]);
     const modalDesignateTarget = computed(() => getters["interactive/modalDesignateTarget"]);
     const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
@@ -110,21 +110,26 @@ export default defineComponent({
       await dispatch("teacherRoom/unmuteAllStudents");
     };
 
-    const onClickEnd = () => {
-      showModal.value = true;
-    };
-
     const onClickLeave = async () => {
       hasConfirmed.value = true;
-      await dispatch("teacherRoom/endClass");
       router.push("/teacher");
+    };
+
+    const onClickEnd = async () => {
+      Modal.confirm({
+        title: "Are you sure you wish to leave the session?",
+        okText: "Yes",
+        cancelText: "No",
+        okButtonProps: { type: "danger" },
+        onOk: async () => {
+          await dispatch("teacherRoom/endClass");
+          router.push("/teacher");
+        },
+      });
     };
     const onClickCloseError = () => {
       // store.dispatch("teacherRoom/setError", null);
       // does nothing, we only accept leave room;
-    };
-    const onClickCloseModal = () => {
-      showModal.value = false;
     };
 
     watch(error, () => {
@@ -152,19 +157,17 @@ export default defineComponent({
       await dispatch("teacherRoom/joinWSRoom");
     });
     return {
-      showModal,
       onClickHideAll,
       onClickShowAll,
       onClickMuteAll,
       onClickUnmuteAll,
-      onClickEnd,
       currentView,
       isGalleryView,
       setClassView,
       toggleView,
       teacher,
+      onClickEnd,
       onClickLeave,
-      onClickCloseModal,
       isClassNotActive,
       onClickCloseError,
       ctaVisible,

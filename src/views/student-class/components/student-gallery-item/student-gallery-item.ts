@@ -13,8 +13,16 @@ export default defineComponent({
   },
   setup: props => {
     const student = computed(() => props.student).value;
-    const raisedHand = computed(() => props.raisedHand);
+    const isRaisingHand = ref(false);
     const store = useStore();
+
+    watch(props, () => {
+      if (props.raisedHand) {
+        isRaisingHand.value = true;
+      } else {
+        isRaisingHand.value = false;
+      }
+    });
 
     const containerRef = ref<HTMLDivElement>();
 
@@ -32,6 +40,7 @@ export default defineComponent({
       isAudioHighlight,
       containerRef,
       isSpeaking,
+      isRaisingHand,
     };
   },
 });
