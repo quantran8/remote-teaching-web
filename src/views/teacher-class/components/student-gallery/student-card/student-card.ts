@@ -84,7 +84,6 @@ export default defineComponent({
 
     const isSpeaking = computed(() => {
       const speakingUsers: Array<string> = store.getters["teacherRoom/speakingUsers"];
-      console.log("MAMIMU", speakingUsers);
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
