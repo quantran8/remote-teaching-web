@@ -78,6 +78,18 @@
     cursor: pointer;
   }
 
+  &__is-speaking {
+    border: 4px solid #00a1ed;
+  }
+
+  &__is-question {
+    border: 4px solid #dd0d0d;
+    -webkit-animation: flickerAnimation 1s infinite;
+    -moz-animation: flickerAnimation 1s infinite;
+    -o-animation: flickerAnimation 1s infinite;
+    animation: flickerAnimation 1s infinite;
+  }
+
   &--large {
     #{$self}__figure {
       width: $card-figure-size--large;
@@ -90,6 +102,51 @@
   }
   &--hand-raised &__figure::after {
     transform: scale(1.2);
+  }
+
+  @keyframes flickerAnimation {
+    0% {
+      border: 4px solid #fff;
+    }
+    50% {
+      border: 4px solid rgb(211, 45, 45);
+    }
+    100% {
+      border: 4px solid #dd0d0d;
+    }
+  }
+  @-o-keyframes flickerAnimation {
+    0% {
+      border: 4px solid #fff;
+    }
+    50% {
+      border: 4px solid rgb(211, 45, 45);
+    }
+    100% {
+      border: 4px solid #dd0d0d;
+    }
+  }
+  @-moz-keyframes flickerAnimation {
+    0% {
+      border: 4px solid #fff;
+    }
+    50% {
+      border: 4px solid rgb(211, 45, 45);
+    }
+    100% {
+      border: 4px solid #dd0d0d;
+    }
+  }
+  @-webkit-keyframes flickerAnimation {
+    0% {
+      border: 4px solid #fff;
+    }
+    50% {
+      border: 4px solid rgb(211, 45, 45);
+    }
+    100% {
+      border: 4px solid #dd0d0d;
+    }
   }
 
   @media (min-width: $xl) {
