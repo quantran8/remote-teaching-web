@@ -15,6 +15,7 @@ import {
   ErrorModal,
   DesignateTarget,
   TeacherPageHeader,
+  WhiteboardPalette,
 } from "./components";
 export default defineComponent({
   components: {
@@ -27,6 +28,7 @@ export default defineComponent({
     ErrorModal,
     DesignateTarget,
     TeacherPageHeader,
+    WhiteboardPalette,
   },
   async beforeUnmount() {
     const store = useStore();

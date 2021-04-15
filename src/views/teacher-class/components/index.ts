@@ -7,6 +7,7 @@ import LeaveModal from "./leave-modal/leave-modal.vue";
 import ErrorModal from "./error-modal/error-modal.vue";
 import DesignateTarget from "./designate-target/designate-target.vue";
 import TeacherPageHeader from "./teacher-page-header/teacher-page-header.vue";
+import WhiteboardPalette from "./whiteboard-palette/whiteboard-palette.vue";
 export {
   TeacherCard,
   LessonPlan,
@@ -17,4 +18,5 @@ export {
   ErrorModal,
   DesignateTarget,
   TeacherPageHeader,
+  WhiteboardPalette,
 };

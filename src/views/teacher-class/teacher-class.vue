@@ -24,7 +24,9 @@
       <div v-if="!isGalleryView" class="activity-content">
         <ActivityContent @on-click-content-view="onClickContentView" />
       </div>
-
+      <div v-if="!isGalleryView" class="whiteboard-content">
+        <WhiteboardPalette />
+      </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
       <!--        <UnityView-->
       <!--          src="/games/writting_book/Build/UnityLoader.js"-->
@@ -46,7 +48,7 @@
     </div>
     <LeaveModal v-if="showModal" @dismiss="onClickCloseModal" @leave="onClickLeave" />
     <ErrorModal v-if="isClassNotActive" @dismiss="onClickCloseError" @confirm="onClickLeave" />
-    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>
+<!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-class.scss"></style>
