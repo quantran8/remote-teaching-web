@@ -63,7 +63,7 @@ export default defineComponent({
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
-    const handIcon = computed(() => (student.value?.raisingHand ? IconHandRaised : IconHand));
+    const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
 
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
