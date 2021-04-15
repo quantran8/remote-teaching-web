@@ -82,7 +82,7 @@ export default defineComponent({
 
         isDetail: false,
 
-        isCampusDetail: true,
+        isCampusDetail: false,
       } as AccessibleClassQueryParam);
 
       filteredSchools.value = schools.value;
