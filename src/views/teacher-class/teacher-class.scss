@@ -1,45 +1,77 @@
-.container {
-  display: flex;
-  flex: 1;
-  height: calc(100vh - 90px);
-  margin-top: 90px;
+@import "../../style/abstracts/variables";
 
-  .content {
-    flex: 1;
+.tc {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr 300px;
+  height: 100vh;
+  &__header {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+  &__sidebar {
+    width: 320px;
+    transition: 0.2s;
+    overflow: hidden;
+    &--collapsed {
+      margin-left: -240px;
+    }
+  }
+  &__content {
     display: flex;
     flex-direction: column;
+    &__teacher {
+      height: 100%;
+      width: 100%;
+    }
+    &__activity-content {
+      flex: auto;
+      min-height: 70%;
+    }
+    &__whiteboard-content{
+      flex: auto;
+    }
+  }
+  &__gallery {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    border-top: 1px solid #ddd;
+  }
 
-    .teacher-full {
-      flex: 1;
+  @media (min-width: $lg) {
+    &__content {
+      flex-direction: row-reverse;
 
-      .teacher-card {
-        display: flex;
-        height: 100%;
-        justify-content: center;
-        align-items: center;
+      &__activity-content {
+        min-width: 70%;
       }
     }
+  }
+  @media (min-width: $xl) {
+    grid-template-columns: auto 1fr 40%;
+    grid-template-rows: auto 1fr;
 
-    .activity-content,
-    .whiteboard-content {
-      flex: 1;
-      margin: 10px;
+    &__header {
+      grid-column-start: 1;
+      grid-column-end: 4;
+    }
+    &__gallery {
+      grid-column-start: unset;
+      grid-column-end: unset;
+      height: 100%;
+      overflow: hidden;
+    }
+    &__content {
+      flex-direction: column;
     }
   }
+  @media (min-width: $xxl) {
+    grid-template-columns: auto 1fr 35%;
 
-  .lesson-plan {
-    flex-basis: 375px;
-    background-color: #fff;
-    margin-left: -325px;
-    &--expanded {
-      margin-left: 0;
+    &__content {
+      &__activity-content {
+        min-height: 60%;
+      }
     }
-  }
-
-  .gallery {
-    overflow: auto;
-    flex-basis: 35%;
-    padding-bottom: 20px;
-    padding-right: 10px;
   }
 }

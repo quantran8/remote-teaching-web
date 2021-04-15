@@ -21,6 +21,7 @@ import { RoomModel } from "@/models";
 import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
 import { UID } from "agora-rtc-sdk-ng";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -39,14 +40,17 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.commit("setError", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, localAudios, manager, students, idOne } = state;
+    const { globalAudios, localAudios, manager, students, idOne, teacher } = state;
     if (!manager) return;
-    const cameras = idOne ? [idOne] : students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
-    let audios = idOne ? [idOne] : students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (localAudios.length > 0) {
       audios = [...localAudios];
     } else if (globalAudios.length > 0) {
       audios = [...globalAudios];
+    }
+    if (idOne) {
+      return manager?.oneToOneSubscribeAudio(cameras, audios, idOne, teacher);
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
@@ -79,7 +83,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
         Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        console.log("speaking", JSON.stringify(result));
+        // console.log("speaking", JSON.stringify(result));
+        dispatch("setSpeakingUsers", result);
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
@@ -104,6 +109,18 @@ const actions: ActionTree<TeacherRoomState, any> = {
       return;
     }
     commit("setRoomInfo", roomResponse.data);
+  },
+  setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
+    const validSpeakings: Array<string> = [];
+    if (payload) {
+      payload.map(item => {
+        if (item.level >= MIN_SPEAKING_LEVEL) {
+          // should check by a level
+          validSpeakings.push(item.uid.toString());
+        }
+      });
+    }
+    commit("setSpeakingUsers", { userIds: validSpeakings });
   },
   async setStudentAudio({ state, commit }, payload: UserMediaPayload) {
     await state.manager?.WSClient.sendRequestMuteStudentAudio(payload.id, !payload.enable);

@@ -149,6 +149,13 @@ const mutations: MutationTree<StudentRoomState> = {
   setSpeakingUsers(state: StudentRoomState, payload: { userIds: Array<string> }) {
     state.speakingUsers = payload.userIds;
   },
+  setStudentRaisingHand(state: StudentRoomState, payload: { id: string; raisingHand: boolean }) {
+    if (!payload.id && state.student?.id) {
+      payload.id = state.student.id;
+    }
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    if (student) student.raisingHand = payload.raisingHand;
+  },
 };
 
 export default mutations;

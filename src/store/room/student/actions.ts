@@ -45,10 +45,10 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setUser", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, manager, students, teacher, idOne } = state;
+    const { globalAudios, manager, students, teacher, idOne, student } = state;
     if (!manager) return;
-    const cameras = idOne ? [idOne] : students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
-    let audios = idOne ? [idOne] : students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -59,6 +59,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       if (teacher.audioEnabled && teacher.status === InClassStatus.JOINED) {
         audios.push(teacher.id);
       }
+    }
+    if (idOne) {
+      return manager?.oneToOneSubscribeAudio(cameras, audios, idOne, teacher, student);
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
@@ -162,8 +165,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   setClassView(store, payload: ClassViewPayload) {
     store.commit("setClassView", payload);
   },
-  async studentRaisingHand({ state }, _: any) {
-    await state.manager?.WSClient.sendRequestRaisingHand();
+  async studentRaisingHand(store, payload: any) {
+    store.commit("setStudentRaisingHand", {
+      raisingHand: true,
+    });
+    await store.state.manager?.WSClient.sendRequestRaisingHand();
   },
   async studentLike({ state }, _: any) {
     await state.manager?.WSClient.sendRequestLike();

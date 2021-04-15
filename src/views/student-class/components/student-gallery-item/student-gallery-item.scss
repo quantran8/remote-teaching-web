@@ -1,4 +1,6 @@
+@import "../../../../style/abstracts/mixins";
 @import "../../../../style/abstracts/animation";
+@import "../../../../style/abstracts/variables";
 
 .sc-gallery-item {
   $self: &;
@@ -61,11 +63,12 @@
 
   &__title-container {
     margin: 0;
-    padding-top: 5px;
+    margin-top: 5px;
     display: flex;
     justify-content: center;
     text-align: center;
     min-width: 100%;
+    height: 20px;
   }
 
   &__title {
@@ -129,11 +132,16 @@
   &--one-on-one {
     width: $one-on-one-size;
     height: $one-on-one-size;
-    #{$self}__title {
-      padding-top: 30px;
-      font-size: 32px;
-      line-height: 37px;
+
+    #{$self}__title-container {
+      margin-top: 30px;
+      height: 50px;
     }
+
+    #{$self}__title {
+      font-size: 32px;
+    }
+
     #{$self}__star {
       width: 50px;
       height: 50px;
@@ -146,10 +154,13 @@
     }
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: $xl) {
+    &__title-container {
+      height: 50px;
+    }
+
     &__title {
       font-size: 16px;
-      line-height: 16px;
     }
     &--current {
       width: $current-item-size-lg;
@@ -167,10 +178,13 @@
       }
     }
   }
-  @media (min-width: 1400px) {
+  @media (min-width: $xxl) {
+    &__title-container {
+      height: 50px;
+    }
+
     &__title {
       font-size: 16px;
-      line-height: 16px;
     }
     &--current {
       width: $current-item-size-xxl;
@@ -183,5 +197,5 @@
 }
 
 .sc-gallery-item--speaking {
-  border: 4px solid #00a1ed;
+  @include cycle(#00a1ed);
 }

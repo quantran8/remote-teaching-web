@@ -20,7 +20,7 @@ export default defineComponent({
     raisedHand: Boolean,
   },
   setup(props) {
-    const topStudents = computed(() => props.students.slice(0, 10));
+    const topStudents = computed(() => props.students.slice(0, 11));
 
     const onEnter = (el: HTMLDivElement) => {
       gsap.from(el.querySelector(".sc-gallery-item"), { translateX: 0, clearProps: "all", translateY: 0, duration: 1, ease: "Power2.easeInOut" });

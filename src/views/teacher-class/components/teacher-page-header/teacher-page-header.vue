@@ -1,6 +1,6 @@
 <template>
-  <div id="header">
-    <div id="header__teacher">
+  <div class="header">
+    <div class="header__left">
       {{ teacherName }}
       <div class="box">
         <label class="label-reactions">
@@ -10,24 +10,19 @@
         <div class="toolbox"></div>
         <label class="overlay"></label>
         <div class="actions">
-          <button
-            class="reaction-icon"
-            @click="() => onClickSelectAction(action)"
-            v-for="action of actions"
-            :key="action.icon"
-          >
+          <button class="reaction-icon" @click="() => onClickSelectAction(action)" v-for="action of actions" :key="action.icon">
             <img :src="require(`@/assets/icons/icon-action-${action.icon}.svg`)" />
             <span class="action-text">{{ action.icon }}</span>
           </button>
         </div>
       </div>
     </div>
-    <div id="header__class-name">
+    <div class="header__right">
       {{ className }}
     </div>
-    <a href="javascript:" id="app-exit" @click="onClickEnd">
+    <a class="header__exit" href="javascript:void(0)" @click="onClickEnd">
       <MatIcon type="close" class="red-close" />
-      Exit
+      <span>Exit</span>
     </a>
   </div>
 </template>

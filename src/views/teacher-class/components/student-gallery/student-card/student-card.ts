@@ -1,5 +1,5 @@
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
@@ -21,6 +21,7 @@ export default defineComponent({
       default: false,
     },
     student: { type: Object as () => StudentState, required: true },
+    isLarge: Boolean,
   },
   setup(props) {
     const store = useStore();
@@ -29,7 +30,6 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isMouseEntered = ref<boolean>(false);
-    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
 
     const isAudioHightlight = computed(() => {
       const enableAudios: Array<string> = store.getters["teacherRoom/enableAudios"];
@@ -51,12 +51,6 @@ export default defineComponent({
       });
     };
 
-    const onClickClearRaisingHand = async () => {
-      await store.dispatch("teacherRoom/clearStudentRaisingHand", {
-        id: props.student.id,
-      });
-    };
-
     const onOneAndOne = async () => {
       if (props.setModeOne) {
         await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
@@ -67,6 +61,7 @@ export default defineComponent({
           status: true,
           id: props.student.id,
         });
+        await store.dispatch("updateAudioAndVideoFeed", {});
         await setDefault(false);
         await setDefault(true);
       }
@@ -80,16 +75,21 @@ export default defineComponent({
       isMouseEntered.value = entered;
     };
 
+    const isSpeaking = computed(() => {
+      const speakingUsers: Array<string> = store.getters["teacherRoom/speakingUsers"];
+      return speakingUsers.indexOf(props.student.id) >= 0;
+    });
+
     return {
       isNotJoinned,
       onDragStart,
       isAudioHightlight,
-      onClickClearRaisingHand,
       onOneAndOne,
       interactive,
       showCorrectAnswer,
       onMouseChange,
       isMouseEntered,
+      isSpeaking,
     };
   },
 });

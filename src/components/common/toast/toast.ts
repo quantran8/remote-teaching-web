@@ -10,14 +10,22 @@ export default defineComponent({
     const audio = new Audio(require(`@/assets/audio/unlock_material.mp3`));
     watch(toast, () => {
       cssClass.value = "snackbar";
-      if (timeoutId.value) clearTimeout(timeoutId.value);
-      if (toast.value && toast.value.message) {
-        setTimeout(() => {
-          if (toast.value.isPlayingSound) audio.play();
-          cssClass.value = toast.value.message ? "snackbar show" : "snackbar";
+      if (timeoutId.value) {
+        clearTimeout(timeoutId.value);
+      }
+      const hasMessage = !!(toast.value.message || toast.value.bigIcon);
+      if (toast.value && hasMessage) {
+        setTimeout(async () => {
+          if (toast.value.isPlayingSound) {
+            await audio.play();
+          }
+          cssClass.value = hasMessage ? "snackbar show" : "snackbar";
         }, 100);
-        timeoutId.value = setTimeout(() => {
-          if (toast.value) dispatch("setToast", { message: "" });
+
+        timeoutId.value = setTimeout(async () => {
+          if (toast.value) {
+            await dispatch("setToast", { message: "" });
+          }
         }, 2500);
       }
     });

@@ -1,6 +1,5 @@
-.align {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 20px);
+.student-gallery {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
 }

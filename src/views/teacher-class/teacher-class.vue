@@ -1,11 +1,17 @@
 <template>
-  <teacher-page-header v-if="teacher" :teacher-name="teacher.name" :className="roomInfo.classInfo.name" @end="onClickEnd"></teacher-page-header>
-  <div class="container">
-    <div class="lesson-plan" :class="{ 'lesson-plan--expanded': !isGalleryView }">
+  <div class="tc">
+    <teacher-page-header
+      class="tc__header"
+      v-if="teacher"
+      :teacher-name="teacher.name"
+      :className="roomInfo.classInfo.name"
+      @end="onClickEnd"
+    ></teacher-page-header>
+    <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
-    <div class="content">
-      <div class="teacher" :class="{ 'teacher-full': isGalleryView }">
+    <div class="tc__content">
+      <div class="tc__content__teacher">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -21,10 +27,10 @@
           @end="onClickEnd"
         />
       </div>
-      <div v-if="!isGalleryView" class="activity-content">
+      <div v-if="!isGalleryView" class="tc__content__activity-content">
         <ActivityContent @on-click-content-view="onClickContentView" />
       </div>
-      <div v-if="!isGalleryView" class="whiteboard-content">
+      <div v-if="!isGalleryView" class="tc__content__whiteboard-content">
         <WhiteboardPalette />
       </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
@@ -43,7 +49,7 @@
       <!--          <GlobalAudioBar />-->
       <!--        </div>-->
     </div>
-    <div class="gallery">
+    <div class="tc__gallery">
       <StudentGallery />
     </div>
     <LeaveModal v-if="showModal" @dismiss="onClickCloseModal" @leave="onClickLeave" />

@@ -72,6 +72,11 @@ export default defineComponent({
       return getters["teacherRoom/isGalleryView"];
     });
 
+    const isSidebarCollapsed = ref<boolean>(true);
+    watch(isGalleryView, value => {
+      isSidebarCollapsed.value = value;
+    });
+
     // const isGameView = computed(() => {
     //   return getters["teacherRoom/isGameView"];
     // });
@@ -83,10 +88,10 @@ export default defineComponent({
 
     const toggleView = async () => {
       if (isGalleryView.value) {
-        gsap.fromTo(".lesson-plan", { x: -100, duration: 1 }, { x: 0, duration: 1 });
+        isSidebarCollapsed.value = false;
         await setClassView(ClassView.LESSON_PLAN);
       } else {
-        gsap.fromTo(".lesson-plan", { x: 200, duration: 1 }, { x: 10, duration: 1 });
+        isSidebarCollapsed.value = true;
         await setClassView(ClassView.GALLERY);
       }
     };
@@ -170,6 +175,7 @@ export default defineComponent({
       onClickContentView,
       modalDesignateTarget,
       roomInfo,
+      isSidebarCollapsed,
       // isGameView,
       // onUnityLoaderLoaded,
       // onUnityViewLoading,

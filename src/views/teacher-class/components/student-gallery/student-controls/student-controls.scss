@@ -1,6 +1,10 @@
+@import "../../../../../style/abstracts/variables";
+
 #student-controls {
-  display: flex;
-  margin: 20px auto;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-around;
+  padding: 10px 0 0;
 
   .student-controls__button {
     flex: 1;
@@ -10,30 +14,40 @@
       cursor: pointer;
       display: inline-block;
       vertical-align: middle;
+      font-size: 19px;
+      font-family: $font-family;
+      font-weight: 600;
       img {
         margin-right: 6px;
       }
 
       .sticker-icon {
-        height: 34px;
+        height: 45px;
         position: relative;
-        top: 4px;
+        top: 5px;
       }
 
       .audio-icon {
-        height: 20px;
+        height: 25px;
         position: relative;
         top: -1px;
       }
       .video-icon {
         position: relative;
-        height: 19px;
+        height: 25px;
         top: -2px;
         &--open {
-          height: 15px;
+          height: 19px;
           top: -1px;
         }
       }
     }
+  }
+
+  @media (min-width: $xl) {
+    padding: 20px 0 0;
+  }
+  @media (min-width: $xxl) {
+    padding: 30px 0 0;
   }
 }

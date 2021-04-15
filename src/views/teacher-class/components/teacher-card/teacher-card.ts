@@ -1,5 +1,9 @@
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
+import IconAudioOn from "@/assets/student-class/audio-on.svg";
+import IconAudioOff from "@/assets/student-class/audio-off.svg";
+import IconVideoOn from "@/assets/student-class/video-on.svg";
+import IconVideoOff from "@/assets/student-class/video-off.svg";
 
 export default defineComponent({
   props: {
@@ -25,8 +29,8 @@ export default defineComponent({
     const hideContextMenu = () => {
       contextMenuVisibility.value = false;
     };
-    const audioIcon = computed(() => (props.audioEnabled ? "icon-audio-on" : "icon-audio-off"));
-    const videoIcon = computed(() => (props.videoEnabled ? "icon-video-on" : "icon-video-off"));
+    const audioIcon = computed(() => (props.audioEnabled ? IconAudioOn : IconAudioOff));
+    const videoIcon = computed(() => (props.videoEnabled ? IconVideoOn : IconVideoOff));
     const toggleAudio = () => {
       dispatch("teacherRoom/setTeacherAudio", {
         id: props.id,

@@ -4,22 +4,21 @@
 
 .student-action {
   $gallery-size: (
-    $xs: 170px,
+    $xs: 130px,
     $sm: false,
     $md: false,
     $lg: false,
     $xl: false,
-    $xxl: false,
+    $xxl: 160px,
   );
   $gallery-item-size: (
-    $xs: 50px,
+    $xs: 45px,
     $sm: false,
     $md: false,
     $lg: false,
     $xl: false,
-    $xxl: false,
+    $xxl: 50px,
   );
-  $selector2: &__btn;
   @include draw-items-on-circle(
     $item-count: 10,
     $container-sizes: $gallery-size,
@@ -30,11 +29,6 @@
     ),
     $item-start-position: -2
   );
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  margin: 0;
 
   &__btn {
     img {
@@ -53,4 +47,39 @@
     font-weight: 600;
     padding-bottom: 4px;
   }
+
+  &--large {
+    $gallery-size: (
+      $xs: 260px,
+      $sm: false,
+      $md: false,
+      $lg: false,
+      $xl: 360px,
+      $xxl: false,
+    );
+    $gallery-item-size: (
+      $xs: 60px,
+      $sm: false,
+      $md: false,
+      $lg: false,
+      $xl: 60px,
+      $xxl: false,
+    );
+    @include draw-items-on-circle(
+      $item-count: 13,
+      $container-sizes: $gallery-size,
+      $item-sizes: $gallery-item-size,
+      $item-selector: (
+        #{"&::v-deep .student-action__item"},
+        #{".student-action__btn"},
+      ),
+      $item-start-position: -2
+    );
+  }
+
+  position: absolute !important;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  margin: 0 !important;
 }

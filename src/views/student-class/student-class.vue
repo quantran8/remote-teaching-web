@@ -9,7 +9,7 @@
       </div>
       <div class="sc-header__right">
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
-        <a class="sc-header__exit" @click="onLeave">
+        <a class="sc-header__exit" @click="onClickEnd">
           <MatIcon type="close" class="red-close" />
           <span>Exit</span>
         </a>
@@ -66,6 +66,7 @@
         </a>
       </div>
     </div>
+    <LeaveModal v-if="showModal" @dismiss="onClickCloseModal" @leave="onClickLeave" />
   </div>
 </template>
 <style lang="scss" scoped src="./student-class.scss"></style>
