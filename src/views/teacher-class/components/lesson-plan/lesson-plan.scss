@@ -11,6 +11,10 @@
     .lesson-container__header-title {
       padding: 10px 15px;
       font-size: 24px;
+      &--text-right {
+        text-align: right;
+        margin-right: 20px;
+      }
     }
 
     .lesson-container__header-back {
@@ -18,7 +22,7 @@
       font-weight: bold;
       text-decoration: none;
       position: absolute;
-      top: -13px;
+      top: -11px;
       right: 15px;
       cursor: pointer;
     }
@@ -29,6 +33,20 @@
     height: calc(100% - 60px);
     padding-left: 10px;
     padding-right: 10px;
+
+    #lesson-container__remaining-time {
+      display: flex;
+      p {
+        &:first-child {
+          flex: 2;
+        }
+        &:last-child {
+          flex: 1;
+          text-align: right;
+        }
+      }
+    }
+
     .progress {
       background: white;
       border: solid 1px gray;
