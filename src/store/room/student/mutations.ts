@@ -150,8 +150,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state.speakingUsers = payload.userIds;
   },
   setStudentRaisingHand(state: StudentRoomState, payload: { id: string; raisingHand: boolean }) {
-    console.log("setStudentRaisingHand",payload);
-    if(!payload.id && state.student?.id){
+    if (!payload.id && state.student?.id) {
       payload.id = state.student.id;
     }
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
