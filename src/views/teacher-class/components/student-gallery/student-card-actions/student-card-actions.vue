@@ -1,5 +1,5 @@
 <template>
-  <transition-group class="student-action" tag="div" @enter="actionEnter" :css="false">
+  <transition-group :class="['student-action', isLarge && 'student-action--large']" tag="div" @enter="actionEnter" :css="false">
     <a v-if="show" href="javascript:void(0)" @click="toggleVideo" class="student-action__item">
       <div class="student-action__btn">
         <img :src="videoIcon" />

@@ -1,11 +1,13 @@
 <template>
-  <div class="container">
-    <p class="time-one-to-one">{{ timeCount }}</p>
-    <div class="btn-return" @click="backToClass">
-      <img class="btn-return__image" src="@/assets/images/exit-1-1.png" />
-      <span class="btn-return__text">Return</span>
+  <div class="tc-one">
+    <div class="tc-one__right">
+      <p class="tc-one__time">{{ timeCount }}</p>
+      <div class="tc-one__action" @click="backToClass">
+        <img class="tc-one__action__image" src="@/assets/images/exit-1-1.png" />
+        <span class="tc-one__action__text">Return</span>
+      </div>
     </div>
-    <StudentCard :key="studentOne.id" :student="studentOne" :setModeOne="false" />
+    <StudentCard :key="studentOne.id" :student="studentOne" :setModeOne="false" :isLarge="true" />
   </div>
 </template>
 <style lang="scss" scoped src="./student-one.scss"></style>

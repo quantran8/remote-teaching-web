@@ -13,6 +13,7 @@ export default defineComponent({
   props: {
     student: { type: Object as () => StudentState, required: true },
     show: Boolean,
+    isLarge: Boolean,
   },
   setup(props) {
     const store = useStore();

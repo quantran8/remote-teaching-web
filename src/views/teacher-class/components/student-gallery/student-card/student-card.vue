@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="['student', false && 'student--speaking', false && 'student--hand-raised']"
+    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isLarge && 'student--large']"
     @mouseover="onMouseChange(true)"
     @mouseleave="onMouseChange(false)"
   >
@@ -11,9 +11,8 @@
     </figure>
     <div class="student__info">
       <h4 class="student__name" @click="onOneAndOne">{{ student.name }}</h4>
-      <span v-if="isNotJoinned" class="student__not-joined">(not joined)</span>
     </div>
-    <StudentCardActions :student="student" :show="isMouseEntered" />
+    <StudentCardActions :student="student" :show="isMouseEntered" :isLarge="isLarge" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->
@@ -25,11 +24,11 @@
   <!--          v-click-outside="hideContextMenu"-->
   <!--        />-->
 
-  <!-- <div class="interactive" v-if="showCorrectAnswer">
+  <div class="interactive" v-if="showCorrectAnswer">
     <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
 
     <StudentBadge class="interactive-badge" :badge="interactive.correct" v-else-if="interactive.status === 1" />
-  </div> -->
+  </div>
 </template>
 <style lang="scss" scoped src="./student-card.scss"></style>
 <script lang="ts" src="./student-card.ts"></script>

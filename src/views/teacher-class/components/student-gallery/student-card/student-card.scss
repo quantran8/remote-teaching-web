@@ -1,15 +1,25 @@
+@import "../../../../../style/abstracts/variables";
+
 .student {
+  $self: &;
+  $card-figure-size: 80px;
+  $card-figure-size-xl: 90px;
+  $card-figure-size-xxl: 100px;
+
+  $card-figure-size--large: 200px;
+  $card-figure-size--large-xl: 300px;
+
   display: grid;
   justify-content: center;
   text-align: center;
   align-content: start;
   position: relative;
   &__figure {
-    width: 120px;
-    height: 120px;
+    width: $card-figure-size;
+    height: $card-figure-size;
     border-radius: 50%;
     margin: 25px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     position: relative;
     z-index: 1;
   }
@@ -26,15 +36,16 @@
       border-radius: 50%;
     }
   }
+  &__info {
+    position: relative;
+    z-index: 1;
+  }
   &__name {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-  }
-  &__not-joined {
-    font-size: 13px;
-    color: rgba(255, 0, 0, 0.637);
+    line-height: normal;
   }
 
   &__figure::before,
@@ -67,10 +78,40 @@
     cursor: pointer;
   }
 
+  &--large {
+    #{$self}__figure {
+      width: $card-figure-size--large;
+      height: $card-figure-size--large;
+    }
+  }
+
   &--speaking &__figure::before {
     transform: scale(1.1);
   }
   &--hand-raised &__figure::after {
     transform: scale(1.2);
+  }
+
+  @media (min-width: $xl) {
+    &__figure {
+      width: $card-figure-size-xl;
+      height: $card-figure-size-xl;
+      margin-bottom: 10px;
+    }
+    &__name {
+      font-size: 18px;
+    }
+    &--large {
+      #{$self}__figure {
+        width: $card-figure-size--large-xl;
+        height: $card-figure-size--large-xl;
+      }
+    }
+  }
+  @media (min-width: $xxl) {
+    &__figure {
+      width: $card-figure-size-xxl;
+      height: $card-figure-size-xxl;
+    }
   }
 }

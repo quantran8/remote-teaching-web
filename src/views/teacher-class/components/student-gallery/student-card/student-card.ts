@@ -21,6 +21,7 @@ export default defineComponent({
       default: false,
     },
     student: { type: Object as () => StudentState, required: true },
+    isLarge: Boolean,
   },
   setup(props) {
     const store = useStore();
