@@ -14,27 +14,30 @@
       cursor: pointer;
       display: inline-block;
       vertical-align: middle;
+      font-size: 19px;
+      font-family: $font-family;
+      font-weight: 600;
       img {
         margin-right: 6px;
       }
 
       .sticker-icon {
-        height: 34px;
+        height: 45px;
         position: relative;
-        top: 4px;
+        top: 5px;
       }
 
       .audio-icon {
-        height: 20px;
+        height: 25px;
         position: relative;
         top: -1px;
       }
       .video-icon {
         position: relative;
-        height: 19px;
+        height: 25px;
         top: -2px;
         &--open {
-          height: 15px;
+          height: 19px;
           top: -1px;
         }
       }

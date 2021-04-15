@@ -1,15 +1,19 @@
 <template>
   <div class="lesson-container">
     <div class="lesson-container__header">
-      <div class="lesson-container__header-title">Lesson Plan</div>
+      <div class="lesson-container__header-title" :class="[isGalleryView && 'lesson-container__header-title--text-right']">
+        Unit 1:14
+      </div>
       <span @click="backToGalleryMode" class="lesson-container__header-back">
         <span v-if="isGalleryView">&#8250;</span>
         <span v-else>&#8249;</span>
       </span>
     </div>
-    <div class="lesson-container__body nice-scroll">
-      <p>- Activities: {{ activityStatistic }}</p>
-      <p>- Remaining times: {{ remainingTime }}</p>
+    <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
+      <div id="lesson-container__remaining-time">
+        <p>Remaining times: {{ remainingTime }}</p>
+        <p>Item: {{ activityStatistic }}</p>
+      </div>
       <div class="progress">
         <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
       </div>
