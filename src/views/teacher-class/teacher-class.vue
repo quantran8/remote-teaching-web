@@ -27,9 +27,9 @@
           @end="onClickEnd"
         />
       </div>
-      <div v-if="!isGalleryView" class="tc__content__activity-content">
-        <ActivityContent @on-click-content-view="onClickContentView" />
-      </div>
+<!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
+<!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
+<!--      </div>-->
       <div v-if="!isGalleryView" class="tc__content__whiteboard-content">
         <WhiteboardPalette />
       </div>

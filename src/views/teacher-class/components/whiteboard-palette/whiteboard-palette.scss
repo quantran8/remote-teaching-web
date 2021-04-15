@@ -2,6 +2,7 @@
   &__wrap{
     #canvas-container {
       position: relative;
+      border: 1px solid #000;
       img {
         max-width: 100%;
         position: absolute;
@@ -14,5 +15,11 @@
         z-index: 11;
       }
     }
+  }
+  &__button {
+    border: 1px solid #000;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
   }
 }

@@ -1,6 +1,8 @@
 <template>
   <div class="whiteboard" v-if="currentExposureItemMedia">
     <div class="whiteboard__wrap">
+      <div class="whiteboard__button" v-if="!showHideWhiteboard" @click="showWhiteboard">show whiteboard</div>
+      <div class="whiteboard__button" v-if="showHideWhiteboard" @click="hideWhiteboard">hide whiteboard</div>
       <div id="canvas-container" @mousemove="cursorPosition">
         <img :src="currentExposureItemMedia?.image.url" @load="boardSetup" id="annotation-img" />
         <div class="wrap-canvas">
