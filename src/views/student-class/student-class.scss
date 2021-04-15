@@ -62,6 +62,8 @@
     border-radius: 0 0 0 50px;
     border-left: 1px solid #00000029;
     color: #0b0b0b;
+    font-weight: 400;
+    cursor: pointer;
   }
   @media (min-width: $lg) {
     &__right {

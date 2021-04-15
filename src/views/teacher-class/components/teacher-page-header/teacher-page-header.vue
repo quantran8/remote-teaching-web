@@ -22,7 +22,7 @@
     </div>
     <a class="header__exit" href="javascript:void(0)" @click="onClickEnd">
       <MatIcon type="close" class="red-close" />
-      Exit
+      <span>Exit</span>
     </a>
   </div>
 </template>

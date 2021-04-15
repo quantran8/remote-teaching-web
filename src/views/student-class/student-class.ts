@@ -15,14 +15,15 @@ import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconHandRaised from "@/assets/student-class/hand-raised.svg";
 import IconHand from "@/assets/student-class/hand.svg";
 import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
-import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
+import LeaveModal from "./components/leave-modal/leave-modal.vue";
 
 export default defineComponent({
   components: {
     UnityView,
     MatIcon,
     StudentGallery,
+    LeaveModal,
   },
   async created() {
     const { getters, dispatch } = useStore();
@@ -64,6 +65,8 @@ export default defineComponent({
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
+    const showModal = ref(false);
+    const hasConfirmed = ref(false);
 
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
@@ -165,16 +168,17 @@ export default defineComponent({
       await store.dispatch("studentRoom/studentAnswer", payload);
     };
 
-    const onLeave = () => {
-      Modal.confirm({
-        title: "Are you sure you wish to leave the session?",
-        okText: "Yes",
-        cancelText: "No",
-        okButtonProps: { type: "danger" },
-        onOk: () => {
-          router.push(Paths.Home);
-        },
-      });
+    const onClickEnd = () => {
+      showModal.value = true;
+    };
+
+    const onClickCloseModal = () => {
+      showModal.value = false;
+    };
+
+    const onClickLeave = async () => {
+      hasConfirmed.value = true;
+      router.push(Paths.Home);
     };
 
     // const onUnityLoaderLoaded = () => {
@@ -217,7 +221,10 @@ export default defineComponent({
       videoContainerRef,
       contentSectionRef,
       classInfo,
-      onLeave,
+      showModal,
+      onClickEnd,
+      onClickCloseModal,
+      onClickLeave,
       raisedHand,
     };
   },
