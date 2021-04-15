@@ -72,7 +72,7 @@ export default defineComponent({
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
 
-    const raisedHand = ref<boolean>(false);
+    const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
     const classActionImageRef = ref<HTMLDivElement | null>(null);
 
@@ -155,7 +155,6 @@ export default defineComponent({
     });
 
     const onClickRaisingHand = async () => {
-      raisedHand.value = true;
       await store.dispatch("studentRoom/studentRaisingHand", {});
     };
     const onClickLike = async () => {
