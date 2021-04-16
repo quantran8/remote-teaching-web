@@ -1,4 +1,19 @@
+.class-holder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
 .class {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin-right: 50px;
+
+  .class__size {
+    width: 200px;
+  }
+
   .class__live-dot {
     margin-right: 0.6rem;
   }
@@ -12,4 +27,30 @@
       margin-bottom: 0;
     }
   }
+}
+
+.class-group__item {
+  margin-left: 30px;
+}
+
+.class-group__size {
+  width: 160px;
+}
+
+.m-10 {
+  margin: 10px;
+}
+
+.card {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.title {
+  color: black;
+  font-size: 17px;
+}
+
+.description {
+  color: gray;
+  font-size: 12px;
 }

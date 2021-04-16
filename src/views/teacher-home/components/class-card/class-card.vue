@@ -1,22 +1,25 @@
 <template>
-  <BaseCard>
+  <div class="class-holder">
     <div class="class" @click="clickToAccess">
-      <div class="class__title">
-        <LiveCircle class="class__live-dot" v-if="active"/>
-        <h5>{{ title }}</h5>
-        {{description}}
-      </div>
-      <BaseButton mode="clear" color="primary">{{ btnText }}</BaseButton>
+      <BaseCard class="class__size">
+        <div class="m-10">
+          <div class="class__title">
+            <h5 class="title">{{ title }}</h5>
+            <span class="description">{{ description }}</span>
+          </div>
+          <BaseButton mode="clear" color="primary">{{ btnText }}</BaseButton>
+        </div>
+      </BaseCard>
     </div>
-  </BaseCard>
-  <div class="class-groups">
-    <BaseCard @click="clickToAccess" v-for="item in [1, 3, 4]" v-bind:key="item">
-      <div class="class-group__item">
-        Group-{{ item }}
-        <span class="d-block">Members: 12</span>
-        <span>Next: 4/1 14:00</span>
-      </div>
-    </BaseCard>
+    <div class="class-group__item" @click="clickToAccess" v-for="item in [1, 3, 4]" v-bind:key="item">
+      <BaseCard class="class-group__size">
+        <div class="m-10">
+          <h2 class="title">Group-{{ item }}</h2>
+          <span class="description d-block">Members: 12</span>
+          <span class="description">Next: 4/1 14:00</span>
+        </div>
+      </BaseCard>
+    </div>
   </div>
 </template>
 <style lang="scss" src="./class-card.scss" scoped></style>

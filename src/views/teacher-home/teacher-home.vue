@@ -1,8 +1,11 @@
 <template>
   <div class="teacher-page">
-    <p></p>
-    <h2>Welcome {{ username }}</h2>
-    <p>Choose a class to start</p>
+    <div class="teacher-title mt-40">
+      <h2>Welcome {{ username }}</h2>
+      <span class="teacher-title__indicator-out">
+        <span class="teacher-title__indicator-in"></span>
+      </span>
+    </div>
     <div class="teacher-page__school-select">
       <Select
         placeholder="School"
@@ -18,6 +21,10 @@
       </Select>
     </div>
     <hr />
+    <!-- <div class="calendar-container">
+      <img class="calendar align-right" src="@/assets/images/calendar.png" />
+      <span class="align-right">Schedule</span>
+    </div> -->
     <div>
       <div v-if="loading">
         Loading
