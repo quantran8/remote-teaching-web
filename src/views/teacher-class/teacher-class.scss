@@ -32,7 +32,6 @@
   &__gallery {
     grid-column-start: 1;
     grid-column-end: 3;
-    border-top: 1px solid #ddd;
   }
 
   @media (min-width: $lg) {
