@@ -194,5 +194,5 @@
 }
 
 .sc-gallery-item--speaking {
-  @include cycle(#00a1ed);
+  @include cycle(#00a1ed, flickerAnimationVoice);
 }
