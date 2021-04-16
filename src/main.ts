@@ -4,15 +4,7 @@ import "./registerServiceWorker";
 import router from "./router";
 import i18n from "./commonui/locales/i18n";
 import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components/base";
-import {
-  LiveCircle,
-  Toast,
-  Notification,
-  ContentView,
-  DesignateCircle,
-  DesignateRectangle,
-  AnnotationView,
-} from "./components/common";
+import { LiveCircle, Toast, Notification, ContentView, DesignateCircle, DesignateRectangle, AnnotationView } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
 import NotFoundPage from "@/views/not-found/not-found.vue";
@@ -20,6 +12,7 @@ import NotFoundPage from "@/views/not-found/not-found.vue";
 import { store } from "./store";
 import { ClickOutsideDirective } from "./directives";
 import { Paths } from "./utils/paths";
+import "./style/main.less";
 
 const app = createApp(App);
 app.directive("click-outside", ClickOutsideDirective);
