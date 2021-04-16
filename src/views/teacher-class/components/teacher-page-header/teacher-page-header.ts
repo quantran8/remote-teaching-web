@@ -14,7 +14,6 @@ export default defineComponent({
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const actions = [
-      { id: ClassAction.DEFAULT, icon: "none" },
       { id: ClassAction.INTERACTIVE, icon: "interactive" },
       { id: ClassAction.LISTEN, icon: "listen" },
       { id: ClassAction.QUESTION, icon: "question" },
