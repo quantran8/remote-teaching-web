@@ -41,6 +41,9 @@ export interface AgoraEventHandler {
       uid: UID;
     }[],
   ): void;
+  onLocalNetworkUpdate(
+      payload: any
+  ): void;
 }
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
@@ -98,6 +101,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("user-unpublished", handler.onUserUnPublished);
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
+    this.client.on("network-quality", handler.onLocalNetworkUpdate);
   }
 
   subscribedVideos: Array<{

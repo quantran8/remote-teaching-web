@@ -86,6 +86,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
         // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
+      onLocalNetworkUpdate(payload: any) {
+        console.log("onLocalNetworkUpdate", payload);
+        const nw = state.manager?.agoraClient?._client?.getRemoteNetworkQuality()
+        console.log("getRemoteNetworkQuality", nw);
+      }
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
