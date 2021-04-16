@@ -117,7 +117,7 @@ export default defineComponent({
 
     const onClickEnd = async () => {
       Modal.confirm({
-        title: "Are you sure you wish to leave the session?",
+        title: "This will end the session and close the remote classroom for all the students. Are you sure you want to continue?",
         okText: "Yes",
         cancelText: "No",
         okButtonProps: { type: "danger" },
