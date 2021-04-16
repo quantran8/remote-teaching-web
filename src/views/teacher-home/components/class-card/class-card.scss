@@ -46,11 +46,15 @@
 }
 
 .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: black;
   font-size: 17px;
 }
 
 .description {
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: gray;
   font-size: 12px;
 }

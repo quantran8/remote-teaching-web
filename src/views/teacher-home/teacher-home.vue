@@ -20,14 +20,14 @@
         <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
       </Select>
     </div>
-    <hr />
-    <!-- <div class="calendar-container">
-      <img class="calendar align-right" src="@/assets/images/calendar.png" />
-      <span class="align-right">Schedule</span>
-    </div> -->
-    <div>
-      <div v-if="loading">
-        Loading
+    <hr class="mr-10 ml-10" />
+    <div class="calendar-container align-right">
+      <span>Schedule</span>
+      <img class="calendar" src="@/assets/images/calendar.png" />
+    </div>
+    <div class="group-class-container">
+      <div class="loading" v-if="loading">
+        <span class="loading__animation">Loading...</span>
       </div>
       <ClassCard
         v-else
