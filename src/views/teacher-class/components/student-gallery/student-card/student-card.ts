@@ -52,7 +52,7 @@ export default defineComponent({
     };
 
     const onOneAndOne = async () => {
-      if (props.setModeOne) {
+      if (props.setModeOne && !isNotJoinned.value) {
         await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
         await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         await store.dispatch("modeOne/setStudentOneId", { id: props.student.id });
