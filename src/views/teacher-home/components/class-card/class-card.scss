@@ -12,6 +12,7 @@
 
   .class__size {
     width: 200px;
+    height: 110px;
   }
 
   .class__live-dot {
@@ -29,20 +30,32 @@
   }
 }
 
-.class-group__item {
+.class-group {
   margin-left: 30px;
-}
-
-.class-group__size {
-  width: 160px;
+  &__size {
+    width: 160px;
+    height: 110px;
+  }
+  &__play-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+  }
 }
 
 .m-10 {
-  margin: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 .card {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.hightlight {
+  border: 3px solid rgb(250, 191, 28);
 }
 
 .title {
