@@ -11,7 +11,7 @@
         </div>
       </BaseCard>
     </div>
-    <div class="class-group" @click="clickToAccess" v-for="item in [1, 3, 4]" v-bind:key="item">
+    <div class="class-group" @click="clickToAccess" v-for="item in [1, 2, 3]" v-bind:key="item">
       <BaseCard class="class-group__size">
         <!-- The next upcoming class group i.e. the group which has the next class based on the timing would be highlighted. -->
         <!-- <BaseCard class="class-group__size hightlight"> -->
