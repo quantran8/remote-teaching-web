@@ -82,4 +82,9 @@
   top: 0;
   transform: translateX(-50%);
   margin: 0 !important;
+
+  &--hide {
+	  opacity: 0;
+	  pointer-events: none;
+  }
 }

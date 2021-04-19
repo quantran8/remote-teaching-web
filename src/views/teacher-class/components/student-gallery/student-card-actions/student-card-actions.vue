@@ -1,6 +1,11 @@
 <template>
   <transition-group :class="['student-action', isLarge && 'student-action--large']" tag="div" @enter="actionEnter" :css="false">
-    <a v-if="show && isRasingHand" href="javascript:void(0)" @click="onClickClearRaisingHand" class="student-action__item">
+    <a
+      v-if="show"
+      href="javascript:void(0)"
+      @click="onClickClearRaisingHand"
+      :class="['student-action__item', !isRasingHand && 'student-action--hide']"
+    >
       <div class="student-action__btn">
         <img src="@/assets/teacher-class/question-small.svg" />
       </div>
