@@ -21,16 +21,17 @@
     display: flex;
     flex-direction: column;
     &__teacher {
-      height: 100%;
       width: 100%;
+      flex: 1;
     }
     &__activity-content {
       flex: auto;
       min-height: 70%;
     }
     &__whiteboard-content {
-      flex: auto;
-      min-height: 70%;
+      flex: 1;
+      max-width: 50%;
+      margin: auto;
     }
   }
   &__gallery {
@@ -70,9 +71,6 @@
 
     &__content {
       &__activity-content {
-        min-height: 60%;
-      }
-      &__whiteboard-content {
         min-height: 60%;
       }
     }
