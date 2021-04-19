@@ -67,6 +67,9 @@ export default defineComponent({
           .filter(s => s !== null),
       };
       canvas.loadFromJSON(JSON.stringify(canvasJsonData), canvas.renderAll.bind(canvas));
+      canvas.getObjects("path").forEach((obj: any) => {
+        obj.selectable = false;
+      });
       if (isShowWhiteBoard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {

@@ -28,8 +28,9 @@
       flex: auto;
       min-height: 70%;
     }
-    &__whiteboard-content{
+    &__whiteboard-content {
       flex: auto;
+      min-height: 70%;
     }
   }
   &__gallery {
@@ -69,6 +70,9 @@
 
     &__content {
       &__activity-content {
+        min-height: 60%;
+      }
+      &__whiteboard-content {
         min-height: 60%;
       }
     }
