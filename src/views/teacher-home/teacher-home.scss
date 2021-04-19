@@ -2,12 +2,26 @@
   margin-top: 40px;
 }
 
+.mr-10 {
+  margin-right: 10px;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
 .align-right {
-  float: right;
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.calendar-container {
+  display: flex;
+  width: 100px;
+  align-items: center;
 }
 
 .calendar {
-  align-items: flex-end;
   width: 30px;
   height: 30px;
 }
@@ -42,7 +56,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 800px;
+  max-width: 850px;
   margin: auto;
 
   &__school-select {
@@ -62,6 +76,22 @@
   margin: 20px;
 }
 
+.group-class-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+
+  &__animation {
+    animation: loadingAnimation 2s ease-out;
+    animation-iteration-count: infinite;
+  }
+}
+
 @keyframes pulsate {
   0% {
     -webkit-transform: translate(-50%, -50%) scale(0.4, 0.4);
@@ -73,5 +103,17 @@
   100% {
     -webkit-transform: translate(-50%, -50%) scale(1.2, 1.2);
     opacity: 0.8;
+  }
+}
+
+@keyframes loadingAnimation {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
   }
 }
