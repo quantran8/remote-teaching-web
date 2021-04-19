@@ -102,6 +102,9 @@ export default defineComponent({
       const canvasContainer = document.getElementsByClassName("canvas-container");
       if (canvasEl && canvasContainer.length == 0) {
         canvas = new fabric.Canvas("canvasDesignate");
+      } else {
+        canvas.dispose();
+        canvas = new fabric.Canvas("canvasDesignate");
       }
       const { width, height } = imgLesson();
       canvas.setWidth(width);
