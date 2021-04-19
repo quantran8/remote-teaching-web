@@ -1,10 +1,9 @@
 <template>
   <div
     :class="['student', false && 'student--speaking', false && 'student--hand-raised', isLarge && 'student--large']"
-    @mouseover="onMouseChange(true)"
     @mouseleave="onMouseChange(false)"
   >
-    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'">
+    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
       <div class="student__video" :class="[isSpeaking && 'student__is-speaking']" v-show="student.videoEnabled" :id="student.id"></div>
       <img class="student__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
     </figure>
