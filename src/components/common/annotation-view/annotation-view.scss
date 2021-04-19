@@ -24,12 +24,15 @@
       max-width: 25px;
     }
   }
-  .canvas-container {
+  .canvas-wrap-container {
     position: absolute;
     z-index: 12;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
+    &.has-whiteboard {
+      border: 1px solid #000;
+    }
   }
 }
 .sticker-control {

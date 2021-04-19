@@ -124,6 +124,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_DELETE_BRUSHSTROKE, handler.onTeacherDeleteBrush);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_STICKER, handler.onTeacherSetStickers);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_STICKER, handler.onTeacherClearStickers);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_WHITEBOARD, handler.onTeacherSetWhiteboard);
     // handlers.set(
     //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
     //   handler.onTeacherSendUnity

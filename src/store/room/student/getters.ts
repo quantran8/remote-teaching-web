@@ -64,6 +64,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   speakingUsers(state: StudentRoomState): Array<string> {
     return state.speakingUsers;
   },
+  isShowWhiteboard(state: StudentRoomState): boolean {
+    return state.showWhiteBoard;
+  },
 };
 
 export default getters;

@@ -94,6 +94,10 @@ export interface ClassViewPayload {
   classView: ClassView;
 }
 
+export interface WhiteboardPayload {
+  isShowWhiteBoard: boolean;
+}
+
 export type DefaultPayload = any;
 
 export interface InitClassRoomPayload {

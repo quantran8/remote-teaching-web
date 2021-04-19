@@ -127,4 +127,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestSetOneToOne(payload: { status: boolean; id: string }) {
     return this.send(WSCmd.TEACHER_SET_ONE_TO_ONE, { StudentId: payload.id });
   }
+  sendRequestSetWhiteboard(isShowWhiteBoard: boolean) {
+    return this.send(WSCmd.TEACHER_SET_WHITEBOARD, isShowWhiteBoard)
+  }
 }

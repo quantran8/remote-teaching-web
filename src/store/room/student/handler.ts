@@ -38,6 +38,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       } else {
         await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+      commit("setWhiteboard", payload.isShowWhiteBoard);
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -299,6 +300,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+    },
+    onTeacherSetWhiteboard: async (payload: any) => {
+      console.log("onTeacherSetWhiteboard",payload);
+      await commit("setWhiteboard", payload);
     },
   };
   return handler;

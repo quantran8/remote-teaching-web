@@ -32,21 +32,16 @@ export default defineComponent({
       return scaleRatio;
     };
 
-    const isPointerMode = computed(
-      () => store.getters["annotation/isPointerMode"]
-    );
-    const isStickerMode = computed(
-      () => store.getters["annotation/isStickerMode"]
-    );
+    const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
+    const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
 
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
+    const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
 
     const pointerStyle = computed(() => {
-      const pointer: { x: number; y: number } =
-        store.getters["annotation/pointer"];
+      const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
-      return `transform: translate(${pointer.x *
-        scaleRatio.value}px, ${pointer.y * scaleRatio.value}px)`;
+      return `transform: translate(${pointer.x * scaleRatio.value}px, ${pointer.y * scaleRatio.value}px)`;
     });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
@@ -59,7 +54,7 @@ export default defineComponent({
       const shapes: Array<string> = canvasData.value;
       const canvasJsonData = {
         objects: shapes
-          .map((s) => {
+          .map(s => {
             const obj = JSON.parse(s);
             obj.width = Math.floor(obj.width * scaleRatio.value);
             obj.height = Math.floor(obj.height * scaleRatio.value);
@@ -69,16 +64,26 @@ export default defineComponent({
             obj.scaleY = obj.scaleY * scaleRatio.value;
             return obj;
           })
-          .filter((s) => s !== null),
+          .filter(s => s !== null),
       };
-
-      canvas.loadFromJSON(
-        JSON.stringify(canvasJsonData),
-        canvas.renderAll.bind(canvas)
-      );
+      canvas.loadFromJSON(JSON.stringify(canvasJsonData), canvas.renderAll.bind(canvas));
+      if (isShowWhiteBoard.value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+      } else {
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+      }
     };
-    watch(undoCanvas, renderCanvas);
+    watch(undoCanvas, () => {
+      renderCanvas();
+    });
     watch(canvasData, renderCanvas);
+    watch(isShowWhiteBoard, () => {
+      if (isShowWhiteBoard.value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+      } else {
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+      }
+    });
     const stickersData = computed(() => store.getters["annotation/stickers"]);
     const stickerRender = () => {
       if (stickersData.value && stickersData.value.length) {
@@ -92,7 +97,7 @@ export default defineComponent({
             fill: "#000",
             opacity: 0.35,
             hasControls: false,
-            hasBorders: false
+            hasBorders: false,
           });
           canvas.add(rectSticker);
           canvas.renderAll();
@@ -136,24 +141,19 @@ export default defineComponent({
       canvas.renderAll();
       stickersData.value.forEach((data: any) => {
         canvas.getObjects("rect").forEach((obj: any) => {
-          if (
-            data.width === Math.round(obj.width / scaleRatio.value) &&
-            data.height === Math.round(obj.height / scaleRatio.value)
-          ) {
+          if (data.width === Math.round(obj.width / scaleRatio.value) && data.height === Math.round(obj.height / scaleRatio.value)) {
             if (
               !(
                 data.top * 0.95 <= Math.round(obj.top / scaleRatio.value) &&
-                Math.round(obj.top / scaleRatio.value) <=
-                  data.top + data.top * 0.15 &&
+                Math.round(obj.top / scaleRatio.value) <= data.top + data.top * 0.15 &&
                 data.left * 0.95 <= Math.round(obj.left / scaleRatio.value) &&
-                Math.round(obj.left / scaleRatio.value) <=
-                  data.left + data.left * 0.15
+                Math.round(obj.left / scaleRatio.value) <= data.left + data.left * 0.15
               )
             ) {
               canvas.remove(obj);
               obj.set({
                 top: 10 * scaleRatio.value,
-                left: 10 * scaleRatio.value
+                left: 10 * scaleRatio.value,
               });
               canvas.add(obj);
               canvas.renderAll();
@@ -186,7 +186,8 @@ export default defineComponent({
       checkStickerAdded,
       changeColorSticker,
       isStickerMode,
-      checkStickers
+      checkStickers,
+      isShowWhiteBoard,
     };
-  }
+  },
 });

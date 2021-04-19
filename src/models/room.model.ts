@@ -89,4 +89,5 @@ export interface RoomModel {
   focusTab: number;
   studentsAudio: Array<string>;
   globalStudentsAudio: Array<string>;
+  isShowWhiteBoard: boolean;
 }

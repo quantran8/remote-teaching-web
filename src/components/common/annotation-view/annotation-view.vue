@@ -4,7 +4,7 @@
     <div class="cursor" v-if="isPointerMode" :style="pointerStyle">
       <img src="@/assets/icon-select.png" alt="" />
     </div>
-    <div class="canvas-container">
+    <div class="canvas-wrap-container" :class="{'has-whiteboard': isShowWhiteBoard }">
       <canvas id="canvas" ref="canvasRef"/>
     </div>
   </div>

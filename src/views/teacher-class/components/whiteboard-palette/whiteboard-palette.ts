@@ -25,6 +25,7 @@ export default defineComponent({
     const isLessonPlanView = computed(() => {
       return store.getters["teacherRoom/isLessonPlanView"];
     });
+    const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -35,6 +36,9 @@ export default defineComponent({
     const modeAnnotation: Ref<number> = ref(-1);
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
+    watch(infoTeacher, () => {
+      showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+    });
     if (currentExposure.value) {
       if (currentExposure.value.type == "poems" || currentExposure.value.type == "bigbook") {
         hasStickerTool.value = true;
@@ -74,7 +78,7 @@ export default defineComponent({
       lastObject.scaleX = lastObject.scaleX / ratio;
       lastObject.scaleY = lastObject.scaleY / ratio;
       await store.dispatch("teacherRoom/setBrush", {
-        drawing: lastObject
+        drawing: lastObject,
       });
     };
     const listenToMouseUp = () => {
@@ -99,20 +103,22 @@ export default defineComponent({
       if (canvasEl && canvasContainer.length == 0) {
         canvas = new fabric.Canvas("canvasDesignate");
       }
-      canvas.remove(...canvas.getObjects("path"));
-      canvas.backgroundColor = "transparent";
-      await clickedTool(Tools.Cursor);
       const { width, height } = imgLesson();
       canvas.setWidth(width);
       canvas.setHeight(height);
+      if (infoTeacher.value.isShowWhiteBoard) {
+        canvas.backgroundColor = "white";
+        await clickedTool(Tools.Pen);
+        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      } else {
+        canvas.remove(...canvas.getObjects("path"));
+        canvas.backgroundColor = "transparent";
+        await clickedTool(Tools.Cursor);
+        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      }
       canvas.selectionFullyContained = false;
       listenToCanvasEvents();
     };
-    watch(imgLesson, () => {
-      const { width, height } = imgLesson();
-      canvas.setWidth(width);
-      canvas.setHeight(height);
-    });
     const clickedTool = async (tool: string) => {
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
@@ -216,18 +222,18 @@ export default defineComponent({
       }
     };
     const showWhiteboard = async () => {
+      await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
       showHideWhiteboard.value = true;
-      await clickedTool(Tools.Pen);
-      canvas.backgroundColor = "white";
-      canvas.renderAll();
+      await clickedTool(Tools.Clear);
+      canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
     };
     const hideWhiteboard = async () => {
+      await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       showHideWhiteboard.value = false;
       await clickedTool(Tools.Cursor);
       canvas.remove(...canvas.getObjects("path"));
       await store.dispatch("teacherRoom/setClearBrush", {});
-      canvas.backgroundColor = "transparent";
-      canvas.renderAll();
+      canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
     };
     const defaultWhiteboard = async () => {
       modeAnnotation.value = 1;

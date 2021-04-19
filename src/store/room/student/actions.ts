@@ -4,7 +4,7 @@ import { UserModel } from "@/models/user.model";
 import { GetClassesModel, RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { Logger } from "@/utils/logger";
 import { ActionTree } from "vuex";
-import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
+import { ClassViewFromValue, ClassViewPayload, InClassStatus, WhiteboardPayload } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
@@ -39,6 +39,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setClassView", {
       classView: ClassViewFromValue(roomResponse.data.focusTab),
     });
+    commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
   },
 
   setUser({ commit }, payload: UserModel) {
