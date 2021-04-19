@@ -52,7 +52,6 @@
     <div class="tc__gallery">
       <StudentGallery />
     </div>
-    <LeaveModal v-if="showModal" @dismiss="onClickCloseModal" @leave="onClickLeave" />
     <ErrorModal v-if="isClassNotActive" @dismiss="onClickCloseError" @confirm="onClickLeave" />
 <!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->
   </div>

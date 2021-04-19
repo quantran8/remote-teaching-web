@@ -1,8 +1,11 @@
 <template>
   <div class="teacher-page">
-    <p></p>
-    <h2>Welcome {{ username }}</h2>
-    <p>Choose a class to start</p>
+    <div class="teacher-title mt-40">
+      <h2>Welcome {{ username }}</h2>
+      <span class="teacher-title__indicator-out">
+        <span class="teacher-title__indicator-in"></span>
+      </span>
+    </div>
     <div class="teacher-page__school-select">
       <Select
         placeholder="School"
@@ -17,10 +20,14 @@
         <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
       </Select>
     </div>
-    <hr />
-    <div>
-      <div v-if="loading">
-        Loading
+    <hr class="mr-10 ml-10" />
+    <div class="calendar-container align-right">
+      <span>Schedule</span>
+      <img class="calendar" src="@/assets/images/calendar.png" />
+    </div>
+    <div class="group-class-container">
+      <div class="loading" v-if="loading">
+        <span class="loading__animation">Loading...</span>
       </div>
       <ClassCard
         v-else

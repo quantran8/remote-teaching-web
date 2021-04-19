@@ -3,7 +3,6 @@ import LessonPlan from "./lesson-plan/lesson-plan.vue";
 import ActivityContent from "./activity-content/activity-content.vue";
 import StudentGallery from "./student-gallery/student-gallery.vue";
 import GlobalAudioBar from "./global-audio-bar/global-audio-bar.vue";
-import LeaveModal from "./leave-modal/leave-modal.vue";
 import ErrorModal from "./error-modal/error-modal.vue";
 import DesignateTarget from "./designate-target/designate-target.vue";
 import TeacherPageHeader from "./teacher-page-header/teacher-page-header.vue";
@@ -14,7 +13,6 @@ export {
   ActivityContent,
   GlobalAudioBar,
   StudentGallery,
-  LeaveModal,
   ErrorModal,
   DesignateTarget,
   TeacherPageHeader,

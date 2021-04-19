@@ -14,7 +14,6 @@ export default defineComponent({
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const actions = [
-      { id: ClassAction.DEFAULT, icon: "none" },
       { id: ClassAction.INTERACTIVE, icon: "interactive" },
       { id: ClassAction.LISTEN, icon: "listen" },
       { id: ClassAction.QUESTION, icon: "question" },
@@ -24,7 +23,7 @@ export default defineComponent({
     ];
     const classAction = computed(() => {
       const id: ClassAction = getters["teacherRoom/classAction"];
-      return actions.find(e => e.id === id) || actions[0];
+      return actions.find(e => e.id === id) || actions[2];
     });
 
     const onClickSelectAction = async (action: { id: ClassAction; icon: string }) => {

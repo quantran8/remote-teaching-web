@@ -1,4 +1,4 @@
-import { StudentState } from "@/store/room/interface";
+import { InClassStatus, StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
@@ -13,8 +13,17 @@ export default defineComponent({
   },
   setup: props => {
     const student = computed(() => props.student).value;
-    const raisedHand = computed(() => props.raisedHand);
+    const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
+    const isRaisingHand = ref(false);
     const store = useStore();
+
+    watch(props, () => {
+      if (props.raisedHand) {
+        isRaisingHand.value = true;
+      } else {
+        isRaisingHand.value = false;
+      }
+    });
 
     const containerRef = ref<HTMLDivElement>();
 
@@ -29,9 +38,11 @@ export default defineComponent({
     });
 
     return {
+      isNotJoinned,
       isAudioHighlight,
       containerRef,
       isSpeaking,
+      isRaisingHand,
     };
   },
 });

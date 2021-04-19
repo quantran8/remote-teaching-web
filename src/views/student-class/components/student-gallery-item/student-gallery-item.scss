@@ -36,11 +36,8 @@
     transform: translate(-50%, -50%) scale(1.2);
   }
 
-  &--help::before {
-    background: rgba(255, 0, 0, 0.658);
-    animation: pulsate 0.5s;
-    animation-iteration-count: 4;
-    animation-direction: alternate;
+  &--help {
+    @include cycle(#dd0d0d, flickerAnimation);
   }
 
   &__img {
@@ -61,6 +58,14 @@
     }
   }
 
+  &__disable {
+    color: rgb(194, 190, 190);
+  }
+
+  &__enable {
+    color: black;
+  }
+
   &__title-container {
     margin: 0;
     margin-top: 5px;
@@ -72,7 +77,6 @@
   }
 
   &__title {
-    color: #0b0b0b;
     font-size: 14px;
     font-weight: 600;
     margin: 0;
@@ -197,5 +201,5 @@
 }
 
 .sc-gallery-item--speaking {
-  @include cycle(#00a1ed);
+  @include cycle(#00a1ed, flickerAnimationVoice);
 }

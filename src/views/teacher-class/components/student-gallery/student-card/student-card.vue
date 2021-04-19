@@ -1,17 +1,23 @@
 <template>
   <div
     :class="['student', false && 'student--speaking', false && 'student--hand-raised', isLarge && 'student--large']"
-    @mouseover="onMouseChange(true)"
     @mouseleave="onMouseChange(false)"
   >
-    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'">
-      <div class="student__video" :class="[isSpeaking && 'student__is-speaking']" v-show="student.videoEnabled" :id="student.id"></div>
-      <img class="student__img" v-show="!student.videoEnabled" src="@/assets/student-class/no-avatar.png" />
+    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
+      <div
+        class="student__video"
+        :class="[isSpeaking && 'student__is-speaking']"
+        v-show="student.videoEnabled && !isNotJoinned"
+        :id="student.id"
+      ></div>
+      <img class="student__img" v-show="!student.videoEnabled || isNotJoinned" src="@/assets/student-class/no-avatar.png" />
     </figure>
     <div class="student__info">
-      <h4 class="student__name" @click="onOneAndOne">{{ student.name }}</h4>
+      <h4 class="student__name" :class="isNotJoinned ? 'student__disable' : 'student__enable'" @click="onOneAndOne">
+        {{ student.name }}
+      </h4>
     </div>
-    <StudentCardActions :student="student" :show="isMouseEntered" :isLarge="isLarge" />
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isLarge" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->

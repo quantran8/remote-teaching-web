@@ -6,12 +6,12 @@
   align-content: start;
   overflow: auto;
   padding: 16px 10px 16px 0;
+  row-gap: 12px;
   @media (min-width: $lg) {
     grid-template-columns: repeat(6, 1fr);
   }
   @media (min-width: $xl) {
     grid-template-columns: 1fr 1fr 1fr;
-    row-gap: 5px;
   }
   @media (min-width: $xxl) {
     grid-template-columns: 1fr 1fr 1fr;

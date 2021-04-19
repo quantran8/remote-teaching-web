@@ -27,7 +27,7 @@
       #{"&::v-deep .student-action__item"},
       #{".student-action__btn"},
     ),
-    $item-start-position: -2
+    $item-start-position: -3
   );
 
   &__btn {
@@ -82,4 +82,9 @@
   top: 0;
   transform: translateX(-50%);
   margin: 0 !important;
+
+  &--hide {
+	  opacity: 0;
+	  pointer-events: none;
+  }
 }
