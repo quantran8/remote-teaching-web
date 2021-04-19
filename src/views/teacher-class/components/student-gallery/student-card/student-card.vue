@@ -11,7 +11,7 @@
     <div class="student__info">
       <h4 class="student__name" @click="onOneAndOne">{{ student.name }}</h4>
     </div>
-    <StudentCardActions :student="student" :show="isMouseEntered" :isLarge="isLarge" />
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isLarge" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->
