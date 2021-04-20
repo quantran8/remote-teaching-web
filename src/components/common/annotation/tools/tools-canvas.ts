@@ -28,17 +28,21 @@ export default defineComponent({
   setup(props, { emit }) {
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
+    console.log("🚀 ~ file: tools-canvas.ts ~ line 31 ~ setup ~ toolNames", tools)
+	
     const toolsWithDropdown = [Tools.Stroke, Tools.StrokeColor];
+	
     const toolNameMap = {
       [Tools.Cursor]: "Cursor",
       [Tools.Pen]: "Pen",
       [Tools.Stroke]: "Size",
-      [Tools.StrokeColor]: "Color",
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
       [Tools.AddSticker]: "Add Sticker",
-      [Tools.AssignSticker]: "Assign Sticker"
+      [Tools.AssignSticker]: "Assign Sticker",
+	  [Tools.StrokeColor]: "Color"
     };
+
     const colors: any = {};
     const colorsList = [
       "black",
@@ -47,16 +51,17 @@ export default defineComponent({
       "orange",
       "yellow",
       "green",
-      "blue",
-      "purple",
-      "gray",
-      "white"
+    //   "blue",
+    //   "purple",
+    //   "gray",
+    //   "white"
     ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
     };
     const updateColor = (value: any) => {
+		
       emit("update-color", value);
     };
     const updateStrokeSize = (value: number) => {
