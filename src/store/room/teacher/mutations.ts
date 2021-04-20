@@ -67,6 +67,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.manager = undefined;
     s.classes = [];
     s.classView = ClassView.GALLERY;
+    s.idOne = "";
   },
   setClassView(s: State, p: ClassViewPayload): void {
     s.classView = p.classView;
@@ -81,6 +82,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.user = p;
   },
   setRoomInfo(s: State, p: RoomModel): void {
+    s.idOne = p.studentOneToOne ? p.studentOneToOne : "";
     s.teacher = {
       id: p.teacher.id,
       name: p.teacher.name,
