@@ -1,8 +1,13 @@
 <template>
   <div class="whiteboard" v-if="currentExposureItemMedia">
     <div class="whiteboard__wrap">
-      <div class="whiteboard__button" v-if="!showHideWhiteboard" @click="showWhiteboard">show whiteboard</div>
-      <div class="whiteboard__button" v-if="showHideWhiteboard" @click="hideWhiteboard">hide whiteboard</div>
+      <div class="whiteboard__button-show" v-if="!showHideWhiteboard" @click="showWhiteboard">Show Whiteboard
+		  <div class="whiteboard__button-show--icon"> <img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
+	  </div>
+      <div class="whiteboard__button-hide" v-if="showHideWhiteboard" @click="hideWhiteboard">Hide Whiteboard
+		  <div class="whiteboard__button-hide--icon"> <img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
+	  </div>
+	  <div class="whiteboard__space"/>
       <div id="canvas-container" @mousemove="cursorPosition">
         <img :src="currentExposureItemMedia?.image.url" @load="boardSetup" id="annotation-img" />
         <div class="wrap-canvas">
