@@ -56,7 +56,7 @@
       <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
       <div class="sc-action">
         <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
-          <img :src="handIcon" class="sc-action__icon" />
+          <img :src="handIcon" class="sc-action__icon sc-action__icon--hand"/>
         </a>
         <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
           <img :src="audioIcon" class="sc-action__icon" />
