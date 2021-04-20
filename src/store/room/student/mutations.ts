@@ -37,6 +37,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state.classView = ClassView.GALLERY;
     state.error = null;
     state.globalAudios = [];
+    state.idOne = "";
   },
   setError(state: StudentRoomState, payload: GLError | null) {
     state.error = payload;
@@ -52,6 +53,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state.user = payload;
   },
   setRoomInfo(state: StudentRoomState, room: RoomModel) {
+    state.idOne = room.studentOneToOne ? room.studentOneToOne : "";
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,
