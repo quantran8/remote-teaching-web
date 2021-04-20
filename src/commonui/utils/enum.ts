@@ -588,10 +588,16 @@ export enum VersionGroupLicenseType {
 export enum Tools {
 	Cursor = 'cursor',
 	Pen = 'pen',
+	Laser = 'laser',
 	Stroke = 'stroke',
 	StrokeColor = 'stroke-color',
 	Delete = 'delete',
 	Clear = 'clear',
 	AddSticker = 'add-sticker',
-	AssignSticker = 'assign-sticker'
+	AssignSticker = 'assign-sticker',
+}
+
+export enum Mode {
+	Cursor = 1,
+	Draw = 2,
 }

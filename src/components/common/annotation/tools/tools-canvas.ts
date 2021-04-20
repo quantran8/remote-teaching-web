@@ -6,24 +6,24 @@ export default defineComponent({
   props: {
     toolSelected: {
       type: String,
-      default: "cursor"
+      default: "cursor",
     },
     selectorOpen: {
       type: Boolean,
-      default: false
+      default: false,
     },
     strokeWidth: {
       type: Number,
-      default: 2
+      default: 2,
     },
     strokeColor: {
       type: String,
-      default: "#000000"
+      default: "#000000",
     },
     stickerTool: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   setup(props, { emit }) {
     const tools = Tools;
@@ -32,26 +32,16 @@ export default defineComponent({
     const toolNameMap = {
       [Tools.Cursor]: "Cursor",
       [Tools.Pen]: "Pen",
+      [Tools.Laser]: "Laser Pen",
       [Tools.Stroke]: "Size",
       [Tools.StrokeColor]: "Color",
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
       [Tools.AddSticker]: "Add Sticker",
-      [Tools.AssignSticker]: "Assign Sticker"
+      [Tools.AssignSticker]: "Assign Sticker",
     };
     const colors: any = {};
-    const colorsList = [
-      "black",
-      "brown",
-      "red",
-      "orange",
-      "yellow",
-      "green",
-      "blue",
-      "purple",
-      "gray",
-      "white"
-    ];
+    const colorsList = ["black", "brown", "red", "orange", "yellow", "green", "blue", "purple", "gray", "white"];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
@@ -74,5 +64,5 @@ export default defineComponent({
       updateStrokeSize,
       strokeSize,
     };
-  }
+  },
 });
