@@ -13,7 +13,7 @@ import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconHandRaised from "@/assets/student-class/hand-raised.svg";
-import IconHand from "@/assets/student-class/hand.svg";
+import IconHand from "@/assets/student-class/hand-jb.png";
 import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";

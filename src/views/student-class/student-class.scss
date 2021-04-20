@@ -168,6 +168,9 @@
     max-width: 70px;
     height: auto;
   }
+  &__icon--hand {
+    width: 88px;
+  }
 
   @media (min-width: $lg) {
     grid-auto-flow: column;
