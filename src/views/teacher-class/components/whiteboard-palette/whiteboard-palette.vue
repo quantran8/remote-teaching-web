@@ -7,16 +7,21 @@
       <div class="whiteboard__button-hide"  v-if="showHideWhiteboard">
 		  <div @click="hideWhiteboard">
  			 Hide Whiteboard
-		  <div class="whiteboard__button-hide--icon"> <img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
+		  	<div class="whiteboard__button-hide--icon"> <img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
 	  	  </div>
 	  </div>
-	  <div class="whiteboard__space"/>
+	  <div v-if="!showHideWhiteboard">
+ 		<div class="whiteboard__space"/>
+	  </div>
       <div id="canvas-container" @mousemove="cursorPosition">
         <img :src="currentExposureItemMedia?.image.url" @load="boardSetup" id="annotation-img" />
         <div class="wrap-canvas">
           <canvas id="canvasDesignate" />
         </div>
       </div>
+	   <div v-if="showHideWhiteboard">
+ 		<div class="whiteboard__space"/>
+	  </div>
       <ToolsCanvas
         v-if="currentExposureItemMedia"
         :selector-open="selectorOpen"
