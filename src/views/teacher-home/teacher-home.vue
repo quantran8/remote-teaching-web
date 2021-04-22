@@ -26,8 +26,8 @@
       <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container">
-      <div class="loading" v-if="loading">
-        <span class="loading__animation">Loading...</span>
+      <div class="loading" v-if="true">
+        <Spin tip="Loading..."></Spin>
       </div>
       <ClassCard
         v-else
@@ -45,3 +45,11 @@
 </template>
 <style lang="scss" scoped src="./teacher-home.scss"></style>
 <script lang="ts" src="./teacher-home.ts"></script>
+<style>
+.ant-spin-dot-item {
+  background-color: gray;
+}
+.ant-spin-text {
+  color: gray;
+}
+</style>
