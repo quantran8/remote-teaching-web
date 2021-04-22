@@ -28,16 +28,13 @@ export default defineComponent({
   },
   data() {
 	return {
-		showFontWeightPopover: true
+		showFontWeightPopover: false,
 	}
   },
   setup(props, { emit }) {
     const tools = Tools;
-    const toolNames: string[] = Object.values(tools);
-    console.log("🚀 ~ file: tools-canvas.ts ~ line 31 ~ setup ~ toolNames", tools)
-	
+    const toolNames: string[] = Object.values(tools);	
     const toolsWithDropdown = [Tools.Stroke, Tools.StrokeColor];
-	
     const toolNameMap = {
       [Tools.Cursor]: "Cursor",
       [Tools.Pen]: "Pen",
@@ -64,12 +61,9 @@ export default defineComponent({
     ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
-	//   this.handleIconClick(toolName)
       emit("tool-selected", toolName);
     };
-    const updateColor = (value: any) => {
-		console.log('run here', value);
-		
+    const updateColor = (value: any) => {				
       emit("update-color", value);
     };
     const updateStrokeSize = (value: number) => {
@@ -96,7 +90,7 @@ export default defineComponent({
 		return false
 	  },
 	  handleIconClick(toolName: any) {
-		if(toolName === Tools.Stroke) {
+		  if(toolName === Tools.Stroke) {
 			this.showFontWeightPopover = !this.showFontWeightPopover
 		  }
 	  }
