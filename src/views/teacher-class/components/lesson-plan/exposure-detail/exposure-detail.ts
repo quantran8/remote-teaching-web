@@ -10,6 +10,8 @@ export default defineComponent({
 
   setup(props, { emit }) {
     const { dispatch } = useStore();
+    const showInfo = ref(false);
+
     const onClickBack = () => {
       emit("click-back");
     };
@@ -22,6 +24,10 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setClearBrush", {});
     };
-    return { onClickItem, onClickBack, onClickMedia };
+    const toggleInformationBox = () => {
+      showInfo.value = !showInfo.value;
+    };
+
+    return { onClickItem, onClickBack, onClickMedia, toggleInformationBox, showInfo };
   },
 });
