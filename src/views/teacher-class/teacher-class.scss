@@ -30,8 +30,9 @@
     }
     &__whiteboard-content {
       flex: 1;
-      max-width: 50%;
-      margin: auto;
+	  width: 100%;
+    //   max-width: 50%;
+    //   margin: auto;
     }
   }
   &__gallery {
