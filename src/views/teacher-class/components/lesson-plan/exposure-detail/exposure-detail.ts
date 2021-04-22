@@ -24,10 +24,10 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setClearBrush", {});
     };
-    const onClickShowInfo = () => {
+    const toggleInformationBox = () => {
       showInfo.value = !showInfo.value;
     };
 
-    return { onClickItem, onClickBack, onClickMedia, onClickShowInfo, showInfo };
+    return { onClickItem, onClickBack, onClickMedia, toggleInformationBox, showInfo };
   },
 });
