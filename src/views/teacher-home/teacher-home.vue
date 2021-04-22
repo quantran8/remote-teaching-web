@@ -26,7 +26,7 @@
       <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container">
-      <div class="loading" v-if="true">
+      <div class="loading" v-if="loading">
         <Spin tip="Loading..."></Spin>
       </div>
       <ClassCard
