@@ -12,7 +12,11 @@
     <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div id="lesson-container__remaining-time">
         <p>Remaining times: {{ remainingTime }}</p>
-        <p>Item: {{ activityStatistic }}</p>
+        <p class="">
+          Item: {{ activityStatistic }} <br />
+          Page: {{ page }}
+        </p>
+        <img class="lesson-container__icon-next" :src="iconNext" @click="onClickNextMedia" />
       </div>
       <div class="progress">
         <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>

@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 export default defineComponent({
