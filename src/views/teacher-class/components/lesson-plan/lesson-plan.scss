@@ -3,6 +3,13 @@
   overflow: hidden;
   border-right: 1px solid #e0e0e0;
 
+  &__icon-next {
+    width: 25px;
+    height: 25px;
+    margin-left: 15px;
+    margin-bottom: 5px;
+  }
+
   .lesson-container__header {
     background: #b62424;
     color: #fff;
@@ -36,10 +43,13 @@
 
     #lesson-container__remaining-time {
       display: flex;
+      justify-content: center;
+      align-items: center;
       padding-top: 10px;
       p {
         &:first-child {
           flex: 2;
+          align-self: center;
         }
         &:last-child {
           flex: 1;
