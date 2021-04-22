@@ -18,13 +18,17 @@
   position: relative;
   &__wrap {
     display: flex;
-    padding: 0 70px;
+    // padding: 0 70px;
     padding-bottom: 45px;
     #canvas-container {
+	//   width: 800px;
+	  height: calc(100vh - 500px);
       position: relative;
       border: 1px solid #000;
       img {
-        max-width: 100%;
+        width: 100%; /* or any custom size */
+    	height: 100%; 
+    	object-fit: contain;
         position: absolute;
         top: 0;
         left: 0;
