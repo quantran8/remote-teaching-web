@@ -1,5 +1,25 @@
+@mixin whiteboard-button-base {
+  border: 1px solid #000;
+  box-shadow: 0 6px 6px -5px #333;
+  background-color: white;
+  position: absolute;
+  font-weight: 500;
+  z-index: 12;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 45px;
+}
+
 .whiteboard {
-  &__wrap{
+  position: relative;
+  &__wrap {
+    display: flex;
+    padding: 0 70px;
+    padding-bottom: 45px;
     #canvas-container {
       position: relative;
       border: 1px solid #000;
@@ -18,11 +38,74 @@
         }
       }
     }
+    &--content {
+      position: relative;
+      width: 100%;
+    }
   }
-  &__button {
-    border: 1px solid #000;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
+  &__space {
+    height: 44px;
+  }
+  &__button-show {
+    @include whiteboard-button-base;
+    animation: expandUp 0.1s ease-out;
+    &--icon {
+      animation: invertedUp 0.1s ease-out;
+      width: 30px;
+      height: 30px;
+	  margin-left: 5px;
+    }
+  }
+  &__button-hide {
+    @include whiteboard-button-base;
+    border-top-width: 0;
+    animation: expandDown 0.1s ease-out;
+    padding: 10px;
+    top: 85%;
+    &--icon {
+      animation: invertedUp 0.1s ease-out;
+      width: 30px;
+      height: 30px;
+      transform: rotate(180deg);
+	  margin-left: 5px;
+    }
+  }
+}
+
+//animations
+
+@keyframes expandDown {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 85%;
+  }
+}
+
+@keyframes invertedDown {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes expandUp {
+  0% {
+    top: 300px;
+  }
+  100% {
+    top: 0;
+  }
+}
+
+@keyframes invertedUp {
+  0% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(0deg);
   }
 }
