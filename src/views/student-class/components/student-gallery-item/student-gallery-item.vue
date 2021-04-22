@@ -15,7 +15,12 @@
       v-show="student.videoEnabled && !isNotJoinned"
       :id="student.id"
     ></div>
-    <img class="sc-gallery-item__img" v-show="!student.videoEnabled || isNotJoinned" src="@/assets/student-class/no-avatar.png" />
+    <img
+      class="sc-gallery-item__img"
+      :class="[isSpeaking && 'sc-gallery-item--speaking']"
+      v-show="!student.videoEnabled || isNotJoinned"
+      src="@/assets/student-class/no-avatar.png"
+    />
     <div class="sc-gallery-item__title-container">
       <h3 class="sc-gallery-item__title" :class="isNotJoinned ? 'sc-gallery-item__disable' : 'sc-gallery-item__enable'">{{ student.name }}</h3>
     </div>
