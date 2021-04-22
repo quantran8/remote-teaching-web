@@ -6,7 +6,7 @@ import { ClassViewFromValue } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 
-export const useTeacherRoomWSHandler = ({ commit, dispatch }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
+export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
@@ -55,6 +55,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch }: ActionContext<Teac
     onStudentDisconnected: async (payload: StudentModel) => {
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
+      const student = state.students.find(student => student.id === payload.id);
+      const message = `${student?.name} left the class.`;
+      dispatch("setToast", { message: message }, { root: true });
     },
     onStudentSendUnity: async (payload: any) => {
       await dispatch(
