@@ -202,8 +202,8 @@ export default defineComponent({
           return;
       }
     };
-    const updateColorValue = (value: any) => {
-      if (toolSelected.value === Tools.StrokeColor) {
+    const updateColorValue = (value: any) => {	  
+      if (toolSelected.value === Tools.StrokeColor) {		  
         strokeColor.value = value;
         clickedTool(Tools.Pen).then();
         if (canvas.getActiveObject()) {
