@@ -234,6 +234,8 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
       showHideWhiteboard.value = true;
       await clickedTool(Tools.Clear);
+      canvas.freeDrawingBrush.color = strokeColor.value;
+      canvas.freeDrawingBrush.width = strokeWidth.value;
       canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
     };
     const hideWhiteboard = async () => {
