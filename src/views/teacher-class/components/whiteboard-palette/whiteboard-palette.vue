@@ -1,6 +1,18 @@
 <template>
   <div class="whiteboard" v-if="currentExposureItemMedia">
     <div class="whiteboard__wrap">
+	  <ToolsCanvas
+        v-if="currentExposureItemMedia"
+        :selector-open="selectorOpen"
+        :tool-selected="toolSelected"
+        :stroke-width="strokeWidth"
+        :stroke-color="strokeColor"
+        :sticker-tool="hasStickerTool"
+        @tool-selected="clickedTool"
+        @update-color="updateColorValue"
+        @update-stroke="updateStrokeWidth"
+      />
+	  <div class="whiteboard__wrap--content">
       <div class="whiteboard__button-show" v-if="!showHideWhiteboard" @click="showWhiteboard">Show Whiteboard
 		  <div class="whiteboard__button-show--icon"> <img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
 	  </div>
@@ -22,17 +34,7 @@
 	   <div v-if="showHideWhiteboard">
  		<div class="whiteboard__space"/>
 	  </div>
-      <ToolsCanvas
-        v-if="currentExposureItemMedia"
-        :selector-open="selectorOpen"
-        :tool-selected="toolSelected"
-        :stroke-width="strokeWidth"
-        :stroke-color="strokeColor"
-        :sticker-tool="hasStickerTool"
-        @tool-selected="clickedTool"
-        @update-color="updateColorValue"
-        @update-stroke="updateStrokeWidth"
-      />
+	  </div>
     </div>
   </div>
 </template>

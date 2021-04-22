@@ -1,5 +1,6 @@
 import { defineComponent, Ref, ref, watch } from "vue";
 import { Tools } from "@/commonui";
+import { times } from "lodash";
 
 export default defineComponent({
   emits: ["tool-selected", "update-color", "update-stroke"],
@@ -24,6 +25,11 @@ export default defineComponent({
       type: Boolean,
       default: false
     }
+  },
+  data() {
+	return {
+		showFontWeightPopover: true
+	}
   },
   setup(props, { emit }) {
     const tools = Tools;
@@ -58,9 +64,11 @@ export default defineComponent({
     ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
+	//   this.handleIconClick(toolName)
       emit("tool-selected", toolName);
     };
     const updateColor = (value: any) => {
+		console.log('run here', value);
 		
       emit("update-color", value);
     };
@@ -79,5 +87,18 @@ export default defineComponent({
       updateStrokeSize,
       strokeSize,
     };
+  },
+  methods: {
+	  checkHasIcon(toolName: any) {
+		const {Cursor, Pen, Delete, Clear, Stroke} = Tools;
+		const iconList = [Cursor, Pen, Delete, Clear, Stroke] 
+		if(iconList.includes(toolName)) return true
+		return false
+	  },
+	  handleIconClick(toolName: any) {
+		if(toolName === Tools.Stroke) {
+			this.showFontWeightPopover = !this.showFontWeightPopover
+		  }
+	  }
   }
 });

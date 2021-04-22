@@ -19,8 +19,8 @@
         </div>
 
         <!-- <p class="tools__item__name">{{ toolNameMap[toolName] }}</p> -->
-		 <div class="tools__item__action__icons" v-if="toolName !== tools.Stroke && toolName !== tools.Delete && toolName !== tools.AddSticker && toolName !== tools.AssignSticker">
-  			<img :src="require(`@/assets/icons/tools-${toolName}.svg`)" alt="Icon" />
+		 <div class="tools__item__action__icons">
+  			<img  v-if="checkHasIcon(toolName)" :src="require(`@/assets/icons/tools-${toolName}.svg`)" alt="Icon" />
 		  </div>
         <div
           class="tools__item__submenu"
@@ -42,11 +42,13 @@
                 @click="updateColor(color)"
               ></div>
             </template>
-            <template v-else-if="toolName === tools.Stroke" v-for="(size, index) in strokeSize" :key="index">
+			<div class="stroke__wrapper" v-else-if="toolName === tools.Stroke && showFontWeightPopover">
+             <template  v-for="(size, index) in strokeSize" :key="index">
               <div class="stroke-item" @click="updateStrokeSize(size)">
                 <div class="stroke-item-line" :style="`height: ${size * 1.2}px`"></div>
               </div>
-            </template>
+             </template>
+			</div>
           </div>
         </div>
       </div>
