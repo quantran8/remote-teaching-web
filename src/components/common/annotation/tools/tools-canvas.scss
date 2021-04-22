@@ -25,6 +25,7 @@
     &__icon {
       &__stroke-line {
         background-color: black;
+		margin-bottom: 5px;
       }
       &__stroke-color {
         width: 20px;
@@ -84,6 +85,8 @@
       }
     }
     &__action__icons {
+	  padding: 5px 10px;
+	  border-radius: 5px;
 	  &:hover {
 		transform: translateY(-2px);
 	  }
@@ -98,6 +101,9 @@
 	  .color-signal {
 		height: 4px;
 		width: 20px;
+	  }
+	  &.selected {
+		  background-color: #ccc;
 	  }
     }
   }

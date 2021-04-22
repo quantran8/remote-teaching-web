@@ -12,7 +12,7 @@
         <div class="tools__item__icon" :class="[toolName, { selected: toolSelected === toolName }]">
           <div v-if="toolName === tools.Stroke" class="tools__item__icon__stroke-line" :style="`height: ${strokeWidth * 1.2}px;`"></div>
         </div>
-		 <div @click="handleIconClick(toolName)" class="tools__item__action__icons">
+		 <div @click="handleIconClick(toolName)" :class="['tools__item__action__icons', {selected: toolSelected === toolName && toolName !== tools.StrokeColor }]">
   			<img v-if="checkHasIcon(toolName)" :src="require(`@/assets/icons/tools-${toolName}.svg`)" alt="Icon" />
 			<div :style="`background-color: ${strokeColor}`" v-if="toolName === tools.Pen" class="color-signal"></div>
 		  </div>
