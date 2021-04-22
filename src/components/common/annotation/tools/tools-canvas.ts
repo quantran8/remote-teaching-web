@@ -47,6 +47,7 @@ export default defineComponent({
     };
 
     const colors: any = {};
+	//currently the design just have 6 color belows
     const colorsList = [
       "black",
       "brown",

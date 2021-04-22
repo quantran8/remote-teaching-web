@@ -11,14 +11,7 @@
       >
         <div class="tools__item__icon" :class="[toolName, { selected: toolSelected === toolName }]">
           <div v-if="toolName === tools.Stroke" class="tools__item__icon__stroke-line" :style="`height: ${strokeWidth * 1.2}px;`"></div>
-          <!-- <div
-            v-if="toolName === tools.StrokeColor"
-            class="tools__item__icon__stroke-color"
-            :style="`background-color: ${strokeColor}`"
-          ></div> -->
         </div>
-
-        <!-- <p class="tools__item__name">{{ toolNameMap[toolName] }}</p> -->
 		 <div @click="handleIconClick(toolName)" class="tools__item__action__icons">
   			<img v-if="checkHasIcon(toolName)" :src="require(`@/assets/icons/tools-${toolName}.svg`)" alt="Icon" />
 			<div :style="`background-color: ${strokeColor}`" v-if="toolName === tools.Pen" class="color-signal"></div>
@@ -40,7 +33,7 @@
                 :key="index"
                 class="color-item"
                 :style="`background-color: ${color}`"
-                @click="updateColor(color)"
+                @click="clickedTool(toolName);updateColor(color)"
               ></div>
             </template>
 			<div class="stroke__wrapper" v-else-if="toolName === tools.Stroke && showFontWeightPopover">
