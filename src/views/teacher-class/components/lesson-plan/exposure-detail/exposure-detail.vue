@@ -5,8 +5,12 @@
       <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
         <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
       </BaseButton>
-      <div class="exposure-title">
-        {{ exposure.name }} ({{ exposure.duration }})
+      <div class="exposure-title">{{ exposure.name }} ({{ exposure.duration }})</div>
+      <div class="exposure-info">
+        <img class="exposure-info__icon-info" src="@/assets/images/info.png" @mouseover="onClickShowInfo" @mouseout="onClickShowInfo" />
+        <span class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''"
+          >GrapeSeed LessonPlan GrapeSeed LessonPlan GrapeSeed LessonPlan GrapeSeed LessonPlan GrapeSeed LessonPlan GrapeSeed LessonPlan</span
+        >
       </div>
     </div>
     <div class="exposure-content">
