@@ -159,7 +159,7 @@ export default defineComponent({
     watch(isConnected, async () => {
       if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
-    });
+    });	
     return {
       onClickHideAll,
       onClickShowAll,

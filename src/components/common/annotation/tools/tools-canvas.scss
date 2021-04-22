@@ -1,5 +1,7 @@
 .tools {
   border: 1px solid black;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
   border-right-width: 0;
   display: flex;
   flex-direction: column;
