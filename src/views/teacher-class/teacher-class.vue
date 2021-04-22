@@ -30,8 +30,8 @@
 <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
 <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
 <!--      </div>-->
-      <div v-if="!isGalleryView" class="tc__content__whiteboard-content">
-        <WhiteboardPalette />
+      <div v-if="isLessonPlan" class="tc__content__whiteboard-content">
+        <WhiteboardPalette :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
       </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
       <!--        <UnityView-->

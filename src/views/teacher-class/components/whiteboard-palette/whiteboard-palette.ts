@@ -13,18 +13,18 @@ import { fabric } from "fabric";
 import { Tools } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import * as R from "ramda/";
+import {ClassView} from "@/store/room/interface";
 
 export default defineComponent({
+  props: ["image"],
   components: {
     ToolsCanvas,
   },
-  setup() {
+  setup(props) {
     const store = useStore();
     const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
-    const isLessonPlanView = computed(() => {
-      return store.getters["teacherRoom/isLessonPlanView"];
-    });
+    const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     let canvas: any;
     const tools = Tools;
@@ -46,6 +46,9 @@ export default defineComponent({
         hasStickerTool.value = true;
       }
     }
+    const imageUrl = computed(() => {
+      return props.image ? props.image.url : {};
+    });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === 1) {
         const { width, height } = currentExposureItemMedia.value.image;
@@ -100,6 +103,7 @@ export default defineComponent({
       return imageLesson?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
     };
     const boardSetup = async () => {
+      if (!props.image) return;
       const canvasEl = document.getElementById("canvasDesignate");
       const canvasContainer = document.getElementsByClassName("canvas-container");
       if (canvasEl && canvasContainer.length == 0) {
@@ -204,8 +208,8 @@ export default defineComponent({
           return;
       }
     };
-    const updateColorValue = (value: any) => {	  
-      if (toolSelected.value === Tools.StrokeColor) {		  
+    const updateColorValue = (value: any) => {
+      if (toolSelected.value === Tools.StrokeColor) {
         strokeColor.value = value;
         clickedTool(Tools.Pen).then();
         if (canvas.getActiveObject()) {
@@ -270,6 +274,8 @@ export default defineComponent({
       showWhiteboard,
       showHideWhiteboard,
       hideWhiteboard,
+      isLessonPlan,
+      imageUrl,
     };
   },
 });

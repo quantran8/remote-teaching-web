@@ -61,6 +61,8 @@ export default defineComponent({
     const isClassNotActive = computed(() => {
       return error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE;
     });
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
+    const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
     const roomInfo = computed(() => {
       return getters["teacherRoom/info"];
     });
@@ -183,6 +185,8 @@ export default defineComponent({
       // onUnityLoaderLoaded,
       // onUnityViewLoading,
       // onUnityViewLoaded
+      isLessonPlan,
+      currentExposureItemMedia,
     };
   },
 });
