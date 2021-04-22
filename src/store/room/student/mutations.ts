@@ -157,7 +157,6 @@ const mutations: MutationTree<StudentRoomState> = {
     if (student) student.raisingHand = payload.raisingHand;
   },
   setWhiteboard(state: StudentRoomState, payload: any) {
-    console.log("11111",payload);
     state.showWhiteBoard = payload;
   },
 };

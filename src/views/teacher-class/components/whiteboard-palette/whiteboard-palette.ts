@@ -37,7 +37,9 @@ export default defineComponent({
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
     watch(infoTeacher, () => {
-      showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      if (infoTeacher.value) {
+        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      }
     });
     if (currentExposure.value) {
       if (currentExposure.value.type == "poems" || currentExposure.value.type == "bigbook") {
