@@ -4,7 +4,7 @@
       <div class="sc-header__left">
         <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
         <div class="sc-header__icon" ref="classActionImageRef">
-          <img v-if="classAction" :src="require(`@/assets/icons/icon-action-${classAction}.svg`)" alt="Icon" />
+          <img v-if="classAction" :src="require(`@/assets/icons/icon-action-${classAction}.png`)" alt="Icon" />
         </div>
       </div>
       <div class="sc-header__right">
@@ -56,7 +56,7 @@
       <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
       <div class="sc-action">
         <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
-          <img :src="handIcon" class="sc-action__icon" />
+          <img :src="handIcon" class="sc-action__icon sc-action__icon--hand"/>
         </a>
         <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
           <img :src="audioIcon" class="sc-action__icon" />

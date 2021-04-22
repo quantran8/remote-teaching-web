@@ -102,7 +102,6 @@ $action-icon-container-size: 70px;
   right: 20px;
   overflow: hidden;
   border-radius: 50%;
-  border: 1px solid #000;
   img {
     width: $action-icon-container-size;
     height: $action-icon-container-size;
@@ -111,7 +110,6 @@ $action-icon-container-size: 70px;
     left: 0;
     right: 0;
     bottom: 0;
-    transform: scale(1.04);
   }
 }
 
@@ -189,7 +187,6 @@ $action-icon-container-size: 70px;
         width: $icon-size;
         height: $icon-size;
         border-radius: 50%;
-        border: 1px solid black;
       }
 
       @for $i from 1 through 8 {
