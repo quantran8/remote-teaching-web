@@ -11,7 +11,7 @@
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
     <div class="tc__content" :style="{paddingTop: !isLessonPlan ? '200px' : '0px'}">
-      <div class="tc__content__teacher">
+      <div class="tc__content__teacher" :class="{'tc__content__teacher--gallery':isGalleryView}">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"

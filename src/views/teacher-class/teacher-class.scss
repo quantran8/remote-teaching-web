@@ -13,6 +13,7 @@
     width: 320px;
     transition: 0.2s;
     overflow: hidden;
+    border-bottom: 1px solid #7b7b7b;
     &--collapsed {
       margin-left: -240px;
     }
@@ -24,6 +25,9 @@
     &__teacher {
 	  height: 300px;
 	  width: 800px;
+      &--gallery{
+        height: 500px;
+      }
     }
     &__activity-content {
       flex: auto;
