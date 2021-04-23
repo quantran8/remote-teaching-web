@@ -22,7 +22,7 @@
     padding-bottom: 45px;
     #canvas-container {
 	//   width: 800px;
-	  height: calc(100vh - 500px);
+	  height: 435px;
       position: relative;
       border: 1px solid #000;
   	  border-bottom-right-radius: 10px;
@@ -70,7 +70,7 @@
 	border-bottom-right-radius: 10px;
     animation: expandDown 0.1s ease-out;
     padding: 10px;
-    top: calc(100vh - 510px);
+    top: 425px;
     &--icon {
       animation: invertedUp 0.1s ease-out;
       width: 30px;
@@ -91,7 +91,7 @@
     top: 0;
   }
   100% {
-	top: calc(100vh - 510px);
+	top: 425px;
   }
 }
 

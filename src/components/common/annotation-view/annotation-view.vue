@@ -5,7 +5,7 @@
       <img src="@/assets/icon-select.png" alt="" />
     </div>
     <div class="canvas-wrap-container" :class="{'has-whiteboard': isShowWhiteBoard }">
-      <canvas id="canvasOnStudent" ref="canvasRef"/>
+      <canvas class="canvas-content" id="canvasOnStudent" ref="canvasRef"/>
     </div>
   </div>
 <!--  <div v-if="isStickerMode" class="sticker-control">-->
