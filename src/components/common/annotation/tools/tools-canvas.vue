@@ -14,6 +14,7 @@
         </div>
 		 <div @click="handleIconClick(toolName)" :class="['tools__item__action__icons', {selected: toolSelected === toolName && toolName !== tools.StrokeColor }]">
   			<img v-if="checkHasIcon(toolName)" :src="require(`@/assets/icons/tools-${toolName}.svg`)" alt="Icon" />
+			<div class="iconn"></div>
 			<div :style="`background-color: ${strokeColor}`" v-if="toolName === tools.Pen" class="color-signal"></div>
 		  </div>
         <div
