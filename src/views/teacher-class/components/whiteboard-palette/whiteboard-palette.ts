@@ -151,6 +151,7 @@ export default defineComponent({
             obj.selectable = false;
             obj.hasControls = false;
             obj.hasBorders = false;
+            obj.hoverCursor = "cursor";
           });
           return;
         case Tools.Pen:
