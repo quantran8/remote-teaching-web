@@ -76,6 +76,18 @@ export default defineComponent({
 
     const classActionImageRef = ref<HTMLDivElement | null>(null);
 
+    const previousImage = ref("");
+
+    watch(studentOneAndOneId, () => {
+      isOneToOne.value = !!studentOneAndOneId.value;
+      if (student.value) {
+        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+        previousImage.value = currentExposureItemMedia.value?.image;
+      } else {
+        studentIsOneToOne.value = false;
+      }
+    });
+
     // Left section animation
     const animate = () => {
       if (videoContainerRef.value) {
@@ -219,6 +231,7 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
+      previousImage,
     };
   },
 });
