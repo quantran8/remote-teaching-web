@@ -10,7 +10,7 @@
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
-    <div class="tc__content">
+    <div class="tc__content" :style="{paddingTop: !isLessonPlan ? '200px' : '0px'}">
       <div class="tc__content__teacher">
         <TeacherCard
           v-if="teacher"

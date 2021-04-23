@@ -11,20 +11,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 45px;
+  height: 54px;
 }
 
 .whiteboard {
   position: relative;
   &__wrap {
     display: flex;
-    padding: 0 70px;
+    // padding: 0 70px;
     padding-bottom: 45px;
     #canvas-container {
+	//   width: 800px;
+	  height: calc(100vh - 500px);
       position: relative;
       border: 1px solid #000;
+  	  border-bottom-right-radius: 10px;
+	  border-top-right-radius: 10px;
       img {
-        max-width: 100%;
+        width: 100%; /* or any custom size */
+    	height: 100%; 
+    	object-fit: contain;
         position: absolute;
         top: 0;
         left: 0;
@@ -34,6 +40,7 @@
         position: relative;
         z-index: 11;
         .canvas-container {
+		  border-top-right-radius: 10px;
           width: 100%;
         }
       }
@@ -48,6 +55,7 @@
   }
   &__button-show {
     @include whiteboard-button-base;
+	border-top-right-radius: 10px;
     animation: expandUp 0.1s ease-out;
     &--icon {
       animation: invertedUp 0.1s ease-out;
@@ -59,9 +67,10 @@
   &__button-hide {
     @include whiteboard-button-base;
     border-top-width: 0;
+	border-bottom-right-radius: 10px;
     animation: expandDown 0.1s ease-out;
     padding: 10px;
-    top: 85%;
+    top: calc(100vh - 510px);
     &--icon {
       animation: invertedUp 0.1s ease-out;
       width: 30px;
@@ -70,6 +79,9 @@
 	  margin-left: 5px;
     }
   }
+ .canvas-designate {
+	border-top-right-radius: 10px;
+ }
 }
 
 //animations
@@ -79,7 +91,7 @@
     top: 0;
   }
   100% {
-    top: 85%;
+	top: calc(100vh - 510px);
   }
 }
 

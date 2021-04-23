@@ -53,7 +53,7 @@
         >
           <img :src="currentExposureItemMedia.image.url" id="annotation-img" />
           <div class="wrap-canvas">
-            <canvas id="canvasDesignate"/>
+            <canvas class="canvas-designate" id="canvasDesignate"/>
           </div>
         </div>
         <div class="designate-box-right">

@@ -25,7 +25,7 @@
         <div id="canvas-container" @mousemove="cursorPosition">
           <img :src="imageUrl" @load="boardSetup" id="annotation-img" />
           <div class="wrap-canvas">
-            <canvas id="canvasDesignate" />
+            <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
         </div>
         <div v-if="showHideWhiteboard" class="whiteboard__space" />
