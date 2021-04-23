@@ -86,8 +86,9 @@ const getters: LessonGetters<LessonState, any> = {
     return s.isBlackout;
   },
   activityStatistic(s: LessonState): string {
-    const activityCompleted = s.exposures.filter(e => e.status === ExposureStatus.COMPLETED).length;
-    return s.exposures.length ? `${activityCompleted}/${s.exposures.length}` : "0";
+    const listExpo: (string | undefined)[] = [];
+    s.exposures.filter(expo => listExpo.push(expo.id));
+    return s.exposures.length ? `${listExpo.indexOf(s.currentExposure?.id) + 1}/${s.exposures.length}` : "0";
   },
   getPage(s: LessonState): string {
     const listMedia: string[] = [];
