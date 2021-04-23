@@ -48,7 +48,7 @@
 <!--              :localTargets="localTargets"-->
 <!--              :studentOneId="studentOneAndOneId"-->
 <!--            ></ContentView>-->
-            <AnnotationView :image="isLessonPlan ? currentExposureItemMedia?.image : null"></AnnotationView>
+            <AnnotationView v-if="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null"></AnnotationView>
           </div>
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>

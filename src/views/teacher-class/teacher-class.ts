@@ -74,6 +74,8 @@ export default defineComponent({
       return getters["teacherRoom/isGalleryView"];
     });
 
+    const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
+
     const isSidebarCollapsed = ref<boolean>(true);
     watch(isGalleryView, value => {
       isSidebarCollapsed.value = value;
@@ -187,6 +189,7 @@ export default defineComponent({
       // onUnityViewLoaded
       isLessonPlan,
       currentExposureItemMedia,
+      isBlackOutContent
     };
   },
 });
