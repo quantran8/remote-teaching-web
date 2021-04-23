@@ -23,7 +23,7 @@
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
         </div>
-        <div class="sc-content__bottom">
+        <div class="sc-content__bottom" v-if="currentExposureItemMedia && isLessonPlan">
           <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
             v-if="isGameView"
@@ -36,19 +36,19 @@
             @on-loaded="onUnityViewLoaded"
           ></UnityView>
         </div> -->
-          <div v-show="currentExposureItemMedia && isLessonPlan" class="sc-lessonplan">
-            <ContentView
-              v-if="!isPointerMode && !isDrawMode && !isStickerMode"
-              @on-tap="onClickContentView"
-              :masked="isBlackOutContent"
-              :image="currentExposureItemMedia?.image"
-              :contentId="currentExposureItemMedia?.id"
-              :targets="designateTargets"
-              :isAssigned="isAssigned"
-              :localTargets="localTargets"
-              :studentOneId="studentOneAndOneId"
-            ></ContentView>
-            <AnnotationView v-if="isPointerMode || isDrawMode || isStickerMode" :image="currentExposureItemMedia?.image"></AnnotationView>
+          <div class="sc-lessonplan">
+<!--            <ContentView-->
+<!--              v-if="!isPointerMode && !isDrawMode && !isStickerMode"-->
+<!--              @on-tap="onClickContentView"-->
+<!--              :masked="isBlackOutContent"-->
+<!--              :image="currentExposureItemMedia?.image"-->
+<!--              :contentId="currentExposureItemMedia?.id"-->
+<!--              :targets="designateTargets"-->
+<!--              :isAssigned="isAssigned"-->
+<!--              :localTargets="localTargets"-->
+<!--              :studentOneId="studentOneAndOneId"-->
+<!--            ></ContentView>-->
+            <AnnotationView :image="isLessonPlan ? currentExposureItemMedia?.image : null"></AnnotationView>
           </div>
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>
