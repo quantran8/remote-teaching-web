@@ -25,6 +25,9 @@
     &__teacher {
 	  height: 300px;
 	  width: 800px;
+      &--gallery{
+        height: 500px;
+      }
     }
     &__activity-content {
       flex: auto;

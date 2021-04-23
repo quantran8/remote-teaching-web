@@ -11,7 +11,7 @@
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
     <div class="tc__content" :style="{paddingTop: !isLessonPlan ? '200px' : '0px'}">
-      <div class="tc__content__teacher">
+      <div class="tc__content__teacher" :class="{'tc__content__teacher--gallery':isGalleryView}">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -31,7 +31,7 @@
 <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
 <!--      </div>-->
       <div v-if="isLessonPlan" class="tc__content__whiteboard-content">
-        <WhiteboardPalette :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
+        <WhiteboardPalette v-if="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
       </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
       <!--        <UnityView-->

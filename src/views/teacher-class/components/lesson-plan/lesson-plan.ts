@@ -32,17 +32,33 @@ export default defineComponent({
         await dispatch("teacherRoom/endExposure", {
           id: currentExposure.value.id,
         });
+        await dispatch("teacherRoom/setBlackOut", {
+          isBlackOut: true,
+        });
       }
       await dispatch("teacherRoom/setBlackOut", {
-        isBlackOut: exposure.type === ExposureType.TRANSITION,
+        isBlackOut: false,
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
+      await dispatch("teacherRoom/setMode", {
+        mode: 1,
+      });
+      await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
     const onClickCloseExposure = async () => {
       await dispatch("teacherRoom/endExposure", {
         id: currentExposure.value.id,
       });
+      await dispatch("teacherRoom/setBlackOut", {
+        isBlackOut: true,
+      });
+      await dispatch("teacherRoom/setMode", {
+        mode: 0,
+      });
+      await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
     const onClickNextMedia = async () => {

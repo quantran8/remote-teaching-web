@@ -43,6 +43,9 @@ export default defineComponent({
       if (!pointer) return `display: none`;
       return `transform: translate(${pointer.x * scaleRatio.value}px, ${pointer.y * scaleRatio.value}px)`;
     });
+    watch(isPointerMode, () => {
+      return pointerStyle;
+    });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
     });

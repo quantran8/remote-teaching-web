@@ -49,8 +49,9 @@
             <!--              :studentOneId="studentOneAndOneId"-->
             <!--            ></ContentView>-->
             <AnnotationView
+              v-if="!isBlackOutContent"
               :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousImage : currentExposureItemMedia?.image) : null"
-            ></AnnotationView>
+            />
           </div>
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>
