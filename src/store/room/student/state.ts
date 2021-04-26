@@ -71,6 +71,7 @@ export interface StudentRoomState {
   idOne: string;
   speakingUsers: Array<string>;
   showWhiteBoard: boolean;
+  laserPath: string;
 }
 
 const state: StudentRoomState = {
@@ -89,6 +90,7 @@ const state: StudentRoomState = {
   idOne: "",
   speakingUsers: [],
   showWhiteBoard: false,
+  laserPath: "",
 };
 
 export default state;
