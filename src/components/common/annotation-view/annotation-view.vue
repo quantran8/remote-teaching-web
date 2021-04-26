@@ -10,11 +10,11 @@
   </div>
   <div class="palette-tool" v-if="isDrawMode">
     <div class="palette-tool__item" @click="addStar">
-	 <img :src="require(`@/assets/icons/tools-star.svg`)" alt="Icon" />
-	</div>
+      <img :src="require(`@/assets/icons/tools-star.svg`)" alt="Icon" />
+    </div>
     <div class="palette-tool__item" @click="clearStar">
-	 <img :src="require(`@/assets/icons/tools-clear.svg`)" alt="Icon" />
-	</div>
+      <img :src="require(`@/assets/icons/tools-clear.svg`)" alt="Icon" />
+    </div>
   </div>
 </template>
 <style lang="scss" scoped src="./annotation-view.scss"></style>

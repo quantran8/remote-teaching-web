@@ -31,7 +31,10 @@
                 :key="index"
                 class="color-item"
                 :style="`background-color: ${color}`"
-                @click="clickedTool(toolName);updateColor(color)"
+                @click="
+                  clickedTool(toolName);
+                  updateColor(color);
+                "
               ></div>
             </template>
             <div class="stroke__wrapper" v-else-if="toolName === tools.Stroke && showFontWeightPopover">

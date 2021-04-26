@@ -67,6 +67,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   isShowWhiteboard(state: StudentRoomState): boolean {
     return state.showWhiteBoard;
   },
+  laserPath(state: StudentRoomState): string {
+    return state.laserPath;
+  },
 };
 
 export default getters;

@@ -10,7 +10,7 @@ import {
 } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import { Tools } from "@/commonui";
+import { Tools, Mode } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import * as R from "ramda/";
 import {ClassView} from "@/store/room/interface";
@@ -36,6 +36,7 @@ export default defineComponent({
     const modeAnnotation: Ref<number> = ref(-1);
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
+    // watch whiteboard state to display
     watch(infoTeacher, () => {
       if (infoTeacher.value) {
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
@@ -50,7 +51,7 @@ export default defineComponent({
       return props.image ? props.image.url : {};
     });
     const cursorPosition = async (e: any) => {
-      if (modeAnnotation.value === 1) {
+      if (modeAnnotation.value === Mode.Cursor) {
         const { width, height } = currentExposureItemMedia.value.image;
         const rect = document.getElementById("canvas-container");
         if (!rect) return;
@@ -62,7 +63,7 @@ export default defineComponent({
         const y = (e.clientY - rectBounding.top) / ratio;
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
-          y: Math.floor(y)
+          y: Math.floor(y),
         });
       }
     };
@@ -82,15 +83,36 @@ export default defineComponent({
       lastObject.left = lastObject.left / ratio;
       lastObject.scaleX = lastObject.scaleX / ratio;
       lastObject.scaleY = lastObject.scaleY / ratio;
-      await store.dispatch("teacherRoom/setBrush", {
-        drawing: lastObject,
+      if (toolSelected.value === Tools.Pen) {
+        await store.dispatch("teacherRoom/setBrush", {
+          drawing: lastObject,
+        });
+      }
+      if (toolSelected.value === Tools.Laser) {
+        await store.dispatch("teacherRoom/setLaserPath", lastObject);
+      }
+    };
+    const laserDraw = () => {
+      const laserPath = canvas.getObjects("path").pop();
+      laserPath.animate("opacity", "0", {
+        duration: 1000,
+        easing: fabric.util.ease.easeInOutExpo,
+        onChange: canvas.renderAll.bind(canvas),
+        onComplete: () => {
+          canvas.remove(laserPath);
+        },
       });
     };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
-        canvas.renderAll();
         if (toolSelected.value === "pen") {
+          canvas.renderAll();
           await objectsCanvas();
+        }
+        if (toolSelected.value === Tools.Laser) {
+          canvas.renderAll();
+          await objectsCanvas();
+          laserDraw();
         }
       });
     };
@@ -143,7 +165,7 @@ export default defineComponent({
         case Tools.Cursor:
           toolSelected.value = Tools.Cursor;
           canvas.isDrawingMode = false;
-          modeAnnotation.value = 1;
+          modeAnnotation.value = Mode.Cursor;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value,
           });
@@ -158,12 +180,20 @@ export default defineComponent({
           toolSelected.value = Tools.Pen;
           canvas.remove(...canvas.getObjects("rect"));
           await store.dispatch("teacherRoom/setClearStickers", {});
-          modeAnnotation.value = 2;
+          modeAnnotation.value = Mode.Draw;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value,
           });
           canvas.freeDrawingBrush.color = strokeColor.value;
           canvas.freeDrawingBrush.width = strokeWidth.value;
+          return;
+        case Tools.Laser:
+          toolSelected.value = Tools.Laser;
+          canvas.isDrawingMode = true;
+          modeAnnotation.value = Mode.Draw;
+          await store.dispatch("teacherRoom/setMode", {
+            mode: modeAnnotation.value,
+          });
           return;
         case Tools.Stroke:
           toolSelected.value = Tools.Stroke;
@@ -189,7 +219,7 @@ export default defineComponent({
             toolSelected.value = Tools.Pen;
             canvas.isDrawingMode = true;
           }
-          modeAnnotation.value = 2;
+          modeAnnotation.value = Mode.Draw;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value,
           });
@@ -200,7 +230,7 @@ export default defineComponent({
           await store.dispatch("teacherRoom/setClearBrush", {});
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
-          modeAnnotation.value = 2;
+          modeAnnotation.value = Mode.Draw;
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value,
           });
@@ -248,7 +278,7 @@ export default defineComponent({
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
     };
     const defaultWhiteboard = async () => {
-      modeAnnotation.value = 1;
+      modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
         mode: modeAnnotation.value,
       });

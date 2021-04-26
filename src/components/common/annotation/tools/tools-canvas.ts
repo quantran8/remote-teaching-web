@@ -38,6 +38,7 @@ export default defineComponent({
     const toolNameMap = {
       [Tools.Cursor]: "Cursor",
       [Tools.Pen]: "Pen",
+      [Tools.Laser]: "Laser Pen",
       [Tools.Stroke]: "Size",
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
@@ -55,10 +56,10 @@ export default defineComponent({
       "orange",
       "yellow",
       "green",
-      //   "blue",
-      //   "purple",
-      //   "gray",
-      //   "white"
+      //"blue",
+      //"purple",
+      //"gray",
+      //"white"
     ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
@@ -85,8 +86,8 @@ export default defineComponent({
   },
   methods: {
     checkHasIcon(toolName: any) {
-      const { Cursor, Pen, Delete, Clear, Stroke } = Tools;
-      const iconList = [Cursor, Pen, Delete, Clear, Stroke];
+      const { Cursor, Pen, Laser, Delete, Clear, Stroke } = Tools;
+      const iconList = [Cursor, Pen, Laser, Delete, Clear, Stroke];
       if (iconList.includes(toolName)) return true;
       return false;
     },

@@ -161,6 +161,12 @@ const mutations: MutationTree<StudentRoomState> = {
   setWhiteboard(state: StudentRoomState, payload: any) {
     state.showWhiteBoard = payload;
   },
+  setDrawLaser(state: StudentRoomState, payload: any) {
+    state.laserPath = payload;
+  },
+  clearLaserPen(state: StudentRoomState, p: "") {
+    state.laserPath = p;
+  },
 };
 
 export default mutations;
