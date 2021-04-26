@@ -180,6 +180,11 @@ export default defineComponent({
       });
     };
 
+    const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
+    watch(laserPath, () => {
+      console.log(laserPath, "laser path");
+    });
+
     const canvasRef = ref(null);
     onMounted(() => {
       calcScaleRatio();

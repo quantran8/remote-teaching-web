@@ -86,8 +86,8 @@ export default defineComponent({
   },
   methods: {
     checkHasIcon(toolName: any) {
-      const { Cursor, Pen, Delete, Clear, Stroke } = Tools;
-      const iconList = [Cursor, Pen, Delete, Clear, Stroke];
+      const { Cursor, Pen, Laser, Delete, Clear, Stroke } = Tools;
+      const iconList = [Cursor, Pen, Laser, Delete, Clear, Stroke];
       if (iconList.includes(toolName)) return true;
       return false;
     },

@@ -83,32 +83,24 @@ export default defineComponent({
       lastObject.left = lastObject.left / ratio;
       lastObject.scaleX = lastObject.scaleX / ratio;
       lastObject.scaleY = lastObject.scaleY / ratio;
-      await store.dispatch("teacherRoom/setBrush", {
-        drawing: lastObject,
-      });
+      if (toolSelected.value === Tools.Pen) {
+        await store.dispatch("teacherRoom/setBrush", {
+          drawing: lastObject,
+        });
+      }
+      if (toolSelected.value === Tools.Laser) {
+        await store.dispatch("teacherRoom/setLaserPath", lastObject);
+      }
     };
     const laserDraw = () => {
-      canvas.getObjects().forEach((obj: any) => {
-        obj.animate("opacity", "0", {
-          duration: 1000,
-          easing: fabric.util.ease.easeInOutExpo,
-          onChange: canvas.renderAll.bind(canvas),
-          onComplete: () => {
-            canvas.remove(obj);
-          },
-        });
-      });
-    };
-    const listenToMouseDown = () => {
-      canvas.on("mouse:down", (e: any) => {
-        console.log("mouse down laser");
-      });
-    };
-    const listenToMouseMove = () => {
-      canvas.on("mouse:move", (e: any) => {
-        if (modeAnnotation.value === Mode.Draw && toolSelected.value === Tools.Laser) {
-          console.log("mouse move laser");
-        }
+      const laserPath = canvas.getObjects("path").pop();
+      laserPath.animate("opacity", "0", {
+        duration: 1000,
+        easing: fabric.util.ease.easeInOutExpo,
+        onChange: canvas.renderAll.bind(canvas),
+        onComplete: () => {
+          canvas.remove(laserPath);
+        },
       });
     };
     const listenToMouseUp = () => {
@@ -119,15 +111,13 @@ export default defineComponent({
         }
         if (toolSelected.value === Tools.Laser) {
           canvas.renderAll();
-          // await objectsCanvas();
+          await objectsCanvas();
           laserDraw();
         }
       });
     };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
-      // listenToMouseDown();
-      // listenToMouseMove();
       listenToMouseUp();
     };
     const imgLesson = () => {
