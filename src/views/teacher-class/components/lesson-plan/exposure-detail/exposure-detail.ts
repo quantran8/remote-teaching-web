@@ -22,7 +22,11 @@ export default defineComponent({
       await dispatch("teacherRoom/setCurrentExposureMediaItem", {
         id: item.id,
       });
+      await dispatch("teacherRoom/setMode", {
+        mode: 1,
+      });
       await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
     const toggleInformationBox = () => {
       showInfo.value = !showInfo.value;

@@ -34,4 +34,5 @@ export enum TeacherWSCommand {
   TEACHER_CLEAR_STICKERS = "TeacherClearStickers",
   // TEACHER_ACTION_GAME = "TeacherActionGame",
   TEACHER_SET_ONE_TO_ONE = "TeacherSetOneToOne",
+  TEACHER_SET_WHITEBOARD = "TeacherSetWhiteBoard",
 }

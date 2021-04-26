@@ -1,13 +1,19 @@
 .annotation-view {
+  width: 717px;
+  height: 435px;
   position: relative;
   left: 0;
   top: 50%;
   z-index: 10;
   transform: translateY(-50%);
+  border-radius: 10px;
   img {
     max-width: 100%;
     position: relative;
     z-index: 11;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
   }
   .cursor {
     display: inline-block;
@@ -24,12 +30,21 @@
       max-width: 25px;
     }
   }
-  .canvas-container {
+  .canvas-wrap-container {
+	border: 1px solid black;
+	border-radius: 10px;
     position: absolute;
     z-index: 12;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
+    &.has-whiteboard {
+      border: 1px solid #000;
+	  border-radius: 10px;
+    }
+	.canvas-content {
+		border-radius: 10px;
+	} 
   }
 }
 .sticker-control {

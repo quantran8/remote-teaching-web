@@ -13,6 +13,7 @@ import {
   UserMediaPayload,
   StudentBadgePayload,
   UserIdPayload,
+  WhiteboardPayload
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";

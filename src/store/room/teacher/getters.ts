@@ -1,9 +1,9 @@
-import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassRoomModel, ClassModel, RoomModel } from "@/models";
-import { GetterTree } from "vuex";
-import { ClassView, InClassStatus, StudentState, TeacherState } from "../interface";
-import { ClassAction } from "../student/state";
-import { TeacherRoomState } from "./state";
+import {TeacherRoomManager} from "@/manager/room/teacher.manager";
+import {ClassModel, RoomModel} from "@/models";
+import {GetterTree} from "vuex";
+import {ClassView, InClassStatus, StudentState, TeacherState} from "../interface";
+import {ClassAction} from "../student/state";
+import {TeacherRoomState} from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
   isConnected(state: TeacherRoomState): boolean {
@@ -58,6 +58,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   isGalleryView(state: TeacherRoomState) {
     return state.classView === ClassView.GALLERY;
+  },
+  isLessonPlanView(state: TeacherRoomState) {
+    return state.classView === ClassView.LESSON_PLAN;
   },
   // isGameView(state: TeacherRoomState) {
   //   return state.classView === ClassView.GAME;

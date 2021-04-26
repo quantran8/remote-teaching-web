@@ -70,6 +70,7 @@ export interface StudentRoomState {
   classAction: ClassAction;
   idOne: string;
   speakingUsers: Array<string>;
+  showWhiteBoard: boolean;
 }
 
 const state: StudentRoomState = {
@@ -87,6 +88,7 @@ const state: StudentRoomState = {
   classAction: ClassAction.DEFAULT,
   idOne: "",
   speakingUsers: [],
+  showWhiteBoard: false,
 };
 
 export default state;

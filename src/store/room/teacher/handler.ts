@@ -219,6 +219,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
     },
+    onTeacherSetWhiteboard: (payload: RoomModel) => {
+      console.log(payload);
+    },
   };
   return handler;
 };

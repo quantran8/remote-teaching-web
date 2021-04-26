@@ -31,4 +31,5 @@ export interface TeacherWSEventHandler {
   onStudentUpdateAnswers(payload: any): void;
   // onTeacherSendUnity(payload: any): void;
   onTeacherSetOneToOne(payload: any): void;
+  onTeacherSetWhiteboard(payload: any): void;
 }

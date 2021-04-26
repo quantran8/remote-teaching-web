@@ -25,7 +25,7 @@ const getters: GetterTree<AnnotationState, any> = {
   },
   stickers(state: AnnotationState): Array<Sticker> {
     return state.stickers;
-  }
+  },
 };
 
 export default getters;

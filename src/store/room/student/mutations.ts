@@ -158,6 +158,9 @@ const mutations: MutationTree<StudentRoomState> = {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.raisingHand = payload.raisingHand;
   },
+  setWhiteboard(state: StudentRoomState, payload: any) {
+    state.showWhiteBoard = payload;
+  },
 };
 
 export default mutations;

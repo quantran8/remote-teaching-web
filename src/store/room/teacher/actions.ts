@@ -14,6 +14,7 @@ import {
   UserIdPayload,
   UserMediaPayload,
   ValueOfClassView,
+  WhiteboardPayload
 } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
@@ -254,6 +255,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   clearStudentOneId({ commit }, p: { id: string }) {
     commit("clearStudentOneId", p);
+  },
+  setWhiteboard({ state }, payload: WhiteboardPayload) {
+    state.manager?.WSClient.sendRequestSetWhiteboard(payload.isShowWhiteBoard);
   },
 };
 

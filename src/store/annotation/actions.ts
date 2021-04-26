@@ -13,9 +13,7 @@ export interface AnnotationActionInterface<S, R> {
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
-export interface AnnotationAction<S, R>
-  extends ActionTree<S, R>,
-    AnnotationActionInterface<S, R> {}
+export interface AnnotationAction<S, R> extends ActionTree<S, R>, AnnotationActionInterface<S, R> {}
 
 const actions: ActionTree<AnnotationState, any> = {
   setPointer({ commit }, p: Pointer) {
@@ -41,6 +39,6 @@ const actions: ActionTree<AnnotationState, any> = {
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);
-  }
+  },
 };
 export default actions;

@@ -51,7 +51,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.mode = p.mode;
     s.drawing = p.drawing;
     s.stickers = p.stickers;
-  }
+  },
 };
 
 export default mutations;
