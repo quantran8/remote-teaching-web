@@ -29,6 +29,9 @@
       &__stroke-line {
         background-color: black;
 		margin-bottom: 5px;
+		width: 65%;
+		margin-left: auto;
+		margin-right: auto;
       }
       &__stroke-color {
         width: 20px;
@@ -88,7 +91,9 @@
       }
 	  .color-signal {
 		height: 4px;
-		width: 20px;
+		background-color: black;
+		margin-bottom: 5px;
+		width: 90%;
 	  }
 	  &.selected {
 		  background-color: #ccc;
@@ -105,7 +110,7 @@
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
-	background-color: #f7f3e9;
+	background-color: #f5f5f5;
 	&:before {
 		content: "";
 		position: absolute;
