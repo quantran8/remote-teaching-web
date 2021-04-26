@@ -1,7 +1,6 @@
 import { defineComponent, Ref, ref, watch } from "vue";
 import { Tools } from "@/commonui";
 import { times } from "lodash";
-import PenIcon from './components/pen-icon.vue'
 
 export default defineComponent({
   emits: ["tool-selected", "update-color", "update-stroke"],
@@ -31,9 +30,6 @@ export default defineComponent({
 	return {
 		showFontWeightPopover: false,
 	}
-  },
-  components: {
-    PenIcon,
   },
   setup(props, { emit }) {
     const tools = Tools;
@@ -74,7 +70,6 @@ export default defineComponent({
     const updateStrokeSize = (value: number) => {
       emit("update-stroke", value);
     };
-	const defaultIconSize = 40
     return {
       tools,
       toolNames,
@@ -86,7 +81,6 @@ export default defineComponent({
       updateColor,
       updateStrokeSize,
       strokeSize,
-	  defaultIconSize
     };
   },
   methods: {
