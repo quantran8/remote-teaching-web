@@ -44,7 +44,11 @@
     }
 	.canvas-content {
 		border-radius: 10px;
-	} 
+	}
+	&.has-palette-tools {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+	}
   }
 }
 .sticker-control {
@@ -83,3 +87,25 @@
     }
   }
 }
+
+.palette-tool {
+	display: flex;
+	width: 719px;
+	padding: 15px 40px;
+	background: #d8dddf;
+	align-items: center;
+	border-bottom-right-radius: 30px;
+	border-bottom-left-radius: 30px;
+	&__item {
+		width: 40px;
+		height: 40px;
+		&:not(:first-child) {
+            margin-left: 50px;
+        }
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+

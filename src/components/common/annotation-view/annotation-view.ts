@@ -10,9 +10,13 @@ import {
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import * as R from "ramda/";
+import StudentTools from './student-tools/student-tools.vue'
 
 export default defineComponent({
   props: ["image"],
+  components: {
+	StudentTools
+  },
   setup(props) {
     const store = useStore();
     let canvas: any;
