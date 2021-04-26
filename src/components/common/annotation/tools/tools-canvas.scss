@@ -4,6 +4,7 @@
   border-bottom-left-radius: 10px;
   border-right-width: 0;
   display: flex;
+  max-height: 479px;
   flex-direction: column;
   align-content: center;
   align-items: center;
@@ -17,7 +18,7 @@
   &__item {
     min-width: 65px;
     position: relative;
-    padding: 5px;
+    padding: 2px;
     margin: 0 5px;
     border-radius: 5px;
     cursor: pointer;
@@ -28,7 +29,7 @@
     &__icon {
       &__stroke-line {
         background-color: black;
-		margin-bottom: 5px;
+		margin-bottom: 1px;
 		width: 65%;
 		margin-left: auto;
 		margin-right: auto;
