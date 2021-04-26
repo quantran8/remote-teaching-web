@@ -56,8 +56,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);
-      const message = `${student?.name} left the class.`;
-      dispatch("setToast", { message: message }, { root: true });
+      if (student && student.name) {
+        const message = `${student.name} left the class.`;
+        dispatch("setToast", { message: message }, { root: true });
+      }
     },
     onStudentSendUnity: async (payload: any) => {
       await dispatch(
