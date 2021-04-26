@@ -128,6 +128,10 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.TEACHER_SET_ONE_TO_ONE, { StudentId: payload.id });
   }
   sendRequestSetWhiteboard(isShowWhiteBoard: boolean) {
-    return this.send(WSCmd.TEACHER_SET_WHITEBOARD, isShowWhiteBoard)
+    return this.send(WSCmd.TEACHER_SET_WHITEBOARD, isShowWhiteBoard);
+  }
+  sendRequestDrawLaser(payload: any) {
+    const data = JSON.stringify(payload);
+    return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);
   }
 }

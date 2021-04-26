@@ -259,6 +259,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setWhiteboard({ state }, payload: WhiteboardPayload) {
     state.manager?.WSClient.sendRequestSetWhiteboard(payload.isShowWhiteBoard);
   },
+  setLaserPath({ state }, payload: string) {
+    state.manager?.WSClient.sendRequestDrawLaser(payload);
+  },
 };
 
 export default actions;

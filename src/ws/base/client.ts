@@ -1,9 +1,9 @@
-import { GLGlobal } from "@/commonui";
-import { Logger } from "@/utils/logger";
-import { HubConnectionBuilder, HttpTransportType, LogLevel, HubConnection, HubConnectionState } from "@microsoft/signalr";
+import {GLGlobal} from "@/commonui";
+import {Logger} from "@/utils/logger";
+import {HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel} from "@microsoft/signalr";
 
-import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
-import { WSEvent, WSEventHandler } from "./event";
+import {RoomWSEvent, StudentWSEvent, TeacherWSEvent} from "..";
+import {WSEvent, WSEventHandler} from "./event";
 
 export interface GLSocketOptions {
   url: string;
@@ -125,6 +125,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_STICKER, handler.onTeacherSetStickers);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_STICKER, handler.onTeacherClearStickers);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_WHITEBOARD, handler.onTeacherSetWhiteboard);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_DRAW_LASER_PEN, handler.onTeacherDrawLaser);
     // handlers.set(
     //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
     //   handler.onTeacherSendUnity

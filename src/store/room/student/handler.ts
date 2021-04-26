@@ -302,8 +302,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
-      console.log("onTeacherSetWhiteboard",payload);
       await commit("setWhiteboard", payload);
+    },
+    onTeacherDrawLaser: async (payload: any) => {
+      await commit("setDrawLaser", payload);
     },
   };
   return handler;

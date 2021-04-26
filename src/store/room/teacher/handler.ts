@@ -224,6 +224,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherSetWhiteboard: (payload: RoomModel) => {
       console.log(payload);
     },
+    onTeacherDrawLaser: (payload: any) => {
+      console.log(payload);
+    },
   };
   return handler;
 };

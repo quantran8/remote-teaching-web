@@ -191,6 +191,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   clearStudentOneId({ commit }, p: { id: string }) {
     commit("clearStudentOneId", p);
   },
+  clearLaserPen({ commit }, p: "") {
+    commit("clearLaserPen", p);
+  },
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);
   // }
