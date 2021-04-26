@@ -10,7 +10,12 @@
         v-show="student.videoEnabled && !isNotJoinned"
         :id="student.id"
       ></div>
-      <img class="student__img" v-show="!student.videoEnabled || isNotJoinned" src="@/assets/student-class/no-avatar.png" />
+      <img
+        class="student__img"
+        :class="[isSpeaking && 'student__is-speaking']"
+        v-show="!student.videoEnabled || isNotJoinned"
+        src="@/assets/student-class/no-avatar.png"
+      />
     </figure>
     <div class="student__info">
       <h4 class="student__name" :class="isNotJoinned ? 'student__disable' : 'student__enable'" @click="onOneAndOne">

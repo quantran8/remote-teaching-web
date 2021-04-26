@@ -61,6 +61,8 @@ export default defineComponent({
     const isClassNotActive = computed(() => {
       return error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE;
     });
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
+    const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
     const roomInfo = computed(() => {
       return getters["teacherRoom/info"];
     });
@@ -71,6 +73,8 @@ export default defineComponent({
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
     });
+
+    const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
     watch(isGalleryView, value => {
@@ -157,7 +161,7 @@ export default defineComponent({
     watch(isConnected, async () => {
       if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
-    });
+    });	
     return {
       onClickHideAll,
       onClickShowAll,
@@ -183,6 +187,9 @@ export default defineComponent({
       // onUnityLoaderLoaded,
       // onUnityViewLoading,
       // onUnityViewLoaded
+      isLessonPlan,
+      currentExposureItemMedia,
+      isBlackOutContent
     };
   },
 });

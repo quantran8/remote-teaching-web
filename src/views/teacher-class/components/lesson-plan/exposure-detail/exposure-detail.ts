@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 export default defineComponent({
@@ -10,6 +10,8 @@ export default defineComponent({
 
   setup(props, { emit }) {
     const { dispatch } = useStore();
+    const showInfo = ref(false);
+
     const onClickBack = () => {
       emit("click-back");
     };
@@ -26,6 +28,10 @@ export default defineComponent({
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
-    return { onClickItem, onClickBack, onClickMedia };
+    const toggleInformationBox = () => {
+      showInfo.value = !showInfo.value;
+    };
+
+    return { onClickItem, onClickBack, onClickMedia, toggleInformationBox, showInfo };
   },
 });

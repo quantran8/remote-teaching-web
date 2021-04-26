@@ -7,12 +7,13 @@ import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { debounce } from "lodash";
-import { Select, Button } from "ant-design-vue";
+import { Select, Button, Spin } from "ant-design-vue";
 
 export default defineComponent({
   components: {
     ClassCard,
     Select,
+	Spin,
     Option: Select.Option,
   },
   async created() {

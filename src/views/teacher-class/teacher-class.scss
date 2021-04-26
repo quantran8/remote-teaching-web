@@ -13,6 +13,7 @@
     width: 320px;
     transition: 0.2s;
     overflow: hidden;
+    border-bottom: 1px solid #7b7b7b;
     &--collapsed {
       margin-left: -240px;
     }
@@ -20,18 +21,21 @@
   &__content {
     display: flex;
     flex-direction: column;
+	align-items: center;
     &__teacher {
-      width: 100%;
-      flex: 1;
+	  height: 300px;
+	  width: 800px;
+      &--gallery{
+        height: 500px;
+      }
     }
     &__activity-content {
       flex: auto;
       min-height: 70%;
     }
     &__whiteboard-content {
-      flex: 1;
-      max-width: 50%;
-      margin: auto;
+		width: 800px;
+		margin: 0 auto;
     }
   }
   &__gallery {

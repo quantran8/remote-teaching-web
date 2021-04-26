@@ -12,15 +12,19 @@ import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
+import * as R from "ramda/";
+import {ClassView} from "@/store/room/interface";
 
 export default defineComponent({
+  props: ["image"],
   components: {
     ToolsCanvas,
   },
-  setup() {
+  setup(props) {
     const store = useStore();
     const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
+    const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     let canvas: any;
     const tools = Tools;
@@ -34,13 +38,18 @@ export default defineComponent({
     const showHideWhiteboard: Ref<boolean> = ref(false);
     // watch whiteboard state to display
     watch(infoTeacher, () => {
-      showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      if (infoTeacher.value) {
+        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      }
     });
     if (currentExposure.value) {
       if (currentExposure.value.type == "poems" || currentExposure.value.type == "bigbook") {
         hasStickerTool.value = true;
       }
     }
+    const imageUrl = computed(() => {
+      return props.image ? props.image.url : {};
+    });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === Mode.Cursor) {
         const { width, height } = currentExposureItemMedia.value.image;
@@ -126,6 +135,7 @@ export default defineComponent({
       return imageLesson?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
     };
     const boardSetup = async () => {
+      if (!props.image) return;
       const canvasEl = document.getElementById("canvasDesignate");
       const canvasContainer = document.getElementsByClassName("canvas-container");
       if (canvasEl && canvasContainer.length == 0) {
@@ -173,6 +183,7 @@ export default defineComponent({
             obj.selectable = false;
             obj.hasControls = false;
             obj.hasBorders = false;
+            obj.hoverCursor = "cursor";
           });
           return;
         case Tools.Pen:
@@ -264,6 +275,8 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
       showHideWhiteboard.value = true;
       await clickedTool(Tools.Clear);
+      canvas.freeDrawingBrush.color = strokeColor.value;
+      canvas.freeDrawingBrush.width = strokeWidth.value;
       canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
     };
     const hideWhiteboard = async () => {
@@ -304,6 +317,8 @@ export default defineComponent({
       showWhiteboard,
       showHideWhiteboard,
       hideWhiteboard,
+      isLessonPlan,
+      imageUrl,
     };
   },
 });

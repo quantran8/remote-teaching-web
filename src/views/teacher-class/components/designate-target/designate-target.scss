@@ -59,7 +59,9 @@
       }
       .wrap-canvas {
         position: relative;
+		border-top-right-radius: 10px;
         z-index: 11;
+		
       }
     }
     .designate-box-right {
@@ -127,5 +129,8 @@
         }
       }
     }
+  }
+  .canvas-designate {
+	border-top-right-radius: 10px;
   }
 }

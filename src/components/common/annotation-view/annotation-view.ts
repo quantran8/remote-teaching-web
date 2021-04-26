@@ -43,6 +43,9 @@ export default defineComponent({
       if (!pointer) return `display: none`;
       return `transform: translate(${pointer.x * scaleRatio.value}px, ${pointer.y * scaleRatio.value}px)`;
     });
+    watch(isPointerMode, () => {
+      return pointerStyle;
+    });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
     });
@@ -111,24 +114,32 @@ export default defineComponent({
       }
     };
     watch(stickersData, () => {
-      stickerRender();
+      // stickerRender();
     });
-
+    const imgLesson = () => {
+      const imageLesson = document.getElementById("annotation-img");
+      return imageLesson?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+    };
     const boardSetup = () => {
-      canvas = new fabric.Canvas("canvas");
       if (!props.image) return;
-      const imgAnnotation = document.getElementById("annotation-img");
-      if (!imgAnnotation) return;
-      const boundingBox = imgAnnotation.getBoundingClientRect();
-      canvas.setWidth(boundingBox.width);
-      canvas.setHeight(boundingBox.height);
+      const canvasEl = document.getElementById("canvasOnStudent");
+      const canvasContainer = document.getElementsByClassName("canvas-container");
+      if (canvasEl && canvasContainer.length == 0) {
+        canvas = new fabric.Canvas("canvasOnStudent");
+      } else {
+        canvas.dispose();
+        canvas = new fabric.Canvas("canvasOnStudent");
+      }
+      const { width, height } = imgLesson();
+      canvas.setWidth(width);
+      canvas.setHeight(height);
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
 
       renderCanvas();
-      stickerRender();
+      // stickerRender();
     };
 
     const changeColorSticker = (stickerColor: string) => {
@@ -172,7 +183,7 @@ export default defineComponent({
     const canvasRef = ref(null);
     onMounted(() => {
       calcScaleRatio();
-      boardSetup();
+      // boardSetup();
       window.addEventListener("resize", calcScaleRatio);
     });
     onUnmounted(() => {
@@ -182,14 +193,15 @@ export default defineComponent({
     return {
       pointerStyle,
       imageUrl,
+      boardSetup,
       isPointerMode,
       isDrawMode,
       canvasRef,
-      stickerColors,
-      checkStickerAdded,
-      changeColorSticker,
-      isStickerMode,
-      checkStickers,
+      // stickerColors,
+      // checkStickerAdded,
+      // changeColorSticker,
+      // isStickerMode,
+      // checkStickers,
       isShowWhiteBoard,
     };
   },

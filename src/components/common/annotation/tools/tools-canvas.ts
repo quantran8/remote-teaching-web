@@ -1,5 +1,6 @@
 import { defineComponent, Ref, ref, watch } from "vue";
 import { Tools } from "@/commonui";
+import { times } from "lodash";
 
 export default defineComponent({
   emits: ["tool-selected", "update-color", "update-stroke"],
@@ -25,6 +26,11 @@ export default defineComponent({
       default: false,
     },
   },
+  data() {
+    return {
+      showFontWeightPopover: false,
+    };
+  },
   setup(props, { emit }) {
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -34,14 +40,27 @@ export default defineComponent({
       [Tools.Pen]: "Pen",
       [Tools.Laser]: "Laser Pen",
       [Tools.Stroke]: "Size",
-      [Tools.StrokeColor]: "Color",
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
       [Tools.AddSticker]: "Add Sticker",
       [Tools.AssignSticker]: "Assign Sticker",
+      [Tools.StrokeColor]: "Color",
     };
+
     const colors: any = {};
-    const colorsList = ["black", "brown", "red", "orange", "yellow", "green", "blue", "purple", "gray", "white"];
+    //currently the design just have 6 color belows
+    const colorsList = [
+      "black",
+      "brown",
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      //"blue",
+      //"purple",
+      //"gray",
+      //"white"
+    ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
@@ -64,5 +83,18 @@ export default defineComponent({
       updateStrokeSize,
       strokeSize,
     };
+  },
+  methods: {
+    checkHasIcon(toolName: any) {
+      const { Cursor, Pen, Delete, Clear, Stroke } = Tools;
+      const iconList = [Cursor, Pen, Delete, Clear, Stroke];
+      if (iconList.includes(toolName)) return true;
+      return false;
+    },
+    handleIconClick(toolName: any) {
+      if (toolName === Tools.Stroke) {
+        this.showFontWeightPopover = !this.showFontWeightPopover;
+      }
+    },
   },
 });

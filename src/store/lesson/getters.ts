@@ -86,8 +86,26 @@ const getters: LessonGetters<LessonState, any> = {
     return s.isBlackout;
   },
   activityStatistic(s: LessonState): string {
-    const activityCompleted = s.exposures.filter(e => e.status === ExposureStatus.COMPLETED).length;
-    return s.exposures.length ? `${activityCompleted}/${s.exposures.length}` : "0";
+    const listExpo: (string | undefined)[] = [];
+    s.exposures.filter(expo => listExpo.push(expo.id));
+    return s.exposures.length ? `${listExpo.indexOf(s.currentExposure?.id) + 1}/${s.exposures.length}` : "0";
+  },
+  getPage(s: LessonState): string {
+    const listMedia: string[] = [];
+    s.currentExposure?.items.map(item => {
+      item.media.map(media => {
+        listMedia.push(media.id);
+      });
+    });
+    const currentPage: string[] = [];
+    if (listMedia.length > 0) {
+      listMedia.map(media => {
+        if (media == s.currentExposureItemMedia?.id) {
+          currentPage.push(media);
+        }
+      });
+    }
+    return s.exposures.length ? `${listMedia.indexOf(currentPage[0]) + 1}/${listMedia.length}` : "0";
   },
   remainingTimeStatistic(s: LessonState): string {
     return secondsToTimeStr(getSeconds(s.totalTime) - getSeconds(s.playedTime));
