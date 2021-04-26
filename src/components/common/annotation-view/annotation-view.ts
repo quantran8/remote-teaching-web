@@ -51,10 +51,13 @@ export default defineComponent({
     });
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
-
+    const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
       const shapes: Array<string> = canvasData.value;
+      if (laserPath.value) {
+        shapes.push(laserPath.value);
+      }
       const canvasJsonData = {
         objects: shapes
           .map(s => {
@@ -78,8 +81,24 @@ export default defineComponent({
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
+      if (laserPath.value) {
+        const laserLine = canvas.getObjects("path").pop();
+        laserLine.animate("opacity", "0", {
+          duration: 1000,
+          easing: fabric.util.ease.easeInOutExpo,
+          onChange: canvas.renderAll.bind(canvas),
+          onComplete: async () => {
+            shapes.pop();
+            canvas.remove(laserLine);
+            await store.dispatch("studentRoom/clearLaserPen", "");
+          },
+        });
+      }
     };
     watch(undoCanvas, () => {
+      renderCanvas();
+    });
+    watch(laserPath,() => {
       renderCanvas();
     });
     watch(canvasData, renderCanvas);
@@ -179,11 +198,6 @@ export default defineComponent({
         });
       });
     };
-
-    const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
-    watch(laserPath, () => {
-      console.log(laserPath, "laser path");
-    });
 
     const canvasRef = ref(null);
     onMounted(() => {

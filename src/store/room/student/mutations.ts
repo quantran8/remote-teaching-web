@@ -164,6 +164,9 @@ const mutations: MutationTree<StudentRoomState> = {
   setDrawLaser(state: StudentRoomState, payload: any) {
     state.laserPath = payload;
   },
+  clearLaserPen(state: StudentRoomState, p: "") {
+    state.laserPath = p;
+  },
 };
 
 export default mutations;
