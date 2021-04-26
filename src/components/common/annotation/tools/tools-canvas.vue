@@ -29,7 +29,7 @@
               <div
                 v-for="(color, index) in colorsList"
                 :key="index"
-                class="color-item"
+				:class="['color-item', { 'color-item--has-border': color === 'white' }]"
                 :style="`background-color: ${color}`"
                 @click="
                   clickedTool(toolName);

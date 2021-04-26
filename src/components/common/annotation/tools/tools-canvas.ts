@@ -51,15 +51,13 @@ export default defineComponent({
     //currently the design just have 6 color belows
     const colorsList = [
       "black",
-      "brown",
       "red",
       "orange",
       "yellow",
       "green",
-      //"blue",
-      //"purple",
-      //"gray",
-      //"white"
+      "blue",
+      "purple",
+      "white"
     ];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
