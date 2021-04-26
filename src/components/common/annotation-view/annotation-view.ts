@@ -180,6 +180,53 @@ export default defineComponent({
       });
     };
 
+    const starPolygonPoints = (spikeCount: any, outerRadius: any, innerRadius: any) => {
+      let rot = (Math.PI / 2) * 3;
+      const cx = outerRadius;
+      const cy = outerRadius;
+      const sweep = Math.PI / spikeCount;
+      const points = [];
+
+      for (let i = 0; i < spikeCount; i++) {
+        let x = cx + Math.cos(rot) * outerRadius;
+        let y = cy + Math.sin(rot) * outerRadius;
+        points.push({ x: x, y: y });
+        rot += sweep;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        points.push({ x: x, y: y });
+        rot += sweep;
+      }
+      return points;
+    };
+
+    const addStar = () => {
+      const points = starPolygonPoints(5, 35, 15);
+      const star = new fabric.Polygon(
+        points,
+        {
+          stroke: "black",
+          left: 100,
+          top: 10,
+          strokeWidth: 3,
+          strokeLineJoin: "round",
+          fill: "white",
+        },
+        false,
+      );
+      canvas.add(star);
+      canvas.getObjects("polygon").forEach((obj: any) => {
+        obj.hasControls = false;
+      });
+      canvas.renderAll();
+    };
+
+    const clearStar = () => {
+      canvas.remove(...canvas.getObjects("polygon"));
+      canvas.renderAll();
+    };
+
     const canvasRef = ref(null);
     onMounted(() => {
       calcScaleRatio();
@@ -203,6 +250,8 @@ export default defineComponent({
       // isStickerMode,
       // checkStickers,
       isShowWhiteBoard,
+      addStar,
+      clearStar,
     };
   },
 });
