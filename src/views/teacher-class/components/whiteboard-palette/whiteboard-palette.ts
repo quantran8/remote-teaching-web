@@ -27,9 +27,20 @@ export default defineComponent({
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
     // watch whiteboard state to display
-    watch(infoTeacher, () => {
+    watch(infoTeacher, async () => {
       if (infoTeacher.value) {
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+        if (!canvas) return;
+        if (infoTeacher.value.isShowWhiteBoard) {
+          canvas.backgroundColor = "white";
+          await clickedTool(Tools.Pen);
+          showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+        } else {
+          canvas.remove(...canvas.getObjects("path"));
+          canvas.backgroundColor = "transparent";
+          await clickedTool(Tools.Cursor);
+          showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+        }
       }
     });
     if (currentExposure.value) {
@@ -42,15 +53,11 @@ export default defineComponent({
     });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === Mode.Cursor) {
-        const { width, height } = currentExposureItemMedia.value.image;
         const rect = document.getElementById("canvas-container");
         if (!rect) return;
         const rectBounding = rect.getBoundingClientRect();
-        const wRatio = rectBounding.width / width;
-        const hRatio = rectBounding.height / height;
-        const ratio = Math.min(wRatio, hRatio);
-        const x = (e.clientX - rectBounding.left) / ratio;
-        const y = (e.clientY - rectBounding.top) / ratio;
+        const x = e.clientX - rectBounding.left;
+        const y = e.clientY - rectBounding.top;
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
@@ -58,21 +65,8 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
-      const { width, height } = currentExposureItemMedia.value.image;
-      const rect = document.getElementById("canvas-container");
-      if (!rect) return;
-      const rectBounding = rect.getBoundingClientRect();
-      const wRatio = rectBounding.width / width;
-      const hRatio = rectBounding.height / height;
-      const ratio = Math.min(wRatio, hRatio);
       const canvasAsJSON = canvas.toJSON();
       const lastObject = canvasAsJSON.objects[canvasAsJSON.objects.length - 1];
-      lastObject.width = lastObject.width / ratio;
-      lastObject.height = lastObject.height / ratio;
-      lastObject.top = lastObject.top / ratio;
-      lastObject.left = lastObject.left / ratio;
-      lastObject.scaleX = lastObject.scaleX / ratio;
-      lastObject.scaleY = lastObject.scaleY / ratio;
       if (toolSelected.value === Tools.Pen) {
         await store.dispatch("teacherRoom/setBrush", {
           drawing: lastObject,
@@ -116,16 +110,6 @@ export default defineComponent({
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(717);
       canvas.setHeight(435);
-      if (infoTeacher.value.isShowWhiteBoard) {
-        canvas.backgroundColor = "white";
-        await clickedTool(Tools.Pen);
-        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
-      } else {
-        canvas.remove(...canvas.getObjects("path"));
-        canvas.backgroundColor = "transparent";
-        await clickedTool(Tools.Cursor);
-        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
-      }
       canvas.selectionFullyContained = false;
       listenToCanvasEvents();
     };

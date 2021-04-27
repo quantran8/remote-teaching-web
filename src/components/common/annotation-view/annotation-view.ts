@@ -237,18 +237,18 @@ export default defineComponent({
 
     const canvasRef = ref(null);
     onMounted(() => {
-      calcScaleRatio();
+      // calcScaleRatio();
       boardSetup();
-      window.addEventListener("resize", calcScaleRatio);
+      // window.addEventListener("resize", calcScaleRatio);
     });
     onUnmounted(() => {
-      window.removeEventListener("resize", calcScaleRatio);
+      // window.removeEventListener("resize", calcScaleRatio);
     });
 
     return {
       pointerStyle,
       imageUrl,
-      boardSetup,
+      // boardSetup,
       isPointerMode,
       isDrawMode,
       canvasRef,
