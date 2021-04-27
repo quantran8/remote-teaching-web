@@ -1,5 +1,5 @@
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, defineComponent, ref } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
@@ -30,6 +30,12 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isMouseEntered = ref<boolean>(false);
+    const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
+    const isStudentOne = ref(false);
+
+    watch(studentOneAndOneId, () => {
+      isStudentOne.value = props.student.id == studentOneAndOneId.value;
+    });
 
     const isAudioHightlight = computed(() => {
       const enableAudios: Array<string> = store.getters["teacherRoom/enableAudios"];
@@ -40,30 +46,20 @@ export default defineComponent({
       return interactive.value.status !== 0 && interactive.value.multiAssign && !isNotJoinned.value;
     });
 
-    const setDefault = async (status: boolean) => {
-      await store.dispatch("teacherRoom/setStudentAudio", {
-        id: props.student.id,
-        enable: status,
-      });
-      await store.dispatch("teacherRoom/setStudentVideo", {
-        id: props.student.id,
-        enable: status,
-      });
-    };
-
     const onOneAndOne = async () => {
       if (props.setModeOne && !isNotJoinned.value) {
-        await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-        await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+        if (currentExposure.value) {
+          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+        }
+        if (currentExposureItemMedia.value) {
+          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+        }
         await store.dispatch("modeOne/setStudentOneId", { id: props.student.id });
-        await store.dispatch("updateAudioAndVideoFeed", {});
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.student.id,
         });
         await store.dispatch("updateAudioAndVideoFeed", {});
-        await setDefault(false);
-        await setDefault(true);
       }
     };
 
@@ -90,6 +86,8 @@ export default defineComponent({
       onMouseChange,
       isMouseEntered,
       isSpeaking,
+      studentOneAndOneId,
+      isStudentOne,
     };
   },
 });
