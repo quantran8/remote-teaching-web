@@ -16,7 +16,6 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
-    const modeRef = computed(() => store.getters["annotation/mode"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -33,10 +32,6 @@ export default defineComponent({
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
       }
     });
-    // watch(modeRef, () => {
-    //   modeAnnotation.value = modeRef.value;
-    //   console.log(modeRef.value, "mode mode mode");
-    // });
     if (currentExposure.value) {
       if (currentExposure.value.type == "poems" || currentExposure.value.type == "bigbook") {
         hasStickerTool.value = true;
