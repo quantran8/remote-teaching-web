@@ -1,6 +1,7 @@
 <template>
   <div
-    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isLarge && 'student--large']"
+    v-show="!studentOneAndOneId || isStudentOne"
+    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
     @mouseleave="onMouseChange(false)"
   >
     <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
@@ -22,7 +23,7 @@
         {{ student.name }}
       </h4>
     </div>
-    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isLarge" />
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isStudentOne" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->

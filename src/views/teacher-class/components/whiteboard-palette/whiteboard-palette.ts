@@ -1,18 +1,8 @@
-import {
-  computed,
-  ComputedRef,
-  defineComponent, onBeforeMount,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch
-} from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
-import * as R from "ramda/";
 import {ClassView} from "@/store/room/interface";
 
 export default defineComponent({
@@ -37,9 +27,20 @@ export default defineComponent({
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
     // watch whiteboard state to display
-    watch(infoTeacher, () => {
+    watch(infoTeacher, async () => {
       if (infoTeacher.value) {
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+        if (!canvas) return;
+        if (infoTeacher.value.isShowWhiteBoard) {
+          canvas.backgroundColor = "white";
+          await clickedTool(Tools.Pen);
+          showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+        } else {
+          canvas.remove(...canvas.getObjects("path"));
+          canvas.backgroundColor = "transparent";
+          await clickedTool(Tools.Cursor);
+          showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+        }
       }
     });
     if (currentExposure.value) {
@@ -52,15 +53,11 @@ export default defineComponent({
     });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === Mode.Cursor) {
-        const { width, height } = currentExposureItemMedia.value.image;
         const rect = document.getElementById("canvas-container");
         if (!rect) return;
         const rectBounding = rect.getBoundingClientRect();
-        const wRatio = rectBounding.width / width;
-        const hRatio = rectBounding.height / height;
-        const ratio = Math.min(wRatio, hRatio);
-        const x = (e.clientX - rectBounding.left) / ratio;
-        const y = (e.clientY - rectBounding.top) / ratio;
+        const x = e.clientX - rectBounding.left;
+        const y = e.clientY - rectBounding.top;
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
@@ -68,21 +65,8 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
-      const { width, height } = currentExposureItemMedia.value.image;
-      const rect = document.getElementById("canvas-container");
-      if (!rect) return;
-      const rectBounding = rect.getBoundingClientRect();
-      const wRatio = rectBounding.width / width;
-      const hRatio = rectBounding.height / height;
-      const ratio = Math.min(wRatio, hRatio);
       const canvasAsJSON = canvas.toJSON();
       const lastObject = canvasAsJSON.objects[canvasAsJSON.objects.length - 1];
-      lastObject.width = lastObject.width / ratio;
-      lastObject.height = lastObject.height / ratio;
-      lastObject.top = lastObject.top / ratio;
-      lastObject.left = lastObject.left / ratio;
-      lastObject.scaleX = lastObject.scaleX / ratio;
-      lastObject.scaleY = lastObject.scaleY / ratio;
       if (toolSelected.value === Tools.Pen) {
         await store.dispatch("teacherRoom/setBrush", {
           drawing: lastObject,
@@ -120,33 +104,12 @@ export default defineComponent({
     const listenToCanvasEvents = () => {
       listenToMouseUp();
     };
-    const imgLesson = () => {
-      const imageLesson = document.getElementById("annotation-img");
-      return imageLesson?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
-    };
     const boardSetup = async () => {
-      if (!props.image) return;
       const canvasEl = document.getElementById("canvasDesignate");
-      const canvasContainer = document.getElementsByClassName("canvas-container");
-      if (canvasEl && canvasContainer.length == 0) {
-        canvas = new fabric.Canvas("canvasDesignate");
-      } else {
-        canvas.dispose();
-        canvas = new fabric.Canvas("canvasDesignate");
-      }
-      const { width, height } = imgLesson();
-      canvas.setWidth(width);
-      canvas.setHeight(height);
-      if (infoTeacher.value.isShowWhiteBoard) {
-        canvas.backgroundColor = "white";
-        await clickedTool(Tools.Pen);
-        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
-      } else {
-        canvas.remove(...canvas.getObjects("path"));
-        canvas.backgroundColor = "transparent";
-        await clickedTool(Tools.Cursor);
-        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
-      }
+      if (!canvasEl) return;
+      canvas = new fabric.Canvas("canvasDesignate");
+      canvas.setWidth(717);
+      canvas.setHeight(435);
       canvas.selectionFullyContained = false;
       listenToCanvasEvents();
     };
@@ -277,6 +240,13 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
     };
+    const imgLoad = async () => {
+      if (!canvas) return;
+      canvas.remove(...canvas.getObjects("path"));
+      showHideWhiteboard.value = false;
+      canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+      await clickedTool(Tools.Cursor);
+    };
     const defaultWhiteboard = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -285,15 +255,12 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
     onMounted(async () => {
-      // boardSetup();
+      await boardSetup();
       await defaultWhiteboard();
     });
-    // onUnmounted(() => {});
 
     return {
       currentExposureItemMedia,
-      imgLesson,
-      boardSetup,
       clickedTool,
       cursorPosition,
       toolNames,
@@ -309,6 +276,7 @@ export default defineComponent({
       hideWhiteboard,
       isLessonPlan,
       imageUrl,
+      imgLoad,
     };
   },
 });

@@ -1,5 +1,5 @@
 <template>
-  <div class="whiteboard" v-if="currentExposureItemMedia && isLessonPlan">
+  <div class="whiteboard">
     <div class="whiteboard__wrap">
       <ToolsCanvas
         v-if="currentExposureItemMedia"
@@ -23,7 +23,7 @@
         </div>
         <div v-if="!showHideWhiteboard" class="whiteboard__space" />
         <div id="canvas-container" @mousemove="cursorPosition">
-          <img :src="imageUrl" @load="boardSetup" id="annotation-img" />
+          <img :src="imageUrl" id="annotation-img" @load="imgLoad" />
           <div class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>

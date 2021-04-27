@@ -135,23 +135,12 @@ export default defineComponent({
     watch(stickersData, () => {
       // stickerRender();
     });
-    const imgLesson = () => {
-      const imageLesson = document.getElementById("annotation-img");
-      return imageLesson?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
-    };
     const boardSetup = () => {
-      if (!props.image) return;
       const canvasEl = document.getElementById("canvasOnStudent");
-      const canvasContainer = document.getElementsByClassName("canvas-container");
-      if (canvasEl && canvasContainer.length == 0) {
-        canvas = new fabric.Canvas("canvasOnStudent");
-      } else {
-        canvas.dispose();
-        canvas = new fabric.Canvas("canvasOnStudent");
-      }
-      const { width, height } = imgLesson();
-      canvas.setWidth(width);
-      canvas.setHeight(height);
+      if (!canvasEl) return;
+      canvas = new fabric.Canvas("canvasOnStudent");
+      canvas.setWidth(717);
+      canvas.setHeight(435);
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
@@ -248,18 +237,18 @@ export default defineComponent({
 
     const canvasRef = ref(null);
     onMounted(() => {
-      calcScaleRatio();
-      // boardSetup();
-      window.addEventListener("resize", calcScaleRatio);
+      // calcScaleRatio();
+      boardSetup();
+      // window.addEventListener("resize", calcScaleRatio);
     });
     onUnmounted(() => {
-      window.removeEventListener("resize", calcScaleRatio);
+      // window.removeEventListener("resize", calcScaleRatio);
     });
 
     return {
       pointerStyle,
       imageUrl,
-      boardSetup,
+      // boardSetup,
       isPointerMode,
       isDrawMode,
       canvasRef,

@@ -23,7 +23,7 @@
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
         </div>
-        <div class="sc-content__bottom" v-if="currentExposureItemMedia && isLessonPlan">
+        <div class="sc-content__bottom" v-show="isLessonPlan">
           <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
             v-if="isGameView"
@@ -36,7 +36,7 @@
             @on-loaded="onUnityViewLoaded"
           ></UnityView>
         </div> -->
-          <div class="sc-lessonplan">
+          <div class="sc-lessonplan" v-show="!isBlackOutContent">
             <!--            <ContentView-->
             <!--              v-if="!isPointerMode && !isDrawMode && !isStickerMode"-->
             <!--              @on-tap="onClickContentView"-->
@@ -48,10 +48,7 @@
             <!--              :localTargets="localTargets"-->
             <!--              :studentOneId="studentOneAndOneId"-->
             <!--            ></ContentView>-->
-            <AnnotationView
-              v-if="!isBlackOutContent"
-              :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousImage : currentExposureItemMedia?.image) : null"
-            />
+            <AnnotationView :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousImage : currentExposureItemMedia?.image) : null" />
           </div>
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>
