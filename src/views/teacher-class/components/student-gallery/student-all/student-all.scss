@@ -1,5 +1,9 @@
 @import "../../../../../style/abstracts/variables";
 
+.oneToOne {
+  align-self: center;
+}
+
 .student-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -16,6 +20,6 @@
   @media (min-width: $xxl) {
     grid-template-columns: 1fr 1fr 1fr;
     row-gap: 20px;
-	align-content: center;
+    align-content: center;
   }
 }

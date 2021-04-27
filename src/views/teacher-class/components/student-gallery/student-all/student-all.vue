@@ -1,5 +1,5 @@
 <template>
-  <div class="student-list">
+  <div :class="oneAndOneStatus ? 'oneToOne' : 'student-list'">
     <StudentCard v-for="student in topStudents" :key="student.id" :student="student" :setModeOne="true" />
   </div>
 </template>

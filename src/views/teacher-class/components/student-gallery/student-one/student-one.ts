@@ -19,7 +19,6 @@ export default defineComponent({
     const store = useStore();
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
-    const teacher: ComputedRef<TeacherState> = computed(() => store.getters["teacherRoom/teacher"]);
     const studentOne = students.value.filter(student => {
       return student.id === studentOneAndOneId.value;
     })[0];
@@ -43,30 +42,6 @@ export default defineComponent({
       });
     };
 
-    const toggleVideoAudioTeacher = async (audioStatus: boolean, videoStatus: boolean, id: string) => {
-      await store.dispatch("teacherRoom/setTeacherAudio", {
-        id: id,
-        enable: audioStatus,
-      });
-      await store.dispatch("teacherRoom/setTeacherVideo", {
-        id: id,
-        enable: videoStatus,
-      });
-    };
-
-    const setVideoTeacher = async () => {
-      if (!teacher.value) {
-        return;
-      }
-      const teacherInfo = teacher.value;
-      if (teacherInfo.audioEnabled && teacherInfo.videoEnabled) {
-        await toggleVideoAudioTeacher(false, false, teacherInfo.id);
-        await toggleVideoAudioTeacher(true, true, teacherInfo.id);
-      } else {
-        await toggleVideoAudioTeacher(true, true, teacherInfo.id);
-      }
-    };
-
     const minute = ref(0);
     const second = ref(0);
     const timeCount = ref("");
@@ -81,26 +56,7 @@ export default defineComponent({
       timeCount.value = `${minute.value < 10 ? "0" + minute.value : minute.value}:${second.value < 10 ? "0" + second.value : second.value}`;
     }, 1000);
 
-    let turnOnCurrentStudent = false;
-    watch(studentOne, async () => {
-      if (turnOnCurrentStudent) {
-        return;
-      }
-      if (studentOne && studentOne.audioEnabled && studentOne.videoEnabled) {
-        // Turn on student video and audio.
-        // Actually this is a trick to make this function work around. Need to optimize later.
-        await setVideoAudioStudent(false, false, studentOne.id);
-        setTimeout(async () => {
-          await setVideoAudioStudent(true, true, studentOne.id);
-        }, 300);
-        turnOnCurrentStudent = true;
-      } else {
-        turnOnCurrentStudent = false;
-      }
-    });
-
     setDefaultVideoStudent();
-    setVideoTeacher();
 
     const previousExposure = computed(() => store.getters["lesson/previousExposure"]);
     const previousExposureMediaItem = computed(() => store.getters["lesson/previousExposureItemMedia"]);
@@ -111,13 +67,12 @@ export default defineComponent({
       if (previousExposureMediaItem.value) {
         await store.dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
       }
-      await store.dispatch("updateAudioAndVideoFeed", {});
-      await setVideoTeacher();
       await store.dispatch("teacherRoom/clearStudentOneId", { id: "" });
       await store.dispatch("teacherRoom/sendOneAndOne", {
         status: false,
         id: null,
       });
+      await store.dispatch("updateAudioAndVideoFeed", {});
     };
 
     return {
