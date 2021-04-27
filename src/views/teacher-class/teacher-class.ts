@@ -98,6 +98,7 @@ export default defineComponent({
         isSidebarCollapsed.value = true;
         await setClassView(ClassView.GALLERY);
       }
+      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
     const onClickHideAll = async () => {
@@ -161,7 +162,7 @@ export default defineComponent({
     watch(isConnected, async () => {
       if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
-    });	
+    });
     return {
       onClickHideAll,
       onClickShowAll,
@@ -189,7 +190,7 @@ export default defineComponent({
       // onUnityViewLoaded
       isLessonPlan,
       currentExposureItemMedia,
-      isBlackOutContent
+      isBlackOutContent,
     };
   },
 });

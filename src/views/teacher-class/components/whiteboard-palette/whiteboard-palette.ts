@@ -110,11 +110,6 @@ export default defineComponent({
     const listenToCanvasEvents = () => {
       listenToMouseUp();
     };
-    const imgLoad = async () => {
-      if (!canvas) return;
-      canvas.remove(...canvas.getObjects("path"));
-      await clickedTool(Tools.Cursor);
-    };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
       if (!canvasEl) return;
@@ -260,6 +255,13 @@ export default defineComponent({
       canvas.remove(...canvas.getObjects("path"));
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+    };
+    const imgLoad = async () => {
+      if (!canvas) return;
+      canvas.remove(...canvas.getObjects("path"));
+      showHideWhiteboard.value = false;
+      canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+      await clickedTool(Tools.Cursor);
     };
     const defaultWhiteboard = async () => {
       modeAnnotation.value = Mode.Cursor;
