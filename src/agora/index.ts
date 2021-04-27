@@ -289,7 +289,7 @@ export class AgoraClient implements AgoraClientSDK {
       remoteTrack.play();
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-      Logger.error("_subscribeAudio", err);
+    //   Logger.error("_subscribeAudio", err);
     }
   }
 
@@ -303,7 +303,7 @@ export class AgoraClient implements AgoraClientSDK {
       remoteTrack.play(userId);
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-      Logger.error("_subscribeVideo", err);
+    //   Logger.error("_subscribeVideo", err);
     }
   }
 
