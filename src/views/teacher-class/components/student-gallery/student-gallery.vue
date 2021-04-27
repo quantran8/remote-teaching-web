@@ -10,7 +10,6 @@
           <span class="tc-one__action__text">Return</span>
         </div>
       </div>
-      <StudentAll />
     </div>
     <StudentControls
       v-else
