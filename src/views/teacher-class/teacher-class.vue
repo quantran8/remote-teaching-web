@@ -31,7 +31,7 @@
 <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
 <!--      </div>-->
       <div v-if="isLessonPlan" class="tc__content__whiteboard-content">
-        <WhiteboardPalette v-if="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
+        <WhiteboardPalette v-show="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
       </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
       <!--        <UnityView-->
