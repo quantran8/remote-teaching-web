@@ -1,10 +1,10 @@
 <template>
   <div class="annotation-view">
-    <img :src="imageUrl" id="annotation-img" @load="boardSetup" />
+    <img :src="imageUrl" id="annotation-img" />
     <div class="cursor" v-if="isPointerMode" :style="pointerStyle">
       <img src="@/assets/icon-select.png" alt="" />
     </div>
-    <div class="canvas-wrap-container"  :class="{'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': isDrawMode }">
+    <div class="canvas-wrap-container" :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': isDrawMode }">
       <canvas class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
     </div>
   </div>

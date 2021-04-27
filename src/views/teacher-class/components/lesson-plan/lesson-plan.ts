@@ -32,12 +32,9 @@ export default defineComponent({
         await dispatch("teacherRoom/endExposure", {
           id: currentExposure.value.id,
         });
-        await dispatch("teacherRoom/setBlackOut", {
-          isBlackOut: true,
-        });
       }
       await dispatch("teacherRoom/setBlackOut", {
-        isBlackOut: false,
+        isBlackOut: exposure.type === ExposureType.TRANSITION,
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
       await dispatch("teacherRoom/setMode", {

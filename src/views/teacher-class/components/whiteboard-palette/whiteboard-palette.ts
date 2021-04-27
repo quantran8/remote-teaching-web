@@ -1,18 +1,8 @@
-import {
-  computed,
-  ComputedRef,
-  defineComponent, onBeforeMount,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch
-} from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
-import * as R from "ramda/";
 import {ClassView} from "@/store/room/interface";
 
 export default defineComponent({
@@ -26,6 +16,7 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const modeRef = computed(() => store.getters["annotation/mode"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -42,6 +33,10 @@ export default defineComponent({
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
       }
     });
+    // watch(modeRef, () => {
+    //   modeAnnotation.value = modeRef.value;
+    //   console.log(modeRef.value, "mode mode mode");
+    // });
     if (currentExposure.value) {
       if (currentExposure.value.type == "poems" || currentExposure.value.type == "bigbook") {
         hasStickerTool.value = true;
@@ -120,23 +115,17 @@ export default defineComponent({
     const listenToCanvasEvents = () => {
       listenToMouseUp();
     };
-    const imgLesson = () => {
-      const imageLesson = document.getElementById("annotation-img");
-      return imageLesson?.getBoundingClientRect() || new DOMRect(0, 0, 0, 0);
+    const imgLoad = async () => {
+      if (!canvas) return;
+      canvas.remove(...canvas.getObjects("path"));
+      await clickedTool(Tools.Cursor);
     };
     const boardSetup = async () => {
-      if (!props.image) return;
       const canvasEl = document.getElementById("canvasDesignate");
-      const canvasContainer = document.getElementsByClassName("canvas-container");
-      if (canvasEl && canvasContainer.length == 0) {
-        canvas = new fabric.Canvas("canvasDesignate");
-      } else {
-        canvas.dispose();
-        canvas = new fabric.Canvas("canvasDesignate");
-      }
-      const { width, height } = imgLesson();
-      canvas.setWidth(width);
-      canvas.setHeight(height);
+      if (!canvasEl) return;
+      canvas = new fabric.Canvas("canvasDesignate");
+      canvas.setWidth(717);
+      canvas.setHeight(435);
       if (infoTeacher.value.isShowWhiteBoard) {
         canvas.backgroundColor = "white";
         await clickedTool(Tools.Pen);
@@ -285,15 +274,12 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
     onMounted(async () => {
-      // boardSetup();
+      await boardSetup();
       await defaultWhiteboard();
     });
-    // onUnmounted(() => {});
 
     return {
       currentExposureItemMedia,
-      imgLesson,
-      boardSetup,
       clickedTool,
       cursorPosition,
       toolNames,
@@ -309,6 +295,7 @@ export default defineComponent({
       hideWhiteboard,
       isLessonPlan,
       imageUrl,
+      imgLoad,
     };
   },
 });
