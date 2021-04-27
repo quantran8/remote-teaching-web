@@ -24,6 +24,7 @@ export default defineComponent({
     MatIcon,
     StudentGallery,
   },
+
   async created() {
     const { getters, dispatch } = useStore();
     const route = useRoute();
@@ -64,7 +65,6 @@ export default defineComponent({
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
-
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
 
@@ -189,6 +189,22 @@ export default defineComponent({
       });
     };
 
+	// const checkIsMiniClass = (miniCls: string, cls: string) => {
+	// 	console.log('!store.getters["lesson/isBlackOut"]', !store.getters["lesson/isBlackOut"]);
+	// 	if(!isBlackOutContent) return miniCls
+	// 	return cls
+	// }
+	// watch(isBlackOutContent, () => {
+	// 	console.log(isBlackOutContent, "");
+		
+	// 	if (isBlackOutContent) {
+	// 		checkIsMiniClass()
+	// 	} else {
+
+	// 	}
+		
+	// })
+
     // const onUnityLoaderLoaded = () => {
     //   console.info("onUnityLoaderLoaded");
     // };
@@ -198,7 +214,7 @@ export default defineComponent({
     // const onUnityViewLoaded = () => {
     //   console.info("onUnityViewLoaded");
     // };
-
+	
     return {
       student,
       students,
@@ -231,7 +247,7 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
-      previousImage,
+      previousImage
     };
   },
 });

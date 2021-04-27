@@ -42,6 +42,20 @@
   &__trainer {
     margin: 0;
     color: #fff;
+	&--mini {
+		margin: 0;
+		color: #fff;
+		padding-left: 60px;
+		font-size: 20px;
+	 @media (min-width: $lg) {
+		font-size: 20px;
+		padding-left: 70px;
+	 }
+	 @media (min-width: $xxl) {
+		 padding-left: 0;
+		 font-size: 30px;
+	 }
+	}
   }
   &__title {
     margin: 0;
@@ -92,6 +106,19 @@
   }
 }
 
+.sc-body--mini {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+  @media (min-width: $xxl) { 
+	align-items: flex-start;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 1fr 150px;
+    grid-template-rows: 1fr 160px;
+  }
+}
+
 .sc-content {
   display: flex;
   flex-direction: row;
@@ -108,7 +135,7 @@
     }
   }
   @media (min-width: $lg) {
-    padding: 40px;
+    padding: 20px;
     flex-direction: column;
     grid-row-start: 1;
     grid-row-end: 3;
@@ -125,15 +152,65 @@
     height: 100%;
     max-height: 320px;
     max-width: 600px;
-
     border-radius: 30px;
     overflow: hidden;
-
     position: relative;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: 0.3s;
+  }
+  &__one-to-one {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    opacity: 50%;
+  }
+  @media (min-width: $xl) {
+    &__video {
+      max-height: 500px;
+      max-width: 800px;
+    }
+  }
+}
+
+.sc-teacher--mini {
+  height: 100%;
+  @media (max-width: $xxl) {
+    position: absolute;
+    z-index: 11;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    top: -120px;
+    left: -70px;
+  }
+  @media (max-width: $lg) {
+    top: -90px;
+    left: -10px;
+  }
+  &__video {
+    @media (max-width: $xxl) {
+      width: 70px;
+      height: 70px;
+      border-radius: 35px;
+    }
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    max-height: 320px;
+    max-width: 600px;
+    background: #eaeaea;
+    overflow: hidden;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: 0.3s;
+    &--mini {
+      width: 100px;
+      height: 100px;
+    }
   }
 
   &__one-to-one {
