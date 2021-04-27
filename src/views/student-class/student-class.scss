@@ -42,20 +42,20 @@
   &__trainer {
     margin: 0;
     color: #fff;
-	&--mini {
-		margin: 0;
-		color: #fff;
-		padding-left: 60px;
-		font-size: 20px;
-	 @media (min-width: $lg) {
-		font-size: 20px;
-		padding-left: 70px;
-	 }
-	 @media (min-width: $xxl) {
-		 padding-left: 0;
-		 font-size: 30px;
-	 }
-	}
+    &--mini {
+      margin: 0;
+      color: #fff;
+      padding-left: 60px;
+      font-size: 20px;
+      @media (min-width: $lg) {
+        font-size: 20px;
+        padding-left: 70px;
+      }
+      @media (min-width: $xxl) {
+        padding-left: 0;
+        font-size: 30px;
+      }
+    }
   }
   &__title {
     margin: 0;
@@ -111,9 +111,9 @@
   display: grid;
   grid-template-columns: auto auto;
   padding-right: 10px;
-  @media (min-width: $xxl) { 
-    padding-right: 0; 
-	align-items: flex-start;
+  @media (min-width: $xxl) {
+    padding-right: 0;
+    align-items: flex-start;
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 1fr 150px;

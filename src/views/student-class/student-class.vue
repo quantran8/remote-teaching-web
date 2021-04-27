@@ -17,8 +17,15 @@
     </div>
     <div :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-body' : 'sc-body--mini'">
       <div class="sc-content" ref="contentSectionRef">
-        <div :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'" ref="videoContainerRef">
-          <div :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'" :id="teacher?.id" v-show="!isOneToOne || studentIsOneToOne"></div>
+        <div
+          :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
+          ref="videoContainerRef"
+        >
+          <div
+            :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
+            :id="teacher?.id"
+            v-show="!isOneToOne || studentIsOneToOne"
+          ></div>
           <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
@@ -53,7 +60,6 @@
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>
       </div>
-      <!-- <div> -->
       <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
       <div class="sc-action">
         <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
@@ -65,7 +71,6 @@
         <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
           <img :src="videoIcon" class="sc-action__icon" />
         </a>
-        <!-- </div> -->
       </div>
     </div>
   </div>
