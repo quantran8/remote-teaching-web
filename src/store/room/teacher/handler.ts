@@ -220,6 +220,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetWhiteboard: (payload: RoomModel) => {
     //   console.log(payload);
