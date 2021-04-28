@@ -102,7 +102,7 @@
 		width: 90%;
 	  }
 	  &.selected {
-		  background-color: #ccc;
+		  background-color: #fff;
 	  }
     }
   }
@@ -112,7 +112,7 @@
     left: 130%;
     z-index: 12;
 	top: -50px;
-	border-radius: 5px;
+	// border-radius: 5px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
