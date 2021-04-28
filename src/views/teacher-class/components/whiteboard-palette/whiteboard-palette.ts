@@ -48,7 +48,6 @@ export default defineComponent({
     watch(oneAndOne, async () => {
       if (!canvas) return;
       if (!oneAndOne.value) {
-        console.log("KASSSSSSS");
         toolSelected.value = Tools.Clear;
         canvas.remove(...canvas.getObjects("path"));
         await store.dispatch("teacherRoom/setClearBrush", {});
