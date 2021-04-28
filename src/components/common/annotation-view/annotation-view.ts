@@ -10,6 +10,7 @@ import {
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import * as R from "ramda/";
+import {toolType} from './types'
 
 export default defineComponent({
   props: ["image"],
@@ -221,14 +222,46 @@ export default defineComponent({
           strokeLineJoin: "round",
           fill: "white",
         },
-        false,
       );
+	  
       canvas.add(star);
       canvas.getObjects("polygon").forEach((obj: any) => {
         obj.hasControls = false;
       });
       canvas.renderAll();
     };
+
+	const addCircle = () => {
+		const cirlce = new fabric.Circle(
+			({
+				radius: 30,
+				fill: '',
+				stroke: 'black',
+				strokeWidth: 3
+			}
+		));
+		canvas.add(cirlce);
+		canvas.getObjects("cirlce").forEach((obj: any) => {
+		  obj.hasControls = false;
+		});
+		canvas.renderAll();
+	}
+
+	const addSquare = () => {
+		const square = new fabric.Rect({
+            width: 50,
+            height: 50,
+            fill: '',
+            stroke: 'black',
+            strokeWidth: 3
+        });
+  
+		canvas.add(square);
+		canvas.getObjects("square").forEach((obj: any) => {
+		  obj.hasControls = false;
+		});
+		canvas.renderAll();
+	}
 
     const clearStar = () => {
       canvas.remove(...canvas.getObjects("polygon"));
@@ -245,6 +278,21 @@ export default defineComponent({
       // window.removeEventListener("resize", calcScaleRatio);
     });
 
+	const paletteTools:Array<toolType> = [
+		{
+			name: 'star',
+			action: addStar
+		},
+		{
+			name: 'circle',
+			action: addCircle
+		},
+		{
+			name: 'square',
+			action: addSquare
+		},
+	]
+
     return {
       pointerStyle,
       imageUrl,
@@ -260,6 +308,7 @@ export default defineComponent({
       isShowWhiteBoard,
       addStar,
       clearStar,
+	  paletteTools
     };
   },
 });
