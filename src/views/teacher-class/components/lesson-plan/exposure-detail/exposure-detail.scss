@@ -1,7 +1,7 @@
 .header-container {
   display: flex;
   align-items: center;
-  border-bottom: solid 1px gray;
+  border-bottom: solid 1px #ccc;
   padding-left: 0.5rem;
   .exposure-title {
     flex: 1;
@@ -11,6 +11,7 @@
 .exposure-content {
   background-color: white;
   min-height: 100%;
+  border-radius: 5px;
 }
 
 .exposure-info {
