@@ -2,7 +2,7 @@
   <div class="sc">
     <div class="sc-header">
       <div class="sc-header__left">
-        <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
+        <h2 :class="[!(currentExposureItemMedia && isLessonPlan) ? 'sc-header__trainer' : 'sc-header__trainer--mini']">{{ teacher?.name }}</h2>
         <div class="sc-header__icon" ref="classActionImageRef">
           <img v-if="classAction" :src="require(`@/assets/icons/icon-action-${classAction}.png`)" alt="Icon" />
         </div>
@@ -15,10 +15,17 @@
         </a>
       </div>
     </div>
-    <div class="sc-body">
+    <div :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-body' : 'sc-body--mini'">
       <div class="sc-content" ref="contentSectionRef">
-        <div class="sc-content__top sc-teacher" ref="videoContainerRef">
-          <div class="sc-teacher__video" :id="teacher?.id" v-show="!isOneToOne || studentIsOneToOne"></div>
+        <div
+          :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
+          ref="videoContainerRef"
+        >
+          <div
+            :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
+            :id="teacher?.id"
+            v-show="!isOneToOne || studentIsOneToOne"
+          ></div>
           <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
