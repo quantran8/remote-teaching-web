@@ -100,7 +100,9 @@ export default defineComponent({
     watch(canvasData, renderCanvas);
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
-        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        if (!studentOneAndOneId.value || student.id == studentOneAndOneId.value) {
+          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
