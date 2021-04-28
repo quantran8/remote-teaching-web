@@ -9,11 +9,8 @@
     </div>
   </div>
   <div class="palette-tool" v-if="isDrawMode">
-    <div class="palette-tool__item" @click="addStar">
-      <img :src="require(`@/assets/icons/tools-star.svg`)" alt="Icon" />
-    </div>
-    <div class="palette-tool__item" @click="clearStar">
-      <img :src="require(`@/assets/icons/tools-clear.svg`)" alt="Icon" />
+    <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" @click="action">
+      <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
     </div>
   </div>
 </template>

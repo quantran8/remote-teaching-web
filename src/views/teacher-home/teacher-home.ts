@@ -44,7 +44,7 @@ export default defineComponent({
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
         } else {
-          console.log(response);
+        //   console.log(response);
         }
       } catch (err) {
         if (err && err.body) {
@@ -57,7 +57,7 @@ export default defineComponent({
             success: boolean;
           } = err.body;
           if (responseError && !responseError.success) {
-            console.log("ERROR", responseError.data.Message);
+            // console.log("ERROR", responseError.data.Message);
           }
         }
       }

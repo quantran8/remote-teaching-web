@@ -24,6 +24,7 @@ export default defineComponent({
     MatIcon,
     StudentGallery,
   },
+
   async created() {
     const { getters, dispatch } = useStore();
     const route = useRoute();
@@ -64,7 +65,6 @@ export default defineComponent({
     const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
-
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
 
@@ -189,16 +189,6 @@ export default defineComponent({
         },
       });
     };
-
-    // const onUnityLoaderLoaded = () => {
-    //   console.info("onUnityLoaderLoaded");
-    // };
-    // const onUnityViewLoading = (progress: number) => {
-    //   console.info("onUnityViewLoading", progress);
-    // };
-    // const onUnityViewLoaded = () => {
-    //   console.info("onUnityViewLoaded");
-    // };
 
     return {
       student,
