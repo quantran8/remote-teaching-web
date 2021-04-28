@@ -195,8 +195,8 @@ const actions: ActionTree<StudentRoomState, any> = {
   clearLaserPen({ commit }, p: "") {
     commit("clearLaserPen", p);
   },
-  async studentAddShape({ state }, payload: { studentShapes: Array<StudentShape> }) {
-    await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload.studentShapes);
+  async studentAddShape({ state }, payload: Array<string>) {
+    await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload);
   },
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);

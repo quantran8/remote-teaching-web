@@ -3,6 +3,7 @@ import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import {Tools} from "commonui";
+import {MIN_SPEAKING_LEVEL} from "@/utils/constant";
 
 export default defineComponent({
   props: ["image"],
@@ -94,12 +95,7 @@ export default defineComponent({
       console.log(studentId, "student id");
       const canvasAsJSON = canvas.toJSON();
       console.log(canvasAsJSON.objects, "check canvas value");
-      await store.dispatch("studentRoom/studentAddShape", {
-        studentShapes: {
-          studentId: studentId,
-          brushstroke: JSON.stringify(canvasAsJSON.objects),
-        },
-      });
+      await store.dispatch("studentRoom/studentAddShape", canvasAsJSON.objects.map((item:any) => JSON.stringify(item)));
     };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
