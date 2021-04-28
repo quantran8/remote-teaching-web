@@ -26,7 +26,10 @@
             :id="teacher?.id"
             v-show="!isOneToOne || studentIsOneToOne"
           ></div>
-          <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
+          <div
+            :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
+            v-show="isOneToOne && !studentIsOneToOne"
+          >
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
         </div>

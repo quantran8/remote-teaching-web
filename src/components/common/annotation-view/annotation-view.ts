@@ -3,13 +3,11 @@ import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import {Tools} from "commonui";
-import {StudentState} from "@/store/room/interface";
 
 export default defineComponent({
   props: ["image"],
   setup(props) {
     const store = useStore();
-    const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     let canvas: any;
     const scaleRatio = ref(1);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
@@ -30,6 +28,8 @@ export default defineComponent({
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
+    const student = computed(() => store.getters["studentRoom/student"]);
+    const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
       const shapes: Array<string> = canvasData.value;
@@ -82,7 +82,9 @@ export default defineComponent({
     watch(canvasData, renderCanvas);
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
-        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
+          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
@@ -153,23 +155,17 @@ export default defineComponent({
       });
 
       canvas.add(star);
-      canvas.getObjects("polygon").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
       canvas.renderAll();
     };
 
     const addCircle = () => {
-      const cirlce = new fabric.Circle({
+      const circle = new fabric.Circle({
         radius: 30,
         fill: "",
         stroke: "black",
         strokeWidth: 3,
       });
-      canvas.add(cirlce);
-      canvas.getObjects("cirlce").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
+      canvas.add(circle);
       canvas.renderAll();
     };
 
@@ -183,9 +179,6 @@ export default defineComponent({
       });
 
       canvas.add(square);
-      canvas.getObjects("square").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
       canvas.renderAll();
     };
 
@@ -234,6 +227,8 @@ export default defineComponent({
       isShowWhiteBoard,
       addStar,
       clearStar,
+      student,
+      studentOneAndOneId,
       paletteTools,
     };
   },

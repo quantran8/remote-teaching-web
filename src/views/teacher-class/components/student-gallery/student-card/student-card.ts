@@ -27,11 +27,9 @@ export default defineComponent({
     const store = useStore();
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
-    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
-    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isMouseEntered = ref<boolean>(false);
     const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
-    const isStudentOne = ref(false);
+    const isStudentOne = ref(props.student.id == studentOneAndOneId.value);
 
     watch(studentOneAndOneId, () => {
       isStudentOne.value = props.student.id == studentOneAndOneId.value;
@@ -48,18 +46,11 @@ export default defineComponent({
 
     const onOneAndOne = async () => {
       if (props.setModeOne && !isNotJoinned.value) {
-        if (currentExposure.value) {
-          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-        }
-        if (currentExposureItemMedia.value) {
-          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
-        }
-        await store.dispatch("modeOne/setStudentOneId", { id: props.student.id });
+        await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.student.id,
         });
-        await store.dispatch("updateAudioAndVideoFeed", {});
       }
     };
 

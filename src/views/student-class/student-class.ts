@@ -76,12 +76,22 @@ export default defineComponent({
 
     const classActionImageRef = ref<HTMLDivElement | null>(null);
 
+    const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
     const previousImage = ref("");
 
-    watch(studentOneAndOneId, () => {
+    watch(previousExposureItemMedia, () => {
+      previousImage.value = previousExposureItemMedia.value?.image;
+    });
+
+    watch(studentOneAndOneId, async () => {
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+        await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+        await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         previousImage.value = currentExposureItemMedia.value?.image;
       } else {
         studentIsOneToOne.value = false;
@@ -156,15 +166,6 @@ export default defineComponent({
         enable: !student.value.videoEnabled,
       });
     };
-    const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
-    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
-    const contentImageStyle = computed(() => {
-      return currentExposureItemMedia.value
-        ? {
-            "background-image": `url("${currentExposureItemMedia.value.image.url}")`,
-          }
-        : {};
-    });
 
     const onClickRaisingHand = async () => {
       await store.dispatch("studentRoom/studentRaisingHand", {});
@@ -200,7 +201,6 @@ export default defineComponent({
       toggleVideo,
       isLessonPlan,
       isBlackOutContent,
-      contentImageStyle,
       onClickRaisingHand,
       onClickLike,
       classAction,
