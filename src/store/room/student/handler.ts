@@ -300,6 +300,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetWhiteboard: async (payload: any) => {
       await commit("setWhiteboard", payload);

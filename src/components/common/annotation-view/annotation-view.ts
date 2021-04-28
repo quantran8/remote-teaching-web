@@ -1,15 +1,8 @@
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch
-} from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import * as R from "ramda/";
+import { StudentState } from "@/store/room/interface";
 
 export default defineComponent({
   props: ["image"],
@@ -52,6 +45,8 @@ export default defineComponent({
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
+    const student = computed<StudentState>(() => store.getters["studentRoom/student"]).value;
+    const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
       const shapes: Array<string> = canvasData.value;
@@ -98,7 +93,7 @@ export default defineComponent({
     watch(undoCanvas, () => {
       renderCanvas();
     });
-    watch(laserPath,() => {
+    watch(laserPath, () => {
       renderCanvas();
     });
     watch(canvasData, renderCanvas);
@@ -260,6 +255,8 @@ export default defineComponent({
       isShowWhiteBoard,
       addStar,
       clearStar,
+      student,
+      studentOneAndOneId,
     };
   },
 });

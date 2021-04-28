@@ -1,11 +1,11 @@
 <template>
   <div class="annotation-view">
     <img :src="imageUrl" id="annotation-img" />
-    <div class="cursor" v-if="isPointerMode" :style="pointerStyle">
+    <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id === studentOneAndOneId)" :style="pointerStyle">
       <img src="@/assets/icon-select.png" alt="" />
     </div>
     <div class="canvas-wrap-container" :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': isDrawMode }">
-      <canvas class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
+      <canvas v-show="!studentOneAndOneId || student.id == studentOneAndOneId" class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
     </div>
   </div>
   <div class="palette-tool" v-if="isDrawMode">

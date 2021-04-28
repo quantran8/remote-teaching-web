@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
-import {ClassView} from "@/store/room/interface";
+import { ClassView } from "@/store/room/interface";
 
 export default defineComponent({
   props: ["image"],
@@ -16,6 +16,8 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
+
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -30,6 +32,21 @@ export default defineComponent({
     watch(infoTeacher, () => {
       if (infoTeacher.value) {
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
+      }
+    });
+    watch(oneAndOne, async () => {
+      if (!canvas) return;
+      if (!oneAndOne.value) {
+        console.log("KASSSSSSS");
+        toolSelected.value = Tools.Clear;
+        canvas.remove(...canvas.getObjects("path"));
+        await store.dispatch("teacherRoom/setClearBrush", {});
+        toolSelected.value = Tools.Pen;
+        canvas.isDrawingMode = true;
+        modeAnnotation.value = Mode.Draw;
+        await store.dispatch("teacherRoom/setMode", {
+          mode: modeAnnotation.value,
+        });
       }
     });
     if (currentExposure.value) {

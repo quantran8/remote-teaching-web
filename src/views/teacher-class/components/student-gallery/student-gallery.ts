@@ -68,7 +68,6 @@ export default defineComponent({
         status: false,
         id: null,
       });
-      await dispatch("updateAudioAndVideoFeed", {});
     };
 
     return {
