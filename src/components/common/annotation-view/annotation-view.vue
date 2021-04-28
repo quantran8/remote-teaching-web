@@ -8,7 +8,7 @@
       <canvas class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
     </div>
   </div>
-  <div class="palette-tool" v-if="true">
+  <div class="palette-tool" v-if="isDrawMode">
     <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" @click="action">
       <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
     </div>
