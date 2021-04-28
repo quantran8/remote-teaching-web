@@ -40,5 +40,8 @@ const actions: ActionTree<AnnotationState, any> = {
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);
   },
+  setAnnotationStatus({ commit }, p: { status: boolean }) {
+    commit("setAnnotationStatus", p);
+  },
 };
 export default actions;

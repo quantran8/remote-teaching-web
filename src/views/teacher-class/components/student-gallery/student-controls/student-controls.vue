@@ -1,36 +1,36 @@
 <template>
   <div id="student-controls">
-    <div class="student-controls__button">
-      <span @click="clickStickerAll" class="student-controls__button--clickable">
-        <img class="sticker-icon" :src="require(`@/assets/sticker.svg`)" />
-        <span>Sticker all</span>
-      </span>
+    <div class="button-group">
+      <div class="student-controls__button">
+        <span @click="onClickStickerAll" class="student-controls__button--clickable">
+          <img class="sticker-icon" :src="require(`@/assets/sticker.svg`)" />
+          <span>Sticker all</span>
+        </span>
+      </div>
+      <div class="student-controls__button">
+        <span @click="onClickToggleAudio" class="student-controls__button--clickable">
+          <span>
+            <img class="audio-icon" :src="isAllAudioMuted ? require(`@/assets/unmuted.svg`) : require(`@/assets/mute.svg`)" />
+            <span>{{ isAllAudioMuted ? "Unmute all" : "Mute all" }}</span>
+          </span>
+        </span>
+      </div>
     </div>
-
-    <div class="student-controls__button">
-      <span @click="onClickToggleAudio" class="student-controls__button--clickable">
-        <span v-if="isAllAudioMuted">
-          <img class="audio-icon" :src="require(`@/assets/unmuted.svg`)" />
-          <span>Unmute all</span>
+    <div class="button-group">
+      <div class="student-controls__button">
+        <span @click="onClickDisableAll" class="student-controls__button--clickable">
+          <img class="disable-icon" :src="require(`@/assets/teacher-class/touch-off-small.svg`)" />
+          <span>Disable all</span>
         </span>
-        <span v-else>
-          <img class="audio-icon" :src="require(`@/assets/mute.svg`)" />
-          <span>Mute all</span>
+      </div>
+      <div class="student-controls__button">
+        <span @click="onClickToggleVideo" class="student-controls__button--clickable">
+          <span>
+            <img class="video-icon" :src="isAllVideoHidden ? require(`@/assets/show-all.svg`) : require(`@/assets/hide-all.svg`)" />
+            <span>{{ isAllVideoHidden ? "Show All" : "Hide All" }}</span>
+          </span>
         </span>
-      </span>
-    </div>
-
-    <div class="student-controls__button">
-      <span @click="onClickToggleVideo" class="student-controls__button--clickable">
-        <span v-if="isAllVideoHidden">
-          <img class="video-icon video-icon--open" :src="require(`@/assets/show-all.svg`)" />
-          <span>Show All</span>
-        </span>
-        <span v-else>
-          <img class="video-icon" :src="require(`@/assets/hide-all.svg`)" />
-          <span>Hide All</span>
-        </span>
-      </span>
+      </div>
     </div>
   </div>
 </template>

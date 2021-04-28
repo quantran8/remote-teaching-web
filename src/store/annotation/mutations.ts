@@ -13,9 +13,7 @@ export interface AnnotationMutationInterface<S> {
   setInfo(s: S, p: AnnotationModel): void;
 }
 
-export interface AnnotationMutation<S>
-  extends MutationTree<S>,
-    AnnotationMutationInterface<S> {}
+export interface AnnotationMutation<S> extends MutationTree<S>, AnnotationMutationInterface<S> {}
 
 const mutations: AnnotationMutation<AnnotationState> = {
   setPointer(s: AnnotationState, p: Pointer) {
@@ -32,7 +30,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setClearBrush(s: AnnotationState, p: any) {
     s.drawing = {
       pencil: null,
-      brushstrokes: []
+      brushstrokes: [],
     };
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
@@ -51,6 +49,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.mode = p.mode;
     s.drawing = p.drawing;
     s.stickers = p.stickers;
+  },
+  setAnnotationStatus(s: AnnotationState, p: { status: boolean }) {
+    s.enableAnnotation = p.status;
   },
 };
 

@@ -18,6 +18,7 @@
       @show-all="onClickShowAll"
       @unmute-all="onClickUnmuteAll"
       @add-sticker-all="onClickStickerAll"
+      @disable-all="onClickDisableAll"
     />
     <StudentAll />
   </div>

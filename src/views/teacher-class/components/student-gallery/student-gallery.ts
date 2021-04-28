@@ -54,6 +54,10 @@ export default defineComponent({
       await dispatch("teacherRoom/setAllStudentBadge");
     };
 
+    const onClickDisableAll = async () => {
+      await dispatch("teacherRoom/disableAllAnnotation");
+    };
+
     const previousExposure = computed(() => getters["lesson/previousExposure"]);
     const previousExposureMediaItem = computed(() => getters["lesson/previousExposureItemMedia"]);
     const backToClass = async () => {
@@ -77,6 +81,7 @@ export default defineComponent({
       onClickMuteAll,
       onClickUnmuteAll,
       onClickStickerAll,
+      onClickDisableAll,
       timeCount,
       backToClass,
     };

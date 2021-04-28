@@ -8,6 +8,7 @@ export enum TeacherWSCommand {
   MUTE_STUDENT_AUDIO = "TeacherMuteStudentAudio",
   MUTE_ALL_STUDENT_AUDIO = "TeacherMuteAllStudentAudio",
   MUTE_ALL_STUDENT_VIDEO = "TeacherMuteAllStudentVideo",
+  DISABLE_ALL_STUDENT_PALLETTE = "DisableAllStudentPalette",
   SET_FOCUS_TAB = "TeacherSetFocusTab",
   END_CLASS = "TeacherEndClass",
   SET_STUDENT_BADGE = "TeacherSetStudentBadge",
