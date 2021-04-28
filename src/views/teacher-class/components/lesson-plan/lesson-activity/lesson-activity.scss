@@ -2,8 +2,9 @@
   background-color: white;
   display: flex;
   flex-direction: row;
-  border-bottom: solid 1px gray;
+  border-bottom: solid 1px #ccc;
   align-items: center;
+
   .item-left {
     padding: 0 16px;
     .icon {
