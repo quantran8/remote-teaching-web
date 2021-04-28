@@ -90,13 +90,16 @@ export default defineComponent({
       }
     });
     const studentAddShapes = async () => {
-      console.log(student.value, "student info");
       const studentId = student.value.id;
+      console.log(studentId, "student id");
       const canvasAsJSON = canvas.toJSON();
       console.log(canvasAsJSON.objects, "check canvas value");
-      // await store.dispatch("studentRoom/setStudentAddShape", {
-      //   studentShapes: [],
-      // });
+      await store.dispatch("studentRoom/studentAddShape", {
+        studentShapes: {
+          studentId: studentId,
+          brushstroke: JSON.stringify(canvasAsJSON.objects),
+        },
+      });
     };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
