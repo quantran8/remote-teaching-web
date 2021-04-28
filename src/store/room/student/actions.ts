@@ -9,6 +9,7 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import { StudentShape } from "@/store/annotation/state";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -193,6 +194,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   clearLaserPen({ commit }, p: "") {
     commit("clearLaserPen", p);
+  },
+  async studentAddShape({ state }, payload: { studentShapes: Array<StudentShape> }) {
+    await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload.studentShapes);
   },
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);

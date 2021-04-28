@@ -222,10 +222,13 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       }
     },
     onTeacherSetWhiteboard: (payload: RoomModel) => {
-    //   console.log(payload);
+      //console.log(payload);
     },
     onTeacherDrawLaser: (payload: any) => {
-    //   console.log(payload);
+      //console.log(payload);
+    },
+    onStudentSetBrushstrokes: (payload: any) => {
+      console.log(payload, "room teacher handler");
     },
   };
   return handler;

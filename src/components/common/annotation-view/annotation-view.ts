@@ -1,41 +1,18 @@
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch
-} from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import * as R from "ramda/";
-import {toolType} from './types'
+import { toolType } from "./types";
+import {Tools} from "commonui";
+import {StudentState} from "@/store/room/interface";
 
 export default defineComponent({
   props: ["image"],
   setup(props) {
     const store = useStore();
+    const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     let canvas: any;
-    const stickerColors = ["red", "yellow", "blue", "green", "pink"];
     const scaleRatio = ref(1);
-    const checkStickers = ref(false);
-    const calcScaleRatio = () => {
-      if (!props.image) return;
-      const imgAnnotation = document.getElementById("annotation-img");
-      if (!imgAnnotation) return;
-      const boundingBox = imgAnnotation.getBoundingClientRect();
-      const { width, height } = props.image;
-      if (!width || !height) return;
-      const wRatio = boundingBox.width / width;
-      const hRatio = boundingBox.height / height;
-      scaleRatio.value = Math.min(wRatio, hRatio);
-      return scaleRatio;
-    };
-
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
-    const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
-
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
 
@@ -99,7 +76,7 @@ export default defineComponent({
     watch(undoCanvas, () => {
       renderCanvas();
     });
-    watch(laserPath,() => {
+    watch(laserPath, () => {
       renderCanvas();
     });
     watch(canvasData, renderCanvas);
@@ -110,32 +87,24 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
     });
-    const stickersData = computed(() => store.getters["annotation/stickers"]);
-    const stickerRender = () => {
-      if (stickersData.value && stickersData.value.length) {
-        stickersData.value.forEach((obj: any) => {
-          const rectSticker = new fabric.Rect({
-            top: 10 * scaleRatio.value,
-            left: 10 * scaleRatio.value,
-            width: obj.width * scaleRatio.value,
-            height: obj.height * scaleRatio.value,
-            objectCaching: false,
-            fill: "#000",
-            opacity: 0.35,
-            hasControls: false,
-            hasBorders: false,
-          });
-          canvas.add(rectSticker);
-          canvas.renderAll();
-          checkStickers.value = false;
-        });
-      } else {
-        canvas.remove(...canvas.getObjects("rect"));
-      }
+    const studentAddShapes = async () => {
+      console.log(student.value, "student info");
+      const studentId = student.value.id;
+      const canvasAsJSON = canvas.toJSON();
+      console.log(canvasAsJSON.objects, "check canvas value");
+      // await store.dispatch("studentRoom/setStudentAddShape", {
+      //   studentShapes: [],
+      // });
     };
-    watch(stickersData, () => {
-      // stickerRender();
-    });
+    const listenToMouseUp = () => {
+      canvas.on("mouse:up", async () => {
+        canvas.renderAll();
+        await studentAddShapes();
+      });
+    };
+    const listenToCanvasEvents = () => {
+      listenToMouseUp();
+    };
     const boardSetup = () => {
       const canvasEl = document.getElementById("canvasOnStudent");
       if (!canvasEl) return;
@@ -148,45 +117,7 @@ export default defineComponent({
       });
 
       renderCanvas();
-      // stickerRender();
-    };
-
-    const changeColorSticker = (stickerColor: string) => {
-      if (stickersData.value) {
-        canvas.getObjects("rect").forEach((obj: any) => {
-          obj.fill = stickerColor;
-        });
-        canvas.renderAll();
-      }
-    };
-
-    const checkStickerAdded = () => {
-      canvas.renderAll();
-      stickersData.value.forEach((data: any) => {
-        canvas.getObjects("rect").forEach((obj: any) => {
-          if (data.width === Math.round(obj.width / scaleRatio.value) && data.height === Math.round(obj.height / scaleRatio.value)) {
-            if (
-              !(
-                data.top * 0.95 <= Math.round(obj.top / scaleRatio.value) &&
-                Math.round(obj.top / scaleRatio.value) <= data.top + data.top * 0.15 &&
-                data.left * 0.95 <= Math.round(obj.left / scaleRatio.value) &&
-                Math.round(obj.left / scaleRatio.value) <= data.left + data.left * 0.15
-              )
-            ) {
-              canvas.remove(obj);
-              obj.set({
-                top: 10 * scaleRatio.value,
-                left: 10 * scaleRatio.value,
-              });
-              canvas.add(obj);
-              canvas.renderAll();
-              checkStickers.value = false;
-            } else {
-              checkStickers.value = true;
-            }
-          }
-        });
-      });
+      listenToCanvasEvents();
     };
 
     const starPolygonPoints = (spikeCount: any, outerRadius: any, innerRadius: any) => {
@@ -212,18 +143,15 @@ export default defineComponent({
 
     const addStar = () => {
       const points = starPolygonPoints(5, 35, 15);
-      const star = new fabric.Polygon(
-        points,
-        {
-          stroke: "black",
-          left: 100,
-          top: 10,
-          strokeWidth: 3,
-          strokeLineJoin: "round",
-          fill: "white",
-        },
-      );
-	  
+      const star = new fabric.Polygon(points, {
+        stroke: "black",
+        left: 100,
+        top: 10,
+        strokeWidth: 3,
+        strokeLineJoin: "round",
+        fill: "white",
+      });
+
       canvas.add(star);
       canvas.getObjects("polygon").forEach((obj: any) => {
         obj.hasControls = false;
@@ -231,37 +159,35 @@ export default defineComponent({
       canvas.renderAll();
     };
 
-	const addCircle = () => {
-		const cirlce = new fabric.Circle(
-			({
-				radius: 30,
-				fill: '',
-				stroke: 'black',
-				strokeWidth: 3
-			}
-		));
-		canvas.add(cirlce);
-		canvas.getObjects("cirlce").forEach((obj: any) => {
-		  obj.hasControls = false;
-		});
-		canvas.renderAll();
-	}
+    const addCircle = () => {
+      const cirlce = new fabric.Circle({
+        radius: 30,
+        fill: "",
+        stroke: "black",
+        strokeWidth: 3,
+      });
+      canvas.add(cirlce);
+      canvas.getObjects("cirlce").forEach((obj: any) => {
+        obj.hasControls = false;
+      });
+      canvas.renderAll();
+    };
 
-	const addSquare = () => {
-		const square = new fabric.Rect({
-            width: 50,
-            height: 50,
-            fill: '',
-            stroke: 'black',
-            strokeWidth: 3
-        });
-  
-		canvas.add(square);
-		canvas.getObjects("square").forEach((obj: any) => {
-		  obj.hasControls = false;
-		});
-		canvas.renderAll();
-	}
+    const addSquare = () => {
+      const square = new fabric.Rect({
+        width: 50,
+        height: 50,
+        fill: "",
+        stroke: "black",
+        strokeWidth: 3,
+      });
+
+      canvas.add(square);
+      canvas.getObjects("square").forEach((obj: any) => {
+        obj.hasControls = false;
+      });
+      canvas.renderAll();
+    };
 
     const clearStar = () => {
       canvas.remove(...canvas.getObjects("polygon"));
@@ -278,20 +204,20 @@ export default defineComponent({
       // window.removeEventListener("resize", calcScaleRatio);
     });
 
-	const paletteTools:Array<toolType> = [
-		{
-			name: 'star',
-			action: addStar
-		},
-		{
-			name: 'circle',
-			action: addCircle
-		},
-		{
-			name: 'square',
-			action: addSquare
-		},
-	]
+    const paletteTools: Array<toolType> = [
+      {
+        name: "star",
+        action: addStar,
+      },
+      {
+        name: "circle",
+        action: addCircle,
+      },
+      {
+        name: "square",
+        action: addSquare,
+      },
+    ];
 
     return {
       pointerStyle,
@@ -308,7 +234,7 @@ export default defineComponent({
       isShowWhiteBoard,
       addStar,
       clearStar,
-	  paletteTools
+      paletteTools,
     };
   },
 });

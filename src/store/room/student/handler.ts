@@ -307,6 +307,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherDrawLaser: async (payload: any) => {
       await commit("setDrawLaser", payload);
     },
+    onStudentSetBrushstrokes: (payload: any) => {
+      console.log(payload, "room student handler");
+    },
   };
   return handler;
 };
