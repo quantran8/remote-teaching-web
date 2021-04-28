@@ -189,32 +189,6 @@ export default defineComponent({
       });
     };
 
-	// const checkIsMiniClass = (miniCls: string, cls: string) => {
-	// 	console.log('!store.getters["lesson/isBlackOut"]', !store.getters["lesson/isBlackOut"]);
-	// 	if(!isBlackOutContent) return miniCls
-	// 	return cls
-	// }
-	// watch(isBlackOutContent, () => {
-	// 	console.log(isBlackOutContent, "");
-		
-	// 	if (isBlackOutContent) {
-	// 		checkIsMiniClass()
-	// 	} else {
-
-	// 	}
-		
-	// })
-
-    // const onUnityLoaderLoaded = () => {
-    //   console.info("onUnityLoaderLoaded");
-    // };
-    // const onUnityViewLoading = (progress: number) => {
-    //   console.info("onUnityViewLoading", progress);
-    // };
-    // const onUnityViewLoaded = () => {
-    //   console.info("onUnityViewLoaded");
-    // };
-	
     return {
       student,
       students,
@@ -247,7 +221,7 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
-      previousImage
+      previousImage,
     };
   },
 });
