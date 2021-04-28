@@ -1,7 +1,6 @@
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import { StudentState } from "@/store/room/interface";
 import { toolType } from "./types";
 
 export default defineComponent({
@@ -45,7 +44,7 @@ export default defineComponent({
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
-    const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
+    const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
