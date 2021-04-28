@@ -1,13 +1,14 @@
 .lesson-container {
   height: 100%;
   overflow: hidden;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #ccc;
 
   &__icon-next {
     width: 25px;
     height: 25px;
     margin-left: 15px;
     margin-bottom: 5px;
+    cursor: pointer;
   }
 
   .lesson-container__header {
@@ -60,9 +61,10 @@
 
     .progress {
       background: white;
-      border: solid 1px gray;
+      border: solid 1px #cccccc;
       height: 16px;
       width: 100%;
+      border-radius: 5px;
 
       .indicator {
         width: 100%;
@@ -78,7 +80,8 @@
       flex: 1;
       margin-top: 10px;
       background-color: #f8f8f8;
-      border: solid 1px gray;
+      border: solid 1px #ccc;
+      border-radius: 5px;
     }
   }
 }
