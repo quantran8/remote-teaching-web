@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
