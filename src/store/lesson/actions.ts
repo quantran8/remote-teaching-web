@@ -26,7 +26,6 @@ const actions: LessonActions<LessonState, any> = {
       await store.dispatch("loadContentSignature", {}, { root: true });
       signalture = store.rootGetters["contentSignature"];
     }
-    console.log("signature", signalture);
     const exposures: Array<Exposure> = payload.contents.map(e => {
       const items: Array<ExposureItem> = e.contents.map(c => {
         const media: Array<ExposureItemMedia> = c.page.map(p => {

@@ -58,7 +58,7 @@ export class GLSocketClient {
     }
   }
   async send(command: string, payload: any): Promise<any> {
-    Logger.log("SEND", command, payload);
+    // Logger.log("SEND", command, payload);
     if (!this.isConnected || this.hubConnection.state === HubConnectionState.Disconnected) {
       this._isConnected = false;
       await this.connect();
@@ -67,7 +67,7 @@ export class GLSocketClient {
   }
 
   async invoke(command: string, payload: any): Promise<any> {
-    Logger.log("INVOKE", command, payload);
+    // Logger.log("INVOKE", command, payload);
     if (!this.isConnected || this.hubConnection.state === HubConnectionState.Disconnected) {
       this._isConnected = false;
       await this.connect();
@@ -133,7 +133,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_ONE_TO_ONE, handler.onTeacherSetOneToOne);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
-        Logger.info("RECEIVE", key, payload);
+        // Logger.info("RECEIVE", key, payload);
         func(payload);
       });
     });
