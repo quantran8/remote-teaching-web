@@ -1,8 +1,6 @@
-import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import * as R from "ramda/";
-import { StudentState } from "@/store/room/interface";
 import { toolType } from "./types";
 
 export default defineComponent({
@@ -46,7 +44,7 @@ export default defineComponent({
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
-    const student = computed<StudentState>(() => store.getters["studentRoom/student"]).value;
+    const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
@@ -100,7 +98,7 @@ export default defineComponent({
     watch(canvasData, renderCanvas);
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
-        if (!studentOneAndOneId.value || student.id == studentOneAndOneId.value) {
+        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
           canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
         }
       } else {
@@ -219,23 +217,17 @@ export default defineComponent({
       });
 
       canvas.add(star);
-      canvas.getObjects("polygon").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
       canvas.renderAll();
     };
 
     const addCircle = () => {
-      const cirlce = new fabric.Circle({
+      const circle = new fabric.Circle({
         radius: 30,
         fill: "",
         stroke: "black",
         strokeWidth: 3,
       });
-      canvas.add(cirlce);
-      canvas.getObjects("cirlce").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
+      canvas.add(circle);
       canvas.renderAll();
     };
 
@@ -249,9 +241,6 @@ export default defineComponent({
       });
 
       canvas.add(square);
-      canvas.getObjects("square").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
       canvas.renderAll();
     };
 
