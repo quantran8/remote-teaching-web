@@ -219,23 +219,17 @@ export default defineComponent({
       });
 
       canvas.add(star);
-      canvas.getObjects("polygon").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
       canvas.renderAll();
     };
 
     const addCircle = () => {
-      const cirlce = new fabric.Circle({
+      const circle = new fabric.Circle({
         radius: 30,
         fill: "",
         stroke: "black",
         strokeWidth: 3,
       });
-      canvas.add(cirlce);
-      canvas.getObjects("cirlce").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
+      canvas.add(circle);
       canvas.renderAll();
     };
 
@@ -249,9 +243,6 @@ export default defineComponent({
       });
 
       canvas.add(square);
-      canvas.getObjects("square").forEach((obj: any) => {
-        obj.hasControls = false;
-      });
       canvas.renderAll();
     };
 
