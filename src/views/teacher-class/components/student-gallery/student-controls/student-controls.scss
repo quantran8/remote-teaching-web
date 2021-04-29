@@ -5,19 +5,27 @@
   justify-content: space-evenly;
 
   .button-group {
-    flex-direction: column;
+    display: flex;
+    flex-direction: collumn;
+    @media (min-width: $xl) {
+      display: inline-block;
+    }
+    @media (min-width: $xxl) {
+      display: flex;
+    }
   }
 
   .student-controls__button {
     flex: 1;
     text-align: center;
     margin: 5px 10px 0 10px;
+    width: 130px;
 
     .student-controls__button--clickable {
       cursor: pointer;
       display: inline-block;
       vertical-align: middle;
-      font-size: 19px;
+      font-size: 15px;
       font-family: $font-family;
       font-weight: 600;
       img {
@@ -46,7 +54,7 @@
       .video-icon {
         position: relative;
         height: 45px;
-        top: 5px;
+        top: 3px;
         right: 6px;
       }
     }

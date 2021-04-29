@@ -91,6 +91,10 @@
     @include cycle(#00a1ed, flickerAnimationVoice);
   }
 
+  &__is-palette {
+    @include cycle(#030303, flickerAnimationPalette);
+  }
+
   &__is-question {
     @include cycle(#dd0d0d, flickerAnimation);
   }
