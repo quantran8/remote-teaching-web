@@ -32,21 +32,11 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
-    watch(studentShapes, () => {
-      renderStudentShapes();
-    });
-    const renderStudentShapes = () => {
-      if (!canvas && !studentShapes.value) return;
-      const otherShapes = studentShapes.value.filter((item: any) => item.studentId !== student.value.id);
-    };
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
       const shapes: Array<string> = canvasData.value;
       if (laserPath.value) {
         shapes.push(laserPath.value);
-      }
-      if (studentShapes.value) {
-        const myShapes = studentShapes.value.filter((item: any) => item.studentId === student.value.id);
       }
       const canvasJsonData = {
         objects: shapes
