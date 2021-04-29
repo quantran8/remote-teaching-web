@@ -15,4 +15,5 @@ export interface StudentModel extends UserModel {
   badge: number;
   isRaisingHand: boolean;
   connectionStatus: number;
+  isPalette: boolean;
 }

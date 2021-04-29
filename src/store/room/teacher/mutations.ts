@@ -13,7 +13,7 @@ import {
   UserMediaPayload,
   StudentBadgePayload,
   UserIdPayload,
-  WhiteboardPayload
+  WhiteboardPayload,
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
@@ -104,6 +104,7 @@ const mutations: TeacherRoomMutation<State> = {
         status: st.connectionStatus,
         index: index,
         raisingHand: st.isRaisingHand,
+        isPalette: st.isPalette,
       };
     });
     s.globalAudios = s.students.filter(ele => p.globalStudentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
@@ -211,6 +212,13 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setSpeakingUsers(s: State, p: { userIds: Array<string> }) {
     s.speakingUsers = p.userIds;
+  },
+  setAnnotationStatus(s: TeacherRoomState, p: { id: string; isPalette: boolean }) {
+    const student = s.students.find(st => st.id === p.id);
+    if (student) student.isPalette = p.isPalette;
+  },
+  disableAnnotationStatus(s: TeacherRoomState, p: any) {
+    s.students.map(student => (student.isPalette = false));
   },
 };
 

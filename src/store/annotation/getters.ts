@@ -26,9 +26,6 @@ const getters: GetterTree<AnnotationState, any> = {
   stickers(state: AnnotationState): Array<Sticker> {
     return state.stickers;
   },
-  getStatusAnnotation(state: AnnotationState): boolean {
-    return state.enableAnnotation;
-  },
 };
 
 export default getters;

@@ -74,6 +74,7 @@ const mutations: MutationTree<StudentRoomState> = {
         status: st.connectionStatus,
         index: state.students.length,
         raisingHand: st.isRaisingHand,
+        isPalette: st.isPalette,
       };
       if (st.id === state.user?.id) {
         student.index = 999;
@@ -166,6 +167,14 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   clearLaserPen(state: StudentRoomState, p: "") {
     state.laserPath = p;
+  },
+  setAnnotationStatus(s: StudentRoomState, p: { id: string; isPalette: boolean }) {
+    const student = p.id === s.student?.id ? s.student : s.students.find(st => st.id === p.id);
+    if (student) student.isPalette = p.isPalette;
+  },
+  disableAnnotationStatus(s: StudentRoomState, p: any) {
+    s.students.map(student => (student.isPalette = false));
+    if (s.student) s.student.isPalette = false;
   },
 };
 
