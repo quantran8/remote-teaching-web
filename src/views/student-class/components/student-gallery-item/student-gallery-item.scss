@@ -203,3 +203,7 @@
 .sc-gallery-item--speaking {
   @include cycle(#00a1ed, flickerAnimationVoice);
 }
+
+.sc-gallery-item--palette {
+  @include cycle(#030303, flickerAnimationPalette);
+}

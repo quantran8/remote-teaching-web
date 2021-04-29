@@ -14,7 +14,7 @@ import {
   UserIdPayload,
   UserMediaPayload,
   ValueOfClassView,
-  WhiteboardPayload
+  WhiteboardPayload,
 } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
@@ -136,6 +136,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async setAllStudentBadge({ state }) {
     state.manager?.WSClient.sendRequestSetStudentBadge([], 1);
+  },
+  async disableAllAnnotation({ state }) {
+    state.manager?.WSClient.sendRequestDisableAllAnnotation();
+  },
+  async toggleAnnotation({ state }, payload: { studentId: string; isEnable: boolean }) {
+    state.manager?.WSClient.sendRequestToggleAnnotation(payload.studentId, payload.isEnable);
   },
   async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;

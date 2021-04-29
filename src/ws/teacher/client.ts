@@ -45,6 +45,15 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.END_CLASS, { roomId: roomId });
   }
 
+  sendRequestDisableAllAnnotation() {
+    return this.send(WSCmd.DISABLE_ALL_STUDENT_PALETTE, {});
+  }
+  sendRequestToggleAnnotation(StudentId: string, IsEnable: boolean) {
+    return this.send(WSCmd.SET_STUDENT_PALETTE, {
+      IsEnable: IsEnable,
+      StudentId: StudentId,
+    });
+  }
   sendRequestSetStudentBadge(StudentIds: string[], Badge: number) {
     return this.send(WSCmd.SET_STUDENT_BADGE, {
       StudentIds: StudentIds,

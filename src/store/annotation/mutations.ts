@@ -14,9 +14,7 @@ export interface AnnotationMutationInterface<S> {
   setInfo(s: S, p: AnnotationModel): void;
 }
 
-export interface AnnotationMutation<S>
-  extends MutationTree<S>,
-    AnnotationMutationInterface<S> {}
+export interface AnnotationMutation<S> extends MutationTree<S>, AnnotationMutationInterface<S> {}
 
 const mutations: AnnotationMutation<AnnotationState> = {
   setPointer(s: AnnotationState, p: Pointer) {
@@ -55,10 +53,6 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.mode = p.mode;
     s.drawing = p.drawing;
     s.stickers = p.stickers;
-    // const { studentShapes } = p.drawing;
-    // s.drawing.studentShapes = studentShapes.map((s: any) => {
-    //   return { studentId: s.studentId, brushstroke: s.brushstroke };
-    // });
   },
 };
 

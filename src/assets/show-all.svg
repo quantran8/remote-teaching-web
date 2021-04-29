@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="34.782" height="20.29" viewBox="0 0 34.782 20.29"><path d="M17.413,7.9c6.885,0,11.685,4.365,13.774,6.719-2.03,2.662-6.83,7.774-13.774,7.774-6.406,0-11.493-5.125-13.736-7.836C5.841,12.168,10.658,7.9,17.413,7.9Zm0-2.9C6.443,5,0,14.494,0,14.494s7.007,10.8,17.413,10.8c11.207,0,17.369-10.8,17.369-10.8S28.563,5,17.413,5Zm-.022,4.348a5.8,5.8,0,1,0,5.8,5.8A5.8,5.8,0,0,0,17.391,9.348Z" transform="translate(0 -5)"/></svg>
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 60" width="42" height="60">
+	<title>sticker-svg</title>
+	<defs>
+		<image width="70" height="42" id="img1" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNC43ODIiIGhlaWdodD0iMjAuMjkiIHZpZXdCb3g9IjAgMCAzNC43ODIgMjAuMjkiPjxwYXRoIGQ9Ik0xNy40MTMsNy45YzYuODg1LDAsMTEuNjg1LDQuMzY1LDEzLjc3NCw2LjcxOS0yLjAzLDIuNjYyLTYuODMsNy43NzQtMTMuNzc0LDcuNzc0LTYuNDA2LDAtMTEuNDkzLTUuMTI1LTEzLjczNi03LjgzNkM1Ljg0MSwxMi4xNjgsMTAuNjU4LDcuOSwxNy40MTMsNy45Wm0wLTIuOUM2LjQ0Myw1LDAsMTQuNDk0LDAsMTQuNDk0czcuMDA3LDEwLjgsMTcuNDEzLDEwLjhjMTEuMjA3LDAsMTcuMzY5LTEwLjgsMTcuMzY5LTEwLjhTMjguNTYzLDUsMTcuNDEzLDVabS0uMDIyLDQuMzQ4YTUuOCw1LjgsMCwxLDAsNS44LDUuOEE1LjgsNS44LDAsMCwwLDE3LjM5MSw5LjM0OFoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTUpIi8+PC9zdmc+"/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<use id="show-all" href="#img1" transform="matrix(0.6,0,0,0.6,0,9)"/>
+</svg>

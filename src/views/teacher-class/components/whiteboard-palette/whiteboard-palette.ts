@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode } from "@/commonui";
@@ -291,6 +291,9 @@ export default defineComponent({
       await boardSetup();
       await defaultWhiteboard();
     });
+	onUnmounted(() => {
+		canvas.dispose()
+	});
 
     return {
       currentExposureItemMedia,

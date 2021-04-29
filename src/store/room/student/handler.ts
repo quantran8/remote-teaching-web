@@ -62,10 +62,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (_payload: any) => {
-    //   console.log(_payload);
+      //   console.log(_payload);
     },
     onStudentSendUnity: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onStudentMuteAudio: (payload: StudentModel) => {
       commit("setStudentAudio", {
@@ -194,10 +194,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("lesson/setCurrentExposureItemMedia", { id: payload.pageSelected }, { root: true });
     },
     onStudentRaisingHand: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onStudentLike: async (payload: StudentModel) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherClearRaisingHand: (payload: any) => {
       commit("setStudentRaisingHand", {
@@ -238,7 +238,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onStudentUpdateAnswers: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherSetPointer: async (payload: Pointer) => {
       await dispatch("annotation/setPointer", payload, {
@@ -307,6 +307,12 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherDrawLaser: async (payload: any) => {
       await commit("setDrawLaser", payload);
+    },
+    onTeacherDisableAllStudentPallete: async (payload: any) => {
+      await commit("studentRoom/disableAnnotationStatus", payload, { root: true });
+    },
+    onTeacherToggleStudentPallete: async (payload: any) => {
+      await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: Array<StudentShape>) => {
       await commit("annotation/setStudentAddShape", { studentShapes: payload },{ root: true });

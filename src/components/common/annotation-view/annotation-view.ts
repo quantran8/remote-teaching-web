@@ -230,7 +230,6 @@ export default defineComponent({
       imageUrl,
       // boardSetup,
       isPointerMode,
-      isDrawMode,
       canvasRef,
       // stickerColors,
       // checkStickerAdded,

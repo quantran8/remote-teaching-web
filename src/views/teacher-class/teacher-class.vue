@@ -10,8 +10,8 @@
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
-    <div class="tc__content" :style="{paddingTop: !isLessonPlan ? '200px' : '0px'}">
-      <div class="tc__content__teacher" :class="{'tc__content__teacher--gallery':isGalleryView}">
+    <div class="tc__content" :style="{ paddingTop: !isLessonPlan ? '200px' : '0px' }">
+      <div class="tc__content__teacher" :class="{ 'tc__content__teacher--gallery': isGalleryView }">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -27,9 +27,9 @@
           @end="onClickEnd"
         />
       </div>
-<!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
-<!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
-<!--      </div>-->
+      <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
+      <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
+      <!--      </div>-->
       <div v-show="isLessonPlan" class="tc__content__whiteboard-content">
         <WhiteboardPalette v-show="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
       </div>
@@ -53,7 +53,7 @@
       <StudentGallery />
     </div>
     <ErrorModal v-if="isClassNotActive" @dismiss="onClickCloseError" @confirm="onClickLeave" />
-<!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->
+    <!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-class.scss"></style>
