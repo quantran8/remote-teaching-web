@@ -9,18 +9,20 @@
     ]"
     ref="containerRef"
   >
-    <div
-      class="sc-gallery-item__video"
-      :class="[isSpeaking && 'sc-gallery-item--speaking']"
-      v-show="student.videoEnabled && !isNotJoinned"
-      :id="student.id"
-    ></div>
-    <img
-      class="sc-gallery-item__img"
-      :class="[isSpeaking && 'sc-gallery-item--speaking']"
-      v-show="!student.videoEnabled || isNotJoinned"
-      src="@/assets/student-class/no-avatar.png"
-    />
+    <div class="sc-gallery-item__video" :class="[student.isPalette && 'sc-gallery-item--palette']">
+      <div
+        class="sc-gallery-item__video"
+        :class="[isSpeaking && 'sc-gallery-item--speaking']"
+        v-show="student.videoEnabled && !isNotJoinned"
+        :id="student.id"
+      ></div>
+      <img
+        class="sc-gallery-item__img"
+        :class="[isSpeaking && 'sc-gallery-item--speaking']"
+        v-show="!student.videoEnabled || isNotJoinned"
+        src="@/assets/student-class/no-avatar.png"
+      />
+    </div>
     <div class="sc-gallery-item__title-container">
       <h3 class="sc-gallery-item__title" :class="isNotJoinned ? 'sc-gallery-item__disable' : 'sc-gallery-item__enable'">{{ student.name }}</h3>
     </div>
