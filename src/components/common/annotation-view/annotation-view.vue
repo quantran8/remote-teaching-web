@@ -1,13 +1,5 @@
 <template>
-  <div
-    :style="{
-      'border-bottom-left-radius':
-        (enableAnnotation && !studentOneAndOneId) || (enableAnnotation && student.id == studentOneAndOneId) ? '0px' : '10px',
-      'border-bottom-right-radius':
-        (enableAnnotation && !studentOneAndOneId) || (enableAnnotation && student.id == studentOneAndOneId) ? '0px' : '10px',
-    }"
-    class="annotation-view"
-  >
+  <div class="annotation-view">
     <img :src="imageUrl" id="annotation-img" />
     <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
       <img src="@/assets/icon-select.png" alt="" />
