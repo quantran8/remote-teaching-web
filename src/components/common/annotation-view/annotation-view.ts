@@ -26,8 +26,6 @@ export default defineComponent({
 
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
-
-    const enableAnnotation = computed(() => store.getters["annotation/getStatusAnnotation"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
 
     const pointerStyle = computed(() => {
@@ -279,7 +277,6 @@ export default defineComponent({
       imageUrl,
       // boardSetup,
       isPointerMode,
-      enableAnnotation,
       canvasRef,
       // stickerColors,
       // checkStickerAdded,

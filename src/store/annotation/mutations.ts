@@ -50,9 +50,6 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.drawing = p.drawing;
     s.stickers = p.stickers;
   },
-  setAnnotationStatus(s: AnnotationState, p: { status: boolean }) {
-    s.enableAnnotation = p.status;
-  },
 };
 
 export default mutations;
