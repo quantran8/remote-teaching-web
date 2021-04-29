@@ -18,6 +18,7 @@ export interface Drawing {
   pencil: Pencil | null;
 }
 export interface AnnotationState {
+  enableAnnotation: boolean;
   mode: number;
   pointer: Pointer;
   drawing: Drawing;
@@ -25,6 +26,7 @@ export interface AnnotationState {
 }
 
 const state: AnnotationState = {
+  enableAnnotation: false,
   mode: 0,
   pointer: { x: 0, y: 0 },
   drawing: {

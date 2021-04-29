@@ -33,4 +33,5 @@ export interface TeacherWSEventHandler {
   onTeacherSetOneToOne(payload: any): void;
   onTeacherSetWhiteboard(payload: any): void;
   onTeacherDrawLaser(payload: any): void;
+  onTeacherDisableAllStudentPallete(payload: any): void;
 }

@@ -32,7 +32,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onStudentMuteAudio: async (payload: StudentModel) => {
       commit("setStudentAudio", {
@@ -71,38 +71,38 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       );
     },
     onTeacherJoinClass: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherStreamConnect: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherMuteAudio: (payload: TeacherModel) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherMuteVideo: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherMuteStudentVideo: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteStudentAudio: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentVideo: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentAudio: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherDisconnect: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherSetFocusTab: (payload: RoomModel) => {
       commit("setClassView", {
@@ -172,7 +172,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("interactive/setInfo", payload, { root: true });
     },
     onStudentAnswerSelf: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onStudentAnswerAll: async (payload: any) => {
       await dispatch("interactive/setRevealedTarget", payload.id, {
@@ -185,28 +185,28 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       });
     },
     onTeacherSetPointer: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherUpdateAnnotationMode: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherAddBrush: async (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherClearAllBrush(payload: any) {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherDeleteBrush(payload: any) {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherSetStickers(payload: any) {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherClearStickers(payload: any) {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherSendUnity(payload: any) {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherSetOneToOne: async (payload: any) => {
       if (payload) {
@@ -223,10 +223,13 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetWhiteboard: (payload: RoomModel) => {
-    //   console.log(payload);
+      //   console.log(payload);
     },
     onTeacherDrawLaser: (payload: any) => {
-    //   console.log(payload);
+      //   console.log(payload);
+    },
+    onTeacherDisableAllStudentPallete: (payload: any) => {
+      //   console.log(payload);
     },
   };
   return handler;
