@@ -46,8 +46,8 @@
       border-radius: 10px;
     }
     &.has-palette-tools {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
     }
   }
 }
@@ -96,6 +96,7 @@
   align-items: center;
   border-bottom-right-radius: 30px;
   border-bottom-left-radius: 30px;
+  border: 1px solid black;
   &__item {
     width: 45px;
     height: 45px;

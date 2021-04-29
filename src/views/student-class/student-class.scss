@@ -243,15 +243,20 @@
   margin-top: 30px;
   padding-left: 40px;
   &__item {
-    display: block;
+    display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100px;
+	height: 100px;
   }
   &__icon {
     -webkit-user-drag: none;
-    max-width: 70px;
-    height: auto;
+	width: 100px;
+	height: 100px;
   }
   &__icon--hand {
-    width: 88px;
+	width: 88px;
+	height: 88px;
   }
 
   @media (min-width: $lg) {

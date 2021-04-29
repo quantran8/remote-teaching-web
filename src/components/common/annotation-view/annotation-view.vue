@@ -1,10 +1,27 @@
 <template>
-  <div class="annotation-view">
+  <div
+    :style="{
+      'border-bottom-left-radius':
+        (enableAnnotation && !studentOneAndOneId) || (enableAnnotation && student.id == studentOneAndOneId) ? '0px' : '10px',
+      'border-bottom-right-radius':
+        (enableAnnotation && !studentOneAndOneId) || (enableAnnotation && student.id == studentOneAndOneId) ? '0px' : '10px',
+    }"
+    class="annotation-view"
+  >
     <img :src="imageUrl" id="annotation-img" />
     <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
       <img src="@/assets/icon-select.png" alt="" />
     </div>
-    <div class="canvas-wrap-container" :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': enableAnnotation }">
+    <div
+      :style="{
+        'border-bottom-left-radius':
+          (enableAnnotation && !studentOneAndOneId) || (enableAnnotation && student.id == studentOneAndOneId) ? '0px' : '10px',
+        'border-bottom-right-radius':
+          (enableAnnotation && !studentOneAndOneId) || (enableAnnotation && student.id == studentOneAndOneId) ? '0px' : '10px',
+      }"
+      class="canvas-wrap-container"
+      :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': enableAnnotation }"
+    >
       <canvas v-show="!studentOneAndOneId || student.id == studentOneAndOneId" class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
     </div>
   </div>
