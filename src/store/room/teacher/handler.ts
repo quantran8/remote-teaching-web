@@ -228,8 +228,11 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherDrawLaser: (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherDisableAllStudentPallete: (payload: any) => {
-      //   console.log(payload);
+    onTeacherDisableAllStudentPallete: async (payload: any) => {
+      await commit("teacherRoom/disableAnnotationStatus", payload, { root: true });
+    },
+    onTeacherToggleStudentPallete: async (payload: any) => {
+      await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
     },
   };
   return handler;

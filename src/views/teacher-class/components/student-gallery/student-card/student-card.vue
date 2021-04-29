@@ -5,18 +5,20 @@
     @mouseleave="onMouseChange(false)"
   >
     <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
-      <div
-        class="student__video"
-        :class="[isSpeaking && 'student__is-speaking']"
-        v-show="student.videoEnabled && !isNotJoinned"
-        :id="student.id"
-      ></div>
-      <img
-        class="student__img"
-        :class="[isSpeaking && 'student__is-speaking']"
-        v-show="!student.videoEnabled || isNotJoinned"
-        src="@/assets/student-class/no-avatar.png"
-      />
+      <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+        <div
+          class="student__video"
+          :class="[isSpeaking && 'student__is-speaking']"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :id="student.id"
+        ></div>
+        <img
+          class="student__img"
+          :class="[isSpeaking && 'student__is-speaking']"
+          v-show="!student.videoEnabled || isNotJoinned"
+          src="@/assets/student-class/no-avatar.png"
+        />
+      </div>
     </figure>
     <div class="student__info">
       <h4 class="student__name" :class="isNotJoinned ? 'student__disable' : 'student__enable'" @click="onOneAndOne">

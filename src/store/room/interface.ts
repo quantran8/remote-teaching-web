@@ -8,6 +8,7 @@ export interface StudentState {
   videoEnabled: boolean;
   status: InClassStatus;
   raisingHand: boolean;
+  isPalette: boolean;
 }
 
 export interface TeacherState {

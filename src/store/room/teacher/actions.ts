@@ -140,6 +140,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async disableAllAnnotation({ state }) {
     state.manager?.WSClient.sendRequestDisableAllAnnotation();
   },
+  async toggleAnnotation({ state }, payload: { studentId: string; isEnable: boolean }) {
+    state.manager?.WSClient.sendRequestToggleAnnotation(payload.studentId, payload.isEnable);
+  },
   async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;
     commit("setMicrophoneLock", { enable: true });

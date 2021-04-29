@@ -309,7 +309,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("setDrawLaser", payload);
     },
     onTeacherDisableAllStudentPallete: async (payload: any) => {
-      await dispatch("annotation/setAnnotationStatus", { status: false }, { root: true });
+      await commit("studentRoom/disableAnnotationStatus", payload, { root: true });
+    },
+    onTeacherToggleStudentPallete: async (payload: any) => {
+      await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
   };
   return handler;

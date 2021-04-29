@@ -20,9 +20,9 @@
         <img :src="audioIcon" />
       </div>
     </a>
-    <a v-if="show" href="javascript:void(0)" class="student-action__item">
+    <a v-if="show" href="javascript:void(0)" @click="toggleAnnotation" class="student-action__item">
       <div class="student-action__btn">
-        <img src="@/assets/teacher-class/touch-off-small.svg" />
+        <img :src="paletteIcon" />
       </div>
     </a>
     <a v-if="show" href="javascript:void(0)" @click="addABadge" class="student-action__item">
