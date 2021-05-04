@@ -2,8 +2,8 @@ import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "v
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
-import {Tools} from "commonui";
-import {MIN_SPEAKING_LEVEL} from "@/utils/constant";
+import { Tools } from "commonui";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 
 export default defineComponent({
   props: ["image"],
@@ -34,25 +34,12 @@ export default defineComponent({
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const renderCanvas = () => {
       if (!canvas || !canvasData.value) return;
-      const shapes: Array<string> = canvasData.value;
-      if (laserPath.value) {
-        shapes.push(laserPath.value);
-      }
-      const canvasJsonData = {
-        objects: shapes
-          .map(s => {
-            const obj = JSON.parse(s);
-            obj.width = Math.floor(obj.width * scaleRatio.value);
-            obj.height = Math.floor(obj.height * scaleRatio.value);
-            obj.top = Math.floor(obj.top * scaleRatio.value);
-            obj.left = Math.floor(obj.left * scaleRatio.value);
-            obj.scaleX = obj.scaleX * scaleRatio.value;
-            obj.scaleY = obj.scaleY * scaleRatio.value;
-            return obj;
-          })
-          .filter(s => s !== null),
-      };
-      canvas.loadFromJSON(JSON.stringify(canvasJsonData), canvas.renderAll.bind(canvas));
+      canvas.remove(...canvas.getObjects("path"));
+      canvasData.value.forEach((s: any) => {
+        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          canvas.add(item);
+        });
+      });
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
@@ -62,16 +49,19 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
       if (laserPath.value) {
-        const laserLine = canvas.getObjects("path").pop();
-        laserLine.animate("opacity", "0", {
-          duration: 1000,
-          easing: fabric.util.ease.easeInOutExpo,
-          onChange: canvas.renderAll.bind(canvas),
-          onComplete: async () => {
-            shapes.pop();
-            canvas.remove(laserLine);
-            await store.dispatch("studentRoom/clearLaserPen", "");
-          },
+        console.log(laserPath.value, "laser path");
+        const laserPathLine = new fabric.Path.fromObject(JSON.parse(laserPath.value), (item: any) => {
+          item.animate("opacity", "0", {
+            duration: 1000,
+            easing: fabric.util.ease.easeInOutExpo,
+            onChange: () => {
+              canvas.add(item);
+            },
+            onComplete: async () => {
+              canvas.remove(item);
+              await store.dispatch("studentRoom/clearLaserPen", "");
+            },
+          });
         });
       }
     };
@@ -81,6 +71,9 @@ export default defineComponent({
     watch(laserPath, () => {
       renderCanvas();
     });
+    // watch(studentShapes, () => {
+    //   renderCanvas();
+    // });
     watch(canvasData, renderCanvas);
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
@@ -93,6 +86,7 @@ export default defineComponent({
     });
     const studentAddShapes = async () => {
       const canvasAsJSON = canvas.toJSON();
+      canvasAsJSON.objects.filter((s: any) => s.type !== "path").map((s: any) => (s["id"] = student.value.id));
       const shapes = canvasAsJSON.objects.filter((s: any) => s.type !== "path").map((s: any) => JSON.stringify(s));
       if (shapes.length) {
         await store.dispatch("studentRoom/studentAddShape", shapes);
@@ -155,7 +149,6 @@ export default defineComponent({
       });
 
       canvas.add(star);
-      canvas.renderAll();
       await studentAddShapes();
     };
 
@@ -167,7 +160,6 @@ export default defineComponent({
         strokeWidth: 3,
       });
       canvas.add(circle);
-      canvas.renderAll();
       await studentAddShapes();
     };
 
@@ -181,7 +173,6 @@ export default defineComponent({
       });
 
       canvas.add(square);
-      canvas.renderAll();
       await studentAddShapes();
     };
 
