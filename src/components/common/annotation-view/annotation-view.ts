@@ -153,7 +153,7 @@ export default defineComponent({
         top: randomPosition(),
         strokeWidth: 3,
         strokeLineJoin: "round",
-        fill: "white",
+        fill: "",
       });
 
       canvas.add(star);
