@@ -58,7 +58,9 @@
             <!--              :localTargets="localTargets"-->
             <!--              :studentOneId="studentOneAndOneId"-->
             <!--            ></ContentView>-->
-            <AnnotationView :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousImage : currentExposureItemMedia?.image) : null" />
+            <AnnotationView
+              :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
+            />
           </div>
           <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
         </div>

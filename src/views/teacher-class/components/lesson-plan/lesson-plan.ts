@@ -1,3 +1,4 @@
+import { PREV_EXPOSURE } from "./../../../../utils/constant";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
@@ -6,6 +7,7 @@ import { Exposure, ExposureStatus, ExposureType } from "@/store/lesson/state";
 import IconNext from "@/assets/images/arrow.png";
 import IconNextDisable from "@/assets/images/arrow-disable.png";
 import { ClassView } from "@/store/room/interface";
+import { NEXT_EXPOSURE } from "@/utils/constant";
 
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
@@ -25,7 +27,7 @@ export default defineComponent({
         });
         await dispatch("teacherRoom/setClearBrush", {});
         await dispatch("teacherRoom/setClearStickers", {});
-        if (nextPrev === 1) {
+        if (nextPrev === NEXT_EXPOSURE) {
           if (nextExposureItemMedia.value !== undefined) {
             await dispatch("teacherRoom/setCurrentExposureMediaItem", {
               id: nextExposureItemMedia.value.id,
@@ -42,9 +44,9 @@ export default defineComponent({
     };
     window.addEventListener("keydown", e => {
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-        onClickPrevNextMedia(1);
+        onClickPrevNextMedia(NEXT_EXPOSURE);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-        onClickPrevNextMedia(2);
+        onClickPrevNextMedia(PREV_EXPOSURE);
       }
     });
   },
@@ -63,7 +65,7 @@ export default defineComponent({
         });
         await dispatch("teacherRoom/setClearBrush", {});
         await dispatch("teacherRoom/setClearStickers", {});
-        if (nextPrev === 1) {
+        if (nextPrev === NEXT_EXPOSURE) {
           if (nextExposureItemMedia.value !== undefined) {
             await dispatch("teacherRoom/setCurrentExposureMediaItem", {
               id: nextExposureItemMedia.value.id,
@@ -80,9 +82,9 @@ export default defineComponent({
     };
     window.removeEventListener("keydown", e => {
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-        onClickPrevNextMedia(1);
+        onClickPrevNextMedia(NEXT_EXPOSURE);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-        onClickPrevNextMedia(2);
+        onClickPrevNextMedia(PREV_EXPOSURE);
       }
     });
   },

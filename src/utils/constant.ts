@@ -3,3 +3,6 @@
  * so to make sure they are speaking, we check by a minimum level (actually this way doesn't make the exactly result)
  */
 export const MIN_SPEAKING_LEVEL = 1;
+
+export const NEXT_EXPOSURE = 1;
+export const PREV_EXPOSURE = 2;
