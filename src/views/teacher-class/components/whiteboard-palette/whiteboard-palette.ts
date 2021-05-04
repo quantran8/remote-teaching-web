@@ -157,7 +157,7 @@ export default defineComponent({
           return;
         case Tools.Pen:
           toolSelected.value = Tools.Pen;
-          canvas.remove(...canvas.getObjects("rect"));
+          // canvas.remove(...canvas.getObjects("rect"));
           await store.dispatch("teacherRoom/setClearStickers", {});
           modeAnnotation.value = Mode.Draw;
           await store.dispatch("teacherRoom/setMode", {
@@ -272,14 +272,32 @@ export default defineComponent({
     };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
-      const shapes: Array<string> = [];
+      canvas.remove(
+        ...canvas
+          .getObjects()
+          .filter((obj: any) => obj.type !== "path")
+          .filter((obj: any) => obj.id !== ""),
+      );
       studentShapes.value.forEach((item: any) => {
         item.brushstrokes.forEach((s: any) => {
-          shapes.push(JSON.parse(s));
+          const shape = JSON.parse(s);
+          if (shape.type === "polygon") {
+            const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+              canvas.add(item);
+            });
+          }
+          if (shape.type === "rect") {
+            const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+              canvas.add(item);
+            });
+          }
+          if (shape.type === "circle") {
+            const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+              canvas.add(item);
+            });
+          }
         });
       });
-      const canvasJsonData = { objects: shapes };
-      canvas.loadFromJSON(JSON.stringify(canvasJsonData), canvas.renderAll.bind(canvas));
       if (showHideWhiteboard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       }
@@ -291,9 +309,9 @@ export default defineComponent({
       await boardSetup();
       await defaultWhiteboard();
     });
-	onUnmounted(() => {
-		canvas.dispose()
-	});
+    onUnmounted(() => {
+      canvas.dispose();
+    });
 
     return {
       currentExposureItemMedia,

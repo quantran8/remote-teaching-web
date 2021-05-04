@@ -51,7 +51,15 @@ const mutations: AnnotationMutation<AnnotationState> = {
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;
-    s.drawing = p.drawing;
+    if (p.drawing) {
+      s.drawing = p.drawing;
+    } else {
+      s.drawing = {
+        pencil: null,
+        brushstrokes: [],
+        studentShapes: [],
+      };
+    }
     s.stickers = p.stickers;
   },
 };

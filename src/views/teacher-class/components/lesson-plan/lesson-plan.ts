@@ -5,10 +5,88 @@ import ExposureDetail from "./exposure-detail/exposure-detail.vue";
 import { Exposure, ExposureStatus, ExposureType } from "@/store/lesson/state";
 import IconNext from "@/assets/images/arrow.png";
 import IconNextDisable from "@/assets/images/arrow-disable.png";
+import { ClassView } from "@/store/room/interface";
+import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
   emits: ["open-gallery-mode"],
+  beforeMount() {
+    const { getters, dispatch } = useStore();
+    const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
+    const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
+    const onClickPrevNextMedia = async (nextPrev: number) => {
+      if (isLessonPlan.value) {
+        await dispatch("interactive/setTargets", {
+          targets: [],
+        });
+        await dispatch("interactive/setLocalTargets", {
+          targets: [],
+        });
+        await dispatch("teacherRoom/setClearBrush", {});
+        await dispatch("teacherRoom/setClearStickers", {});
+        if (nextPrev === NEXT_EXPOSURE) {
+          if (nextExposureItemMedia.value !== undefined) {
+            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+              id: nextExposureItemMedia.value.id,
+            });
+          }
+        } else {
+          if (prevExposureItemMedia.value !== undefined) {
+            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+              id: prevExposureItemMedia.value.id,
+            });
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", e => {
+      if (e.key == "ArrowRight" || e.key == "ArrowDown") {
+        onClickPrevNextMedia(NEXT_EXPOSURE);
+      } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
+        onClickPrevNextMedia(PREV_EXPOSURE);
+      }
+    });
+  },
+  beforeUnmount() {
+    const { getters, dispatch } = useStore();
+    const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
+    const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
+    const onClickPrevNextMedia = async (nextPrev: number) => {
+      if (isLessonPlan.value) {
+        await dispatch("interactive/setTargets", {
+          targets: [],
+        });
+        await dispatch("interactive/setLocalTargets", {
+          targets: [],
+        });
+        await dispatch("teacherRoom/setClearBrush", {});
+        await dispatch("teacherRoom/setClearStickers", {});
+        if (nextPrev === NEXT_EXPOSURE) {
+          if (nextExposureItemMedia.value !== undefined) {
+            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+              id: nextExposureItemMedia.value.id,
+            });
+          }
+        } else {
+          if (prevExposureItemMedia.value !== undefined) {
+            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+              id: prevExposureItemMedia.value.id,
+            });
+          }
+        }
+      }
+    };
+    window.removeEventListener("keydown", e => {
+      if (e.key == "ArrowRight" || e.key == "ArrowDown") {
+        onClickPrevNextMedia(NEXT_EXPOSURE);
+      } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
+        onClickPrevNextMedia(PREV_EXPOSURE);
+      }
+    });
+  },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const exposures = computed(() => getters["lesson/exposures"]);
@@ -19,6 +97,7 @@ export default defineComponent({
     const remainingTime = computed(() => getters["lesson/remainingTimeStatistic"]);
     const isGalleryView = computed(() => getters["teacherRoom/isGalleryView"]);
     const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
+    const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
     const iconNext = ref(IconNextDisable);
 
@@ -58,19 +137,25 @@ export default defineComponent({
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
-    const onClickNextMedia = async () => {
-      if (nextExposureItemMedia.value !== undefined) {
-        await dispatch("interactive/setTargets", {
-          targets: [],
-        });
-        await dispatch("interactive/setLocalTargets", {
-          targets: [],
-        });
-        await dispatch("teacherRoom/setClearBrush", {});
-        await dispatch("teacherRoom/setClearStickers", {});
+    const onClickPrevNextMedia = async (nextPrev: number) => {
+      await dispatch("interactive/setTargets", {
+        targets: [],
+      });
+      await dispatch("interactive/setLocalTargets", {
+        targets: [],
+      });
+      await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setClearStickers", {});
+      if (nextPrev === NEXT_EXPOSURE) {
         if (nextExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
+          });
+        }
+      } else {
+        if (prevExposureItemMedia.value !== undefined) {
+          await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+            id: prevExposureItemMedia.value.id,
           });
         }
       }
@@ -102,9 +187,10 @@ export default defineComponent({
       onClickCloseExposure,
       backToGalleryMode,
       page,
-      onClickNextMedia,
+      onClickPrevNextMedia,
       nextExposureItemMedia,
       iconNext,
+      NEXT_EXPOSURE,
     };
   },
 });
