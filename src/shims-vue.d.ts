@@ -6,3 +6,10 @@ declare module '*.vue' {
 
 declare module 'fabric';
 // declare const UnityLoader;
+
+declare module 'vue-lottie'
+
+declare module "*.json" {
+	const value: any;
+	export default value;
+  }
