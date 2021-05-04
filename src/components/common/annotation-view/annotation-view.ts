@@ -5,6 +5,8 @@ import { toolType } from "./types";
 import {Tools} from "commonui";
 import {MIN_SPEAKING_LEVEL} from "@/utils/constant";
 
+const randomPosition = () => Math.random() * 100
+
 export default defineComponent({
   props: ["image"],
   setup(props) {
@@ -147,8 +149,8 @@ export default defineComponent({
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
         stroke: activeColor.value,
-        left: 100,
-        top: 10,
+        left: randomPosition(),
+        top: randomPosition(),
         strokeWidth: 3,
         strokeLineJoin: "round",
         fill: "white",
@@ -161,6 +163,8 @@ export default defineComponent({
 
     const addCircle = async () => {
       const circle = new fabric.Circle({
+		left: randomPosition(),
+        top: randomPosition(),
         radius: 30,
         fill: "",
         stroke: activeColor.value,
@@ -173,6 +177,8 @@ export default defineComponent({
 
     const addSquare = async () => {
       const square = new fabric.Rect({
+		left: randomPosition(),
+        top: randomPosition(),
         width: 50,
         height: 50,
         fill: "",

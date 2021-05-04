@@ -27,7 +27,7 @@
         :key="color"
         class="palette-tool__colors--item"
         @click="changeColor(color)"
-        :style="{ backgroundColor: color }"
+        :style="{ backgroundColor: color, borderStyle: color === activeColor ? 'solid' : '', transform: color === activeColor ? 'scale(1.3)' : '' }"
       ></div>
     </div>
   </div>
