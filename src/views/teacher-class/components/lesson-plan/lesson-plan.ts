@@ -1,4 +1,3 @@
-import { PREV_EXPOSURE } from "./../../../../utils/constant";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
@@ -7,7 +6,7 @@ import { Exposure, ExposureStatus, ExposureType } from "@/store/lesson/state";
 import IconNext from "@/assets/images/arrow.png";
 import IconNextDisable from "@/assets/images/arrow-disable.png";
 import { ClassView } from "@/store/room/interface";
-import { NEXT_EXPOSURE } from "@/utils/constant";
+import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
