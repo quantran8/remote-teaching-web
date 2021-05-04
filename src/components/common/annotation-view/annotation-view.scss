@@ -7,7 +7,7 @@
   z-index: 10;
   //transform: translateY(-50%);
   border-radius: 10px;
-  img {
+  #annotation-img {
     max-width: 100%;
     position: relative;
     z-index: 11;
@@ -46,8 +46,8 @@
       border-radius: 10px;
     }
     &.has-palette-tools {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
     }
   }
 }
@@ -94,8 +94,9 @@
   padding: 15px 40px;
   background: #d8dddf;
   align-items: center;
-  border-bottom-right-radius: 30px;
-  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border: 1px solid black;
   &__item {
     width: 45px;
     height: 45px;

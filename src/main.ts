@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import Lottie from "vue-lottie";
 import App from "./app/app.vue";
 import "./registerServiceWorker";
 import router from "./router";
@@ -31,6 +32,7 @@ app.component("ContentView", ContentView);
 app.component("AnnotationView", AnnotationView);
 app.component("DesignateCircle", DesignateCircle);
 app.component("DesignateRectangle", DesignateRectangle);
+app.component("Lottie", Lottie);
 //app.component("UnityView", UnityView);
 app.use(router);
 app.use(store);

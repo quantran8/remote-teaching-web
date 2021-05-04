@@ -1,5 +1,4 @@
 @mixin whiteboard-button-base {
-  border: 1px solid #000;
   box-shadow: 0 6px 6px -5px #333;
   background-color: white;
   position: absolute;
@@ -18,19 +17,17 @@
   position: relative;
   &__wrap {
     display: flex;
-    // padding: 0 70px;
     padding-bottom: 45px;
     #canvas-container {
-	//   width: 800px;
-	  height: 435px;
+      width: 717px;
+      height: 435px;
       position: relative;
-      border: 1px solid #000;
-  	  border-bottom-right-radius: 10px;
-	  border-top-right-radius: 10px;
-      img {
-        width: 100%; /* or any custom size */
-    	height: 100%; 
-    	object-fit: contain;
+      border-bottom-right-radius: 10px;
+      border-top-right-radius: 10px;
+      #annotation-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
         position: absolute;
         top: 0;
         left: 0;
@@ -40,14 +37,16 @@
         position: relative;
         z-index: 11;
         .canvas-container {
-		  border-top-right-radius: 10px;
-          width: 100%;
+          border-top-right-radius: 10px;
         }
       }
     }
     &--content {
       position: relative;
-      width: 100%;
+      width: 719px;
+      border: 1px solid #000;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
     }
   }
   &__space {
@@ -55,19 +54,19 @@
   }
   &__button-show {
     @include whiteboard-button-base;
-	border-top-right-radius: 10px;
+    border-top-right-radius: 10px;
     animation: expandUp 0.1s ease-out;
     &--icon {
       animation: invertedUp 0.1s ease-out;
       width: 30px;
       height: 30px;
-	  margin-left: 5px;
+      margin-left: 5px;
     }
   }
   &__button-hide {
     @include whiteboard-button-base;
     border-top-width: 0;
-	border-bottom-right-radius: 10px;
+    border-bottom-right-radius: 10px;
     animation: expandDown 0.1s ease-out;
     padding: 10px;
     top: 425px;
@@ -76,12 +75,12 @@
       width: 30px;
       height: 30px;
       transform: rotate(180deg);
-	  margin-left: 5px;
+      margin-left: 5px;
     }
   }
- .canvas-designate {
-	border-top-right-radius: 10px;
- }
+  .canvas-designate {
+    border-top-right-radius: 10px;
+  }
 }
 
 //animations
@@ -91,7 +90,7 @@
     top: 0;
   }
   100% {
-	top: 425px;
+    top: 425px;
   }
 }
 
