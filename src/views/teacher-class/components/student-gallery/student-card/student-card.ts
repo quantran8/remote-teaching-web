@@ -30,6 +30,8 @@ export default defineComponent({
     const isMouseEntered = ref<boolean>(false);
     const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const isStudentOne = ref(props.student.id == studentOneAndOneId.value);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
 
     watch(studentOneAndOneId, () => {
       isStudentOne.value = props.student.id == studentOneAndOneId.value;
@@ -46,6 +48,8 @@ export default defineComponent({
 
     const onOneAndOne = async () => {
       if (props.setModeOne && !isNotJoinned.value) {
+        await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+        await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,

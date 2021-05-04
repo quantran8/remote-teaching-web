@@ -16,7 +16,7 @@
           Item: {{ activityStatistic }} <br />
           Page: {{ page }}
         </p>
-        <img class="lesson-container__icon-next" :src="iconNext" @click="onClickNextMedia" />
+        <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" />
       </div>
       <div class="progress">
         <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
