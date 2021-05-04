@@ -146,7 +146,7 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
-      if (nextPrev === 1) {
+      if (nextPrev === NEXT_EXPOSURE) {
         if (nextExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
@@ -190,6 +190,7 @@ export default defineComponent({
       onClickPrevNextMedia,
       nextExposureItemMedia,
       iconNext,
+      NEXT_EXPOSURE,
     };
   },
 });
