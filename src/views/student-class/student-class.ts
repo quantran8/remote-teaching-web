@@ -80,19 +80,15 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
-    const previousImage = ref("");
-
-    watch(previousExposureItemMedia, () => {
-      previousImage.value = previousExposureItemMedia.value?.image;
-    });
 
     watch(studentOneAndOneId, async () => {
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-        await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-        await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
-        previousImage.value = currentExposureItemMedia.value?.image;
+        if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
+          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+        }
       } else {
         studentIsOneToOne.value = false;
       }
@@ -206,6 +202,7 @@ export default defineComponent({
       classAction,
       classActionImageRef,
       currentExposureItemMedia,
+      previousExposureItemMedia,
       designateTargets,
       onClickContentView,
       isAssigned,
@@ -221,7 +218,6 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
-      previousImage,
     };
   },
 });

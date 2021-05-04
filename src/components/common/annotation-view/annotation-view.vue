@@ -12,7 +12,7 @@
           (student?.isPalette && !studentOneAndOneId) || (student?.isPalette && student.id == studentOneAndOneId) ? '0px' : '10px',
       }"
       class="canvas-wrap-container"
-      :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': enableAnnotation }"
+      :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': student?.isPalette }"
     >
       <canvas v-show="!studentOneAndOneId || student.id == studentOneAndOneId" class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
     </div>
