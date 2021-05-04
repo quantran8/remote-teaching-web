@@ -21,6 +21,15 @@
     <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" @click="action">
       <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
     </div>
+    <div class="palette-tool__colors">
+      <div
+        v-for="color in colorsList"
+        :key="color"
+        class="palette-tool__colors--item"
+        @click="changeColor(color)"
+        :style="{ backgroundColor: color }"
+      ></div>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped src="./annotation-view.scss"></style>

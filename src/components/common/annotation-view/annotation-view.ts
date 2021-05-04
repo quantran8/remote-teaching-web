@@ -14,7 +14,7 @@ export default defineComponent({
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
-
+	const activeColor = ref('black')
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
@@ -146,7 +146,7 @@ export default defineComponent({
     const addStar = async () => {
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
-        stroke: "black",
+        stroke: activeColor.value,
         left: 100,
         top: 10,
         strokeWidth: 3,
@@ -163,7 +163,7 @@ export default defineComponent({
       const circle = new fabric.Circle({
         radius: 30,
         fill: "",
-        stroke: "black",
+        stroke: activeColor.value,
         strokeWidth: 3,
       });
       canvas.add(circle);
@@ -176,7 +176,7 @@ export default defineComponent({
         width: 50,
         height: 50,
         fill: "",
-        stroke: "black",
+        stroke: activeColor.value,
         strokeWidth: 3,
       });
 
@@ -215,23 +215,35 @@ export default defineComponent({
       },
     ];
 
+	const colorsList = [
+		"black",
+		"red",
+		"orange",
+		"yellow",
+		"green",
+		"blue",
+		"purple",
+		"white"
+	  ];
+
+	const changeColor = (color: string) => {		
+		activeColor.value = color
+	}
+
     return {
       pointerStyle,
       imageUrl,
-      // boardSetup,
       isPointerMode,
       canvasRef,
-      // stickerColors,
-      // checkStickerAdded,
-      // changeColorSticker,
-      // isStickerMode,
-      // checkStickers,
       isShowWhiteBoard,
       addStar,
       clearStar,
       student,
       studentOneAndOneId,
       paletteTools,
+	  activeColor,
+	  colorsList,
+	  changeColor
     };
   },
 });
