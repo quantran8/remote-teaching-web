@@ -1,4 +1,14 @@
+@mixin toast-base {
+  position: fixed;
+  z-index: 10;
+  top: 30px;
+  -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.47);
+  -moz-box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.47);
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.47);
+}
+
 .snackbar {
+  @include toast-base;
   visibility: hidden;
   min-width: 250px;
   margin-left: -125px;
@@ -6,8 +16,6 @@
   color: #000;
   text-align: center;
   padding: 16px;
-  position: fixed;
-  z-index: 1;
   right: 20px;
   top: 30px;
   font-size: 17px;
@@ -21,6 +29,31 @@
   visibility: visible;
   -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s forwards;
   animation: fadein 0.5s, fadeout 0.5s 2.5s forwards;
+}
+
+.medal {
+  @include toast-base;
+  right: 90px;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  @media (max-width: 1400px) {
+	width: 100px;
+	height: 100px;
+	right: 20px;
+  }
+}
+
+.medal-enter-active {
+  animation: shake 0.5s ease;
+}
+
+.medal-leave-to {
+  opacity: 0;
+  transform: scale(0.1);
+}
+.medal-leave-active {
+  transition: all 0.3s ease;
 }
 
 @-webkit-keyframes fadein {
@@ -68,5 +101,36 @@
 }
 
 .toast__big-icon {
-  width: 50%;
+  width: 100%;
+}
+
+@keyframes shake {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(8px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(-8px);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(4px);
+    opacity: 1;
+  }
+  90% {
+    transform: translateX(-4px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
 }

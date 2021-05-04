@@ -1,8 +1,12 @@
 <template>
   <teleport to="body" v-if="toast">
-    <div :class="cssClass">
-      <img v-if="toast.bigIcon" class="toast__big-icon" :src="require(`@/assets/${toast.bigIcon}.png`)" />
-      <div v-if="toast.message">
+    <transition name="medal">
+      <div v-if="toast.bigIcon" class="medal">
+        <img class="toast__big-icon" :src="require(`@/assets/${toast.bigIcon}.png`)" />
+      </div>
+    </transition>
+    <div v-if="toast.message" :class="cssClass">
+      <div>
         {{ toast.message }}
       </div>
     </div>
