@@ -28,28 +28,10 @@
 }
 
 .medal {
-  @include toast-base;
-  right: 90px;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  @media (max-width: 1400px) {
-	width: 100px;
-	height: 100px;
-	right: 20px;
-  }
-}
-
-.medal-enter-active {
-  animation: shake 0.5s ease;
-}
-
-.medal-leave-to {
-  opacity: 0;
-  transform: scale(0.1);
-}
-.medal-leave-active {
-  transition: all 0.3s ease;
+  position: fixed;
+  z-index: 100;
+  top: 30px;
+  right: 5%;
 }
 
 @-webkit-keyframes fadein {
@@ -96,37 +78,3 @@
   }
 }
 
-.toast__big-icon {
-  width: 100%;
-}
-
-@keyframes shake {
-  0% {
-    transform: scale(0.1);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  60% {
-    transform: translateX(8px);
-    opacity: 1;
-  }
-  70% {
-    transform: translateX(-8px);
-    opacity: 1;
-  }
-  80% {
-    transform: translateX(4px);
-    opacity: 1;
-  }
-  90% {
-    transform: translateX(-4px);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(0px);
-    opacity: 1;
-  }
-}

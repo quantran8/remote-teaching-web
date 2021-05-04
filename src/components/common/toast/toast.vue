@@ -1,10 +1,8 @@
 <template>
   <teleport to="body" v-if="toast">
-    <transition name="medal">
-      <div v-if="toast.bigIcon" class="medal">
-        <img class="toast__big-icon" :src="require(`@/assets/${toast.bigIcon}.png`)" />
-      </div>
-    </transition>
+    <div v-if="toast.bigIcon" class="medal">
+      <Lottie :options="option" :height="140" :width="140" />
+    </div>
     <div v-if="toast.message" :class="cssClass">
       <div>
         {{ toast.message }}
