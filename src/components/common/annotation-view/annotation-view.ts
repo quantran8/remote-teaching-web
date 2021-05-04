@@ -2,10 +2,10 @@ import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "v
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
-import {Tools} from "commonui";
-import {MIN_SPEAKING_LEVEL} from "@/utils/constant";
+import { Tools } from "commonui";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 
-const randomPosition = () => Math.random() * 100
+const randomPosition = () => Math.random() * 100;
 
 export default defineComponent({
   props: ["image"],
@@ -16,7 +16,7 @@ export default defineComponent({
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
-	const activeColor = ref('black')
+    const activeColor = ref("black");
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
@@ -163,7 +163,7 @@ export default defineComponent({
 
     const addCircle = async () => {
       const circle = new fabric.Circle({
-		left: randomPosition(),
+        left: randomPosition(),
         top: randomPosition(),
         radius: 30,
         fill: "",
@@ -177,7 +177,7 @@ export default defineComponent({
 
     const addSquare = async () => {
       const square = new fabric.Rect({
-		left: randomPosition(),
+        left: randomPosition(),
         top: randomPosition(),
         width: 50,
         height: 50,
@@ -221,20 +221,11 @@ export default defineComponent({
       },
     ];
 
-	const colorsList = [
-		"black",
-		"red",
-		"orange",
-		"yellow",
-		"green",
-		"blue",
-		"purple",
-		"white"
-	  ];
+    const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
 
-	const changeColor = (color: string) => {		
-		activeColor.value = color
-	}
+    const changeColor = (color: string) => {
+      activeColor.value = color;
+    };
 
     return {
       pointerStyle,
@@ -247,9 +238,9 @@ export default defineComponent({
       student,
       studentOneAndOneId,
       paletteTools,
-	  activeColor,
-	  colorsList,
-	  changeColor
+      activeColor,
+      colorsList,
+      changeColor,
     };
   },
 });
