@@ -55,6 +55,8 @@ export default defineComponent({
         canvas.getObjects("path").forEach((obj: any) => {
           obj.selectable = false;
         });
+      } else {
+        canvas.remove(...canvas.getObjects());
       }
       // laser processing
       if (laserPath.value) {

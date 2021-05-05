@@ -262,6 +262,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherClearAllBrush: async (payload: any) => {
+      await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });
       await dispatch("annotation/setClearBrush", {}, { root: true });
     },
     onTeacherDeleteBrush: async (payload: any) => {
