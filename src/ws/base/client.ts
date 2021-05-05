@@ -89,6 +89,7 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.EVENT_TEACHER_ANSWER_TARGET, handler.onStudentAnswerAll);
     handlers.set(StudentWSEvent.STUDENT_RAISING_HAND, handler.onStudentRaisingHand);
     handlers.set(StudentWSEvent.STUDENT_LIKE, handler.onStudentLike);
+    handlers.set(StudentWSEvent.EVENT_STUDENT_UPDATE_SHAPE_LIST, handler.onStudentSetBrushstrokes);
     // handlers.set(
     //   StudentWSEvent.EVENT_STUDENT_SEND_UNITY,
     //   handler.onStudentSendUnity

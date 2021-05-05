@@ -17,7 +17,7 @@ export default defineComponent({
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
-
+    const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -157,7 +157,7 @@ export default defineComponent({
           return;
         case Tools.Pen:
           toolSelected.value = Tools.Pen;
-          canvas.remove(...canvas.getObjects("rect"));
+          // canvas.remove(...canvas.getObjects("rect"));
           await store.dispatch("teacherRoom/setClearStickers", {});
           modeAnnotation.value = Mode.Draw;
           await store.dispatch("teacherRoom/setMode", {
@@ -205,7 +205,7 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects("path"));
+          canvas.remove(...canvas.getObjects());
           await store.dispatch("teacherRoom/setClearBrush", {});
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
@@ -252,13 +252,13 @@ export default defineComponent({
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       showHideWhiteboard.value = false;
       await clickedTool(Tools.Cursor);
-      canvas.remove(...canvas.getObjects("path"));
+      canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
     };
     const imgLoad = async () => {
       if (!canvas) return;
-      canvas.remove(...canvas.getObjects("path"));
+      canvas.remove(...canvas.getObjects());
       showHideWhiteboard.value = false;
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       await clickedTool(Tools.Cursor);
@@ -270,13 +270,48 @@ export default defineComponent({
       });
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
+    const renderStudentsShapes = () => {
+      if (!canvas && !studentShapes.value) return;
+      canvas.remove(
+        ...canvas
+          .getObjects()
+          .filter((obj: any) => obj.type !== "path")
+          .filter((obj: any) => obj.id !== ""),
+      );
+      studentShapes.value.forEach((item: any) => {
+        item.brushstrokes.forEach((s: any) => {
+          const shape = JSON.parse(s);
+          if (shape.type === "polygon") {
+            const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+              canvas.add(item);
+            });
+          }
+          if (shape.type === "rect") {
+            const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+              canvas.add(item);
+            });
+          }
+          if (shape.type === "circle") {
+            const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+              canvas.add(item);
+            });
+          }
+        });
+      });
+      if (showHideWhiteboard.value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+      }
+    };
+    watch(studentShapes, () => {
+      renderStudentsShapes();
+    });
     onMounted(async () => {
       await boardSetup();
       await defaultWhiteboard();
     });
-	onUnmounted(() => {
-		canvas.dispose()
-	});
+    onUnmounted(() => {
+      canvas.dispose();
+    });
 
     return {
       currentExposureItemMedia,

@@ -234,6 +234,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherToggleStudentPallete: async (payload: any) => {
       await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
     },
+    onStudentSetBrushstrokes: async (payload: any) => {
+      await commit("annotation/setStudentAddShape", { studentShapes: payload },{ root: true });
+    },
   };
   return handler;
 };

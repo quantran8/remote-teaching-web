@@ -2,32 +2,21 @@ import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "v
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
+import { Tools } from "commonui";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+
+const randomPosition = () => Math.random() * 100;
 
 export default defineComponent({
   props: ["image"],
   setup(props) {
     const store = useStore();
     let canvas: any;
-    const stickerColors = ["red", "yellow", "blue", "green", "pink"];
     const scaleRatio = ref(1);
-    const checkStickers = ref(false);
-    const calcScaleRatio = () => {
-      if (!props.image) return;
-      const imgAnnotation = document.getElementById("annotation-img");
-      if (!imgAnnotation) return;
-      const boundingBox = imgAnnotation.getBoundingClientRect();
-      const { width, height } = props.image;
-      if (!width || !height) return;
-      const wRatio = boundingBox.width / width;
-      const hRatio = boundingBox.height / height;
-      scaleRatio.value = Math.min(wRatio, hRatio);
-      return scaleRatio;
-    };
-
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
-    const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
+    const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
-
+    const activeColor = ref("black");
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
@@ -44,56 +33,86 @@ export default defineComponent({
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
     const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
+    const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const renderCanvas = () => {
-      if (!canvas || !canvasData.value) return;
-      const shapes: Array<string> = canvasData.value;
-      if (laserPath.value) {
-        shapes.push(laserPath.value);
-      }
-      const canvasJsonData = {
-        objects: shapes
-          .map(s => {
-            const obj = JSON.parse(s);
-            obj.width = Math.floor(obj.width * scaleRatio.value);
-            obj.height = Math.floor(obj.height * scaleRatio.value);
-            obj.top = Math.floor(obj.top * scaleRatio.value);
-            obj.left = Math.floor(obj.left * scaleRatio.value);
-            obj.scaleX = obj.scaleX * scaleRatio.value;
-            obj.scaleY = obj.scaleY * scaleRatio.value;
-            return obj;
-          })
-          .filter(s => s !== null),
-      };
-      canvas.loadFromJSON(JSON.stringify(canvasJsonData), canvas.renderAll.bind(canvas));
-      canvas.getObjects("path").forEach((obj: any) => {
-        obj.selectable = false;
-      });
+      if (!canvas) return;
+      // whiteboard processing
       if (isShowWhiteBoard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
-      if (laserPath.value) {
-        const laserLine = canvas.getObjects("path").pop();
-        laserLine.animate("opacity", "0", {
-          duration: 1000,
-          easing: fabric.util.ease.easeInOutExpo,
-          onChange: canvas.renderAll.bind(canvas),
-          onComplete: async () => {
-            shapes.pop();
-            canvas.remove(laserLine);
-            await store.dispatch("studentRoom/clearLaserPen", "");
-          },
+      if (undoCanvas.value) {
+        canvas.remove(...canvas.getObjects("path"));
+      }
+      // teacher drawing
+      if (canvasData.value) {
+        canvasData.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            canvas.add(item);
+          });
+        });
+        canvas.getObjects("path").forEach((obj: any) => {
+          obj.selectable = false;
         });
       }
+      // laser processing
+      if (laserPath.value) {
+        const laserPathLine = new fabric.Path.fromObject(JSON.parse(laserPath.value), (item: any) => {
+          item.animate("opacity", "0", {
+            duration: 1000,
+            easing: fabric.util.ease.easeInOutExpo,
+            onChange: () => {
+              canvas.add(item);
+            },
+            onComplete: async () => {
+              canvas.remove(item);
+              await store.dispatch("studentRoom/clearLaserPen", "");
+            },
+          });
+        });
+      }
+      // students sharing shapes
+      if (studentShapes.value) {
+        studentShapes.value.forEach((item: any) => {
+          console.log(item, "students shape sharing");
+          if (item.studentId !== student.value.id) {
+            console.log(item.studentId, student.value.id, "check id student");
+            canvas.remove(
+              ...canvas
+                .getObjects()
+                .filter((obj: any) => obj.id !== student.value.id)
+                .filter((obj: any) => obj.type !== "path"),
+            );
+            item.brushstrokes.forEach((s: any) => {
+              const shape = JSON.parse(s);
+              if (shape.type === "polygon") {
+                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+              if (shape.type === "rect") {
+                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+              if (shape.type === "circle") {
+                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+            });
+          }
+        });
+      } else {
+        canvas.remove(...canvas.getObjects("polygon"));
+        canvas.remove(...canvas.getObjects("rect"));
+        canvas.remove(...canvas.getObjects("circle"));
+      }
     };
-    watch(undoCanvas, () => {
-      renderCanvas();
-    });
-    watch(laserPath, () => {
-      renderCanvas();
-    });
-    watch(canvasData, renderCanvas);
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
@@ -103,32 +122,40 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
     });
-    const stickersData = computed(() => store.getters["annotation/stickers"]);
-    const stickerRender = () => {
-      if (stickersData.value && stickersData.value.length) {
-        stickersData.value.forEach((obj: any) => {
-          const rectSticker = new fabric.Rect({
-            top: 10 * scaleRatio.value,
-            left: 10 * scaleRatio.value,
-            width: obj.width * scaleRatio.value,
-            height: obj.height * scaleRatio.value,
-            objectCaching: false,
-            fill: "#000",
-            opacity: 0.35,
-            hasControls: false,
-            hasBorders: false,
-          });
-          canvas.add(rectSticker);
-          canvas.renderAll();
-          checkStickers.value = false;
-        });
-      } else {
-        canvas.remove(...canvas.getObjects("rect"));
+    watch(undoCanvas, () => {
+      renderCanvas();
+    });
+    watch(canvasData, () => {
+      renderCanvas();
+    });
+    watch(laserPath, () => {
+      renderCanvas();
+    });
+    watch(studentShapes, () => {
+      renderCanvas();
+    });
+    const studentAddShapes = async () => {
+      const shapes: Array<string> = [];
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.id === student.value.id) {
+          obj = obj.toJSON();
+          obj.id = student.value.id;
+          shapes.push(JSON.stringify(obj));
+        }
+      });
+      if (shapes.length) {
+        await store.dispatch("studentRoom/studentAddShape", shapes);
       }
     };
-    watch(stickersData, () => {
-      // stickerRender();
-    });
+    const listenToMouseUp = () => {
+      canvas.on("mouse:up", async () => {
+        canvas.renderAll();
+        await studentAddShapes();
+      });
+    };
+    const listenToCanvasEvents = () => {
+      listenToMouseUp();
+    };
     const boardSetup = () => {
       const canvasEl = document.getElementById("canvasOnStudent");
       if (!canvasEl) return;
@@ -141,45 +168,7 @@ export default defineComponent({
       });
 
       renderCanvas();
-      // stickerRender();
-    };
-
-    const changeColorSticker = (stickerColor: string) => {
-      if (stickersData.value) {
-        canvas.getObjects("rect").forEach((obj: any) => {
-          obj.fill = stickerColor;
-        });
-        canvas.renderAll();
-      }
-    };
-
-    const checkStickerAdded = () => {
-      canvas.renderAll();
-      stickersData.value.forEach((data: any) => {
-        canvas.getObjects("rect").forEach((obj: any) => {
-          if (data.width === Math.round(obj.width / scaleRatio.value) && data.height === Math.round(obj.height / scaleRatio.value)) {
-            if (
-              !(
-                data.top * 0.95 <= Math.round(obj.top / scaleRatio.value) &&
-                Math.round(obj.top / scaleRatio.value) <= data.top + data.top * 0.15 &&
-                data.left * 0.95 <= Math.round(obj.left / scaleRatio.value) &&
-                Math.round(obj.left / scaleRatio.value) <= data.left + data.left * 0.15
-              )
-            ) {
-              canvas.remove(obj);
-              obj.set({
-                top: 10 * scaleRatio.value,
-                left: 10 * scaleRatio.value,
-              });
-              canvas.add(obj);
-              canvas.renderAll();
-              checkStickers.value = false;
-            } else {
-              checkStickers.value = true;
-            }
-          }
-        });
-      });
+      listenToCanvasEvents();
     };
 
     const starPolygonPoints = (spikeCount: any, outerRadius: any, innerRadius: any) => {
@@ -203,43 +192,50 @@ export default defineComponent({
       return points;
     };
 
-    const addStar = () => {
+    const addStar = async () => {
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
-        stroke: "black",
-        left: 100,
-        top: 10,
+        stroke: activeColor.value,
+        left: randomPosition(),
+        top: randomPosition(),
         strokeWidth: 3,
         strokeLineJoin: "round",
-        fill: "white",
+        fill: "",
+        id: student.value.id,
       });
 
       canvas.add(star);
-      canvas.renderAll();
+      await studentAddShapes();
     };
 
-    const addCircle = () => {
+    const addCircle = async () => {
       const circle = new fabric.Circle({
+        left: randomPosition(),
+        top: randomPosition(),
         radius: 30,
         fill: "",
-        stroke: "black",
+        stroke: activeColor.value,
         strokeWidth: 3,
+        id: student.value.id,
       });
       canvas.add(circle);
-      canvas.renderAll();
+      await studentAddShapes();
     };
 
-    const addSquare = () => {
+    const addSquare = async () => {
       const square = new fabric.Rect({
+        left: randomPosition(),
+        top: randomPosition(),
         width: 50,
         height: 50,
         fill: "",
-        stroke: "black",
+        stroke: activeColor.value,
         strokeWidth: 3,
+        id: student.value.id,
       });
 
       canvas.add(square);
-      canvas.renderAll();
+      await studentAddShapes();
     };
 
     const clearStar = () => {
@@ -272,23 +268,26 @@ export default defineComponent({
       },
     ];
 
+    const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
+
+    const changeColor = (color: string) => {
+      activeColor.value = color;
+    };
+
     return {
       pointerStyle,
       imageUrl,
-      // boardSetup,
       isPointerMode,
       canvasRef,
-      // stickerColors,
-      // checkStickerAdded,
-      // changeColorSticker,
-      // isStickerMode,
-      // checkStickers,
       isShowWhiteBoard,
       addStar,
       clearStar,
       student,
       studentOneAndOneId,
       paletteTools,
+      activeColor,
+      colorsList,
+      changeColor,
     };
   },
 });

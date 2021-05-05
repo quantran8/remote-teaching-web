@@ -41,10 +41,14 @@ export interface PencilModel {
   size: number;
   color: string;
 }
-
+export interface StudentShapeModel {
+  studentId: string;
+  brushstroke: Array<string>;
+}
 export interface DrawingModel {
   pencil: PencilModel | null;
   brushstrokes: Array<string>;
+  studentShapes: StudentShapeModel[];
 }
 
 export interface AnnotationModel {

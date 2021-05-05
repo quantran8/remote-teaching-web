@@ -1,6 +1,6 @@
 import { AnnotationModel } from "@/models";
 import { MutationTree } from "vuex";
-import { AnnotationState, Pointer, Sticker } from "./state";
+import { AnnotationState, Pointer, Sticker, StudentShape } from "./state";
 
 export interface AnnotationMutationInterface<S> {
   setPointer(s: S, pointer: Pointer): void;
@@ -10,6 +10,7 @@ export interface AnnotationMutationInterface<S> {
   setDeleteBrush(s: S, p: {}): void;
   setStickers(s: S, p: { stickers: Array<Sticker> }): void;
   setClearStickers(s: S, p: {}): void;
+  setStudentAddShape(s: S, p: { studentShapes: Array<StudentShape> }): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -22,7 +23,6 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setMode(s: AnnotationState, p: { mode: number }) {
     s.mode = p.mode;
   },
-
   addShape(s: AnnotationState, p: string) {
     if (!p) return;
     s.drawing.brushstrokes = [...s.drawing.brushstrokes, p];
@@ -31,6 +31,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.drawing = {
       pencil: null,
       brushstrokes: [],
+      studentShapes: [],
     };
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
@@ -43,11 +44,22 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setClearStickers(s: AnnotationState, p: {}) {
     s.stickers = [];
   },
+  setStudentAddShape(s: AnnotationState, p: { studentShapes: Array<StudentShape> }) {
+    s.drawing.studentShapes = p.studentShapes;
+  },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;
-    s.drawing = p.drawing;
+    if (p.drawing) {
+      s.drawing = p.drawing;
+    } else {
+      s.drawing = {
+        pencil: null,
+        brushstrokes: [],
+        studentShapes: [],
+      };
+    }
     s.stickers = p.stickers;
   },
 };
