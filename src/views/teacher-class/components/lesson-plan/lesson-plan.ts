@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch, onBeforeUnmount, onBeforeMount, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
@@ -11,82 +11,6 @@ import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
   emits: ["open-gallery-mode"],
-  beforeMount() {
-    const { getters, dispatch } = useStore();
-    const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
-    const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
-    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
-    const onClickPrevNextMedia = async (nextPrev: number) => {
-      if (isLessonPlan.value) {
-        await dispatch("interactive/setTargets", {
-          targets: [],
-        });
-        await dispatch("interactive/setLocalTargets", {
-          targets: [],
-        });
-        await dispatch("teacherRoom/setClearBrush", {});
-        await dispatch("teacherRoom/setClearStickers", {});
-        if (nextPrev === NEXT_EXPOSURE) {
-          if (nextExposureItemMedia.value !== undefined) {
-            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
-              id: nextExposureItemMedia.value.id,
-            });
-          }
-        } else {
-          if (prevExposureItemMedia.value !== undefined) {
-            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
-              id: prevExposureItemMedia.value.id,
-            });
-          }
-        }
-      }
-    };
-    window.addEventListener("keydown", e => {
-      if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-        onClickPrevNextMedia(NEXT_EXPOSURE);
-      } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-        onClickPrevNextMedia(PREV_EXPOSURE);
-      }
-    });
-  },
-  beforeUnmount() {
-    const { getters, dispatch } = useStore();
-    const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
-    const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
-    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
-    const onClickPrevNextMedia = async (nextPrev: number) => {
-      if (isLessonPlan.value) {
-        await dispatch("interactive/setTargets", {
-          targets: [],
-        });
-        await dispatch("interactive/setLocalTargets", {
-          targets: [],
-        });
-        await dispatch("teacherRoom/setClearBrush", {});
-        await dispatch("teacherRoom/setClearStickers", {});
-        if (nextPrev === NEXT_EXPOSURE) {
-          if (nextExposureItemMedia.value !== undefined) {
-            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
-              id: nextExposureItemMedia.value.id,
-            });
-          }
-        } else {
-          if (prevExposureItemMedia.value !== undefined) {
-            await dispatch("teacherRoom/setCurrentExposureMediaItem", {
-              id: prevExposureItemMedia.value.id,
-            });
-          }
-        }
-      }
-    };
-    window.removeEventListener("keydown", e => {
-      if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-        onClickPrevNextMedia(NEXT_EXPOSURE);
-      } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-        onClickPrevNextMedia(PREV_EXPOSURE);
-      }
-    });
-  },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const exposures = computed(() => getters["lesson/exposures"]);
@@ -100,13 +24,26 @@ export default defineComponent({
     const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
     const iconNext = ref(IconNextDisable);
-
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
     };
 
-    const onClickExposure = async (exposure: Exposure) => {
-      if (exposure.id === currentExposure.value?.id || exposure.status === ExposureStatus.COMPLETED) return;
+    const nextCurrentExposuse = ref(null);
+    const prevCurrentExposuse = ref(null);
+
+    watch(currentExposure, () => {
+      const currentExposureIndex = exposures.value.findIndex((item: any) => {
+        return item.id === currentExposure.value?.id;
+      });
+      const nextCurrentExposuseIndex = currentExposureIndex + 1;
+      const prevCurrentExposuseIndex = currentExposureIndex - 1;
+      nextCurrentExposuse.value = exposures.value[nextCurrentExposuseIndex];
+      prevCurrentExposuse.value = exposures.value[prevCurrentExposuseIndex];
+    });
+
+    const onClickExposure = async (exposure: Exposure | null) => {
+      if (!exposure) return;
+      if (exposure.id === currentExposure.value?.id) return;
       if (currentExposure.value && currentExposure.value.type === ExposureType.TRANSITION) {
         await dispatch("teacherRoom/endExposure", {
           id: currentExposure.value.id,
@@ -151,12 +88,22 @@ export default defineComponent({
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
           });
+        } else {
+          await dispatch("teacherRoom/endExposure", {
+            id: currentExposure?.value?.id,
+          });
+          onClickExposure(nextCurrentExposuse.value);
         }
       } else {
         if (prevExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
-            id: prevExposureItemMedia.value.id,
+            id: prevExposureItemMedia?.value?.id,
           });
+        } else {
+          await dispatch("teacherRoom/endExposure", {
+            id: currentExposure?.value?.id,
+          });
+          onClickExposure(prevCurrentExposuse.value);
         }
       }
     };
@@ -172,6 +119,22 @@ export default defineComponent({
     const isShowExposureDetail = computed(() => {
       const exposure = getters["lesson/currentExposure"];
       return exposure && exposure.type !== ExposureType.TRANSITION;
+    });
+
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
+    const handleKeyDown = (e: any) => {
+      if (e.key == "ArrowRight" || e.key == "ArrowDown") {
+        onClickPrevNextMedia(NEXT_EXPOSURE);
+      } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
+        onClickPrevNextMedia(PREV_EXPOSURE);
+      }
+    };
+    onBeforeMount(() => {
+      window.addEventListener("keydown", handleKeyDown);
+    });
+
+    onUnmounted( () => {
+      window.removeEventListener("keydown", handleKeyDown);
     });
 
     return {
