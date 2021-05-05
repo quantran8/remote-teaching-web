@@ -24,6 +24,9 @@ export default defineComponent({
     const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
     const iconNext = ref(IconNextDisable);
+    const canNext = ref(true);
+    const canPrev = ref(false);
+
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
     };
@@ -74,10 +77,9 @@ export default defineComponent({
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const onClickPrevNextMedia = async (nextPrev: number) => {
-      const currentExposureIndex = exposures.value.findIndex((item: any) => {
-        return item.id === currentExposure.value?.id;
-      });
+      if (!isLessonPlan.value) return;
       await dispatch("interactive/setTargets", {
         targets: [],
       });
@@ -87,24 +89,24 @@ export default defineComponent({
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
       if (nextPrev === NEXT_EXPOSURE) {
+        if (!canNext.value) return;
         if (nextExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
           });
         } else {
-          if (currentExposureIndex == exposures.value.length - 1) return;
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
           onClickExposure(nextCurrentExposure.value);
         }
       } else {
+        if (!canPrev.value) return;
         if (prevExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: prevExposureItemMedia?.value?.id,
           });
         } else {
-          if (currentExposureIndex == 0) return;
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
@@ -113,11 +115,20 @@ export default defineComponent({
       }
     };
 
-    watch(nextExposureItemMedia, () => {
-      if (nextExposureItemMedia.value !== undefined) {
-        iconNext.value = IconNext;
+    watch(page, () => {
+      const itemArr = activityStatistic.value.split("/");
+      const pageArr = page.value.split("/");
+      if (+itemArr[0] == 1 && +pageArr[0] == 1) {
+        canPrev.value = false;
       } else {
+        canPrev.value = true;
+      }
+      if (+itemArr[0] == +itemArr[1] && +pageArr[0] == +pageArr[1]) {
         iconNext.value = IconNextDisable;
+        canNext.value = false;
+      } else {
+        iconNext.value = IconNext;
+        canNext.value = true;
       }
     });
 
@@ -126,7 +137,6 @@ export default defineComponent({
       return exposure && exposure.type !== ExposureType.TRANSITION;
     });
 
-    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const handleKeyDown = (e: any) => {
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
         onClickPrevNextMedia(NEXT_EXPOSURE);
