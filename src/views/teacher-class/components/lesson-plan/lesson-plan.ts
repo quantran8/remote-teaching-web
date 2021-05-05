@@ -74,7 +74,9 @@ export default defineComponent({
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
+    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const onClickPrevNextMedia = async (nextPrev: number) => {
+      if (!isLessonPlan.value || !canNext.value) return;
       await dispatch("interactive/setTargets", {
         targets: [],
       });
@@ -108,11 +110,16 @@ export default defineComponent({
       }
     };
 
-    watch(nextExposureItemMedia, () => {
-      if (nextExposureItemMedia.value !== undefined) {
-        iconNext.value = IconNext;
-      } else {
+    const canNext = ref(true);
+    watch(page, () => {
+      const itemArr = activityStatistic.value.split("/");
+      const pageArr = page.value.split("/");
+      if (+itemArr[0] == +itemArr[1] && +pageArr[0] == +pageArr[1]) {
         iconNext.value = IconNextDisable;
+        canNext.value = false;
+      } else {
+        iconNext.value = IconNext;
+        canNext.value = true;
       }
     });
 
@@ -121,7 +128,6 @@ export default defineComponent({
       return exposure && exposure.type !== ExposureType.TRANSITION;
     });
 
-    const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const handleKeyDown = (e: any) => {
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
         onClickPrevNextMedia(NEXT_EXPOSURE);
@@ -133,7 +139,7 @@ export default defineComponent({
       window.addEventListener("keydown", handleKeyDown);
     });
 
-    onUnmounted( () => {
+    onUnmounted(() => {
       window.removeEventListener("keydown", handleKeyDown);
     });
 
