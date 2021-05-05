@@ -24,21 +24,24 @@ export default defineComponent({
     const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
     const iconNext = ref(IconNextDisable);
+    const canNext = ref(true);
+    const canPrev = ref(false);
+
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
     };
 
-    const nextCurrentExposuse = ref(null);
-    const prevCurrentExposuse = ref(null);
+    const nextCurrentExposure = ref(null);
+    const prevCurrentExposure = ref(null);
 
     watch(currentExposure, () => {
       const currentExposureIndex = exposures.value.findIndex((item: any) => {
         return item.id === currentExposure.value?.id;
       });
-      const nextCurrentExposuseIndex = currentExposureIndex + 1;
-      const prevCurrentExposuseIndex = currentExposureIndex - 1;
-      nextCurrentExposuse.value = exposures.value[nextCurrentExposuseIndex];
-      prevCurrentExposuse.value = exposures.value[prevCurrentExposuseIndex];
+      const nextCurrentExposureIndex = currentExposureIndex + 1;
+      const prevCurrentExposureIndex = currentExposureIndex - 1;
+      nextCurrentExposure.value = exposures.value[nextCurrentExposureIndex];
+      prevCurrentExposure.value = exposures.value[prevCurrentExposureIndex];
     });
 
     const onClickExposure = async (exposure: Exposure | null) => {
@@ -76,7 +79,7 @@ export default defineComponent({
 
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const onClickPrevNextMedia = async (nextPrev: number) => {
-      if (!isLessonPlan.value || !canNext.value) return;
+      if (!isLessonPlan.value) return;
       await dispatch("interactive/setTargets", {
         targets: [],
       });
@@ -86,6 +89,7 @@ export default defineComponent({
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
       if (nextPrev === NEXT_EXPOSURE) {
+        if (!canNext.value) return;
         if (nextExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
@@ -94,9 +98,10 @@ export default defineComponent({
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
-          onClickExposure(nextCurrentExposuse.value);
+          onClickExposure(nextCurrentExposure.value);
         }
       } else {
+        if (!canPrev.value) return;
         if (prevExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: prevExposureItemMedia?.value?.id,
@@ -105,15 +110,19 @@ export default defineComponent({
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
-          onClickExposure(prevCurrentExposuse.value);
+          onClickExposure(prevCurrentExposure.value);
         }
       }
     };
 
-    const canNext = ref(true);
     watch(page, () => {
       const itemArr = activityStatistic.value.split("/");
       const pageArr = page.value.split("/");
+      if (+itemArr[0] == 1 && +pageArr[0] == 1) {
+        canPrev.value = false;
+      } else {
+        canPrev.value = true;
+      }
       if (+itemArr[0] == +itemArr[1] && +pageArr[0] == +pageArr[1]) {
         iconNext.value = IconNextDisable;
         canNext.value = false;
