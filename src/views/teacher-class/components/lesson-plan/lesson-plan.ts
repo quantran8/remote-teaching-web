@@ -118,12 +118,12 @@ export default defineComponent({
     watch(page, () => {
       const itemArr = activityStatistic.value.split("/");
       const pageArr = page.value.split("/");
-      if (+itemArr[0] == 1 && +pageArr[0] == 1) {
+      if (+itemArr[0] == 0 || (+itemArr[0] == 1 && +pageArr[0] == 1)) {
         canPrev.value = false;
       } else {
         canPrev.value = true;
       }
-      if (+itemArr[0] == +itemArr[1] && +pageArr[0] == +pageArr[1]) {
+      if (+itemArr[0] == 0 || (+itemArr[0] == +itemArr[1] && +pageArr[0] == +pageArr[1])) {
         iconNext.value = IconNextDisable;
         canNext.value = false;
       } else {
