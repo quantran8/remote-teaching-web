@@ -28,17 +28,17 @@ export default defineComponent({
       emit("open-gallery-mode");
     };
 
-    const nextCurrentExposuse = ref(null);
-    const prevCurrentExposuse = ref(null);
+    const nextCurrentExposure = ref(null);
+    const prevCurrentExposure = ref(null);
 
     watch(currentExposure, () => {
       const currentExposureIndex = exposures.value.findIndex((item: any) => {
         return item.id === currentExposure.value?.id;
       });
-      const nextCurrentExposuseIndex = currentExposureIndex + 1;
-      const prevCurrentExposuseIndex = currentExposureIndex - 1;
-      nextCurrentExposuse.value = exposures.value[nextCurrentExposuseIndex];
-      prevCurrentExposuse.value = exposures.value[prevCurrentExposuseIndex];
+      const nextCurrentExposureIndex = currentExposureIndex + 1;
+      const prevCurrentExposureIndex = currentExposureIndex - 1;
+      nextCurrentExposure.value = exposures.value[nextCurrentExposureIndex];
+      prevCurrentExposure.value = exposures.value[prevCurrentExposureIndex];
     });
 
     const onClickExposure = async (exposure: Exposure | null) => {
@@ -75,6 +75,9 @@ export default defineComponent({
     };
 
     const onClickPrevNextMedia = async (nextPrev: number) => {
+      const currentExposureIndex = exposures.value.findIndex((item: any) => {
+        return item.id === currentExposure.value?.id;
+      });
       await dispatch("interactive/setTargets", {
         targets: [],
       });
@@ -89,10 +92,11 @@ export default defineComponent({
             id: nextExposureItemMedia.value.id,
           });
         } else {
+          if (currentExposureIndex == exposures.value.length - 1) return;
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
-          onClickExposure(nextCurrentExposuse.value);
+          onClickExposure(nextCurrentExposure.value);
         }
       } else {
         if (prevExposureItemMedia.value !== undefined) {
@@ -100,10 +104,11 @@ export default defineComponent({
             id: prevExposureItemMedia?.value?.id,
           });
         } else {
+          if (currentExposureIndex == 0) return;
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
-          onClickExposure(prevCurrentExposuse.value);
+          onClickExposure(prevCurrentExposure.value);
         }
       }
     };
@@ -133,7 +138,7 @@ export default defineComponent({
       window.addEventListener("keydown", handleKeyDown);
     });
 
-    onUnmounted( () => {
+    onUnmounted(() => {
       window.removeEventListener("keydown", handleKeyDown);
     });
 
