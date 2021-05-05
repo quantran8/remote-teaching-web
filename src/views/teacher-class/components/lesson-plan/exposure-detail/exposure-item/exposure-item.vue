@@ -8,7 +8,7 @@
         :class="{ collapsed: isToggle }"
       ></BaseIcon>
     </div>
-    <div class="item-content" :class="{ 'content-collapsed': isToggle }">
+    <div class="item-content nice-scroll" :class="{ 'content-collapsed': isToggle } ">
       <div
         @click="() => onClickItem(item)"
         class="item-media"
