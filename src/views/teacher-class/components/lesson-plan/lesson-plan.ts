@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref, watch, onBeforeUnmount, onBeforeMount } from "vue";
+import { computed, defineComponent, ref, watch, onBeforeUnmount, onBeforeMount, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
@@ -27,13 +27,11 @@ export default defineComponent({
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
     };
-	console.log('HELLO NO BUG',currentExposure.value);
-	
 
     const nextCurrentExposuse = ref(null);
     const prevCurrentExposuse = ref(null);
 
-    watch(currentExposureItemMedia, () => {
+    watch(currentExposure, () => {
       const currentExposureIndex = exposures.value.findIndex((item: any) => {
         return item.id === currentExposure.value?.id;
       });
@@ -86,32 +84,22 @@ export default defineComponent({
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
       if (nextPrev === NEXT_EXPOSURE) {
-        if (!nextCurrentExposuse.value) return;
-		console.log('currentExposure',currentExposure);
-
-		console.log('run vao next', nextCurrentExposuse.value)
         if (nextExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
           });
         } else {
-          if (!nextCurrentExposuse.value) return;
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
           onClickExposure(nextCurrentExposuse.value);
         }
       } else {
-        if (!prevCurrentExposuse.value) return;
-		console.log('currentExposure',currentExposure);
-		
-		console.log('run vao prev', prevCurrentExposuse.value)
         if (prevExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: prevExposureItemMedia?.value?.id,
           });
         } else {
-          if (!prevCurrentExposuse.value) return;
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
@@ -134,27 +122,19 @@ export default defineComponent({
     });
 
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
-
+    const handleKeyDown = (e: any) => {
+      if (e.key == "ArrowRight" || e.key == "ArrowDown") {
+        onClickPrevNextMedia(NEXT_EXPOSURE);
+      } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
+        onClickPrevNextMedia(PREV_EXPOSURE);
+      }
+    };
     onBeforeMount(() => {
-      window.addEventListener("keydown", e => {
-        if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-          onClickPrevNextMedia(NEXT_EXPOSURE);
-        } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-          onClickPrevNextMedia(PREV_EXPOSURE);
-        }
-      });
+      window.addEventListener("keydown", handleKeyDown);
     });
 
-    onBeforeUnmount(() => {
-      nextCurrentExposuse.value = null;
-      nextCurrentExposuse.value = null;
-      window.removeEventListener("keydown", e => {
-        if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-          onClickPrevNextMedia(NEXT_EXPOSURE);
-        } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-          onClickPrevNextMedia(PREV_EXPOSURE);
-        }
-      });
+    onUnmounted( () => {
+      window.removeEventListener("keydown", handleKeyDown);
     });
 
     return {
