@@ -24,7 +24,7 @@
       />
     </div>
     <div class="sc-gallery-item__title-container">
-      <h3 class="sc-gallery-item__title" :class="isNotJoinned ? 'sc-gallery-item__disable' : 'sc-gallery-item__enable'">{{ student.name }}</h3>
+      <h3 class="sc-gallery-item__title" :class="isNotJoinned ? 'sc-gallery-item__disable' : 'sc-gallery-item__enable'">{{ student.englishName }}</h3>
     </div>
     <span class="sc-gallery-item__star" v-if="isCurrent">
       <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
