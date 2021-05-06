@@ -42,23 +42,12 @@ export default defineComponent({
       [Tools.Stroke]: "Size",
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
-      [Tools.AddSticker]: "Add Sticker",
-      [Tools.AssignSticker]: "Assign Sticker",
       [Tools.StrokeColor]: "Color",
     };
 
     const colors: any = {};
     //currently the design just have 6 color belows
-    const colorsList = [
-      "black",
-      "red",
-      "orange",
-      "yellow",
-      "green",
-      "blue",
-      "purple",
-      "white"
-    ];
+    const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
@@ -84,10 +73,9 @@ export default defineComponent({
   },
   methods: {
     checkHasIcon(toolName: any) {
-      const { Cursor, Pen, Laser, Delete, Clear, Stroke } = Tools;
-      const iconList = [Cursor, Pen, Laser, Delete, Clear, Stroke];
-      if (iconList.includes(toolName)) return true;
-      return false;
+      const { Cursor, Pen, Laser, Delete, Clear, Star, Circle, Square, Stroke } = Tools;
+      const iconList = [Cursor, Pen, Laser, Delete, Clear, Star, Circle, Square, Stroke];
+      return iconList.includes(toolName);
     },
     handleIconClick(toolName: any) {
       if (toolName === Tools.Stroke) {

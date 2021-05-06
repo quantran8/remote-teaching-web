@@ -5,7 +5,6 @@
         class="tools__item"
         :class="{
           selected: toolSelected === toolName,
-          'tools__item--sticker': toolName === tools.AddSticker || toolName === tools.AssignSticker,
         }"
         @click="clickedTool(toolName)"
       >
@@ -29,7 +28,7 @@
               <div
                 v-for="(color, index) in colorsList"
                 :key="index"
-				:class="['color-item', { 'color-item--has-border': color === 'white' }]"
+                :class="['color-item', { 'color-item--has-border': color === 'white' }]"
                 :style="`background-color: ${color}`"
                 @click="
                   clickedTool(toolName);
