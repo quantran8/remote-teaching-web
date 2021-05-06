@@ -2,6 +2,7 @@ export interface StudentState {
   id: string;
   index: number;
   name: string;
+  englishName: string;
   avatar?: string;
   badge: number;
   audioEnabled: boolean;

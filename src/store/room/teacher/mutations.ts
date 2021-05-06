@@ -17,7 +17,7 @@ import {
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import {StudentShape} from "@/store/annotation/state";
+import { StudentShape } from "@/store/annotation/state";
 
 type State = TeacherRoomState;
 
@@ -98,6 +98,7 @@ const mutations: TeacherRoomMutation<State> = {
       return {
         id: st.id,
         name: st.name,
+        englishName: st.englishName,
         avatar: "",
         audioEnabled: !st.isMuteAudio,
         videoEnabled: !st.isMuteVideo,

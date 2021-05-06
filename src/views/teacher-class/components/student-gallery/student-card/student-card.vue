@@ -22,7 +22,7 @@
     </figure>
     <div class="student__info">
       <h4 class="student__name" :class="isNotJoinned ? 'student__disable' : 'student__enable'" @click="onOneAndOne">
-        {{ student.name }}
+        {{ student.englishName }}
       </h4>
     </div>
     <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isStudentOne" />

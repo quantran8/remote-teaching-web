@@ -67,6 +67,7 @@ const mutations: MutationTree<StudentRoomState> = {
       const student = {
         id: st.id,
         name: st.name,
+        englishName: st.englishName,
         avatar: "",
         audioEnabled: !st.isMuteAudio,
         videoEnabled: !st.isMuteVideo,
