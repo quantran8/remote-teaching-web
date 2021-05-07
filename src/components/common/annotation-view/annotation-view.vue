@@ -21,7 +21,7 @@
       <canvas v-show="!studentOneAndOneId || student.id == studentOneAndOneId" class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
     </div>
   </div>
-  <transition appear @enter="actionEnter" @leave="actionLeave">
+  <transition @enter="actionEnter" @leave="actionLeave">
     <div class="palette-tool" v-if="(student?.isPalette && !studentOneAndOneId) || (student?.isPalette && student.id == studentOneAndOneId)">
       <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" @click="action">
         <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
