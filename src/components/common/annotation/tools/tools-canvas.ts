@@ -44,9 +44,9 @@ export default defineComponent({
       [Tools.Clear]: "Clear Brush Strokes",
       [Tools.StrokeColor]: "Color",
     };
-
+    const showColorsPopover = ref<boolean>(false);
     const colors: any = {};
-    //currently the design just have 6 color belows
+    //currently the design just have 8 color belows
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
     const strokeSize = [2, 6, 10];
     const clickedTool = (toolName: string) => {
@@ -58,6 +58,27 @@ export default defineComponent({
     const updateStrokeSize = (value: number) => {
       emit("update-stroke", value);
     };
+    const handleToolClick = (toolName: string) => {
+      if (toolName === "stroke-color") {
+        showColorsPopover.value = !showColorsPopover.value;
+      }
+    };
+
+    const customIconStyle = (toolName: string) => {
+      switch (toolName) {
+        case tools.Laser:
+          return { width: "45px", height: "45px", paddingBottom: "5px", paddingLeft: "5px" };
+        case tools.Stroke:
+          return { width: "40px", height: "40px" };
+        case tools.Square:
+          return { width: "27px", height: "27px" };
+        case tools.Circle:
+          return { width: "28px", height: "28px" };
+        default:
+          return;
+      }
+    };
+
     return {
       tools,
       toolNames,
@@ -69,6 +90,9 @@ export default defineComponent({
       updateColor,
       updateStrokeSize,
       strokeSize,
+      showColorsPopover,
+      handleToolClick,
+      customIconStyle,
     };
   },
   methods: {
