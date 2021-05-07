@@ -1,5 +1,6 @@
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
+import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
@@ -223,6 +224,10 @@ export default defineComponent({
       canvas.renderAll();
     };
 
+    const addDraw = () => {
+      console.log("drawing");
+    };
+
     const canvasRef = ref(null);
     onMounted(() => {
       // calcScaleRatio();
@@ -246,12 +251,27 @@ export default defineComponent({
         name: "square",
         action: addSquare,
       },
+      { name: "pen", action: addDraw },
     ];
 
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
 
     const changeColor = (color: string) => {
       activeColor.value = color;
+    };
+    const animationCheck = ref(true);
+    const animationDone = computed(() => animationCheck.value);
+    const actionEnter = (element: HTMLElement) => {
+      animationCheck.value = false;
+      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce" });
+      gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
+      gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
+    };
+    const actionLeave = async (element: HTMLElement, done: any) => {
+      await gsap.to(element.querySelectorAll(".palette-tool__item"), { duration: 0.1, scale: 0, stagger: 0.1 });
+      await gsap.to(element.querySelector(".palette-tool__colors"), { duration: 0.1, scale: 0 });
+      await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
+      animationCheck.value = true;
     };
 
     return {
@@ -268,6 +288,9 @@ export default defineComponent({
       activeColor,
       colorsList,
       changeColor,
+      actionEnter,
+      actionLeave,
+      animationDone,
     };
   },
 });
