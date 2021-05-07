@@ -33,3 +33,24 @@ export const fmtMsg = FormatMessage;
 export function isLocalEnvironment(): boolean {
 	return process.env.VUE_APP_ENVIRONMENT === "local";
 }
+
+export function starPolygonPoints(spikeCount: any, outerRadius: any, innerRadius: any) {
+	let rot = (Math.PI / 2) * 3;
+	const cx = outerRadius;
+	const cy = outerRadius;
+	const sweep = Math.PI / spikeCount;
+	const points = [];
+
+	for (let i = 0; i < spikeCount; i++) {
+		let x = cx + Math.cos(rot) * outerRadius;
+		let y = cy + Math.sin(rot) * outerRadius;
+		points.push({ x: x, y: y });
+		rot += sweep;
+
+		x = cx + Math.cos(rot) * innerRadius;
+		y = cy + Math.sin(rot) * innerRadius;
+		points.push({ x: x, y: y });
+		rot += sweep;
+	}
+	return points;
+}

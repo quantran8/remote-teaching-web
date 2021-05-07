@@ -1,7 +1,7 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import { Tools, Mode } from "@/commonui";
+import {Tools, Mode, starPolygonPoints} from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 
@@ -13,7 +13,6 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
-    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
@@ -65,11 +64,6 @@ export default defineComponent({
         });
       }
     });
-    if (currentExposure.value) {
-      if (currentExposure.value.type == "poems" || currentExposure.value.type == "bigbook") {
-        hasStickerTool.value = true;
-      }
-    }
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
     });
@@ -135,6 +129,54 @@ export default defineComponent({
       canvas.selectionFullyContained = false;
       listenToCanvasEvents();
     };
+    const objectCanvasProcess = () => {
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.type === "path" || obj.id !== "teacher-symbol") {
+          obj.selectable = false;
+          obj.hasControls = false;
+          obj.hasBorders = false;
+          obj.hoverCursor = "cursor";
+        }
+      });
+    };
+    const addStar = async () => {
+      const points = starPolygonPoints(5, 35, 15);
+      const star = new fabric.Polygon(points, {
+        stroke: strokeColor.value,
+        left: 0,
+        top: 0,
+        strokeWidth: 3,
+        strokeLineJoin: "round",
+        fill: "",
+        id: "teacher-symbol",
+      });
+      canvas.add(star);
+    };
+    const addCircle = async () => {
+      const circle = new fabric.Circle({
+        left: 0,
+        top: 0,
+        radius: 30,
+        fill: "",
+        stroke: strokeColor.value,
+        strokeWidth: 3,
+        id: "teacher-symbol",
+      });
+      canvas.add(circle);
+    };
+    const addSquare = async () => {
+      const square = new fabric.Rect({
+        left: 0,
+        top: 0,
+        width: 50,
+        height: 50,
+        fill: "",
+        stroke: strokeColor.value,
+        strokeWidth: 3,
+        id: "teacher-symbol",
+      });
+      canvas.add(square);
+    };
     const clickedTool = async (tool: string) => {
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
@@ -154,12 +196,7 @@ export default defineComponent({
           await store.dispatch("teacherRoom/setMode", {
             mode: modeAnnotation.value,
           });
-          canvas.getObjects().forEach((obj: any) => {
-            obj.selectable = false;
-            obj.hasControls = false;
-            obj.hasBorders = false;
-            obj.hoverCursor = "cursor";
-          });
+          objectCanvasProcess();
           return;
         case Tools.Pen:
           toolSelected.value = Tools.Pen;
@@ -171,6 +208,7 @@ export default defineComponent({
           });
           canvas.freeDrawingBrush.color = strokeColor.value;
           canvas.freeDrawingBrush.width = strokeWidth.value;
+          objectCanvasProcess();
           return;
         case Tools.Laser:
           toolSelected.value = Tools.Laser;
@@ -182,15 +220,11 @@ export default defineComponent({
           return;
         case Tools.Stroke:
           toolSelected.value = Tools.Stroke;
-          canvas.getObjects().forEach((obj: any) => {
-            obj.selectable = false;
-          });
+          objectCanvasProcess();
           return;
         case Tools.StrokeColor:
           toolSelected.value = Tools.StrokeColor;
-          canvas.getObjects().forEach((obj: any) => {
-            obj.selectable = false;
-          });
+          objectCanvasProcess();
           return;
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
@@ -220,6 +254,21 @@ export default defineComponent({
             mode: modeAnnotation.value,
           });
           return;
+        case Tools.Star:
+          toolSelected.value = Tools.Star;
+          await addStar();
+          objectCanvasProcess();
+          return;
+        case Tools.Circle:
+          toolSelected.value = Tools.Circle;
+          await addCircle();
+          objectCanvasProcess();
+          return;
+        case Tools.Square:
+          toolSelected.value = Tools.Square;
+          await addSquare();
+          objectCanvasProcess();
+          return;
         default:
           return;
       }
@@ -228,10 +277,10 @@ export default defineComponent({
       if (toolSelected.value === Tools.StrokeColor) {
         strokeColor.value = value;
         clickedTool(Tools.Pen).then();
-        if (canvas.getActiveObject()) {
-          canvas.getActiveObject().set("stroke", strokeColor.value);
-          canvas.renderAll();
-        }
+        // if (canvas.getActiveObject()) {
+        //   canvas.getActiveObject().set("stroke", strokeColor.value);
+        //   canvas.renderAll();
+        // }
       }
       if (canvas.isDrawingMode) {
         canvas.freeDrawingBrush.color = strokeColor.value;
@@ -241,10 +290,10 @@ export default defineComponent({
       strokeWidth.value = value;
       selectorOpen.value = false;
       clickedTool(Tools.Pen).then();
-      if (canvas.getActiveObject()) {
-        canvas.getActiveObject().set("strokeWidth", strokeWidth.value);
-        canvas.renderAll();
-      }
+      // if (canvas.getActiveObject()) {
+      //   canvas.getActiveObject().set("strokeWidth", strokeWidth.value);
+      //   canvas.renderAll();
+      // }
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });

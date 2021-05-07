@@ -2,8 +2,7 @@ import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "v
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { toolType } from "./types";
-import { Tools } from "commonui";
-import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import { starPolygonPoints } from "commonui";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -171,27 +170,6 @@ export default defineComponent({
 
       renderCanvas();
       listenToCanvasEvents();
-    };
-
-    const starPolygonPoints = (spikeCount: any, outerRadius: any, innerRadius: any) => {
-      let rot = (Math.PI / 2) * 3;
-      const cx = outerRadius;
-      const cy = outerRadius;
-      const sweep = Math.PI / spikeCount;
-      const points = [];
-
-      for (let i = 0; i < spikeCount; i++) {
-        let x = cx + Math.cos(rot) * outerRadius;
-        let y = cy + Math.sin(rot) * outerRadius;
-        points.push({ x: x, y: y });
-        rot += sweep;
-
-        x = cx + Math.cos(rot) * innerRadius;
-        y = cy + Math.sin(rot) * innerRadius;
-        points.push({ x: x, y: y });
-        rot += sweep;
-      }
-      return points;
     };
 
     const addStar = async () => {
