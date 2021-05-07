@@ -91,7 +91,8 @@
 .palette-tool {
   display: flex;
   width: 719px;
-  padding: 15px 40px;
+  height: 100px;
+  padding: 0 20px;
   background: #d8dddf;
   align-items: center;
   border-bottom-right-radius: 10px;
@@ -120,10 +121,10 @@
       width: 25px;
       height: 25px;
       border-radius: 12.5px;
-	  cursor: pointer;
-	  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
-	  border-width: 2px;
-	  border-color: white;
+      cursor: pointer;
+      box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
+      border-width: 2px;
+      border-color: white;
     }
   }
 }
