@@ -592,10 +592,11 @@ export enum Tools {
 	Stroke = 'stroke',
 	Delete = 'delete',
 	Clear = 'clear',
+	StrokeColor = 'stroke-color',
 	Star = 'star',
 	Circle = 'circle',
 	Square = 'square',
-	StrokeColor = 'stroke-color',
+	
 }
 
 export enum Mode {
