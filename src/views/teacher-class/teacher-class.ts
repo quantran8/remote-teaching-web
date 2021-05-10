@@ -82,7 +82,8 @@ export default defineComponent({
     });
 
     const handleKeyDown = (e: any) => {
-      if (e.keyCode == 91 || e.keyCode == 82 || e.keyCode == 116) {
+      // R: 82; F5: 116
+      if (e.keyCode == 82 || e.keyCode == 116) {
         e.preventDefault();
       }
     };
