@@ -32,8 +32,8 @@
                   <div
                     v-for="(color, index) in colorsList"
                     :key="index"
-                    :class="['colors-item', { 'color-item--has-border': color === 'white' }]"
                     :style="`background-color: ${color}`"
+                    :class="color === 'white' ? 'colors-item has-border' : 'colors-item'"
                     @click="
                       clickedTool(toolName);
                       updateColor(color);
