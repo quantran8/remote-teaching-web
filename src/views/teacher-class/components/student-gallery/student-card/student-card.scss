@@ -55,6 +55,10 @@
   &__enable {
     color: black;
     cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+      text-underline-position: under;
+    }
   }
   &__figure::before,
   &__figure::after {
