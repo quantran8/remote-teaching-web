@@ -1,7 +1,7 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import {Tools, Mode, starPolygonPoints} from "@/commonui";
+import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 
@@ -21,7 +21,7 @@ export default defineComponent({
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
     const toolSelected: Ref<string> = ref("cursor");
-    const strokeColor: Ref<string> = ref("#000000");
+    const strokeColor: Ref<string> = ref("#ff0000");
     const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
