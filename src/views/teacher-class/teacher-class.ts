@@ -4,7 +4,7 @@ import { ClassView, TeacherState } from "@/store/room/interface";
 import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
 import { gsap } from "gsap";
-import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import {
@@ -79,6 +79,28 @@ export default defineComponent({
     const isSidebarCollapsed = ref<boolean>(true);
     watch(isGalleryView, value => {
       isSidebarCollapsed.value = value;
+    });
+
+    const handleKeyDown = (e: any) => {
+      if (e.keyCode == 91 || e.keyCode == 82 || e.keyCode == 116) {
+        e.preventDefault();
+      }
+    };
+
+    onBeforeMount(() => {
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("beforeunload", event => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("beforeunload", event => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
     });
 
     // const isGameView = computed(() => {

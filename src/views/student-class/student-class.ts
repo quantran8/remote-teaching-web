@@ -4,7 +4,7 @@ import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
 import gsap from "gsap";
-import { computed, ComputedRef, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
@@ -185,6 +185,28 @@ export default defineComponent({
         },
       });
     };
+
+    const handleKeyDown = (e: any) => {
+      if (e.keyCode == 91 || e.keyCode == 82 || e.keyCode == 116) {
+        e.preventDefault();
+      }
+    };
+
+    onBeforeMount(() => {
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("beforeunload", event => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("beforeunload", event => {
+        event.preventDefault();
+        event.returnValue = null;
+      });
+    });
 
     return {
       student,
