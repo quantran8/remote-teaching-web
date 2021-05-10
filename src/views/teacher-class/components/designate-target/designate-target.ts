@@ -326,30 +326,30 @@ export default defineComponent({
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
           return;
-        case Tools.AddSticker:
-          canvas.remove(...canvas.getObjects("path"));
-          await store.dispatch("teacherRoom/setClearBrush", {});
-          modeAnnotation.value = 3;
-          await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
-          });
-          fabric.Rect.prototype.controls.deleteControl = new fabric.Control({
-            x: 0.5,
-            y: -0.5,
-            offsetY: 16,
-            cursorStyle: "pointer",
-            mouseUpHandler: deleteObject,
-            render: renderIcon,
-            cornerSize: 24
-          });
-          addSticker();
-          return;
-        case Tools.AssignSticker:
-          canvas.renderAll();
-          if (modeAnnotation.value === 3) {
-            await assignSticker();
-          }
-          return;
+        // case Tools.AddSticker:
+        //   canvas.remove(...canvas.getObjects("path"));
+        //   await store.dispatch("teacherRoom/setClearBrush", {});
+        //   modeAnnotation.value = 3;
+        //   await store.dispatch("teacherRoom/setMode", {
+        //     mode: modeAnnotation.value
+        //   });
+        //   fabric.Rect.prototype.controls.deleteControl = new fabric.Control({
+        //     x: 0.5,
+        //     y: -0.5,
+        //     offsetY: 16,
+        //     cursorStyle: "pointer",
+        //     mouseUpHandler: deleteObject,
+        //     render: renderIcon,
+        //     cornerSize: 24
+        //   });
+        //   addSticker();
+        //   return;
+        // case Tools.AssignSticker:
+        //   canvas.renderAll();
+        //   if (modeAnnotation.value === 3) {
+        //     await assignSticker();
+        //   }
+        //   return;
         default:
           return;
       }
