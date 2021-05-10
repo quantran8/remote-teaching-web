@@ -149,14 +149,12 @@ $action-icon-container-size: 70px;
   transform: scale(0.8) translateY(100px);
 }
 
-.box:hover [class*="reaction-"]:hover,
-.box:hover [class*="reaction-"]:focus {
+.box:hover [class*="reaction-"]:hover {
   transition: all 0.2s ease-in;
   transform: scale(1) translateY(95px);
 }
 
-.box:hover [class*="reaction-"]:hover .action-text,
-.box:hover [class*="reaction-"]:focus .action-text {
+.box:hover [class*="reaction-"]:hover .action-text {
   opacity: 1;
 }
 
