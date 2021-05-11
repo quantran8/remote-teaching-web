@@ -56,8 +56,8 @@
     color: black;
     cursor: pointer;
     &:hover {
-      text-decoration: underline;
-      text-underline-position: under;
+      color: rgb(55, 55, 235);
+      text-decoration: none;
     }
   }
   &__figure::before,
