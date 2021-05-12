@@ -1,3 +1,4 @@
+import { AuthService, LoginInfo, RoleName } from "@/commonui";
 import { store } from "@/store";
 import { AppView } from "@/store/app/state";
 import { Paths } from "@/utils/paths";
@@ -34,6 +35,15 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true,
       requireTeacher: true,
     },
+    beforeEnter: (to, from, next) => {
+      const loginInfo: LoginInfo = AuthService.getLoginInfo();
+      const isTeacher = loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1;
+      if (!isTeacher) {
+        next({ name: "ParentHome" });
+      } else {
+        next();
+      }
+    },
   },
   {
     path: "/class/:classId",
@@ -52,6 +62,15 @@ const routes: Array<RouteRecordRaw> = [
       layout: "main",
       requiresAuth: true,
       requireParent: true,
+    },
+    beforeEnter: (to, from, next) => {
+      const loginInfo: LoginInfo = AuthService.getLoginInfo();
+      const isParent = loginInfo.profile.roles.indexOf(RoleName.parent) !== -1;
+      if (!isParent) {
+        next({ name: "TeacherHome" });
+      } else {
+        next();
+      }
     },
   },
   {
