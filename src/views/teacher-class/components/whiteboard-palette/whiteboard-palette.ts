@@ -59,6 +59,7 @@ export default defineComponent({
     watch(oneAndOne, async () => {
       if (!canvas) return;
       if (!oneAndOne.value) {
+        hideWhiteboard();
         canvas.remove(
           ...canvas
             .getObjects()
