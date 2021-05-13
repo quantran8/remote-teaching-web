@@ -14,7 +14,6 @@ export default defineComponent({
     let canvas: any;
     const scaleRatio = ref(1);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
-    const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
     const activeColor = ref("black");
     const pointerStyle = computed(() => {
