@@ -98,6 +98,9 @@ const actions: ActionTree<StudentRoomState, any> = {
         // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
+      onLocalNetworkUpdate(payload: any) {
+        console.log("onLocalNetworkUpdate", payload);
+      }
     });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
