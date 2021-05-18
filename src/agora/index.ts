@@ -13,6 +13,7 @@ import AgoraRTC, {
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
+import { AgoraError } from "./interfaces";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -311,11 +312,12 @@ export class AgoraClient implements AgoraClientSDK {
           remoteTrack.play(userId);
           this.subscribedVideos.push({ userId: userId, track: remoteTrack });
         } catch (err) {
-          clearInterval(intervalId);
-          //   Logger.error("_subscribeVideo", err);
+          if (err.code !== AgoraError.REMOTE_USER_IS_NOT_PUBLISHED) {
+            this._subscribeVideo(userId);
+          }
         }
       }
-    }, 1000);
+    }, 1500);
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {
