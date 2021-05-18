@@ -41,9 +41,7 @@ export interface AgoraEventHandler {
       uid: UID;
     }[],
   ): void;
-  onLocalNetworkUpdate(
-      payload: any
-  ): void;
+  onLocalNetworkUpdate(payload: any): void;
 }
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
@@ -293,22 +291,31 @@ export class AgoraClient implements AgoraClientSDK {
       remoteTrack.play();
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-    //   Logger.error("_subscribeAudio", err);
+      //   Logger.error("_subscribeAudio", err);
     }
   }
 
   async _subscribeVideo(userId: string) {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
-    const user = this._getRemoteUser(userId);
-    if (!user || !user.hasVideo) return;
-    try {
-      const remoteTrack = await this.client.subscribe(user, "video");
-      remoteTrack.play(userId);
-      this.subscribedVideos.push({ userId: userId, track: remoteTrack });
-    } catch (err) {
-    //   Logger.error("_subscribeVideo", err);
-    }
+    let user = null;
+    const intervalId = setInterval(async () => {
+      user = this._getRemoteUser(userId);
+      if (user) {
+        clearInterval(intervalId);
+        if (!user.hasVideo) {
+          clearInterval(intervalId);
+        }
+        try {
+          const remoteTrack = await this.client.subscribe(user, "video");
+          remoteTrack.play(userId);
+          this.subscribedVideos.push({ userId: userId, track: remoteTrack });
+        } catch (err) {
+          clearInterval(intervalId);
+          //   Logger.error("_subscribeVideo", err);
+        }
+      }
+    }, 1000);
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {

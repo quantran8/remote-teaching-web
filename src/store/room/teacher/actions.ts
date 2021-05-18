@@ -88,7 +88,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        console.log("onLocalNetworkUpdate", payload);
+        // console.log("onLocalNetworkUpdate", payload);
         const nw = state.manager?.agoraClient?._client?.getRemoteNetworkQuality()
         console.log("getRemoteNetworkQuality", nw);
       }
