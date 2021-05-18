@@ -302,6 +302,7 @@ export class AgoraClient implements AgoraClientSDK {
     const intervalId = setInterval(async () => {
       user = this._getRemoteUser(userId);
       if (user) {
+		console.log("interval running", user)
         clearInterval(intervalId);
         if (!user.hasVideo) {
           clearInterval(intervalId);
@@ -311,7 +312,8 @@ export class AgoraClient implements AgoraClientSDK {
           remoteTrack.play(userId);
           this.subscribedVideos.push({ userId: userId, track: remoteTrack });
         } catch (err) {
-          clearInterval(intervalId);
+		  console.log('3rr', err)
+		  this._subscribeVideo(userId)
           //   Logger.error("_subscribeVideo", err);
         }
       }
