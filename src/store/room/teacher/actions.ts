@@ -90,7 +90,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onLocalNetworkUpdate(payload: any) {
         // console.log("onLocalNetworkUpdate", payload);
         const nw = state.manager?.agoraClient?._client?.getRemoteNetworkQuality()
-        console.log("getRemoteNetworkQuality", nw);
+        // console.log("getRemoteNetworkQuality", nw);
       }
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);

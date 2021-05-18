@@ -13,6 +13,7 @@ import AgoraRTC, {
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
+import { AgoraError } from "./interfaces";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -302,7 +303,6 @@ export class AgoraClient implements AgoraClientSDK {
     const intervalId = setInterval(async () => {
       user = this._getRemoteUser(userId);
       if (user) {
-		console.log("interval running", user)
         clearInterval(intervalId);
         if (!user.hasVideo) {
           clearInterval(intervalId);
@@ -312,9 +312,9 @@ export class AgoraClient implements AgoraClientSDK {
           remoteTrack.play(userId);
           this.subscribedVideos.push({ userId: userId, track: remoteTrack });
         } catch (err) {
-		  console.log('3rr', err)
-		  this._subscribeVideo(userId)
-          //   Logger.error("_subscribeVideo", err);
+          if (err.code !== AgoraError.REMOTE_USER_IS_NOT_PUBLISHED) {
+            this._subscribeVideo(userId);
+          }
         }
       }
     }, 1000);
