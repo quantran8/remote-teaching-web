@@ -118,7 +118,7 @@ export class AgoraClient implements AgoraClientSDK {
   async openMicrophone(): Promise<any> {
     if (this._microphoneTrack) return;
     try {
-      this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
+      this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack({AEC: true, ANS: true});
       this.microphoneTrack.on("track-ended", () => {
         this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
       });
