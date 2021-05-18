@@ -99,7 +99,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        console.log("onLocalNetworkUpdate", payload);
+        // console.log("onLocalNetworkUpdate", payload);
       }
     });
   },
