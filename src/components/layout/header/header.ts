@@ -11,7 +11,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const isLoggedIn =  computed(() => store.getters["auth/isLoggedIn"])
+    const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
     const userName = computed(() => store.getters["auth/username"]);
     const userRole = computed(() => store.getters["auth/userRole"]);
     const userAvatar = computed(() => store.getters["auth/userAvatar"]);

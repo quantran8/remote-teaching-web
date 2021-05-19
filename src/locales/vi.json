@@ -1,4 +1,9 @@
 {
 	"versionGroup.add.text": "Name of New Version",
-	"common.site.title": "Remote Teaching"
+	"common.site.title": "Remote Teaching",
+	"common.access.denied": "Không thể truy cập",
+	"teacher.policy.text1": "The use of classroom video allows the GrapeSEED team to focus, refine and analyze the GrapeSEED curriculum in the context of a “real-life” setting.",
+	"teacher.policy.text2": "Through this observation, the curriculum and teaching methods are continually refined and improved upon to meet the expectations of the GrapeSEED students, their parents, school administrators and GrapeSEED teachers around the world.",
+	"teacher.policy.text3": "I hereby give to GrapeCity Inc., a Japanese corporation (the “Company”) permission to copyright and use video pictures of me for training purposes of teachers within the Company’s global network.",
+	"teacher.policy.text4": "I hereby release the Company from any claim arising in connection with the use of the photographic and video pictures, and I agree that the the the Company will own all rights to the photographic and video pictures under all applicable copyright laws, and hereby waive any right to royalties or other compensation arising from or related to the use of the photographic and video pictures."
 }

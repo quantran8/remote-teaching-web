@@ -38,9 +38,17 @@ export class CommonLocale {
   static CommonRoleParent = "common.role.parent";
   static CommonSiteTitle = "common.site.title";
   static CommonNoButtonText = "common.noButtonText";
+  static CommonAccessDenied = "common.access.denied";
 }
 
 export class ErrorLocale {
   static UnauthorizedMessage = "error.unauthorized";
   static NotFoundMessage = "error.notfound";
+}
+
+export class PrivacyPolicy {
+  static TeacherPolicyText1 = "teacher.policy.text1";
+  static TeacherPolicyText2 = "teacher.policy.text2";
+  static TeacherPolicyText3 = "teacher.policy.text3";
+  static TeacherPolicyText4 = "teacher.policy.text4";
 }

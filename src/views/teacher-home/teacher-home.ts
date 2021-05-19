@@ -1,20 +1,23 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import {AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService} from "@/services";
+import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
-import { debounce } from "lodash";
-import { Select, Button, Spin } from "ant-design-vue";
+import { Select, Spin, Modal, Checkbox } from "ant-design-vue";
+import { fmtMsg } from "@/commonui";
+import {CommonLocale, PrivacyPolicy} from "@/locales/localeid";
 
 export default defineComponent({
   components: {
     ClassCard,
     Select,
-	Spin,
+    Spin,
     Option: Select.Option,
+    Modal,
+    Checkbox,
   },
   async created() {
     const store = useStore();
@@ -34,17 +37,19 @@ export default defineComponent({
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
+    const visible = ref<boolean>(true);
+    const agreePolicy = ref<boolean>(false);
+    const accessDenied = fmtMsg(CommonLocale.CommonAccessDenied);
+    const policyText1 = fmtMsg(PrivacyPolicy.TeacherPolicyText1);
+    const policyText2 = fmtMsg(PrivacyPolicy.TeacherPolicyText2);
+    const policyText3 = fmtMsg(PrivacyPolicy.TeacherPolicyText3);
+    const policyText4 = fmtMsg(PrivacyPolicy.TeacherPolicyText4);
 
     const startClass = async (teacherClass: TeacherClassModel) => {
       try {
-        // const lessons = await LessonService.getLessonByUnit(11);
-        // let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
-        // if (!lesson) lesson = lessons[0];
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, teacherClass.schoolClassId);
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
-        } else {
-        //   console.log(response);
         }
       } catch (err) {
         if (err && err.body) {
@@ -56,9 +61,6 @@ export default defineComponent({
             };
             success: boolean;
           } = err.body;
-          if (responseError && !responseError.success) {
-            // console.log("ERROR", responseError.data.Message);
-          }
         }
       }
     };
@@ -68,26 +70,19 @@ export default defineComponent({
       await store.dispatch("teacher/loadAccessibleSchools", {
         disabled: false,
       } as AccessibleSchoolQueryParam);
-
       filteredSchools.value = schools.value;
       loading.value = false;
     };
 
     const onSchoolChange = async (schoolId: string) => {
-      console.error(schoolId);
       loading.value = true;
       await store.dispatch("teacher/loadAccessibleClasses", {
         schoolId,
-
         disabled: false,
-
         isDetail: false,
-
         isCampusDetail: false,
       } as AccessibleClassQueryParam);
-
       filteredSchools.value = schools.value;
-
       loading.value = false;
     };
 
@@ -95,7 +90,6 @@ export default defineComponent({
       const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
       if (loginInfo && loginInfo.loggedin) {
         await getSchools();
-
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
           if (schools.value.length === 1) {
@@ -115,6 +109,34 @@ export default defineComponent({
 
     const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
-    return { schools, classes, username, onClickClass, filterSchools, onSchoolChange, loading, disabled, filteredSchools };
+    const onAgreePolicy = () => {
+      agreePolicy.value = !agreePolicy.value;
+      console.error(agreePolicy.value, "aaaaaaaaaaaaaaaa");
+    };
+    const submitPolicy = () => {
+      console.log("submit modal");
+      visible.value = false;
+    };
+
+    return {
+      schools,
+      classes,
+      username,
+      onClickClass,
+      filterSchools,
+      onSchoolChange,
+      loading,
+      disabled,
+      filteredSchools,
+      visible,
+      submitPolicy,
+      agreePolicy,
+      onAgreePolicy,
+      policyText1,
+      policyText2,
+      policyText3,
+      policyText4,
+      accessDenied,
+    };
   },
 });
