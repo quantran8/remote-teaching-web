@@ -53,6 +53,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: async (payload: StudentModel) => {
+		console.log('RUN VAO DISCONNECT', payload);
+		
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);

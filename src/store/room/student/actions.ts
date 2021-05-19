@@ -88,7 +88,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: () => {
+      onUserUnPublished: () => {		
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {

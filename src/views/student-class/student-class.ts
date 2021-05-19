@@ -230,7 +230,7 @@ export default defineComponent({
           });
         }, POPUP_TIMING);
         return;
-      }	  
+      }
       clearTimeout(timeoutId);
     //   const { studentId, classId } = route.params;
     //   await store.dispatch("studentRoom/initClassRoom", {
