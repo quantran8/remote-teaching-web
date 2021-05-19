@@ -204,6 +204,15 @@ const actions: ActionTree<StudentRoomState, any> = {
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);
   // }
+  updateDisconnectStatus({ commit }, p: false) {
+    commit("updateDisconnectStatus", p);
+  },
+  setOnline({ commit }) {
+    commit("setOnline");
+  },
+  setOffline({ commit }) {
+    commit("setOffline");
+  },
 };
 
 export default actions;

@@ -53,6 +53,13 @@ export default defineComponent({
       if (isSignedIn.value) onUserSignedIn();
     });
 
+    window.addEventListener("online", () => {
+      dispatch("studentRoom/setOnline");
+    });
+    window.addEventListener("offline", () => {
+      dispatch("studentRoom/setOffline");
+    });
+
     return {
       siteTitle,
       appView,

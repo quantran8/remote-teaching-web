@@ -18,6 +18,8 @@ import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
 
+const POPUP_TIMING = 60000 * 5;
+
 export default defineComponent({
   components: {
     UnityView,
@@ -47,8 +49,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+	const route = useRoute();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
@@ -67,6 +71,7 @@ export default defineComponent({
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
+    const studentIsDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnect"]);
 
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
@@ -209,6 +214,35 @@ export default defineComponent({
       });
     });
 
+   let timeoutId: any;
+
+    watch(studentIsDisconnected, async isDisconnected => {
+      if (isDisconnected) {
+        timeoutId = setTimeout(() => {
+          Modal.confirm({
+            content: "So Sorry! It seems you lost network connectivity.",
+            onOk: () => {
+              console.log("OK");
+            },
+            onCancel: () => {
+              console.log("OK");
+            },
+          });
+        }, POPUP_TIMING);
+        return;
+      }	  
+      clearTimeout(timeoutId);
+    //   const { studentId, classId } = route.params;
+    //   await store.dispatch("studentRoom/initClassRoom", {
+    //     classId: classId,
+    //     userId: loginInfo.profile.sub,
+    //     userName: loginInfo.profile.name,
+    //     studentId: studentId,
+    //     role: RoleName.parent,
+    //   });
+    //   await store.dispatch("studentRoom/joinRoom");
+    });
+
     return {
       student,
       students,
@@ -241,6 +275,7 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
+      studentIsDisconnected,
     };
   },
 });

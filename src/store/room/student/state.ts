@@ -92,7 +92,7 @@ const state: StudentRoomState = {
   speakingUsers: [],
   showWhiteBoard: false,
   laserPath: "",
-  isDisconnect: false
+  isDisconnect: !navigator.onLine
 };
 
 export default state;

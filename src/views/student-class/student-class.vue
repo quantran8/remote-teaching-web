@@ -21,6 +21,7 @@
           :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
           ref="videoContainerRef"
         >
+		  <img v-show="studentIsDisconnected" class="sc-content__top--confused" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
             :id="teacher?.id"

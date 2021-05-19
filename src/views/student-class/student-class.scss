@@ -147,6 +147,12 @@
     grid-column-end: unset;
     grid-column-start: unset;
   }
+  &__top {
+	  &--confused {
+		  width: 200px;
+		  height: 100px;
+	  }
+  }
 }
 
 .sc-teacher {
