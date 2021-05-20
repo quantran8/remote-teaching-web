@@ -1,4 +1,5 @@
 import { LoginInfo, MatIcon, RoleName } from "@/commonui";
+import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
@@ -49,7 +50,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-	const route = useRoute();
+    const route = useRoute();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
@@ -214,33 +215,42 @@ export default defineComponent({
       });
     });
 
-   let timeoutId: any;
+    let timeoutId: any;
+    const reconnectFailedSound = new Howl({
+      src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
+    });
+
+    const reconnectSuccessSound = new Howl({
+      src: [require(`@/assets/student-class/reconnect-success.mp3`)],
+    });
+
+    Howler.volume(1);
 
     watch(studentIsDisconnected, async isDisconnected => {
       if (isDisconnected) {
-        timeoutId = setTimeout(() => {
-          Modal.confirm({
+        await store.dispatch("studentRoom/leaveRoom");
+        timeoutId = setTimeout(async () => {
+          await reconnectFailedSound.play();
+          Modal.warning({
             content: "So Sorry! It seems you lost network connectivity.",
             onOk: () => {
               console.log("OK");
             },
-            onCancel: () => {
-              console.log("OK");
-            },
           });
-        }, POPUP_TIMING);
+        }, 5000);
         return;
       }
       clearTimeout(timeoutId);
-    //   const { studentId, classId } = route.params;
-    //   await store.dispatch("studentRoom/initClassRoom", {
-    //     classId: classId,
-    //     userId: loginInfo.profile.sub,
-    //     userName: loginInfo.profile.name,
-    //     studentId: studentId,
-    //     role: RoleName.parent,
-    //   });
-    //   await store.dispatch("studentRoom/joinRoom");
+      await reconnectSuccessSound.play();
+      const { studentId, classId } = route.params;
+      await store.dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+      });
+      await store.dispatch("studentRoom/joinRoom");
     });
 
     return {

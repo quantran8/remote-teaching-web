@@ -25,7 +25,7 @@
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
             :id="teacher?.id"
-            v-show="!isOneToOne || studentIsOneToOne"
+            v-show="!studentIsDisconnected && (!isOneToOne || studentIsOneToOne)"
           ></div>
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"

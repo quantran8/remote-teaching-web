@@ -317,7 +317,7 @@ export class AgoraClient implements AgoraClientSDK {
           }
         }
       }
-    }, 1500);
+    }, 1000);
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {
