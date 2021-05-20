@@ -142,7 +142,7 @@ export default defineComponent({
 
     const onClickLeave = async () => {
       hasConfirmed.value = true;
-      router.push("/teacher");
+      await router.push("/teacher");
     };
 
     const onClickEnd = async () => {
@@ -153,7 +153,7 @@ export default defineComponent({
         okButtonProps: { type: "danger" },
         onOk: async () => {
           await dispatch("teacherRoom/endClass");
-          router.push("/teacher");
+          await router.push("/teacher");
         },
       });
     };
