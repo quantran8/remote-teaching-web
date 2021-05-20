@@ -1,5 +1,5 @@
 import { GLServiceBase, ServiceRoute } from "../base.service";
-import { RemoteTeachingServiceInterface } from "./interface";
+import { RemoteTeachingServiceInterface } from "@/services";
 import { StudentGetRoomResponse, TeacherGetRoomResponse } from "./model";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
@@ -18,6 +18,9 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get(`rooms`, {
       studentId: childId,
     });
+  }
+  acceptPolicy(): Promise<any> {
+    return this.get("policy/is-accepted");
   }
 }
 
