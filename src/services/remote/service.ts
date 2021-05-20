@@ -22,6 +22,9 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   acceptPolicy(): Promise<any> {
     return this.get("policy/is-accepted");
   }
+  submitPolicy(): Promise<any> {
+    return this.create("policy/accept/true");
+  }
 }
 
 export const RemoteTeachingService = new GLRemoteTeachingService();

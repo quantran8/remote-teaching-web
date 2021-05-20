@@ -15,6 +15,9 @@ const mutations: MutationTree<ParentState> = {
   setInfo(state: ParentState, payload: Parent) {
     state.info = payload;
   },
+  setAcceptPolicy(state: ParentState, payload: boolean) {
+    state.acceptPolicy = payload;
+  },
 };
 
 export default mutations;

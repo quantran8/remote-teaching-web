@@ -1,5 +1,5 @@
 <template>
-  <div class="student-page" v-if="!visible && agreePolicy">
+  <div class="student-page" v-if="policy">
     <h2>Welcome {{ username }}</h2>
     <p>Choose a student to start</p>
     <hr />
@@ -7,7 +7,7 @@
       <StudentCard v-for="child in children" :key="child.id" :name="child.name" @click="() => onClickChild(child)"> </StudentCard>
     </div>
   </div>
-  <Modal :visible="visible" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+  <Modal :visible="visible && !policy" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <div class="policy-content">
       <p>{{ policyText1 }}</p>
       <p>{{ policyText2 }}</p>

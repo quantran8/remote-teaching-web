@@ -1,5 +1,5 @@
 import { ChildModel, RemoteTeachingService, StudentGetRoomResponse } from "@/services";
-import {computed, ComputedRef, defineComponent, ref} from "vue";
+import {computed, ComputedRef, defineComponent, ref, watch} from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
@@ -25,12 +25,7 @@ export default defineComponent({
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText4));
-    const dataRoom = computed(async () => await RemoteTeachingService.acceptPolicy());
-    console.error(dataRoom.value, "checkkkkkkkkkkkkkk");
-    const processPolicy = async () => {
-      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.acceptPolicy();
-      console.error(roomResponse, "checkkkkkkkkkkkkkk");
-    };
+    const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const onClickChild = async (student: ChildModel) => {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
       if (!roomResponse || !roomResponse.data) {
@@ -43,9 +38,10 @@ export default defineComponent({
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
-    const submitPolicy = () => {
-      console.log("submit modal");
+    const submitPolicy = async () => {
       visible.value = false;
+      await RemoteTeachingService.submitPolicy();
+      await store.dispatch("parent/setAcceptPolicy");
     };
     return {
       children,
@@ -59,7 +55,7 @@ export default defineComponent({
       policyText2,
       policyText3,
       policyText4,
-      processPolicy,
+      policy,
     };
   },
 });
