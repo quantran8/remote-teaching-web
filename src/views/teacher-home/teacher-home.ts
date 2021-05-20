@@ -1,19 +1,18 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import {AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService} from "@/services";
+import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
-import { debounce } from "lodash";
-import { Select, Button, Spin } from "ant-design-vue";
+import { Select, Spin } from "ant-design-vue";
 
 export default defineComponent({
   components: {
     ClassCard,
     Select,
-	Spin,
+    Spin,
     Option: Select.Option,
   },
   async created() {
@@ -43,8 +42,6 @@ export default defineComponent({
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, teacherClass.schoolClassId);
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
-        } else {
-        //   console.log(response);
         }
       } catch (err) {
         if (err && err.body) {
@@ -74,7 +71,6 @@ export default defineComponent({
     };
 
     const onSchoolChange = async (schoolId: string) => {
-      console.error(schoolId);
       loading.value = true;
       await store.dispatch("teacher/loadAccessibleClasses", {
         schoolId,

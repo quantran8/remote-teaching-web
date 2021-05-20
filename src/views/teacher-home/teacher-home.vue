@@ -37,6 +37,7 @@
         :id="cl.schoolClassId"
         :title="cl.schoolClassName"
         :description="cl.campusName"
+        :remoteClassGroups="cl.remoteClassGroups"
         :active="cl.isActive"
         @click-to-access="() => onClickClass(cl)"
       />
