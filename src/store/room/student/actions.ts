@@ -88,7 +88,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: () => {
+      onUserUnPublished: () => {		
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
@@ -204,6 +204,20 @@ const actions: ActionTree<StudentRoomState, any> = {
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);
   // }
+  updateDisconnectStatus({ commit }, p: false) {
+    commit("updateDisconnectStatus", p);
+  },
+  setOnline({ commit }) {
+    commit("setOnline");
+  },
+  setOffline({ commit }) {
+    commit("setOffline");
+  },
+  disconnectSignalR({state}) {
+	  console.log('disconnectSignalR');
+	  
+	state.manager?.close();
+  }
 };
 
 export default actions;

@@ -14,6 +14,7 @@ import AgoraRTC, {
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraError } from "./interfaces";
+import {store} from "@/store"
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -101,6 +102,12 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
+	this.client.on("connection-state-change", (payload) => {
+		console.log('connection-state-change', payload)
+		if(payload === "DISCONNECTED") {
+			store.dispatch('studentRoom/setOffline')
+		}
+	})
   }
 
   subscribedVideos: Array<{
@@ -316,7 +323,7 @@ export class AgoraClient implements AgoraClientSDK {
           }
         }
       }
-    }, 1500);
+    }, 1000);
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {

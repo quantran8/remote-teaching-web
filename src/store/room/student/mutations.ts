@@ -177,6 +177,12 @@ const mutations: MutationTree<StudentRoomState> = {
     s.students.map(student => (student.isPalette = false));
     if (s.student) s.student.isPalette = false;
   },
+  setOnline(state: StudentRoomState) {
+    state.isDisconnect = false
+  },
+  setOffline(state: StudentRoomState) {
+    state.isDisconnect = true
+  },
 };
 
 export default mutations;

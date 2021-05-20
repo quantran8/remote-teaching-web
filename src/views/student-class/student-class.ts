@@ -1,4 +1,5 @@
 import { LoginInfo, MatIcon, RoleName } from "@/commonui";
+import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
@@ -17,6 +18,8 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
+
+const POPUP_TIMING = 60000;
 
 export default defineComponent({
   components: {
@@ -47,8 +50,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
@@ -67,6 +72,7 @@ export default defineComponent({
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
+    const studentIsDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnect"]);
 
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
@@ -195,19 +201,61 @@ export default defineComponent({
 
     onBeforeMount(() => {
       window.addEventListener("keydown", handleKeyDown);
-      window.addEventListener("beforeunload", event => {
-        event.preventDefault();
-        event.returnValue = null;
-      });
+    //   window.addEventListener("beforeunload", event => {
+    //     event.preventDefault();
+    //     event.returnValue = null;
+    //   });
     });
 
     onUnmounted(() => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("beforeunload", event => {
-        event.preventDefault();
-        event.returnValue = null;
-      });
+    //   window.removeEventListener("beforeunload", event => {
+    //     event.preventDefault();
+    //     event.returnValue = null;
+    //   });
     });
+
+    let timeoutId: any;
+    const reconnectFailedSound = new Howl({
+      src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
+    });
+
+    const reconnectSuccessSound = new Howl({
+      src: [require(`@/assets/student-class/reconnect-success.mp3`)],
+    });
+
+    Howler.volume(1);
+
+    watch(studentIsDisconnected, async isDisconnected => {
+      if (isDisconnected) {
+        await store.dispatch("studentRoom/leaveRoom");
+        timeoutId = setTimeout(async () => {
+          await reconnectFailedSound.play();
+          Modal.warning({
+            content: "So Sorry! It seems you lost network connectivity.",
+            onOk: () => {
+              console.log("OK");
+            },
+          });
+        }, POPUP_TIMING);
+        return;
+      }
+      clearTimeout(timeoutId);
+      await reconnectSuccessSound.play();
+      const { studentId, classId } = route.params;
+      await store.dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+      });
+      await store.dispatch("studentRoom/joinRoom");
+    });
+
+	const disconnectSignalR = async () => {		
+		await store.dispatch("studentRoom/disconnectSignalR");
+	}
 
     return {
       student,
@@ -241,6 +289,8 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
+      studentIsDisconnected,
+	  disconnectSignalR
     };
   },
 });

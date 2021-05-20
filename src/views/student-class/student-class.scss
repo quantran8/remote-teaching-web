@@ -147,6 +147,13 @@
     grid-column-end: unset;
     grid-column-start: unset;
   }
+  &__top {
+	  &--confused {
+		  width: 100%;
+		  height: 100%;
+		  object-fit: contain;
+	  }
+  }
 }
 
 .sc-teacher {
@@ -285,4 +292,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.try-button {
+	padding: 10px 10px;
+	border-radius: 10px;
+	background-color: aquamarine;
+	color: white;
+	position: fixed;
+	top: 100px;
+	cursor: pointer;
 }
