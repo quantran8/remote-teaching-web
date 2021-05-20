@@ -1,8 +1,7 @@
 import { GLServiceBase, ServiceRoute } from "../base.service";
 import { RemoteTeachingServiceInterface } from "./interface";
 import { StudentGetRoomResponse, TeacherGetRoomResponse } from "./model";
-class GLRemoteTeachingService extends GLServiceBase<any, any>
-  implements RemoteTeachingServiceInterface {
+class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
 
   getActiveClassRoom(): Promise<TeacherGetRoomResponse> {
@@ -13,11 +12,11 @@ class GLRemoteTeachingService extends GLServiceBase<any, any>
   }
   teacherEndClassRoom(roomId?: string): Promise<any> {
     if (!roomId) return Promise.resolve(null);
-    return this.delete("rooms/" + roomId);
+    return this.update("rooms/end-class/" + roomId);
   }
   studentGetRoomInfo(childId: string): Promise<StudentGetRoomResponse> {
-    return this.get(`rooms`,{
-      studentId: childId
+    return this.get(`rooms`, {
+      studentId: childId,
     });
   }
 }

@@ -27,6 +27,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
+      await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
     }
     commit("endClass", payload);
   },
@@ -89,9 +90,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: any) {
         // console.log("onLocalNetworkUpdate", payload);
-        const nw = state.manager?.agoraClient?._client?.getRemoteNetworkQuality()
+        const nw = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
         // console.log("getRemoteNetworkQuality", nw);
-      }
+      },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
