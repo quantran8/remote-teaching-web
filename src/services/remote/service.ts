@@ -9,10 +9,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any>
     return this.get("rooms/teachers");
   }
   teacherStartClassRoom(classId: string, lessonId?: string): Promise<any> {
-    return this.create("rooms/create", {
-      classId: classId,
-      lessonId: lessonId,
-    });
+    return this.create(`rooms/join/${classId}/${lessonId}`);
   }
   teacherEndClassRoom(roomId?: string): Promise<any> {
     if (!roomId) return Promise.resolve(null);
