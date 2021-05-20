@@ -19,7 +19,7 @@ import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
 
-const POPUP_TIMING = 60000 * 5;
+const POPUP_TIMING = 60000;
 
 export default defineComponent({
   components: {
@@ -237,7 +237,7 @@ export default defineComponent({
               console.log("OK");
             },
           });
-        }, 5000);
+        }, POPUP_TIMING);
         return;
       }
       clearTimeout(timeoutId);

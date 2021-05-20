@@ -78,9 +78,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: _payload => {
-		  console.log('USER UN_PUBLIC', _payload);
-		  
+      onUserUnPublished: _payload => {		  
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
