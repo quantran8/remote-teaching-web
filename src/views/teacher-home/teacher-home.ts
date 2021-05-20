@@ -6,9 +6,9 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
-import { Select, Spin, Modal, Checkbox } from "ant-design-vue";
+import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
-import {CommonLocale, PrivacyPolicy} from "@/locales/localeid";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -18,6 +18,8 @@ export default defineComponent({
     Option: Select.Option,
     Modal,
     Checkbox,
+    Button,
+    Row,
   },
   async created() {
     const store = useStore();
@@ -39,11 +41,10 @@ export default defineComponent({
     const disabled = ref<boolean>(false);
     const visible = ref<boolean>(true);
     const agreePolicy = ref<boolean>(false);
-    const accessDenied = fmtMsg(CommonLocale.CommonAccessDenied);
-    const policyText1 = fmtMsg(PrivacyPolicy.TeacherPolicyText1);
-    const policyText2 = fmtMsg(PrivacyPolicy.TeacherPolicyText2);
-    const policyText3 = fmtMsg(PrivacyPolicy.TeacherPolicyText3);
-    const policyText4 = fmtMsg(PrivacyPolicy.TeacherPolicyText4);
+    const policyText1 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText1));
+    const policyText2 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText2));
+    const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
+    const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
 
     const startClass = async (teacherClass: TeacherClassModel) => {
       try {
@@ -111,7 +112,6 @@ export default defineComponent({
 
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
-      console.error(agreePolicy.value, "aaaaaaaaaaaaaaaa");
     };
     const submitPolicy = () => {
       console.log("submit modal");
@@ -136,7 +136,6 @@ export default defineComponent({
       policyText2,
       policyText3,
       policyText4,
-      accessDenied,
     };
   },
 });

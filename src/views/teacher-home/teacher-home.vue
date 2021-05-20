@@ -42,22 +42,17 @@
       />
     </div>
   </div>
-  <h1 class="access-denied" v-if="!visible && !agreePolicy">{{ $t(accessDenied) }}</h1>
-  <Modal
-    :visible="visible"
-    title="Privacy Policy"
-    :closable="false"
-    :centered="true"
-    :maskClosable="false"
-    okText="Submit"
-    @cancel="submitPolicy"
-    @ok="submitPolicy"
-  >
-    <p>{{ policyText1 }}</p>
-    <p>{{ policyText2 }}</p>
-    <p>{{ policyText3 }}</p>
-    <p>{{ policyText4 }}</p>
-    <Checkbox @change="onAgreePolicy">I accept the policies</Checkbox>
+  <Modal :visible="visible" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+    <div class="policy-content">
+      <p>{{ policyText1 }}</p>
+      <p>{{ policyText2 }}</p>
+      <p>{{ policyText3 }}</p>
+      <p>{{ policyText4 }}</p>
+      <Checkbox @change="onAgreePolicy">I accept the policies</Checkbox>
+    </div>
+    <Row type="flex" justify="end">
+      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
+    </Row>
   </Modal>
 </template>
 <style lang="scss" scoped src="./teacher-home.scss"></style>

@@ -95,6 +95,12 @@
   }
 }
 
+.policy-content {
+  max-height: 300px;
+  overflow-y: scroll;
+  margin-bottom: 25px;
+}
+
 @keyframes pulsate {
   0% {
     -webkit-transform: translate(-50%, -50%) scale(0.4, 0.4);
