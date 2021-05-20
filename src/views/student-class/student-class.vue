@@ -8,6 +8,7 @@
         </div>
       </div>
       <div class="sc-header__right">
+		<div v-if="!studentIsDisconnected" @click="disconnectSignalR">DISCONNECT SIGNALR</div>
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <a class="sc-header__exit" @click="onClickEnd">
           <MatIcon type="close" class="red-close" />

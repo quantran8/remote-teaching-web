@@ -213,6 +213,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   setOffline({ commit }) {
     commit("setOffline");
   },
+  disconnectSignalR({state}) {
+	  console.log('disconnectSignalR');
+	  
+	state.manager?.close();
+  }
 };
 
 export default actions;

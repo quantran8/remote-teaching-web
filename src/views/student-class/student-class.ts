@@ -201,18 +201,18 @@ export default defineComponent({
 
     onBeforeMount(() => {
       window.addEventListener("keydown", handleKeyDown);
-      window.addEventListener("beforeunload", event => {
-        event.preventDefault();
-        event.returnValue = null;
-      });
+    //   window.addEventListener("beforeunload", event => {
+    //     event.preventDefault();
+    //     event.returnValue = null;
+    //   });
     });
 
     onUnmounted(() => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("beforeunload", event => {
-        event.preventDefault();
-        event.returnValue = null;
-      });
+    //   window.removeEventListener("beforeunload", event => {
+    //     event.preventDefault();
+    //     event.returnValue = null;
+    //   });
     });
 
     let timeoutId: any;
@@ -253,6 +253,10 @@ export default defineComponent({
       await store.dispatch("studentRoom/joinRoom");
     });
 
+	const disconnectSignalR = async () => {		
+		await store.dispatch("studentRoom/disconnectSignalR");
+	}
+
     return {
       student,
       students,
@@ -286,6 +290,7 @@ export default defineComponent({
       onClickEnd,
       raisedHand,
       studentIsDisconnected,
+	  disconnectSignalR
     };
   },
 });
