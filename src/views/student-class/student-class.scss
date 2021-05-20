@@ -293,3 +293,12 @@
   flex-direction: column;
   justify-content: center;
 }
+.try-button {
+	padding: 10px 10px;
+	border-radius: 10px;
+	background-color: aquamarine;
+	color: white;
+	position: fixed;
+	top: 100px;
+	cursor: pointer;
+}
