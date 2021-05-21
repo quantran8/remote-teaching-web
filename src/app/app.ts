@@ -27,9 +27,6 @@ export default defineComponent({
         id: loginInfo.profile.sub,
         name: loginInfo.profile.name,
       });
-      await dispatch("teacher/loadClasses", {
-        teacherId: loginInfo.profile.sub,
-      });
     };
 
     const onParentSignedIn = async (loginInfo: LoginInfo) => {

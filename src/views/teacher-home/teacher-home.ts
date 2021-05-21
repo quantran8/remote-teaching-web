@@ -15,15 +15,6 @@ export default defineComponent({
     Spin,
     Option: Select.Option,
   },
-  async created() {
-    const store = useStore();
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
-    if (loginInfo && loginInfo.loggedin) {
-      await store.dispatch("teacher/loadClasses", {
-        teacherId: loginInfo.profile.sub,
-      });
-    }
-  },
   setup() {
     const store = useStore();
     const router = useRouter();
