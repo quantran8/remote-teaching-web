@@ -19,7 +19,7 @@ import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
 
-const POPUP_TIMING = 6000*10;
+const POPUP_TIMING = 6000 * 10;
 
 export default defineComponent({
   components: {
@@ -192,29 +192,6 @@ export default defineComponent({
       });
     };
 
-    const handleKeyDown = (e: any) => {
-      // R: 82; F5: 116
-      if (e.keyCode == 82 || e.keyCode == 116) {
-        e.preventDefault();
-      }
-    };
-
-    onBeforeMount(() => {
-      window.addEventListener("keydown", handleKeyDown);
-    //   window.addEventListener("beforeunload", event => {
-    //     event.preventDefault();
-    //     event.returnValue = null;
-    //   });
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener("keydown", handleKeyDown);
-    //   window.removeEventListener("beforeunload", event => {
-    //     event.preventDefault();
-    //     event.returnValue = null;
-    //   });
-    });
-
     let timeoutId: any;
     const reconnectFailedSound = new Howl({
       src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
@@ -253,9 +230,9 @@ export default defineComponent({
       await store.dispatch("studentRoom/joinRoom");
     });
 
-	const disconnectSignalR = async () => {		
-		await store.dispatch("studentRoom/disconnectSignalR");
-	}
+    const disconnectSignalR = async () => {
+      await store.dispatch("studentRoom/disconnectSignalR");
+    };
 
     return {
       student,
@@ -290,7 +267,7 @@ export default defineComponent({
       onClickEnd,
       raisedHand,
       studentIsDisconnected,
-	  disconnectSignalR
+      disconnectSignalR,
     };
   },
 });
