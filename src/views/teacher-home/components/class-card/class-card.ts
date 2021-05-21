@@ -40,10 +40,10 @@ export default defineComponent({
               return current.daysOfWeek - next.daysOfWeek;
             });
             const greaterDay = classTime.filter(time => {
-              return time.daysOfWeek > currentDay;
+              return time.daysOfWeek - 1 > currentDay;
             });
             const lowerDay = classTime.filter(time => {
-              return time.daysOfWeek < currentDay;
+              return time.daysOfWeek - 1 <= currentDay;
             });
             let nextDay: SchoolClassTimeModel;
             let isLow = false;
@@ -60,7 +60,7 @@ export default defineComponent({
           } else {
             let nextDay = 0;
             if (classTime[0]) {
-              if (classTime[0].daysOfWeek <= currentDay) {
+              if (classTime[0].daysOfWeek - 1 <= currentDay) {
                 nextDay = classTime[0].daysOfWeek + 6;
               } else {
                 nextDay = classTime[0].daysOfWeek - 1;
