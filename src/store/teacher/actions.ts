@@ -1,10 +1,18 @@
 import { ClassModel, Parent } from "@/models";
-import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, RemoteTeachingService, TeacherGetRoomResponse, TeacherService } from "@/services";
+import {
+  AccessibleClassQueryParam,
+  AccessibleSchoolQueryParam,
+  RemoteTeachingService,
+  StudentGetRoomResponse,
+  TeacherGetRoomResponse,
+  TeacherService
+} from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
 const actions: ActionTree<TeacherState, any> = {
-  setInfo({ commit }, payload: Parent) {
+  async setInfo({ dispatch, commit }, payload: Parent) {
+    await dispatch("setAcceptPolicy");
     commit("setInfo", payload);
   },
   async loadClasses({ commit, state }: ActionContext<TeacherState, any>) {
@@ -25,6 +33,10 @@ const actions: ActionTree<TeacherState, any> = {
     const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
     commit("setClassesAccessible", response.data);
     commit("setClassRoom", responseActive.data);
+  },
+  async setAcceptPolicy({ commit }) {
+    const policyResponse: StudentGetRoomResponse = await RemoteTeachingService.acceptPolicy();
+    commit("setAcceptPolicy", policyResponse.data);
   },
 };
 

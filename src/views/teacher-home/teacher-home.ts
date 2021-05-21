@@ -45,6 +45,7 @@ export default defineComponent({
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
+    const policy = computed(() => store.getters["teacher/acceptPolicy"]);
 
     const startClass = async (teacherClass: TeacherClassModel) => {
       try {
@@ -87,19 +88,6 @@ export default defineComponent({
       loading.value = false;
     };
 
-    onMounted(async () => {
-      const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
-      if (loginInfo && loginInfo.loggedin) {
-        await getSchools();
-        if (schools.value?.length) {
-          await onSchoolChange(schools.value[0].id);
-          if (schools.value.length === 1) {
-            disabled.value = true;
-          }
-        }
-      }
-    });
-
     const onClickClass = async (teacherClass: TeacherClassModel) => {
       if (teacherClass.isActive) {
         await router.push("/class/" + teacherClass.schoolClassId);
@@ -113,10 +101,27 @@ export default defineComponent({
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
-    const submitPolicy = () => {
-      console.log("submit modal");
+    const submitPolicy = async () => {
+      visible.value = false;
+      await RemoteTeachingService.submitPolicy();
+      await store.dispatch("teacher/setAcceptPolicy");
+    };
+    const cancelPolicy = () => {
       visible.value = false;
     };
+
+    onMounted(async () => {
+      const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+      if (loginInfo && loginInfo.loggedin) {
+        await getSchools();
+        if (schools.value?.length) {
+          await onSchoolChange(schools.value[0].id);
+          if (schools.value.length === 1) {
+            disabled.value = true;
+          }
+        }
+      }
+    });
 
     return {
       schools,
@@ -136,6 +141,8 @@ export default defineComponent({
       policyText2,
       policyText3,
       policyText4,
+      policy,
+      cancelPolicy,
     };
   },
 });

@@ -43,6 +43,9 @@ export default defineComponent({
       await RemoteTeachingService.submitPolicy();
       await store.dispatch("parent/setAcceptPolicy");
     };
+    const cancelPolicy = () => {
+      visible.value = false;
+    };
     return {
       children,
       username,
@@ -56,6 +59,7 @@ export default defineComponent({
       policyText3,
       policyText4,
       policy,
+      cancelPolicy,
     };
   },
 });

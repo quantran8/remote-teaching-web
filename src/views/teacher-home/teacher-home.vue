@@ -1,5 +1,5 @@
 <template>
-  <div class="teacher-page" v-if="!visible && agreePolicy">
+  <div class="teacher-page" v-if="policy">
     <div class="teacher-title mt-40">
       <h2>Welcome {{ username }}</h2>
       <span class="teacher-title__indicator-out">
@@ -42,7 +42,8 @@
       />
     </div>
   </div>
-  <Modal :visible="visible" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+  <h1 class="access-denied" v-if="!visible && !policy">Access Denied</h1>
+  <Modal :visible="visible && !policy" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <div class="policy-content">
       <p>{{ policyText1 }}</p>
       <p>{{ policyText2 }}</p>
@@ -51,6 +52,7 @@
       <Checkbox @change="onAgreePolicy">I accept the policies</Checkbox>
     </div>
     <Row type="flex" justify="end">
+      <Button class="btn-cancel-policy" @click="cancelPolicy">Cancel</Button>
       <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
     </Row>
   </Modal>
