@@ -13,7 +13,7 @@ import AgoraRTC, {
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
-import { AgoraError } from "./interfaces";
+import { AgoraError, AgoraConnectionState } from "./interfaces";
 import {store} from "@/store"
 
 export interface AgoraClientSDK {
@@ -103,8 +103,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
 	this.client.on("connection-state-change", (payload) => {
-		console.log('connection-state-change', payload)
-		if(payload === "DISCONNECTED") {
+		if(payload === AgoraConnectionState.DISCONNECTED) {
 			store.dispatch('studentRoom/setOffline')
 		}
 	})
