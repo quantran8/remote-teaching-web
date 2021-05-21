@@ -55,15 +55,15 @@ export default defineComponent({
               nextDay = greaterDay[0];
             }
             group.next = `${moment()
-              .day(isLow ? nextDay.daysOfWeek + 7 : nextDay.daysOfWeek)
+              .day(isLow ? nextDay.daysOfWeek + 6 : nextDay.daysOfWeek - 1)
               .format("MM/DD")} ${nextDay.start ? nextDay.start.split(":")[0] + ":" + nextDay.start.split(":")[1] : ""}`;
           } else {
             let nextDay = 0;
             if (classTime[0]) {
               if (classTime[0].daysOfWeek <= currentDay) {
-                nextDay = classTime[0].daysOfWeek + 7;
+                nextDay = classTime[0].daysOfWeek + 6;
               } else {
-                nextDay = classTime[0].daysOfWeek;
+                nextDay = classTime[0].daysOfWeek - 1;
               }
               group.next = `${moment()
                 .day(nextDay)
