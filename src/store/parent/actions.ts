@@ -1,10 +1,11 @@
 import { Parent } from "@/models";
-import { GetChildrenModel, ParentService } from "@/services";
+import { GetChildrenModel, ParentService, RemoteTeachingService, StudentGetRoomResponse } from "@/services";
 import { ActionContext, ActionTree } from "vuex";
 import { ParentState } from "./state";
 
 const actions: ActionTree<ParentState, any> = {
-  setInfo({ commit }, payload: Parent) {
+  async setInfo({ dispatch,commit }, payload: Parent) {
+    await dispatch("setAcceptPolicy");
     commit("setInfo", payload);
   },
   setSelectedChild({ commit }, payload: { childId: string }) {
@@ -25,6 +26,10 @@ const actions: ActionTree<ParentState, any> = {
           reject(err);
         });
     });
+  },
+  async setAcceptPolicy({ commit }) {
+    const policyResponse: StudentGetRoomResponse = await RemoteTeachingService.acceptPolicy();
+    commit("setAcceptPolicy", policyResponse.data);
   },
 };
 

@@ -9,6 +9,7 @@ export interface TeacherState {
   classesOrigin: Array<TeacherClassModel>;
   classesAccessible: Array<any>;
   room?: RoomModel;
+  acceptPolicy: boolean;
 }
 
 const state: TeacherState = {
@@ -18,6 +19,7 @@ const state: TeacherState = {
   classesOrigin: [],
   classesAccessible: [],
   room: undefined,
+  acceptPolicy: true,
 };
 
 export default state;

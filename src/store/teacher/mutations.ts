@@ -22,6 +22,9 @@ const mutations: MutationTree<TeacherState> = {
   setInfo(state: TeacherState, payload: UserModel) {
     state.info = payload;
   },
+  setAcceptPolicy(state: TeacherState, payload: boolean) {
+    state.acceptPolicy = payload;
+  },
 };
 
 export default mutations;

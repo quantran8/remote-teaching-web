@@ -13,6 +13,9 @@ const getters: GetterTree<TeacherState, any> = {
   classRoom(state: TeacherState): RoomModel {
     return state.room as RoomModel;
   },
+  acceptPolicy(state: TeacherState): boolean {
+    return state.acceptPolicy;
+  },
 };
 
 export default getters;

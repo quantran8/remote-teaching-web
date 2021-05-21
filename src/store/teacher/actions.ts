@@ -4,7 +4,8 @@ import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
 const actions: ActionTree<TeacherState, any> = {
-  setInfo({ commit }, payload: Parent) {
+  async setInfo({ dispatch, commit }, payload: Parent) {
+    await dispatch("setAcceptPolicy");
     commit("setInfo", payload);
   },
   async loadClasses({ commit, state }: ActionContext<TeacherState, any>, payload: { schoolId: string }) {
@@ -18,6 +19,10 @@ const actions: ActionTree<TeacherState, any> = {
     if (!state.info) return;
     const response = await TeacherService.getAccessibleSchools(payload);
     commit("setSchools", response);
+  },
+  async setAcceptPolicy({ commit }) {
+    const policyResponse: TeacherGetRoomResponse = await RemoteTeachingService.acceptPolicy();
+    commit("setAcceptPolicy", policyResponse.data);
   },
 };
 
