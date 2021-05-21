@@ -1,6 +1,6 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, LessonService, RemoteTeachingService } from "@/services";
+import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -8,7 +8,7 @@ import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
-import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
+import { PrivacyPolicy } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -21,15 +21,6 @@ export default defineComponent({
     Button,
     Row,
   },
-  async created() {
-    const store = useStore();
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
-    if (loginInfo && loginInfo.loggedin) {
-      await store.dispatch("teacher/loadClasses", {
-        teacherId: loginInfo.profile.sub,
-      });
-    }
-  },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -39,6 +30,8 @@ export default defineComponent({
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
+    const haveClassActive = ref(false);
+    const classActive = ref();
     const visible = ref<boolean>(true);
     const agreePolicy = ref<boolean>(false);
     const policyText1 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText1));
@@ -78,12 +71,7 @@ export default defineComponent({
 
     const onSchoolChange = async (schoolId: string) => {
       loading.value = true;
-      await store.dispatch("teacher/loadAccessibleClasses", {
-        schoolId,
-        disabled: false,
-        isDetail: false,
-        isCampusDetail: false,
-      } as AccessibleClassQueryParam);
+      await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
       filteredSchools.value = schools.value;
       loading.value = false;
     };
@@ -105,6 +93,7 @@ export default defineComponent({
       visible.value = false;
       await RemoteTeachingService.submitPolicy();
       await store.dispatch("teacher/setAcceptPolicy");
+      await onSchoolChange(schools.value[0].id);
     };
     const cancelPolicy = () => {
       visible.value = false;
@@ -121,11 +110,23 @@ export default defineComponent({
           }
         }
       }
+      if (classes.value) {
+        classes.value.map((cl: TeacherClassModel) => {
+          if (cl.isActive) {
+            classActive.value = cl;
+            haveClassActive.value = true;
+          } else {
+            haveClassActive.value = false;
+          }
+        });
+      }
     });
 
     return {
       schools,
       classes,
+      haveClassActive,
+      classActive,
       username,
       onClickClass,
       filterSchools,

@@ -1,15 +1,13 @@
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { GetClassesModel, RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
-import { Logger } from "@/utils/logger";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
-import { ClassViewFromValue, ClassViewPayload, InClassStatus, WhiteboardPayload } from "../interface";
+import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { StudentShape } from "@/store/annotation/state";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -88,7 +86,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: () => {		
+      onUserUnPublished: () => {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
@@ -100,7 +98,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: any) {
         // console.log("onLocalNetworkUpdate", payload);
-      }
+      },
     });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
@@ -125,12 +123,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },
-  async loadClasses({ commit }, { teacherId }: { teacherId: string }) {
-    const response: GetClassesModel = await TeacherService.getClasses(teacherId);
-    if (!response) return;
-    commit("setClasses", response.data);
-  },
-
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
@@ -213,11 +205,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   setOffline({ commit }) {
     commit("setOffline");
   },
-  disconnectSignalR({state}) {
-	  console.log('disconnectSignalR');
-	  
-	state.manager?.close();
-  }
+  disconnectSignalR({ state }) {
+    console.log("disconnectSignalR");
+
+    state.manager?.close();
+  },
 };
 
 export default actions;
