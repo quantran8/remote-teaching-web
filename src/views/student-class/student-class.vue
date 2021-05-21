@@ -8,6 +8,7 @@
         </div>
       </div>
       <div class="sc-header__right">
+		<!-- <div class="try-button" v-if="!studentIsDisconnected" @click="disconnectSignalR">Manual disconnect SIGNALR/AGORA</div> -->
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <a class="sc-header__exit" @click="onClickEnd">
           <MatIcon type="close" class="red-close" />
@@ -21,10 +22,11 @@
           :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
           ref="videoContainerRef"
         >
+		  <img v-show="studentIsDisconnected" class="sc-content__top--confused" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
             :id="teacher?.id"
-            v-show="!isOneToOne || studentIsOneToOne"
+            v-show="!studentIsDisconnected && (!isOneToOne || studentIsOneToOne)"
           ></div>
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"

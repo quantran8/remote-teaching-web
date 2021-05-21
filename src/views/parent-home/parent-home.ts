@@ -33,6 +33,7 @@ export default defineComponent({
         await store.dispatch("setToast", { message: message });
         return;
       }
+      await store.dispatch("studentRoom/setOnline");
       await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
     };
     const onAgreePolicy = () => {
