@@ -1,5 +1,5 @@
 import { SchoolClassTimeModel } from "./../../../../models/group.model";
-import { computed, defineComponent, ref, watch } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { GroupModel } from "@/models/group.model";
 import moment from "moment";
 
@@ -29,11 +29,8 @@ export default defineComponent({
   emits: ["click-to-access"],
   setup(props, { emit }) {
     const groups = ref();
-    const btnText = computed(() => {
-      return props.active ? "Join now" : "Start";
-    });
 
-    watch(props, () => {
+    onMounted(() => {
       if (props.remoteClassGroups) {
         const newGroups = props.remoteClassGroups.map(group => {
           const currentDay = moment().weekday();
@@ -62,14 +59,18 @@ export default defineComponent({
               .format("MM/DD")} ${nextDay.start ? nextDay.start.split(":")[0] + ":" + nextDay.start.split(":")[1] : ""}`;
           } else {
             let nextDay = 0;
-            if (classTime[0].daysOfWeek <= currentDay) {
-              nextDay = classTime[0].daysOfWeek + 7;
+            if (classTime[0]) {
+              if (classTime[0].daysOfWeek <= currentDay) {
+                nextDay = classTime[0].daysOfWeek + 7;
+              } else {
+                nextDay = classTime[0].daysOfWeek;
+              }
+              group.next = `${moment()
+                .day(nextDay)
+                .format("MM/DD")} ${classTime[0].start ? classTime[0].start.split(":")[0] + ":" + classTime[0].start.split(":")[1] : ""}`;
             } else {
-              nextDay = classTime[0].daysOfWeek;
+              group.next = " ";
             }
-            group.next = `${moment()
-              .day(nextDay)
-              .format("MM/DD")} ${classTime[0].start ? classTime[0].start.split(":")[0] + ":" + classTime[0].start.split(":")[1] : ""}`;
           }
           return group;
         });
@@ -83,6 +84,6 @@ export default defineComponent({
       emit("click-to-access");
     };
 
-    return { groups, btnText, clickToAccess };
+    return { groups, clickToAccess };
   },
 });

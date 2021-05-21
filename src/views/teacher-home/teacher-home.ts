@@ -1,6 +1,6 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
-import { AccessibleClassQueryParam, AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
+import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -33,6 +33,8 @@ export default defineComponent({
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
+    const haveClassActive = ref(false);
+    const classActive = ref();
 
     const startClass = async (teacherClass: TeacherClassModel) => {
       try {
@@ -72,18 +74,8 @@ export default defineComponent({
 
     const onSchoolChange = async (schoolId: string) => {
       loading.value = true;
-      await store.dispatch("teacher/loadAccessibleClasses", {
-        schoolId,
-
-        disabled: false,
-
-        isDetail: false,
-
-        isCampusDetail: false,
-      } as AccessibleClassQueryParam);
-
+      await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
       filteredSchools.value = schools.value;
-
       loading.value = false;
     };
 
@@ -91,13 +83,22 @@ export default defineComponent({
       const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
       if (loginInfo && loginInfo.loggedin) {
         await getSchools();
-
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
           if (schools.value.length === 1) {
             disabled.value = true;
           }
         }
+      }
+      if (classes.value) {
+        classes.value.map((cl: TeacherClassModel) => {
+          if (cl.isActive) {
+            classActive.value = cl;
+            haveClassActive.value = true;
+          } else {
+            haveClassActive.value = false;
+          }
+        });
       }
     });
 
@@ -111,6 +112,18 @@ export default defineComponent({
 
     const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
-    return { schools, classes, username, onClickClass, filterSchools, onSchoolChange, loading, disabled, filteredSchools };
+    return {
+      schools,
+      classes,
+      haveClassActive,
+      classActive,
+      username,
+      onClickClass,
+      filterSchools,
+      onSchoolChange,
+      loading,
+      disabled,
+      filteredSchools,
+    };
   },
 });
