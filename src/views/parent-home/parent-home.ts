@@ -25,6 +25,7 @@ export default defineComponent({
         store.dispatch("setToast", {message: message});
         return;
       }
+	  store.dispatch("studentRoom/setOnline")
       router.push(`/student/${student.id}/class/${student.schoolClassId}`);
     };
     return { children, username, onClickChild };
