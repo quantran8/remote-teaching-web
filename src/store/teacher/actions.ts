@@ -3,7 +3,6 @@ import {
   AccessibleClassQueryParam,
   AccessibleSchoolQueryParam,
   RemoteTeachingService,
-  StudentGetRoomResponse,
   TeacherGetRoomResponse,
   TeacherService
 } from "@/services";
@@ -35,7 +34,7 @@ const actions: ActionTree<TeacherState, any> = {
     commit("setClassRoom", responseActive.data);
   },
   async setAcceptPolicy({ commit }) {
-    const policyResponse: StudentGetRoomResponse = await RemoteTeachingService.acceptPolicy();
+    const policyResponse: TeacherGetRoomResponse = await RemoteTeachingService.acceptPolicy();
     commit("setAcceptPolicy", policyResponse.data);
   },
 };
