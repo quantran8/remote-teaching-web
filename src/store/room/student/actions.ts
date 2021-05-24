@@ -88,7 +88,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: () => {		
+      onUserUnPublished: () => {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
@@ -100,7 +100,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: any) {
         // console.log("onLocalNetworkUpdate", payload);
-      }
+      },
     });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
@@ -116,7 +116,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setSpeakingUsers", { userIds: validSpeakings });
   },
   async leaveRoom({ state, commit }, payload: any) {
-	// state.manager?.WSClient.sendRequestLeaveRoom()
     await state.manager?.close();
     commit("leaveRoom", payload);
   },
@@ -214,11 +213,13 @@ const actions: ActionTree<StudentRoomState, any> = {
   setOffline({ commit }) {
     commit("setOffline");
   },
-  disconnectSignalR({state}) {
-	  console.log('disconnectSignalR');
-	  
-	state.manager?.close();
-  }
+  disconnectSignalR({ state }) {
+    state.manager?.close();
+  },
+  async studentLeaveClass({ state }) {
+    if (!state.info || !state.manager || !state.user) return;
+    await state.manager?.WSClient.sendRequestStudentLeaveClass(state.info.id, state.user.id);
+  },
 };
 
 export default actions;

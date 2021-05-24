@@ -186,7 +186,8 @@ export default defineComponent({
         okText: "Yes",
         cancelText: "No",
         okButtonProps: { type: "danger" },
-        onOk: () => {
+        onOk: async () => {
+          await store.dispatch("studentRoom/studentLeaveClass");
           router.push(Paths.Home);
         },
       });

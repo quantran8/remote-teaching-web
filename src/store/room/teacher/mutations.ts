@@ -167,6 +167,10 @@ const mutations: TeacherRoomMutation<State> = {
     const student = s.students.find(student => student.id === p.id);
     if (student) student.status = InClassStatus.LEFT;
   },
+  studentDisconnectClass(s: State, p: UserIdPayload): void {
+    const student = s.students.find(student => student.id === p.id);
+    if (student) student.status = InClassStatus.DISCONNECTED;
+  },
   studentLeaving(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
     if (student) student.status = InClassStatus.LEAVING;
