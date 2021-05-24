@@ -16,7 +16,7 @@
           <h2 class="title">Group - {{ item.groupName }}</h2>
           <span class="description d-block">Members: {{ item.studentCount }}</span>
           <span class="description">Next: {{ item.next }}</span>
-          <img v-show="item.isCurrentDay" class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess" />
+          <img v-show="item.isCurrentDay && item.startClass" class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess" />
         </div>
       </BaseCard>
     </div>
