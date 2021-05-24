@@ -31,4 +31,8 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestStudentSetBrushstrokes(payload: any) {
     return this.send(WSCmd.STUDENT_SET_BRUSH_STROKES, payload);
   }
+
+  sendRequestLeaveRoom(roomId?: string) {
+    return this.send(WSCmd.STUDENT_LEAVE_CLASS, {});
+  }
 }

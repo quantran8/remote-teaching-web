@@ -116,6 +116,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setSpeakingUsers", { userIds: validSpeakings });
   },
   async leaveRoom({ state, commit }, payload: any) {
+	// state.manager?.WSClient.sendRequestLeaveRoom()
     await state.manager?.close();
     commit("leaveRoom", payload);
   },

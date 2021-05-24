@@ -215,43 +215,43 @@ export default defineComponent({
     //   });
     });
 
-    let timeoutId: any;
-    const reconnectFailedSound = new Howl({
-      src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
-    });
+    // let timeoutId: any;
+    // const reconnectFailedSound = new Howl({
+    //   src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
+    // });
 
-    const reconnectSuccessSound = new Howl({
-      src: [require(`@/assets/student-class/reconnect-success.mp3`)],
-    });
+    // const reconnectSuccessSound = new Howl({
+    //   src: [require(`@/assets/student-class/reconnect-success.mp3`)],
+    // });
 
-    Howler.volume(1);
+    // Howler.volume(1);
 
-    watch(studentIsDisconnected, async isDisconnected => {
-      if (isDisconnected) {
-        await store.dispatch("studentRoom/leaveRoom");
-        timeoutId = setTimeout(async () => {
-          await reconnectFailedSound.play();
-          Modal.warning({
-            content: "So Sorry! It seems you lost network connectivity.",
-            onOk: () => {
-              console.log("OK");
-            },
-          });
-        }, POPUP_TIMING);
-        return;
-      }
-      clearTimeout(timeoutId);
-      await reconnectSuccessSound.play();
-      const { studentId, classId } = route.params;
-      await store.dispatch("studentRoom/initClassRoom", {
-        classId: classId,
-        userId: loginInfo.profile.sub,
-        userName: loginInfo.profile.name,
-        studentId: studentId,
-        role: RoleName.parent,
-      });
-      await store.dispatch("studentRoom/joinRoom");
-    });
+    // watch(studentIsDisconnected, async isDisconnected => {
+    //   if (isDisconnected) {
+    //     await store.dispatch("studentRoom/leaveRoom");
+    //     timeoutId = setTimeout(async () => {
+    //       await reconnectFailedSound.play();
+    //       Modal.warning({
+    //         content: "So Sorry! It seems you lost network connectivity.",
+    //         onOk: () => {
+    //           console.log("OK");
+    //         },
+    //       });
+    //     }, POPUP_TIMING);
+    //     return;
+    //   }
+    //   clearTimeout(timeoutId);
+    //   await reconnectSuccessSound.play();
+    //   const { studentId, classId } = route.params;
+    //   await store.dispatch("studentRoom/initClassRoom", {
+    //     classId: classId,
+    //     userId: loginInfo.profile.sub,
+    //     userName: loginInfo.profile.name,
+    //     studentId: studentId,
+    //     role: RoleName.parent,
+    //   });
+    //   await store.dispatch("studentRoom/joinRoom");
+    // });
 
 	const disconnectSignalR = async () => {		
 		await store.dispatch("studentRoom/disconnectSignalR");

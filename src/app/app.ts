@@ -1,9 +1,14 @@
 import { useStore } from "vuex";
-import { AuthService, LoginInfo } from "@/commonui";
+import { AuthService, LoginInfo, RoleName } from "@/commonui";
+import { Modal } from "ant-design-vue";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
+import { Howl, Howler } from "howler";
 import { CommonLocale } from "@/locales/localeid";
+import { useRoute, useRouter } from "vue-router";
+
+const POPUP_TIMING = 500 * 10;
 
 export default defineComponent({
   components: {
@@ -51,6 +56,51 @@ export default defineComponent({
 
     watch(isSignedIn, async () => {
       if (isSignedIn.value) onUserSignedIn();
+    });
+
+    const studentIsDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnect"]);
+
+    const reconnectFailedSound = new Howl({
+      src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
+    });
+
+    const reconnectSuccessSound = new Howl({
+      src: [require(`@/assets/student-class/reconnect-success.mp3`)],
+    });
+
+    const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"])
+	console.log('loginInfo', loginInfo);
+	
+	// const students = computed(() => store.getters["studentRoom/students"]);
+    const route = useRoute(); 
+	
+    let timeoutId: any;
+	
+    watch(studentIsDisconnected, async isDisconnected => { 
+      if (isDisconnected) {
+        await dispatch("studentRoom/leaveRoom");
+        timeoutId = setTimeout(async () => {
+          await reconnectFailedSound.play();
+          Modal.warning({
+            content: "So Sorry! It seems you lost network connectivity.",
+            onOk: () => {
+              console.log("OK");
+            },
+          });
+        }, POPUP_TIMING);
+        return;
+      }
+      clearTimeout(timeoutId);
+      await reconnectSuccessSound.play();
+      const { studentId, classId } = route.params;
+      await dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.value.profile.sub,
+        userName: loginInfo.value.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+      });
+      await dispatch("studentRoom/joinRoom");
     });
 
     window.addEventListener("online", () => {
