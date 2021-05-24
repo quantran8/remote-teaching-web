@@ -26,11 +26,7 @@ export default defineComponent({
       default: false,
     },
   },
-  data() {
-    return {
-      showFontWeightPopover: false,
-    };
-  },
+
   setup(props, { emit }) {
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -45,6 +41,7 @@ export default defineComponent({
       [Tools.StrokeColor]: "Color",
     };
     const showColorsPopover = ref<boolean>(false);
+    const showFontWeightPopover = ref<boolean>(false);
     const colors: any = {};
     //currently the design just have 8 color belows
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
@@ -79,6 +76,20 @@ export default defineComponent({
       }
     };
 
+    const handleIconClick = (toolName: any) => {
+      if (toolName === Tools.Stroke) {
+        showFontWeightPopover.value = !showFontWeightPopover.value;
+      }
+    };
+
+    const hideColorsPopover = () => {		
+      showColorsPopover.value = false;
+    };
+
+    const hideFontWeightPopover = () => {
+      showFontWeightPopover.value = false;
+    };
+
     return {
       tools,
       toolNames,
@@ -91,8 +102,12 @@ export default defineComponent({
       updateStrokeSize,
       strokeSize,
       showColorsPopover,
+      showFontWeightPopover,
       handleToolClick,
       customIconStyle,
+      hideColorsPopover,
+      hideFontWeightPopover,
+      handleIconClick,
     };
   },
   methods: {
@@ -100,11 +115,6 @@ export default defineComponent({
       const { Cursor, Pen, Laser, Delete, Clear, Star, Circle, Square, Stroke } = Tools;
       const iconList = [Cursor, Pen, Laser, Delete, Clear, Star, Circle, Square, Stroke];
       return iconList.includes(toolName);
-    },
-    handleIconClick(toolName: any) {
-      if (toolName === Tools.Stroke) {
-        this.showFontWeightPopover = !this.showFontWeightPopover;
-      }
     },
   },
 });
