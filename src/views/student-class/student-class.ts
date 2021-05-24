@@ -193,29 +193,6 @@ export default defineComponent({
       });
     };
 
-    const handleKeyDown = (e: any) => {
-      // R: 82; F5: 116
-      if (e.keyCode == 82 || e.keyCode == 116) {
-        e.preventDefault();
-      }
-    };
-
-    onBeforeMount(() => {
-      window.addEventListener("keydown", handleKeyDown);
-      //   window.addEventListener("beforeunload", event => {
-      //     event.preventDefault();
-      //     event.returnValue = null;
-      //   });
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener("keydown", handleKeyDown);
-      //   window.removeEventListener("beforeunload", event => {
-      //     event.preventDefault();
-      //     event.returnValue = null;
-      //   });
-    });
-
     const disconnectSignalR = async () => {
       await store.dispatch("studentRoom/disconnectSignalR");
     };

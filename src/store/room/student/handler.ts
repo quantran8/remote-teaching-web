@@ -48,9 +48,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentLeave: (payload: StudentModel) => {
-
-		console.log('hello no bug');
-		
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
