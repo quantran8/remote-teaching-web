@@ -1,9 +1,7 @@
-import { SchoolClassTimeModel} from  "@/models/group.model";
+import { SchoolClassTimeModel } from "@/models/group.model";
 import { defineComponent, onMounted, ref } from "vue";
 import { GroupModel } from "@/models/group.model";
 import moment from "moment";
-import { useStore } from "vuex";
-import { LoginInfo } from "@/commonui";
 
 export default defineComponent({
   props: {
@@ -29,16 +27,6 @@ export default defineComponent({
     },
   },
   emits: ["click-to-access"],
-  async created() {
-    const store = useStore();
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
-    if (loginInfo && loginInfo.loggedin) {
-      await store.dispatch("teacher/loadClasses", {
-        teacherId: loginInfo.profile.sub,
-      });
-    }
-  },
-
   setup(props, { emit }) {
     const groups = ref();
 
