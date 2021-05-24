@@ -4,6 +4,7 @@ export interface GroupModel {
   schoolClassTimeDto: SchoolClassTimeModel[];
   studentCount: number;
   next?: string;
+  isCurrentDay?: boolean;
 }
 
 export interface SchoolClassTimeModel {

@@ -35,6 +35,11 @@ export default defineComponent({
         const newGroups = props.remoteClassGroups.map(group => {
           const currentDay = moment().weekday();
           const classTime = group.schoolClassTimeDto;
+          classTime.map(time => {
+            if (time.daysOfWeek - 1 == currentDay) {
+              group.isCurrentDay = true;
+            }
+          });
           if (classTime.length > 1) {
             classTime.sort((current, next) => {
               return current.daysOfWeek - next.daysOfWeek;
