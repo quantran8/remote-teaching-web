@@ -9,6 +9,9 @@ const getters: GetterTree<ParentState, any> = {
   selectedChild(state: ParentState): ChildModel {
     return state.selectedChild as ChildModel;
   },
+  acceptPolicy(state: ParentState): boolean {
+    return state.acceptPolicy;
+  },
 };
 
 export default getters;

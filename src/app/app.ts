@@ -25,15 +25,14 @@ export default defineComponent({
     const isFooterVisible = computed(() => getters.appLayout !== "full");
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
+    const isJoined = computed(() => getters["studentRoom/isJoined"]);
+
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
 
     const onTeacherSignedIn = async (loginInfo: LoginInfo) => {
       await dispatch("teacher/setInfo", {
         id: loginInfo.profile.sub,
         name: loginInfo.profile.name,
-      });
-      await dispatch("teacher/loadClasses", {
-        teacherId: loginInfo.profile.sub,
       });
     };
 
@@ -77,6 +76,8 @@ export default defineComponent({
     let timeoutId: any;
 	
     watch(studentIsDisconnected, async isDisconnected => { 
+		console.log('isJoined', isJoined);
+		
       if (isDisconnected) {
         await dispatch("studentRoom/leaveRoom");
         timeoutId = setTimeout(async () => {

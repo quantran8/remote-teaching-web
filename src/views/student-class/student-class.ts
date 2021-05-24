@@ -41,6 +41,7 @@ export default defineComponent({
       role: RoleName.parent,
     });
     await dispatch("studentRoom/joinRoom");
+    dispatch("studentRoom/setIsJoined", { isJoined: true });
   },
   async beforeUnmount() {
     const store = useStore();
@@ -188,6 +189,7 @@ export default defineComponent({
         okButtonProps: { type: "danger" },
         onOk: async () => {
           await store.dispatch("studentRoom/studentLeaveClass");
+          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
           router.push(Paths.Home);
         },
       });
@@ -292,7 +294,6 @@ export default defineComponent({
       raisedHand,
       studentIsDisconnected,
       disconnectSignalR,
-
       IconHandRaised,
       IconHand,
       IconAudioOn,

@@ -183,6 +183,9 @@ const mutations: MutationTree<StudentRoomState> = {
   setOffline(state: StudentRoomState) {
     state.isDisconnect = true
   },
+  setIsJoined(state: StudentRoomState, p: {isJoined: boolean}) {
+    state.isJoined = p.isJoined
+  },
 };
 
 export default mutations;

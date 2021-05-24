@@ -71,4 +71,9 @@
   .user-container:hover {
     cursor: pointer;
   }
+  .locale-switcher {
+    select {
+      color: #000;
+    }
+  }
 }

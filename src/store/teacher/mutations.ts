@@ -9,30 +9,21 @@ const mutations: MutationTree<TeacherState> = {
     state.schools = payload;
   },
   setClasses(state: TeacherState, payload: Array<ClassModel>) {
-    if(payload && payload.length!=0){
-      state.classesOrigin = payload;
-    }
-    if(state.classesAccessible){
-      state.classes = state.classesOrigin.filter(s => state.classesAccessible.find(cl => cl.id = s.schoolClassId))
-    }
-    state.classes.forEach((cl) => {
-      cl.isActive = state.room?.classId === cl.schoolClassId;
-    });
-  },
-  setClassesAccessible(state: TeacherState, payload: Array<any>) {
-    state.classesAccessible = payload;
-    if(state.classesOrigin && state.classesOrigin.length!=0){
-      state.classes = state.classesOrigin.filter(s=>state.classesAccessible.find(item=>item.id === s.schoolClassId))
+    if (payload && payload.length != 0) {
+      state.classes = payload;
     }
   },
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
-    state.classes.forEach((cl) => {
+    state.classes.forEach(cl => {
       cl.isActive = state.room?.classId === cl.schoolClassId;
     });
   },
   setInfo(state: TeacherState, payload: UserModel) {
     state.info = payload;
+  },
+  setAcceptPolicy(state: TeacherState, payload: boolean) {
+    state.acceptPolicy = payload;
   },
 };
 

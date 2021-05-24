@@ -21,7 +21,7 @@ export interface ClassModel {
   regionId: string;
   regionName: string;
   regionEnglishName: string;
-  groups?: GroupModel[];
+  remoteClassGroups: GroupModel[];
 }
 
 export interface TeacherClassModel extends ClassModel {

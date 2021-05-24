@@ -1,15 +1,13 @@
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { GetClassesModel, RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
-import { Logger } from "@/utils/logger";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
-import { ClassViewFromValue, ClassViewPayload, InClassStatus, WhiteboardPayload } from "../interface";
+import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { StudentShape } from "@/store/annotation/state";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -125,12 +123,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },
-  async loadClasses({ commit }, { teacherId }: { teacherId: string }) {
-    const response: GetClassesModel = await TeacherService.getClasses(teacherId);
-    if (!response) return;
-    commit("setClasses", response.data);
-  },
-
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
@@ -220,6 +212,9 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (!state.info || !state.manager || !state.user) return;
     await state.manager?.WSClient.sendRequestStudentLeaveClass(state.info.id, state.user.id);
   },
+  setIsJoined({commit}, p: {isJoined: boolean}) {
+	commit("setIsJoined", p);
+  }
 };
 
 export default actions;
