@@ -8,7 +8,7 @@ import { Howl, Howler } from "howler";
 import { CommonLocale } from "@/locales/localeid";
 import { useRoute, useRouter } from "vue-router";
 
-const POPUP_TIMING = 6000 * 10; 
+const POPUP_TIMING = 500 * 10; 
 
 export default defineComponent({
   components: {
