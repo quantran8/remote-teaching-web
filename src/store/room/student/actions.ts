@@ -24,21 +24,29 @@ const actions: ActionTree<StudentRoomState, any> = {
       id: payload.studentId,
       name: payload.userName,
     });
-    const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId);
-    if (!roomResponse) return;
-    const roomInfo: RoomModel = roomResponse.data;
-    if (!roomInfo || roomInfo.classId !== payload.classId) {
+    try {
+      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId);
+      if (!roomResponse) return;
+      const roomInfo: RoomModel = roomResponse.data;
+      if (!roomInfo || roomInfo.classId !== payload.classId) {
+        commit("setError", {
+          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: "Your class has not been started!",
+        });
+        return;
+      }
+      commit("setRoomInfo", roomResponse.data);
+      commit("setClassView", {
+        classView: ClassViewFromValue(roomResponse.data.focusTab),
+      });
+      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
+    } catch (error) {
       commit("setError", {
         errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
         message: "Your class has not been started!",
       });
       return;
     }
-    commit("setRoomInfo", roomResponse.data);
-    commit("setClassView", {
-      classView: ClassViewFromValue(roomResponse.data.focusTab),
-    });
-    commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
   },
 
   setUser({ commit }, payload: UserModel) {
@@ -202,13 +210,19 @@ const actions: ActionTree<StudentRoomState, any> = {
   setOnline({ commit }) {
     commit("setOnline");
   },
-  setOffline({ commit }) {
+  setOffline({ commit, state }) {
+    if (!state.isJoined) return;
     commit("setOffline");
   },
   disconnectSignalR({ state }) {
-    console.log("disconnectSignalR");
-
     state.manager?.close();
+  },
+  async studentLeaveClass({ state }) {
+    if (!state.info || !state.manager || !state.user) return;
+    await state.manager?.WSClient.sendRequestStudentLeaveClass(state.info.id, state.user.id);
+  },
+  setIsJoined({ commit }, p: { isJoined: boolean }) {
+    commit("setIsJoined", p);
   },
 };
 

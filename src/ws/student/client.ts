@@ -21,8 +21,7 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestLike() {
     return this.send(WSCmd.LIKE, {});
   }
-  sendRequestAnswer(payload: {
-    x: number, y: number, contentId: string}) {
+  sendRequestAnswer(payload: { x: number; y: number; contentId: string }) {
     return this.invoke(WSCmd.ANSWER, payload);
   }
   sendRequestUnity(message: string) {
@@ -30,5 +29,9 @@ export class StudentWSClient extends GLSocketClient {
   }
   sendRequestStudentSetBrushstrokes(payload: any) {
     return this.send(WSCmd.STUDENT_SET_BRUSH_STROKES, payload);
+  }
+
+  sendRequestStudentLeaveClass(roomId?: string, studentId?: string) {
+    return this.send(WSCmd.STUDENT_LEAVE_CLASS, { roomId, studentId });
   }
 }

@@ -2,7 +2,7 @@ import { RoomModel, StudentModel, TeacherModel } from "@/models";
 import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
-import { ClassViewFromValue } from "../interface";
+import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 
@@ -51,13 +51,19 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onStudentLeave: async (payload: StudentModel) => {
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
-    },
-    onStudentDisconnected: async (payload: StudentModel) => {
-      commit("studentLeftClass", { id: payload.id });
-      await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);
       if (student && student.name) {
         const message = `${student.name} left the class.`;
+        dispatch("setToast", { message: message }, { root: true });
+      }
+    },
+    onStudentDisconnected: async (payload: StudentModel) => {
+      const student = state.students.find(student => student.id === payload.id);
+      if (student?.status === InClassStatus.LEFT) return;
+      commit("studentDisconnectClass", { id: payload.id });
+      await dispatch("updateAudioAndVideoFeed", {});
+      if (student && student.name) {
+        const message = `${student.name} has lost connection.`;
         dispatch("setToast", { message: message }, { root: true });
       }
     },
@@ -235,7 +241,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: any) => {
-      await commit("annotation/setStudentAddShape", { studentShapes: payload },{ root: true });
+      await commit("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
     },
   };
   return handler;

@@ -1,4 +1,4 @@
-import { SchoolClassTimeModel } from "./../../../../models/group.model";
+import { SchoolClassTimeModel} from  "@/models/group.model";
 import { defineComponent, onMounted, ref } from "vue";
 import { GroupModel } from "@/models/group.model";
 import moment from "moment";

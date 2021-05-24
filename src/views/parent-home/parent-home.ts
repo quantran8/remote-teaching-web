@@ -28,9 +28,9 @@ export default defineComponent({
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const onClickChild = async (student: ChildModel) => {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
-      if (!roomResponse || !roomResponse.data) {
+      if (!roomResponse || !roomResponse.data) { 
         const message = `${student.name}'s class has not been started`;
-        await store.dispatch("setToast", { message: message });
+        await store.dispatch("setToast", { message: message });   
         return;
       }
       await store.dispatch("studentRoom/setOnline");

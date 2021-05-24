@@ -28,7 +28,7 @@
           >
             <template v-if="toolName === tools.StrokeColor">
               <transition name="popover">
-                <div v-show="showColorsPopover" class="colors">
+                <div v-show="showColorsPopover" v-click-outside="hideColorsPopover" class="colors">
                   <div
                     v-for="(color, index) in colorsList"
                     :key="index"
@@ -43,7 +43,7 @@
               </transition>
             </template>
             <transition name="popover">
-              <div class="stroke__wrapper" v-if="toolName === tools.Stroke && showFontWeightPopover">
+              <div class="stroke__wrapper" v-show="toolName === tools.Stroke && showFontWeightPopover">
                 <template v-for="(size, index) in strokeSize" :key="index">
                   <div
                     class="stroke-item"

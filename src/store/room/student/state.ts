@@ -73,6 +73,7 @@ export interface StudentRoomState {
   showWhiteBoard: boolean;
   laserPath: string;
   isDisconnect: boolean;
+  isJoined: boolean;
 }
 
 const state: StudentRoomState = {
@@ -92,7 +93,8 @@ const state: StudentRoomState = {
   speakingUsers: [],
   showWhiteBoard: false,
   laserPath: "",
-  isDisconnect: !navigator.onLine
+  isDisconnect: !navigator.onLine,
+  isJoined: false
 };
 
 export default state;
