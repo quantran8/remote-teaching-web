@@ -8,7 +8,7 @@ import { Howl, Howler } from "howler";
 import { CommonLocale } from "@/locales/localeid";
 import { useRoute, useRouter } from "vue-router";
 
-const POPUP_TIMING = 500 * 10;
+const POPUP_TIMING = 6000 * 10; 
 
 export default defineComponent({
   components: {
@@ -68,16 +68,13 @@ export default defineComponent({
     });
 
     const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"])
-	console.log('loginInfo', loginInfo);
 	
 	// const students = computed(() => store.getters["studentRoom/students"]);
     const route = useRoute(); 
 	
     let timeoutId: any;
 	
-    watch(studentIsDisconnected, async isDisconnected => { 
-		console.log('isJoined', isJoined);
-		
+    watch(studentIsDisconnected, async (isDisconnected, previousDisConnect) => { 
       if (isDisconnected) {
         await dispatch("studentRoom/leaveRoom");
         timeoutId = setTimeout(async () => {

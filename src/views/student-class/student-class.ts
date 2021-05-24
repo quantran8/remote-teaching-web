@@ -19,8 +19,6 @@ import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
 
-const POPUP_TIMING = 6000 * 10;
-
 export default defineComponent({
   components: {
     UnityView,
@@ -188,8 +186,8 @@ export default defineComponent({
         cancelText: "No",
         okButtonProps: { type: "danger" },
         onOk: async () => {
+		  await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
           await store.dispatch("studentRoom/studentLeaveClass");
-          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
           router.push(Paths.Home);
         },
       });
@@ -217,44 +215,6 @@ export default defineComponent({
       //     event.returnValue = null;
       //   });
     });
-
-    // let timeoutId: any;
-    // const reconnectFailedSound = new Howl({
-    //   src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
-    // });
-
-    // const reconnectSuccessSound = new Howl({
-    //   src: [require(`@/assets/student-class/reconnect-success.mp3`)],
-    // });
-
-    // Howler.volume(1);
-
-    // watch(studentIsDisconnected, async isDisconnected => {
-    //   if (isDisconnected) {
-    //     await store.dispatch("studentRoom/leaveRoom");
-    //     timeoutId = setTimeout(async () => {
-    //       await reconnectFailedSound.play();
-    //       Modal.warning({
-    //         content: "So Sorry! It seems you lost network connectivity.",
-    //         onOk: () => {
-    //           console.log("OK");
-    //         },
-    //       });
-    //     }, POPUP_TIMING);
-    //     return;
-    //   }
-    //   clearTimeout(timeoutId);
-    //   await reconnectSuccessSound.play();
-    //   const { studentId, classId } = route.params;
-    //   await store.dispatch("studentRoom/initClassRoom", {
-    //     classId: classId,
-    //     userId: loginInfo.profile.sub,
-    //     userName: loginInfo.profile.name,
-    //     studentId: studentId,
-    //     role: RoleName.parent,
-    //   });
-    //   await store.dispatch("studentRoom/joinRoom");
-    // });
 
     const disconnectSignalR = async () => {
       await store.dispatch("studentRoom/disconnectSignalR");
