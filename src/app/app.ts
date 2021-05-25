@@ -4,11 +4,11 @@ import { Modal } from "ant-design-vue";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
 import { CommonLocale } from "@/locales/localeid";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
-const POPUP_TIMING = 500 * 10; 
+const POPUP_TIMING = 6000 * 10; 
 
 export default defineComponent({
   components: {
@@ -25,7 +25,6 @@ export default defineComponent({
     const isFooterVisible = computed(() => getters.appLayout !== "full");
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
-    const isJoined = computed(() => getters["studentRoom/isJoined"]);
 
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
 
