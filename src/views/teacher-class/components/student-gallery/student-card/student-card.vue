@@ -4,7 +4,7 @@
     :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
     @mouseleave="onMouseChange(false)"
   >
-    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
+    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)" @click="onOneAndOne">
       <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
         <div
           class="student__video"
@@ -21,7 +21,11 @@
       </div>
     </figure>
     <div class="student__info">
-      <h4 class="student__name" :class="isNotJoinned ? 'student__disable' : 'student__enable'" @click="onOneAndOne">
+      <h4
+        class="student__name"
+        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, 'student__enable--active': isMouseEntered && !isNotJoinned }"
+        @click="onOneAndOne"
+      >
         {{ student.englishName }}
       </h4>
     </div>
