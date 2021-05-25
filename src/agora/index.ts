@@ -104,6 +104,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
 	this.client.on("connection-state-change", (payload) => {
 		if(payload === AgoraConnectionState.DISCONNECTED) {
+			if(!store.getters["studentRoom/isJoined"]) return
 			store.dispatch('studentRoom/setOffline')
 		}
 	})
