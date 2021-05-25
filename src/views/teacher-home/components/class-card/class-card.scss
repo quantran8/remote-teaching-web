@@ -3,7 +3,9 @@
   justify-content: flex-start;
   align-items: center;
   flex-direction: row;
+ 
 }
+
 .class {
   display: flex;
   justify-content: center;
@@ -33,11 +35,15 @@
 .class-group {
   margin-left: 30px;
   position: relative;
+ 
 
   &__size {
     margin: 10px;
     width: 170px;
     height: 100px;
+	&:hover {
+		transform: translateY(-3px) scale(1.02);
+	}
   }
   &__play-icon {
     position: absolute;
@@ -45,6 +51,7 @@
     height: 30px;
     right: 5px;
     bottom: 5px;
+	
   }
 }
 
@@ -75,3 +82,14 @@
   color: gray;
   font-size: 12px;
 }
+
+.loading {
+	display: flex;
+	justify-content: center;
+  
+	&__animation {
+	  animation: loadingAnimation 2s ease-out;
+	  animation-iteration-count: infinite;
+	}
+  }
+

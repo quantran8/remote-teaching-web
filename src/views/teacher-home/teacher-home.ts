@@ -41,12 +41,9 @@ export default defineComponent({
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
-
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
-		console.log('response', response);
-		
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
         }

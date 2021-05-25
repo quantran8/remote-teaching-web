@@ -16,9 +16,7 @@ const actions: ActionTree<TeacherState, any> = {
     commit("setClassRoom", responseActive.data);
   },
   async loadAccessibleSchools({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleSchoolQueryParam) {
-	  console.log('1', state.info);
     if (!state.info) return;
-	console.log('2');
     const response = await TeacherService.getAccessibleSchools(payload);
     commit("setSchools", response);
   },
