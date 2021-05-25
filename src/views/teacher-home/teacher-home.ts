@@ -34,6 +34,8 @@ export default defineComponent({
     const classActive = ref();
     const visible = ref<boolean>(true);
     const agreePolicy = ref<boolean>(false);
+    const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));
+    const policySubtitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicySubtitle));
     const policyText1 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText1));
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
@@ -143,6 +145,8 @@ export default defineComponent({
       policyText4,
       policy,
       cancelPolicy,
+      policyTitle,
+      policySubtitle,
     };
   },
 });
