@@ -1,5 +1,6 @@
 import { SchoolClassTimeModel } from "@/models/group.model";
 import { defineComponent, onMounted, ref } from "vue";
+import { Spin } from "ant-design-vue";
 import { GroupModel } from "@/models/group.model";
 import moment from "moment";
 
@@ -26,11 +27,16 @@ export default defineComponent({
       default: false,
     },
   },
+  components: {
+    Spin,
+  },
   emits: ["click-to-access"],
   setup(props, { emit }) {
     const groups = ref();
-
+    const clickedGroup = ref<string>("");
     const isActiveClass = (daysOfWeek: number, startDate: string, endDate: string) => {
+      //check daysOfWeek, startDate, endDate, return false if one of them is null or undefined
+      if ([daysOfWeek, startDate, endDate].some(t => t == null)) return false;
       // get system local time
       const current = new Date();
       const day = current.getDay();
@@ -113,10 +119,11 @@ export default defineComponent({
       }
     });
 
-    const clickToAccess = () => {
-      emit("click-to-access");
+    const clickToAccess = (groupId: string) => {
+      clickedGroup.value = groupId;
+      emit("click-to-access", groupId);
     };
 
-    return { groups, clickToAccess };
+    return { groups, clickToAccess, clickedGroup };
   },
 });

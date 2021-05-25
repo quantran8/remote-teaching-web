@@ -7,8 +7,8 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   getActiveClassRoom(): Promise<TeacherGetRoomResponse> {
     return this.get("rooms/teachers");
   }
-  teacherStartClassRoom(classId: string, lessonId?: string): Promise<any> {
-    return this.create(`rooms/join/${classId}/${lessonId}`);
+  teacherStartClassRoom(classId: string, groupId?: string): Promise<any> {
+    return this.create(`rooms/join/${classId}/${groupId}`);
   }
   teacherEndClassRoom(roomId?: string): Promise<any> {
     if (!roomId) return Promise.resolve(null);
