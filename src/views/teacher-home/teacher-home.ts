@@ -25,9 +25,7 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
-    const classes = computed(() => {
-      return store.getters["teacher/classes"];
-    });
+    const classes = computed(() => store.getters["teacher/classes"]);
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
