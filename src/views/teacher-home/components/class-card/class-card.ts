@@ -71,7 +71,7 @@ export default defineComponent({
           classTime.map(time => {
             if (time.daysOfWeek - 1 == currentDay) {
               group.isCurrentDay = true;
-              group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
+              group.startClass = true;
             }
           });
           if (classTime.length > 1) {

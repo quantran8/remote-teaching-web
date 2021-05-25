@@ -2,6 +2,14 @@
 @import "../../../../../style/abstracts/animation";
 @import "../../../../../style/abstracts/variables";
 
+@mixin hyperlinkName {
+  color: #00a1ed;
+  text-decoration: underline;
+  -webkit-text-underline-position: under;
+  -ms-text-underline-position: below;
+  text-underline-position: under;
+}
+
 .student {
   $self: &;
   $card-figure-size: 80px;
@@ -56,8 +64,10 @@
     color: black;
     cursor: pointer;
     &:hover {
-      color: rgb(55, 55, 235);
-      text-decoration: none;
+      @include hyperlinkName;
+    }
+    &--active {
+      @include hyperlinkName;
     }
   }
   &__figure::before,
