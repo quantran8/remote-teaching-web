@@ -144,6 +144,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: async (_payload: any) => {
+	  await dispatch("setIsJoined", { isJoined: false })
       await dispatch("leaveRoom", {});
       commit("setError", {
         errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
