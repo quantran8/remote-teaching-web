@@ -55,8 +55,7 @@ export default defineComponent({
       const hourEnd = parseInt(timeEnd[0], 10);
       const minEnd = parseInt(timeEnd[1], 10);
       const inputTimeEnd = 1440 * daysOfWeek + hourEnd * 60 + minEnd;
-      if ((inputTimeStart <= currentTime && currentTime <= inputTimeEnd)
-        || (inputTimeStart < 0 && currentTime > (7*1440 + inputTimeStart))) {
+      if ((inputTimeStart <= currentTime && currentTime <= inputTimeEnd) || (inputTimeStart < 0 && currentTime > 7 * 1440 + inputTimeStart)) {
         return true;
       } else {
         return false;
@@ -73,12 +72,16 @@ export default defineComponent({
       const m = current.getMinutes();
       const h = current.getHours();
       const currentTime = d * 1440 + h * 60 + m;
-      classTime.forEach((value, index) =>{
+      let check = false;
+      classTime.forEach((value, index) => {
+        const { end } = value;
+        if ([end].some(t => t == null)) return null;
         const timeEnd = value.end.split(":");
         const hourEnd = parseInt(timeEnd[0], 10);
         const minEnd = parseInt(timeEnd[1], 10);
         const dayEnd = value.daysOfWeek - 1;
         const inputTimeEnd = 1440 * dayEnd + hourEnd * 60 + minEnd;
+        check = true;
         if (inputTimeEnd < minTime) {
           minTime = inputTimeEnd;
           indexMinTime = index;
@@ -90,13 +93,16 @@ export default defineComponent({
           }
         }
       });
+      if (!check) {
+        return null;
+      }
       if (min !== 99999) {
         return classTime[indexMin];
       } else {
         classTime[indexMinTime].daysOfWeek += 7;
         return classTime[indexMinTime];
       }
-    }
+    };
 
     onMounted(() => {
       if (props.remoteClassGroups) {
@@ -109,10 +115,15 @@ export default defineComponent({
               group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
             }
           });
+
           const nextDay = validatedTime(classTime);
-          group.next = `${moment()
-            .day(nextDay.daysOfWeek - 1)
-            .format("MM/DD")} ${nextDay.start ? nextDay.start.split(":")[0] + ":" + nextDay.start.split(":")[1] : ""}`;
+          if (nextDay != null) {
+            group.next = `${moment()
+              .day(nextDay.daysOfWeek - 1)
+              .format("MM/DD")} ${nextDay.start ? nextDay.start.split(":")[0] + ":" + nextDay.start.split(":")[1] : ""}`;
+          } else {
+            group.next = "";
+          }
           return group;
         });
         groups.value = newGroups;
