@@ -31,8 +31,8 @@ export default defineComponent({
     const groups = ref();
 
     const isActiveClass = (daysOfWeek: number, startDate: string, endDate: string) => {
-	  //check daysOfWeek, startDate, endDate, return false if one of them is null or undefined
-      if ([daysOfWeek, startDate, endDate].some(t => t == null)) return false
+      //check daysOfWeek, startDate, endDate, return false if one of them is null or undefined
+      if ([daysOfWeek, startDate, endDate].some(t => t == null)) return false;
       // get system local time
       const current = new Date();
       const day = current.getDay();
@@ -67,7 +67,7 @@ export default defineComponent({
           classTime.map(time => {
             if (time.daysOfWeek - 1 == currentDay) {
               group.isCurrentDay = true;
-              group.startClass = true;
+              group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
             }
           });
           if (classTime.length > 1) {
@@ -115,8 +115,8 @@ export default defineComponent({
       }
     });
 
-    const clickToAccess = () => {
-      emit("click-to-access");
+    const clickToAccess = (groupId: string) => {
+      emit("click-to-access", groupId);
     };
 
     return { groups, clickToAccess };

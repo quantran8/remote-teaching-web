@@ -25,7 +25,9 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
-    const classes = computed(() => store.getters["teacher/classes"]);
+    const classes = computed(() => {
+      return store.getters["teacher/classes"];
+    });
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
@@ -40,9 +42,11 @@ export default defineComponent({
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
 
-    const startClass = async (teacherClass: TeacherClassModel) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
-        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, teacherClass.schoolClassId);
+        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
+		console.log('response', response);
+		
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
         }
@@ -76,11 +80,11 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel) => {
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       if (teacherClass.isActive) {
         await router.push("/class/" + teacherClass.schoolClassId);
       } else {
-        await startClass(teacherClass);
+        await startClass(teacherClass, groupId);
       }
     };
 
