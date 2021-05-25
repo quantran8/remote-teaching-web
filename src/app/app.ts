@@ -8,7 +8,8 @@ import { Howl } from "howler";
 import { CommonLocale } from "@/locales/localeid";
 import { useRoute } from "vue-router";
 
-const POPUP_TIMING = 6000 * 10; 
+//5 minutes
+const POPUP_TIMING = 6000 * 10 * 5; 
 
 export default defineComponent({
   components: {
@@ -66,14 +67,14 @@ export default defineComponent({
       src: [require(`@/assets/student-class/reconnect-success.mp3`)],
     });
 
-    const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"])
-	
-	// const students = computed(() => store.getters["studentRoom/students"]);
-    const route = useRoute(); 
-	
+    const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
+
+    // const students = computed(() => store.getters["studentRoom/students"]);
+    const route = useRoute();
+
     let timeoutId: any;
-	
-    watch(studentIsDisconnected, async (isDisconnected, previousDisConnect) => { 
+
+    watch(studentIsDisconnected, async (isDisconnected, previousDisConnect) => {
       if (isDisconnected) {
         await dispatch("studentRoom/leaveRoom");
         timeoutId = setTimeout(async () => {
