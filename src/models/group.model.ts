@@ -12,8 +12,10 @@ export interface SchoolClassTimeModel {
 export interface GroupModel {
   id: string;
   groupName: string;
-  schoolClassTimeDto: SchoolClassTimeModel[];
+  schedules: SchoolClassTimeModel[];
   studentCount: number;
   next?: string;
+  isCurrentDay?: boolean;
+  startClass?: boolean;
 }
 
