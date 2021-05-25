@@ -4,11 +4,12 @@ import { Modal } from "ant-design-vue";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
 import { CommonLocale } from "@/locales/localeid";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
-const POPUP_TIMING = 6000 * 10; 
+//5 minutes
+const POPUP_TIMING = 6000 * 10 * 5; 
 
 export default defineComponent({
   components: {
@@ -25,7 +26,6 @@ export default defineComponent({
     const isFooterVisible = computed(() => getters.appLayout !== "full");
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
-    const isJoined = computed(() => getters["studentRoom/isJoined"]);
 
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
 
@@ -67,14 +67,14 @@ export default defineComponent({
       src: [require(`@/assets/student-class/reconnect-success.mp3`)],
     });
 
-    const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"])
-	
-	// const students = computed(() => store.getters["studentRoom/students"]);
-    const route = useRoute(); 
-	
+    const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
+
+    // const students = computed(() => store.getters["studentRoom/students"]);
+    const route = useRoute();
+
     let timeoutId: any;
-	
-    watch(studentIsDisconnected, async (isDisconnected, previousDisConnect) => { 
+
+    watch(studentIsDisconnected, async (isDisconnected, previousDisConnect) => {
       if (isDisconnected) {
         await dispatch("studentRoom/leaveRoom");
         timeoutId = setTimeout(async () => {

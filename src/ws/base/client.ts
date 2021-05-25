@@ -4,7 +4,7 @@ import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionSt
 
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
-import {store} from "@/store"
+import { store } from "@/store";
 export interface GLSocketOptions {
   url: string;
 }
@@ -38,7 +38,9 @@ export class GLSocketClient {
     this._isConnected = false;
   }
   onClosed() {
-	store.dispatch('studentRoom/setOffline')
+    if (store.getters["studentRoom/isJoined"]) {
+      store.dispatch("studentRoom/setOffline");
+    }
     this._isConnected = false;
   }
   get isConnected(): boolean {
@@ -83,7 +85,7 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.STREAM_CONNECT, handler.onStudentStreamConnect);
     handlers.set(StudentWSEvent.MUTE_AUDIO, handler.onStudentMuteAudio);
     handlers.set(StudentWSEvent.MUTE_VIDEO, handler.onStudentMuteVideo);
-    handlers.set(StudentWSEvent.LEAVE,handler.onStudentLeave);
+    handlers.set(StudentWSEvent.LEAVE, handler.onStudentLeave);
     handlers.set(StudentWSEvent.DISCONNECT, handler.onStudentDisconnected);
     handlers.set(StudentWSEvent.EVENT_STUDENT_ANSWER_TARGET, handler.onStudentAnswerAll);
     handlers.set(StudentWSEvent.EVENT_STUDENT_ANSWER_CORRECT, handler.onStudentAnswerSelf);

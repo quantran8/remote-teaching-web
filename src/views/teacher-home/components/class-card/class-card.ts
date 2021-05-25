@@ -1,9 +1,8 @@
-import { SchoolClassTimeModel} from  "@/models/group.model";
+import { SchoolClassTimeModel } from "@/models/group.model";
 import { defineComponent, onMounted, ref } from "vue";
+import { Spin } from "ant-design-vue";
 import { GroupModel } from "@/models/group.model";
 import moment from "moment";
-import { useStore } from "vuex";
-import { LoginInfo } from "@/commonui";
 
 export default defineComponent({
   props: {
@@ -28,46 +27,76 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["click-to-access"],
-  async created() {
-    const store = useStore();
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
-    if (loginInfo && loginInfo.loggedin) {
-      await store.dispatch("teacher/loadClasses", {
-        teacherId: loginInfo.profile.sub,
-      });
-    }
+  components: {
+    Spin,
   },
-
+  emits: ["click-to-access"],
   setup(props, { emit }) {
     const groups = ref();
-
+    const clickedGroup = ref<string>("");
     const isActiveClass = (daysOfWeek: number, startDate: string, endDate: string) => {
+      //check daysOfWeek, startDate, endDate, return false if one of them is null or undefined
+      if ([daysOfWeek, startDate, endDate].some(t => t == null)) return false;
       // get system local time
       const current = new Date();
       const day = current.getDay();
       const m = current.getMinutes();
       const h = current.getHours();
-      if (startDate === "" || endDate === "" || day !== daysOfWeek) {
+      if (!startDate || !endDate || day !== daysOfWeek) {
         return false;
       }
-
-      const currentTime = h * 60 + m;
+      const currentTime = 1440 * day + h * 60 + m;
       // get input time
       const timeStart = startDate.split(":");
       const hourStart = parseInt(timeStart[0], 10);
       const minStart = parseInt(timeStart[1], 10);
-      const inputTimeStart = hourStart * 60 + minStart - 30;
+      const inputTimeStart = 1440 * daysOfWeek + hourStart * 60 + minStart - 15;
       const timeEnd = endDate.split(":");
       const hourEnd = parseInt(timeEnd[0], 10);
       const minEnd = parseInt(timeEnd[1], 10);
-      const inputTimeEnd = hourEnd * 60 + minEnd;
-      if (inputTimeStart <= currentTime && currentTime <= inputTimeEnd) {
+      const inputTimeEnd = 1440 * daysOfWeek + hourEnd * 60 + minEnd;
+      if ((inputTimeStart <= currentTime && currentTime <= inputTimeEnd)
+        || (inputTimeStart < 0 && currentTime > (7*1440 + inputTimeStart))) {
         return true;
       } else {
         return false;
       }
     };
+
+    const validatedTime = (classTime: SchoolClassTimeModel[]) => {
+      let min = 99999;
+      let indexMin = 0;
+      let minTime = 99999;
+      let indexMinTime = 0;
+      const current = new Date();
+      const d = moment().weekday();
+      const m = current.getMinutes();
+      const h = current.getHours();
+      const currentTime = d * 1440 + h * 60 + m;
+      classTime.forEach((value, index) =>{
+        const timeEnd = value.end.split(":");
+        const hourEnd = parseInt(timeEnd[0], 10);
+        const minEnd = parseInt(timeEnd[1], 10);
+        const dayEnd = value.daysOfWeek - 1;
+        const inputTimeEnd = 1440 * dayEnd + hourEnd * 60 + minEnd;
+        if (inputTimeEnd < minTime) {
+          minTime = inputTimeEnd;
+          indexMinTime = index;
+        }
+        if (inputTimeEnd > currentTime) {
+          if (inputTimeEnd - currentTime < min) {
+            min = inputTimeEnd - currentTime;
+            indexMin = index;
+          }
+        }
+      });
+      if (min !== 99999) {
+        return classTime[indexMin];
+      } else {
+        classTime[indexMinTime].daysOfWeek += 7;
+        return classTime[indexMinTime];
+      }
+    }
 
     onMounted(() => {
       if (props.remoteClassGroups) {
@@ -80,43 +109,10 @@ export default defineComponent({
               group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
             }
           });
-          if (classTime.length > 1) {
-            classTime.sort((current, next) => {
-              return current.daysOfWeek - next.daysOfWeek;
-            });
-            const greaterDay = classTime.filter(time => {
-              return time.daysOfWeek - 1 > currentDay;
-            });
-            const lowerDay = classTime.filter(time => {
-              return time.daysOfWeek - 1 <= currentDay;
-            });
-            let nextDay: SchoolClassTimeModel;
-            let isLow = false;
-            if (greaterDay.length <= 0) {
-              isLow = true;
-              nextDay = lowerDay[0];
-            } else {
-              isLow = false;
-              nextDay = greaterDay[0];
-            }
-            group.next = `${moment()
-              .day(isLow ? nextDay.daysOfWeek + 6 : nextDay.daysOfWeek - 1)
-              .format("MM/DD")} ${nextDay.start ? nextDay.start.split(":")[0] + ":" + nextDay.start.split(":")[1] : ""}`;
-          } else {
-            let nextDay = 0;
-            if (classTime[0]) {
-              if (classTime[0].daysOfWeek - 1 <= currentDay) {
-                nextDay = classTime[0].daysOfWeek + 6;
-              } else {
-                nextDay = classTime[0].daysOfWeek - 1;
-              }
-              group.next = `${moment()
-                .day(nextDay)
-                .format("MM/DD")} ${classTime[0].start ? classTime[0].start.split(":")[0] + ":" + classTime[0].start.split(":")[1] : ""}`;
-            } else {
-              group.next = " ";
-            }
-          }
+          const nextDay = validatedTime(classTime);
+          group.next = `${moment()
+            .day(nextDay.daysOfWeek - 1)
+            .format("MM/DD")} ${nextDay.start ? nextDay.start.split(":")[0] + ":" + nextDay.start.split(":")[1] : ""}`;
           return group;
         });
         groups.value = newGroups;
@@ -125,10 +121,11 @@ export default defineComponent({
       }
     });
 
-    const clickToAccess = () => {
-      emit("click-to-access");
+    const clickToAccess = (groupId: string) => {
+      clickedGroup.value = groupId;
+      emit("click-to-access", groupId);
     };
 
-    return { groups, clickToAccess };
+    return { groups, clickToAccess, clickedGroup };
   },
 });

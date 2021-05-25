@@ -39,10 +39,9 @@ export default defineComponent({
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
-
-    const startClass = async (teacherClass: TeacherClassModel) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
-        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, teacherClass.schoolClassId);
+        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
         }
@@ -80,11 +79,11 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel) => {
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       if (teacherClass.isActive) {
         await router.push("/class/" + teacherClass.schoolClassId);
       } else {
-        await startClass(teacherClass);
+        await startClass(teacherClass, groupId);
       }
     };
 
