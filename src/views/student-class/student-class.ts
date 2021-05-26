@@ -71,7 +71,7 @@ export default defineComponent({
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
-    const studentIsDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnect"]);
+    const studentIsDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
 
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);

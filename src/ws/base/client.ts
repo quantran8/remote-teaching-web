@@ -38,6 +38,8 @@ export class GLSocketClient {
     this._isConnected = false;
   }
   onClosed() {
+	  console.log('run vao 1');
+	  
     if (store.getters["studentRoom/isJoined"]) {
       store.dispatch("studentRoom/setOffline");
     }

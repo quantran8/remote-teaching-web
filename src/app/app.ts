@@ -57,7 +57,7 @@ export default defineComponent({
       if (isSignedIn.value) onUserSignedIn();
     });
 
-    const studentIsDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnect"]);
+    const studentIsDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
 
     const reconnectFailedSound = new Howl({
       src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
