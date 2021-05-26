@@ -69,6 +69,7 @@ export default defineComponent({
 
     watch(teacherDisconnected, async isDisconnected => {
       if (isDisconnected) {
+        await dispatch("teacherRoom/leaveRoom");
         timeoutId = setTimeout(() => {
           audioSource.teacherTryReconnectSound.stop();
           audioSource.reconnectFailedSound.play();
@@ -96,6 +97,14 @@ export default defineComponent({
       }
       audioSource.teacherTryReconnectSound.stop();
       audioSource.reconnectSuccessSound.play();
+      const loginInfo: LoginInfo = getters["auth/loginInfo"];
+      await dispatch("teacherRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        role: RoleName.teacher,
+      });
+      await dispatch("teacherRoom/joinRoom");
     });
 
     //handle student disconnection
