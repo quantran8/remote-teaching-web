@@ -1,0 +1,45 @@
+.calendar-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 90%;
+  margin: auto;
+
+  .calendar-title {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+  }
+  .select-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-top: 50px;
+  }
+  .size-select {
+    width: 200px;
+  }
+  .title-select {
+    font-size: 18px;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .mt-40 {
+    margin-top: 40px;
+  }
+  .ml-20 {
+    margin-left: 20px;
+  }
+  .calendar {
+    border: 1px solid rgba(235, 234, 234, 0.719);
+    margin-top: 30px;
+    margin-bottom: 50px;
+  }
+  .month-select {
+    width: 100px;
+    margin-left: 10px;
+  }
+  .year-select {
+    width: 100px;
+  }
+}
