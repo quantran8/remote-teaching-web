@@ -4,7 +4,7 @@
     :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
     @mouseleave="onMouseChange(false)"
   >
-    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)" @click="onOneAndOne">
+    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
       <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
         <div
           class="student__video"
