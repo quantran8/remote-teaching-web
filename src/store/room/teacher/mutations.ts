@@ -226,6 +226,12 @@ const mutations: TeacherRoomMutation<State> = {
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
     s.students.map(student => (student.isPalette = false));
   },
+  setOnline(state: TeacherRoomState) {
+    state.isDisconnected = false
+  },
+  setOffline(state: TeacherRoomState) {
+    state.isDisconnected = true
+  },
 };
 
 export default mutations;

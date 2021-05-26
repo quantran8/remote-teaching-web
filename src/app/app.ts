@@ -9,7 +9,7 @@ import { CommonLocale } from "@/locales/localeid";
 import { useRoute } from "vue-router";
 
 //5 minutes
-const POPUP_TIMING = 6000 * 10 * 5; 
+const POPUP_TIMING = 6000 * 10 * 5;
 
 export default defineComponent({
   components: {
@@ -26,9 +26,7 @@ export default defineComponent({
     const isFooterVisible = computed(() => getters.appLayout !== "full");
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
-
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
-
     const onTeacherSignedIn = async (loginInfo: LoginInfo) => {
       await dispatch("teacher/setInfo", {
         id: loginInfo.profile.sub,
@@ -102,10 +100,24 @@ export default defineComponent({
     });
 
     window.addEventListener("online", () => {
-      dispatch("studentRoom/setOnline");
+      const isTeacher: boolean = getters["auth/isTeacher"];
+      const isParent: boolean = getters["auth/isParent"];
+      if (isTeacher) {
+        dispatch("teacherRoom/setOnline");
+      }
+      if (isParent) {
+        dispatch("studentRoom/setOnline");
+      }
     });
     window.addEventListener("offline", () => {
-      dispatch("studentRoom/setOffline");
+      const isTeacher: boolean = getters["auth/isTeacher"];
+      const isParent: boolean = getters["auth/isParent"];
+      if (isTeacher) {
+        dispatch("teacherRoom/setOffline");
+      }
+      if (isParent) {
+        dispatch("studentRoom/setOffline");
+      }
     });
 
     return {
