@@ -4,12 +4,13 @@ import { Modal } from "ant-design-vue";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
-import { Howl } from "howler";
 import { CommonLocale } from "@/locales/localeid";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import * as audioSource from "@/utils/audioGenerator";
+import { ResourceModel } from "@/models/resource.model";
 
 //5 minutes
-const POPUP_TIMING = 6000 * 10 * 5;
+const POPUP_TIMING = 6000;
 
 export default defineComponent({
   components: {
@@ -55,28 +56,55 @@ export default defineComponent({
       if (isSignedIn.value) onUserSignedIn();
     });
 
-    const studentIsDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
-
-    const reconnectFailedSound = new Howl({
-      src: [require(`@/assets/student-class/reconnect-failed.mp3`)],
-    });
-
-    const reconnectSuccessSound = new Howl({
-      src: [require(`@/assets/student-class/reconnect-success.mp3`)],
-    });
-
+    const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
+    const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
     const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
-
     // const students = computed(() => store.getters["studentRoom/students"]);
     const route = useRoute();
 
     let timeoutId: any;
+    const router = useRouter();
 
-    watch(studentIsDisconnected, async (isDisconnected, previousDisConnect) => {
+    //handle teacher disconnection
+
+    watch(teacherDisconnected, async isDisconnected => {
+      if (isDisconnected) {
+        timeoutId = setTimeout(() => {
+          audioSource.teacherTryReconnectSound.stop();
+          audioSource.reconnectFailedSound.play();
+          dispatch("teacherRoom/endClass");
+          router.push("/teacher");
+        }, 10000);
+        audioSource.teacherTryReconnectSound.play();
+        Modal.warning({
+          content: "So Sorry! It seems you lost network connectivity.",
+          onOk: () => {
+            console.log("OK");
+          },
+        });
+        return;
+      }
+      const { classId } = route.params;
+      if (!classId) {
+        window.location.reload();
+
+        // const schools: ResourceModel[] =  getters["teacher/schools"]
+        // dispatch("teacher/loadClasses", { schoolId: schools[0].id });
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      audioSource.teacherTryReconnectSound.stop();
+      audioSource.reconnectSuccessSound.play();
+    });
+
+    //handle student disconnection
+
+    watch(studentDisconnected, async isDisconnected => {
       if (isDisconnected) {
         await dispatch("studentRoom/leaveRoom");
         timeoutId = setTimeout(async () => {
-          await reconnectFailedSound.play();
+          audioSource.reconnectFailedSound.play();
           Modal.warning({
             content: "So Sorry! It seems you lost network connectivity.",
             onOk: () => {
@@ -87,8 +115,9 @@ export default defineComponent({
         return;
       }
       clearTimeout(timeoutId);
-      await reconnectSuccessSound.play();
+      audioSource.reconnectSuccessSound.play();
       const { studentId, classId } = route.params;
+      if (!studentId || !classId) return;
       await dispatch("studentRoom/initClassRoom", {
         classId: classId,
         userId: loginInfo.value.profile.sub,
