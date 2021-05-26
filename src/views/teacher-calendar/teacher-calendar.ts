@@ -15,6 +15,8 @@ export default defineComponent({
   },
   setup() {
     const value = ref<Moment>();
+    const visible = ref(false);
+    const recurringVisible = ref(false);
 
     const getListData = (value: any) => {
       let listData;
@@ -61,15 +63,27 @@ export default defineComponent({
     };
 
     const onSelect = (value: Moment) => {
-      console.log(value);
+      if (value.weekday() % 2) {
+        visible.value = true;
+      } else {
+        recurringVisible.value = true;
+      }
+    };
+
+    const onCancel = () => {
+      visible.value = false;
+      recurringVisible.value = false;
     };
 
     return {
       value,
+      visible,
+      recurringVisible,
       getListData,
       getMonths,
       getYears,
       onSelect,
+      onCancel,
     };
   },
 });

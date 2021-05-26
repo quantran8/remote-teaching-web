@@ -53,13 +53,71 @@
         </div>
       </template>
       <template #dateCellRender="{ current: value }">
-        <ul class="events">
+        <ul>
           <li v-for="item in getListData(value)" :key="item.content">
             <p>{{ item.content }}</p>
           </li>
         </ul>
       </template>
     </Calendar>
+    <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+      <div class="select-container">
+        <span class="modal-title-select">Group</span>
+        <Select defaultValue="1" class="modal-size-select">
+          <Option value="1">Group 2</Option>
+        </Select>
+      </div>
+      <div class="select-container">
+        <span class="modal-title-select">Start</span>
+        <Select defaultValue="1" class="modal-size-select">
+          <Option value="1">13:00</Option>
+        </Select>
+      </div>
+      <div class="select-container">
+        <span class="modal-title-select">End</span>
+        <Select defaultValue="1" class="modal-size-select">
+          <Option value="1">14:00</Option>
+        </Select>
+      </div>
+      <div class="modal-footer">
+        <div class="delete-position">
+          <Button type="danger">Delete</Button>
+        </div>
+        <div class="save-position">
+          <Button class="btn-cancel" @click="onCancel">Cancel</Button>
+          <Button type="primary">Save</Button>
+        </div>
+      </div>
+    </Modal>
+    <Modal :visible="recurringVisible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+      <div class="select-container">
+        <span class="modal-title-select">Group</span>
+        <Select defaultValue="1" class="modal-size-select">
+          <Option value="1">Group 2</Option>
+        </Select>
+      </div>
+      <div class="select-container">
+        <span class="modal-title-select">Start</span>
+        <Select defaultValue="1" disabled="true" class="modal-size-select">
+          <Option value="1">13:00</Option>
+        </Select>
+      </div>
+      <div class="select-container">
+        <span class="modal-title-select">End</span>
+        <Select defaultValue="1" disabled="true" class="modal-size-select">
+          <Option value="1">14:00</Option>
+        </Select>
+      </div>
+      <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>
+      <div class="modal-footer">
+        <div class="delete-position">
+          <Button type="primary">Skip</Button>
+        </div>
+        <div class="save-position">
+          <Button class="btn-cancel" @click="onCancel">Close</Button>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-calendar.scss"></style>

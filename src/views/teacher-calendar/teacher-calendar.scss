@@ -43,3 +43,36 @@
     width: 100px;
   }
 }
+.select-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  min-width: 300px;
+  margin-top: 10px;
+}
+.modal-title-select {
+  width: 100px;
+}
+.modal-size-select {
+  width: 200px;
+}
+.note {
+  margin-top: 30px;
+  font-size: 12px;
+  font-style: italic;
+}
+.btn-cancel {
+  margin-right: 10px;
+}
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+.delete-position {
+  align-self: flex-start;
+}
+.save-position {
+  align-self: flex-end;
+}
