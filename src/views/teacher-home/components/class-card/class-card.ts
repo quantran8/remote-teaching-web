@@ -72,16 +72,16 @@ export default defineComponent({
       const m = current.getMinutes();
       const h = current.getHours();
       const currentTime = d * 1440 + h * 60 + m;
-      let check = false;
+      let hasTime = false;
       classTime.forEach((value, index) => {
         const { end } = value;
         if ([end].some(t => t == null)) return null;
+        hasTime = true;
         const timeEnd = value.end.split(":");
         const hourEnd = parseInt(timeEnd[0], 10);
         const minEnd = parseInt(timeEnd[1], 10);
         const dayEnd = value.daysOfWeek - 1;
         const inputTimeEnd = 1440 * dayEnd + hourEnd * 60 + minEnd;
-        check = true;
         if (inputTimeEnd < minTime) {
           minTime = inputTimeEnd;
           indexMinTime = index;
@@ -93,7 +93,7 @@ export default defineComponent({
           }
         }
       });
-      if (!check) {
+      if (!hasTime) {
         return null;
       }
       if (min !== 99999) {
