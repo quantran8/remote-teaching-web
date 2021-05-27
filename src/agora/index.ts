@@ -105,8 +105,8 @@ export class AgoraClient implements AgoraClientSDK {
 	this.client.on("connection-state-change", (payload) => {
 		if(payload === AgoraConnectionState.DISCONNECTED) {
 			console.log('Agora Disconnection ~~~~~');
-			if(!store.getters["studentRoom/isJoined"]) return
-			store.dispatch('studentRoom/setOffline')
+			// if(!store.getters["studentRoom/isJoined"]) return
+			// store.dispatch('studentRoom/setOffline')
 		}
 	})
   }
