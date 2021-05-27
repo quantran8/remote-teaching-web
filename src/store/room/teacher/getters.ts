@@ -88,6 +88,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   speakingUsers(state: TeacherRoomState): Array<string> {
     return state.speakingUsers;
   },
+  isDisconnected(state: TeacherRoomState): boolean {
+    return state.isDisconnected;
+  },
 };
 
 export default getters;

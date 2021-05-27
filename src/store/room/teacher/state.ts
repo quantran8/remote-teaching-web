@@ -22,6 +22,7 @@ export interface TeacherRoomState {
   classAction: ClassAction;
   idOne: string;
   speakingUsers: Array<string>;
+  isDisconnected: boolean;
 }
 
 const state: TeacherRoomState = {
@@ -40,6 +41,7 @@ const state: TeacherRoomState = {
   classAction: ClassAction.DEFAULT,
   idOne: "",
   speakingUsers: [],
+  isDisconnected: !navigator.onLine,
 };
 
 export default state;

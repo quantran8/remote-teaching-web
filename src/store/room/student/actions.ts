@@ -211,7 +211,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setOnline");
   },
   setOffline({ commit, state }) {
-    // if (!state.isJoined) return;
     commit("setOffline");
   },
   disconnectSignalR({ state }) {

@@ -70,8 +70,8 @@ const getters: GetterTree<StudentRoomState, any> = {
   laserPath(state: StudentRoomState): string {
     return state.laserPath;
   },
-  isDisconnect(state: StudentRoomState): boolean {
-    return state.isDisconnect;
+  isDisconnected(state: StudentRoomState): boolean {
+    return state.isDisconnected;
   },
   isJoined(state: StudentRoomState): boolean {
     return state.isJoined;

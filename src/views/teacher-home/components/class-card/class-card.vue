@@ -16,11 +16,11 @@
           <h2 class="title">Group - {{ item.groupName }}</h2>
           <span class="description d-block">Members: {{ item.studentCount }}</span>
           <span class="description">Next: {{ item.next }}</span>
-          <div v-show="item.isCurrentDay && item.startClass">
-            <span  class="class-group__play-icon" v-if="clickedGroup === item.id">
+          <div>
+            <!-- <span  class="class-group__play-icon" v-if="clickedGroup === item.id">
 				<Spin spin type="loading" />
-            </span>
-            <div v-else>
+            </span> -->
+            <div>
               <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.id)" />
             </div>
           </div>
