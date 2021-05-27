@@ -6,8 +6,6 @@ export interface TeacherState {
   info?: UserModel;
   schools: Array<ResourceModel>;
   classes: Array<TeacherClassModel>;
-  classesOrigin: Array<TeacherClassModel>;
-  classesAccessible: Array<any>;
   room?: RoomModel;
   acceptPolicy: boolean;
 }
@@ -16,8 +14,6 @@ const state: TeacherState = {
   info: undefined,
   schools: [],
   classes: [],
-  classesOrigin: [],
-  classesAccessible: [],
   room: undefined,
   acceptPolicy: true,
 };

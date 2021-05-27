@@ -5,12 +5,15 @@
     </div>
     <div class="select-container">
       <span class="title-select">Class</span>
-      <Select defaultValue="1" class="size-select">
-        <Option value="1">All</Option>
+      <Select defaultValue="all" class="size-select">
+        <Option value="all">All</Option>
+        <Option v-for="val in listClassSelect" :key="val.id">
+          {{ val.name }}
+        </Option>
       </Select>
       <span class="title-select ml-20">Group</span>
-      <Select defaultValue="1" class="size-select">
-        <Option value="1">All</Option>
+      <Select defaultValue="all" class="size-select">
+        <Option value="all">All</Option>
       </Select>
     </div>
     <Calendar class="calendar" mode="month" @select="onSelect">

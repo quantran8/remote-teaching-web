@@ -1,6 +1,9 @@
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, onMounted } from "vue";
 import { Calendar, Select, Spin, Modal, Button, Row, Col } from "ant-design-vue";
 import { Moment } from "moment";
+import { useStore } from "vuex";
+import moment from "moment";
+import { ClassModel } from "@/models";
 
 export default defineComponent({
   components: {
@@ -14,9 +17,40 @@ export default defineComponent({
     Col,
   },
   setup() {
+    const store = useStore();
     const value = ref<Moment>();
     const visible = ref(false);
     const recurringVisible = ref(false);
+    const classes = computed(() => store.getters["teacher/classes"]).value;
+    const listClassSelect = ref<any>([]);
+    const listGroupSelect = ref<any>([]);
+
+    onMounted(() => {
+      getSchedules(classes);
+    });
+
+    const getSchedules = async (listClass: ClassModel[]) => {
+      if (listClass.length <= 0) return;
+      const startDate = moment().format();
+      const classId = listClass[0].schoolClassId;
+      await store.dispatch("teacher/loadSchedules", {
+        classId: classId,
+        groupId: null,
+        startDate: startDate,
+        endDate: null,
+      });
+      listClassSelect.value = listClass.map(cl => {
+        let listGroup = [];
+        listGroup = cl.remoteClassGroups.map(group => {
+          return { id: group.id, name: group.groupName };
+        });
+        return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
+      });
+    };
+
+    const getGroupByClass = () => {
+      listClassSelect.value = [];
+    };
 
     const getListData = (value: any) => {
       let listData;
@@ -76,6 +110,8 @@ export default defineComponent({
     };
 
     return {
+      listClassSelect,
+      listGroupSelect,
       value,
       visible,
       recurringVisible,
