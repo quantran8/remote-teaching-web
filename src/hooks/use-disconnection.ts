@@ -5,10 +5,10 @@ import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import * as audioSource from "@/utils/audioGenerator";
 
-//5 minutes
+//five minutes
 const POPUP_TIMING = 6000 * 10 * 5;
 
-//1 minute
+//one minutes
 const TEACHER_RECONNECT_TIMING = 6000 * 10;
 
 export const useDisconnection = () => {
