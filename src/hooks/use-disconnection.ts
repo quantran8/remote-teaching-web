@@ -5,7 +5,11 @@ import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import * as audioSource from "@/utils/audioGenerator";
 
-const POPUP_TIMING = 6000;
+//5 minutes
+const POPUP_TIMING = 6000 * 10 * 5;
+
+//1 minute
+const TEACHER_RECONNECT_TIMING = 6000 * 10;
 
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
@@ -27,7 +31,7 @@ export const useDisconnection = () => {
         audioSource.reconnectFailedSound.play();
         dispatch("teacherRoom/endClass");
         router.push("/teacher");
-      }, 10000);
+      }, TEACHER_RECONNECT_TIMING);
       audioSource.teacherTryReconnectSound.play();
       Modal.warning({
         content: "So Sorry! It seems you lost network connectivity.",

@@ -38,10 +38,9 @@ export class GLSocketClient {
     this._isConnected = false;
   }
   onClosed() {
-    console.log("Websocket Disconnection ~~~~~");
-    // if (store.getters["studentRoom/isJoined"]) {
-    //   store.dispatch("studentRoom/setOffline");
-    // }
+    if (store.getters["studentRoom/isJoined"]) {
+      store.dispatch("studentRoom/setOffline");
+    }
     this._isConnected = false;
   }
   get isConnected(): boolean {
