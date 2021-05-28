@@ -19,7 +19,7 @@
         </Option>
       </Select>
     </div>
-    <Calendar class="calendar" mode="month" @select="onSelect">
+    <Calendar class="calendar" mode="month" @select="onSelect" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">
         <div style="padding: 10px; float: right; margin-bottom: 20px;">
           <Row type="flex">

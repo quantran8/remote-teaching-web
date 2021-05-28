@@ -187,6 +187,10 @@ export default defineComponent({
       }
     };
 
+    const onPanelChange = (value: any, _mode: any) => {
+      getSchedules(classIsChoose.value, value, groupIsChoose.value);
+    };
+
     const onCancel = () => {
       visible.value = false;
       recurringVisible.value = false;
@@ -202,6 +206,7 @@ export default defineComponent({
       getYears,
       onSelect,
       onCancel,
+      onPanelChange,
       isDisableGroup,
       classIsChoose,
       groupIsChoose,
