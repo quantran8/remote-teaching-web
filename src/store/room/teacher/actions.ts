@@ -274,6 +274,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setLaserPath({ state }, payload: string) {
     state.manager?.WSClient.sendRequestDrawLaser(payload);
   },
+  setOnline({ commit }) {
+    commit("setOnline");
+  },
+  setOffline({ commit }) {
+    commit("setOffline");
+  },
 };
 
 export default actions;

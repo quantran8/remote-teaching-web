@@ -61,6 +61,10 @@ export default defineComponent({
       }
     };
 
+    const onClickCalendar = async () => {
+      await router.push("/teacher-calendars");
+    };
+
     const getSchools = async () => {
       loading.value = true;
       await store.dispatch("teacher/loadAccessibleSchools", {
@@ -151,6 +155,7 @@ export default defineComponent({
       policyText4,
       policy,
       cancelPolicy,
+      onClickCalendar,
       policyTitle,
       policySubtitle,
     };

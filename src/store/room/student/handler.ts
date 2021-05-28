@@ -6,7 +6,7 @@ import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
-import {Pointer, StudentShape} from "@/store/annotation/state";
+import { Pointer, StudentShape } from "@/store/annotation/state";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
   const { commit, dispatch, state, getters } = store;
@@ -82,6 +82,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherJoinClass: (payload: TeacherModel) => {
+      console.log("onTeacherJoinClass", payload);
+
       commit("setTeacherStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -144,6 +146,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: async (_payload: any) => {
+      await dispatch("setIsJoined", { isJoined: false });
       await dispatch("leaveRoom", {});
       commit("setError", {
         errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
@@ -151,6 +154,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherDisconnect: (payload: any) => {
+      console.log("teacher disconnect", payload);
+
       commit("setTeacherStatus", {
         id: payload.id,
         status: InClassStatus.DEFAULT,
@@ -316,7 +321,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: Array<StudentShape>) => {
-      await commit("annotation/setStudentAddShape", { studentShapes: payload },{ root: true });
+      await commit("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
     },
   };
   return handler;

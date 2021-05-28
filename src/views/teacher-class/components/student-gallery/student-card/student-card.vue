@@ -21,7 +21,11 @@
       </div>
     </figure>
     <div class="student__info">
-      <h4 class="student__name" :class="isNotJoinned ? 'student__disable' : 'student__enable'" @click="onOneAndOne">
+      <h4
+        class="student__name"
+        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, 'student__enable--active': isMouseEntered && !isNotJoinned }"
+        @click="onOneAndOne"
+      >
         {{ student.englishName }}
       </h4>
     </div>
