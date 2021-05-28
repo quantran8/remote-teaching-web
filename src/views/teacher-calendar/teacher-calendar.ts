@@ -30,23 +30,23 @@ export default defineComponent({
     const isDisableGroup = ref<boolean>(true);
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
     const color = ref();
-    const startMonth = ref<Moment>(
-      moment()
-        .clone()
-        .startOf("month"),
-    );
-    const endMonth = ref<Moment>(
-      moment()
-        .clone()
-        .endOf("month"),
-    );
+    const month = ref<Moment>(moment());
 
     onMounted(async () => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
       const classes = store.getters["teacher/classes"];
       if (classes.length <= 0) return;
-      getSchedules("null", startMonth.value.format(), endMonth.value.format(), "null");
+      getSchedules("null", month.value, "null");
       getListClassSelect(classes);
+      getColor();
+    });
+
+    watch(month, () => {
+      getSchedules(
+        classIsChoose.value == "all" ? "null" : classIsChoose.value,
+        month.value,
+        groupIsChoose.value == "all" ? "null" : groupIsChoose.value,
+      );
     });
 
     watch(calendarSchedules, () => {
@@ -54,12 +54,12 @@ export default defineComponent({
       getColor();
     });
 
-    const getSchedules = async (schoolClassId: string, startDate: string, endDate: string, groupId: string) => {
+    const getSchedules = async (schoolClassId: string, month: Moment, groupId: string) => {
       await store.dispatch("teacher/loadSchedules", {
         classId: schoolClassId,
         groupId: groupId,
-        startDate: startDate,
-        endDate: endDate,
+        startDate: month.startOf("month").format(),
+        endDate: month.endOf("month").format(),
       });
     };
 
@@ -100,11 +100,11 @@ export default defineComponent({
     const handleChangeClass = (vl: string) => {
       classIsChoose.value = vl;
       if (vl != "all") {
-        getSchedules(vl, startMonth.value.format(), endMonth.value.format(), "null");
+        getSchedules(vl, month.value, "null");
         getGroupByClass(vl);
         isDisableGroup.value = false;
       } else {
-        getSchedules("null", startMonth.value.format(), endMonth.value.format(), "null");
+        getSchedules("null", month.value, "null");
         groupIsChoose.value = "all";
         isDisableGroup.value = true;
       }
@@ -113,9 +113,9 @@ export default defineComponent({
     const handeChangeGroup = (vl: string) => {
       groupIsChoose.value = vl;
       if (vl != "all") {
-        getSchedules(classIsChoose.value, startMonth.value.format(), endMonth.value.format(), vl);
+        getSchedules(classIsChoose.value, month.value, vl);
       } else {
-        getSchedules(classIsChoose.value, startMonth.value.format(), endMonth.value.format(), "null");
+        getSchedules(classIsChoose.value, month.value, "null");
       }
     };
 
@@ -176,15 +176,8 @@ export default defineComponent({
     };
 
     const onSelect = (vl: Moment) => {
-      if (vl.month() != startMonth.value.month()) {
-        startMonth.value = vl.startOf("month");
-        endMonth.value = vl.endOf("month");
-        getSchedules(
-          classIsChoose.value == "all" ? "null" : classIsChoose.value,
-          startMonth.value.format(),
-          endMonth.value.format(),
-          groupIsChoose.value == "all" ? "null" : groupIsChoose.value,
-        );
+      if (vl.month() != month.value.month()) {
+        month.value = vl;
         return;
       }
       if (vl.weekday() % 2) {
