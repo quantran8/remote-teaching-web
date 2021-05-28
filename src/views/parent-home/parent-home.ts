@@ -27,6 +27,7 @@ export default defineComponent({
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText4));
+    const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.StudentAcceptPolicy));
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const onClickChild = async (student: ChildModel) => {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
@@ -65,6 +66,7 @@ export default defineComponent({
       cancelPolicy,
       policyTitle,
       policySubtitle,
+      acceptPolicyText
     };
   },
 });

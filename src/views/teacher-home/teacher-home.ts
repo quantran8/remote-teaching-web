@@ -40,6 +40,7 @@ export default defineComponent({
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
+    const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.TeacherAcceptPolicy));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
@@ -158,6 +159,7 @@ export default defineComponent({
       onClickCalendar,
       policyTitle,
       policySubtitle,
+      acceptPolicyText,
     };
   },
 });

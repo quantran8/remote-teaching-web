@@ -54,8 +54,8 @@
       <p>{{ policyText2 }}</p>
       <p>{{ policyText3 }}</p>
       <p>{{ policyText4 }}</p>
-      <Checkbox @change="onAgreePolicy">I accept the policies</Checkbox>
     </div>
+    <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">
       <Button class="btn-cancel-policy" @click="cancelPolicy">Cancel</Button>
       <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
