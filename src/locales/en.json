@@ -52,5 +52,6 @@
 	"student.policy.text3": "I hereby give to GrapeCity Inc., a Japanese corporation (the “Company”) permission to copyright and use video pictures of my child(ren) for training purposes of teachers within the Company’s global network.",
 	"student.policy.text4": "I hereby release the Company from any claim arising in connection with the use of the photographic and video pictures, and I agree that the Company will own all rights to the photographic and video pictures under all applicable copyright laws, and hereby waive any right to royalties or other compensation arising from or related to the use of the photographic and video pictures.",
 	"student.policy.title": "RTSI Release",
-	"student.policy.subtitle": "(Children)"
+	"student.policy.subtitle": "(Children)",
+	"student.message.join": "{studentName}'s class has not been started"
 }

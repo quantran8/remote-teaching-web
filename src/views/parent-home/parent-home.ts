@@ -31,7 +31,7 @@ export default defineComponent({
     const onClickChild = async (student: ChildModel) => {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
       if (!roomResponse || !roomResponse.data) {
-        const message = `${student.name}'s class has not been started`;
+        const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
         await store.dispatch("setToast", { message: message });
         return;
       }

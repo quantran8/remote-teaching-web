@@ -59,4 +59,5 @@ export class PrivacyPolicy {
   static StudentPolicyText2 = "student.policy.text2";
   static StudentPolicyText3 = "student.policy.text3";
   static StudentPolicyText4 = "student.policy.text4";
+  static StudentMessageJoin = "student.message.join";
 }
