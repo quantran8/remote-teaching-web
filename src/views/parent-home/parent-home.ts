@@ -21,6 +21,8 @@ export default defineComponent({
     const username = computed(() => store.getters["auth/username"]);
     const visible = ref<boolean>(true);
     const agreePolicy = ref<boolean>(false);
+    const policyTitle = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyTitle));
+    const policySubtitle = computed(() => fmtMsg(PrivacyPolicy.StudentPolicySubtitle));
     const policyText1 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText1));
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText3));
@@ -28,9 +30,9 @@ export default defineComponent({
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const onClickChild = async (student: ChildModel) => {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
-      if (!roomResponse || !roomResponse.data) { 
-        const message = `${student.name}'s class has not been started`;
-        await store.dispatch("setToast", { message: message });   
+      if (!roomResponse || !roomResponse.data) {
+        const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
+        await store.dispatch("setToast", { message: message });
         return;
       }
       await store.dispatch("studentRoom/setOnline");
@@ -61,6 +63,8 @@ export default defineComponent({
       policyText4,
       policy,
       cancelPolicy,
+      policyTitle,
+      policySubtitle,
     };
   },
 });

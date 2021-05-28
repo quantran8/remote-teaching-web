@@ -47,12 +47,17 @@ export class ErrorLocale {
 }
 
 export class PrivacyPolicy {
+  static TeacherPolicyTitle = "teacher.policy.title";
+  static TeacherPolicySubtitle = "teacher.policy.subtitle";
   static TeacherPolicyText1 = "teacher.policy.text1";
   static TeacherPolicyText2 = "teacher.policy.text2";
   static TeacherPolicyText3 = "teacher.policy.text3";
   static TeacherPolicyText4 = "teacher.policy.text4";
+  static StudentPolicyTitle = "student.policy.title";
+  static StudentPolicySubtitle = "student.policy.subtitle";
   static StudentPolicyText1 = "student.policy.text1";
   static StudentPolicyText2 = "student.policy.text2";
   static StudentPolicyText3 = "student.policy.text3";
   static StudentPolicyText4 = "student.policy.text4";
+  static StudentMessageJoin = "student.message.join";
 }
