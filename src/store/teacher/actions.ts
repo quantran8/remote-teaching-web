@@ -33,7 +33,7 @@ const actions: ActionTree<TeacherState, any> = {
     }
   },
   async setAcceptPolicy({ commit }) {
-    const policyResponse: TeacherGetRoomResponse = await RemoteTeachingService.acceptPolicy();
+    const policyResponse: TeacherGetRoomResponse = await RemoteTeachingService.acceptPolicy("teacher");
     commit("setAcceptPolicy", policyResponse.data);
   },
 };

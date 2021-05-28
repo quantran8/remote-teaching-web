@@ -1,5 +1,5 @@
 import { ChildModel, RemoteTeachingService, StudentGetRoomResponse } from "@/services";
-import {computed, ComputedRef, defineComponent, ref, watch} from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, ref, watch} from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
@@ -27,6 +27,9 @@ export default defineComponent({
     const policyText2 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText2));
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText4));
+    const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.StudentAcceptPolicy));
+    const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
+    const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const onClickChild = async (student: ChildModel) => {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
@@ -43,12 +46,20 @@ export default defineComponent({
     };
     const submitPolicy = async () => {
       visible.value = false;
-      await RemoteTeachingService.submitPolicy();
+      await RemoteTeachingService.submitPolicy("parent");
       await store.dispatch("parent/setAcceptPolicy");
     };
     const cancelPolicy = () => {
       visible.value = false;
     };
+    onMounted(async () => {
+      window.addEventListener("keyup", ev => {
+        // check press escape key
+        if (ev.keyCode === 27) {
+          cancelPolicy();
+        }
+      });
+    });
     return {
       children,
       username,
@@ -65,6 +76,9 @@ export default defineComponent({
       cancelPolicy,
       policyTitle,
       policySubtitle,
+      acceptPolicyText,
+      readPolicy,
+      policyTitleModal,
     };
   },
 });

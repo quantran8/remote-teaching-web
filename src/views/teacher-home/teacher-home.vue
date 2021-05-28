@@ -44,7 +44,10 @@
     </div>
   </div>
   <h1 class="access-denied" v-if="!visible && !policy">Access Denied</h1>
-  <Modal :visible="visible && !policy" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+  <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+    <h3>{{ policyTitleModal }}</h3>
+    <p>{{ readPolicy }}</p>
+    <hr/>
     <div class="policy-content">
       <p>
         <b>{{ policyTitle }}</b>
@@ -54,8 +57,8 @@
       <p>{{ policyText2 }}</p>
       <p>{{ policyText3 }}</p>
       <p>{{ policyText4 }}</p>
-      <Checkbox @change="onAgreePolicy">I accept the policies</Checkbox>
     </div>
+    <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">
       <Button class="btn-cancel-policy" @click="cancelPolicy">Cancel</Button>
       <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
