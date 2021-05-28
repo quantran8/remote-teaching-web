@@ -7,7 +7,7 @@ class GLTeacherService extends AdminService implements TeacherServiceInterface {
     return this.get("schools/accessibleschools", params);
   }
   getScheduleCalendar(classId: string, groupId: string, startDate: string, endDate: string): Promise<any> {
-    const url = `schedule/${classId}/${groupId}/startdate/${startDate}/enddate/${endDate}`;
+    const url = `schedule/${startDate}?classId=${classId}&groupId=${groupId}&endDate=${endDate}`;
     return this.get(url);
   }
   getClasses(teacherId: string, schoolId: string): Promise<GetClassesModel> {

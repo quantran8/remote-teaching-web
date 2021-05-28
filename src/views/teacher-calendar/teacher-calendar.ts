@@ -67,7 +67,7 @@ export default defineComponent({
       const listClassId = calendarSchedules.value
         .map((calendarSchedule: any) => {
           return calendarSchedule.schedules.map((schedule: any) => {
-            return schedule.class.id;
+            return schedule.classId;
           });
         })
         .flat(1)
@@ -149,7 +149,7 @@ export default defineComponent({
       });
       return listData.length > 0
         ? listData[0].schedules.map((schedule: any) => {
-            schedule.color = color.value[schedule.class.id];
+            schedule.color = color.value[schedule.classId];
             return schedule;
           })
         : [];

@@ -59,10 +59,10 @@
         </div>
       </template>
       <template #dateCellRender="{ current: value }">
-        <div v-for="item in getListData(value)" :key="item.class.name" :style="`color: ${item.color}; font-weight: 500`">
-          {{ "Class: " + item.class.name }} <br />
+        <div v-for="item in getListData(value)" :key="item.classId" :style="`color: ${item.color}; font-weight: 500`">
+          {{ "Class: " + item.className }} <br />
           {{
-            `Group ${item.group.name}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
+            `Group ${item.groupName}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
               item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
             }`
           }}

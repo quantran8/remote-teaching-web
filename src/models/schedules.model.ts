@@ -5,8 +5,10 @@ export interface CalendarSchedulesModel {
 
 export interface SchedulesModel {
   id: string;
-  class: { id: string; name: string };
-  group: { id: string; name: string };
+  classId: string;
+  className: string;
+  groupId: string;
+  groupName: string;
   duration: number;
   end: string;
   start: string;
