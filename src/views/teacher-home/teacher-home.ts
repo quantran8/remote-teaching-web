@@ -121,6 +121,12 @@ export default defineComponent({
           }
         });
       }
+      window.addEventListener("keyup", ev => {
+        if (ev.keyCode === 27) {
+          console.log(ev);
+          cancelPolicy();
+        }
+      });
     });
 
     return {
