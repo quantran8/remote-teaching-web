@@ -1,10 +1,9 @@
-import { times } from "lodash";
-import { computed, defineComponent, ref, onMounted } from "vue";
+import { computed, defineComponent, ref, onMounted, watch } from "vue";
 import { Calendar, Select, Spin, Modal, Button, Row, Col } from "ant-design-vue";
 import { Moment } from "moment";
 import { useStore } from "vuex";
 import moment from "moment";
-import { CalendarSchedulesModel, ClassModel } from "@/models";
+import { ClassModel } from "@/models";
 import { useRoute } from "vue-router";
 
 export default defineComponent({
@@ -31,6 +30,7 @@ export default defineComponent({
     const groupIsChoose = ref<string>("all");
     const isDisableGroup = ref<boolean>(true);
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
+    const color = ref();
     const startOfMonth = moment()
       .clone()
       .startOf("month")
@@ -48,6 +48,11 @@ export default defineComponent({
       getListClassSelect(classes);
     });
 
+    watch(calendarSchedules, () => {
+      if (!calendarSchedules.value) return;
+      getColor();
+    });
+
     const getSchedules = async (schoolClassId: string, startDate: string, endDate: string, groupId: string) => {
       await store.dispatch("teacher/loadSchedules", {
         classId: schoolClassId,
@@ -55,6 +60,23 @@ export default defineComponent({
         startDate: startDate,
         endDate: endDate,
       });
+    };
+
+    const getColor = () => {
+      const listClassId = calendarSchedules.value
+        .map((calendarSchedule: any) => {
+          return calendarSchedule.schedules.map((schedule: any) => {
+            return schedule.class.id;
+          });
+        })
+        .flat(1)
+        .filter((v: any, i: any, a: any) => {
+          return a.indexOf(v) === i;
+        });
+      color.value = listClassId.reduce((hash: any, elem: any) => {
+        hash[elem] = getRandomColor();
+        return hash;
+      }, {});
     };
 
     const getListClassSelect = (listClass: ClassModel[]) => {
@@ -126,7 +148,7 @@ export default defineComponent({
       });
       return listData.length > 0
         ? listData[0].schedules.map((schedule: any) => {
-            schedule.color = getRandomColor();
+            schedule.color = color.value[schedule.class.id];
             return schedule;
           })
         : [];
