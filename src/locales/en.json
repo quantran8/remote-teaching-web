@@ -55,5 +55,7 @@
 	"student.policy.subtitle": "(Children)",
 	"student.message.join": "{studentName}'s class has not been started",
 	"teacher.accept.policy": "I accept the policies",
-	"student.accept.policy": "I accept the policies"
+	"student.accept.policy": "I accept the policies",
+	"read.policy": "Please read the privacy policy carefully.",
+	"privacy.policy": "Privacy Policy"
 }

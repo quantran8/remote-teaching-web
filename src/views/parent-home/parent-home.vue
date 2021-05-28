@@ -8,7 +8,10 @@
     </div>
   </div>
   <h1 class="access-denied" v-if="!visible && !policy">Access Denied</h1>
-  <Modal :visible="visible && !policy" title="Privacy Policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+  <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+    <h3>{{ policyTitleModal }}</h3>
+    <p>{{ readPolicy }}</p>
+    <hr/>
     <div class="policy-content">
       <p>
         <b>{{ policyTitle }}</b>

@@ -41,6 +41,8 @@ export default defineComponent({
     const policyText3 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText3));
     const policyText4 = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyText4));
     const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.TeacherAcceptPolicy));
+    const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
+    const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
@@ -97,7 +99,7 @@ export default defineComponent({
     };
     const submitPolicy = async () => {
       visible.value = false;
-      await RemoteTeachingService.submitPolicy();
+      await RemoteTeachingService.submitPolicy("teacher");
       await store.dispatch("teacher/setAcceptPolicy");
       await onSchoolChange(schools.value[0].id);
     };
@@ -160,6 +162,8 @@ export default defineComponent({
       policyTitle,
       policySubtitle,
       acceptPolicyText,
+      readPolicy,
+      policyTitleModal,
     };
   },
 });

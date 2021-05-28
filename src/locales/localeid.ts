@@ -47,6 +47,7 @@ export class ErrorLocale {
 }
 
 export class PrivacyPolicy {
+  static PrivacyPolicy = "privacy.policy";
   static TeacherPolicyTitle = "teacher.policy.title";
   static TeacherPolicySubtitle = "teacher.policy.subtitle";
   static TeacherPolicyText1 = "teacher.policy.text1";
@@ -62,4 +63,5 @@ export class PrivacyPolicy {
   static StudentPolicyText4 = "student.policy.text4";
   static StudentAcceptPolicy = "student.accept.policy";
   static StudentMessageJoin = "student.message.join";
+  static ReadPolicy = "read.policy";
 }
