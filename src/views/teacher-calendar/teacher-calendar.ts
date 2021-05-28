@@ -21,7 +21,6 @@ export default defineComponent({
     const store = useStore();
     const route = useRoute();
     const { schoolId } = route.params;
-    const value = ref<Moment>();
     const visible = ref<boolean>(false);
     const recurringVisible = ref<boolean>(false);
     const listClassSelect = ref<any[]>([]);
@@ -31,20 +30,22 @@ export default defineComponent({
     const isDisableGroup = ref<boolean>(true);
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
     const color = ref();
-    const startOfMonth = moment()
-      .clone()
-      .startOf("month")
-      .format();
-    const endOfMonth = moment()
-      .clone()
-      .endOf("month")
-      .format();
+    const startMonth = ref<Moment>(
+      moment()
+        .clone()
+        .startOf("month"),
+    );
+    const endMonth = ref<Moment>(
+      moment()
+        .clone()
+        .endOf("month"),
+    );
 
     onMounted(async () => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
       const classes = store.getters["teacher/classes"];
       if (classes.length <= 0) return;
-      getSchedules("null", startOfMonth, endOfMonth, "null");
+      getSchedules("null", startMonth.value.format(), endMonth.value.format(), "null");
       getListClassSelect(classes);
     });
 
@@ -96,25 +97,25 @@ export default defineComponent({
       listGroupSelect.value = currentClass.groups;
     };
 
-    const handleChangeClass = (value: string) => {
-      classIsChoose.value = value;
-      if (value != "all") {
-        getSchedules(value, startOfMonth, endOfMonth, "null");
-        getGroupByClass(value);
+    const handleChangeClass = (vl: string) => {
+      classIsChoose.value = vl;
+      if (vl != "all") {
+        getSchedules(vl, startMonth.value.format(), endMonth.value.format(), "null");
+        getGroupByClass(vl);
         isDisableGroup.value = false;
       } else {
-        getSchedules("null", startOfMonth, endOfMonth, "null");
+        getSchedules("null", startMonth.value.format(), endMonth.value.format(), "null");
         groupIsChoose.value = "all";
         isDisableGroup.value = true;
       }
     };
 
-    const handeChangeGroup = (value: string) => {
-      groupIsChoose.value = value;
-      if (value != "all") {
-        getSchedules(classIsChoose.value, startOfMonth, endOfMonth, value);
+    const handeChangeGroup = (vl: string) => {
+      groupIsChoose.value = vl;
+      if (vl != "all") {
+        getSchedules(classIsChoose.value, startMonth.value.format(), endMonth.value.format(), vl);
       } else {
-        getSchedules(classIsChoose.value, startOfMonth, endOfMonth, "null");
+        getSchedules(classIsChoose.value, startMonth.value.format(), endMonth.value.format(), "null");
       }
     };
 
@@ -141,10 +142,10 @@ export default defineComponent({
       return rgb;
     };
 
-    const getListData = (value: Moment) => {
+    const getListData = (vl: Moment) => {
       if (calendarSchedules.value.length <= 0) return;
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
-        return moment(daySchedule.day).date() == value.date() && moment(daySchedule.day).month() == value.month();
+        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
       return listData.length > 0
         ? listData[0].schedules.map((schedule: any) => {
@@ -154,9 +155,9 @@ export default defineComponent({
         : [];
     };
 
-    const getMonths = (value: Moment) => {
-      const current = value.clone();
-      const localeData = value.localeData();
+    const getMonths = (vl: Moment) => {
+      const current = vl.clone();
+      const localeData = vl.localeData();
       const months = [];
       for (let i = 0; i < 12; i++) {
         current.month(i);
@@ -165,8 +166,8 @@ export default defineComponent({
       return months;
     };
 
-    const getYears = (value: Moment) => {
-      const year = value.year();
+    const getYears = (vl: Moment) => {
+      const year = vl.year();
       const years = [];
       for (let i = year - 10; i < year + 10; i += 1) {
         years.push(i);
@@ -174,17 +175,19 @@ export default defineComponent({
       return years;
     };
 
-    const onSelect = (value: Moment) => {
-      getSchedules(
-        classIsChoose.value == "all" ? "null" : classIsChoose.value,
-        value.startOf("month").format(),
-        value.endOf("month").format(),
-        groupIsChoose.value == "all" ? "null" : groupIsChoose.value,
-      );
-      if (value.month() != moment().month()) {
+    const onSelect = (vl: Moment) => {
+      if (vl.month() != startMonth.value.month()) {
+        startMonth.value = vl.startOf("month");
+        endMonth.value = vl.endOf("month");
+        getSchedules(
+          classIsChoose.value == "all" ? "null" : classIsChoose.value,
+          startMonth.value.format(),
+          endMonth.value.format(),
+          groupIsChoose.value == "all" ? "null" : groupIsChoose.value,
+        );
         return;
       }
-      if (value.weekday() % 2) {
+      if (vl.weekday() % 2) {
         visible.value = true;
       } else {
         recurringVisible.value = true;
@@ -199,7 +202,6 @@ export default defineComponent({
     return {
       listClassSelect,
       listGroupSelect,
-      value,
       visible,
       recurringVisible,
       getListData,
