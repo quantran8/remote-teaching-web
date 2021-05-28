@@ -36,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/teacher-calendars",
+    path: "/teacher-calendars/:schoolId",
     name: "TeacherCalendar",
     component: () => import("../views/teacher-calendar/teacher-calendar.vue"),
     meta: {

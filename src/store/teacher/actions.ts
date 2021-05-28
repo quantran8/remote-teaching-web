@@ -21,7 +21,7 @@ const actions: ActionTree<TeacherState, any> = {
   ) {
     if (!state.info) return;
     const response = await TeacherService.getScheduleCalendar(payload.classId, payload.groupId, payload.startDate, payload.endDate);
-    console.log(response);
+    commit("setCalendarSchedule", response);
   },
   async loadAccessibleSchools({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleSchoolQueryParam) {
     // if (!state.info) return;

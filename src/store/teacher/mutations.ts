@@ -1,4 +1,4 @@
-import { ClassModel, RoomModel } from "@/models";
+import { ClassModel, RoomModel, CalendarSchedulesModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -11,6 +11,11 @@ const mutations: MutationTree<TeacherState> = {
   setClasses(state: TeacherState, payload: Array<ClassModel>) {
     if (payload && payload.length != 0) {
       state.classes = payload;
+    }
+  },
+  setCalendarSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
+    if (payload && payload.length != 0) {
+      state.calendarSchedules = payload;
     }
   },
   setClassRoom(state: TeacherState, payload: RoomModel) {

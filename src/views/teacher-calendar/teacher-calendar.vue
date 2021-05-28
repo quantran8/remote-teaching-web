@@ -5,15 +5,18 @@
     </div>
     <div class="select-container">
       <span class="title-select">Class</span>
-      <Select defaultValue="all" class="size-select">
+      <Select :value="classIsChoose" class="size-select" @change="handleChangeClass">
         <Option value="all">All</Option>
         <Option v-for="val in listClassSelect" :key="val.id">
           {{ val.name }}
         </Option>
       </Select>
       <span class="title-select ml-20">Group</span>
-      <Select defaultValue="all" class="size-select">
+      <Select :value="groupIsChoose" :disabled="isDisableGroup" class="size-select" @change="handeChangeGroup">
         <Option value="all">All</Option>
+        <Option v-for="val in listGroupSelect" :key="val.id">
+          {{ val.name }}
+        </Option>
       </Select>
     </div>
     <Calendar class="calendar" mode="month" @select="onSelect">
@@ -56,11 +59,16 @@
         </div>
       </template>
       <template #dateCellRender="{ current: value }">
-        <ul>
-          <li v-for="item in getListData(value)" :key="item.content">
-            <p>{{ item.content }}</p>
-          </li>
-        </ul>
+        <div v-for="item in getListData(value)" :key="item.class.name" :style="`color: ${item.color}`">
+          {{ "Class: " + item.class.name }} <br />
+          {{
+            `Group ${item.group.name}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
+              item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
+            }`
+          }}
+          <br />
+          <br />
+        </div>
       </template>
     </Calendar>
     <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">

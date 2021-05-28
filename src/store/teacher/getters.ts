@@ -1,4 +1,4 @@
-import { ClassModel, RoomModel } from "@/models";
+import { ClassModel, RoomModel, CalendarSchedulesModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { GetterTree } from "vuex";
 import { TeacherState } from "./state";
@@ -15,6 +15,9 @@ const getters: GetterTree<TeacherState, any> = {
   },
   acceptPolicy(state: TeacherState): boolean {
     return state.acceptPolicy;
+  },
+  calendarSchedules(state: TeacherState): Array<CalendarSchedulesModel> {
+    return state.calendarSchedules;
   },
 };
 
