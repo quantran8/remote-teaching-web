@@ -109,13 +109,13 @@ export default defineComponent({
         const newGroups = props.remoteClassGroups.map(group => {
           const currentDay = moment().weekday();
           const classTime = group.schedules;
-          let checkActiveClass = false;
+          let hasActiveClass = false;
           classTime.map(time => {
             if (time.daysOfWeek - 1 == currentDay) {
               group.isCurrentDay = true;
-              if(checkActiveClass == false) {
+              if(hasActiveClass == false) {
                 group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
-                checkActiveClass = group.startClass;
+                hasActiveClass = true;
               }else{
                 group.startClass = true;
               }
