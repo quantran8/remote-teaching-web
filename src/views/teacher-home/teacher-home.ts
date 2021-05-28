@@ -126,8 +126,8 @@ export default defineComponent({
         });
       }
       window.addEventListener("keyup", ev => {
+        // check press escape key
         if (ev.keyCode === 27) {
-          console.log(ev);
           cancelPolicy();
         }
       });
