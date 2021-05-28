@@ -19,11 +19,11 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       studentId: childId,
     });
   }
-  acceptPolicy(): Promise<any> {
-    return this.get("policy/is-accepted");
+  acceptPolicy(role: string): Promise<any> {
+    return this.get(`policy/${role}/is-accepted`);
   }
-  submitPolicy(): Promise<any> {
-    return this.create("policy/accept/true");
+  submitPolicy(role: string): Promise<any> {
+    return this.create(`policy/${role}/accept/true`);
   }
 }
 
