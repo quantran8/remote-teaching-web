@@ -115,7 +115,7 @@ export default defineComponent({
               group.isCurrentDay = true;
               if(hasActiveClass == false) {
                 group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
-                hasActiveClass = true;
+                hasActiveClass = group.startClass;
               }else{
                 group.startClass = true;
               }
