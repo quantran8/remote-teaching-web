@@ -39,7 +39,7 @@
         :description="cl.campusName"
         :remoteClassGroups="cl.remoteClassGroups"
         :active="cl.isActive"
-        @click-to-access="(groupId) => onClickClass(cl, groupId)"
+        @click-to-access="groupId => onClickClass(cl, groupId)"
       />
     </div>
   </div>
