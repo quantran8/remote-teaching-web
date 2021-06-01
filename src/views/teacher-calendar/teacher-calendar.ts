@@ -182,7 +182,7 @@ export default defineComponent({
       });
       return listData.length > 0
         ? listData[0].schedules.map((schedule: any) => {
-            schedule.color = color.value[schedule.classId];
+            schedule.color = color.value ? color.value[schedule.classId] : "#000";
             return schedule;
           })
         : [];
@@ -222,7 +222,7 @@ export default defineComponent({
           return { id: schedule.groupId, name: schedule.groupName };
         })
         .filter((v: any, i: any, a: any) => {
-          return a.indexOf(v) === i;
+          return a.findIndex((t: any) => t.id === v.id) === i;
         });
     };
 
