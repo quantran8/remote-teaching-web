@@ -17,7 +17,7 @@
           <span class="description d-block">Members: {{ item.studentCount }}</span>
           <span class="description">Next: {{ item.next }}</span>
           <div v-show="item.isCurrentDay && item.startClass">
-            <span class="class-group__play-icon" v-if="clickedGroup === item.id">
+            <span class="class-group__play-icon" v-if="clickedGroup === item.id && item.studentCount > 0">
               <Spin spin type="loading" />
             </span>
             <div v-else>

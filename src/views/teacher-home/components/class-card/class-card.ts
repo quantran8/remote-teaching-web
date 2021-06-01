@@ -55,11 +55,7 @@ export default defineComponent({
       const hourEnd = parseInt(timeEnd[0], 10);
       const minEnd = parseInt(timeEnd[1], 10);
       const inputTimeEnd = 1440 * daysOfWeek + hourEnd * 60 + minEnd;
-      if ((inputTimeStart <= currentTime && currentTime <= inputTimeEnd) || (inputTimeStart < 0 && currentTime > 7 * 1440 + inputTimeStart)) {
-        return true;
-      } else {
-        return false;
-      }
+      return (inputTimeStart <= currentTime && currentTime <= inputTimeEnd) || (inputTimeStart < 0 && currentTime > 7 * 1440 + inputTimeStart);
     };
 
     const validatedTime = (classTime: SchoolClassTimeModel[]) => {
@@ -113,10 +109,10 @@ export default defineComponent({
           classTime.map(time => {
             if (time.daysOfWeek - 1 == currentDay) {
               group.isCurrentDay = true;
-              if(hasActiveClass == false) {
+              if (!hasActiveClass) {
                 group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
                 hasActiveClass = group.startClass;
-              }else{
+              } else {
                 group.startClass = true;
               }
             }

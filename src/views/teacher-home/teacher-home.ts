@@ -52,16 +52,8 @@ export default defineComponent({
           await router.push("/class/" + teacherClass.schoolClassId);
         }
       } catch (err) {
-        if (err && err.body) {
-          const responseError: {
-            data: {
-              Code: string;
-              Message: string;
-              Success: boolean;
-            };
-            success: boolean;
-          } = err.body;
-        }
+        const message = err.body.message;
+        await store.dispatch("setToast", { message: message });
       }
     };
 
@@ -80,9 +72,13 @@ export default defineComponent({
 
     const onSchoolChange = async (schoolId: string) => {
       loading.value = true;
-      await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
-      filteredSchools.value = schools.value;
-      currentSchoolId.value = schoolId;
+      try {
+        await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
+        filteredSchools.value = schools.value;
+      } catch (err) {
+        const message = err.body.message;
+        await store.dispatch("setToast", { message: message });
+      }
       loading.value = false;
     };
 

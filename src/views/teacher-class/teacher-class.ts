@@ -129,8 +129,14 @@ export default defineComponent({
         cancelText: "No",
         okButtonProps: { type: "danger" },
         onOk: async () => {
-          await dispatch("teacherRoom/endClass");
-          await router.push("/teacher");
+          try {
+            await dispatch("teacherRoom/endClass");
+            await router.push("/teacher");
+          } catch (err) {
+            Modal.destroyAll();
+            const message = err.body.message;
+            await dispatch("setToast", { message: message });
+          }
         },
       });
     };
