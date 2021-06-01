@@ -40,6 +40,7 @@ export default defineComponent({
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
     const color = ref();
     const month = ref<Moment>(moment());
+    const formatTime = "HH:mm";
 
     onMounted(async () => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -134,6 +135,7 @@ export default defineComponent({
       const group = listData[0].schedules.filter((schedule: any) => {
         return schedule.groupId == groupId;
       });
+      console.log(group);
       selectedStartDateModal.value = group[0].start;
       selectedEndDateModal.value = group[0].end;
     };
@@ -192,7 +194,7 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
-      return listData.length < 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-"));
+      return listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-"));
     };
 
     const getMonths = (vl: Moment) => {
@@ -238,8 +240,8 @@ export default defineComponent({
       }
     };
 
-    const onPanelChange = (value: any, _mode: any) => {
-      getSchedules(selectedClassId.value, selectedGroupId.value, value);
+    const onPanelChange = async (value: any, _mode: any) => {
+      await getSchedules(selectedClassId.value, selectedGroupId.value, value);
     };
 
     const scheduleAction = async (type: string, timeLong: any, item?: any) => {
@@ -252,16 +254,14 @@ export default defineComponent({
       if (type == "Create") {
         await getDataModal(date);
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
-        selectedStartDateModal.value = moment().format("HH:mm");
-        selectedEndDateModal.value = moment()
-          .add(60, "minutes")
-          .format("HH:mm");
+        selectedStartDateModal.value = "00:00";
+        selectedEndDateModal.value = "00:00";
         visible.value = true;
       } else {
         await getDataModal(date, item.customizedScheduleId);
         selectedGroupIdModal.value = item.groupId;
-        selectedStartDateModal.value = moment(item.start, "HH:mm").format("HH:mm");
-        selectedEndDateModal.value = moment(item.end, "HH:mm").format("HH:mm");
+        selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
+        selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         if (!item.customizedScheduleId.includes("-0000-")) {
           visible.value = true;
         } else {
@@ -273,15 +273,13 @@ export default defineComponent({
     const onCancel = () => {
       visible.value = false;
       recurringVisible.value = false;
-      selectedStartDateModal.value = moment().format("HH:mm");
-      selectedEndDateModal.value = moment()
-        .add(60, "minutes")
-        .format("HH:mm");
+      selectedStartDateModal.value = "00:00";
+      selectedEndDateModal.value = "00:00";
       selectedGroupIdModal.value = "";
     };
 
     const convertTime = (time: string) => {
-      return moment(time, "HH:mm").format("HH:mm:ss");
+      return moment(time, formatTime).format("HH:mm:ss");
     };
 
     const createData = (type: string) => {

@@ -59,7 +59,7 @@
         </div>
       </template>
       <template #dateCellRender="{ current: value }">
-        <div @click="canCreate(value) && scheduleAction('Create', value)">
+        <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
           <div v-for="item in getListData(value)" :key="item.classId" :style="`color: ${item.color}; font-weight: 500`">
             <a @click.stop.prevent="scheduleAction('Other', value, item)"
               >{{ "Class: " + item.className }} <br />
