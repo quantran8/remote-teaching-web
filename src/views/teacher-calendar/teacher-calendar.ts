@@ -135,7 +135,6 @@ export default defineComponent({
       const group = listData[0].schedules.filter((schedule: any) => {
         return schedule.groupId == groupId;
       });
-      console.log(group);
       selectedStartDateModal.value = group[0].start;
       selectedEndDateModal.value = group[0].end;
     };
