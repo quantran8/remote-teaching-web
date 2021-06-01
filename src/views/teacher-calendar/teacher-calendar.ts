@@ -41,6 +41,7 @@ export default defineComponent({
     const color = ref();
     const month = ref<Moment>(moment());
     const formatTime = "HH:mm";
+    const isCreate = ref<boolean>(false);
 
     onMounted(async () => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -255,6 +256,7 @@ export default defineComponent({
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";
+        isCreate.value = true;
         visible.value = true;
       } else {
         await getDataModal(date, item.customizedScheduleId);
@@ -262,6 +264,7 @@ export default defineComponent({
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         if (!item.customizedScheduleId.includes("-0000-")) {
+          isCreate.value = false;
           visible.value = true;
         } else {
           recurringVisible.value = true;
@@ -283,12 +286,15 @@ export default defineComponent({
 
     const createData = (type: string) => {
       const date = selectedDate.value;
+      let schedule = [];
       const data = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == date.date() && moment(daySchedule.day).month() == date.month();
       })[0];
-      const schedule = data.schedules.filter((schedule: any) => {
-        return schedule.groupId == selectedGroupIdModal.value;
-      })[0];
+      if (data) {
+        schedule = data.schedules.filter((schedule: any) => {
+          return schedule.groupId == selectedGroupIdModal.value;
+        })[0];
+      }
       let dataBack = {};
       switch (type) {
         case "Delete":
@@ -296,19 +302,18 @@ export default defineComponent({
           break;
         case "Create":
           dataBack = {
-            id: schedule[0].id,
-            schoolClassId: schedule[0].classId,
-            groupId: schedule[0].groupId,
-            start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
-            end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
+            schoolClassId: selectedClassId.value,
+            groupId: selectedGroupIdModal.value,
+            start: moment(selectedStartDateModal.value, formatTime).format(),
+            end: moment(selectedEndDateModal.value, formatTime).format(),
             type: type,
           };
           break;
         case "Update":
           dataBack = {
-            id: schedule[0].id,
-            schoolClassId: schedule[0].classId,
-            groupId: schedule[0].groupId,
+            id: schedule.customizedScheduleId,
+            schoolClassId: schedule.classId,
+            groupId: schedule.groupId,
             start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
             end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
             type: type,
@@ -396,6 +401,7 @@ export default defineComponent({
       onSubmit,
       scheduleAction,
       canCreate,
+      isCreate,
     };
   },
 });

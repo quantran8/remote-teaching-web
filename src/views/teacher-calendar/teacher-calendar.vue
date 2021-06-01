@@ -98,7 +98,7 @@
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Cancel</Button>
-          <Button type="primary" @click="onSubmit('Save')">Save</Button>
+          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')">Save</Button>
         </div>
       </div>
     </Modal>

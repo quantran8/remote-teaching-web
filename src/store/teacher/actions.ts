@@ -27,16 +27,13 @@ const actions: ActionTree<TeacherState, any> = {
     await TeacherService.skipSchedule(payload);
   },
   async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    const response = await TeacherService.createSchedule(payload);
-    console.log(response);
+    await TeacherService.createSchedule(payload);
   },
   async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    const response = await TeacherService.updateSchedule(payload);
-    console.log(response);
+    await TeacherService.updateSchedule(payload);
   },
   async deleteSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { scheduleId: string }) {
-    const response = await TeacherService.deleteSchedule(payload.scheduleId);
-    console.log(response);
+    await TeacherService.deleteSchedule(payload.scheduleId);
   },
   async loadAccessibleSchools({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleSchoolQueryParam) {
     try {
