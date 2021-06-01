@@ -18,6 +18,8 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
   components: {
@@ -29,17 +31,28 @@ export default defineComponent({
   async created() {
     const { getters, dispatch } = useStore();
     const route = useRoute();
+    const router = useRouter();
     const { studentId, classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    await dispatch("studentRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.profile.sub,
-      userName: loginInfo.profile.name,
-      studentId: studentId,
-      role: RoleName.parent,
-    });
+    const fp = await fpPromise;
+    const result = await fp.get();
+    const visitorId = result.visitorId;
+    try {
+      await dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+        browserFingerPrinting: visitorId,
+      });
+    } catch (err) {
+      if (err.code === 1) {
+        await router.push(Paths.Home);
+      }
+    }
     await dispatch("studentRoom/joinRoom");
-    dispatch("studentRoom/setIsJoined", { isJoined: true });
+    await dispatch("studentRoom/setIsJoined", { isJoined: true });
   },
   async beforeUnmount() {
     const store = useStore();
@@ -186,9 +199,9 @@ export default defineComponent({
         cancelText: "No",
         okButtonProps: { type: "danger" },
         onOk: async () => {
-		  await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
+          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
           await store.dispatch("studentRoom/studentLeaveClass");
-          router.push(Paths.Home);
+          await router.push(Paths.Home);
         },
       });
     };

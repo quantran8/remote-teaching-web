@@ -18,6 +18,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       userName: string;
       studentId: string;
       role: string;
+      browserFingerPrinting: string;
     },
   ) {
     commit("setUser", {
@@ -25,7 +26,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       name: payload.userName,
     });
     try {
-      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId);
+      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
       if (!roomResponse) return;
       const roomInfo: RoomModel = roomResponse.data;
       if (!roomInfo || roomInfo.classId !== payload.classId) {
@@ -127,7 +128,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
-    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id);
+    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },

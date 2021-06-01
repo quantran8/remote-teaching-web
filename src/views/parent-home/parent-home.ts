@@ -6,6 +6,9 @@ import StudentCard from "./components/student-card/student-card.vue";
 import { Modal, Checkbox, Button, Row } from "ant-design-vue";
 import { fmtMsg } from "commonui";
 import { PrivacyPolicy } from "@/locales/localeid";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+const fpPromise = FingerprintJS.load();
+
 export default defineComponent({
   components: {
     StudentCard,
@@ -32,14 +35,21 @@ export default defineComponent({
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const onClickChild = async (student: ChildModel) => {
-      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id);
-      if (!roomResponse || !roomResponse.data) {
-        const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
-        await store.dispatch("setToast", { message: message });
-        return;
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      try {
+        await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+        await store.dispatch("studentRoom/setOnline");
+        await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
+      } catch (err) {
+        if (err.code === 1) {
+          await store.dispatch("setToast", { message: err.message });
+        } else {
+          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
+          await store.dispatch("setToast", { message: message });
+        }
       }
-      await store.dispatch("studentRoom/setOnline");
-      await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
     };
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;

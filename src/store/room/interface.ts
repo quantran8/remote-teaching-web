@@ -111,4 +111,5 @@ export interface InitClassRoomPayload {
   userId: string;
   userName: string;
   role: string;
+  browserFingerPrinting: string;
 }
