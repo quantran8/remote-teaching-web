@@ -4,7 +4,6 @@ export interface CalendarSchedulesModel {
 }
 
 export interface SchedulesModel {
-  id: string;
   classId: string;
   className: string;
   groupId: string;

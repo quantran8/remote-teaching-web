@@ -14,7 +14,7 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    margin-top: 50px;
+    margin-top: 20px;
   }
   .size-select {
     width: 200px;
@@ -24,8 +24,8 @@
     font-weight: 500;
     margin-right: 10px;
   }
-  .mt-40 {
-    margin-top: 40px;
+  .mt-20 {
+    margin-top: 20px;
   }
   .ml-20 {
     margin-left: 20px;
@@ -53,7 +53,8 @@
 .modal-title-select {
   width: 100px;
 }
-.modal-size-select {
+.modal-size-time-picker,
+.modal-size-group {
   width: 200px;
 }
 .note {
