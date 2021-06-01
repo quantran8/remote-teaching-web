@@ -318,7 +318,7 @@ export default defineComponent({
           break;
         case "Update":
           dataBack = {
-            id: schedule.customizedScheduleId,
+            customizedScheduleId: schedule.customizedScheduleId,
             schoolClassId: schedule.classId,
             groupId: schedule.groupId,
             start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
@@ -329,7 +329,6 @@ export default defineComponent({
           break;
         case "Skip":
           dataBack = {
-            id: schedule.customizedScheduleId,
             schoolClassId: schedule.classId,
             groupId: schedule.groupId,
             start: data.day.replace("00:00:00", schedule.start),
