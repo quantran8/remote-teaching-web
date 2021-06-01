@@ -44,6 +44,7 @@ export default defineComponent({
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
+    const currentSchoolId = ref("");
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
@@ -57,7 +58,7 @@ export default defineComponent({
     };
 
     const onClickCalendar = async () => {
-      await router.push("/teacher-calendars");
+      await router.push(`/teacher-calendars/${currentSchoolId.value}`);
     };
 
     const getSchools = async () => {
@@ -110,6 +111,7 @@ export default defineComponent({
         await getSchools();
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
+          currentSchoolId.value = schools.value[0].id;
           if (schools.value.length === 1) {
             disabled.value = true;
           }

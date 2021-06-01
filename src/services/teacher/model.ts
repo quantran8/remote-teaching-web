@@ -14,3 +14,13 @@ export interface AccessibleSchoolQueryParam {
   regionId?: string;
   disabled?: boolean;
 }
+
+export interface ScheduleParam {
+  id?: string;
+  schoolClassId?: string;
+  groupId?: string;
+  start?: string;
+  end?: string;
+  type?: string;
+  createdBy?: string;
+}
