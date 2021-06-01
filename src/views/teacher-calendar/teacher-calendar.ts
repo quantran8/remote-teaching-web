@@ -35,16 +35,25 @@ export default defineComponent({
     const selectedGroupIdModal = ref<string>("");
     const selectedStartDateModal = ref<string>("");
     const selectedEndDateModal = ref<string>("");
+    const selectedCustomScheduleId = ref<string>("");
     const selectedDate = ref<Moment>(moment());
     const isDisableGroup = ref<boolean>(true);
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
     const color = ref();
     const month = ref<Moment>(moment());
     const formatTime = "HH:mm";
+    const isCreate = ref<boolean>(false);
+    const classes = store.getters["teacher/classes"];
 
     onMounted(async () => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
-      const classes = store.getters["teacher/classes"];
+      if (classes.length <= 0) return;
+      getSchedules(null, null, month.value);
+      getListClassSelect(classes);
+      getColor();
+    });
+
+    watch(classes, () => {
       if (classes.length <= 0) return;
       getSchedules(null, null, month.value);
       getListClassSelect(classes);
@@ -196,6 +205,14 @@ export default defineComponent({
       return listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-"));
     };
 
+    const isUpdate = (vl: Moment) => {
+      if (calendarSchedules.value.length <= 0) return;
+      const listData = calendarSchedules.value.filter((daySchedule: any) => {
+        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
+      });
+      return listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-");
+    };
+
     const getMonths = (vl: Moment) => {
       const current = vl.clone();
       const localeData = vl.localeData();
@@ -230,10 +247,8 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == date.date() && moment(daySchedule.day).month() == date.month();
       });
-      if (!customizedScheduleId || listData.length <= 0) {
+      if (!customizedScheduleId || listData.length <= 0 || (customizedScheduleId && !customizedScheduleId.includes("-0000-"))) {
         listGroupModal.value = listGroupSelect.value;
-      } else if (customizedScheduleId && !customizedScheduleId.includes("-0000-")) {
-        listGroupModal.value = getGroupModal(listData[0]);
       } else if (customizedScheduleId && customizedScheduleId.includes("-0000-")) {
         listGroupModal.value = getGroupModal(listData[0]);
       }
@@ -255,6 +270,15 @@ export default defineComponent({
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";
+        isCreate.value = true;
+        visible.value = true;
+      } else if (type == "Update") {
+        await getDataModal(date, item.customizedScheduleId);
+        selectedCustomScheduleId.value = item.customizedScheduleId;
+        selectedGroupIdModal.value = item.groupId;
+        selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
+        selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
+        isCreate.value = false;
         visible.value = true;
       } else {
         await getDataModal(date, item.customizedScheduleId);
@@ -262,6 +286,7 @@ export default defineComponent({
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         if (!item.customizedScheduleId.includes("-0000-")) {
+          isCreate.value = false;
           visible.value = true;
         } else {
           recurringVisible.value = true;
@@ -283,12 +308,15 @@ export default defineComponent({
 
     const createData = (type: string) => {
       const date = selectedDate.value;
+      let schedule = [];
       const data = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == date.date() && moment(daySchedule.day).month() == date.month();
       })[0];
-      const schedule = data.schedules.filter((schedule: any) => {
-        return schedule.groupId == selectedGroupIdModal.value;
-      })[0];
+      if (data) {
+        schedule = data.schedules.filter((schedule: any) => {
+          return schedule.groupId == selectedGroupIdModal.value;
+        })[0];
+      }
       let dataBack = {};
       switch (type) {
         case "Delete":
@@ -296,19 +324,18 @@ export default defineComponent({
           break;
         case "Create":
           dataBack = {
-            id: schedule[0].id,
-            schoolClassId: schedule[0].classId,
-            groupId: schedule[0].groupId,
-            start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
-            end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
+            schoolClassId: selectedClassId.value,
+            groupId: selectedGroupIdModal.value,
+            start: moment(selectedDate.value).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
+            end: moment(selectedDate.value).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
             type: type,
           };
           break;
         case "Update":
           dataBack = {
-            id: schedule[0].id,
-            schoolClassId: schedule[0].classId,
-            groupId: schedule[0].groupId,
+            customizedScheduleId: selectedCustomScheduleId.value,
+            schoolClassId: selectedClassId.value,
+            groupId: selectedGroupIdModal.value,
             start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
             end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
             type: type,
@@ -317,7 +344,6 @@ export default defineComponent({
           break;
         case "Skip":
           dataBack = {
-            id: schedule.customizedScheduleId,
             schoolClassId: schedule.classId,
             groupId: schedule.groupId,
             start: data.day.replace("00:00:00", schedule.start),
@@ -396,6 +422,8 @@ export default defineComponent({
       onSubmit,
       scheduleAction,
       canCreate,
+      isCreate,
+      isUpdate,
     };
   },
 });
