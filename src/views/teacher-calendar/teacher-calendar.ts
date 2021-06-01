@@ -187,6 +187,14 @@ export default defineComponent({
         : [];
     };
 
+    const canCreate = (vl: Moment) => {
+      if (calendarSchedules.value.length <= 0) return;
+      const listData = calendarSchedules.value.filter((daySchedule: any) => {
+        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
+      });
+      return listData.length < 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-"));
+    };
+
     const getMonths = (vl: Moment) => {
       const current = vl.clone();
       const localeData = vl.localeData();
@@ -390,6 +398,7 @@ export default defineComponent({
       moment,
       onSubmit,
       scheduleAction,
+      canCreate,
     };
   },
 });
