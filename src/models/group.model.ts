@@ -17,5 +17,5 @@ export interface GroupModel {
   next?: string;
   isCurrentDay?: boolean;
   startClass?: boolean;
+  isHighLighted?: boolean;
 }
-

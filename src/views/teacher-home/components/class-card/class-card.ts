@@ -103,6 +103,7 @@ export default defineComponent({
     const validatedGroupHighlighted = () => {
       let min = 999999;
       let indexMin = -1;
+      let hasGroupActive = false;
       const current = new Date();
       const d = moment().weekday();
       const m = current.getMinutes();
@@ -112,8 +113,15 @@ export default defineComponent({
         const classTime = group.schedules;
         const nextDay = validatedTime(classTime);
         if(nextDay != null) {
+          const timeStart = nextDay.start.split(":");
           const timeEnd = nextDay.end.split(":");
-          const timeValue = (nextDay.daysOfWeek-1)*1440 + parseInt(timeEnd[0], 10)*60 + parseInt(timeEnd[1], 10);
+          const timeStartValue = (nextDay.daysOfWeek-1)*1440 + parseInt(timeStart[0], 10)*60 + parseInt(timeStart[1], 10);
+          const timeEndValue = (nextDay.daysOfWeek-1)*1440 + parseInt(timeEnd[0], 10)*60 + parseInt(timeEnd[1], 10);
+          if(timeStartValue <= currentTime && currentTime <= timeEndValue){
+            hasGroupActive = true;
+            group.isHighLighted = true;
+          }
+          const timeValue = timeStartValue;
           if(timeValue - currentTime > 0){
             if(timeValue - currentTime < min){
               min = timeValue - currentTime;
@@ -125,13 +133,15 @@ export default defineComponent({
           }
         }
       });
-      props.remoteClassGroups.map((group, index) => {
-        if(indexMin == index){
-          group.isCurrentDay = true;
-        }else{
-          group.isCurrentDay = false;
-        }
-      });
+      if(hasGroupActive == false) {
+        props.remoteClassGroups.map((group, index) => {
+          if (indexMin == index) {
+            group.isHighLighted = true;
+          } else {
+            group.isHighLighted = false;
+          }
+        });
+      }
     };
 
     onMounted(() => {
@@ -143,6 +153,7 @@ export default defineComponent({
           let hasActiveClass = false;
           classTime.map(time => {
             if (time.daysOfWeek - 1 == currentDay) {
+              group.isCurrentDay = true;
               if (!hasActiveClass) {
                 group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);
                 hasActiveClass = group.startClass;
