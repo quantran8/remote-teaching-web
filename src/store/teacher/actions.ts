@@ -23,17 +23,21 @@ const actions: ActionTree<TeacherState, any> = {
     const response = await TeacherService.getScheduleCalendar(payload.classId, payload.groupId, payload.startDate, payload.endDate);
     commit("setCalendarSchedule", response);
   },
-  async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    await TeacherService.skipSchedule(payload);
+  async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+    // const response = await TeacherService.skipSchedule(payload.data);
+    commit("updateCalendarSchedule", payload);
   },
-  async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    await TeacherService.createSchedule(payload);
+  async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+    // const response = await TeacherService.createSchedule(payload.data);
+    commit("updateCalendarSchedule", payload);
   },
-  async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    await TeacherService.updateSchedule(payload);
+  async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+    const response = await TeacherService.updateSchedule(payload.data);
+    if (response) commit("updateCalendarSchedule", payload);
   },
-  async deleteSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { scheduleId: string }) {
-    await TeacherService.deleteSchedule(payload.scheduleId);
+  async deleteSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: { scheduleId: string; type: string } }) {
+    const response = await TeacherService.deleteSchedule(payload.data.scheduleId);
+    if (response) commit("updateCalendarSchedule", payload);
   },
   async loadAccessibleSchools({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleSchoolQueryParam) {
     try {
