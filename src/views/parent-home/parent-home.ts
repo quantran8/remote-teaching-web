@@ -43,6 +43,8 @@ export default defineComponent({
         await store.dispatch("studentRoom/setOnline");
         await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
       } catch (err) {
+        // TODO: create a file for declaring const
+        // 1 = ConcurrentUserException
         if (err.code === 1) {
           await store.dispatch("setToast", { message: err.message });
         } else {
