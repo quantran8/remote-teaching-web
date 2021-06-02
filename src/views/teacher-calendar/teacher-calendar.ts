@@ -43,21 +43,24 @@ export default defineComponent({
     const month = ref<Moment>(moment());
     const formatTime = "HH:mm";
     const isCreate = ref<boolean>(false);
-    const classes = store.getters["teacher/classes"];
+    const classes = computed(() => store.getters["teacher/classes"]);
+
+    const getClassBySchoolId = async (schoolId: any) => {
+      await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
+    };
 
     onMounted(async () => {
-      await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
-      if (classes.length <= 0) return;
+      await getClassBySchoolId(schoolId);
       getSchedules(null, null, month.value);
-      getListClassSelect(classes);
-      getColor();
     });
 
     watch(classes, () => {
-      if (classes.length <= 0) return;
-      getSchedules(null, null, month.value);
-      getListClassSelect(classes);
-      getColor();
+      if (classes.value.length <= 0) {
+        getClassBySchoolId(schoolId);
+      } else {
+        getListClassSelect(classes.value);
+        getColor();
+      }
     });
 
     watch(month, () => {
