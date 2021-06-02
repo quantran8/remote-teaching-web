@@ -122,8 +122,6 @@ export default defineComponent({
           if (cl.isActive) {
             classActive.value = cl;
             haveClassActive.value = true;
-          } else {
-            haveClassActive.value = false;
           }
         });
       }
