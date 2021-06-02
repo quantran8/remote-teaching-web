@@ -4,6 +4,8 @@ import { Modal } from "ant-design-vue";
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import * as audioSource from "@/utils/audioGenerator";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+const fpPromise = FingerprintJS.load();
 
 //five minutes
 const POPUP_TIMING = 6000 * 10 * 5;
@@ -53,11 +55,15 @@ export const useDisconnection = () => {
     audioSource.teacherTryReconnectSound.stop();
     audioSource.reconnectSuccessSound.play();
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const fp = await fpPromise;
+    const result = await fp.get();
+    const visitorId = result.visitorId;
     await dispatch("teacherRoom/initClassRoom", {
       classId: classId,
       userId: loginInfo.profile.sub,
       userName: loginInfo.profile.name,
       role: RoleName.teacher,
+      browserFingerPrinting: visitorId,
     });
     await dispatch("teacherRoom/joinRoom");
   });
@@ -82,12 +88,16 @@ export const useDisconnection = () => {
     audioSource.reconnectSuccessSound.play();
     const { studentId, classId } = route.params;
     if (!studentId || !classId) return;
+    const fp = await fpPromise;
+    const result = await fp.get();
+    const visitorId = result.visitorId;
     await dispatch("studentRoom/initClassRoom", {
       classId: classId,
       userId: loginInfo.value.profile.sub,
       userName: loginInfo.value.profile.name,
       studentId: studentId,
       role: RoleName.parent,
+      browserFingerPrinting: visitorId,
     });
     await dispatch("studentRoom/joinRoom");
   });

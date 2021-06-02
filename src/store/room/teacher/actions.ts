@@ -23,6 +23,7 @@ import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -98,7 +99,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async initClassRoom({ commit }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
-    let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
+    let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
     if (!roomResponse) {
       // start class room
       // const lessons = await LessonService.getLessonByUnit(11);

@@ -9,6 +9,8 @@ import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
 import { PrivacyPolicy } from "@/locales/localeid";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
   components: {
@@ -72,8 +74,11 @@ export default defineComponent({
 
     const onSchoolChange = async (schoolId: string) => {
       loading.value = true;
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
       try {
-        await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
+        await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
       } catch (err) {
         const message = err.body.message;

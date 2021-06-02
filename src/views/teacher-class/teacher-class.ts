@@ -7,6 +7,8 @@ import { gsap } from "gsap";
 import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+const fpPromise = FingerprintJS.load();
 import {
   TeacherCard,
   LessonPlan,
@@ -37,14 +39,25 @@ export default defineComponent({
   async created() {
     const { getters, dispatch } = useStore();
     const route = useRoute();
+    const router = useRouter();
     const { classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    await dispatch("teacherRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.profile.sub,
-      userName: loginInfo.profile.name,
-      role: RoleName.teacher,
-    });
+    const fp = await fpPromise;
+    const result = await fp.get();
+    const visitorId = result.visitorId;
+    try {
+      await dispatch("teacherRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        role: RoleName.teacher,
+        browserFingerPrinting: visitorId,
+      });
+    } catch (err) {
+      if (err.code === 1) {
+        await router.push("/teacher");
+      }
+    }
     await dispatch("teacherRoom/joinRoom");
   },
 
