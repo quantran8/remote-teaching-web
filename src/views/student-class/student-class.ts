@@ -47,6 +47,8 @@ export default defineComponent({
         browserFingerPrinting: visitorId,
       });
     } catch (err) {
+      // TODO: create a file for declaring const
+      // 1 = ConcurrentUserException
       if (err.code === 1) {
         await router.push(Paths.Home);
       }
