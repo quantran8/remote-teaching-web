@@ -8,11 +8,11 @@ const actions: ActionTree<TeacherState, any> = {
     await dispatch("setAcceptPolicy");
     commit("setInfo", payload);
   },
-  async loadClasses({ commit, state }: ActionContext<TeacherState, any>, payload: { schoolId: string }) {
+  async loadClasses({ commit, state }: ActionContext<TeacherState, any>, payload: { schoolId: string; browserFingerPrinting: string }) {
     if (!state.info) return;
     const response = await TeacherService.getClasses(state.info.id, payload.schoolId);
     commit("setClasses", response.data);
-    const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom();
+    const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
     commit("setClassRoom", responseActive.data);
   },
   async loadSchedules(
