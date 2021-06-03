@@ -64,6 +64,7 @@ export default defineComponent({
 
     const getSchedules = async (classId: any, groupId: any, month: Moment) => {
       await store.dispatch("teacher/loadSchedules", {
+        schoolId,
         classId,
         groupId,
         startDate: month.startOf("month").format(),
