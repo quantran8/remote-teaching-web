@@ -15,25 +15,30 @@ const actions: ActionTree<TeacherState, any> = {
     const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
     commit("setClassRoom", responseActive.data);
   },
+  async clearSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
+    commit("clearCalendarSchedule");
+  },
   async loadSchedules(
     { commit, state }: ActionContext<TeacherState, any>,
-    payload: { classId: string; groupId: string; startDate: string; endDate: string },
+    payload: { schoolId: string; classId: string; groupId: string; startDate: string; endDate: string },
   ) {
     if (!state.info) return;
-    const response = await TeacherService.getScheduleCalendar(payload.classId, payload.groupId, payload.startDate, payload.endDate);
+    const response = await TeacherService.getScheduleCalendar(payload.schoolId, payload.classId, payload.groupId, payload.startDate, payload.endDate);
     commit("setCalendarSchedule", response);
   },
-  async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    await TeacherService.skipSchedule(payload);
+  async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+    await TeacherService.skipSchedule(payload.data);
   },
-  async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    await TeacherService.createSchedule(payload);
+  async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+    await TeacherService.createSchedule(payload.data);
   },
-  async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: ScheduleParam) {
-    await TeacherService.updateSchedule(payload);
+  async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+    const response = await TeacherService.updateSchedule(payload.data);
+    if (response) commit("updateCalendarSchedule", payload);
   },
-  async deleteSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { scheduleId: string }) {
-    await TeacherService.deleteSchedule(payload.scheduleId);
+  async deleteSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: { scheduleId: string; type: string } }) {
+    const response = await TeacherService.deleteSchedule(payload.data.scheduleId);
+    if (response) commit("updateCalendarSchedule", payload);
   },
   async loadAccessibleSchools({ commit, state }: ActionContext<TeacherState, any>, payload: AccessibleSchoolQueryParam) {
     try {

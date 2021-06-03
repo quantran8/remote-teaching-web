@@ -31,12 +31,13 @@ export default defineComponent({
     const listGroupSelect = ref<any[]>([]);
     const listGroupModal = ref<any[]>([]);
     const selectedClassId = ref<string>("all");
+    const selectedClassIdModal = ref<string>("");
     const selectedGroupId = ref<string>("all");
     const selectedGroupIdModal = ref<string>("");
     const selectedStartDateModal = ref<string>("");
     const selectedEndDateModal = ref<string>("");
     const selectedCustomScheduleId = ref<string>("");
-    const selectedDate = ref<Moment>(moment());
+    const selectedDate = ref<Moment>(moment().startOf("day"));
     const isDisableGroup = ref<boolean>(true);
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
     const color = ref();
@@ -51,16 +52,8 @@ export default defineComponent({
 
     onMounted(async () => {
       await getClassBySchoolId(schoolId);
-      getSchedules(null, null, month.value);
-    });
-
-    watch(classes, () => {
-      if (classes.value.length <= 0) {
-        getClassBySchoolId(schoolId);
-      } else {
-        getListClassSelect(classes.value);
-        getColor();
-      }
+      await getListClassSelect(classes.value);
+      await getSchedules(null, null, month.value);
     });
 
     watch(month, () => {
@@ -69,53 +62,47 @@ export default defineComponent({
       getSchedules(classId, groupId, month.value);
     });
 
-    watch(calendarSchedules, () => {
-      if (!calendarSchedules.value) return;
-      getColor();
-    });
-
     const getSchedules = async (classId: any, groupId: any, month: Moment) => {
       await store.dispatch("teacher/loadSchedules", {
+        schoolId,
         classId,
         groupId,
         startDate: month.startOf("month").format(),
         endDate: month.endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
       });
-      await getColor();
     };
 
-    const getColor = () => {
-      const listClassId = calendarSchedules.value
-        .map((calendarSchedule: any) => {
-          return calendarSchedule.schedules.map((schedule: any) => {
-            return schedule.classId;
-          });
-        })
-        .flat(1)
-        .filter((v: any, i: any, a: any) => {
-          return a.indexOf(v) === i;
-        });
-      color.value = listClassId.reduce((hash: any, elem: any) => {
-        hash[elem] = getRandomColor();
-        return hash;
-      }, {});
-    };
-
-    const getListClassSelect = (listClass: ClassModel[]) => {
-      listClassSelect.value = listClass.map((cl: any) => {
+    const getListClassSelect = async (listClass: ClassModel[]) => {
+      const listClassFilter = listClass.map((cl: any) => {
         let listGroup = [];
         listGroup = cl.remoteClassGroups.map((group: any) => {
           return { id: group.id, name: group.groupName };
         });
         return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
       });
+      color.value = listClassFilter
+        .map((cl: any) => {
+          return cl.id;
+        })
+        .reduce((hash: any, elem: any) => {
+          hash[elem] = getRandomColor();
+          return hash;
+        }, {});
+      listClassSelect.value = listClassFilter;
     };
 
-    const getGroupsByClass = (classId: string) => {
+    const getGroupsByClass = async (classId: string) => {
       const currentClass = listClassSelect.value.filter((cl: any) => {
         return cl.id == classId;
       })[0];
       listGroupSelect.value = currentClass.groups;
+    };
+
+    const getGroupsModalByClass = async (classId: string) => {
+      const currentClass = listClassSelect.value.filter((cl: any) => {
+        return cl.id == classId;
+      })[0];
+      listGroupModal.value = currentClass.groups;
     };
 
     const handleChangeClass = (vl: string) => {
@@ -149,6 +136,11 @@ export default defineComponent({
       });
       selectedStartDateModal.value = group[0].start;
       selectedEndDateModal.value = group[0].end;
+    };
+
+    const handleChangeClassModal = (vl: string) => {
+      selectedClassIdModal.value = vl;
+      getGroupsModalByClass(vl);
     };
 
     const handleChangeGroupModal = (vl: string) => {
@@ -194,7 +186,7 @@ export default defineComponent({
       });
       return listData.length > 0
         ? listData[0].schedules.map((schedule: any) => {
-            schedule.color = color.value ? color.value[schedule.classId] : "#000";
+            schedule.color = color.value && color.value[schedule.classId];
             return schedule;
           })
         : [];
@@ -205,7 +197,10 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
-      return listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-"));
+      return (
+        vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") &&
+        (listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-")))
+      );
     };
 
     const isUpdate = (vl: Moment) => {
@@ -262,7 +257,7 @@ export default defineComponent({
     };
 
     const scheduleAction = async (type: string, timeLong: any, item?: any) => {
-      const date = moment(timeLong);
+      const date = moment(timeLong).startOf("day");
       selectedDate.value = date;
       if (date.month() != month.value.month()) {
         month.value = date;
@@ -270,30 +265,31 @@ export default defineComponent({
       }
       if (type == "Create") {
         await getDataModal(date);
+        selectedClassIdModal.value = listClassSelect.value[0]?.id;
+        getGroupsModalByClass(listClassSelect.value[0]?.id);
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";
         isCreate.value = true;
         visible.value = true;
       } else if (type == "Update") {
+        if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
+        listGroupModal.value = [{ id: item.groupId, name: item.groupName }];
         selectedCustomScheduleId.value = item.customizedScheduleId;
+        selectedClassIdModal.value = item.classId;
         selectedGroupIdModal.value = item.groupId;
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         isCreate.value = false;
         visible.value = true;
       } else {
+        if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
         selectedGroupIdModal.value = item.groupId;
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
-        if (!item.customizedScheduleId.includes("-0000-")) {
-          isCreate.value = false;
-          visible.value = true;
-        } else {
-          recurringVisible.value = true;
-        }
+        recurringVisible.value = true;
       }
     };
 
@@ -323,35 +319,44 @@ export default defineComponent({
       let dataBack = {};
       switch (type) {
         case "Delete":
-          dataBack = { scheduleId: schedule.customizedScheduleId };
+          dataBack = { day: selectedDate.value.format(), data: { scheduleId: selectedCustomScheduleId.value, type: type } };
           break;
         case "Create":
           dataBack = {
-            schoolClassId: selectedClassId.value,
-            groupId: selectedGroupIdModal.value,
-            start: moment(selectedDate.value).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
-            end: moment(selectedDate.value).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
-            type: type,
+            day: selectedDate.value.format(),
+            data: {
+              schoolClassId: selectedClassIdModal.value,
+              groupId: selectedGroupIdModal.value,
+              start: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
+              end: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
+              type: type,
+            },
           };
           break;
         case "Update":
           dataBack = {
-            customizedScheduleId: selectedCustomScheduleId.value,
-            schoolClassId: selectedClassId.value,
-            groupId: selectedGroupIdModal.value,
-            start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
-            end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
-            type: type,
-            createdBy: loginInfo.profile.sub,
+            day: selectedDate.value.format(),
+            data: {
+              customizedScheduleId: selectedCustomScheduleId.value,
+              schoolClassId: selectedClassId.value == "all" ? selectedClassIdModal.value : selectedClassId.value,
+              groupId: selectedGroupIdModal.value,
+              start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
+              end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
+              type: type,
+              createdBy: loginInfo.profile.sub,
+            },
           };
           break;
         case "Skip":
           dataBack = {
-            schoolClassId: schedule.classId,
-            groupId: schedule.groupId,
-            start: data.day.replace("00:00:00", schedule.start),
-            end: data.day.replace("00:00:00", schedule.end),
-            type: type,
+            day: selectedDate.value.format(),
+            data: {
+              schoolClassId: schedule.classId,
+              groupId: schedule.groupId,
+              start: data.day.replace("00:00:00", schedule.start),
+              end: data.day.replace("00:00:00", schedule.end),
+              type: type,
+            },
           };
           break;
       }
@@ -378,9 +383,19 @@ export default defineComponent({
       switch (type) {
         case "Skip":
           await onSkipSchedule(createData(type));
+          await getSchedules(
+            selectedClassId.value == "all" ? null : selectedClassId.value,
+            selectedGroupId.value == "all" ? null : selectedGroupId.value,
+            month.value,
+          );
           break;
         case "Create":
           await onCreateSchedule(createData(type));
+          await getSchedules(
+            selectedClassId.value == "all" ? null : selectedClassId.value,
+            selectedGroupId.value == "all" ? null : selectedGroupId.value,
+            month.value,
+          );
           break;
         case "Update":
           await onUpdateSchedule(createData(type));
@@ -389,11 +404,6 @@ export default defineComponent({
           await onDeleteSchedule(createData(type));
           break;
       }
-      await getSchedules(
-        selectedClassId.value == "all" ? null : selectedClassId.value,
-        selectedGroupId.value == "all" ? null : selectedGroupId.value,
-        month.value,
-      );
       visible.value = false;
       recurringVisible.value = false;
     };
@@ -411,12 +421,14 @@ export default defineComponent({
       onPanelChange,
       isDisableGroup,
       selectedClassId,
+      selectedClassIdModal,
       selectedGroupId,
       selectedGroupIdModal,
       selectedStartDateModal,
       selectedEndDateModal,
       handleChangeClass,
       handleChangeGroup,
+      handleChangeClassModal,
       handleChangeGroupModal,
       onChangeStartDateModal,
       onChangeEndDateModal,

@@ -83,6 +83,7 @@ export default defineComponent({
       try {
         await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
+        currentSchoolId.value = schoolId;
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
@@ -120,12 +121,12 @@ export default defineComponent({
         await getSchools();
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
-          currentSchoolId.value = schools.value[0].id;
           if (schools.value.length === 1) {
             disabled.value = true;
           }
         }
       }
+      await store.dispatch("teacher/clearSchedules");
       if (classes.value) {
         classes.value.map((cl: TeacherClassModel) => {
           if (cl.isActive) {
