@@ -76,6 +76,14 @@
       </template>
     </Calendar>
     <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+      <div class="select-container" v-if="isCreate">
+        <span class="modal-title-select">Class</span>
+        <Select :value="selectedClassIdModal" class="modal-size-group" @change="handleChangeClassModal">
+          <Option v-for="val in listClassSelect" :key="val.id">
+            {{ val.name }}
+          </Option>
+        </Select>
+      </div>
       <div class="select-container">
         <span class="modal-title-select">Group</span>
         <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal">
@@ -87,14 +95,12 @@
       <div class="select-container">
         <span class="modal-title-select">Start</span>
         <TimePicker class="modal-size-time-picker" @change="onChangeStartDateModal" :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
-      </div>
-      <div class="select-container">
-        <span class="modal-title-select">End</span>
+        <span class="modal-title-select ml-20">End</span>
         <TimePicker class="modal-size-time-picker" @change="onChangeEndDateModal" :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
       </div>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button type="danger" @click="onSubmit('Delete')">Delete</Button>
+          <Button v-if="!isCreate" type="danger" @click="onSubmit('Delete')">Delete</Button>
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Cancel</Button>
