@@ -52,27 +52,14 @@ export default defineComponent({
 
     onMounted(async () => {
       await getClassBySchoolId(schoolId);
-      getSchedules(null, null, month.value);
-    });
-
-    watch(classes, () => {
-      if (classes.value.length <= 0) {
-        getClassBySchoolId(schoolId);
-      } else {
-        getListClassSelect(classes.value);
-        getColor();
-      }
+      await getListClassSelect(classes.value);
+      await getSchedules(null, null, month.value);
     });
 
     watch(month, () => {
       const classId = selectedClassId.value == "all" ? null : selectedClassId.value;
       const groupId = selectedGroupId.value == "all" ? null : selectedGroupId.value;
       getSchedules(classId, groupId, month.value);
-    });
-
-    watch(calendarSchedules, () => {
-      if (!calendarSchedules.value) return;
-      getColor();
     });
 
     const getSchedules = async (classId: any, groupId: any, month: Moment) => {
@@ -82,44 +69,35 @@ export default defineComponent({
         startDate: month.startOf("month").format(),
         endDate: month.endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
       });
-      await getColor();
     };
 
-    const getColor = () => {
-      const listClassId = calendarSchedules.value
-        .map((calendarSchedule: any) => {
-          return calendarSchedule.schedules.map((schedule: any) => {
-            return schedule.classId;
-          });
-        })
-        .flat(1)
-        .filter((v: any, i: any, a: any) => {
-          return a.indexOf(v) === i;
-        });
-      color.value = listClassId.reduce((hash: any, elem: any) => {
-        hash[elem] = getRandomColor();
-        return hash;
-      }, {});
-    };
-
-    const getListClassSelect = (listClass: ClassModel[]) => {
-      listClassSelect.value = listClass.map((cl: any) => {
+    const getListClassSelect = async (listClass: ClassModel[]) => {
+      const listClassFilter = listClass.map((cl: any) => {
         let listGroup = [];
         listGroup = cl.remoteClassGroups.map((group: any) => {
           return { id: group.id, name: group.groupName };
         });
         return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
       });
+      color.value = listClassFilter
+        .map((cl: any) => {
+          return cl.id;
+        })
+        .reduce((hash: any, elem: any) => {
+          hash[elem] = getRandomColor();
+          return hash;
+        }, {});
+      listClassSelect.value = listClassFilter;
     };
 
-    const getGroupsByClass = (classId: string) => {
+    const getGroupsByClass = async (classId: string) => {
       const currentClass = listClassSelect.value.filter((cl: any) => {
         return cl.id == classId;
       })[0];
       listGroupSelect.value = currentClass.groups;
     };
 
-    const getGroupsModalByClass = (classId: string) => {
+    const getGroupsModalByClass = async (classId: string) => {
       const currentClass = listClassSelect.value.filter((cl: any) => {
         return cl.id == classId;
       })[0];
@@ -207,7 +185,7 @@ export default defineComponent({
       });
       return listData.length > 0
         ? listData[0].schedules.map((schedule: any) => {
-            schedule.color = color.value ? color.value[schedule.classId] : "#000";
+            schedule.color = color.value && color.value[schedule.classId];
             return schedule;
           })
         : [];
@@ -399,9 +377,19 @@ export default defineComponent({
       switch (type) {
         case "Skip":
           await onSkipSchedule(createData(type));
+          await getSchedules(
+            selectedClassId.value == "all" ? null : selectedClassId.value,
+            selectedGroupId.value == "all" ? null : selectedGroupId.value,
+            month.value,
+          );
           break;
         case "Create":
           await onCreateSchedule(createData(type));
+          await getSchedules(
+            selectedClassId.value == "all" ? null : selectedClassId.value,
+            selectedGroupId.value == "all" ? null : selectedGroupId.value,
+            month.value,
+          );
           break;
         case "Update":
           await onUpdateSchedule(createData(type));

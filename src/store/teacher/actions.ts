@@ -24,12 +24,10 @@ const actions: ActionTree<TeacherState, any> = {
     commit("setCalendarSchedule", response);
   },
   async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
-    // const response = await TeacherService.skipSchedule(payload.data);
-    commit("updateCalendarSchedule", payload);
+    await TeacherService.skipSchedule(payload.data);
   },
   async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
-    // const response = await TeacherService.createSchedule(payload.data);
-    commit("updateCalendarSchedule", payload);
+    await TeacherService.createSchedule(payload.data);
   },
   async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
     const response = await TeacherService.updateSchedule(payload.data);

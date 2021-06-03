@@ -80,6 +80,7 @@ export default defineComponent({
       try {
         await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
+        currentSchoolId.value = schoolId;
       } catch (err) {
         const message = err.body.message;
         await store.dispatch("setToast", { message: message });
@@ -116,7 +117,6 @@ export default defineComponent({
         await getSchools();
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
-          currentSchoolId.value = schools.value[0].id;
           if (schools.value.length === 1) {
             disabled.value = true;
           }

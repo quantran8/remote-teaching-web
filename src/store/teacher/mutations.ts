@@ -43,10 +43,6 @@ const mutations: MutationTree<TeacherState> = {
           return dayCalendar;
         });
         break;
-      case "Create":
-        console.log(payload);
-        console.log(state.calendarSchedules);
-        break;
       case "Update":
         state.calendarSchedules.map(dayCalendar => {
           if (dayCalendar.day == payload.day) {
@@ -61,10 +57,6 @@ const mutations: MutationTree<TeacherState> = {
           }
           return dayCalendar;
         });
-        break;
-      case "Skip":
-        console.log(payload.data);
-        console.log(state.calendarSchedules);
         break;
     }
   },
