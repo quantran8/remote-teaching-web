@@ -1,5 +1,5 @@
 <template>
-  <div class="teacher-page" v-if="policy">
+  <div class="teacher-page" v-if="policy && !concurrent">
     <div class="teacher-title mt-40">
       <h2>Welcome {{ username }}</h2>
       <span class="teacher-title__indicator-out" v-if="haveClassActive" @click="onClickClass(classActive)">
@@ -42,6 +42,10 @@
         @click-to-access="groupId => onClickClass(cl, groupId)"
       />
     </div>
+  </div>
+  <div class="concurrent-connection" v-if="policy && concurrent">
+    <h1>Access Denied</h1>
+    <p>{{ concurrentMess }}</p>
   </div>
   <h1 class="access-denied" v-if="!visible && !policy">Access Denied</h1>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">

@@ -1,4 +1,4 @@
-import { LoginInfo, RoleName } from "@/commonui";
+import {ErrorCode, LoginInfo, RoleName} from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Paths } from "@/utils/paths";
@@ -54,7 +54,7 @@ export default defineComponent({
         browserFingerPrinting: visitorId,
       });
     } catch (err) {
-      if (err.code === 1) {
+      if (err.code === ErrorCode.ConcurrentUserException) {
         await router.push("/teacher");
       }
     }

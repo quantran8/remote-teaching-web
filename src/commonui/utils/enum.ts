@@ -603,3 +603,7 @@ export enum Mode {
 	Cursor = 1,
 	Draw = 2,
 }
+
+export enum ErrorCode {
+	ConcurrentUserException = 1
+}

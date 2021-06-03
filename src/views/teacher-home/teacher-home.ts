@@ -47,6 +47,8 @@ export default defineComponent({
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
+    const concurrent = ref<boolean>(false);
+    const concurrentMess = ref("");
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
@@ -81,8 +83,8 @@ export default defineComponent({
         await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
       } catch (err) {
-        const message = err.body.message;
-        await store.dispatch("setToast", { message: message });
+        concurrent.value = true;
+        concurrentMess.value = err.body.message;
       }
       loading.value = false;
     };
@@ -166,6 +168,8 @@ export default defineComponent({
       acceptPolicyText,
       readPolicy,
       policyTitleModal,
+      concurrent,
+      concurrentMess,
     };
   },
 });

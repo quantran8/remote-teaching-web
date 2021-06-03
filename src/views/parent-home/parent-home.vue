@@ -1,11 +1,15 @@
 <template>
-  <div class="student-page" v-if="policy">
+  <div class="student-page" v-if="policy && !concurrent">
     <h2>Welcome {{ username }}</h2>
     <p>Choose a student to start</p>
     <hr />
     <div class="list-student">
       <StudentCard v-for="child in children" :key="child.id" :name="child.name" @click="() => onClickChild(child)"> </StudentCard>
     </div>
+  </div>
+  <div class="concurrent-connection" v-if="policy && concurrent">
+    <h1>Access Denied</h1>
+    <p>{{ concurrentMess }}</p>
   </div>
   <h1 class="access-denied" v-if="!visible && !policy">Access Denied</h1>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
