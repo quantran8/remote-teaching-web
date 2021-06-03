@@ -1,4 +1,4 @@
-import { LoginInfo, MatIcon, RoleName } from "@/commonui";
+import {ErrorCode, LoginInfo, MatIcon, RoleName} from "@/commonui";
 import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
@@ -47,10 +47,8 @@ export default defineComponent({
         browserFingerPrinting: visitorId,
       });
     } catch (err) {
-      // TODO: create a file for declaring const
-      // 1 = ConcurrentUserException
-      if (err.code === 1) {
-        await router.push(Paths.Home);
+      if (err.code === ErrorCode.ConcurrentUserException) {
+        await router.push(Paths.Parent);
       }
     }
     await dispatch("studentRoom/joinRoom");
@@ -158,7 +156,16 @@ export default defineComponent({
 
     watch(isConnected, async () => {
       if (!isConnected.value) return;
-      await store.dispatch("studentRoom/joinWSRoom");
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      try {
+        await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
+      } catch (err) {
+        if (err.code === ErrorCode.ConcurrentUserException) {
+          await store.dispatch("setToast", { message: err.message });
+        }
+      }
     });
 
     watch(classAction, () => {

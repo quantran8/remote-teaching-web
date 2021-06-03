@@ -4,8 +4,8 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
 import { Modal, Checkbox, Button, Row } from "ant-design-vue";
-import { fmtMsg } from "commonui";
-import { PrivacyPolicy } from "@/locales/localeid";
+import {ErrorCode, fmtMsg} from "commonui";
+import {CommonLocale, PrivacyPolicy} from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 const fpPromise = FingerprintJS.load();
 
@@ -33,7 +33,10 @@ export default defineComponent({
     const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.StudentAcceptPolicy));
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
+    const accessDenied = computed(() => CommonLocale.CommonAccessDenied);
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
+    const concurrent = ref<boolean>(false);
+    const concurrentMess = ref("");
     const onClickChild = async (student: ChildModel) => {
       const fp = await fpPromise;
       const result = await fp.get();
@@ -43,9 +46,9 @@ export default defineComponent({
         await store.dispatch("studentRoom/setOnline");
         await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
       } catch (err) {
-        // TODO: create a file for declaring const
-        // 1 = ConcurrentUserException
-        if (err.code === 1) {
+        if (err.code === ErrorCode.ConcurrentUserException) {
+          // concurrent.value = true;
+          // concurrentMess.value = err.message;
           await store.dispatch("setToast", { message: err.message });
         } else {
           const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
@@ -91,6 +94,9 @@ export default defineComponent({
       acceptPolicyText,
       readPolicy,
       policyTitleModal,
+      concurrent,
+      concurrentMess,
+      accessDenied,
     };
   },
 });
