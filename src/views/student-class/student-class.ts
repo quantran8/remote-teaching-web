@@ -159,7 +159,13 @@ export default defineComponent({
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
-      await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
+      try {
+        await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
+      } catch (err) {
+        if (err.code === ErrorCode.ConcurrentUserException) {
+          await store.dispatch("setToast", { message: err.message });
+        }
+      }
     });
 
     watch(classAction, () => {
