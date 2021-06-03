@@ -84,8 +84,9 @@ export default defineComponent({
         await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
       } catch (err) {
-        concurrent.value = true;
-        concurrentMess.value = err.body.message;
+        // concurrent.value = true;
+        // concurrentMess.value = err.body.message;
+        await store.dispatch("setToast", { message: err.body.message });
       }
       loading.value = false;
     };

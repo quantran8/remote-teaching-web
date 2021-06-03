@@ -47,8 +47,9 @@ export default defineComponent({
         await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
       } catch (err) {
         if (err.code === ErrorCode.ConcurrentUserException) {
-          concurrent.value = true;
-          concurrentMess.value = err.message;
+          // concurrent.value = true;
+          // concurrentMess.value = err.message;
+          await store.dispatch("setToast", { message: err.message });
         } else {
           const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
           await store.dispatch("setToast", { message: message });
