@@ -14,6 +14,9 @@ const mutations: MutationTree<TeacherState> = {
       state.classes = payload;
     }
   },
+  clearCalendarSchedule(state: TeacherState, payload: any) {
+    state.calendarSchedules = [];
+  },
   setCalendarSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
     if (payload && payload.length != 0) {
       state.calendarSchedules = payload;

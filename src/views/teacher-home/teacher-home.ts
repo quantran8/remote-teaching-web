@@ -122,6 +122,7 @@ export default defineComponent({
           }
         }
       }
+      await store.dispatch("teacher/clearSchedules");
       if (classes.value) {
         classes.value.map((cl: TeacherClassModel) => {
           if (cl.isActive) {

@@ -15,12 +15,15 @@ const actions: ActionTree<TeacherState, any> = {
     const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
     commit("setClassRoom", responseActive.data);
   },
+  async clearSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
+    commit("clearCalendarSchedule");
+  },
   async loadSchedules(
     { commit, state }: ActionContext<TeacherState, any>,
-    payload: { classId: string; groupId: string; startDate: string; endDate: string },
+    payload: { schoolId: string; classId: string; groupId: string; startDate: string; endDate: string },
   ) {
     if (!state.info) return;
-    const response = await TeacherService.getScheduleCalendar(payload.classId, payload.groupId, payload.startDate, payload.endDate);
+    const response = await TeacherService.getScheduleCalendar(payload.schoolId, payload.classId, payload.groupId, payload.startDate, payload.endDate);
     commit("setCalendarSchedule", response);
   },
   async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
