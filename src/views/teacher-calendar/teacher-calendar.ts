@@ -196,7 +196,10 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
-      return listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-"));
+      return (
+        vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") &&
+        (listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-")))
+      );
     };
 
     const isUpdate = (vl: Moment) => {
@@ -269,6 +272,7 @@ export default defineComponent({
         isCreate.value = true;
         visible.value = true;
       } else if (type == "Update") {
+        if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
         listGroupModal.value = [{ id: item.groupId, name: item.groupName }];
         selectedCustomScheduleId.value = item.customizedScheduleId;
@@ -279,6 +283,7 @@ export default defineComponent({
         isCreate.value = false;
         visible.value = true;
       } else {
+        if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
         selectedGroupIdModal.value = item.groupId;
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);

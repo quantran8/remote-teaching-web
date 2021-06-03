@@ -12,4 +12,5 @@ export interface SchedulesModel {
   end: string;
   start: string;
   customizedScheduleId: string;
+  isHistory: boolean;
 }
