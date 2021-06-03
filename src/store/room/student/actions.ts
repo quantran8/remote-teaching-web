@@ -76,7 +76,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
-    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id);
+    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id, _payload.browserFingerPrinting);
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },

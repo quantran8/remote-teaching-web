@@ -180,7 +180,10 @@ export default defineComponent({
     const isConnected = computed(() => getters["teacherRoom/isConnected"]);
     watch(isConnected, async () => {
       if (!isConnected.value) return;
-      await dispatch("teacherRoom/joinWSRoom");
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      await dispatch("teacherRoom/joinWSRoom", { browserFingerPrinting: visitorId });
     });
     return {
       onClickHideAll,

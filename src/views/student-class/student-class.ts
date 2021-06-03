@@ -156,7 +156,10 @@ export default defineComponent({
 
     watch(isConnected, async () => {
       if (!isConnected.value) return;
-      await store.dispatch("studentRoom/joinWSRoom");
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
     });
 
     watch(classAction, () => {
