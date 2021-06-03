@@ -23,6 +23,8 @@ import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import {Paths} from "@/utils/paths";
+import router from "@/router";
 
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
@@ -97,26 +99,24 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
-  async initClassRoom({ commit }, payload: InitClassRoomPayload) {
+  async initClassRoom({ commit, dispatch }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
-    let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
-    if (!roomResponse) {
-      // start class room
-      // const lessons = await LessonService.getLessonByUnit(11);
-      // let lesson = lessons.find((ele) => parseInt(ele.title) === 16);
-      // if (!lesson) lesson = lessons[0];
+    try {
+      let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       roomResponse = await RemoteTeachingService.teacherStartClassRoom(payload.classId, payload.classId);
-      if (!roomResponse) throw new Error("Can not start class");
+      const roomInfo: RoomModel = roomResponse.data;
+      if (!roomInfo || roomInfo.classId !== payload.classId) {
+        commit("setError", {
+          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: "Your class has not been started!",
+        });
+        return;
+      }
+      commit("setRoomInfo", roomResponse.data);
+    } catch (err) {
+      await dispatch("setToast", { message: err.message }, { root: true });
+      await router.push(Paths.Home);
     }
-    const roomInfo: RoomModel = roomResponse.data;
-    if (!roomInfo || roomInfo.classId !== payload.classId) {
-      commit("setError", {
-        errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-        message: "Your class has not been started!",
-      });
-      return;
-    }
-    commit("setRoomInfo", roomResponse.data);
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
