@@ -43,8 +43,10 @@ export default defineComponent({
     const color = ref();
     const month = ref<Moment>(moment());
     const formatTime = "HH:mm";
+    const formatDateTime = "YYYY-MM-DDTHH:mm:ss";
     const isCreate = ref<boolean>(false);
     const classes = computed(() => store.getters["teacher/classes"]);
+    const recurringCustomIdFistFormat = "0000-";
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -68,7 +70,7 @@ export default defineComponent({
         classId,
         groupId,
         startDate: month.startOf("month").format(),
-        endDate: month.endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
+        endDate: month.endOf("month").format(formatDateTime),
       });
     };
 
@@ -103,27 +105,28 @@ export default defineComponent({
         return cl.id == classId;
       })[0];
       listGroupModal.value = currentClass.groups;
+      selectedGroupIdModal.value = currentClass.groups.length > 0 ? currentClass.groups[0].id : "";
     };
 
-    const handleChangeClass = (vl: string) => {
+    const handleChangeClass = async (vl: string) => {
       selectedClassId.value = vl;
       if (vl != "all") {
-        getSchedules(vl, null, month.value);
-        getGroupsByClass(vl);
+        await getSchedules(vl, null, month.value);
+        await getGroupsByClass(vl);
         isDisableGroup.value = false;
       } else {
-        getSchedules(null, null, month.value);
-        selectedGroupId.value = "all";
+        await getSchedules(null, null, month.value);
         isDisableGroup.value = true;
       }
+      selectedGroupId.value = "all";
     };
 
-    const handleChangeGroup = (vl: string) => {
+    const handleChangeGroup = async (vl: string) => {
       selectedGroupId.value = vl;
       if (vl != "all") {
-        getSchedules(selectedClassId.value, vl, month.value);
+        await getSchedules(selectedClassId.value, vl, month.value);
       } else {
-        getSchedules(selectedClassId.value, null, month.value);
+        await getSchedules(selectedClassId.value, null, month.value);
       }
     };
 
@@ -134,8 +137,8 @@ export default defineComponent({
       const group = listData[0].schedules.filter((schedule: any) => {
         return schedule.groupId == groupId;
       });
-      selectedStartDateModal.value = group[0].start;
-      selectedEndDateModal.value = group[0].end;
+      selectedStartDateModal.value = !isCreate.value ? group[0].start : "00:00";
+      selectedEndDateModal.value = !isCreate.value ? group[0].end : "00:00";
     };
 
     const handleChangeClassModal = (vl: string) => {
@@ -184,24 +187,22 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
-      return listData.length > 0
-        ? listData[0].schedules.map((schedule: any) => {
-            schedule.color = color.value && color.value[schedule.classId];
-            return schedule;
-          })
-        : [];
+      const dataReturn =
+        listData.length > 0
+          ? listData[0].schedules.map((schedule: any) => {
+              schedule.color = color.value && color.value[schedule.classId];
+              return schedule;
+            })
+          : [];
+      return dataReturn;
     };
 
     const canCreate = (vl: Moment) => {
       return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD");
     };
 
-    const isUpdate = (vl: Moment) => {
-      if (calendarSchedules.value.length <= 0) return;
-      const listData = calendarSchedules.value.filter((daySchedule: any) => {
-        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
-      });
-      return listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-");
+    const isUpdate = (item: any) => {
+      return !item.customizedScheduleId.includes(recurringCustomIdFistFormat);
     };
 
     const getMonths = (vl: Moment) => {
@@ -238,9 +239,9 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == date.date() && moment(daySchedule.day).month() == date.month();
       });
-      if (!customizedScheduleId || listData.length <= 0 || (customizedScheduleId && !customizedScheduleId.includes("-0000-"))) {
+      if (!customizedScheduleId || listData.length <= 0 || (customizedScheduleId && !customizedScheduleId.includes(recurringCustomIdFistFormat))) {
         listGroupModal.value = listGroupSelect.value;
-      } else if (customizedScheduleId && customizedScheduleId.includes("-0000-")) {
+      } else if (customizedScheduleId && customizedScheduleId.includes(recurringCustomIdFistFormat)) {
         listGroupModal.value = getGroupModal(listData[0]);
       }
     };
@@ -279,6 +280,7 @@ export default defineComponent({
       } else {
         if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
+        selectedCustomScheduleId.value = item.customizedScheduleId;
         selectedGroupIdModal.value = item.groupId;
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
@@ -312,11 +314,17 @@ export default defineComponent({
       let dataBack = {};
       switch (type) {
         case "Delete":
-          dataBack = { day: selectedDate.value.format(), data: { scheduleId: selectedCustomScheduleId.value, type: type } };
+          dataBack = { day: selectedDate.value.format(formatDateTime), data: { scheduleId: selectedCustomScheduleId.value, type: type } };
           break;
         case "Create":
           dataBack = {
-            day: selectedDate.value.format(),
+            day: selectedDate.value.format(formatDateTime),
+            groupName: listGroupModal.value.filter(group => {
+              return group.id == selectedGroupIdModal.value;
+            })[0].name,
+            className: listClassSelect.value.filter(group => {
+              return group.id == selectedClassIdModal.value;
+            })[0].name,
             data: {
               schoolClassId: selectedClassIdModal.value,
               groupId: selectedGroupIdModal.value,
@@ -328,13 +336,13 @@ export default defineComponent({
           break;
         case "Update":
           dataBack = {
-            day: selectedDate.value.format(),
+            day: selectedDate.value.format(formatDateTime),
             data: {
               customizedScheduleId: selectedCustomScheduleId.value,
               schoolClassId: selectedClassId.value == "all" ? selectedClassIdModal.value : selectedClassId.value,
               groupId: selectedGroupIdModal.value,
-              start: data.day.replace("00:00:00", convertTime(selectedStartDateModal.value)),
-              end: data.day.replace("00:00:00", convertTime(selectedEndDateModal.value)),
+              start: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
+              end: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
               type: type,
               createdBy: loginInfo.profile.sub,
             },
@@ -342,7 +350,8 @@ export default defineComponent({
           break;
         case "Skip":
           dataBack = {
-            day: selectedDate.value.format(),
+            day: selectedDate.value.format(formatDateTime),
+            customId: selectedCustomScheduleId.value,
             data: {
               schoolClassId: schedule.classId,
               groupId: schedule.groupId,
@@ -376,19 +385,9 @@ export default defineComponent({
       switch (type) {
         case "Skip":
           await onSkipSchedule(createData(type));
-          await getSchedules(
-            selectedClassId.value == "all" ? null : selectedClassId.value,
-            selectedGroupId.value == "all" ? null : selectedGroupId.value,
-            month.value,
-          );
           break;
         case "Create":
           await onCreateSchedule(createData(type));
-          await getSchedules(
-            selectedClassId.value == "all" ? null : selectedClassId.value,
-            selectedGroupId.value == "all" ? null : selectedGroupId.value,
-            month.value,
-          );
           break;
         case "Update":
           await onUpdateSchedule(createData(type));

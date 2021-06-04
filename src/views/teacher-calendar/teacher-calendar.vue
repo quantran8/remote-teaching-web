@@ -60,8 +60,8 @@
       </template>
       <template #dateCellRender="{ current: value }">
         <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
-          <div v-for="item in getListData(value)" :key="item.classId" :style="`color: ${item.color}; font-weight: 500`">
-            <a @click.stop.prevent="isUpdate(value) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
+          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`color: ${item.color}; font-weight: 500`">
+            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
               >{{ item.className }} <br />
               {{
                 `Group ${item.groupName}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${

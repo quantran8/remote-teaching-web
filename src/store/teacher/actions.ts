@@ -26,11 +26,19 @@ const actions: ActionTree<TeacherState, any> = {
     const response = await TeacherService.getScheduleCalendar(payload.schoolId, payload.classId, payload.groupId, payload.startDate, payload.endDate);
     commit("setCalendarSchedule", response);
   },
-  async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
-    await TeacherService.skipSchedule(payload.data);
+  async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; customId: string; data: ScheduleParam }) {
+    const response = await TeacherService.skipSchedule(payload.data);
+    if (response) commit("updateCalendarSchedule", payload);
   },
-  async createSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
-    await TeacherService.createSchedule(payload.data);
+  async createSchedule(
+    { commit, state }: ActionContext<TeacherState, any>,
+    payload: { day: string; className: string; groupName: string; data: ScheduleParam; id?: string },
+  ) {
+    const response = await TeacherService.createSchedule(payload.data);
+    if (response) {
+      payload.id = response;
+      commit("updateCalendarSchedule", payload);
+    }
   },
   async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
     const response = await TeacherService.updateSchedule(payload.data);
