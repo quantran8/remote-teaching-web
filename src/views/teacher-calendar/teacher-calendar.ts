@@ -259,7 +259,7 @@ export default defineComponent({
 
     const getDisabledMinutes = () => {
       const minutes = [];
-      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute() + 1; i++) {
+      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute(); i++) {
         minutes.push(i);
       }
       return minutes;
