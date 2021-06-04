@@ -52,6 +52,10 @@ export default defineComponent({
     const concurrentMess = ref("");
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
+        const fp = await fpPromise;
+        const result = await fp.get();
+        const visitorId = result.visitorId;
+        await RemoteTeachingService.getActiveClassRoom(visitorId);
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
