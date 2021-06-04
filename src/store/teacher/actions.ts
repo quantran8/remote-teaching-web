@@ -12,8 +12,12 @@ const actions: ActionTree<TeacherState, any> = {
     if (!state.info) return;
     const response = await TeacherService.getClasses(state.info.id, payload.schoolId);
     commit("setClasses", response.data);
-    const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
-    commit("setClassRoom", responseActive.data);
+    try {
+      const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
+      commit("setClassRoom", responseActive.data);
+    } catch (err) {
+      // process with err
+    }
   },
   async clearSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
     commit("clearCalendarSchedule");

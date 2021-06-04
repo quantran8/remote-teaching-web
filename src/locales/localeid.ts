@@ -44,6 +44,7 @@ export class CommonLocale {
 export class ErrorLocale {
   static UnauthorizedMessage = "error.unauthorized";
   static NotFoundMessage = "error.notfound";
+  static ClassNotStarted = "error.class.not.started";
 }
 
 export class PrivacyPolicy {

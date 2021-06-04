@@ -4,8 +4,8 @@ import { GLSocketClient } from "../base";
 import { TeacherWSCommand as WSCmd } from "./command";
 
 export class TeacherWSClient extends GLSocketClient {
-  sendRequestJoinRoom(roomId: string) {
-    return this.send(WSCmd.JOIN_CLASS, { roomId: roomId });
+  sendRequestJoinRoom(roomId: string, browserFingerPrinting: string) {
+    return this.send(WSCmd.JOIN_CLASS, { roomId: roomId, browserFingerPrinting: browserFingerPrinting });
   }
   sendRequestMuteVideo(IsMute: boolean) {
     return this.send(WSCmd.MUTE_VIDEO, { IsMute: IsMute });

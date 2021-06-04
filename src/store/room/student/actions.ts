@@ -8,10 +8,14 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import {ErrorCode, fmtMsg} from "commonui";
+import router from "@/router";
+import {Paths} from "@/utils/paths";
+import {ErrorLocale} from "@/locales/localeid";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
-    { commit },
+    { commit, dispatch },
     payload: {
       classId: string;
       userId: string;
@@ -27,12 +31,11 @@ const actions: ActionTree<StudentRoomState, any> = {
     });
     try {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
-      if (!roomResponse) return;
       const roomInfo: RoomModel = roomResponse.data;
       if (!roomInfo || roomInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-          message: "Your class has not been started!",
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
         });
         return;
       }
@@ -42,11 +45,15 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
-      commit("setError", {
-        errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-        message: "Your class has not been started!",
-      });
-      return;
+      if (error.code === ErrorCode.ConcurrentUserException) {
+        await router.push(Paths.Home);
+      } else {
+        commit("setError", {
+          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
+        });
+        return;
+      }
     }
   },
 
@@ -76,7 +83,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
-    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id);
+    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id, _payload.browserFingerPrinting);
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },

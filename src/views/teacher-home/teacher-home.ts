@@ -8,7 +8,7 @@ import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
-import { PrivacyPolicy } from "@/locales/localeid";
+import {CommonLocale, PrivacyPolicy} from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 const fpPromise = FingerprintJS.load();
 
@@ -45,10 +45,17 @@ export default defineComponent({
     const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.TeacherAcceptPolicy));
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
+    const accessDenied = computed(() => CommonLocale.CommonAccessDenied);
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
+    const concurrent = ref<boolean>(false);
+    const concurrentMess = ref("");
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
+        const fp = await fpPromise;
+        const result = await fp.get();
+        const visitorId = result.visitorId;
+        await RemoteTeachingService.getActiveClassRoom(visitorId);
         const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
         if (response && response.success) {
           await router.push("/class/" + teacherClass.schoolClassId);
@@ -82,8 +89,9 @@ export default defineComponent({
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
       } catch (err) {
-        const message = err.body.message;
-        await store.dispatch("setToast", { message: message });
+        // concurrent.value = true;
+        // concurrentMess.value = err.body.message;
+        await store.dispatch("setToast", { message: err.body.message });
       }
       loading.value = false;
     };
@@ -167,6 +175,9 @@ export default defineComponent({
       acceptPolicyText,
       readPolicy,
       policyTitleModal,
+      concurrent,
+      concurrentMess,
+      accessDenied,
     };
   },
 });
