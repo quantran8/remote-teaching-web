@@ -8,9 +8,10 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import {ErrorCode} from "commonui";
+import {ErrorCode, fmtMsg} from "commonui";
 import router from "@/router";
 import {Paths} from "@/utils/paths";
+import {ErrorLocale} from "@/locales/localeid";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -34,7 +35,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       if (!roomInfo || roomInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-          message: "Your class has not been started!",
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
         });
         return;
       }
@@ -45,12 +46,11 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
       if (error.code === ErrorCode.ConcurrentUserException) {
-        await dispatch("setToast", { message: error.message }, { root: true });
         await router.push(Paths.Home);
       } else {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-          message: "Your class has not been started!",
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
         });
         return;
       }

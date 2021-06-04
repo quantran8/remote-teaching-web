@@ -25,6 +25,8 @@ import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 import {Paths} from "@/utils/paths";
 import router from "@/router";
+import {fmtMsg} from "commonui";
+import {ErrorLocale} from "@/locales/localeid";
 
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
@@ -107,13 +109,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
       if (!roomInfo || roomInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-          message: "Your class has not been started!",
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
         });
         return;
       }
       commit("setRoomInfo", roomResponse.data);
     } catch (err) {
-      await dispatch("setToast", { message: err.message }, { root: true });
       await router.push(Paths.Home);
     }
   },
