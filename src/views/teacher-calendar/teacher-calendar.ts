@@ -47,6 +47,7 @@ export default defineComponent({
     const isCreate = ref<boolean>(false);
     const classes = computed(() => store.getters["teacher/classes"]);
     const recurringCustomIdFistFormat = "0000-";
+    const loading = ref(false);
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -65,6 +66,7 @@ export default defineComponent({
     });
 
     const getSchedules = async (classId: any, groupId: any, month: Moment) => {
+      loading.value = true;
       await store.dispatch("teacher/loadSchedules", {
         schoolId,
         classId,
@@ -72,6 +74,7 @@ export default defineComponent({
         startDate: month.startOf("month").format(),
         endDate: month.endOf("month").format(formatDateTime),
       });
+      loading.value = false;
     };
 
     const getListClassSelect = async (listClass: ClassModel[]) => {
@@ -431,6 +434,7 @@ export default defineComponent({
       canCreate,
       isCreate,
       isUpdate,
+      loading,
     };
   },
 });

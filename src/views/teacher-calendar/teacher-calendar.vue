@@ -18,6 +18,9 @@
           {{ val.name }}
         </Option>
       </Select>
+      <div class="loading" v-if="loading">
+        <Spin></Spin>
+      </div>
     </div>
     <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">
