@@ -26,6 +26,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    loadingStart: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     Spin,
