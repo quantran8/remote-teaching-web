@@ -30,7 +30,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     });
     try {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
-      if (!roomResponse) return;
       const roomInfo: RoomModel = roomResponse.data;
       if (!roomInfo || roomInfo.classId !== payload.classId) {
         commit("setError", {
