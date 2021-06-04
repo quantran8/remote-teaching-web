@@ -249,7 +249,7 @@ export default defineComponent({
       }
     };
 
-    const getDisabledHours = () => {
+    const getDisabledHoursEnd = () => {
       const hours = [];
       for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).hour(); i++) {
         hours.push(i);
@@ -257,7 +257,7 @@ export default defineComponent({
       return hours;
     };
 
-    const getDisabledMinutes = () => {
+    const getDisabledMinutesEnd = () => {
       const minutes = [];
       for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute(); i++) {
         minutes.push(i);
@@ -419,6 +419,10 @@ export default defineComponent({
       recurringVisible.value = false;
     };
 
+    const disableEndTime = (startTime: string) => {
+      return startTime == "00:00";
+    };
+
     return {
       listClassSelect,
       listGroupSelect,
@@ -451,8 +455,9 @@ export default defineComponent({
       isCreate,
       isUpdate,
       loading,
-      getDisabledHours,
-      getDisabledMinutes,
+      getDisabledHoursEnd,
+      getDisabledMinutesEnd,
+      disableEndTime,
     };
   },
 });

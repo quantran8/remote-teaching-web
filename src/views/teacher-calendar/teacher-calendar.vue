@@ -101,8 +101,9 @@
         <span class="modal-title-select ml-20">End</span>
         <TimePicker
           class="modal-size-time-picker"
-          :disabledHours="getDisabledHours"
-          :disabledMinutes="getDisabledMinutes"
+          :disabled="disableEndTime(selectedStartDateModal)"
+          :disabledHours="getDisabledHoursEnd"
+          :disabledMinutes="getDisabledMinutesEnd"
           @change="onChangeEndDateModal"
           :value="moment(selectedEndDateModal, 'HH:mm')"
           format="HH:mm"
