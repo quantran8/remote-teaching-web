@@ -8,7 +8,7 @@ export interface SchedulesModel {
   className: string;
   groupId: string;
   groupName: string;
-  duration: number;
+  duration?: number;
   end: string;
   start: string;
   customizedScheduleId: string;
