@@ -70,7 +70,10 @@ export default defineComponent({
         classId,
         groupId,
         startDate: month.startOf("month").format(),
-        endDate: month.endOf("month").format(formatDateTime),
+        endDate: month
+          .endOf("month")
+          .add(35 - moment().daysInMonth(), "days")
+          .format(formatDateTime),
       });
     };
 
