@@ -50,6 +50,7 @@ export default defineComponent({
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
+    const loadingStartClass = ref<boolean>(true);
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
         const fp = await fpPromise;
@@ -61,6 +62,7 @@ export default defineComponent({
           await router.push("/class/" + teacherClass.schoolClassId);
         }
       } catch (err) {
+        loadingStartClass.value = false;
         const message = err.body.message;
         await store.dispatch("setToast", { message: message });
       }
@@ -178,6 +180,7 @@ export default defineComponent({
       concurrent,
       concurrentMess,
       accessDenied,
+      loadingStartClass,
     };
   },
 });
