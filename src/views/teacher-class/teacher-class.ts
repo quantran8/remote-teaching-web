@@ -158,8 +158,10 @@ export default defineComponent({
       // does nothing, we only accept leave room;
     };
 
-    watch(error, () => {
-      console.log(error.value);
+    watch(error, async () => {
+      if (error.value) {
+        await router.push("/teacher");
+      }
     });
 
     const ctaVisible = ref(false);
