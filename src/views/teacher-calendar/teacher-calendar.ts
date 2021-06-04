@@ -193,14 +193,7 @@ export default defineComponent({
     };
 
     const canCreate = (vl: Moment) => {
-      if (calendarSchedules.value.length <= 0) return;
-      const listData = calendarSchedules.value.filter((daySchedule: any) => {
-        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
-      });
-      return (
-        vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") &&
-        (listData.length <= 0 || (listData[0] && !listData[0].schedules[0].customizedScheduleId.includes("-0000-")))
-      );
+      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD");
     };
 
     const isUpdate = (vl: Moment) => {
