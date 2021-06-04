@@ -99,7 +99,14 @@
         <span class="modal-title-select">Start</span>
         <TimePicker class="modal-size-time-picker" @change="onChangeStartDateModal" :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
         <span class="modal-title-select ml-20">End</span>
-        <TimePicker class="modal-size-time-picker" @change="onChangeEndDateModal" :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
+        <TimePicker
+          class="modal-size-time-picker"
+          :disabledHours="getDisabledHours"
+          :disabledMinutes="getDisabledMinutes"
+          @change="onChangeEndDateModal"
+          :value="moment(selectedEndDateModal, 'HH:mm')"
+          format="HH:mm"
+        />
       </div>
       <div class="modal-footer">
         <div class="delete-position">

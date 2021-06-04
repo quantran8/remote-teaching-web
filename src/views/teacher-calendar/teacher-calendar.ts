@@ -249,6 +249,22 @@ export default defineComponent({
       }
     };
 
+    const getDisabledHours = () => {
+      const hours = [];
+      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).hour(); i++) {
+        hours.push(i);
+      }
+      return hours;
+    };
+
+    const getDisabledMinutes = () => {
+      const minutes = [];
+      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute() + 1; i++) {
+        minutes.push(i);
+      }
+      return minutes;
+    };
+
     const onPanelChange = async (value: any, _mode: any) => {
       await getSchedules(selectedClassId.value, selectedGroupId.value, value);
     };
@@ -435,6 +451,8 @@ export default defineComponent({
       isCreate,
       isUpdate,
       loading,
+      getDisabledHours,
+      getDisabledMinutes,
     };
   },
 });
