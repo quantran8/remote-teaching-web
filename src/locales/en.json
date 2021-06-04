@@ -57,5 +57,6 @@
 	"teacher.accept.policy": "I accept the policies",
 	"student.accept.policy": "I accept the policies",
 	"read.policy": "Please read the privacy policy carefully.",
-	"privacy.policy": "Privacy Policy"
+	"privacy.policy": "Privacy Policy",
+	"error.class.not.started": "Your class has not been started!"
 }
