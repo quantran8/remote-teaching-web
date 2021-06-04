@@ -224,7 +224,9 @@ export default defineComponent({
     };
 
     const addDraw = () => {
-      console.log("drawing");
+      canvas.isDrawingMode = true;
+      canvas.freeDrawingBrush.color = activeColor.value;
+      canvas.freeDrawingBrush.width = 3;
     };
 
     const canvasRef = ref(null);
@@ -257,6 +259,9 @@ export default defineComponent({
 
     const changeColor = (color: string) => {
       activeColor.value = color;
+      if (canvas.isDrawingMode) {
+        canvas.freeDrawingBrush.color = color;
+      }
     };
     const animationCheck = ref(true);
     const animationDone = computed(() => animationCheck.value);
