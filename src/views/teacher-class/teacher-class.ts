@@ -182,6 +182,9 @@ export default defineComponent({
       if (!isConnected.value) return;
       await dispatch("teacherRoom/joinWSRoom");
     });
+
+	
+
     return {
       onClickHideAll,
       onClickShowAll,

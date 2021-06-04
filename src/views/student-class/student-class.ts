@@ -19,6 +19,9 @@ import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { useTimer } from "@/hooks/use-timer";
+import * as audioSource from "@/utils/audioGenerator";
+
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -87,7 +90,10 @@ export default defineComponent({
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
     const studentIsDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
-
+    const teacherIsDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
+    const showBearConfused = computed<boolean>(() => {
+      return store.getters["studentRoom/isDisconnected"] || store.getters["studentRoom/teacherIsDisconnected"];
+    });
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
@@ -212,6 +218,43 @@ export default defineComponent({
       await store.dispatch("studentRoom/disconnectSignalR");
     };
 
+    const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
+
+    const { start, pause, stop, formattedTime } = useTimer();
+
+    const milestones = {
+      first: "00:30",
+      second: "03:00",
+    };
+
+    watch(formattedTime, async currentFormattedTime => {
+      if (currentFormattedTime === milestones.first) {
+        audioSource.tryReconnectLoop2.stop();
+        audioSource.watchStory.play();
+        audioSource.watchStory.on("end", () => {
+          console.log("play video");
+        });
+      }
+	  if (currentFormattedTime === milestones.second) {
+		console.log('3p');
+		
+	  }
+    });
+
+    watch(myTeacherDisconnected, async isDisconnected => {
+      if (isDisconnected) {
+        start();
+        audioSource.reconnectFailedSound.play();
+        audioSource.reconnectFailedSound.on("end", () => {
+          audioSource.tryReconnectLoop2.play();
+        });
+        return;
+      } else {
+        stop();
+        audioSource.tryReconnectLoop2.stop();
+      }
+    });
+
     return {
       student,
       students,
@@ -244,7 +287,6 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
-      studentIsDisconnected,
       disconnectSignalR,
       IconHandRaised,
       IconHand,
@@ -252,6 +294,10 @@ export default defineComponent({
       IconAudioOff,
       IconVideoOn,
       IconVideoOff,
+      studentIsDisconnected,
+      teacherIsDisconnected,
+      showBearConfused,
+      formattedTime,
     };
   },
 });
