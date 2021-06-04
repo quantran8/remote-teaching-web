@@ -16,3 +16,4 @@ export const tryReconnectLoop2 = audioGenerator("/try-reconnect-loop-2.mp3");
 
 export const watchStory = audioGenerator("/watch-story.mp3");
 
+export const canGoToClassRoomToday = audioGenerator("/can-go-to-classroom-today.mp3")

@@ -10,8 +10,8 @@ const fpPromise = FingerprintJS.load();
 //five minutes
 const POPUP_TIMING = 6000 * 10 * 5;
 
-//one minutes
-const TEACHER_RECONNECT_TIMING = 6000 * 100;
+//three minutes
+const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
 
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
@@ -27,12 +27,12 @@ export const useDisconnection = () => {
   //handle teacher disconnection in student's side
 
   watch(myTeacherDisconnected, async isDisconnected => {
-	if(timeoutId) {
-		clearTimeout(timeoutId)
-	}
-    if(isDisconnected) {
-		audioSource.reconnectFailedSound.play();
-	}
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    if (isDisconnected) {
+      audioSource.reconnectFailedSound.play();
+    }
   });
 
   //handle teacher disconnection in teacher's side
@@ -43,7 +43,6 @@ export const useDisconnection = () => {
       timeoutId = setTimeout(() => {
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectFailedSound.play();
-        dispatch("teacherRoom/endClass");
         router.push("/teacher");
       }, TEACHER_RECONNECT_TIMING);
       audioSource.teacherTryReconnectSound.play();

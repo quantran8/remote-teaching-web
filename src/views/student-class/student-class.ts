@@ -235,10 +235,13 @@ export default defineComponent({
           console.log("play video");
         });
       }
-	  if (currentFormattedTime === milestones.second) {
-		console.log('3p');
-		
-	  }
+      if (currentFormattedTime === milestones.second) {
+        pause();
+        audioSource.canGoToClassRoomToday.play();
+        audioSource.canGoToClassRoomToday.on("end", () => {
+          router.push("/disconnect-issue");
+        });
+      }
     });
 
     watch(myTeacherDisconnected, async isDisconnected => {
