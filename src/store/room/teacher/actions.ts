@@ -102,8 +102,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async initClassRoom({ commit, dispatch }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
     try {
-      let roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
-      roomResponse = await RemoteTeachingService.teacherStartClassRoom(payload.classId, payload.classId);
+      const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
       if (!roomInfo || roomInfo.classId !== payload.classId) {
         commit("setError", {
