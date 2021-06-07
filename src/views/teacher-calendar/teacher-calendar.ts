@@ -154,12 +154,20 @@ export default defineComponent({
       handleChangeTimeModal(vl);
     };
 
-    const onChangeStartDateModal = (time: any, timeString: any) => {
-      selectedStartDateModal.value = timeString;
+    const onChangeStartDateModal = (_time: any, timeString: any) => {
+      if (timeString.length > 0) {
+        selectedStartDateModal.value = timeString;
+      } else {
+        selectedStartDateModal.value = "00:00";
+      }
     };
 
-    const onChangeEndDateModal = (time: any, timeString: any) => {
-      selectedEndDateModal.value = timeString;
+    const onChangeEndDateModal = (_time: any, timeString: any) => {
+      if (timeString.length > 0) {
+        selectedEndDateModal.value = timeString;
+      } else {
+        selectedEndDateModal.value = "00:00";
+      }
     };
 
     const getRandomColor = () => {
