@@ -231,6 +231,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   setIsJoined({ commit }, p: { isJoined: boolean }) {
     commit("setIsJoined", p);
   },
+  setTeacherDisconnected({ commit }, p: boolean) {
+    commit("setTeacherDisconnected", p);
+  },
 };
 
 export default actions;

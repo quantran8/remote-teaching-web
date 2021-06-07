@@ -22,16 +22,14 @@
           :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
           ref="videoContainerRef"
         >
-          <img
-            v-show="studentIsDisconnected"
-            class="sc-content__top--confused"
-            :src="require(`@/assets/student-class/bear-confuse.png`)"
-            alt="confused"
-          />
+          <div v-show="showBearConfused" class="sc-content__top--confused">
+            <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
+			<span v-if="teacherIsDisconnected" class="sc-content__top--confused__time">{{formattedTime}}</span>
+          </div>
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
             :id="teacher?.id"
-            v-show="!studentIsDisconnected && (!isOneToOne || studentIsOneToOne)"
+            v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"
           ></div>
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"

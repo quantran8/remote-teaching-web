@@ -18,6 +18,9 @@
           {{ val.name }}
         </Option>
       </Select>
+      <div class="loading" v-if="loading">
+        <Spin></Spin>
+      </div>
     </div>
     <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">
@@ -60,8 +63,8 @@
       </template>
       <template #dateCellRender="{ current: value }">
         <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
-          <div v-for="item in getListData(value)" :key="item.classId" :style="`color: ${item.color}; font-weight: 500`">
-            <a @click.stop.prevent="isUpdate(value) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
+          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`color: ${item.color}; font-weight: 500`">
+            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
               >{{ item.className }} <br />
               {{
                 `Group ${item.groupName}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
@@ -96,7 +99,15 @@
         <span class="modal-title-select">Start</span>
         <TimePicker class="modal-size-time-picker" @change="onChangeStartDateModal" :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
         <span class="modal-title-select ml-20">End</span>
-        <TimePicker class="modal-size-time-picker" @change="onChangeEndDateModal" :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
+        <TimePicker
+          class="modal-size-time-picker"
+          :disabled="disableEndTime(selectedStartDateModal)"
+          :disabledHours="getDisabledHoursEnd"
+          :disabledMinutes="getDisabledMinutesEnd"
+          @change="onChangeEndDateModal"
+          :value="moment(selectedEndDateModal, 'HH:mm')"
+          format="HH:mm"
+        />
       </div>
       <div class="modal-footer">
         <div class="delete-position">

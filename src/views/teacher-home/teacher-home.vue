@@ -39,6 +39,7 @@
         :description="cl.campusName"
         :remoteClassGroups="cl.remoteClassGroups"
         :active="cl.isActive"
+        :loadingStart="loadingStartClass"
         @click-to-access="groupId => onClickClass(cl, groupId)"
       />
     </div>

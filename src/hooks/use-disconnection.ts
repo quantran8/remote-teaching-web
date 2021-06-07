@@ -10,12 +10,13 @@ const fpPromise = FingerprintJS.load();
 //five minutes
 const POPUP_TIMING = 6000 * 10 * 5;
 
-//one minutes
-const TEACHER_RECONNECT_TIMING = 6000 * 10;
+//three minutes
+const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
 
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
   const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
+  const myTeacherDisconnected = computed<boolean>(() => getters["studentRoom/teacherIsDisconnected"]);
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
   const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
   const route = useRoute();
@@ -23,7 +24,18 @@ export const useDisconnection = () => {
   let timeoutId: any;
   const router = useRouter();
 
-  //handle teacher disconnection
+  //handle teacher disconnection in student's side
+
+  watch(myTeacherDisconnected, async isDisconnected => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    if (isDisconnected) {
+      audioSource.reconnectFailedSound.play();
+    }
+  });
+
+  //handle teacher disconnection in teacher's side
 
   watch(teacherDisconnected, async isDisconnected => {
     if (isDisconnected) {
@@ -31,7 +43,6 @@ export const useDisconnection = () => {
       timeoutId = setTimeout(() => {
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectFailedSound.play();
-        dispatch("teacherRoom/endClass");
         router.push("/teacher");
       }, TEACHER_RECONNECT_TIMING);
       audioSource.teacherTryReconnectSound.play();

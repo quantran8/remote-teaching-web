@@ -8,6 +8,8 @@ import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components
 import { LiveCircle, Toast, Notification, ContentView, DesignateCircle, DesignateRectangle, AnnotationView } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
+import DisconnectIssuePage from "@/views/disconnect-issue/disconnect-issue.vue";
+
 import NotFoundPage from "@/views/not-found/not-found.vue";
 
 import { store } from "./store";
@@ -19,6 +21,7 @@ const app = createApp(App);
 app.directive("click-outside", ClickOutsideDirective);
 app.component("LoadingPage", LoadingPage);
 app.component("AccessDeniedPage", AccessDeniedPage);
+app.component("DisconnectIssuePage", DisconnectIssuePage);
 app.component("NotFoundPage", NotFoundPage);
 app.component("BaseIcon", BaseIcon);
 app.component("BaseButton", BaseButton);

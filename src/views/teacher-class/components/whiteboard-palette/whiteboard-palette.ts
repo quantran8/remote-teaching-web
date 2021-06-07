@@ -5,6 +5,8 @@ import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 
+const DEFAULT_COLOR = "red";
+
 export default defineComponent({
   props: ["image"],
   components: {
@@ -21,7 +23,7 @@ export default defineComponent({
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
     const toolSelected: Ref<string> = ref("cursor");
-    const strokeColor: Ref<string> = ref("#ff0000");
+    const strokeColor: Ref<string> = ref("black");
     const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
@@ -353,6 +355,8 @@ export default defineComponent({
     onMounted(async () => {
       await boardSetup();
       await defaultWhiteboard();
+      strokeColor.value = DEFAULT_COLOR;
+      canvas.freeDrawingBrush.color = DEFAULT_COLOR;
     });
     onUnmounted(() => {
       canvas.dispose();
