@@ -78,13 +78,19 @@ export default defineComponent({
     };
 
     const getListClassSelect = async (listClass: ClassModel[]) => {
-      const listClassFilter = listClass.map((cl: any) => {
-        let listGroup = [];
-        listGroup = cl.remoteClassGroups.map((group: any) => {
-          return { id: group.id, name: group.groupName };
+      const listClassFilter = listClass
+        .map((cl: any) => {
+          let listGroup = [];
+          listGroup = cl.remoteClassGroups.map((group: any) => {
+            return { id: group.id, name: group.groupName };
+          });
+          if (listGroup.length > 0) {
+            return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
+          }
+        })
+        .filter(function(el) {
+          return el != null;
         });
-        return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
-      });
       color.value = listClassFilter
         .map((cl: any) => {
           return cl.id;
