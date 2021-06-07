@@ -47,6 +47,7 @@ export default defineComponent({
     const isCreate = ref<boolean>(false);
     const classes = computed(() => store.getters["teacher/classes"]);
     const recurringCustomIdFistFormat = "0000-";
+    const loading = ref(false);
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -65,16 +66,15 @@ export default defineComponent({
     });
 
     const getSchedules = async (classId: any, groupId: any, month: Moment) => {
+      loading.value = true;
       await store.dispatch("teacher/loadSchedules", {
         schoolId,
         classId,
         groupId,
         startDate: month.startOf("month").format(),
-        endDate: month
-          .endOf("month")
-          .add(35 - moment().daysInMonth(), "days")
-          .format(formatDateTime),
+        endDate: month.endOf("month").format(formatDateTime),
       });
+      loading.value = false;
     };
 
     const getListClassSelect = async (listClass: ClassModel[]) => {
@@ -249,6 +249,22 @@ export default defineComponent({
       }
     };
 
+    const getDisabledHoursEnd = () => {
+      const hours = [];
+      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).hour(); i++) {
+        hours.push(i);
+      }
+      return hours;
+    };
+
+    const getDisabledMinutesEnd = () => {
+      const minutes = [];
+      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute(); i++) {
+        minutes.push(i);
+      }
+      return minutes;
+    };
+
     const onPanelChange = async (value: any, _mode: any) => {
       await getSchedules(selectedClassId.value, selectedGroupId.value, value);
     };
@@ -403,6 +419,10 @@ export default defineComponent({
       recurringVisible.value = false;
     };
 
+    const disableEndTime = (startTime: string) => {
+      return startTime == "00:00";
+    };
+
     return {
       listClassSelect,
       listGroupSelect,
@@ -434,6 +454,10 @@ export default defineComponent({
       canCreate,
       isCreate,
       isUpdate,
+      loading,
+      getDisabledHoursEnd,
+      getDisabledMinutesEnd,
+      disableEndTime,
     };
   },
 });

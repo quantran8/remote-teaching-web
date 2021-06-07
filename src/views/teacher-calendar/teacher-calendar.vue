@@ -18,6 +18,9 @@
           {{ val.name }}
         </Option>
       </Select>
+      <div class="loading" v-if="loading">
+        <Spin></Spin>
+      </div>
     </div>
     <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">
@@ -96,7 +99,15 @@
         <span class="modal-title-select">Start</span>
         <TimePicker class="modal-size-time-picker" @change="onChangeStartDateModal" :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
         <span class="modal-title-select ml-20">End</span>
-        <TimePicker class="modal-size-time-picker" @change="onChangeEndDateModal" :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
+        <TimePicker
+          class="modal-size-time-picker"
+          :disabled="disableEndTime(selectedStartDateModal)"
+          :disabledHours="getDisabledHoursEnd"
+          :disabledMinutes="getDisabledMinutesEnd"
+          @change="onChangeEndDateModal"
+          :value="moment(selectedEndDateModal, 'HH:mm')"
+          format="HH:mm"
+        />
       </div>
       <div class="modal-footer">
         <div class="delete-position">
