@@ -1,46 +1,60 @@
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { GetClassesModel, RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
-import { Logger } from "@/utils/logger";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
-import { ClassViewFromValue, ClassViewPayload, InClassStatus, WhiteboardPayload } from "../interface";
+import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { StudentShape } from "@/store/annotation/state";
+import {ErrorCode, fmtMsg} from "commonui";
+import router from "@/router";
+import {Paths} from "@/utils/paths";
+import {ErrorLocale} from "@/locales/localeid";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
-    { commit },
+    { commit, dispatch },
     payload: {
       classId: string;
       userId: string;
       userName: string;
       studentId: string;
       role: string;
+      browserFingerPrinting: string;
     },
   ) {
     commit("setUser", {
       id: payload.studentId,
       name: payload.userName,
     });
-    const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId);
-    if (!roomResponse) return;
-    const roomInfo: RoomModel = roomResponse.data;
-    if (!roomInfo || roomInfo.classId !== payload.classId) {
-      commit("setError", {
-        errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-        message: "Your class has not been started!",
+    try {
+      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
+      const roomInfo: RoomModel = roomResponse.data;
+      if (!roomInfo || roomInfo.classId !== payload.classId) {
+        commit("setError", {
+          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
+        });
+        return;
+      }
+      commit("setRoomInfo", roomResponse.data);
+      commit("setClassView", {
+        classView: ClassViewFromValue(roomResponse.data.focusTab),
       });
-      return;
+      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
+    } catch (error) {
+      if (error.code === ErrorCode.ConcurrentUserException) {
+        await router.push(Paths.Home);
+      } else {
+        commit("setError", {
+          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
+        });
+        return;
+      }
     }
-    commit("setRoomInfo", roomResponse.data);
-    commit("setClassView", {
-      classView: ClassViewFromValue(roomResponse.data.focusTab),
-    });
-    commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
   },
 
   setUser({ commit }, payload: UserModel) {
@@ -69,7 +83,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
-    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id);
+    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id, _payload.browserFingerPrinting);
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },
@@ -98,6 +112,9 @@ const actions: ActionTree<StudentRoomState, any> = {
         // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
+      onLocalNetworkUpdate(payload: any) {
+        // console.log("onLocalNetworkUpdate", payload);
+      },
     });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
@@ -118,16 +135,10 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
-    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id);
+    const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },
-  async loadClasses({ commit }, { teacherId }: { teacherId: string }) {
-    const response: GetClassesModel = await TeacherService.getClasses(teacherId);
-    if (!response) return;
-    commit("setClasses", response.data);
-  },
-
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
@@ -201,6 +212,28 @@ const actions: ActionTree<StudentRoomState, any> = {
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);
   // }
+  updateDisconnectStatus({ commit }, p: false) {
+    commit("updateDisconnectStatus", p);
+  },
+  setOnline({ commit }) {
+    commit("setOnline");
+  },
+  setOffline({ commit, state }) {
+    commit("setOffline");
+  },
+  disconnectSignalR({ state }) {
+    state.manager?.close();
+  },
+  async studentLeaveClass({ state }) {
+    if (!state.info || !state.manager || !state.user) return;
+    await state.manager?.WSClient.sendRequestStudentLeaveClass(state.info.id, state.user.id);
+  },
+  setIsJoined({ commit }, p: { isJoined: boolean }) {
+    commit("setIsJoined", p);
+  },
+  setTeacherDisconnected({ commit }, p: boolean) {
+    commit("setTeacherDisconnected", p);
+  },
 };
 
 export default actions;

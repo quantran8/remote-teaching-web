@@ -28,6 +28,10 @@
       &--gallery{
         height: 500px;
       }
+	  img {
+		  width: 100px;
+		  height: 100px;
+	  }
     }
     &__activity-content {
       flex: auto;

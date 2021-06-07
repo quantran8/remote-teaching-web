@@ -26,7 +26,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     await this.agoraClient.joinRTCRoom(options);
   }
 
-  async close() {
+  async close() {	  
     await this.WSClient.disconnect();
     await this.agoraClient.reset();
   }

@@ -19,6 +19,7 @@
   }
   &__item {
     min-width: 65px;
+    height: 60px;
     position: relative;
     padding: 2px;
     margin: 0 5px;
@@ -31,10 +32,10 @@
     &__icon {
       &__stroke-line {
         background-color: black;
-		margin-bottom: 1px;
-		width: 65%;
-		margin-left: auto;
-		margin-right: auto;
+        margin-bottom: 1px;
+        width: 65%;
+        margin-left: auto;
+        margin-right: auto;
       }
       &__stroke-color {
         width: 20px;
@@ -60,7 +61,7 @@
       }
       &__content {
         position: relative;
-		display: flex;
+        display: flex;
         &.stroke {
           .stroke-item {
             margin-bottom: 5px;
@@ -72,62 +73,133 @@
           }
         }
         &.stroke-color {
-          display: grid;
-          grid-template-columns: auto auto;
-          grid-column-gap: 10px;
-          grid-row-gap: 10px;
-          .color-item {
-            width: 20px;
-            height: 20px;
+          position: relative;
+          width: 25px;
+          height: 25px;
+          border-radius: 15px;
+          border: 1px solid black;
+          margin: 0 auto;
+          margin-right: 18px;
+          .colors {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-column-gap: 10px;
+            grid-row-gap: 10px;
+            position: absolute;
+            left: 100px;
+            padding: 10px 10px;
             border-radius: 10px;
-            padding: 10px;
-			&--has-border {
-				border: 1px solid black;
-				padding: 9px;
-			}
+            height: 130px;
+            background: #f5f5f5;
+            left: 60px;
+            top: -50px;
+            z-index: 12;
+            position: relative;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            &:before {
+              content: "";
+              position: absolute;
+              right: 100%;
+              top: 50px;
+              width: 0;
+              height: 0;
+              border-top: 13px solid transparent;
+              border-right: 26px solid #f5f5f5;
+              border-bottom: 13px solid transparent;
+            }
+
+            .colors-item {
+              width: 20px;
+              height: 20px;
+              border-radius: 10px;
+              transition: all 0.2s ease-out;
+              padding: 10px;
+
+              &:hover {
+                transform: scale(1.3);
+              }
+            }
+
+            .has-border {
+              border: 0.4px solid rgb(53, 53, 53);
+              padding: 9px;
+            }
           }
         }
       }
     }
     &__action__icons {
-	  padding: 5px 10px;
-	  border-radius: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
       img {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
       }
-	  .color-signal {
-		height: 4px;
-		background-color: black;
-		margin-bottom: 5px;
-		width: 90%;
-	  }
-	  &.selected {
-		  background-color: #fff;
-	  }
+      .color-signal {
+        height: 4px;
+        background-color: black;
+        margin-bottom: 5px;
+        width: 90%;
+      }
+      &.selected {
+        background-color: #fff;
+      }
     }
   }
   .stroke__wrapper {
     position: absolute;
     width: 100%;
-    left: 130%;
+    left: 120%;
     z-index: 12;
-	top: -50px;
-	// border-radius: 5px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
-	background-color: #f5f5f5;
-	&:before {
-		content: "";
-		position: absolute;
-		right: 100%;
-		top: 26px;
-		width: 0;
-		height: 0;
-		border-top: 13px solid transparent;
-		border-right: 26px solid #f7f3e9;
-		border-bottom: 13px solid transparent;
-	  }
+    top: -60px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    &:before {
+      content: "";
+      position: absolute;
+      right: 100%;
+      top: 26px;
+      width: 0;
+      height: 0;
+      border-top: 13px solid transparent;
+      border-right: 26px solid #f7f3e9;
+      border-bottom: 13px solid transparent;
+    }
+  }
+}
+
+.popover-enter-active {
+  animation: scaleUp 0.1s ease-out;
+}
+.popover-leave-active {
+  animation: scaleDown 0.1s ease-in;
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleDown {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.1);
+    opacity: 0;
   }
 }

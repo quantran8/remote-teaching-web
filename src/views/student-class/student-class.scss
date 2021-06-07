@@ -147,6 +147,25 @@
     grid-column-end: unset;
     grid-column-start: unset;
   }
+  &__top {
+    &--confused {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        position: relative;
+      }
+      &__time {
+        position: absolute;
+        top: 70%;
+        left: 90%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
 }
 
 .sc-teacher {
@@ -169,7 +188,7 @@
     width: 100%;
     height: 100%;
     background-size: cover;
-    opacity: 50%;
+    opacity: 0.7;
   }
   @media (min-width: $xl) {
     &__video {
@@ -244,25 +263,24 @@
   padding-left: 40px;
   &__item {
     display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 77px;
-	height: 77px;
-	@media (min-width: $xl) {
-	
-		width: 100px;
-		height: 100px;
-	}
+    justify-content: center;
+    align-items: center;
+    width: 77px;
+    height: 77px;
+    @media (min-width: $xl) {
+      width: 100px;
+      height: 100px;
+    }
   }
   &__icon {
     -webkit-user-drag: none;
-	width: 100%;
-	height: 100%;
+    width: 100%;
+    height: 100%;
   }
   &__icon--hand {
-	width: 88%;
-	height: 88%;
-	margin-bottom: 5px;
+    width: 88%;
+    height: 88%;
+    margin-bottom: 5px;
   }
 
   @media (min-width: $lg) {
@@ -285,4 +303,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.try-button {
+  padding: 10px 10px;
+  border-radius: 10px;
+  background-color: aquamarine;
+  color: white;
+  position: fixed;
+  top: 100px;
+  cursor: pointer;
 }

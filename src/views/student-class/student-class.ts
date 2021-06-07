@@ -1,10 +1,11 @@
-import { LoginInfo, MatIcon, RoleName } from "@/commonui";
+import {ErrorCode, LoginInfo, MatIcon, RoleName} from "@/commonui";
+import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
 import gsap from "gsap";
-import { computed, ComputedRef, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
@@ -17,6 +18,11 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
 import { Modal } from "ant-design-vue";
 import { Paths } from "@/utils/paths";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { useTimer } from "@/hooks/use-timer";
+import * as audioSource from "@/utils/audioGenerator";
+
+const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
   components: {
@@ -28,16 +34,28 @@ export default defineComponent({
   async created() {
     const { getters, dispatch } = useStore();
     const route = useRoute();
+    const router = useRouter();
     const { studentId, classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    await dispatch("studentRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.profile.sub,
-      userName: loginInfo.profile.name,
-      studentId: studentId,
-      role: RoleName.parent,
-    });
+    const fp = await fpPromise;
+    const result = await fp.get();
+    const visitorId = result.visitorId;
+    try {
+      await dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+        browserFingerPrinting: visitorId,
+      });
+    } catch (err) {
+      if (err.code === ErrorCode.ConcurrentUserException) {
+        await router.push(Paths.Parent);
+      }
+    }
     await dispatch("studentRoom/joinRoom");
+    await dispatch("studentRoom/setIsJoined", { isJoined: true });
   },
   async beforeUnmount() {
     const store = useStore();
@@ -47,8 +65,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
@@ -67,7 +87,11 @@ export default defineComponent({
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
-
+    const studentIsDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
+    const teacherIsDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
+    const showBearConfused = computed<boolean>(() => {
+      return store.getters["studentRoom/isDisconnected"] || store.getters["studentRoom/teacherIsDisconnected"];
+    });
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
@@ -138,7 +162,16 @@ export default defineComponent({
 
     watch(isConnected, async () => {
       if (!isConnected.value) return;
-      await store.dispatch("studentRoom/joinWSRoom");
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      try {
+        await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
+      } catch (err) {
+        if (err.code === ErrorCode.ConcurrentUserException) {
+          await store.dispatch("setToast", { message: err.message });
+        }
+      }
     });
 
     watch(classAction, () => {
@@ -180,11 +213,57 @@ export default defineComponent({
         okText: "Yes",
         cancelText: "No",
         okButtonProps: { type: "danger" },
-        onOk: () => {
-          router.push(Paths.Home);
+        onOk: async () => {
+          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
+          await store.dispatch("studentRoom/studentLeaveClass");
+          await router.push(Paths.Home);
         },
       });
     };
+
+    const disconnectSignalR = async () => {
+      await store.dispatch("studentRoom/disconnectSignalR");
+    };
+
+    const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
+
+    const { start, pause, stop, formattedTime } = useTimer();
+
+    const milestones = {
+      first: "00:30",
+      second: "03:00",
+    };
+
+    watch(formattedTime, async currentFormattedTime => {
+      if (currentFormattedTime === milestones.first) {
+        audioSource.tryReconnectLoop2.stop();
+        audioSource.watchStory.play();
+        audioSource.watchStory.on("end", () => {
+          console.log("play video");
+        });
+      }
+      if (currentFormattedTime === milestones.second) {
+        pause();
+        audioSource.canGoToClassRoomToday.play();
+        audioSource.canGoToClassRoomToday.on("end", () => {
+          router.push("/disconnect-issue");
+        });
+      }
+    });
+
+    watch(myTeacherDisconnected, async isDisconnected => {
+      if (isDisconnected) {
+        start();
+        audioSource.reconnectFailedSound.play();
+        audioSource.reconnectFailedSound.on("end", () => {
+          audioSource.tryReconnectLoop2.play();
+        });
+        return;
+      } else {
+        stop();
+        audioSource.tryReconnectLoop2.stop();
+      }
+    });
 
     return {
       student,
@@ -218,6 +297,17 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       raisedHand,
+      disconnectSignalR,
+      IconHandRaised,
+      IconHand,
+      IconAudioOn,
+      IconAudioOff,
+      IconVideoOn,
+      IconVideoOff,
+      studentIsDisconnected,
+      teacherIsDisconnected,
+      showBearConfused,
+      formattedTime,
     };
   },
 });

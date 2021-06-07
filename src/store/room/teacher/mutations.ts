@@ -112,7 +112,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.globalAudios = s.students.filter(ele => p.globalStudentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
     s.localAudios = s.students.filter(ele => p.studentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
     s.info = p;
-    const role = p.streamInfo.userId === p.teacher.id ? "host" : "audience";
+    const role = p.streamInfo?.userId === p.teacher.id ? "host" : "audience";
     if (!s.manager) {
       s.manager = new TeacherRoomManager({
         agora: {
@@ -166,6 +166,10 @@ const mutations: TeacherRoomMutation<State> = {
   studentLeftClass(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
     if (student) student.status = InClassStatus.LEFT;
+  },
+  studentDisconnectClass(s: State, p: UserIdPayload): void {
+    const student = s.students.find(student => student.id === p.id);
+    if (student) student.status = InClassStatus.DISCONNECTED;
   },
   studentLeaving(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
@@ -221,6 +225,12 @@ const mutations: TeacherRoomMutation<State> = {
   },
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
     s.students.map(student => (student.isPalette = false));
+  },
+  setOnline(state: TeacherRoomState) {
+    state.isDisconnected = false
+  },
+  setOffline(state: TeacherRoomState) {
+    state.isDisconnected = true
   },
 };
 

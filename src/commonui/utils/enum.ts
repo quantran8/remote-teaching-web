@@ -592,12 +592,18 @@ export enum Tools {
 	Stroke = 'stroke',
 	Delete = 'delete',
 	Clear = 'clear',
-	AddSticker = 'add-sticker',
-	AssignSticker = 'assign-sticker',
 	StrokeColor = 'stroke-color',
+	Star = 'star',
+	Circle = 'circle',
+	Square = 'square',
+	
 }
 
 export enum Mode {
 	Cursor = 1,
 	Draw = 2,
+}
+
+export enum ErrorCode {
+	ConcurrentUserException = 1
 }

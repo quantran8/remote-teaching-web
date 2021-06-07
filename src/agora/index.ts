@@ -13,6 +13,8 @@ import AgoraRTC, {
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
+import { AgoraError, AgoraConnectionState } from "./interfaces";
+import {store} from "@/store"
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -41,6 +43,7 @@ export interface AgoraEventHandler {
       uid: UID;
     }[],
   ): void;
+  onLocalNetworkUpdate(payload: any): void;
 }
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
@@ -98,6 +101,13 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("user-unpublished", handler.onUserUnPublished);
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
+    this.client.on("network-quality", handler.onLocalNetworkUpdate);
+	this.client.on("connection-state-change", (payload) => {
+		if(payload === AgoraConnectionState.DISCONNECTED) {
+			if(!store.getters["studentRoom/isJoined"]) return
+			store.dispatch('studentRoom/setOffline')
+		}
+	})
   }
 
   subscribedVideos: Array<{
@@ -120,7 +130,6 @@ export class AgoraClient implements AgoraClientSDK {
       this.microphoneTrack.on("track-ended", () => {
         this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
       });
-      this.microphoneTrack.play();
       this.microphoneError = null;
     } catch (err) {
       this.microphoneError = err;
@@ -289,22 +298,32 @@ export class AgoraClient implements AgoraClientSDK {
       remoteTrack.play();
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-    //   Logger.error("_subscribeAudio", err);
+      //   Logger.error("_subscribeAudio", err);
     }
   }
 
   async _subscribeVideo(userId: string) {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
-    const user = this._getRemoteUser(userId);
-    if (!user || !user.hasVideo) return;
-    try {
-      const remoteTrack = await this.client.subscribe(user, "video");
-      remoteTrack.play(userId);
-      this.subscribedVideos.push({ userId: userId, track: remoteTrack });
-    } catch (err) {
-    //   Logger.error("_subscribeVideo", err);
-    }
+    let user = null;
+    const intervalId = setInterval(async () => {
+      user = this._getRemoteUser(userId);
+      if (user) {
+        clearInterval(intervalId);
+        if (!user.hasVideo) {
+          clearInterval(intervalId);
+        }
+        try {
+          const remoteTrack = await this.client.subscribe(user, "video");
+          remoteTrack.play(userId);
+          this.subscribedVideos.push({ userId: userId, track: remoteTrack });
+        } catch (err) {
+          if (err.code !== AgoraError.REMOTE_USER_IS_NOT_PUBLISHED) {
+            this._subscribeVideo(userId);
+          }
+        }
+      }
+    }, 1000);
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {

@@ -1,12 +1,14 @@
-import { LoginInfo, RoleName } from "@/commonui";
+import {ErrorCode, LoginInfo, RoleName} from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
 import { gsap } from "gsap";
-import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+const fpPromise = FingerprintJS.load();
 import {
   TeacherCard,
   LessonPlan,
@@ -37,14 +39,25 @@ export default defineComponent({
   async created() {
     const { getters, dispatch } = useStore();
     const route = useRoute();
+    const router = useRouter();
     const { classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    await dispatch("teacherRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.profile.sub,
-      userName: loginInfo.profile.name,
-      role: RoleName.teacher,
-    });
+    const fp = await fpPromise;
+    const result = await fp.get();
+    const visitorId = result.visitorId;
+    try {
+      await dispatch("teacherRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        role: RoleName.teacher,
+        browserFingerPrinting: visitorId,
+      });
+    } catch (err) {
+      if (err.code === ErrorCode.ConcurrentUserException) {
+        await router.push("/teacher");
+      }
+    }
     await dispatch("teacherRoom/joinRoom");
   },
 
@@ -119,7 +132,7 @@ export default defineComponent({
 
     const onClickLeave = async () => {
       hasConfirmed.value = true;
-      router.push("/teacher");
+      await router.push("/teacher");
     };
 
     const onClickEnd = async () => {
@@ -129,8 +142,14 @@ export default defineComponent({
         cancelText: "No",
         okButtonProps: { type: "danger" },
         onOk: async () => {
-          await dispatch("teacherRoom/endClass");
-          router.push("/teacher");
+          try {
+            await dispatch("teacherRoom/endClass");
+            await router.push("/teacher");
+          } catch (err) {
+            Modal.destroyAll();
+            const message = err.body.message;
+            await dispatch("setToast", { message: message });
+          }
         },
       });
     };
@@ -139,8 +158,10 @@ export default defineComponent({
       // does nothing, we only accept leave room;
     };
 
-    watch(error, () => {
-      console.log(error.value);
+    watch(error, async () => {
+      if (error.value) {
+        await router.push("/teacher");
+      }
     });
 
     const ctaVisible = ref(false);
@@ -161,7 +182,16 @@ export default defineComponent({
     const isConnected = computed(() => getters["teacherRoom/isConnected"]);
     watch(isConnected, async () => {
       if (!isConnected.value) return;
-      await dispatch("teacherRoom/joinWSRoom");
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      try {
+        await dispatch("teacherRoom/joinWSRoom", { browserFingerPrinting: visitorId });
+      } catch (err) {
+        if (err.code === ErrorCode.ConcurrentUserException) {
+          await dispatch("setToast", { message: err.message });
+        }
+      }
     });
     return {
       onClickHideAll,

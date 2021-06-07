@@ -68,6 +68,10 @@ export enum InClassStatus {
    * Student has left the class
    */
   LEFT = 4,
+  /**
+   * Student has left the class
+   */
+  DISCONNECTED = 5,
 }
 export enum StreamingStatus {
   WAITING = 0,
@@ -107,4 +111,5 @@ export interface InitClassRoomPayload {
   userId: string;
   userName: string;
   role: string;
+  browserFingerPrinting: string;
 }

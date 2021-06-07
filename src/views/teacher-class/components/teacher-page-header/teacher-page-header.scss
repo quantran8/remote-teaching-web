@@ -14,13 +14,21 @@ $font-size: 2.2em;
     position: relative;
     line-height: $header-height;
     border-radius: 0 0 60px 0;
+	&--below {
+		background-color: black;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+	}
   }
 
   &__right {
-    color: #000;
+    color: white;
     padding: 0 30px;
     text-align: center;
     line-height: $header-height;
+	background-color: black;
   }
 
   &__exit {
@@ -149,14 +157,12 @@ $action-icon-container-size: 70px;
   transform: scale(0.8) translateY(100px);
 }
 
-.box:hover [class*="reaction-"]:hover,
-.box:hover [class*="reaction-"]:focus {
+.box:hover [class*="reaction-"]:hover {
   transition: all 0.2s ease-in;
   transform: scale(1) translateY(95px);
 }
 
-.box:hover [class*="reaction-"]:hover .action-text,
-.box:hover [class*="reaction-"]:focus .action-text {
+.box:hover [class*="reaction-"]:hover .action-text {
   opacity: 1;
 }
 

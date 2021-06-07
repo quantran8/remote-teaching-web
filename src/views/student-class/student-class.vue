@@ -8,6 +8,7 @@
         </div>
       </div>
       <div class="sc-header__right">
+        <!-- <div class="try-button" v-if="!studentIsDisconnected" @click="disconnectSignalR">Manual disconnect SIGNALR/AGORA</div> -->
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <a class="sc-header__exit" @click="onClickEnd">
           <MatIcon type="close" class="red-close" />
@@ -21,10 +22,14 @@
           :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
           ref="videoContainerRef"
         >
+          <div v-show="showBearConfused" class="sc-content__top--confused">
+            <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
+			<span v-if="teacherIsDisconnected" class="sc-content__top--confused__time">{{formattedTime}}</span>
+          </div>
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
             :id="teacher?.id"
-            v-show="!isOneToOne || studentIsOneToOne"
+            v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"
           ></div>
           <div
             :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
@@ -68,13 +73,16 @@
       <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
       <div class="sc-action">
         <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
-          <img :src="handIcon" class="sc-action__icon sc-action__icon--hand" />
+          <img v-show="raisedHand" :src="IconHandRaised" class="sc-action__icon sc-action__icon--hand" />
+          <img v-show="!raisedHand" :src="IconHand" class="sc-action__icon sc-action__icon--hand" />
         </a>
         <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
-          <img :src="audioIcon" class="sc-action__icon" />
+          <img v-show="student?.audioEnabled" :src="IconAudioOn" class="sc-action__icon" />
+          <img v-show="!student?.audioEnabled" :src="IconAudioOff" class="sc-action__icon" />
         </a>
         <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
-          <img :src="videoIcon" class="sc-action__icon" />
+          <img v-show="student?.videoEnabled" :src="IconVideoOn" class="sc-action__icon" />
+          <img v-show="!student?.videoEnabled" :src="IconVideoOff" class="sc-action__icon" />
         </a>
       </div>
     </div>

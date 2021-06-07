@@ -8,4 +8,5 @@ export enum StudentWSCommand {
   ANSWER = "StudentAnswerInteractive",
   STUDENT_ACTION_GAME = "StudentActionGame",
   STUDENT_SET_BRUSH_STROKES = "StudentSetBrushstrokes",
+  STUDENT_LEAVE_CLASS = "StudentLeaveClass"
 }

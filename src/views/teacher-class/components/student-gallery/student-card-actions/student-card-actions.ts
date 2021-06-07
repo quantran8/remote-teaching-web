@@ -70,6 +70,10 @@ export default defineComponent({
       gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
     };
 
+	const toolEnter = (element: HTMLElement) => {
+		gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
+	  }
+
     return {
       isRasingHand,
       audioIcon,
@@ -81,6 +85,7 @@ export default defineComponent({
       toggleAnnotation,
       addABadge,
       actionEnter,
+	  toolEnter
     };
   },
 });

@@ -70,6 +70,15 @@ const getters: GetterTree<StudentRoomState, any> = {
   laserPath(state: StudentRoomState): string {
     return state.laserPath;
   },
+  isDisconnected(state: StudentRoomState): boolean {
+    return state.isDisconnected;
+  },
+  isJoined(state: StudentRoomState): boolean {
+    return state.isJoined;
+  },
+  teacherIsDisconnected(state: StudentRoomState): boolean {
+    return state.teacherIsDisconnected;
+  },
 };
 
 export default getters;
