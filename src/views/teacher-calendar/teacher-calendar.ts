@@ -266,6 +266,7 @@ export default defineComponent({
     };
 
     const onPanelChange = async (value: any, _mode: any) => {
+      month.value = value;
       await getSchedules(selectedClassId.value, selectedGroupId.value, value);
     };
 
