@@ -31,6 +31,7 @@ export default defineComponent({
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
     const student = computed(() => store.getters["studentRoom/student"]);
+    const teacher = computed(() => store.getters["teacherRoom/teacher"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const renderCanvas = () => {
@@ -42,7 +43,13 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
       if (undoCanvas.value) {
-        canvas.remove(...canvas.getObjects("path"));
+        console.log(undoCanvas.value, "undocanvas value");
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id !== student.value.id)
+            .filter((obj: any) => obj.type === "path"),
+        );
       }
       // teacher drawing
       if (canvasData.value) {
@@ -55,6 +62,7 @@ export default defineComponent({
           obj.selectable = false;
         });
       } else {
+        console.log("teacher drawing else");
         canvas.remove(...canvas.getObjects());
       }
       // laser processing
@@ -78,7 +86,6 @@ export default defineComponent({
         studentShapes.value.forEach((item: any) => {
           console.log(item, "students shape sharing");
           if (item.studentId !== student.value.id) {
-            console.log(item.studentId, student.value.id, "check id student");
             canvas.remove(
               ...canvas
                 .getObjects()
@@ -151,11 +158,27 @@ export default defineComponent({
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         canvas.renderAll();
-        await studentAddShapes();
+        if (canvas.isDrawingMode) {
+          // await send path student drawing
+          canvas.getObjects().forEach((obj: any) => {
+            if (obj.id === student.value.id) {
+              console.log(obj, "obj path");
+            }
+          });
+        } else {
+          console.log("mouse up shapes");
+          await studentAddShapes();
+        }
+      });
+    };
+    const listenCreatedPath = () => {
+      canvas.on("path:created", (obj: any) => {
+        obj.path.id = student.value.id;
       });
     };
     const listenToCanvasEvents = () => {
       listenToMouseUp();
+      listenCreatedPath();
     };
     const boardSetup = () => {
       const canvasEl = document.getElementById("canvasOnStudent");
@@ -171,7 +194,20 @@ export default defineComponent({
       renderCanvas();
       listenToCanvasEvents();
     };
-
+    const objectCanvasProcess = () => {
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.type === "path") {
+          obj.selectable = false;
+          obj.hasControls = false;
+          obj.hasBorders = false;
+          obj.hoverCursor = "cursor";
+        }
+      });
+    };
+    const cursorHand = () => {
+      canvas.isDrawingMode = false;
+      objectCanvasProcess();
+    };
     const addStar = async () => {
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
@@ -183,7 +219,7 @@ export default defineComponent({
         fill: "",
         id: student.value.id,
       });
-
+      canvas.isDrawingMode = false;
       canvas.add(star);
       await studentAddShapes();
     };
@@ -198,6 +234,7 @@ export default defineComponent({
         strokeWidth: 3,
         id: student.value.id,
       });
+      canvas.isDrawingMode = false;
       canvas.add(circle);
       await studentAddShapes();
     };
@@ -213,7 +250,7 @@ export default defineComponent({
         strokeWidth: 3,
         id: student.value.id,
       });
-
+      canvas.isDrawingMode = false;
       canvas.add(square);
       await studentAddShapes();
     };
@@ -240,6 +277,10 @@ export default defineComponent({
     });
 
     const paletteTools: Array<toolType> = [
+      {
+        name: "cursor",
+        action: cursorHand,
+      },
       {
         name: "star",
         action: addStar,

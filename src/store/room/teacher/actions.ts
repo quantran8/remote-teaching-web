@@ -281,6 +281,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setOffline({ commit }) {
     commit("setOffline");
   },
+  async setShapesForStudent({ state }, payload: Array<string>) {
+    await state.manager?.WSClient.sendRequestShapesForStudent(payload);
+  },
 };
 
 export default actions;

@@ -12,13 +12,14 @@ export interface Sticker {
   width: number;
   height: number;
 }
-export interface StudentShape {
-  studentId: string;
+export interface UserShape {
+  UserId: string;
   brushstroke: Array<string>;
 }
 export interface Drawing {
   brushstrokes: Array<string>;
-  studentShapes: StudentShape[];
+  studentShapes: UserShape[];
+  teacherShapes: UserShape[];
   pencil: Pencil | null;
 }
 export interface AnnotationState {
@@ -35,6 +36,7 @@ const state: AnnotationState = {
     pencil: null,
     brushstrokes: [],
     studentShapes: [],
+    teacherShapes: [],
   },
   stickers: [],
 };

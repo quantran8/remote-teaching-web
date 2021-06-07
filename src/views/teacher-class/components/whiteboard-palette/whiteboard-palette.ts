@@ -115,6 +115,19 @@ export default defineComponent({
         },
       });
     };
+    const teacherAddShapes = async () => {
+      const shapes: Array<string> = [];
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.id === "teacher-symbol") {
+          obj = obj.toJSON();
+          obj.id = "teacher-symbol";
+          shapes.push(JSON.stringify(obj));
+        }
+      });
+      if (shapes.length) {
+        // await push shapes for students
+      }
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         if (toolSelected.value === "pen") {
@@ -128,9 +141,15 @@ export default defineComponent({
         }
       });
     };
+    const listenCreatedPath = () => {
+      canvas.on("path:created", (obj: any) => {
+        obj.path.id = infoTeacher.value.id;
+      });
+    };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
+      listenCreatedPath();
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -163,6 +182,7 @@ export default defineComponent({
         id: "teacher-symbol",
       });
       canvas.add(star);
+      await teacherAddShapes();
     };
     const addCircle = async () => {
       const circle = new fabric.Circle({
