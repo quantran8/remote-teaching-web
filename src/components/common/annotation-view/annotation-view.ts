@@ -31,9 +31,10 @@ export default defineComponent({
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
     const student = computed(() => store.getters["studentRoom/student"]);
-    const teacher = computed(() => store.getters["teacherRoom/teacher"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
+    const teacherShapes = computed(() => store.getters["annotation/teacherShape"]);
+    console.log(teacherShapes.value, "tttttttttttttttt");
     const renderCanvas = () => {
       if (!canvas) return;
       // whiteboard processing

@@ -125,7 +125,7 @@ export default defineComponent({
         }
       });
       if (shapes.length) {
-        // await push shapes for students
+        await store.dispatch("teacherRoom/setShapesForStudent", shapes);
       }
     };
     const listenToMouseUp = () => {
@@ -139,6 +139,7 @@ export default defineComponent({
           await objectsCanvas();
           laserDraw();
         }
+        await teacherAddShapes();
       });
     };
     const listenCreatedPath = () => {
