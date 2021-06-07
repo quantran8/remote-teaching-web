@@ -76,6 +76,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   isJoined(state: StudentRoomState): boolean {
     return state.isJoined;
   },
+  teacherIsDisconnected(state: StudentRoomState): boolean {
+    return state.teacherIsDisconnected;
+  },
 };
 
 export default getters;

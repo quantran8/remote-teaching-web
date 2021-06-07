@@ -178,13 +178,16 @@ const mutations: MutationTree<StudentRoomState> = {
     if (s.student) s.student.isPalette = false;
   },
   setOnline(state: StudentRoomState) {
-    state.isDisconnected = false
+    state.isDisconnected = false;
   },
   setOffline(state: StudentRoomState) {
-    state.isDisconnected = true
+    state.isDisconnected = true;
   },
-  setIsJoined(state: StudentRoomState, p: {isJoined: boolean}) {
-    state.isJoined = p.isJoined
+  setIsJoined(state: StudentRoomState, p: { isJoined: boolean }) {
+    state.isJoined = p.isJoined;
+  },
+  setTeacherDisconnected(state: StudentRoomState, p: boolean) {
+    state.teacherIsDisconnected = p;
   },
 };
 

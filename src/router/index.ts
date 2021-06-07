@@ -26,6 +26,15 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/disconnect-issue",
+    name: "disconnect-issue",
+    component: () => import("../views/disconnect-issue/disconnect-issue.vue"),
+    meta: {
+      layout: "full",
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/teacher",
     name: "TeacherHome",
     component: () => import("../views/teacher-home/teacher-home.vue"),

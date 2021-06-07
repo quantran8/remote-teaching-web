@@ -74,6 +74,7 @@ export interface StudentRoomState {
   laserPath: string;
   isDisconnected: boolean;
   isJoined: boolean;
+  teacherIsDisconnected: boolean;
 }
 
 const state: StudentRoomState = {
@@ -94,6 +95,7 @@ const state: StudentRoomState = {
   showWhiteBoard: false,
   laserPath: "",
   isDisconnected: !navigator.onLine,
+  teacherIsDisconnected: false,
   isJoined: false
 };
 
