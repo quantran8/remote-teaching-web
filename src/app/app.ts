@@ -60,6 +60,7 @@ export default defineComponent({
     watch(route, () => {
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
+	  if((!isParent && !isTeacher) || (isParent && isTeacher)) return
       if (isTeacher) {
         const matchIndex = route.path.search(PARENT_PATH_REGEX);
         if (matchIndex > -1) {
