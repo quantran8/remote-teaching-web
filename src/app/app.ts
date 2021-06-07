@@ -1,10 +1,14 @@
 import { useStore } from "vuex";
 import { AuthService, LoginInfo } from "@/commonui";
 import { computed, defineComponent, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
 import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
+
+const PARENT_PATH = "/parent";
+const TEACHER_PATH = "/teacher";
 
 export default defineComponent({
   components: {
@@ -49,6 +53,27 @@ export default defineComponent({
 
     watch(isSignedIn, async () => {
       if (isSignedIn.value) onUserSignedIn();
+    });
+
+    const route = useRoute();
+    const router = useRouter();
+    watch(route, () => {		
+      const isTeacher: boolean = getters["auth/isTeacher"];
+      const isParent: boolean = getters["auth/isParent"];
+      switch (route.path) {
+        case PARENT_PATH:
+          if (isTeacher) {
+            router.push(TEACHER_PATH);
+          }
+          break;
+        case TEACHER_PATH:
+          if (isParent) {
+            router.push(PARENT_PATH);
+          }
+		  break;
+        default:
+          break;
+      }
     });
 
     return {
