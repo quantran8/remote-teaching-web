@@ -112,6 +112,7 @@ const mutations: MutationTree<TeacherState> = {
           if (dayCalendar.day == payload.day) {
             dayCalendar.schedules = dayCalendar.schedules.map(schedule => {
               if (schedule.customizedScheduleId != payload.data.customizedScheduleId) return schedule;
+              schedule.groupName = payload.groupName;
               schedule.groupId = payload.data.groupId;
               schedule.start = moment(payload.data.start).format("HH:mm:ss");
               schedule.end = moment(payload.data.end).format("HH:mm:ss");

@@ -48,6 +48,7 @@ export default defineComponent({
     const classes = computed(() => store.getters["teacher/classes"]);
     const recurringCustomIdFistFormat = "0000-";
     const loading = ref(false);
+    const isActionUpdate = ref(false);
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -151,7 +152,7 @@ export default defineComponent({
 
     const handleChangeGroupModal = (vl: string) => {
       selectedGroupIdModal.value = vl;
-      handleChangeTimeModal(vl);
+      if (!isActionUpdate.value) handleChangeTimeModal(vl);
     };
 
     const onChangeStartDateModal = (_time: any, timeString: any) => {
@@ -296,7 +297,10 @@ export default defineComponent({
       } else if (type == "Update") {
         if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
-        listGroupModal.value = [{ id: item.groupId, name: item.groupName }];
+        isActionUpdate.value = true;
+        listGroupModal.value = listClassSelect.value.filter((cl: any) => {
+          return cl.id == item.classId;
+        })[0].groups;
         selectedCustomScheduleId.value = item.customizedScheduleId;
         selectedClassIdModal.value = item.classId;
         selectedGroupIdModal.value = item.groupId;
@@ -321,6 +325,7 @@ export default defineComponent({
       selectedStartDateModal.value = "00:00";
       selectedEndDateModal.value = "00:00";
       selectedGroupIdModal.value = "";
+      isActionUpdate.value = false;
     };
 
     const convertTime = (time: string) => {
@@ -364,6 +369,9 @@ export default defineComponent({
         case "Update":
           dataBack = {
             day: selectedDate.value.format(formatDateTime),
+            groupName: listGroupModal.value.filter(group => {
+              return group.id == selectedGroupIdModal.value;
+            })[0].name,
             data: {
               customizedScheduleId: selectedCustomScheduleId.value,
               schoolClassId: selectedClassId.value == "all" ? selectedClassIdModal.value : selectedClassId.value,
@@ -418,6 +426,7 @@ export default defineComponent({
           break;
         case "Update":
           await onUpdateSchedule(createData(type));
+          isActionUpdate.value = false;
           break;
         case "Delete":
           await onDeleteSchedule(createData(type));

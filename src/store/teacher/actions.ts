@@ -44,7 +44,7 @@ const actions: ActionTree<TeacherState, any> = {
       commit("updateCalendarSchedule", payload);
     }
   },
-  async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; data: ScheduleParam }) {
+  async updateSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; groupName: string; data: ScheduleParam }) {
     const response = await TeacherService.updateSchedule(payload.data);
     if (response) commit("updateCalendarSchedule", payload);
   },
