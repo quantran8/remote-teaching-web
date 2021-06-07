@@ -7,8 +7,8 @@ import { fmtMsg } from "@/commonui";
 import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
 
-const PARENT_PATH = "/parent";
-const TEACHER_PATH = "/teacher";
+const PARENT_PATH_REGEX = /\/parent/;
+const TEACHER_PATH_REGEX = /\/teacher/;
 
 export default defineComponent({
   components: {
@@ -57,22 +57,20 @@ export default defineComponent({
 
     const route = useRoute();
     const router = useRouter();
-    watch(route, () => {		
+    watch(route, () => {
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
-      switch (route.path) {
-        case PARENT_PATH:
-          if (isTeacher) {
-            router.push(TEACHER_PATH);
-          }
-          break;
-        case TEACHER_PATH:
-          if (isParent) {
-            router.push(PARENT_PATH);
-          }
-		  break;
-        default:
-          break;
+      if (isTeacher) {
+        const matchIndex = route.path.search(PARENT_PATH_REGEX);
+        if (matchIndex > -1) {
+          router.push(route.path.replace(PARENT_PATH_REGEX, "/teacher"));
+        }
+      }
+      if (isParent) {
+        const matchIndex = route.path.search(TEACHER_PATH_REGEX);
+        if (matchIndex > -1) {
+          router.push(route.path.replace(TEACHER_PATH_REGEX, "/parent"));
+        }
       }
     });
 
