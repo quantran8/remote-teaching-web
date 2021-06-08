@@ -125,8 +125,6 @@ export default defineComponent({
           shapes.push(JSON.stringify(obj));
         }
       });
-      console.log(shapes, "ssssssssssss");
-      console.log(canvas.getObjects(), "oooooooooooooooooo");
       if (shapes.length) {
         await store.dispatch("teacherRoom/setShapesForStudent", shapes);
       }
@@ -342,17 +340,14 @@ export default defineComponent({
     };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
-      console.log(canvas.getObjects(), "ffffffffffff");
       canvas.remove(
         ...canvas
           .getObjects()
           .filter((obj: any) => obj.type !== "path")
           .filter((obj: any) => obj.id !== isTeacher.value.id),
       );
-      console.log(canvas.getObjects(), "f2222222222222");
       studentShapes.value.forEach((item: any) => {
-        console.log(item, "iiiiiiiiiiiii");
-        if (item.userId !== infoTeacher.value.id) {
+        if (item.userId !== isTeacher.value.id) {
           item.brushstrokes.forEach((s: any) => {
             const shape = JSON.parse(s);
             if (shape.type === "polygon") {

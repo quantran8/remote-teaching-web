@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
+import {TeacherModel} from "@/models";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -34,7 +35,30 @@ export default defineComponent({
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const teacherShapes = computed(() => store.getters["annotation/teacherShape"]);
-    const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
+    const teacherForST = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
+    const brushstrokesRender = (data: any) => {
+      data.brushstrokes.forEach((s: any) => {
+        const shape = JSON.parse(s);
+        if (shape.type === "polygon") {
+          const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "rect") {
+          const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "circle") {
+          const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+      });
+    };
     const renderCanvas = () => {
       if (!canvas) return;
       // whiteboard processing
@@ -93,27 +117,7 @@ export default defineComponent({
                 .filter((obj: any) => obj.id !== student.value.id)
                 .filter((obj: any) => obj.type !== "path"),
             );
-            item.brushstrokes.forEach((s: any) => {
-              const shape = JSON.parse(s);
-              if (shape.type === "polygon") {
-                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "rect") {
-                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "circle") {
-                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-            });
+            brushstrokesRender(item);
           }
         });
       } else {
@@ -122,31 +126,10 @@ export default defineComponent({
         canvas.remove(...canvas.getObjects("circle"));
       }
       if (teacherShapes.value) {
-        console.log(teacherShapes.value, "TTTTTTTTTTTTTT");
         teacherShapes.value.forEach((item: any) => {
-          if (item.userId === isTeacher.value.id) {
-            canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === isTeacher.value.id));
-            item.brushstrokes.forEach((s: any) => {
-              const shape = JSON.parse(s);
-              if (shape.type === "polygon") {
-                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "rect") {
-                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "circle") {
-                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-            });
+          if (item.userId === teacherForST.value.id) {
+            canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+            brushstrokesRender(item);
           }
         });
       }
@@ -184,8 +167,6 @@ export default defineComponent({
           shapes.push(JSON.stringify(obj));
         }
       });
-      console.log(shapes, "sSSSSSSSSSSSSSSSS");
-      console.log(canvas.getObjects(), "oOOOOOOOOOOOO");
       if (shapes.length) {
         await store.dispatch("studentRoom/studentAddShape", shapes);
       }
