@@ -1,17 +1,17 @@
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse } from "@/services";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { ActionTree } from "vuex";
 import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import {ErrorCode, fmtMsg} from "commonui";
+import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
-import {Paths} from "@/utils/paths";
-import {ErrorLocale} from "@/locales/localeid";
+import { Paths } from "@/utils/paths";
+import { ErrorLocale } from "@/locales/localeid";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -233,6 +233,10 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   setTeacherDisconnected({ commit }, p: boolean) {
     commit("setTeacherDisconnected", p);
+  },
+  async getAvatarIndependent({ commit }, payload: { studentId: string; teacherId: string }) {
+    const response = await TeacherService.getAvatarIndependent(payload.studentId, payload.teacherId);
+    if (response) commit("setAvatarIndependent", response);
   },
 };
 

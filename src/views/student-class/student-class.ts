@@ -1,4 +1,4 @@
-import {ErrorCode, LoginInfo, MatIcon, RoleName} from "@/commonui";
+import { ErrorCode, LoginInfo, MatIcon, RoleName } from "@/commonui";
 import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
@@ -95,6 +95,8 @@ export default defineComponent({
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
+    const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
+    const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
@@ -106,12 +108,15 @@ export default defineComponent({
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
 
     watch(studentOneAndOneId, async () => {
+      if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+        await store.dispatch("studentRoom/getAvatarIndependent", { studentId: studentOneAndOneId.value, teacherId: teacher.value.id });
+      }
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
         if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
+          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
         }
       } else {
         studentIsOneToOne.value = false;
@@ -308,6 +313,8 @@ export default defineComponent({
       teacherIsDisconnected,
       showBearConfused,
       formattedTime,
+      avatarTeacher,
+      avatarStudentOneToOne,
     };
   },
 });
