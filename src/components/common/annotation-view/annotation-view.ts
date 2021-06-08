@@ -34,7 +34,7 @@ export default defineComponent({
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const teacherShapes = computed(() => store.getters["annotation/teacherShape"]);
-    console.log(teacherShapes.value, "tttttttttttttttt");
+    const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const renderCanvas = () => {
       if (!canvas) return;
       // whiteboard processing
@@ -121,6 +121,35 @@ export default defineComponent({
         canvas.remove(...canvas.getObjects("rect"));
         canvas.remove(...canvas.getObjects("circle"));
       }
+      if (teacherShapes.value) {
+        console.log(teacherShapes.value, "TTTTTTTTTTTTTT");
+        teacherShapes.value.forEach((item: any) => {
+          if (item.userId === isTeacher.value.id) {
+            canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === isTeacher.value.id));
+            item.brushstrokes.forEach((s: any) => {
+              const shape = JSON.parse(s);
+              if (shape.type === "polygon") {
+                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+              if (shape.type === "rect") {
+                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+              if (shape.type === "circle") {
+                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+            });
+          }
+        });
+      }
     };
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
@@ -141,6 +170,9 @@ export default defineComponent({
       renderCanvas();
     });
     watch(studentShapes, () => {
+      renderCanvas();
+    });
+    watch(teacherShapes, () => {
       renderCanvas();
     });
     const studentAddShapes = async () => {

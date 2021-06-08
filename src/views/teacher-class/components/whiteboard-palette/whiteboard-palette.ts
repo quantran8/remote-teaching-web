@@ -17,6 +17,7 @@ export default defineComponent({
     const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     let canvas: any;
@@ -118,9 +119,9 @@ export default defineComponent({
     const teacherAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === "teacher-symbol") {
+        if (obj.id === isTeacher.value.id) {
           obj = obj.toJSON();
-          obj.id = "teacher-symbol";
+          obj.id = isTeacher.value.id;
           shapes.push(JSON.stringify(obj));
         }
       });
@@ -146,7 +147,7 @@ export default defineComponent({
     };
     const listenCreatedPath = () => {
       canvas.on("path:created", (obj: any) => {
-        obj.path.id = infoTeacher.value.id;
+        obj.path.id = isTeacher.value.id;
       });
     };
     // LISTENING TO CANVAS EVENTS
@@ -165,7 +166,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || obj.id !== "teacher-symbol") {
+        if (obj.type === "path" || obj.id !== isTeacher.value.id) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -182,7 +183,7 @@ export default defineComponent({
         strokeWidth: 3,
         strokeLineJoin: "round",
         fill: "",
-        id: "teacher-symbol",
+        id: isTeacher.value.id,
       });
       canvas.add(star);
       await teacherAddShapes();
@@ -195,7 +196,7 @@ export default defineComponent({
         fill: "",
         stroke: strokeColor.value,
         strokeWidth: 3,
-        id: "teacher-symbol",
+        id: isTeacher.value.id,
       });
       canvas.add(circle);
       await teacherAddShapes();
@@ -209,7 +210,7 @@ export default defineComponent({
         fill: "",
         stroke: strokeColor.value,
         strokeWidth: 3,
-        id: "teacher-symbol",
+        id: isTeacher.value.id,
       });
       canvas.add(square);
       await teacherAddShapes();
@@ -346,12 +347,11 @@ export default defineComponent({
         ...canvas
           .getObjects()
           .filter((obj: any) => obj.type !== "path")
-          .filter((obj: any) => obj.id !== "teacher-symbol"),
+          .filter((obj: any) => obj.id !== isTeacher.value.id),
       );
       console.log(canvas.getObjects(), "f2222222222222");
       studentShapes.value.forEach((item: any) => {
         console.log(item, "iiiiiiiiiiiii");
-        console.log(infoTeacher.value.id, "idddddddddddd");
         if (item.userId !== infoTeacher.value.id) {
           item.brushstrokes.forEach((s: any) => {
             const shape = JSON.parse(s);
