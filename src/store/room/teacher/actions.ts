@@ -30,6 +30,18 @@ import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import _ from "lodash";
 
+const networkQualityStats = {
+  "0": 0, //The network quality is unknown.
+  "1": 1, //The network quality is excellent.
+  "2": 2, //The network quality is quite good, but the bitrate may be slightly lower than excellent.
+  "3": 3, //Users can feel the communication slightly impaired.
+  "4": 4, //Users can communicate only not very smoothly.
+  "5": 5, //The network is so bad that users can hardly communicate.
+  "6": 6, //The network is down and users cannot communicate at all.
+};
+
+const lowBandWidthPoint = networkQualityStats["3"];
+
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
@@ -97,10 +109,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
-        if ((uplinkNetworkQuality >= 3 || downlinkNetworkQuality >= 3) && !state.isLowBandWidth) {
+        if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", true);
         }
-        if (uplinkNetworkQuality < 3 && downlinkNetworkQuality < 3 && state.isLowBandWidth) {
+        if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint && state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", false);
         }
         const studentIdNetworkQuality = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
@@ -110,14 +122,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
         for (const studentId in studentIdNetworkQuality) {
           const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
           const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
-          if (uplinkNetworkQuality >= 3 || downlinkNetworkQuality >= 3) {
+          if (uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) {
             const studentIdExisting = listStudentLowBandWidthState.find(id => studentId === id);
             if (!studentIdExisting) {
               hasChange = true;
               listStudentLowBandWidthState.push(studentId);
             }
           }
-          if (uplinkNetworkQuality < 3 && downlinkNetworkQuality < 3) {
+          if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint) {
             const studentIdExistingIndex = listStudentLowBandWidthState.findIndex(id => studentId === id);
             if (studentIdExistingIndex > -1) {
               hasChange = true;
