@@ -11,7 +11,7 @@ export interface AnnotationMutationInterface<S> {
   setStickers(s: S, p: { stickers: Array<Sticker> }): void;
   setClearStickers(s: S, p: {}): void;
   setStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
-  setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape>}): void;
+  setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -49,7 +49,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
     s.drawing.studentShapes = p.studentShapes;
   },
-  setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape>}) {
+  setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
     s.drawing.teacherShapes = p.teacherShapes;
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {

@@ -86,7 +86,7 @@ export default defineComponent({
       if (studentShapes.value) {
         studentShapes.value.forEach((item: any) => {
           console.log(item, "students shape sharing");
-          if (item.studentId !== student.value.id) {
+          if (item.userId !== student.value.id) {
             canvas.remove(
               ...canvas
                 .getObjects()
