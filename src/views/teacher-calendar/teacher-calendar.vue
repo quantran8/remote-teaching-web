@@ -101,7 +101,6 @@
         <span class="modal-title-select ml-20">End</span>
         <TimePicker
           class="modal-size-time-picker"
-          :disabled="disableEndTime(selectedStartDateModal)"
           :disabledHours="getDisabledHoursEnd"
           :disabledMinutes="getDisabledMinutesEnd"
           @change="onChangeEndDateModal"
@@ -115,7 +114,7 @@
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Cancel</Button>
-          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')">Save</Button>
+          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">Save</Button>
         </div>
       </div>
     </Modal>
