@@ -49,6 +49,10 @@ export default defineComponent({
     const recurringCustomIdFistFormat = "0000-";
     const loading = ref(false);
     const isActionUpdate = ref(false);
+    const cacheMinutesEnd = ref<number>(0);
+    const cacheHoursEnd = ref<number>(0);
+    const cacheMinutesStart = ref<number>(0);
+    const cacheHoursStart = ref<number>(0);
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -167,9 +171,18 @@ export default defineComponent({
       } else {
         selectedStartDateModal.value = "00:00";
       }
+      if(timeString != null){
+        cacheHoursStart.value = parseInt(timeString.split(":")[0]);
+        cacheMinutesStart.value = parseInt(timeString.split(":")[1]);
+      }
     };
 
     const onChangeEndDateModal = (_time: any, timeString: any) => {
+      if(timeString != null) {
+        const timePicker = timeString.split(":");
+        cacheHoursEnd.value = parseInt(timePicker[0]);
+        cacheMinutesEnd.value = parseInt(timePicker[1]);
+      }
       if (timeString.length > 0) {
         selectedEndDateModal.value = timeString;
       } else {
@@ -264,6 +277,16 @@ export default defineComponent({
       }
     };
 
+    const onValidateTime = () => {
+      const totalTimeStart = cacheHoursStart.value * 60 + cacheMinutesStart.value;
+      const totalTimeEnd = cacheHoursEnd.value * 60 + cacheMinutesEnd.value;
+      if(totalTimeStart >= totalTimeEnd) {
+        return true;
+      }else{
+        return false;
+      }
+    }
+
     const getDisabledHoursEnd = () => {
       const hours = [];
       for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).hour(); i++) {
@@ -273,9 +296,15 @@ export default defineComponent({
     };
 
     const getDisabledMinutesEnd = () => {
-      const minutes = [];
-      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute(); i++) {
-        minutes.push(i);
+      const minutes = [-1];
+      if(cacheHoursEnd.value < moment(selectedStartDateModal.value, formatTime).hour()){
+        for(let i = 0; i < 60; i++){
+          minutes.push(i);
+        }
+      }else if(cacheHoursEnd.value == moment(selectedStartDateModal.value, formatTime).hour()){
+        for (let i = 0; i <= moment(selectedStartDateModal.value, formatTime).minute(); i++) {
+          minutes.push(i);
+        }
       }
       return minutes;
     };
@@ -482,6 +511,7 @@ export default defineComponent({
       getDisabledHoursEnd,
       getDisabledMinutesEnd,
       disableEndTime,
+      onValidateTime,
     };
   },
 });
