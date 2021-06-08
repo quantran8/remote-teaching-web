@@ -131,9 +131,7 @@
       <div class="select-container">
         <span class="modal-title-select">Start</span>
         <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
-      </div>
-      <div class="select-container">
-        <span class="modal-title-select">End</span>
+        <span class="modal-title-select ml-20">End</span>
         <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
       </div>
       <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>
