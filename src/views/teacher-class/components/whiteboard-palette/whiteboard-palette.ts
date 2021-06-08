@@ -124,6 +124,8 @@ export default defineComponent({
           shapes.push(JSON.stringify(obj));
         }
       });
+      console.log(shapes, "ssssssssssss");
+      console.log(canvas.getObjects(), "oooooooooooooooooo");
       if (shapes.length) {
         await store.dispatch("teacherRoom/setShapesForStudent", shapes);
       }
@@ -196,6 +198,7 @@ export default defineComponent({
         id: "teacher-symbol",
       });
       canvas.add(circle);
+      await teacherAddShapes();
     };
     const addSquare = async () => {
       const square = new fabric.Rect({
@@ -209,6 +212,7 @@ export default defineComponent({
         id: "teacher-symbol",
       });
       canvas.add(square);
+      await teacherAddShapes();
     };
     const clickedTool = async (tool: string) => {
       canvas.selection = false;
@@ -337,34 +341,40 @@ export default defineComponent({
     };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
+      console.log(canvas.getObjects(), "ffffffffffff");
       canvas.remove(
         ...canvas
           .getObjects()
           .filter((obj: any) => obj.type !== "path")
           .filter((obj: any) => obj.id !== "teacher-symbol"),
       );
+      console.log(canvas.getObjects(), "f2222222222222");
       studentShapes.value.forEach((item: any) => {
-        item.brushstrokes.forEach((s: any) => {
-          const shape = JSON.parse(s);
-          if (shape.type === "polygon") {
-            const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-              canvas.add(item);
-              item.selectable = false;
-            });
-          }
-          if (shape.type === "rect") {
-            const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-              canvas.add(item);
-              item.selectable = false;
-            });
-          }
-          if (shape.type === "circle") {
-            const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-              canvas.add(item);
-              item.selectable = false;
-            });
-          }
-        });
+        console.log(item, "iiiiiiiiiiiii");
+        console.log(infoTeacher.value.id, "idddddddddddd");
+        if (item.userId !== infoTeacher.value.id) {
+          item.brushstrokes.forEach((s: any) => {
+            const shape = JSON.parse(s);
+            if (shape.type === "polygon") {
+              const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+                canvas.add(item);
+                item.selectable = false;
+              });
+            }
+            if (shape.type === "rect") {
+              const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+                canvas.add(item);
+                item.selectable = false;
+              });
+            }
+            if (shape.type === "circle") {
+              const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+                canvas.add(item);
+                item.selectable = false;
+              });
+            }
+          });
+        }
       });
       if (showHideWhiteboard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));

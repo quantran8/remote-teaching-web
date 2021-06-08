@@ -152,6 +152,8 @@ export default defineComponent({
           shapes.push(JSON.stringify(obj));
         }
       });
+      console.log(shapes, "sSSSSSSSSSSSSSSSS");
+      console.log(canvas.getObjects(), "oOOOOOOOOOOOO");
       if (shapes.length) {
         await store.dispatch("studentRoom/studentAddShape", shapes);
       }
