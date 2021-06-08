@@ -4,7 +4,6 @@ import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
-import student from "@/store/room/student";
 
 export enum InteractiveStatus {
   DEFAULT = 0,

@@ -16,7 +16,6 @@ import {
   ValueOfClassView,
   WhiteboardPayload,
   NetworkQualityPayload,
-  NetworkQualityValue,
 } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
@@ -29,7 +28,6 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import corsProxy from "@/commonui/request/cors";
 import _ from "lodash";
 
 const actions: ActionTree<TeacherRoomState, any> = {
