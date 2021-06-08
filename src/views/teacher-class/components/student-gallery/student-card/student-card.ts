@@ -3,6 +3,8 @@ import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
+import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import student from "@/store/room/student";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -32,6 +34,10 @@ export default defineComponent({
     const isStudentOne = ref(props.student.id == studentOneAndOneId.value);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const isLowBandWidth = computed(() => {
+      const listStudentLowBandWidth = store.getters["teacherRoom/listStudentLowBandWidth"];
+      return listStudentLowBandWidth.findIndex((id: string) => id === props.student.id) > -1;
+    });
 
     watch(studentOneAndOneId, () => {
       isStudentOne.value = props.student.id == studentOneAndOneId.value;
@@ -71,6 +77,9 @@ export default defineComponent({
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
+	console.log('student', props.student);
+	
+
     return {
       isNotJoinned,
       onDragStart,
@@ -83,6 +92,8 @@ export default defineComponent({
       isSpeaking,
       studentOneAndOneId,
       isStudentOne,
+      IconLowWifi,
+	  isLowBandWidth
     };
   },
 });

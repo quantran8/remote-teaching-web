@@ -15,6 +15,8 @@ import {
   UserMediaPayload,
   ValueOfClassView,
   WhiteboardPayload,
+  NetworkQualityPayload,
+  NetworkQualityValue,
 } from "../interface";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
@@ -23,10 +25,12 @@ import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import {Paths} from "@/utils/paths";
+import { Paths } from "@/utils/paths";
 import router from "@/router";
-import {fmtMsg} from "commonui";
-import {ErrorLocale} from "@/locales/localeid";
+import { fmtMsg } from "commonui";
+import { ErrorLocale } from "@/locales/localeid";
+import corsProxy from "@/commonui/request/cors";
+import _ from "lodash";
 
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
@@ -83,7 +87,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: _payload => {		  
+      onUserUnPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
@@ -93,10 +97,39 @@ const actions: ActionTree<TeacherRoomState, any> = {
         // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
-      onLocalNetworkUpdate(payload: any) {
-        // console.log("onLocalNetworkUpdate", payload);
-        const nw = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
-        // console.log("getRemoteNetworkQuality", nw);
+      onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+        const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
+        if ((uplinkNetworkQuality >= 3 || downlinkNetworkQuality >= 3) && !state.isLowBandWidth) {
+          dispatch("setTeacherLowBandWidth", true);
+        }
+        if (uplinkNetworkQuality < 3 && downlinkNetworkQuality < 3 && state.isLowBandWidth) {
+          dispatch("setTeacherLowBandWidth", false);
+        }
+        const studentIdNetworkQuality = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
+        let hasChange = false;
+        const listStudentLowBandWidthState = [...state.listStudentLowBandWidth];
+        if (_.isEmpty(studentIdNetworkQuality)) return;
+        for (const studentId in studentIdNetworkQuality) {
+          const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
+          const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
+          if (uplinkNetworkQuality >= 3 || downlinkNetworkQuality >= 3) {
+            const studentIdExisting = listStudentLowBandWidthState.find(id => studentId === id);
+            if (!studentIdExisting) {
+              hasChange = true;
+              listStudentLowBandWidthState.push(studentId);
+            }
+          }
+          if (uplinkNetworkQuality < 3 && downlinkNetworkQuality < 3) {
+            const studentIdExistingIndex = listStudentLowBandWidthState.findIndex(id => studentId === id);
+            if (studentIdExistingIndex > -1) {
+              hasChange = true;
+              listStudentLowBandWidthState.splice(studentIdExistingIndex, 1);
+            }
+          }
+        }
+        if (hasChange) {
+          dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
+        }
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
@@ -280,6 +313,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setOffline({ commit }) {
     commit("setOffline");
+  },
+  setTeacherLowBandWidth({ commit }, p: boolean) {
+    commit("setTeacherLowBandWidth", p);
+  },
+  setListStudentLowBandWidth({ commit }, p: string[]) {
+    commit("setListStudentLowBandWidth", p);
   },
 };
 
