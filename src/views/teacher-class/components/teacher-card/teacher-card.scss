@@ -47,12 +47,18 @@
   display: grid;
   grid-auto-flow: row;
   column-gap: 5px;
+  text-align: center;
   &__item {
     max-width: 55px;
     img {
       max-width: 100%;
       height: auto;
     }
+	&--wifi {
+		margin-top: 5px;
+		width: 40px;
+		height: 40px;
+	}
   }
   @media (min-width: $xl) {
     &__item {
