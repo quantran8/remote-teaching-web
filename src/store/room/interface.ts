@@ -19,6 +19,7 @@ export interface TeacherState {
   audioEnabled: boolean;
   videoEnabled: boolean;
   status: InClassStatus;
+  disconnectTime?: number | null;
 }
 export enum ClassView {
   GALLERY = "gallery",

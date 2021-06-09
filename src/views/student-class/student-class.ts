@@ -1,11 +1,11 @@
-import {ErrorCode, LoginInfo, MatIcon, RoleName} from "@/commonui";
+import { ErrorCode, LoginInfo, MatIcon, RoleName } from "@/commonui";
 import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
 import gsap from "gsap";
-import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
@@ -21,6 +21,7 @@ import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { useTimer } from "@/hooks/use-timer";
 import * as audioSource from "@/utils/audioGenerator";
+import * as clockData from "../../assets/lotties/clock.json";
 
 const fpPromise = FingerprintJS.load();
 
@@ -230,8 +231,8 @@ export default defineComponent({
     const { start, pause, stop, formattedTime } = useTimer();
 
     const milestones = {
-      first: "00:30",
-      second: "03:00",
+      first: "2:30",
+      second: "00:00",
     };
 
     watch(formattedTime, async currentFormattedTime => {
@@ -253,7 +254,12 @@ export default defineComponent({
 
     watch(myTeacherDisconnected, async isDisconnected => {
       if (isDisconnected) {
-        start();
+        let initialTimeSecond = 0;
+        const initialTimeMillis = store.getters["studentRoom/teacher"].disconnectTime;
+        if (initialTimeMillis) {
+          initialTimeSecond = Math.floor(initialTimeMillis / 1000);
+        }
+        start(initialTimeSecond);
         audioSource.reconnectFailedSound.play();
         audioSource.reconnectFailedSound.on("end", () => {
           audioSource.tryReconnectLoop2.play();
@@ -264,6 +270,8 @@ export default defineComponent({
         audioSource.tryReconnectLoop2.stop();
       }
     });
+
+	const option = reactive({ animationData: clockData.default });
 
     return {
       student,
@@ -308,6 +316,7 @@ export default defineComponent({
       teacherIsDisconnected,
       showBearConfused,
       formattedTime,
+	  option
     };
   },
 });

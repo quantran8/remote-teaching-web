@@ -39,6 +39,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
       commit("setWhiteboard", payload.isShowWhiteBoard);
+      if (payload.teacher.disconnectTime) {		  
+        commit("setTeacherDisconnected", true);
+      }
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -154,7 +157,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherDisconnect: (payload: any) => {
       commit("setTeacherDisconnected", true);
-	  store.dispatch("setToast", { message: 'Please wait for your teacher' }, { root: true });
+      store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
       commit("setTeacherStatus", {
         id: payload.id,
         status: InClassStatus.DEFAULT,
