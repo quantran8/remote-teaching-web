@@ -8,7 +8,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 const fpPromise = FingerprintJS.load();
 
 //five minutes
-const POPUP_TIMING = 25000; 
+const POPUP_TIMING = 6000 * 10 * 5;
 
 //three minutes
 const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
