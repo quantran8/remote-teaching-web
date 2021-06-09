@@ -36,7 +36,6 @@ export class StudentWSClient extends GLSocketClient {
     return this.send(WSCmd.STUDENT_LEAVE_CLASS, { roomId, studentId });
   }
   sendRequestStudentDrawsLine(payload: any) {
-    console.log(payload, 'payload');
-    return this.invoke(WSCmd.STUDENT_DRAWS_LINE, JSON.stringify(payload));
+    return this.send(WSCmd.STUDENT_DRAWS_LINE, payload);
   }
 }

@@ -268,6 +268,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherClearAllBrush: async (payload: any) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });
       await dispatch("annotation/setClearBrush", {}, { root: true });
+      await dispatch("annotation/setTeacherAddShape", { teacherShapes: null }, { root: true });
+      await dispatch("annotation/setStudentDrawsLine", null, { root: true });
     },
     onTeacherDeleteBrush: async (payload: any) => {
       await dispatch("annotation/setDeleteBrush", {}, { root: true });
@@ -325,8 +327,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherAddShape: async (payload: any) => {
       await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
     },
-    onStudentDrawsLine: async (payload: any) => {
-      console.log(payload, "pspspspspspspspsps");
+    onStudentDrawsLine: async (payload: string) => {
+      await commit("annotation/setStudentDrawsLine", payload, { root: true });
     },
   };
   return handler;

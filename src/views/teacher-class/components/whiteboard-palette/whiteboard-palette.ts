@@ -95,8 +95,8 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
-      const canvasAsJSON = canvas.toJSON();
-      const lastObject = canvasAsJSON.objects[canvasAsJSON.objects.length - 1];
+      const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
+      const lastObject = teacherStrokes[teacherStrokes.length - 1];
       if (toolSelected.value === Tools.Pen) {
         await store.dispatch("teacherRoom/setBrush", {
           drawing: lastObject,
@@ -387,8 +387,13 @@ export default defineComponent({
       renderStudentsShapes();
     });
     const renderStudentStrokes = () => {
-      console.log("renderStudentStrokes");
-      console.log(studentStrokes.value, "svvsvsvsvsvsvsv");
+      if (!canvas && !studentStrokes.value) return;
+      studentStrokes.value.forEach((s: any) => {
+        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          canvas.add(item);
+        });
+      });
+      objectCanvasProcess();
     };
     watch(studentStrokes, () => {
       renderStudentStrokes();

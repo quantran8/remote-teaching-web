@@ -248,7 +248,6 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
     },
     onStudentDrawsLine: async (payload: string) => {
-      console.log(payload, "pptptptptptpt");
       await dispatch("annotation/setStudentDrawsLine", payload, {
         root: true,
       });
