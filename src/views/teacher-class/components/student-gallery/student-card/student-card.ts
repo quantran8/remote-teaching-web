@@ -76,9 +76,6 @@ export default defineComponent({
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
-	console.log('student', props.student);
-	
-
     return {
       isNotJoinned,
       onDragStart,
@@ -92,7 +89,7 @@ export default defineComponent({
       studentOneAndOneId,
       isStudentOne,
       IconLowWifi,
-	  isLowBandWidth
+      isLowBandWidth,
     };
   },
 });
