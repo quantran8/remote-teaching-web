@@ -1,8 +1,7 @@
-import { StudentService } from "./../../../services/student/service";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, TeacherService } from "@/services";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, StudentService, InfoService } from "@/services";
 import { ActionTree } from "vuex";
 import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
@@ -236,7 +235,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setTeacherDisconnected", p);
   },
   async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
-    const response = await StudentService.getAvatarTeacher(payload.teacherId);
+    const response = await InfoService.getAvatarTeacher(payload.teacherId);
     if (response) commit("setAvatarTeacher", response);
   },
   async getAvatarStudent({ commit }, payload: { studentId: string }) {
