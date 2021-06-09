@@ -1,4 +1,5 @@
 {
 	"versionGroup.add.text": "Name of New Version",
-	"common.site.title": "Remote Teaching"
+	"common.site.title": "Remote Teaching",
+	"common.warning.overlap": "There seems to be a session already existing in that timeslot"
 }

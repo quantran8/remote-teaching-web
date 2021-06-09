@@ -6,9 +6,10 @@ import moment from "moment";
 import { ClassModel } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
-import { LoginInfo } from "@/commonui";
+import { fmtMsg, LoginInfo } from "@/commonui";
 import IconWarning from "@/assets/calendar-warning.svg";
 import { Tooltip } from "ant-design-vue";
+import { CommonLocale } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -56,6 +57,7 @@ export default defineComponent({
     const cacheHoursEnd = ref<number>(0);
     const cacheMinutesStart = ref<number>(0);
     const cacheHoursStart = ref<number>(0);
+    const warningOverlap = computed(() => fmtMsg(CommonLocale.OverlapWarningSession));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -574,6 +576,7 @@ export default defineComponent({
       onValidateTime,
       IconWarning,
       checkOverlapTime,
+      warningOverlap,
     };
   },
 });

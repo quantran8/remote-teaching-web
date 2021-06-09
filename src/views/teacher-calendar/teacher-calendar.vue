@@ -66,7 +66,7 @@
           <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`position: 'relative' color: ${item.color}; font-weight: 500`">
             <Tooltip placement="top">
               <template #title>
-                <span>There seems to be a session already existing in that timeslot</span>
+                <span>{{warningOverlap}}</span>
               </template>
               <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
             </Tooltip>
