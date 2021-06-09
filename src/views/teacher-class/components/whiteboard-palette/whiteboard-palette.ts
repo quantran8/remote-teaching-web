@@ -20,6 +20,7 @@ export default defineComponent({
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
+    const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -140,7 +141,14 @@ export default defineComponent({
           await objectsCanvas();
           laserDraw();
         }
-        await teacherAddShapes();
+        if (
+          toolSelected.value === Tools.Star ||
+          toolSelected.value === Tools.Circle ||
+          toolSelected.value === Tools.Square ||
+          toolSelected.value === Tools.Cursor
+        ) {
+          await teacherAddShapes();
+        }
       });
     };
     const listenCreatedPath = () => {
@@ -377,6 +385,13 @@ export default defineComponent({
     };
     watch(studentShapes, () => {
       renderStudentsShapes();
+    });
+    const renderStudentStrokes = () => {
+      console.log("renderStudentStrokes");
+      console.log(studentStrokes.value, "svvsvsvsvsvsvsv");
+    };
+    watch(studentStrokes, () => {
+      renderStudentStrokes();
     });
     onMounted(async () => {
       await boardSetup();

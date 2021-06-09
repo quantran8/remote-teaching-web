@@ -1,6 +1,6 @@
 import { AnnotationModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
-import {AnnotationState, Pointer, Sticker, UserShape} from "./state";
+import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationActionInterface<S, R> {
   setPointer(s: ActionContext<S, R>, p: Pointer): void;
@@ -12,6 +12,7 @@ export interface AnnotationActionInterface<S, R> {
   setClearStickers(s: ActionContext<S, R>, p: {}): void;
   setStudentAddShape(s: ActionContext<S, R>, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: ActionContext<S, R>, p: { teacherShapes: Array<UserShape> }): void;
+  setStudentDrawsLine(s: ActionContext<S, R>, p: string): void;
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
@@ -44,6 +45,9 @@ const actions: ActionTree<AnnotationState, any> = {
   },
   setTeacherAddShape({ commit }, p: { teacherShapes: Array<UserShape> }) {
     commit("setTeacherAddShape", p);
+  },
+  setStudentDrawsLine({ commit }, p: string) {
+    commit("setStudentDrawsLine", p);
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);

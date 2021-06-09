@@ -152,14 +152,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         message: "Your class has been ended!",
       });
     },
-    onTeacherDisconnect: (payload: any) => {
+    onTeacherDisconnect: async (payload: any) => {
       commit("setTeacherDisconnected", true);
-	  store.dispatch("setToast", { message: 'Please wait for your teacher' }, { root: true });
+      await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
       commit("setTeacherStatus", {
         id: payload.id,
         status: InClassStatus.DEFAULT,
       });
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetFocusTab: (payload: any) => {
       dispatch("setClassView", {
@@ -324,6 +324,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherAddShape: async (payload: any) => {
       await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
+    },
+    onStudentDrawsLine: async (payload: any) => {
+      console.log(payload, "pspspspspspspspsps");
     },
   };
   return handler;

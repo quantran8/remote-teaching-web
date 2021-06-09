@@ -234,6 +234,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   setTeacherDisconnected({ commit }, p: boolean) {
     commit("setTeacherDisconnected", p);
   },
+  async studentDrawsLine({ state }, payload: Array<string>) {
+    await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
+  },
 };
 
 export default actions;

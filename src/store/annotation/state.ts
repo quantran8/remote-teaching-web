@@ -21,6 +21,7 @@ export interface Drawing {
   studentShapes: UserShape[];
   teacherShapes: UserShape[];
   pencil: Pencil | null;
+  studentStrokes: Array<string>;
 }
 export interface AnnotationState {
   mode: number;
@@ -37,6 +38,7 @@ const state: AnnotationState = {
     brushstrokes: [],
     studentShapes: [],
     teacherShapes: [],
+    studentStrokes: [],
   },
   stickers: [],
 };

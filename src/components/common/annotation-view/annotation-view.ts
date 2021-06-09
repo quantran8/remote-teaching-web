@@ -120,11 +120,8 @@ export default defineComponent({
             brushstrokesRender(item);
           }
         });
-      } else {
-        canvas.remove(...canvas.getObjects("polygon"));
-        canvas.remove(...canvas.getObjects("rect"));
-        canvas.remove(...canvas.getObjects("circle"));
       }
+      //teacher sharing shapes
       if (teacherShapes.value) {
         teacherShapes.value.forEach((item: any) => {
           if (item.userId === teacherForST.value.id) {
@@ -176,11 +173,10 @@ export default defineComponent({
         canvas.renderAll();
         if (canvas.isDrawingMode) {
           // await send path student drawing
-          canvas.getObjects().forEach((obj: any) => {
-            if (obj.id === student.value.id) {
-              console.log(obj, "obj path");
-            }
-          });
+          const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
+          const lastStroke = studentStrokes[studentStrokes.length - 1];
+          console.log(lastStroke, "sssssssssss");
+          await store.dispatch("studentRoom/studentDrawsLine", lastStroke);
         } else {
           console.log("mouse up shapes");
           await studentAddShapes();

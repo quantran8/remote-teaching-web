@@ -12,6 +12,7 @@ export interface AnnotationMutationInterface<S> {
   setClearStickers(s: S, p: {}): void;
   setStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
+  setStudentDrawsLine(s: S, p: string): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -34,6 +35,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
       brushstrokes: [],
       studentShapes: [],
       teacherShapes: [],
+      studentStrokes: [],
     };
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
@@ -52,6 +54,10 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
     s.drawing.teacherShapes = p.teacherShapes;
   },
+  setStudentDrawsLine(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.drawing.studentStrokes = [...s.drawing.studentStrokes, p];
+  },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;
     s.pointer = p.pointer;
@@ -64,6 +70,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
         brushstrokes: [],
         studentShapes: [],
         teacherShapes: [],
+        studentStrokes: [],
       };
     }
     s.stickers = p.stickers;

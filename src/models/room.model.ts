@@ -50,6 +50,7 @@ export interface DrawingModel {
   brushstrokes: Array<string>;
   studentShapes: UserShapeModel[];
   teacherShapes: UserShapeModel[];
+  studentStrokes: Array<string>;
 }
 
 export interface AnnotationModel {
