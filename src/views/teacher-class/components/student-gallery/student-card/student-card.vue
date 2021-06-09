@@ -26,6 +26,7 @@
         :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, 'student__enable--active': isMouseEntered && !isNotJoinned }"
         @click="onOneAndOne"
       >
+        <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
         {{ student.englishName }}
       </h4>
     </div>
