@@ -1,3 +1,4 @@
+import { StudentService } from "./../../../services/student/service";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -234,9 +235,13 @@ const actions: ActionTree<StudentRoomState, any> = {
   setTeacherDisconnected({ commit }, p: boolean) {
     commit("setTeacherDisconnected", p);
   },
-  async getAvatarIndependent({ commit }, payload: { studentId: string; teacherId: string }) {
-    const response = await TeacherService.getAvatarIndependent(payload.studentId, payload.teacherId);
-    if (response) commit("setAvatarIndependent", response);
+  async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
+    const response = await StudentService.getAvatarTeacher(payload.teacherId);
+    if (response) commit("setAvatarTeacher", response);
+  },
+  async getAvatarStudent({ commit }, payload: { studentId: string }) {
+    const response = await StudentService.getAvatarStudent(payload.studentId);
+    if (response) commit("setAvatarStudentOneToOne", response);
   },
 };
 

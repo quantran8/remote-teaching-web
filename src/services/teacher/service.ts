@@ -28,9 +28,6 @@ class GLTeacherService extends AdminService implements TeacherServiceInterface {
     const url = `resources/users/${teacherId}/landingresources/0?filterText=&disabled=false&sortBy=schoolName&schoolId=${schoolId}&isDescending=false&includeGroup=true&offset=0&limit=20`;
     return this.get(url);
   }
-  getAvatarIndependent(studentId: string, teacherId: string): Promise<any> {
-    return this.get(`students/${studentId}/avatar/${teacherId}`);
-  }
 }
 
 export const TeacherService = new GLTeacherService();

@@ -109,7 +109,8 @@ export default defineComponent({
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
-        await store.dispatch("studentRoom/getAvatarIndependent", { studentId: studentOneAndOneId.value, teacherId: teacher.value.id });
+        await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
+        await store.dispatch("studentRoom/getAvatarStudent", { studentId: studentOneAndOneId.value });
       }
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
