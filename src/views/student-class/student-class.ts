@@ -9,6 +9,8 @@ import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnm
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
+import { UnitPlayer } from "./components/unit-player";
+
 import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
@@ -30,6 +32,7 @@ export default defineComponent({
     UnityView,
     MatIcon,
     StudentGallery,
+	UnitPlayer
   },
 
   async created() {

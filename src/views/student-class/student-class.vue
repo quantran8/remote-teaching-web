@@ -22,6 +22,7 @@
           :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
           ref="videoContainerRef"
         >
+          <UnitPlayer />
           <div v-show="showBearConfused" class="sc-content__top--confused">
             <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
             <div class="sc-content__top--confused__clock">
@@ -43,6 +44,7 @@
             <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
           </div>
         </div>
+
         <div class="sc-content__bottom" v-show="isLessonPlan">
           <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
