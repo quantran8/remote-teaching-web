@@ -27,12 +27,18 @@ import * as clockData from "../../assets/lotties/clock.json";
 
 const fpPromise = FingerprintJS.load();
 
+//temporary hard code video
+const sourceVideo = {
+  src: "//amssamples.streaming.mediaservices.windows.net/622b189f-ec39-43f2-93a2-201ac4e31ce1/BigBuckBunny.ism/manifest",
+  type: "application/vnd.ms-sstr+xml",
+};
+
 export default defineComponent({
   components: {
     UnityView,
     MatIcon,
     StudentGallery,
-	UnitPlayer
+    UnitPlayer,
   },
 
   async created() {
@@ -234,22 +240,25 @@ export default defineComponent({
     const { start, pause, stop, formattedTime } = useTimer();
 
     const milestones = {
-      first: "2:30",
+      first: "02:50",
       second: "00:00",
     };
+
+    const isPlayVideo = ref(false);
 
     watch(formattedTime, async currentFormattedTime => {
       if (currentFormattedTime === milestones.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
         audioSource.watchStory.on("end", () => {
-          console.log("play video");
+          isPlayVideo.value = true;
         });
       }
       if (currentFormattedTime === milestones.second) {
         pause();
         audioSource.canGoToClassRoomToday.play();
         audioSource.canGoToClassRoomToday.on("end", () => {
+          isPlayVideo.value = false;
           router.push("/disconnect-issue");
         });
       }
@@ -274,7 +283,7 @@ export default defineComponent({
       }
     });
 
-	const option = reactive({ animationData: clockData.default });
+    const option = reactive({ animationData: clockData.default });
 
     return {
       student,
@@ -319,7 +328,9 @@ export default defineComponent({
       teacherIsDisconnected,
       showBearConfused,
       formattedTime,
-	  option
+      option,
+      sourceVideo,
+      isPlayVideo,
     };
   },
 });

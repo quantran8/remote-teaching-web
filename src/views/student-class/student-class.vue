@@ -22,7 +22,7 @@
           :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
           ref="videoContainerRef"
         >
-          <UnitPlayer />
+          <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
           <div v-show="showBearConfused" class="sc-content__top--confused">
             <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
             <div class="sc-content__top--confused__clock">

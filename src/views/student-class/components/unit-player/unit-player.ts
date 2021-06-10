@@ -1,22 +1,16 @@
 import { defineComponent } from "@vue/runtime-core";
 import { ref } from "vue";
+import { technologyType } from "./interfaces";
 
-const ampLoadTimeout = 300;
-
-export enum technologyType {
-  azureHtml5JS = "azureHtml5JS",
-  flashSS = "flashSS",
-  html5FairPlayHLS = "html5FairPlayHLS",
-  silverlightSS = "silverlightSS",
-  html5 = "html5",
-}
-
-const sourceVideo = {
-  src: "//amssamples.streaming.mediaservices.windows.net/622b189f-ec39-43f2-93a2-201ac4e31ce1/BigBuckBunny.ism/manifest",
-  type: "application/vnd.ms-sstr+xml",
-};
+const AMP_LOAD_TIMEOUT = 300;
 
 export default defineComponent({
+  props: {
+    sourceVideo: {
+      type: Object,
+      required: true,
+    },
+  },
   setup: props => {
     const videoRef = ref(null);
     let videoPlayer: any;
@@ -26,10 +20,19 @@ export default defineComponent({
         autoplay: true,
         controls: true,
         logo: { enabled: false },
-        techOrder: ["azureHtml5JS", "html5FairPlayHLS", "html5"],
+        techOrder: [
+          technologyType.azureHtml5JS,
+          technologyType.flashSS,
+          technologyType.html5FairPlayHLS,
+          technologyType.silverlightSS,
+          technologyType.html5,
+        ],
       });
-      video.addEventListener(amp.eventName.error, (errorDetails: any) => {
-        console.log("errorDetails", errorDetails);
+      video.addEventListener(amp.eventName.error, (payload: any) => {
+        console.log("Error details =>", payload);
+      });
+      video.addEventListener(amp.eventName.ended, (payload: any) => {
+        console.log("Ended details =>", payload);
       });
       return video;
     };
@@ -44,7 +47,7 @@ export default defineComponent({
             if (amp !== undefined) {
               return resolve(amp);
             }
-            if (waited >= ampLoadTimeout * 100) {
+            if (waited >= AMP_LOAD_TIMEOUT * 100) {
               return reject();
             }
             wait(interval * 2);
@@ -58,7 +61,9 @@ export default defineComponent({
     waitForAmp()
       .then(amp => {
         videoPlayer = createVideoPlayer(amp);
-        videoPlayer.src([sourceVideo]);
+
+        videoPlayer.src([props.sourceVideo]);
+        // videoPlayer.autoPlay()
       })
       .catch(e => console.error("Could not found Azure Media Player plugin", e));
     return {
