@@ -63,7 +63,13 @@
       </template>
       <template #dateCellRender="{ current: value }">
         <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
-          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`color: ${item.color}; font-weight: 500`">
+          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`position: 'relative' color: ${item.color}; font-weight: 500`">
+            <Tooltip placement="top">
+              <template #title>
+                <span>{{warningOverlap}}</span>
+              </template>
+              <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
+            </Tooltip>
             <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
               >{{ item.className }} <br />
               {{
@@ -101,7 +107,6 @@
         <span class="modal-title-select ml-20">End</span>
         <TimePicker
           class="modal-size-time-picker"
-          :disabled="disableEndTime(selectedStartDateModal)"
           :disabledHours="getDisabledHoursEnd"
           :disabledMinutes="getDisabledMinutesEnd"
           @change="onChangeEndDateModal"
@@ -115,7 +120,7 @@
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Cancel</Button>
-          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')">Save</Button>
+          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">Save</Button>
         </div>
       </div>
     </Modal>
@@ -131,9 +136,7 @@
       <div class="select-container">
         <span class="modal-title-select">Start</span>
         <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
-      </div>
-      <div class="select-container">
-        <span class="modal-title-select">End</span>
+        <span class="modal-title-select ml-20">End</span>
         <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
       </div>
       <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>

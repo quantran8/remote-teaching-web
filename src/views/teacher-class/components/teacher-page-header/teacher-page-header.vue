@@ -1,6 +1,7 @@
 <template>
   <div class="header">
     <div class="header__left">
+	  <div class="header__left--below"></div>
       {{ teacherName }}
       <div class="box">
         <label class="label-reactions">

@@ -6,7 +6,10 @@ import moment from "moment";
 import { ClassModel } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
-import { LoginInfo } from "@/commonui";
+import { fmtMsg, LoginInfo } from "@/commonui";
+import IconWarning from "@/assets/calendar-warning.svg";
+import { Tooltip } from "ant-design-vue";
+import { CommonLocale } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -19,6 +22,7 @@ export default defineComponent({
     Calendar,
     Col,
     TimePicker,
+    Tooltip,
   },
   setup() {
     const store = useStore();
@@ -48,6 +52,12 @@ export default defineComponent({
     const classes = computed(() => store.getters["teacher/classes"]);
     const recurringCustomIdFistFormat = "0000-";
     const loading = ref(false);
+    const isActionUpdate = ref(false);
+    const cacheMinutesEnd = ref<number>(0);
+    const cacheHoursEnd = ref<number>(0);
+    const cacheMinutesStart = ref<number>(0);
+    const cacheHoursStart = ref<number>(0);
+    const warningOverlap = computed(() => fmtMsg(CommonLocale.OverlapWarningSession));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -78,13 +88,19 @@ export default defineComponent({
     };
 
     const getListClassSelect = async (listClass: ClassModel[]) => {
-      const listClassFilter = listClass.map((cl: any) => {
-        let listGroup = [];
-        listGroup = cl.remoteClassGroups.map((group: any) => {
-          return { id: group.id, name: group.groupName };
+      const listClassFilter = listClass
+        .map((cl: any) => {
+          let listGroup = [];
+          listGroup = cl.remoteClassGroups.map((group: any) => {
+            return { id: group.id, name: group.groupName };
+          });
+          if (listGroup.length > 0) {
+            return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
+          }
+        })
+        .filter(function(el) {
+          return el != null;
         });
-        return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
-      });
       color.value = listClassFilter
         .map((cl: any) => {
           return cl.id;
@@ -151,15 +167,32 @@ export default defineComponent({
 
     const handleChangeGroupModal = (vl: string) => {
       selectedGroupIdModal.value = vl;
-      handleChangeTimeModal(vl);
+      if (!isActionUpdate.value) handleChangeTimeModal(vl);
     };
 
-    const onChangeStartDateModal = (time: any, timeString: any) => {
-      selectedStartDateModal.value = timeString;
+    const onChangeStartDateModal = (_time: any, timeString: any) => {
+      if (timeString.length > 0) {
+        selectedStartDateModal.value = timeString;
+      } else {
+        selectedStartDateModal.value = "00:00";
+      }
+      if (timeString != null) {
+        cacheHoursStart.value = parseInt(timeString.split(":")[0]);
+        cacheMinutesStart.value = parseInt(timeString.split(":")[1]);
+      }
     };
 
-    const onChangeEndDateModal = (time: any, timeString: any) => {
-      selectedEndDateModal.value = timeString;
+    const onChangeEndDateModal = (_time: any, timeString: any) => {
+      if (timeString != null) {
+        const timePicker = timeString.split(":");
+        cacheHoursEnd.value = parseInt(timePicker[0]);
+        cacheMinutesEnd.value = parseInt(timePicker[1]);
+      }
+      if (timeString.length > 0) {
+        selectedEndDateModal.value = timeString;
+      } else {
+        selectedEndDateModal.value = "00:00";
+      }
     };
 
     const getRandomColor = () => {
@@ -198,6 +231,48 @@ export default defineComponent({
             })
           : [];
       return dataReturn;
+    };
+
+    const checkOverlapTime = (vl: Moment) => {
+      if (calendarSchedules.value.length <= 0) return;
+      const listData = calendarSchedules.value.filter((daySchedule: any) => {
+        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
+      });
+      const dataReturn =
+        listData.length > 0
+          ? listData[0].schedules.map((schedule: any) => {
+              return schedule;
+            })
+          : [];
+      let isOverlap = false;
+      const startTime: any[] | null = [];
+      const endTime: any[] | null = [];
+      dataReturn.forEach((data: any) => {
+        startTime.push(data.start);
+        endTime.push(data.end);
+      });
+      startTime.forEach((time: string, index) => {
+        const timeStart = startTime[index];
+        const timeEnd = endTime[index];
+        if (timeStart != null && timeEnd != null) {
+          startTime.forEach((totalTime: string, indexTotal) => {
+            if (index != indexTotal && startTime[indexTotal] != null && endTime[indexTotal]!= null) {
+              const timeStartValue = parseInt(timeStart.split(":")[0]) * 60 + parseInt(timeStart.split(":")[1]);
+              const timeEndValue = parseInt(timeEnd.split(":")[0]) * 60 + parseInt(timeEnd.split(":")[1]);
+              const timeStartDataValue = parseInt(startTime[indexTotal].split(":")[0]) * 60 + parseInt(startTime[indexTotal].split(":")[1]);
+              const timeEndDataValue = parseInt(endTime[indexTotal].split(":")[0]) * 60 + parseInt(endTime[indexTotal].split(":")[1]);
+              if (
+                (timeStartValue >= timeStartDataValue && timeStartValue < timeEndDataValue) ||
+                (timeEndValue > timeStartDataValue && timeEndValue <= timeEndDataValue)
+              ) {
+                isOverlap = true;
+                return false;
+              }
+            }
+          });
+        }
+      });
+      return isOverlap;
     };
 
     const canCreate = (vl: Moment) => {
@@ -249,6 +324,12 @@ export default defineComponent({
       }
     };
 
+    const onValidateTime = () => {
+      const totalTimeStart = cacheHoursStart.value * 60 + cacheMinutesStart.value;
+      const totalTimeEnd = cacheHoursEnd.value * 60 + cacheMinutesEnd.value;
+      return totalTimeStart >= totalTimeEnd;
+    };
+
     const getDisabledHoursEnd = () => {
       const hours = [];
       for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).hour(); i++) {
@@ -258,14 +339,21 @@ export default defineComponent({
     };
 
     const getDisabledMinutesEnd = () => {
-      const minutes = [];
-      for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).minute(); i++) {
-        minutes.push(i);
+      const minutes = [-1];
+      if (cacheHoursEnd.value < moment(selectedStartDateModal.value, formatTime).hour()) {
+        for (let i = 0; i < 60; i++) {
+          minutes.push(i);
+        }
+      } else if (cacheHoursEnd.value == moment(selectedStartDateModal.value, formatTime).hour()) {
+        for (let i = 0; i <= moment(selectedStartDateModal.value, formatTime).minute(); i++) {
+          minutes.push(i);
+        }
       }
       return minutes;
     };
 
     const onPanelChange = async (value: any, _mode: any) => {
+      month.value = value;
       await getSchedules(selectedClassId.value, selectedGroupId.value, value);
     };
 
@@ -288,7 +376,10 @@ export default defineComponent({
       } else if (type == "Update") {
         if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
-        listGroupModal.value = [{ id: item.groupId, name: item.groupName }];
+        isActionUpdate.value = true;
+        listGroupModal.value = listClassSelect.value.filter((cl: any) => {
+          return cl.id == item.classId;
+        })[0].groups;
         selectedCustomScheduleId.value = item.customizedScheduleId;
         selectedClassIdModal.value = item.classId;
         selectedGroupIdModal.value = item.groupId;
@@ -305,6 +396,7 @@ export default defineComponent({
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         recurringVisible.value = true;
       }
+      setCacheWhenUpdate(convertTime(selectedStartDateModal.value), convertTime(selectedEndDateModal.value));
     };
 
     const onCancel = () => {
@@ -313,10 +405,27 @@ export default defineComponent({
       selectedStartDateModal.value = "00:00";
       selectedEndDateModal.value = "00:00";
       selectedGroupIdModal.value = "";
+      isActionUpdate.value = false;
     };
 
     const convertTime = (time: string) => {
       return moment(time, formatTime).format("HH:mm:ss");
+    };
+
+    const resetCacheTime = () => {
+      cacheMinutesStart.value = 0;
+      cacheHoursStart.value = 0;
+      cacheMinutesEnd.value = 0;
+      cacheHoursEnd.value = 0;
+    };
+
+    const setCacheWhenUpdate = (start: string, end: string) => {
+      if (start != null && end != null) {
+        cacheHoursStart.value = parseInt(start.split(":")[0]);
+        cacheMinutesStart.value = parseInt(start.split(":")[1]);
+        cacheHoursEnd.value = parseInt(end.split(":")[0]);
+        cacheMinutesEnd.value = parseInt(end.split(":")[1]);
+      }
     };
 
     const createData = (type: string) => {
@@ -334,6 +443,7 @@ export default defineComponent({
       switch (type) {
         case "Delete":
           dataBack = { day: selectedDate.value.format(formatDateTime), data: { scheduleId: selectedCustomScheduleId.value, type: type } };
+          resetCacheTime();
           break;
         case "Create":
           dataBack = {
@@ -347,21 +457,25 @@ export default defineComponent({
             data: {
               schoolClassId: selectedClassIdModal.value,
               groupId: selectedGroupIdModal.value,
-              start: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
-              end: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
+              start: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value),
+              end: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value),
               type: type,
             },
           };
+          resetCacheTime();
           break;
         case "Update":
           dataBack = {
             day: selectedDate.value.format(formatDateTime),
+            groupName: listGroupModal.value.filter(group => {
+              return group.id == selectedGroupIdModal.value;
+            })[0].name,
             data: {
               customizedScheduleId: selectedCustomScheduleId.value,
               schoolClassId: selectedClassId.value == "all" ? selectedClassIdModal.value : selectedClassId.value,
               groupId: selectedGroupIdModal.value,
-              start: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
-              end: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
+              start: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value),
+              end: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value),
               type: type,
               createdBy: loginInfo.profile.sub,
             },
@@ -410,6 +524,7 @@ export default defineComponent({
           break;
         case "Update":
           await onUpdateSchedule(createData(type));
+          isActionUpdate.value = false;
           break;
         case "Delete":
           await onDeleteSchedule(createData(type));
@@ -458,6 +573,10 @@ export default defineComponent({
       getDisabledHoursEnd,
       getDisabledMinutesEnd,
       disableEndTime,
+      onValidateTime,
+      IconWarning,
+      checkOverlapTime,
+      warningOverlap,
     };
   },
 });

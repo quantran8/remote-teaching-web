@@ -10,6 +10,9 @@
       <a href="javascript:void(0)" class="tc-action__item" @click="toggleVideo">
         <img :src="videoIcon" class="tc-action__icon" />
       </a>
+	  <span v-if="isLowBandWidth" class="tc-action__item">
+        <img :src="IconLowWifi" class="tc-action__item--wifi" />
+      </span>
     </div>
     <!-- <div class="item-container">
       <div class="mask">

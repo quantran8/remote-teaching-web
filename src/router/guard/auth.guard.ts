@@ -1,13 +1,9 @@
-import {
-  AuthService,
-  GLUtil,
-  locationReplace,
-  LoginInfo,
-} from "@/commonui";
+import { AuthService, GLUtil, locationReplace, LoginInfo } from "@/commonui";
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 
 import { store } from "@/store";
 import { AppView } from "@/store/app/state";
+import { LayoutGuard, ParentGuard, TeacherGuard } from ".";
 
 const isTokenExpired = () => {
   const { getTokenParam } = AuthService.getTokenUrlParams();
@@ -23,43 +19,47 @@ const verifySession = () => {
       return Promise.reject();
     };
     return AuthService.clearState()
-      .then((_) => abortSignin())
-      .catch((_) => abortSignin());
+      .then(_ => abortSignin())
+      .catch(_ => abortSignin());
   }
   AuthService.trySetSigninVerifyToken();
   return Promise.resolve();
 };
 
-const routeAuth = (
-  loginInfo: LoginInfo,
-  to: RouteLocationNormalized,
-  next: any
-) => {
+const routeAuth = (loginInfo: LoginInfo, to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
   const isNotAuthorized = !loginInfo.loggedin || GLUtil.isExpired(loginInfo);
   if (isNotAuthorized) {
     AuthService.storePagethenSigninRedirect();
   } else {
     if (to.meta) {
-      if (store.getters.appView !== AppView.Authorized) {
+	  if (store.getters.appView !== AppView.Authorized) {
         store.dispatch("setAppView", { appView: AppView.Authorized });
       }
+
       if (store.getters["spin/setSplash"]) {
         store.dispatch("spin/setSplash", false);
       }
+
+	  const isTeacherGuardPassed = TeacherGuard(to, from, next);
+      const isParentGuardPassed = ParentGuard(to, from, next);
+      
+      if (isTeacherGuardPassed && isParentGuardPassed) {
+		LayoutGuard(to, from, next);
+		next();
+      }
+	  else
+	  {
+		store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+	  }
+
     } else {
       store.dispatch("setAppView", { appView: AppView.UnAuthorized });
     }
   }
 };
 
-export default (
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) => {
-  const requiresAuth: boolean = to.matched.some(
-    (record) => record.meta.requiresAuth
-  );
+export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  const requiresAuth: boolean = to.matched.some(record => record.meta.requiresAuth);
 
   const hasIdTokenInUrl = window.location.href.indexOf("id_token") !== -1;
   if (requiresAuth) {
@@ -72,20 +72,17 @@ export default (
       };
       AuthService.signoutRedirectCallback()
         .then(onSignedOut)
-        .catch((e) => {
+        .catch(e => {
           console.error(e);
         });
     } else if (hasIdTokenInUrl) {
       verifySession().then(() => {
-        AuthService.signinRedirectCallback().then((user) => {
+        AuthService.signinRedirectCallback().then(user => {
           try {
             const page = AuthService.getPageAfterSignin();
             const processedUser = AuthService.processUser(user);
             AuthService.setLoginInfo(true, processedUser, () => {
-              const replaceToSite = () =>
-                locationReplace(
-                  page ? page.afterSignin || page.shouldSignin : "/"
-                );
+              const replaceToSite = () => locationReplace(page ? page.afterSignin || page.shouldSignin : "/");
               try {
                 return replaceToSite();
               } catch (e) {
@@ -100,14 +97,12 @@ export default (
     } else {
       const loginInfo = AuthService.getLoginInfo();
       if (loginInfo && loginInfo.loggedin) {
-        routeAuth(loginInfo, to, next);
+        routeAuth(loginInfo, to, from, next);
       } else {
-        AuthService.useLocalStoreToLogin().then((loginInfo) =>
-          routeAuth(loginInfo, to, next)
-        );
+        AuthService.useLocalStoreToLogin().then(loginInfo => routeAuth(loginInfo, to, from, next));
       }
     }
-  } else if (to.matched.some((record) => record.meta.notFound)) {
+  } else if (to.matched.some(record => record.meta.notFound)) {
     store.dispatch("setAppView", { appView: AppView.NotFound });
   } else {
     store.dispatch("setAppView", { appView: AppView.Blank });

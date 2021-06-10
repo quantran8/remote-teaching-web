@@ -39,6 +39,7 @@
 	"common.role.parent": "Parent",
 	"common.site.title": "Remote Teaching",
 	"common.access.denied": "Access Denied",
+	"common.warning.overlap": "There seems to be a session already existing in that timeslot",
 	"error.unauthorized": "It seems you do not have access to the Curriculum Vault. Please reach out to the support team for further assistance",
 	"error.notfound": "Sorry, the page you visited does not exist.",
 	"teacher.policy.title": "RTSI Release",

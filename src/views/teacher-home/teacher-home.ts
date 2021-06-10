@@ -45,7 +45,7 @@ export default defineComponent({
     const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.TeacherAcceptPolicy));
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
-    const accessDenied = computed(() => CommonLocale.CommonAccessDenied);
+    const accessDenied = computed(() => fmtMsg(CommonLocale.CommonAccessDenied));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);

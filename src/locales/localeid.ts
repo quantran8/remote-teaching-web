@@ -39,6 +39,7 @@ export class CommonLocale {
   static CommonSiteTitle = "common.site.title";
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
+  static OverlapWarningSession = "common.warning.overlap";
 }
 
 export class ErrorLocale {

@@ -1,4 +1,7 @@
 {
 	"versionGroup.add.text": "Name of New Version",
-	"common.site.title": "Remote Teaching Arabic"
+	"common.site.title": "Remote Teaching Arabic",
+	"common.access.denied": "Access Denied",
+	"common.site.title": "Remote Teaching Arabic",
+	"common.warning.overlap": "There seems to be a session already existing in that timeslot"
 }
