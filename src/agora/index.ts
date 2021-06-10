@@ -92,6 +92,7 @@ export class AgoraClient implements AgoraClientSDK {
       await this.openCamera(options.videoEncoderConfigurationPreset);
     }
     if (options.microphone) await this.openMicrophone();
+	//seem break right here
     this.client.enableAudioVolumeIndicator();
     await this._publish();
   }

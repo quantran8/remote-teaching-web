@@ -8,7 +8,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 const fpPromise = FingerprintJS.load();
 
 //five minutes
-const POPUP_TIMING = 25000; 
+const POPUP_TIMING = 25000;
 
 //three minutes
 const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
@@ -36,24 +36,28 @@ export const useDisconnection = () => {
   });
 
   //handle teacher disconnection in teacher's side
-
+  let modalRef: any;
   watch(teacherDisconnected, async isDisconnected => {
     if (isDisconnected) {
       await dispatch("teacherRoom/leaveRoom");
       timeoutId = setTimeout(() => {
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectFailedSound.play();
+        console.log("hello no bug");
         router.push("/teacher");
       }, TEACHER_RECONNECT_TIMING);
       audioSource.teacherTryReconnectSound.play();
-      Modal.warning({
+      modalRef = Modal.warning({
         content: "So Sorry! It seems you lost network connectivity.",
         onOk: () => {
           console.log("OK");
         },
       });
+      console.log("modalRef", modalRef);
+
       return;
     }
+    modalRef.destroy();
     const { classId } = route.params;
     if (!classId) {
       window.location.reload();
