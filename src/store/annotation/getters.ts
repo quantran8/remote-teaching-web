@@ -20,6 +20,9 @@ const getters: GetterTree<AnnotationState, any> = {
   shapes(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },
+  oneOneTeacherStrokes(state: AnnotationState): Array<string> {
+    return state.oneToOne?.brushstrokes;
+  },
   undoShape(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },
@@ -34,6 +37,9 @@ const getters: GetterTree<AnnotationState, any> = {
   },
   studentStrokes(state: AnnotationState): Array<string> {
     return state.drawing?.studentStrokes;
+  },
+  oneOneStudentStrokes(state: AnnotationState): Array<string> {
+    return state.oneToOne?.studentStrokes;
   },
 };
 

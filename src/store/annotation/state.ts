@@ -27,6 +27,7 @@ export interface AnnotationState {
   mode: number;
   pointer: Pointer;
   drawing: Drawing;
+  oneToOne: Drawing;
   stickers: Array<Sticker>;
 }
 
@@ -34,6 +35,13 @@ const state: AnnotationState = {
   mode: 0,
   pointer: { x: 0, y: 0 },
   drawing: {
+    pencil: null,
+    brushstrokes: [],
+    studentShapes: [],
+    teacherShapes: [],
+    studentStrokes: [],
+  },
+  oneToOne: {
     pencil: null,
     brushstrokes: [],
     studentShapes: [],

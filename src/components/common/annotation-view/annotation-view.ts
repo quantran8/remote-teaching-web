@@ -37,6 +37,7 @@ export default defineComponent({
     const teacherShapes = computed(() => store.getters["annotation/teacherShape"]);
     const teacherForST = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
+    const oneOneTeacherStrokes = computed(() => store.getters["annotation/oneOneTeacherStrokes"]);
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
@@ -82,16 +83,22 @@ export default defineComponent({
     watch(undoCanvas, () => {
       undoStrokeByTeacher();
     });
+    const renderStrokes = (data: any, oneId: any) => {
+      data.forEach((s: any) => {
+        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          if (oneId) {
+            item.isOneToOne = oneId;
+          }
+          canvas.add(item);
+        });
+      });
+      canvas.getObjects("path").forEach((obj: any) => {
+        obj.selectable = false;
+      });
+    };
     const renderTeacherStrokes = () => {
       if (canvasData.value) {
-        canvasData.value.forEach((s: any) => {
-          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-            canvas.add(item);
-          });
-        });
-        canvas.getObjects("path").forEach((obj: any) => {
-          obj.selectable = false;
-        });
+        renderStrokes(canvasData.value, null);
       } else {
         canvas.remove(...canvas.getObjects());
       }
@@ -171,6 +178,19 @@ export default defineComponent({
     watch(studentStrokes, () => {
       studentSharingStrokes();
     });
+    const renderOneTeacherStrokes = () => {
+      if (oneOneTeacherStrokes.value && studentOneAndOneId.value) {
+        renderStrokes(oneOneTeacherStrokes.value, studentOneAndOneId.value);
+      }
+    };
+    watch(studentOneAndOneId, () => {
+      if (!studentOneAndOneId.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        renderTeacherStrokes();
+      } else {
+        renderOneTeacherStrokes();
+      }
+    });
     const studentAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
@@ -199,6 +219,7 @@ export default defineComponent({
     const listenCreatedPath = () => {
       canvas.on("path:created", (obj: any) => {
         obj.path.id = student.value.id;
+        obj.path.isOneToOne = studentOneAndOneId.value || null;
       });
     };
     const listenToCanvasEvents = () => {
@@ -215,6 +236,10 @@ export default defineComponent({
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
+      renderTeacherStrokes();
+      studentSharingShapes();
+      teacherSharingShapes();
+      studentSharingStrokes();
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {
@@ -241,6 +266,7 @@ export default defineComponent({
         strokeLineJoin: "round",
         fill: "",
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
       canvas.isDrawingMode = false;
       canvas.add(star);
@@ -256,6 +282,7 @@ export default defineComponent({
         stroke: activeColor.value,
         strokeWidth: 3,
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
       canvas.isDrawingMode = false;
       canvas.add(circle);
@@ -272,6 +299,7 @@ export default defineComponent({
         stroke: activeColor.value,
         strokeWidth: 3,
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
       canvas.isDrawingMode = false;
       canvas.add(square);

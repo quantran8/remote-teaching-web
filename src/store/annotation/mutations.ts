@@ -29,6 +29,10 @@ const mutations: AnnotationMutation<AnnotationState> = {
     if (!p) return;
     s.drawing.brushstrokes = [...s.drawing.brushstrokes, p];
   },
+  setOneTeacherDrawsStrokes(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes, p];
+  },
   setClearBrush(s: AnnotationState, p: any) {
     s.drawing = {
       pencil: null,
@@ -57,6 +61,10 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setStudentDrawsLine(s: AnnotationState, p: string) {
     if (!p) return;
     s.drawing.studentStrokes = [...s.drawing.studentStrokes, p];
+  },
+  setOneStudentDrawsLine(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.oneToOne.studentStrokes = [...s.oneToOne.studentStrokes, p];
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;

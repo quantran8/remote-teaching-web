@@ -21,6 +21,7 @@ export default defineComponent({
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
+    const oneOneStudentStrokes = computed(() => store.getters["annotation/oneOneStudentStrokes"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -58,24 +59,6 @@ export default defineComponent({
           await clickedTool(Tools.Cursor);
           showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         }
-      }
-    });
-    watch(oneAndOne, async () => {
-      if (!canvas) return;
-      if (!oneAndOne.value) {
-        hideWhiteboard();
-        canvas.remove(
-          ...canvas
-            .getObjects()
-            .filter((obj: any) => obj.type !== "path")
-            .filter((obj: any) => obj.id !== ""),
-        );
-        toolSelected.value = Tools.Clear;
-        canvas.remove(...canvas.getObjects("path"));
-        await store.dispatch("teacherRoom/setClearBrush", {});
-        toolSelected.value = Tools.Pen;
-        canvas.isDrawingMode = true;
-        await setDrawMode();
       }
     });
     const imageUrl = computed(() => {
@@ -154,6 +137,7 @@ export default defineComponent({
     const listenCreatedPath = () => {
       canvas.on("path:created", (obj: any) => {
         obj.path.id = isTeacher.value.id;
+        obj.path.isOneToOne = oneAndOne.value || null;
       });
     };
     // LISTENING TO CANVAS EVENTS
@@ -190,6 +174,7 @@ export default defineComponent({
         strokeLineJoin: "round",
         fill: "",
         id: isTeacher.value.id,
+        isOneToOne: oneAndOne.value || null,
       });
       canvas.add(star);
       await teacherAddShapes();
@@ -203,6 +188,7 @@ export default defineComponent({
         stroke: strokeColor.value,
         strokeWidth: 3,
         id: isTeacher.value.id,
+        isOneToOne: oneAndOne.value || null,
       });
       canvas.add(circle);
       await teacherAddShapes();
@@ -217,6 +203,7 @@ export default defineComponent({
         stroke: strokeColor.value,
         strokeWidth: 3,
         id: isTeacher.value.id,
+        isOneToOne: oneAndOne.value || null,
       });
       canvas.add(square);
       await teacherAddShapes();
@@ -397,6 +384,24 @@ export default defineComponent({
     };
     watch(studentStrokes, () => {
       renderStudentStrokes();
+    });
+    const renderOneStudentStrokes = () => {
+      oneOneStudentStrokes.value.forEach((s: any) => {
+        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          item.isOneToOne = oneAndOne.value;
+          canvas.add(item);
+        });
+      });
+      objectCanvasProcess();
+    };
+    watch(oneAndOne, async () => {
+      if (!canvas) return;
+      if (!oneAndOne.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        renderStudentStrokes();
+      } else {
+        renderOneStudentStrokes();
+      }
     });
     onMounted(async () => {
       await boardSetup();

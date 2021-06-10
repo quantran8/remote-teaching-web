@@ -25,8 +25,12 @@ const actions: ActionTree<AnnotationState, any> = {
   setMode({ commit }, p: { mode: number }) {
     commit("setMode", p);
   },
-  addShape({ commit }, p: string) {
-    commit("addShape", p);
+  addShape({ commit, rootGetters }, p: string) {
+    if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherDrawsStrokes", p);
+    } else {
+      commit("addShape", p);
+    }
   },
   setClearBrush({ commit }, p: {}) {
     commit("setClearBrush", p);
@@ -46,8 +50,12 @@ const actions: ActionTree<AnnotationState, any> = {
   setTeacherAddShape({ commit }, p: { teacherShapes: Array<UserShape> }) {
     commit("setTeacherAddShape", p);
   },
-  setStudentDrawsLine({ commit }, p: string) {
-    commit("setStudentDrawsLine", p);
+  setStudentDrawsLine({ commit, rootGetters }, p: string) {
+    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneStudentDrawsLine", p);
+    } else {
+      commit("setStudentDrawsLine", p);
+    }
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);
