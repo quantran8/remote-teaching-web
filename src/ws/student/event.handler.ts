@@ -11,4 +11,5 @@ export interface StudentWSEventHandler {
   onStudentAnswerAll(payload: any): void;
   onStudentSendUnity(payload: any): void;
   onStudentSetBrushstrokes(payload: any): void;
+  onStudentDrawsLine(payload: any): void;
 }

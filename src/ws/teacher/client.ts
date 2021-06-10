@@ -143,4 +143,7 @@ export class TeacherWSClient extends GLSocketClient {
     const data = JSON.stringify(payload);
     return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);
   }
+  sendRequestShapesForStudent(payload: any) {
+    return this.send(WSCmd.TEACHER_DRAWS_SHAPE, payload);
+  }
 }

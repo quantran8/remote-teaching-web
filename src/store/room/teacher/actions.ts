@@ -330,6 +330,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setListStudentLowBandWidth({ commit }, p: string[]) {
     commit("setListStudentLowBandWidth", p);
   },
+  async setShapesForStudent({ state }, payload: Array<string>) {
+    await state.manager?.WSClient.sendRequestShapesForStudent(payload);
+  },
 };
 
 export default actions;

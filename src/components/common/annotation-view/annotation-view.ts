@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
+import {TeacherModel} from "@/models";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -33,31 +34,79 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
-    const renderCanvas = () => {
-      if (!canvas) return;
-      // whiteboard processing
+    const teacherShapes = computed(() => store.getters["annotation/teacherShape"]);
+    const teacherForST = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
+    const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
+    const oneOneTeacherStrokes = computed(() => store.getters["annotation/oneOneTeacherStrokes"]);
+    watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
-        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
+          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
-      if (undoCanvas.value) {
-        canvas.remove(...canvas.getObjects("path"));
-      }
-      // teacher drawing
-      if (canvasData.value) {
-        canvasData.value.forEach((s: any) => {
-          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+    });
+    const brushstrokesRender = (data: any) => {
+      data.brushstrokes.forEach((s: any) => {
+        const shape = JSON.parse(s);
+        if (shape.type === "polygon") {
+          const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
             canvas.add(item);
+            item.selectable = false;
           });
+        }
+        if (shape.type === "rect") {
+          const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "circle") {
+          const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+      });
+    };
+    const undoStrokeByTeacher = () => {
+      if (undoCanvas.value) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === teacherForST.value.id)
+            .filter((obj: any) => obj.type === "path"),
+        );
+      }
+    };
+    watch(undoCanvas, () => {
+      undoStrokeByTeacher();
+    });
+    const renderStrokes = (data: any, oneId: any) => {
+      data.forEach((s: any) => {
+        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          if (oneId) {
+            item.isOneToOne = oneId;
+          }
+          canvas.add(item);
         });
-        canvas.getObjects("path").forEach((obj: any) => {
-          obj.selectable = false;
-        });
+      });
+      canvas.getObjects("path").forEach((obj: any) => {
+        obj.selectable = false;
+      });
+    };
+    const renderTeacherStrokes = () => {
+      if (canvasData.value) {
+        renderStrokes(canvasData.value, null);
       } else {
         canvas.remove(...canvas.getObjects());
       }
-      // laser processing
+    };
+    watch(canvasData, () => {
+      renderTeacherStrokes();
+    });
+    const laserPathByTeacher = () => {
       if (laserPath.value) {
         const laserPathLine = new fabric.Path.fromObject(JSON.parse(laserPath.value), (item: any) => {
           item.animate("opacity", "0", {
@@ -73,67 +122,74 @@ export default defineComponent({
           });
         });
       }
-      // students sharing shapes
+    };
+    watch(laserPath, () => {
+      laserPathByTeacher();
+    });
+    const studentSharingShapes = () => {
       if (studentShapes.value) {
         studentShapes.value.forEach((item: any) => {
-          console.log(item, "students shape sharing");
-          if (item.studentId !== student.value.id) {
-            console.log(item.studentId, student.value.id, "check id student");
+          if (item.userId !== student.value.id) {
             canvas.remove(
               ...canvas
                 .getObjects()
                 .filter((obj: any) => obj.id !== student.value.id)
+                .filter((obj: any) => obj.id !== teacherForST.value.id)
                 .filter((obj: any) => obj.type !== "path"),
             );
-            item.brushstrokes.forEach((s: any) => {
-              const shape = JSON.parse(s);
-              if (shape.type === "polygon") {
-                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "rect") {
-                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "circle") {
-                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
+            brushstrokesRender(item);
+          }
+        });
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path"));
+      }
+    };
+    watch(studentShapes, () => {
+      studentSharingShapes();
+    });
+    const teacherSharingShapes = () => {
+      if (teacherShapes.value) {
+        teacherShapes.value.forEach((item: any) => {
+          if (item.userId === teacherForST.value.id) {
+            canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+            brushstrokesRender(item);
+          }
+        });
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+      }
+    };
+    watch(teacherShapes, () => {
+      teacherSharingShapes();
+    });
+    const studentSharingStrokes = () => {
+      if (studentStrokes.value) {
+        studentStrokes.value.forEach((s: any) => {
+          if (s.id !== student.value.id) {
+            const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+              canvas.add(item);
             });
           }
         });
       } else {
-        canvas.remove(...canvas.getObjects("polygon"));
-        canvas.remove(...canvas.getObjects("rect"));
-        canvas.remove(...canvas.getObjects("circle"));
+        canvas.remove(...canvas.getObjects("path"));
       }
     };
-    watch(isShowWhiteBoard, () => {
-      if (isShowWhiteBoard.value) {
-        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-        }
-      } else {
-        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+    watch(studentStrokes, () => {
+      studentSharingStrokes();
+    });
+    const renderOneTeacherStrokes = () => {
+      if (oneOneTeacherStrokes.value && studentOneAndOneId.value) {
+        renderStrokes(oneOneTeacherStrokes.value, studentOneAndOneId.value);
       }
-    });
-    watch(undoCanvas, () => {
-      renderCanvas();
-    });
-    watch(canvasData, () => {
-      renderCanvas();
-    });
-    watch(laserPath, () => {
-      renderCanvas();
-    });
-    watch(studentShapes, () => {
-      renderCanvas();
+    };
+    watch(studentOneAndOneId, () => {
+      if (!studentOneAndOneId.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        renderTeacherStrokes();
+      } else {
+        renderOneTeacherStrokes();
+      }
     });
     const studentAddShapes = async () => {
       const shapes: Array<string> = [];
@@ -151,11 +207,24 @@ export default defineComponent({
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         canvas.renderAll();
-        await studentAddShapes();
+        if (canvas.isDrawingMode) {
+          const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
+          const lastStroke = studentStrokes[studentStrokes.length - 1];
+          await store.dispatch("studentRoom/studentDrawsLine", JSON.stringify(lastStroke));
+        } else {
+          await studentAddShapes();
+        }
+      });
+    };
+    const listenCreatedPath = () => {
+      canvas.on("path:created", (obj: any) => {
+        obj.path.id = student.value.id;
+        obj.path.isOneToOne = studentOneAndOneId.value || null;
       });
     };
     const listenToCanvasEvents = () => {
       listenToMouseUp();
+      listenCreatedPath();
     };
     const boardSetup = () => {
       const canvasEl = document.getElementById("canvasOnStudent");
@@ -167,11 +236,26 @@ export default defineComponent({
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
-
-      renderCanvas();
+      renderTeacherStrokes();
+      studentSharingShapes();
+      teacherSharingShapes();
+      studentSharingStrokes();
       listenToCanvasEvents();
     };
-
+    const objectCanvasProcess = () => {
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.type === "path") {
+          obj.selectable = false;
+          obj.hasControls = false;
+          obj.hasBorders = false;
+          obj.hoverCursor = "cursor";
+        }
+      });
+    };
+    const cursorHand = () => {
+      canvas.isDrawingMode = false;
+      objectCanvasProcess();
+    };
     const addStar = async () => {
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
@@ -182,8 +266,9 @@ export default defineComponent({
         strokeLineJoin: "round",
         fill: "",
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
-
+      canvas.isDrawingMode = false;
       canvas.add(star);
       await studentAddShapes();
     };
@@ -197,7 +282,9 @@ export default defineComponent({
         stroke: activeColor.value,
         strokeWidth: 3,
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
+      canvas.isDrawingMode = false;
       canvas.add(circle);
       await studentAddShapes();
     };
@@ -212,8 +299,9 @@ export default defineComponent({
         stroke: activeColor.value,
         strokeWidth: 3,
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
-
+      canvas.isDrawingMode = false;
       canvas.add(square);
       await studentAddShapes();
     };
@@ -224,7 +312,9 @@ export default defineComponent({
     };
 
     const addDraw = () => {
-      console.log("drawing");
+      canvas.isDrawingMode = true;
+      canvas.freeDrawingBrush.color = activeColor.value;
+      canvas.freeDrawingBrush.width = 3;
     };
 
     const canvasRef = ref(null);
@@ -238,6 +328,10 @@ export default defineComponent({
     });
 
     const paletteTools: Array<toolType> = [
+      {
+        name: "cursor",
+        action: cursorHand,
+      },
       {
         name: "star",
         action: addStar,
@@ -257,6 +351,9 @@ export default defineComponent({
 
     const changeColor = (color: string) => {
       activeColor.value = color;
+      if (canvas.isDrawingMode) {
+        canvas.freeDrawingBrush.color = color;
+      }
     };
     const animationCheck = ref(true);
     const animationDone = computed(() => animationCheck.value);

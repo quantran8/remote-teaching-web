@@ -17,7 +17,7 @@ import {
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { StudentShape } from "@/store/annotation/state";
+import { UserShape } from "@/store/annotation/state";
 
 type State = TeacherRoomState;
 

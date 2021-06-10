@@ -242,6 +242,9 @@ const actions: ActionTree<StudentRoomState, any> = {
     const response = await StudentService.getAvatarStudent(payload.studentId);
     if (response) commit("setAvatarStudentOneToOne", response);
   },
+  async studentDrawsLine({ state }, payload: Array<string>) {
+    await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
+  },
 };
 
 export default actions;

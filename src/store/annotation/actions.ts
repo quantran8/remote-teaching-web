@@ -1,6 +1,6 @@
 import { AnnotationModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
-import {AnnotationState, Pointer, Sticker, StudentShape} from "./state";
+import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationActionInterface<S, R> {
   setPointer(s: ActionContext<S, R>, p: Pointer): void;
@@ -10,7 +10,9 @@ export interface AnnotationActionInterface<S, R> {
   setDeleteBrush(s: ActionContext<S, R>, p: {}): void;
   setStickers(s: ActionContext<S, R>, p: { stickers: Array<Sticker> }): void;
   setClearStickers(s: ActionContext<S, R>, p: {}): void;
-  setStudentAddShape(s: ActionContext<S, R>, p: { studentShapes: Array<StudentShape> }): void;
+  setStudentAddShape(s: ActionContext<S, R>, p: { studentShapes: Array<UserShape> }): void;
+  setTeacherAddShape(s: ActionContext<S, R>, p: { teacherShapes: Array<UserShape> }): void;
+  setStudentDrawsLine(s: ActionContext<S, R>, p: string): void;
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
@@ -23,8 +25,12 @@ const actions: ActionTree<AnnotationState, any> = {
   setMode({ commit }, p: { mode: number }) {
     commit("setMode", p);
   },
-  addShape({ commit }, p: string) {
-    commit("addShape", p);
+  addShape({ commit, rootGetters }, p: string) {
+    if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherDrawsStrokes", p);
+    } else {
+      commit("addShape", p);
+    }
   },
   setClearBrush({ commit }, p: {}) {
     commit("setClearBrush", p);
@@ -38,8 +44,18 @@ const actions: ActionTree<AnnotationState, any> = {
   setClearStickers({ commit }, p: {}) {
     commit("setClearStickers", p);
   },
-  setStudentAddShape({ commit }, p: { studentShapes: Array<StudentShape> }) {
+  setStudentAddShape({ commit }, p: { studentShapes: Array<UserShape> }) {
     commit("setStudentAddShape", p);
+  },
+  setTeacherAddShape({ commit }, p: { teacherShapes: Array<UserShape> }) {
+    commit("setTeacherAddShape", p);
+  },
+  setStudentDrawsLine({ commit, rootGetters }, p: string) {
+    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneStudentDrawsLine", p);
+    } else {
+      commit("setStudentDrawsLine", p);
+    }
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);
