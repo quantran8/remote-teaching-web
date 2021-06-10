@@ -3,7 +3,6 @@
   justify-content: flex-start;
   align-items: center;
   flex-direction: row;
- 
 }
 
 .class {
@@ -15,6 +14,9 @@
   .class__size {
     width: 200px;
     height: 100px;
+    box-shadow: none;
+    border: 1px solid #cccc;
+    cursor: default;
   }
 
   .class__live-dot {
@@ -35,14 +37,15 @@
 .class-group {
   margin-left: 30px;
   position: relative;
- 
+
   &__size {
     margin: 10px;
     width: 170px;
     height: 100px;
-	&:hover {
-		transform: translateY(-3px) scale(1.02);
-	}
+    cursor: default;
+    &:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
   }
   &__play-icon {
     position: absolute;
@@ -50,6 +53,7 @@
     height: 30px;
     right: 5px;
     bottom: 5px;
+    cursor: pointer;
   }
 }
 
@@ -82,12 +86,11 @@
 }
 
 .loading {
-	display: flex;
-	justify-content: center;
-  
-	&__animation {
-	  animation: loadingAnimation 2s ease-out;
-	  animation-iteration-count: infinite;
-	}
-  }
+  display: flex;
+  justify-content: center;
 
+  &__animation {
+    animation: loadingAnimation 2s ease-out;
+    animation-iteration-count: infinite;
+  }
+}
