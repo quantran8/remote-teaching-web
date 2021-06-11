@@ -49,7 +49,6 @@
             </div>
           </div>
         </div>
-
         <div class="sc-content__bottom" v-show="isLessonPlan">
           <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
