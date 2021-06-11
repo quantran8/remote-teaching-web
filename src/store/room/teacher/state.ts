@@ -23,6 +23,8 @@ export interface TeacherRoomState {
   idOne: string;
   speakingUsers: Array<string>;
   isDisconnected: boolean;
+  isLowBandWidth: boolean;
+  listStudentLowBandWidth: string[];
 }
 
 const state: TeacherRoomState = {
@@ -42,6 +44,8 @@ const state: TeacherRoomState = {
   idOne: "",
   speakingUsers: [],
   isDisconnected: !navigator.onLine,
+  isLowBandWidth: false,
+  listStudentLowBandWidth: []
 };
 
 export default state;

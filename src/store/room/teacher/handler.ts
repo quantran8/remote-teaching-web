@@ -5,6 +5,7 @@ import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
+import {UserShape} from "@/store/annotation/state";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -242,6 +243,14 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     },
     onStudentSetBrushstrokes: async (payload: any) => {
       await commit("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
+    },
+    onTeacherAddShape: async (payload: Array<UserShape>) => {
+      await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
+    },
+    onStudentDrawsLine: async (payload: string) => {
+      await dispatch("annotation/setStudentDrawsLine", payload, {
+        root: true,
+      });
     },
   };
   return handler;
