@@ -29,7 +29,7 @@ const fpPromise = FingerprintJS.load();
 
 //temporary hard code video
 const sourceVideo = {
-  src: "//amssamples.streaming.mediaservices.windows.net/622b189f-ec39-43f2-93a2-201ac4e31ce1/BigBuckBunny.ism/manifest",
+  src: "https://devmediaservice-jpea.streaming.media.azure.net/8b604fd3-7a56-4a32-acc8-ad2227a47430/GSv4-U10-REP-Jonny Bear Paints w.ism/manifest",
   type: "application/vnd.ms-sstr+xml",
 };
 
@@ -236,25 +236,25 @@ export default defineComponent({
     };
 
     const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
-
-    const { start, pause, stop, formattedTime } = useTimer();
-
-    const milestones = {
-      first: "02:50",
+    const { start, pause, stop, formattedTime, toSecond } = useTimer();
+    const milestonesHms = {
+      first: "02:30",
       second: "00:00",
     };
-
+    const milestonesSecond = {
+      first: 150,
+      second: 0,
+    };
     const isPlayVideo = ref(false);
-
     watch(formattedTime, async currentFormattedTime => {
-      if (currentFormattedTime === milestones.first) {
+      if (currentFormattedTime === milestonesHms.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
         audioSource.watchStory.on("end", () => {
           isPlayVideo.value = true;
         });
       }
-      if (currentFormattedTime === milestones.second) {
+      if (currentFormattedTime === milestonesHms.second) {
         pause();
         audioSource.canGoToClassRoomToday.play();
         audioSource.canGoToClassRoomToday.on("end", () => {
@@ -262,8 +262,10 @@ export default defineComponent({
           router.push("/disconnect-issue");
         });
       }
+      if (toSecond(`00:${currentFormattedTime}`) < milestonesSecond.first && toSecond(`00:${currentFormattedTime}`) > milestonesSecond.second) {
+        isPlayVideo.value = true;
+      }
     });
-
     watch(myTeacherDisconnected, async isDisconnected => {
       if (isDisconnected) {
         let initialTimeSecond = 0;
@@ -280,6 +282,7 @@ export default defineComponent({
       } else {
         stop();
         audioSource.tryReconnectLoop2.stop();
+        isPlayVideo.value = false;
       }
     });
 

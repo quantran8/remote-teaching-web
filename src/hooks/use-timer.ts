@@ -38,10 +38,17 @@ export const useTimer = () => {
     formattedTime.value = "03:00";
     timerState.value = "stopped";
   };
+
+  const toSecond = (hms: string) => {
+    const formattedHms = hms.split(":");
+    return +formattedHms[0] * 60 * 60 + +formattedHms[1] * 60 + +formattedHms[2];
+  };
+
   return {
     start,
     pause,
     stop,
     formattedTime,
+    toSecond,
   };
 };

@@ -61,9 +61,9 @@ export default defineComponent({
     waitForAmp()
       .then(amp => {
         videoPlayer = createVideoPlayer(amp);
-
         videoPlayer.src([props.sourceVideo]);
-        // videoPlayer.autoPlay()
+        videoPlayer.autoplay();
+        // videoPlayer.enterFullscreen();
       })
       .catch(e => console.error("Could not found Azure Media Player plugin", e));
     return {

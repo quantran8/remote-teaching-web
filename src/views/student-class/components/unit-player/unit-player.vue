@@ -1,12 +1,10 @@
 <template>
   <div class="unit-player">
     <video
-      class="azuremediaplayer amp-default-skin amp-big-play-centered"
+      class="azuremediaplayer amp-default-skin amp-big-play-centered unit-player__video"
       id="stream-switch-video"
       controls
       preload="metadata"
-      width="640"
-      height="268"
       tabIndex="0"
       ref="videoRef"
       data-setup="{}"

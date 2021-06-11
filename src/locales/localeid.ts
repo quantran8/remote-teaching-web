@@ -66,3 +66,10 @@ export class PrivacyPolicy {
   static StudentMessageJoin = "student.message.join";
   static ReadPolicy = "read.policy";
 }
+
+export class DisconnectScreenLocale {
+  static Title = "disconnect.title";
+  static Content1 = "disconnect.content1";
+  static Content2 = "disconnect.content2";
+  static Goto = "disconnect.goto";
+}
