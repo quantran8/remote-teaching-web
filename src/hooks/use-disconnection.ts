@@ -43,7 +43,6 @@ export const useDisconnection = () => {
       timeoutId = setTimeout(() => {
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectFailedSound.play();
-        console.log("hello no bug");
         router.push("/teacher");
       }, TEACHER_RECONNECT_TIMING);
       audioSource.teacherTryReconnectSound.play();
@@ -53,8 +52,6 @@ export const useDisconnection = () => {
           console.log("OK");
         },
       });
-      console.log("modalRef", modalRef);
-
       return;
     }
     modalRef.destroy();
