@@ -16,7 +16,7 @@
         </a>
       </div>
     </div>
-    <div class="sc-body">
+    <div class="sc-body" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">
         <div class="sc-content__top sc-teacher" ref="videoContainerRef">
           <div v-show="showBearConfused" class="sc-content__top--confused">
@@ -90,6 +90,12 @@
           <img v-show="!student?.videoEnabled" :src="IconVideoOff" class="sc-action__icon" />
         </a>
       </div>
+    </div>
+    <div class="sc-message" v-else>
+      <p class="message">{{ errors.message }}</p>
+      <router-link to="/">
+        <div class="btn-homepage">Go To Home Page</div>
+      </router-link>
     </div>
   </div>
 </template>

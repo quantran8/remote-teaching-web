@@ -97,6 +97,7 @@ export default defineComponent({
     const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
     const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
+    const showMessage = ref(false);
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
@@ -150,14 +151,14 @@ export default defineComponent({
       }
     });
 
-    watch(errors, () => {
+    watch(errors, async () => {
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
-          window.confirm(errors.value.message);
-          router.replace("/");
+          showMessage.value = true;
+          await store.dispatch("setToast", { message: errors.value.message });
         } else if (errors.value.errorCode === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
-          window.confirm(errors.value.message);
-          router.replace("/");
+          showMessage.value = true;
+          await store.dispatch("setToast", { message: errors.value.message });
         }
       }
     });
@@ -316,6 +317,8 @@ export default defineComponent({
       formattedTime,
       avatarTeacher,
       avatarStudentOneToOne,
+      showMessage,
+      errors,
     };
   },
 });
