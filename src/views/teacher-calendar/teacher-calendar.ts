@@ -38,6 +38,7 @@ export default defineComponent({
     const selectedClassIdModal = ref<string>("");
     const selectedGroupId = ref<string>("all");
     const selectedGroupIdModal = ref<string>("");
+    const selectedTimeIdModal = ref<string>("");
     const selectedStartDateModal = ref<string>("");
     const selectedEndDateModal = ref<string>("");
     const selectedCustomScheduleId = ref<string>("");
@@ -383,6 +384,7 @@ export default defineComponent({
         selectedCustomScheduleId.value = item.customizedScheduleId;
         selectedClassIdModal.value = item.classId;
         selectedGroupIdModal.value = item.groupId;
+        selectedTimeIdModal.value = item.timeId;
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         isCreate.value = false;
@@ -392,6 +394,7 @@ export default defineComponent({
         await getDataModal(date, item.customizedScheduleId);
         selectedCustomScheduleId.value = item.customizedScheduleId;
         selectedGroupIdModal.value = item.groupId;
+        selectedTimeIdModal.value = item.timeId;
         selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         recurringVisible.value = true;
@@ -436,7 +439,11 @@ export default defineComponent({
       })[0];
       if (data) {
         schedule = data.schedules.filter((schedule: any) => {
-          return schedule.groupId == selectedGroupIdModal.value;
+          if (schedule.customizedScheduleId != null || !schedule.customizedScheduleId.includes(recurringCustomIdFistFormat)) {
+            return schedule.customizedScheduleId == selectedCustomScheduleId.value;
+          } else {
+            return schedule.timeId == selectedTimeIdModal.value;
+          }
         })[0];
       }
       let dataBack = {};
@@ -488,8 +495,9 @@ export default defineComponent({
             data: {
               schoolClassId: schedule.classId,
               groupId: schedule.groupId,
-              start: data.day.replace("00:00:00", schedule.start),
-              end: data.day.replace("00:00:00", schedule.end),
+              timeId: schedule.timeId,
+              start: moment(data.day).format("YYYY-MM-DD"),
+              end: moment(data.day).format("YYYY-MM-DD"),
               type: type,
             },
           };
