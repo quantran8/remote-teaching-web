@@ -1,14 +1,6 @@
 <template>
   <div class="item-container">
-    <div class="item-header" @click="toggleContent">
-      <div class="item-title">{{ title }}</div>
-      <BaseIcon
-        name="icon-arrow-down"
-        class="collapse-icon"
-        :class="{ collapsed: isToggle }"
-      ></BaseIcon>
-    </div>
-    <div class="item-content nice-scroll" :class="{ 'content-collapsed': isToggle } ">
+    <div class="item-content nice-scroll">
       <div
         @click="() => onClickItem(item)"
         class="item-media"
@@ -22,6 +14,5 @@
     </div>
   </div>
 </template>
-<style lang="scss" scoped src="./exposure-item.scss">
-</style>
+<style lang="scss" scoped src="./exposure-item.scss"></style>
 <script lang="ts" src="./exposure-item.ts"></script>
