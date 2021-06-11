@@ -347,18 +347,21 @@ export default defineComponent({
             const shape = JSON.parse(s);
             if (shape.type === "polygon") {
               const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+                item.isOneToOne = oneAndOne.value || null;
                 canvas.add(item);
                 item.selectable = false;
               });
             }
             if (shape.type === "rect") {
               const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+                item.isOneToOne = oneAndOne.value || null;
                 canvas.add(item);
                 item.selectable = false;
               });
             }
             if (shape.type === "circle") {
               const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+                item.isOneToOne = oneAndOne.value || null;
                 canvas.add(item);
                 item.selectable = false;
               });
@@ -377,6 +380,7 @@ export default defineComponent({
       if (!canvas && !studentStrokes.value) return;
       studentStrokes.value.forEach((s: any) => {
         const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          item.isOneToOne = oneAndOne.value || null;
           canvas.add(item);
         });
       });
@@ -386,21 +390,24 @@ export default defineComponent({
       renderStudentStrokes();
     });
     const renderOneStudentStrokes = () => {
-      oneOneStudentStrokes.value.forEach((s: any) => {
-        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-          item.isOneToOne = oneAndOne.value;
-          canvas.add(item);
+      if (oneOneStudentStrokes.value) {
+        oneOneStudentStrokes.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            item.isOneToOne = oneAndOne.value;
+            canvas.add(item);
+          });
         });
-      });
-      objectCanvasProcess();
+        objectCanvasProcess();
+      }
     };
     watch(oneAndOne, async () => {
       if (!canvas) return;
       if (!oneAndOne.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
-        renderStudentStrokes();
       } else {
-        renderOneStudentStrokes();
+        watch(oneOneStudentStrokes, () => {
+          renderOneStudentStrokes();
+        });
       }
     });
     onMounted(async () => {
