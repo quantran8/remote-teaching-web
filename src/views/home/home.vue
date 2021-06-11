@@ -12,7 +12,7 @@
           <div class="item-name">Teacher</div>
         </div>
       </router-link>
-      <router-link to="/student">
+      <router-link to="/parent">
         <div class="item-container student-container">
           <BaseIcon class="item-icon" name="icon-student" />
           <div class="item-name">Student</div>

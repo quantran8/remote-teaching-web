@@ -8,8 +8,9 @@ import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
-import {CommonLocale, PrivacyPolicy} from "@/locales/localeid";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { AppView } from "@/store/app/state";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -119,6 +120,7 @@ export default defineComponent({
     };
     const cancelPolicy = () => {
       visible.value = false;
+      store.dispatch("setAppView", { appView: AppView.UnAuthorized });
     };
 
     onMounted(async () => {

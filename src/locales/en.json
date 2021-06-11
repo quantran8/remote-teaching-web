@@ -59,5 +59,8 @@
 	"student.accept.policy": "I accept the policies",
 	"read.policy": "Please read the privacy policy carefully.",
 	"privacy.policy": "Privacy Policy",
-	"error.class.not.started": "Your class has not been started!"
+	"error.class.not.started": "Your class has not been started!",
+	"access_denied.we_are_sorry": "We are sorry...",
+  	"access_denied.description": "The page you're trying to access has restricted access.",
+  	"access_denied.suggest": "Please refer your administrator"
 }

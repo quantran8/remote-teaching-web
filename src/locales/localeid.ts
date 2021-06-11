@@ -67,3 +67,9 @@ export class PrivacyPolicy {
   static StudentMessageJoin = "student.message.join";
   static ReadPolicy = "read.policy";
 }
+
+export class AccessDeniedLocale {
+  static AccessDeniedWeAreSorry = "access_denied.we_are_sorry";
+  static AccessDeniedDescription = "access_denied.description";
+  static AccessDeniedSuggest = "access_denied.suggest";
+}
