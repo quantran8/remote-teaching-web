@@ -1,7 +1,10 @@
 {
 	"versionGroup.add.text": "Name of New Version",
 	"common.site.title": "Remote Teaching",
+	"disconnect.title": "Oops! There is an issue" ,
+	"disconnect.content1": "There were connection issue for your teacher",
+	"disconnect.content2": "Teacher will contact you about rescheduling",
+	"disconnect.goto": "Go To Home Page",
 	"common.warning.overlap": "There seems to be a session already existing in that timeslot",
-	"common.site.title": "Remote Teaching",
 	"common.access.denied": "Access Denied"
 }

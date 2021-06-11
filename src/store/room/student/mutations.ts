@@ -38,6 +38,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state.error = null;
     state.globalAudios = [];
     state.idOne = "";
+    state.teacherIsDisconnected = false;
   },
   setError(state: StudentRoomState, payload: GLError | null) {
     state.error = payload;
@@ -61,6 +62,7 @@ const mutations: MutationTree<StudentRoomState> = {
       audioEnabled: !room.teacher.isMuteAudio,
       videoEnabled: !room.teacher.isMuteVideo,
       status: room.teacher.connectionStatus,
+      disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
     state.students = [];
     for (const st of room.students) {
@@ -188,6 +190,9 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   setTeacherDisconnected(state: StudentRoomState, p: boolean) {
     state.teacherIsDisconnected = p;
+    if (!p && state.teacher) {
+      state.teacher.disconnectTime = null;
+    }
   },
   setAvatarTeacher(state: StudentRoomState, p: string) {
     state.avatarTeacher = p;
