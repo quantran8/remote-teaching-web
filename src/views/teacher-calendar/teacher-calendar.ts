@@ -6,7 +6,10 @@ import moment from "moment";
 import { ClassModel } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
-import { LoginInfo } from "@/commonui";
+import { fmtMsg, LoginInfo } from "@/commonui";
+import IconWarning from "@/assets/calendar-warning.svg";
+import { Tooltip } from "ant-design-vue";
+import { CommonLocale } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -19,6 +22,7 @@ export default defineComponent({
     Calendar,
     Col,
     TimePicker,
+    Tooltip,
   },
   setup() {
     const store = useStore();
@@ -53,6 +57,7 @@ export default defineComponent({
     const cacheHoursEnd = ref<number>(0);
     const cacheMinutesStart = ref<number>(0);
     const cacheHoursStart = ref<number>(0);
+    const warningOverlap = computed(() => fmtMsg(CommonLocale.OverlapWarningSession));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
@@ -171,14 +176,14 @@ export default defineComponent({
       } else {
         selectedStartDateModal.value = "00:00";
       }
-      if(timeString != null){
+      if (timeString != null) {
         cacheHoursStart.value = parseInt(timeString.split(":")[0]);
         cacheMinutesStart.value = parseInt(timeString.split(":")[1]);
       }
     };
 
     const onChangeEndDateModal = (_time: any, timeString: any) => {
-      if(timeString != null) {
+      if (timeString != null) {
         const timePicker = timeString.split(":");
         cacheHoursEnd.value = parseInt(timePicker[0]);
         cacheMinutesEnd.value = parseInt(timePicker[1]);
@@ -226,6 +231,48 @@ export default defineComponent({
             })
           : [];
       return dataReturn;
+    };
+
+    const checkOverlapTime = (vl: Moment) => {
+      if (calendarSchedules.value.length <= 0) return;
+      const listData = calendarSchedules.value.filter((daySchedule: any) => {
+        return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
+      });
+      const dataReturn =
+        listData.length > 0
+          ? listData[0].schedules.map((schedule: any) => {
+              return schedule;
+            })
+          : [];
+      let isOverlap = false;
+      const startTime: any[] | null = [];
+      const endTime: any[] | null = [];
+      dataReturn.forEach((data: any) => {
+        startTime.push(data.start);
+        endTime.push(data.end);
+      });
+      startTime.forEach((time: string, index) => {
+        const timeStart = startTime[index];
+        const timeEnd = endTime[index];
+        if (timeStart != null && timeEnd != null) {
+          startTime.forEach((totalTime: string, indexTotal) => {
+            if (index != indexTotal && startTime[indexTotal] != null && endTime[indexTotal]!= null) {
+              const timeStartValue = parseInt(timeStart.split(":")[0]) * 60 + parseInt(timeStart.split(":")[1]);
+              const timeEndValue = parseInt(timeEnd.split(":")[0]) * 60 + parseInt(timeEnd.split(":")[1]);
+              const timeStartDataValue = parseInt(startTime[indexTotal].split(":")[0]) * 60 + parseInt(startTime[indexTotal].split(":")[1]);
+              const timeEndDataValue = parseInt(endTime[indexTotal].split(":")[0]) * 60 + parseInt(endTime[indexTotal].split(":")[1]);
+              if (
+                (timeStartValue >= timeStartDataValue && timeStartValue < timeEndDataValue) ||
+                (timeEndValue > timeStartDataValue && timeEndValue <= timeEndDataValue)
+              ) {
+                isOverlap = true;
+                return false;
+              }
+            }
+          });
+        }
+      });
+      return isOverlap;
     };
 
     const canCreate = (vl: Moment) => {
@@ -280,12 +327,8 @@ export default defineComponent({
     const onValidateTime = () => {
       const totalTimeStart = cacheHoursStart.value * 60 + cacheMinutesStart.value;
       const totalTimeEnd = cacheHoursEnd.value * 60 + cacheMinutesEnd.value;
-      if(totalTimeStart >= totalTimeEnd) {
-        return true;
-      }else{
-        return false;
-      }
-    }
+      return totalTimeStart >= totalTimeEnd;
+    };
 
     const getDisabledHoursEnd = () => {
       const hours = [];
@@ -297,11 +340,11 @@ export default defineComponent({
 
     const getDisabledMinutesEnd = () => {
       const minutes = [-1];
-      if(cacheHoursEnd.value < moment(selectedStartDateModal.value, formatTime).hour()){
-        for(let i = 0; i < 60; i++){
+      if (cacheHoursEnd.value < moment(selectedStartDateModal.value, formatTime).hour()) {
+        for (let i = 0; i < 60; i++) {
           minutes.push(i);
         }
-      }else if(cacheHoursEnd.value == moment(selectedStartDateModal.value, formatTime).hour()){
+      } else if (cacheHoursEnd.value == moment(selectedStartDateModal.value, formatTime).hour()) {
         for (let i = 0; i <= moment(selectedStartDateModal.value, formatTime).minute(); i++) {
           minutes.push(i);
         }
@@ -353,6 +396,7 @@ export default defineComponent({
         selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
         recurringVisible.value = true;
       }
+      setCacheWhenUpdate(convertTime(selectedStartDateModal.value), convertTime(selectedEndDateModal.value));
     };
 
     const onCancel = () => {
@@ -366,6 +410,22 @@ export default defineComponent({
 
     const convertTime = (time: string) => {
       return moment(time, formatTime).format("HH:mm:ss");
+    };
+
+    const resetCacheTime = () => {
+      cacheMinutesStart.value = 0;
+      cacheHoursStart.value = 0;
+      cacheMinutesEnd.value = 0;
+      cacheHoursEnd.value = 0;
+    };
+
+    const setCacheWhenUpdate = (start: string, end: string) => {
+      if (start != null && end != null) {
+        cacheHoursStart.value = parseInt(start.split(":")[0]);
+        cacheMinutesStart.value = parseInt(start.split(":")[1]);
+        cacheHoursEnd.value = parseInt(end.split(":")[0]);
+        cacheMinutesEnd.value = parseInt(end.split(":")[1]);
+      }
     };
 
     const createData = (type: string) => {
@@ -383,6 +443,7 @@ export default defineComponent({
       switch (type) {
         case "Delete":
           dataBack = { day: selectedDate.value.format(formatDateTime), data: { scheduleId: selectedCustomScheduleId.value, type: type } };
+          resetCacheTime();
           break;
         case "Create":
           dataBack = {
@@ -396,11 +457,12 @@ export default defineComponent({
             data: {
               schoolClassId: selectedClassIdModal.value,
               groupId: selectedGroupIdModal.value,
-              start: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
-              end: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
+              start: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value),
+              end: selectedDate.value.format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value),
               type: type,
             },
           };
+          resetCacheTime();
           break;
         case "Update":
           dataBack = {
@@ -412,8 +474,8 @@ export default defineComponent({
               customizedScheduleId: selectedCustomScheduleId.value,
               schoolClassId: selectedClassId.value == "all" ? selectedClassIdModal.value : selectedClassId.value,
               groupId: selectedGroupIdModal.value,
-              start: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value) + moment().format("Z"),
-              end: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value) + moment().format("Z"),
+              start: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedStartDateModal.value),
+              end: moment(data.day).format("YYYY-MM-DDT") + convertTime(selectedEndDateModal.value),
               type: type,
               createdBy: loginInfo.profile.sub,
             },
@@ -512,6 +574,9 @@ export default defineComponent({
       getDisabledMinutesEnd,
       disableEndTime,
       onValidateTime,
+      IconWarning,
+      checkOverlapTime,
+      warningOverlap,
     };
   },
 });

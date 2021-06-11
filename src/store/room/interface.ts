@@ -114,3 +114,8 @@ export interface InitClassRoomPayload {
   role: string;
   browserFingerPrinting: string;
 }
+
+export interface NetworkQualityPayload {
+	uplinkNetworkQuality: number;
+	downlinkNetworkQuality: number;
+}

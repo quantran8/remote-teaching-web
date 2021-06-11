@@ -105,6 +105,8 @@ export default defineComponent({
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
+    const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
+    const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
@@ -116,12 +118,16 @@ export default defineComponent({
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
 
     watch(studentOneAndOneId, async () => {
+      if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+        await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
+        await store.dispatch("studentRoom/getAvatarStudent", { studentId: studentOneAndOneId.value });
+      }
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
         if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
+          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
         }
       } else {
         studentIsOneToOne.value = false;
@@ -334,6 +340,8 @@ export default defineComponent({
       option,
       sourceVideo,
       isPlayVideo,
+      avatarTeacher,
+      avatarStudentOneToOne,
     };
   },
 });

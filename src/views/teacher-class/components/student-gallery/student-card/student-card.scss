@@ -55,6 +55,16 @@
     font-size: 16px;
     font-weight: 600;
     line-height: normal;
+	position: relative;
+    &--wifi {
+      width: 20px;
+	  position: absolute;
+	  left: 5px;
+	  top: 3px;
+    }
+	&--text {
+		display: inline-block;
+	}
   }
   &__disable {
     color: rgb(194, 190, 190);

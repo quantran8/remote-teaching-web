@@ -17,7 +17,7 @@ import {
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { StudentShape } from "@/store/annotation/state";
+import { UserShape } from "@/store/annotation/state";
 
 type State = TeacherRoomState;
 
@@ -232,6 +232,12 @@ const mutations: TeacherRoomMutation<State> = {
   setOffline(state: TeacherRoomState) {
     state.isDisconnected = true
   },
+  setTeacherLowBandWidth(state: TeacherRoomState, p) {
+    state.isLowBandWidth = p
+  },
+  setListStudentLowBandWidth(state: TeacherRoomState, p) {
+	  state.listStudentLowBandWidth = p
+  }
 };
 
 export default mutations;

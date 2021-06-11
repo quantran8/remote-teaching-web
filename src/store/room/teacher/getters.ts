@@ -1,9 +1,9 @@
-import {TeacherRoomManager} from "@/manager/room/teacher.manager";
-import {ClassModel, RoomModel} from "@/models";
-import {GetterTree} from "vuex";
-import {ClassView, InClassStatus, StudentState, TeacherState} from "../interface";
-import {ClassAction} from "../student/state";
-import {TeacherRoomState} from "./state";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
+import { ClassModel, RoomModel } from "@/models";
+import { GetterTree } from "vuex";
+import { ClassView, InClassStatus, StudentState, TeacherState } from "../interface";
+import { ClassAction } from "../student/state";
+import { TeacherRoomState } from "./state";
 
 const getters: GetterTree<TeacherRoomState, any> = {
   isConnected(state: TeacherRoomState): boolean {
@@ -90,6 +90,12 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   isDisconnected(state: TeacherRoomState): boolean {
     return state.isDisconnected;
+  },
+  isLowBandWidth(state: TeacherRoomState): boolean {
+    return state.isLowBandWidth;
+  },
+  listStudentLowBandWidth(state: TeacherRoomState): string[] {
+    return state.listStudentLowBandWidth;
   },
 };
 

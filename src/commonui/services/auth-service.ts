@@ -14,6 +14,7 @@ import {
 } from "../utils";
 import { LocationDescriptor } from "history";
 import AccountService from "./account.service";
+import ResourceService from "./resource.service";
 import { store } from "@/store";
 
 class RedirectNavigator {
@@ -362,6 +363,7 @@ class AuthServiceClass {
   private mergeLoginInfo(user: any) {
     return Promise.resolve(this.processUser(user))
       .then(this.accessTokenScope(this.appendUserAvatarInfo.bind(this)) as any)
+	  .then(this.appendRemoteTsiSettings.bind(this))
       .then((loginInfo: any) => {
         this.setLoginInfo(true, loginInfo);
         return Promise.resolve(loginInfo);
@@ -377,6 +379,22 @@ class AuthServiceClass {
         this.setUserAvatar(loginInfo)
           .then((avatarResult) => {
             resolve(avatarResult);
+          })
+          .catch(() => resolve(loginInfo));
+      } else {
+        resolve(loginInfo);
+      }
+    });
+  }
+
+  private appendRemoteTsiSettings(loginInfo: LoginInfo) {
+    return new Promise<LoginInfo>((resolve, reject) => {
+      if (!loginInfo.loggedin || GLUtil.isExpired(loginInfo)) {
+        resolve(loginInfo);
+      } else if (!loginInfo.profile.remoteTsiSettings) {
+        this.setRemoteTsiSettings(loginInfo)
+          .then((settings) => {
+            resolve(settings);
           })
           .catch(() => resolve(loginInfo));
       } else {
@@ -529,6 +547,23 @@ class AuthServiceClass {
         });
     });
   }
+
+  private setRemoteTsiSettings(loginInfo: LoginInfo): Promise<LoginInfo> {
+    return new Promise((resolve, reject) => {
+      this.getRemoteTsiSettings()
+        .then((settings: any) => {
+          loginInfo.profile.remoteTsiSettings = settings;
+          resolve(loginInfo);
+        })
+        .catch((e: Error) => {
+          reject(loginInfo);
+        });
+    });
+  }
+
+private getRemoteTsiSettings(){
+	return ResourceService.getRemoteTsiSettings();
+}
 
   private getUserAvatarUrl(userId: string, expirationInMinutes: any): any {
     return AccountService.getUserAvatarUrl(userId, expirationInMinutes);

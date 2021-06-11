@@ -1,6 +1,8 @@
 {
 	"versionGroup.add.text": "Name of New Version",
 	"common.site.title": "Remote Teaching Arabic",
+	"common.access.denied": "Access Denied",
+	"common.warning.overlap": "There seems to be a session already existing in that timeslot",
 	"disconnect.title": "Oops! There is an issue" ,
 	"disconnect.content1": "There were connection issue for your teacher",
 	"disconnect.content2": "Teacher will contact you about rescheduling",

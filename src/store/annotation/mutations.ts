@@ -1,6 +1,6 @@
 import { AnnotationModel } from "@/models";
 import { MutationTree } from "vuex";
-import { AnnotationState, Pointer, Sticker, StudentShape } from "./state";
+import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationMutationInterface<S> {
   setPointer(s: S, pointer: Pointer): void;
@@ -10,7 +10,9 @@ export interface AnnotationMutationInterface<S> {
   setDeleteBrush(s: S, p: {}): void;
   setStickers(s: S, p: { stickers: Array<Sticker> }): void;
   setClearStickers(s: S, p: {}): void;
-  setStudentAddShape(s: S, p: { studentShapes: Array<StudentShape> }): void;
+  setStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
+  setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
+  setStudentDrawsLine(s: S, p: string): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -27,11 +29,17 @@ const mutations: AnnotationMutation<AnnotationState> = {
     if (!p) return;
     s.drawing.brushstrokes = [...s.drawing.brushstrokes, p];
   },
+  setOneTeacherDrawsStrokes(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes, p];
+  },
   setClearBrush(s: AnnotationState, p: any) {
     s.drawing = {
       pencil: null,
       brushstrokes: [],
       studentShapes: [],
+      teacherShapes: [],
+      studentStrokes: [],
     };
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
@@ -44,8 +52,19 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setClearStickers(s: AnnotationState, p: {}) {
     s.stickers = [];
   },
-  setStudentAddShape(s: AnnotationState, p: { studentShapes: Array<StudentShape> }) {
+  setStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
     s.drawing.studentShapes = p.studentShapes;
+  },
+  setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
+    s.drawing.teacherShapes = p.teacherShapes;
+  },
+  setStudentDrawsLine(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.drawing.studentStrokes = [...s.drawing.studentStrokes, p];
+  },
+  setOneStudentDrawsLine(s: AnnotationState, p: string) {
+    if (!p) return;
+    s.oneToOne.studentStrokes = [...s.oneToOne.studentStrokes, p];
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;
@@ -58,6 +77,8 @@ const mutations: AnnotationMutation<AnnotationState> = {
         pencil: null,
         brushstrokes: [],
         studentShapes: [],
+        teacherShapes: [],
+        studentStrokes: [],
       };
     }
     s.stickers = p.stickers;

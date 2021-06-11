@@ -194,6 +194,12 @@ const mutations: MutationTree<StudentRoomState> = {
       state.teacher.disconnectTime = null;
     }
   },
+  setAvatarTeacher(state: StudentRoomState, p: string) {
+    state.avatarTeacher = p;
+  },
+  setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
+    state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
+  },
 };
 
 export default mutations;

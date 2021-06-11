@@ -39,6 +39,7 @@ export class CommonLocale {
   static CommonSiteTitle = "common.site.title";
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
+  static OverlapWarningSession = "common.warning.overlap";
 }
 
 export class ErrorLocale {
@@ -72,4 +73,9 @@ export class DisconnectScreenLocale {
   static Content1 = "disconnect.content1";
   static Content2 = "disconnect.content2";
   static Goto = "disconnect.goto";
+}
+export class AccessDeniedLocale {
+  static AccessDeniedWeAreSorry = "access_denied.we_are_sorry";
+  static AccessDeniedDescription = "access_denied.description";
+  static AccessDeniedSuggest = "access_denied.suggest";
 }

@@ -39,6 +39,7 @@
 	"common.role.parent": "Parent",
 	"common.site.title": "Remote Teaching",
 	"common.access.denied": "Access Denied",
+	"common.warning.overlap": "There seems to be a session already existing in that timeslot",
 	"error.unauthorized": "It seems you do not have access to the Curriculum Vault. Please reach out to the support team for further assistance",
 	"error.notfound": "Sorry, the page you visited does not exist.",
 	"teacher.policy.title": "RTSI Release",
@@ -62,5 +63,8 @@
 	"disconnect.title": "Oops! There is an issue" ,
 	"disconnect.content1": "There were connection issue for your teacher",
 	"disconnect.content2": "Teacher will contact you about rescheduling",
-	"disconnect.goto": "Go To Home Page"
+	"disconnect.goto": "Go To Home Page",
+	"access_denied.we_are_sorry": "We are sorry...",
+  	"access_denied.description": "The page you're trying to access has restricted access.",
+  	"access_denied.suggest": "Please refer your administrator"
 }

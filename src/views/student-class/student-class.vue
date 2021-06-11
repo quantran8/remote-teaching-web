@@ -2,7 +2,7 @@
   <div class="sc">
     <div class="sc-header">
       <div class="sc-header__left">
-        <h2 :class="[!(currentExposureItemMedia && isLessonPlan) ? 'sc-header__trainer' : 'sc-header__trainer--mini']">{{ teacher?.name }}</h2>
+        <h2 class="sc-header__trainer">{{ teacher?.name }}</h2>
         <div class="sc-header__icon" ref="classActionImageRef">
           <img v-if="classAction" :src="require(`@/assets/icons/icon-action-${classAction}.png`)" alt="Icon" />
         </div>
@@ -16,12 +16,9 @@
         </a>
       </div>
     </div>
-    <div :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-body' : 'sc-body--mini'">
+    <div class="sc-body">
       <div class="sc-content" ref="contentSectionRef">
-        <div
-          :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-content__top sc-teacher' : 'sc-content__top sc-teacher--mini'"
-          ref="videoContainerRef"
-        >
+        <div class="sc-content__top sc-teacher" ref="videoContainerRef">
           <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
           <div v-show="showBearConfused" class="sc-content__top--confused">
             <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
@@ -32,16 +29,24 @@
               <div v-if="teacherIsDisconnected" class="sc-content__top--confused__clock--text">{{ formattedTime }}</div>
             </div>
           </div>
-          <div
-            :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
-            :id="teacher?.id"
-            v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"
-          ></div>
-          <div
-            :class="!(currentExposureItemMedia && isLessonPlan) ? 'sc-teacher__video' : 'sc-teacher--mini__video'"
-            v-show="isOneToOne && !studentIsOneToOne"
-          >
-            <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
+          <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
+          <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
+            <div class="sc-independent__avatar-container">
+              <img class="sc-independent__avatar-container__avatar" v-if="avatarTeacher && avatarTeacher.length > 0" :src="avatarTeacher" />
+              <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+            </div>
+            <div class="sc-independent__icon-container">
+              <img class="sc-independent__icon-container__size-talk" src="@/assets/images/talk.jpeg" />
+              <img class="sc-independent__icon-container__size-clock" src="@/assets/images/sand-clock.png" />
+            </div>
+            <div class="sc-independent__avatar-container">
+              <img
+                class="sc-independent__avatar-container__avatar"
+                v-if="avatarStudentOneToOne && avatarStudentOneToOne.length > 0"
+                :src="`data:image/png;base64,${avatarStudentOneToOne}`"
+              />
+              <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+            </div>
           </div>
         </div>
 
