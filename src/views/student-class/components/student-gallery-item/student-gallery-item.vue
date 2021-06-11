@@ -6,6 +6,7 @@
       isAudioHighlight && 'sc-gallery-item--highlight',
       isOneToOne && 'sc-gallery-item--one-on-one',
       isRaisingHand && 'sc-gallery-item--help',
+      isNotJoinned && 'sc-gallery-item--disabled',
     ]"
     ref="containerRef"
   >
@@ -22,13 +23,13 @@
         v-show="!student.videoEnabled || isNotJoinned"
         src="@/assets/student-class/no-avatar.png"
       />
+      <span class="sc-gallery-item__star" v-if="isCurrent">
+        <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
+      </span>
     </div>
     <div class="sc-gallery-item__title-container">
-      <h3 class="sc-gallery-item__title" :class="isNotJoinned ? 'sc-gallery-item__disable' : 'sc-gallery-item__enable'">{{ student.englishName }}</h3>
+      <h3 class="sc-gallery-item__title">{{ student.englishName }}</h3>
     </div>
-    <span class="sc-gallery-item__star" v-if="isCurrent">
-      <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
-    </span>
   </div>
 </template>
 <script lang="ts" src="./student-gallery-item.ts"></script>

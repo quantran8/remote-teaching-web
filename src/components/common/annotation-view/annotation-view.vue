@@ -1,5 +1,5 @@
 <template>
-  <div class="annotation-view">
+  <div class="annotation-view" ref="containerRef">
     <img :src="imageUrl" id="annotation-img" />
     <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
       <img src="@/assets/icon-select.png" alt="" />

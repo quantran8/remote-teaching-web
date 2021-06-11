@@ -12,6 +12,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     let canvas: any;
+    const containerRef = ref<HTMLDivElement>();
     const scaleRatio = ref(1);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
@@ -161,8 +162,9 @@ export default defineComponent({
       const canvasEl = document.getElementById("canvasOnStudent");
       if (!canvasEl) return;
       canvas = new fabric.Canvas("canvasOnStudent");
-      canvas.setWidth(717);
-      canvas.setHeight(435);
+      const containerClientRect = containerRef.value?.getBoundingClientRect();
+      canvas.setWidth(containerClientRect?.width);
+      canvas.setHeight(containerClientRect?.height);
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
@@ -274,6 +276,7 @@ export default defineComponent({
     };
 
     return {
+      containerRef,
       pointerStyle,
       imageUrl,
       isPointerMode,
