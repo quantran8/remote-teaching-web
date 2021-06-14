@@ -12,22 +12,7 @@
       </slot>
       <slot />
     </div>
-    <div class="locale-switcher">
-      🌐 {{$i18n.locale}}
-      <select v-model="$i18n.locale">
-        <option value="en">English</option>
-        <option value="ar-sa">العربية</option>
-        <option value="es">Español</option>
-        <option value="zh-cn">中文</option>
-        <option value="ms">中文(马来西亚)</option>
-        <option value="ja">日本語</option>
-        <option value="ko">한국어</option>
-        <option value="ru">Русский</option>
-        <option value="vi">Tiếng Việt</option>
-        <option value="mn">Монгол</option>
-        <option value="th">ภาษาไทย</option>
-      </select>
-    </div>
+    <LanguagePicker />
     <slot name="actions">
       <MenuItem class="user-container" v-if="isLoggedIn">
         <div class="user-container">
@@ -48,5 +33,5 @@
     </slot>
   </div>
 </template>
-<style src="./header.scss" lang="scss" scoped ></style>
+<style src="./header.scss" lang="scss" scoped></style>
 <script src="./header.ts" lang="ts"></script>
