@@ -12,8 +12,8 @@
       </a>
       <template #overlay>
         <Menu v-model:selectedKeys="currentLanguageCode" class="language-picker__menu">
-          <MenuItem class="language-picker__menu" @click="handleClick" v-for="{ value, label } in languages" :key="value">
-            <div :class="classGenerator(value)" />
+          <MenuItem class="language-picker__menu--item" @click="handleClick" v-for="{ value, label } in languages" :key="value">
+            <img class="language-picker__menu--item__logo" :src="require(`@/assets/flags/${value}.svg`)" />
             <div class="language-picker__menu--item__text">{{ label }}</div>
           </MenuItem>
         </Menu>
