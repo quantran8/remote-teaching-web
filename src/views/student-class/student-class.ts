@@ -1,4 +1,5 @@
-import { ErrorCode, LoginInfo, MatIcon, RoleName } from "@/commonui";
+import { StudentClassLocale } from "./../../locales/localeid";
+import { ErrorCode, fmtMsg, LoginInfo, MatIcon, RoleName } from "@/commonui";
 import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { TeacherModel } from "@/models";
@@ -66,6 +67,8 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
+    const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
+    const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
@@ -319,6 +322,8 @@ export default defineComponent({
       avatarStudentOneToOne,
       showMessage,
       errors,
+      exitText,
+      goToHomePageText,
     };
   },
 });

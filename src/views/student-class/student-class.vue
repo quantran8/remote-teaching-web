@@ -12,7 +12,7 @@
         <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
         <a class="sc-header__exit" @click="onClickEnd">
           <MatIcon type="close" class="red-close" />
-          <span>Exit</span>
+          <span>{{ exitText }}</span>
         </a>
       </div>
     </div>
@@ -94,7 +94,7 @@
     <div class="sc-message" v-else>
       <p class="message">{{ errors.message }}</p>
       <router-link to="/">
-        <div class="btn-homepage">Go To Home Page</div>
+        <div class="btn-homepage">{{ goToHomePageText }}</div>
       </router-link>
     </div>
   </div>
