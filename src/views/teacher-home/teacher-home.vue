@@ -21,7 +21,7 @@
       </Select>
     </div>
     <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right" v-show="hasClassesShowUp()">
+    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()">
         <span>Schedule</span>
       <img class="calendar" src="@/assets/images/calendar.png" @click="onClickCalendar" />
     </div>
