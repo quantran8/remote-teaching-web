@@ -90,6 +90,7 @@ export default defineComponent({
       data.forEach((s: any) => {
         const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
           item.isOneToOne = oneId;
+          item.id = teacherForST.value.id;
           canvas.add(item);
         });
       });
@@ -98,7 +99,7 @@ export default defineComponent({
       });
     };
     const renderTeacherStrokes = () => {
-      if (canvasData.value) {
+      if (canvasData.value && canvasData.value.length > 0) {
         renderStrokes(canvasData.value, null);
       } else {
         canvas.remove(...canvas.getObjects());
@@ -164,7 +165,7 @@ export default defineComponent({
       teacherSharingShapes();
     });
     const studentSharingStrokes = () => {
-      if (studentStrokes.value) {
+      if (studentStrokes.value && studentStrokes.value.length > 0) {
         if (!studentOneAndOneId.value) {
           studentStrokes.value.forEach((s: any) => {
             if (s.id !== student.value.id) {
@@ -183,21 +184,17 @@ export default defineComponent({
       studentSharingStrokes();
     });
     const renderOneTeacherStrokes = () => {
-      if (oneOneTeacherStrokes.value && studentOneAndOneId.value) {
+      if (oneOneTeacherStrokes.value && oneOneTeacherStrokes.value.length > 0 && studentOneAndOneId.value === student.value.id) {
         renderStrokes(oneOneTeacherStrokes.value, studentOneAndOneId.value);
       }
     };
     watch(studentOneAndOneId, () => {
-      if (!studentOneAndOneId.value) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+      if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0 && studentOneAndOneId.value === student.value.id) {
+        watch(oneOneTeacherStrokes, () => {
+          renderOneTeacherStrokes();
+        });
       } else {
-        if (studentOneAndOneId.value === student.value.id) {
-          console.log(studentOneAndOneId.value, student.value.id, "check 1-1 id");
-          watch(oneOneTeacherStrokes, () => {
-            console.log(oneOneTeacherStrokes.value, "teacher ve one");
-            renderOneTeacherStrokes();
-          });
-        }
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
       }
     });
     const studentAddShapes = async () => {

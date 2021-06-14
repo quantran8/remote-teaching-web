@@ -13,6 +13,8 @@ export interface AnnotationActionInterface<S, R> {
   setStudentAddShape(s: ActionContext<S, R>, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: ActionContext<S, R>, p: { teacherShapes: Array<UserShape> }): void;
   setStudentDrawsLine(s: ActionContext<S, R>, p: string): void;
+  setClearOneTeacherDrawsStrokes(s: ActionContext<S, R>, p: {}): void;
+  setClearOneStudentDrawsLine(s: ActionContext<S, R>, p: {}): void;
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
@@ -56,6 +58,12 @@ const actions: ActionTree<AnnotationState, any> = {
     } else {
       commit("setStudentDrawsLine", p);
     }
+  },
+  setClearOneTeacherDrawsStrokes({ commit }, p: {}) {
+    commit("setClearOneTeacherDrawsStrokes", p);
+  },
+  setClearOneStudentDrawsLine({ commit }, p: {}) {
+    commit("setClearOneStudentDrawsLine", p);
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);

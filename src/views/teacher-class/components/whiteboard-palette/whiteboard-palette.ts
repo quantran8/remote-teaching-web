@@ -152,6 +152,9 @@ export default defineComponent({
       canvas.setWidth(717);
       canvas.setHeight(435);
       canvas.selectionFullyContained = false;
+      // renderStudentsShapes();
+      // renderStudentStrokes();
+      // renderOneStudentStrokes();
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {
@@ -341,34 +344,36 @@ export default defineComponent({
           .filter((obj: any) => obj.type !== "path")
           .filter((obj: any) => obj.id !== isTeacher.value.id),
       );
-      studentShapes.value.forEach((item: any) => {
-        if (item.userId !== isTeacher.value.id) {
-          item.brushstrokes.forEach((s: any) => {
-            const shape = JSON.parse(s);
-            if (shape.type === "polygon") {
-              const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-                item.isOneToOne = oneAndOne.value || null;
-                canvas.add(item);
-                item.selectable = false;
-              });
-            }
-            if (shape.type === "rect") {
-              const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-                item.isOneToOne = oneAndOne.value || null;
-                canvas.add(item);
-                item.selectable = false;
-              });
-            }
-            if (shape.type === "circle") {
-              const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-                item.isOneToOne = oneAndOne.value || null;
-                canvas.add(item);
-                item.selectable = false;
-              });
-            }
-          });
-        }
-      });
+      if (studentShapes.value !== null) {
+        studentShapes.value.forEach((item: any) => {
+          if (item.userId !== isTeacher.value.id) {
+            item.brushstrokes.forEach((s: any) => {
+              const shape = JSON.parse(s);
+              if (shape.type === "polygon") {
+                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+                  item.isOneToOne = oneAndOne.value || null;
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+              if (shape.type === "rect") {
+                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+                  item.isOneToOne = oneAndOne.value || null;
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+              if (shape.type === "circle") {
+                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+                  item.isOneToOne = oneAndOne.value || null;
+                  canvas.add(item);
+                  item.selectable = false;
+                });
+              }
+            });
+          }
+        });
+      }
       if (showHideWhiteboard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       }
@@ -378,19 +383,21 @@ export default defineComponent({
     });
     const renderStudentStrokes = () => {
       if (!canvas && !studentStrokes.value) return;
-      studentStrokes.value.forEach((s: any) => {
-        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-          item.isOneToOne = oneAndOne.value || null;
-          canvas.add(item);
+      if (studentStrokes.value.length > 0) {
+        studentStrokes.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            item.isOneToOne = oneAndOne.value || null;
+            canvas.add(item);
+          });
         });
-      });
+      }
       objectCanvasProcess();
     };
     watch(studentStrokes, () => {
       renderStudentStrokes();
     });
     const renderOneStudentStrokes = () => {
-      if (oneOneStudentStrokes.value) {
+      if (oneOneStudentStrokes.value && oneOneStudentStrokes.value.length > 0) {
         oneOneStudentStrokes.value.forEach((s: any) => {
           const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
             item.isOneToOne = oneAndOne.value;
