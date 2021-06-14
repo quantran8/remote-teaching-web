@@ -5,17 +5,17 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
 
   getActiveClassRoom(bfp: string): Promise<TeacherGetRoomResponse> {
-    return this.get("rooms/teachers", { browserFingerPrinting: bfp });
+    return this.get("teacher/online-session", { browserFingerPrinting: bfp });
   }
   teacherStartClassRoom(classId: string, groupId?: string): Promise<any> {
-    return this.create(`rooms/join/${classId}/${groupId}`);
+    return this.create(`teacher/join/${classId}/${groupId}`);
   }
   teacherEndClassRoom(roomId?: string): Promise<any> {
     if (!roomId) return Promise.resolve(null);
-    return this.update("rooms/end-class/" + roomId);
+    return this.update("teacher/end-class/" + roomId);
   }
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
-    return this.get(`rooms`, {
+    return this.get(`student/join-session`, {
       studentId: childId,
       browserFingerPrinting: bfp,
     });
