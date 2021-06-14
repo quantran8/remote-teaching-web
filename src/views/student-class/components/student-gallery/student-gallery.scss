@@ -13,13 +13,17 @@
   transition: all 0.5s;
   width: 100%;
 
+  display: flex;
+  justify-content: center;
+
   &__container {
     overflow: hidden;
     display: grid;
-    grid-template-columns: repeat(10, 70px);
     grid-auto-flow: column;
     grid-column-gap: 5px;
     padding: 5px;
+    height: 100%;
+    align-content: center;
   }
 
   &--hide {
@@ -41,16 +45,25 @@
   @media (min-width: $md) {
     position: static;
     height: 120px;
-    padding: 12px;
+
     overflow: hidden;
     &--hide {
       transform: translateY(0);
     }
+
+    &__container {
+      padding: 12px;
+    }
+
     &__toggle {
       display: none;
     }
   }
   @media (min-width: $lg) {
+    height: 135px;
+    &__container {
+      grid-column-gap: 15px;
+    }
   }
   @media (min-width: $xl) {
   }

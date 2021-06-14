@@ -1,9 +1,5 @@
-import IconAudioOff from "@/assets/student-class/audio-off.svg";
-import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
-import IconVideoOff from "@/assets/student-class/video-off.svg";
-import IconVideoOn from "@/assets/student-class/video-on.svg";
 import { ErrorCode, LoginInfo, MatIcon, RoleName } from "@/commonui";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
@@ -14,14 +10,15 @@ import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { computed, ComputedRef, defineComponent, ref, watch, reactive } from "vue";
+import { computed, ComputedRef, defineComponent, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import * as clockData from "../../assets/lotties/clock.json";
+import { StudentAction } from "./components/student-action";
 import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
-import * as clockData from "../../assets/lotties/clock.json";
 
 const fpPromise = FingerprintJS.load();
 
@@ -39,6 +36,7 @@ export default defineComponent({
     StudentGalleryItem,
     StudentHeader,
     UnitPlayer,
+	StudentAction
   },
 
   async created() {
@@ -91,8 +89,6 @@ export default defineComponent({
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
     const isConnected = computed(() => store.getters["studentRoom/isConnected"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
-    const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
-    const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
@@ -187,23 +183,6 @@ export default defineComponent({
       }
     });
 
-    const toggleAudio = async () => {
-      await store.dispatch("studentRoom/setStudentAudio", {
-        id: student.value.id,
-        enable: !student.value.audioEnabled,
-      });
-    };
-
-    const toggleVideo = async () => {
-      await store.dispatch("studentRoom/setStudentVideo", {
-        id: student.value.id,
-        enable: !student.value.videoEnabled,
-      });
-    };
-
-    const onClickRaisingHand = async () => {
-      await store.dispatch("studentRoom/studentRaisingHand", {});
-    };
     const onClickLike = async () => {
       await store.dispatch("studentRoom/studentLike", {});
     };
@@ -273,14 +252,9 @@ export default defineComponent({
       student,
       students,
       teacher,
-      audioIcon,
-      videoIcon,
       handIcon,
-      toggleAudio,
-      toggleVideo,
       isLessonPlan,
       isBlackOutContent,
-      onClickRaisingHand,
       onClickLike,
       currentExposureItemMedia,
       previousExposureItemMedia,
@@ -299,12 +273,6 @@ export default defineComponent({
       classInfo,
       raisedHand,
       disconnectSignalR,
-      IconHandRaised,
-      IconHand,
-      IconAudioOn,
-      IconAudioOff,
-      IconVideoOn,
-      IconVideoOff,
       studentIsDisconnected,
       teacherIsDisconnected,
       showBearConfused,

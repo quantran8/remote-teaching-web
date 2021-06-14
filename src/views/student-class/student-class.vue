@@ -38,26 +38,35 @@
           <span v-if="teacherIsDisconnected" class="sc-content__top--confused__time">{{ formattedTime }}</span>
         </div>
         <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
-        <div class="sc-teacher__video" v-show="isOneToOne && !studentIsOneToOne">
-          <img class="sc-teacher__one-to-one" src="@/assets/images/talk.png" />
+        <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
+          <div class="sc-independent__avatar-container">
+            <img class="sc-independent__avatar-container__avatar" v-if="avatarTeacher && avatarTeacher.length > 0" :src="avatarTeacher" />
+            <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+          </div>
+          <div class="sc-independent__icon-container">
+            <img class="sc-independent__icon-container__size-talk" src="@/assets/images/talk.jpeg" />
+            <img class="sc-independent__icon-container__size-clock" src="@/assets/images/sand-clock.png" />
+          </div>
+          <div class="sc-independent__avatar-container">
+            <img
+              class="sc-independent__avatar-container__avatar"
+              v-if="avatarStudentOneToOne && avatarStudentOneToOne.length > 0"
+              :src="`data:image/png;base64,${avatarStudentOneToOne}`"
+            />
+            <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+          </div>
         </div>
       </div>
       <div class="sc-student">
-        <StudentGalleryItem class="sc-student__avatar" :student="student" :isCurrent="true" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
-        <div class="sc-action">
-          <a href="javascript:void(0)" class="sc-action__item" @click="onClickRaisingHand">
-            <img v-show="raisedHand" :src="IconHandRaised" class="sc-action__icon sc-action__icon--hand" />
-            <img v-show="!raisedHand" :src="IconHand" class="sc-action__icon sc-action__icon--hand" />
-          </a>
-          <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
-            <img v-show="student?.audioEnabled" :src="IconAudioOn" class="sc-action__icon" />
-            <img v-show="!student?.audioEnabled" :src="IconAudioOff" class="sc-action__icon" />
-          </a>
-          <a href="javascript:void(0)" class="sc-action__item" @click="toggleVideo">
-            <img v-show="student?.videoEnabled" :src="IconVideoOn" class="sc-action__icon" />
-            <img v-show="!student?.videoEnabled" :src="IconVideoOff" class="sc-action__icon" />
-          </a>
-        </div>
+        <StudentGalleryItem
+          v-if="student"
+          class="sc-student__avatar"
+          :student="student"
+          :isCurrent="true"
+          :isOneToOne="isOneToOne"
+          :raisedHand="raisedHand"
+        />
+        <StudentAction />
       </div>
     </div>
     <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />

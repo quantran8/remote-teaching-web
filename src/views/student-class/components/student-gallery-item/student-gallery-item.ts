@@ -8,12 +8,11 @@ export default defineComponent({
   props: {
     student: { type: Object as () => StudentState, required: true },
     isCurrent: Boolean,
-    isOneToOne: Boolean,
     raisedHand: Boolean,
   },
   setup: props => {
-    const student = computed(() => props.student).value;
-    const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
+    const student = computed(() => props.student);
+    const isNotJoinned = computed(() => student.value.status !== InClassStatus.JOINED);
     const isRaisingHand = ref(false);
     const store = useStore();
 
@@ -29,12 +28,12 @@ export default defineComponent({
 
     const isAudioHighlight = computed(() => {
       const enableAudios: Array<string> = store.getters["studentRoom/globalAudios"];
-      return student.id && enableAudios.indexOf(student.id) !== -1;
+      return student.value.id && enableAudios.indexOf(student.value.id) !== -1;
     });
 
     const isSpeaking = computed(() => {
       const speakingUsers: Array<string> = store.getters["studentRoom/speakingUsers"];
-      return speakingUsers.indexOf(student.id) >= 0;
+      return speakingUsers.indexOf(student.value.id) >= 0;
     });
 
     return {

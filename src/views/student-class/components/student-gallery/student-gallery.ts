@@ -6,8 +6,6 @@ import { dragscrollNext } from "vue-dragscroll";
 import { MatIcon } from "@/commonui";
 import { ref } from "vue";
 
-console.log("dragscrollNext", dragscrollNext);
-
 export default defineComponent({
   directives: {
     dragscroll: dragscrollNext,

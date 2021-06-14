@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
-import {TeacherModel} from "@/models";
+import { TeacherModel } from "@/models";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -39,6 +39,9 @@ export default defineComponent({
     const teacherForST = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
     const oneOneTeacherStrokes = computed(() => store.getters["annotation/oneOneTeacherStrokes"]);
+    const isPaletteVisible = computed(
+      () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
+    );
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
@@ -227,6 +230,7 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
     };
+
     const boardSetup = () => {
       const canvasEl = document.getElementById("canvasOnStudent");
       if (!canvasEl) return;
@@ -361,7 +365,7 @@ export default defineComponent({
     const animationDone = computed(() => animationCheck.value);
     const actionEnter = (element: HTMLElement) => {
       animationCheck.value = false;
-      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce" });
+      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
       gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
     };
@@ -390,6 +394,7 @@ export default defineComponent({
       actionEnter,
       actionLeave,
       animationDone,
+      isPaletteVisible,
     };
   },
 });
