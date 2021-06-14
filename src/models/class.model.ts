@@ -24,6 +24,13 @@ export interface ClassModel {
   remoteClassGroups: GroupModel[];
 }
 
+export interface ClassModelSchedules {
+  classId: string;
+  className: string;
+  isTeacher: boolean;
+  remoteClassGroups: GroupModel[];
+}
+
 export interface TeacherClassModel extends ClassModel {
   isActive?: boolean;
 }

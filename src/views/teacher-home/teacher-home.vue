@@ -32,10 +32,10 @@
       <ClassCard
         v-else
         class="card-margin"
-        v-for="cl in classes"
-        :key="cl.schoolClassId"
-        :id="cl.schoolClassId"
-        :title="cl.schoolClassName"
+        v-for="cl in classesSchedules"
+        :key="cl.classId"
+        :id="cl.classId"
+        :title="cl.className"
         :description="cl.campusName"
         :remoteClassGroups="cl.remoteClassGroups"
         :active="cl.isActive"

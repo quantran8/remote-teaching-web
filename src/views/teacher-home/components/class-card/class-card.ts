@@ -1,4 +1,4 @@
-import { SchoolClassTimeModel } from "@/models/group.model";
+import { GroupModelSchedules, SchoolClassTimeModel, SchoolClassTimeSchedulesModel } from "@/models/group.model";
 import { defineComponent, onMounted, ref } from "vue";
 import { Spin } from "ant-design-vue";
 import { GroupModel } from "@/models/group.model";
@@ -19,7 +19,7 @@ export default defineComponent({
       required: true,
     },
     remoteClassGroups: {
-      type: Object as () => Array<GroupModel>,
+      type: Object as () => Array<GroupModelSchedules>,
       required: true,
     },
     active: {
@@ -62,7 +62,7 @@ export default defineComponent({
       return (inputTimeStart <= currentTime && currentTime <= inputTimeEnd) || (inputTimeStart < 0 && currentTime > 7 * 1440 + inputTimeStart);
     };
 
-    const validatedTime = (classTime: SchoolClassTimeModel[]) => {
+    const validatedTime = (classTime: SchoolClassTimeSchedulesModel[]) => {
       let min = 99999;
       let indexMin = 0;
       let minTime = 99999;
@@ -148,6 +148,11 @@ export default defineComponent({
       }
     };
 
+    const validatedSkipDates = (schedulesListDate: string[], date: string) => {
+      console.log(date);
+      return false;
+    }
+
     onMounted(() => {
       if (props.remoteClassGroups) {
         validatedGroupHighlighted();
@@ -155,8 +160,9 @@ export default defineComponent({
           const currentDay = moment().weekday();
           const classTime = group.schedules;
           let hasActiveClass = false;
+          const current = new Date();
           classTime.map(time => {
-            if (time.daysOfWeek - 1 == currentDay) {
+            if (time.daysOfWeek - 1 == currentDay && validatedSkipDates(time.dates, current.toDateString())) {
               group.isCurrentDay = true;
               if (!hasActiveClass) {
                 group.startClass = isActiveClass(time.daysOfWeek - 1, time.start, time.end);

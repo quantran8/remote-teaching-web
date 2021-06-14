@@ -1,7 +1,7 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted } from "vue";
+import { computed, defineComponent, ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
@@ -29,7 +29,8 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
-    const classes = computed(() => store.getters["teacher/classes"]);
+    //const classes = computed(() => store.getters["teacher/classes"]);
+    const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
@@ -89,7 +90,8 @@ export default defineComponent({
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
+        //await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId});
+        await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId, browserFingerPrinting: visitorId});
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
       } catch (err) {
@@ -136,8 +138,8 @@ export default defineComponent({
         }
       }
       await store.dispatch("teacher/clearSchedules");
-      if (classes.value) {
-        classes.value.map((cl: TeacherClassModel) => {
+      if (classesSchedules.value) {
+        classesSchedules.value.map((cl: TeacherClassModel) => {
           if (cl.isActive) {
             classActive.value = cl;
             haveClassActive.value = true;
@@ -154,7 +156,7 @@ export default defineComponent({
 
     const hasClassesShowUp = () => {
       if (loading.value == false) {
-        return classes.value.length != 0;
+        return classesSchedules.value.length != 0;
       } else {
         return true;
       }
@@ -162,13 +164,14 @@ export default defineComponent({
 
     const hasClassesShowUpSchedule = () => {
       if (loading.value == false) {
-        return classes.value.length != 0;
+        return classesSchedules.value.length != 0;
       } else return loading.value != true;
     }
 
     return {
       schools,
-      classes,
+      //classes,
+      classesSchedules,
       haveClassActive,
       classActive,
       username,
