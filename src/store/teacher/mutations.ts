@@ -63,6 +63,7 @@ const mutations: MutationTree<TeacherState> = {
                 end: moment(payload.data.end).format("HH:mm:ss"),
                 start: moment(payload.data.start).format("HH:mm:ss"),
                 customizedScheduleId: payload.id,
+                timeId: payload.data.timeId,
                 isHistory: false,
               });
             }
@@ -80,6 +81,7 @@ const mutations: MutationTree<TeacherState> = {
                 end: moment(payload.data.end).format("HH:mm:ss"),
                 start: moment(payload.data.start).format("HH:mm:ss"),
                 customizedScheduleId: payload.id,
+                timeId: payload.data.timeId,
                 isHistory: false,
               },
             ],
