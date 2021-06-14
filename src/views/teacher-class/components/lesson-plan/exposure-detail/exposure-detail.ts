@@ -1,4 +1,4 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 export default defineComponent({
@@ -11,6 +11,15 @@ export default defineComponent({
   setup(props, { emit }) {
     const { dispatch } = useStore();
     const showInfo = ref(false);
+    const listMedia = ref([]);
+
+    onMounted(() => {
+      listMedia.value = props.exposure.items
+        .map((item: any) => {
+          return item.media;
+        })
+        .flat(1);
+    });
 
     const onClickBack = () => {
       emit("click-back");
@@ -32,6 +41,6 @@ export default defineComponent({
       showInfo.value = !showInfo.value;
     };
 
-    return { onClickItem, onClickBack, onClickMedia, toggleInformationBox, showInfo };
+    return { onClickItem, onClickBack, onClickMedia, toggleInformationBox, showInfo, listMedia };
   },
 });

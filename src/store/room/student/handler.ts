@@ -39,6 +39,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
       commit("setWhiteboard", payload.isShowWhiteBoard);
+      if (payload.teacher.disconnectTime) {		  
+        commit("setTeacherDisconnected", true);
+      }
     },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {

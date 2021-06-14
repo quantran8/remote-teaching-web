@@ -36,7 +36,7 @@ export const useDisconnection = () => {
   });
 
   //handle teacher disconnection in teacher's side
-
+  let modalRef: any;
   watch(teacherDisconnected, async isDisconnected => {
     if (isDisconnected) {
       await dispatch("teacherRoom/leaveRoom");
@@ -46,7 +46,7 @@ export const useDisconnection = () => {
         router.push("/teacher");
       }, TEACHER_RECONNECT_TIMING);
       audioSource.teacherTryReconnectSound.play();
-      Modal.warning({
+      modalRef = Modal.warning({
         content: "So Sorry! It seems you lost network connectivity.",
         onOk: () => {
           console.log("OK");
@@ -54,6 +54,7 @@ export const useDisconnection = () => {
       });
       return;
     }
+    modalRef.destroy();
     const { classId } = route.params;
     if (!classId) {
       window.location.reload();

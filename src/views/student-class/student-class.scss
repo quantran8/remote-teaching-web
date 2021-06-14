@@ -157,11 +157,30 @@
         object-fit: contain;
         position: relative;
       }
-      &__time {
-        position: absolute;
+      &__clock {
         top: 70%;
-        left: 90%;
-        transform: translate(-50%, -50%);
+        right: -5%;
+        position: absolute;
+        width: 30%;
+        height: 30%;
+        @media (min-width: 1800px) {
+          top: 65%;
+        }
+        @media (min-width: $xxl) {
+          top: 60%;
+        }
+        @media (min-width: $xl) {
+          top: 55%;
+        }
+        // @media (min-width: $xl) {
+        //   top: 50%;
+        // }
+        &--text {
+          text-align: center;
+          font-weight: 600;
+          color: #39a6a3;
+          font-size: 1.5em;
+        }
       }
     }
   }
