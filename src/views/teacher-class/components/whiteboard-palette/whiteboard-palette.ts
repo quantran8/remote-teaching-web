@@ -22,6 +22,7 @@ export default defineComponent({
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
     const oneOneStudentStrokes = computed(() => store.getters["annotation/oneOneStudentStrokes"]);
+    const oneStudentShape = computed(() => store.getters["annotation/oneStudentShape"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -339,6 +340,32 @@ export default defineComponent({
       await setCursorMode();
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
+    const shapeRender = (data: any) => {
+      data.brushstrokes.forEach((s: any) => {
+        const shape = JSON.parse(s);
+        if (shape.type === "polygon") {
+          const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneAndOne.value || null;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "rect") {
+          const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneAndOne.value || null;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "circle") {
+          const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneAndOne.value || null;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+      });
+    };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
       canvas.remove(
@@ -350,30 +377,7 @@ export default defineComponent({
       if (studentShapes.value !== null) {
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== isTeacher.value.id) {
-            item.brushstrokes.forEach((s: any) => {
-              const shape = JSON.parse(s);
-              if (shape.type === "polygon") {
-                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-                  item.isOneToOne = oneAndOne.value || null;
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "rect") {
-                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-                  item.isOneToOne = oneAndOne.value || null;
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "circle") {
-                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-                  item.isOneToOne = oneAndOne.value || null;
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-            });
+            shapeRender(item);
           }
         });
       }
@@ -410,13 +414,38 @@ export default defineComponent({
         objectCanvasProcess();
       }
     };
+    const renderOneStudentShape = () => {
+      if (oneStudentShape.value && oneStudentShape.value.length > 0) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => obj.id !== isTeacher.value.id)
+            .filter((obj: any) => obj.isOneToOne !== null),
+        );
+        oneStudentShape.value.forEach((item: any) => {
+          if (item.userId !== isTeacher.value.id) {
+            shapeRender(item);
+          }
+        });
+      }
+    };
+    watch(oneStudentShape, () => {
+      if (oneAndOne.value) {
+        renderOneStudentShape();
+      }
+    });
     watch(oneAndOne, async () => {
       if (!canvas) return;
       if (!oneAndOne.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        renderStudentsShapes();
       } else {
         watch(oneOneStudentStrokes, () => {
           renderOneStudentStrokes();
+        });
+        watch(oneStudentShape, () => {
+          renderOneStudentShape();
         });
       }
     });

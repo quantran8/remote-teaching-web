@@ -48,11 +48,23 @@ const actions: ActionTree<AnnotationState, any> = {
   setClearStickers({ commit }, p: {}) {
     commit("setClearStickers", p);
   },
-  setStudentAddShape({ commit }, p: { studentShapes: Array<UserShape> }) {
-    commit("setStudentAddShape", p);
+  setStudentAddShape({ commit, rootGetters }, p: { studentShapes: Array<UserShape> }) {
+    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneStudentAddShape", p);
+    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneStudentAddShape", p);
+    } else {
+      commit("setStudentAddShape", p);
+    }
   },
-  setTeacherAddShape({ commit }, p: { teacherShapes: Array<UserShape> }) {
-    commit("setTeacherAddShape", p);
+  setTeacherAddShape({ commit, rootGetters }, p: { teacherShapes: Array<UserShape> }) {
+    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherAddShape", p);
+    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherAddShape", p);
+    } else {
+      commit("setTeacherAddShape", p);
+    }
   },
   setStudentDrawsLine({ commit, rootGetters }, p: string) {
     if (rootGetters["teacherRoom/getStudentModeOneId"]) {

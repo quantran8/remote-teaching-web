@@ -191,12 +191,24 @@ export default defineComponent({
         watch(oneOneTeacherStrokes, () => {
           renderOneTeacherStrokes();
         });
-        // disable shapes student not 1-1
-        // disable move shapes of teacher on students not 1-1
-        // disable move shapes of student 1-1 on students not 1-1
+        // disable shapes of student not 1-1
+        canvas
+          .getObjects()
+          .filter((obj: any) => obj.type !== "path")
+          .filter((obj: any) => obj.id !== studentOneAndOneId.value)
+          .forEach((item: any) => {
+            item.selectable = false;
+          });
       } else {
-        // enable shapes of each students
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        // enable shapes of each students
+        canvas
+          .getObjects()
+          .filter((obj: any) => obj.type !== "path")
+          .filter((obj: any) => obj.id === student.value.id)
+          .forEach((item: any) => {
+            item.selectable = true;
+          });
       }
     });
     const studentAddShapes = async () => {
