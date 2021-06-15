@@ -60,6 +60,10 @@
 	"read.policy": "Please read the privacy policy carefully.",
 	"privacy.policy": "Privacy Policy",
 	"error.class.not.started": "Your class has not been started!",
+	"disconnect.title": "Oops! There is an issue" ,
+	"disconnect.content1": "There were connection issue for your teacher",
+	"disconnect.content2": "Teacher will contact you about rescheduling",
+	"disconnect.goto": "Go To Home Page",
 	"access_denied.we_are_sorry": "We are sorry...",
   	"access_denied.description": "The page you're trying to access has restricted access.",
   	"access_denied.suggest": "Please refer your administrator"

@@ -68,6 +68,12 @@ export class PrivacyPolicy {
   static ReadPolicy = "read.policy";
 }
 
+export class DisconnectScreenLocale {
+  static Title = "disconnect.title";
+  static Content1 = "disconnect.content1";
+  static Content2 = "disconnect.content2";
+  static Goto = "disconnect.goto";
+}
 export class AccessDeniedLocale {
   static AccessDeniedWeAreSorry = "access_denied.we_are_sorry";
   static AccessDeniedDescription = "access_denied.description";

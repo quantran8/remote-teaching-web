@@ -5,10 +5,12 @@ import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
 import gsap from "gsap";
-import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StudentGallery } from "./components/student-gallery";
+import { UnitPlayer } from "./components/unit-player";
+
 import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
@@ -21,14 +23,22 @@ import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { useTimer } from "@/hooks/use-timer";
 import * as audioSource from "@/utils/audioGenerator";
+import * as clockData from "../../assets/lotties/clock.json";
 
 const fpPromise = FingerprintJS.load();
+
+//temporary hard code video
+const sourceVideo = {
+  src: "https://devmediaservice-jpea.streaming.media.azure.net/8b604fd3-7a56-4a32-acc8-ad2227a47430/GSv4-U10-REP-Jonny Bear Paints w.ism/manifest",
+  type: "application/vnd.ms-sstr+xml",
+};
 
 export default defineComponent({
   components: {
     UnityView,
     MatIcon,
     StudentGallery,
+    UnitPlayer,
   },
 
   async created() {
@@ -232,34 +242,44 @@ export default defineComponent({
     };
 
     const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
-
-    const { start, pause, stop, formattedTime } = useTimer();
-
-    const milestones = {
-      first: "00:30",
-      second: "03:00",
+    const { start, pause, stop, formattedTime, toSecond } = useTimer();
+    const milestonesHms = {
+      first: "02:30",
+      second: "00:00",
     };
-
+    const milestonesSecond = {
+      first: 150,
+      second: 0,
+    };
+    const isPlayVideo = ref(false);
     watch(formattedTime, async currentFormattedTime => {
-      if (currentFormattedTime === milestones.first) {
+      if (currentFormattedTime === milestonesHms.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
         audioSource.watchStory.on("end", () => {
-          console.log("play video");
+          isPlayVideo.value = true;
         });
       }
-      if (currentFormattedTime === milestones.second) {
+      if (currentFormattedTime === milestonesHms.second) {
         pause();
         audioSource.canGoToClassRoomToday.play();
         audioSource.canGoToClassRoomToday.on("end", () => {
+          isPlayVideo.value = false;
           router.push("/disconnect-issue");
         });
       }
+      if (toSecond(`00:${currentFormattedTime}`) < milestonesSecond.first && toSecond(`00:${currentFormattedTime}`) > milestonesSecond.second) {
+        isPlayVideo.value = true;
+      }
     });
-
     watch(myTeacherDisconnected, async isDisconnected => {
       if (isDisconnected) {
-        start();
+        let initialTimeSecond = 0;
+        const initialTimeMillis = store.getters["studentRoom/teacher"].disconnectTime;
+        if (initialTimeMillis) {
+          initialTimeSecond = Math.floor(initialTimeMillis / 1000);
+        }
+        start(initialTimeSecond);
         audioSource.reconnectFailedSound.play();
         audioSource.reconnectFailedSound.on("end", () => {
           audioSource.tryReconnectLoop2.play();
@@ -268,8 +288,11 @@ export default defineComponent({
       } else {
         stop();
         audioSource.tryReconnectLoop2.stop();
+        isPlayVideo.value = false;
       }
     });
+
+    const option = reactive({ animationData: clockData.default });
 
     return {
       student,
@@ -314,6 +337,9 @@ export default defineComponent({
       teacherIsDisconnected,
       showBearConfused,
       formattedTime,
+      option,
+      sourceVideo,
+      isPlayVideo,
       avatarTeacher,
       avatarStudentOneToOne,
     };

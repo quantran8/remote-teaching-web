@@ -19,9 +19,15 @@
     <div class="sc-body">
       <div class="sc-content" ref="contentSectionRef">
         <div class="sc-content__top sc-teacher" ref="videoContainerRef">
+          <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
           <div v-show="showBearConfused" class="sc-content__top--confused">
             <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
-            <span v-if="teacherIsDisconnected" class="sc-content__top--confused__time">{{ formattedTime }}</span>
+            <div class="sc-content__top--confused__clock">
+              <div class="sc-content__top--confused__clock--img">
+                <Lottie :options="option" />
+              </div>
+              <div v-if="teacherIsDisconnected" class="sc-content__top--confused__clock--text">{{ formattedTime }}</div>
+            </div>
           </div>
           <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
           <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">

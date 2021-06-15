@@ -5,12 +5,6 @@ import DesignateCircle from "./designate-circle/designate-circle.vue";
 import DesignateRectangle from "./designate-rectangle/designate-rectangle.vue";
 import ContentView from "./content-view/content-view.vue";
 import AnnotationView from "./annotation-view/annotation-view.vue";
-export {
-  LiveCircle,
-  Toast,
-  Notification,
-  DesignateCircle,
-  DesignateRectangle,
-  ContentView,
-  AnnotationView,
-};
+import LanguagePicker from "./language-picker/language-picker.vue";
+
+export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, LanguagePicker };
