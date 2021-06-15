@@ -13,6 +13,8 @@ export interface AnnotationActionInterface<S, R> {
   setStudentAddShape(s: ActionContext<S, R>, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: ActionContext<S, R>, p: { teacherShapes: Array<UserShape> }): void;
   setStudentDrawsLine(s: ActionContext<S, R>, p: string): void;
+  setClearOneTeacherDrawsStrokes(s: ActionContext<S, R>, p: {}): void;
+  setClearOneStudentDrawsLine(s: ActionContext<S, R>, p: {}): void;
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
 }
 
@@ -27,6 +29,8 @@ const actions: ActionTree<AnnotationState, any> = {
   },
   addShape({ commit, rootGetters }, p: string) {
     if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherDrawsStrokes", p);
+    } else if (rootGetters["teacherRoom/getStudentModeOneId"]) {
       commit("setOneTeacherDrawsStrokes", p);
     } else {
       commit("addShape", p);
@@ -44,18 +48,38 @@ const actions: ActionTree<AnnotationState, any> = {
   setClearStickers({ commit }, p: {}) {
     commit("setClearStickers", p);
   },
-  setStudentAddShape({ commit }, p: { studentShapes: Array<UserShape> }) {
-    commit("setStudentAddShape", p);
+  setStudentAddShape({ commit, rootGetters }, p: { studentShapes: Array<UserShape> }) {
+    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneStudentAddShape", p);
+    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneStudentAddShape", p);
+    } else {
+      commit("setStudentAddShape", p);
+    }
   },
-  setTeacherAddShape({ commit }, p: { teacherShapes: Array<UserShape> }) {
-    commit("setTeacherAddShape", p);
+  setTeacherAddShape({ commit, rootGetters }, p: { teacherShapes: Array<UserShape> }) {
+    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherAddShape", p);
+    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherAddShape", p);
+    } else {
+      commit("setTeacherAddShape", p);
+    }
   },
   setStudentDrawsLine({ commit, rootGetters }, p: string) {
     if (rootGetters["teacherRoom/getStudentModeOneId"]) {
       commit("setOneStudentDrawsLine", p);
+    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setOneStudentDrawsLine", p);
     } else {
       commit("setStudentDrawsLine", p);
     }
+  },
+  setClearOneTeacherDrawsStrokes({ commit }, p: {}) {
+    commit("setClearOneTeacherDrawsStrokes", p);
+  },
+  setClearOneStudentDrawsLine({ commit }, p: {}) {
+    commit("setClearOneStudentDrawsLine", p);
   },
   setInfo({ commit }, p: AnnotationModel) {
     commit("setInfo", p);

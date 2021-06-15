@@ -57,6 +57,7 @@ export interface AnnotationModel {
   mode: number;
   pointer: { x: number; y: number };
   drawing: DrawingModel;
+  oneToOne: DrawingModel;
   stickers: Array<Sticker>;
 }
 

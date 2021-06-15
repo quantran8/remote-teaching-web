@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
-import {TeacherModel} from "@/models";
+import { TeacherModel } from "@/models";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -13,6 +13,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     let canvas: any;
+    const containerRef = ref<HTMLDivElement>();
     const scaleRatio = ref(1);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
@@ -38,6 +39,9 @@ export default defineComponent({
     const teacherForST = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
     const oneOneTeacherStrokes = computed(() => store.getters["annotation/oneOneTeacherStrokes"]);
+    const isPaletteVisible = computed(
+      () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
+    );
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
@@ -52,18 +56,21 @@ export default defineComponent({
         const shape = JSON.parse(s);
         if (shape.type === "polygon") {
           const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+            item.isOneToOne = studentOneAndOneId.value || null;
             canvas.add(item);
             item.selectable = false;
           });
         }
         if (shape.type === "rect") {
           const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+            item.isOneToOne = studentOneAndOneId.value || null;
             canvas.add(item);
             item.selectable = false;
           });
         }
         if (shape.type === "circle") {
           const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+            item.isOneToOne = studentOneAndOneId.value || null;
             canvas.add(item);
             item.selectable = false;
           });
@@ -86,9 +93,8 @@ export default defineComponent({
     const renderStrokes = (data: any, oneId: any) => {
       data.forEach((s: any) => {
         const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-          if (oneId) {
-            item.isOneToOne = oneId;
-          }
+          item.isOneToOne = oneId;
+          item.id = teacherForST.value.id;
           canvas.add(item);
         });
       });
@@ -97,10 +103,8 @@ export default defineComponent({
       });
     };
     const renderTeacherStrokes = () => {
-      if (canvasData.value) {
+      if (canvasData.value && canvasData.value.length > 0) {
         renderStrokes(canvasData.value, null);
-      } else {
-        canvas.remove(...canvas.getObjects());
       }
     };
     watch(canvasData, () => {
@@ -151,26 +155,34 @@ export default defineComponent({
       if (teacherShapes.value) {
         teacherShapes.value.forEach((item: any) => {
           if (item.userId === teacherForST.value.id) {
-            canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+            canvas.remove(
+              ...canvas
+                .getObjects()
+                .filter((obj: any) => obj.type !== "path")
+                .filter((obj: any) => obj.id === teacherForST.value.id),
+            );
             brushstrokesRender(item);
           }
         });
       } else {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+        // canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
       }
     };
     watch(teacherShapes, () => {
       teacherSharingShapes();
     });
     const studentSharingStrokes = () => {
-      if (studentStrokes.value) {
-        studentStrokes.value.forEach((s: any) => {
-          if (s.id !== student.value.id) {
-            const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-              canvas.add(item);
-            });
-          }
-        });
+      if (studentStrokes.value && studentStrokes.value.length > 0) {
+        if (!studentOneAndOneId.value) {
+          studentStrokes.value.forEach((s: any) => {
+            if (s.id !== student.value.id) {
+              const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+                item.isOneToOne = null;
+                canvas.add(item);
+              });
+            }
+          });
+        }
       } else {
         canvas.remove(...canvas.getObjects("path"));
       }
@@ -179,16 +191,33 @@ export default defineComponent({
       studentSharingStrokes();
     });
     const renderOneTeacherStrokes = () => {
-      if (oneOneTeacherStrokes.value && studentOneAndOneId.value) {
+      if (oneOneTeacherStrokes.value && oneOneTeacherStrokes.value.length > 0 && studentOneAndOneId.value === student.value.id) {
         renderStrokes(oneOneTeacherStrokes.value, studentOneAndOneId.value);
       }
     };
     watch(studentOneAndOneId, () => {
-      if (!studentOneAndOneId.value) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
-        renderTeacherStrokes();
+      if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0 && studentOneAndOneId.value === student.value.id) {
+        watch(oneOneTeacherStrokes, () => {
+          renderOneTeacherStrokes();
+        });
+        // disable shapes of student not 1-1
+        canvas
+          .getObjects()
+          .filter((obj: any) => obj.type !== "path")
+          .filter((obj: any) => obj.id !== studentOneAndOneId.value)
+          .forEach((item: any) => {
+            item.selectable = false;
+          });
       } else {
-        renderOneTeacherStrokes();
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        // enable shapes of each students
+        canvas
+          .getObjects()
+          .filter((obj: any) => obj.type !== "path")
+          .filter((obj: any) => obj.id === student.value.id)
+          .forEach((item: any) => {
+            item.selectable = true;
+          });
       }
     });
     const studentAddShapes = async () => {
@@ -226,12 +255,14 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
     };
+
     const boardSetup = () => {
       const canvasEl = document.getElementById("canvasOnStudent");
       if (!canvasEl) return;
       canvas = new fabric.Canvas("canvasOnStudent");
-      canvas.setWidth(717);
-      canvas.setHeight(435);
+      const containerClientRect = containerRef.value?.getBoundingClientRect();
+      canvas.setWidth(containerClientRect?.width);
+      canvas.setHeight(containerClientRect?.height);
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
@@ -314,7 +345,7 @@ export default defineComponent({
     const addDraw = () => {
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush.color = activeColor.value;
-      canvas.freeDrawingBrush.width = 3;
+      canvas.freeDrawingBrush.width = 2;
     };
 
     const canvasRef = ref(null);
@@ -359,7 +390,7 @@ export default defineComponent({
     const animationDone = computed(() => animationCheck.value);
     const actionEnter = (element: HTMLElement) => {
       animationCheck.value = false;
-      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce" });
+      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
       gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
     };
@@ -371,6 +402,7 @@ export default defineComponent({
     };
 
     return {
+      containerRef,
       pointerStyle,
       imageUrl,
       isPointerMode,
@@ -387,6 +419,7 @@ export default defineComponent({
       actionEnter,
       actionLeave,
       animationDone,
+      isPaletteVisible,
     };
   },
 });

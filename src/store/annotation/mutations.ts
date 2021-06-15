@@ -13,6 +13,8 @@ export interface AnnotationMutationInterface<S> {
   setStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
   setStudentDrawsLine(s: S, p: string): void;
+  setClearOneTeacherDrawsStrokes(s: S, p: {}): void;
+  setClearOneStudentDrawsLine(s: S, p: {}): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -26,15 +28,31 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.mode = p.mode;
   },
   addShape(s: AnnotationState, p: string) {
-    if (!p) return;
-    s.drawing.brushstrokes = [...s.drawing.brushstrokes, p];
+    if (p) {
+      s.drawing.brushstrokes = [...s.drawing.brushstrokes, p];
+    } else {
+      s.drawing.brushstrokes = [];
+    }
   },
   setOneTeacherDrawsStrokes(s: AnnotationState, p: string) {
-    if (!p) return;
-    s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes, p];
+    if (p) {
+      s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes, p];
+    } else {
+      s.oneToOne.brushstrokes = [];
+    }
+  },
+  setClearOneTeacherDrawsStrokes(s: AnnotationState, p: {}) {
+    s.oneToOne.brushstrokes = [];
   },
   setClearBrush(s: AnnotationState, p: any) {
     s.drawing = {
+      pencil: null,
+      brushstrokes: [],
+      studentShapes: [],
+      teacherShapes: [],
+      studentStrokes: [],
+    };
+    s.oneToOne = {
       pencil: null,
       brushstrokes: [],
       studentShapes: [],
@@ -55,16 +73,31 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
     s.drawing.studentShapes = p.studentShapes;
   },
+  setOneStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
+    s.oneToOne.studentShapes = p.studentShapes;
+  },
   setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
     s.drawing.teacherShapes = p.teacherShapes;
   },
+  setOneTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
+    s.oneToOne.teacherShapes = p.teacherShapes;
+  },
   setStudentDrawsLine(s: AnnotationState, p: string) {
-    if (!p) return;
-    s.drawing.studentStrokes = [...s.drawing.studentStrokes, p];
+    if (p) {
+      s.drawing.studentStrokes = [...s.drawing.studentStrokes, p];
+    } else {
+      s.drawing.studentStrokes = [];
+    }
   },
   setOneStudentDrawsLine(s: AnnotationState, p: string) {
-    if (!p) return;
-    s.oneToOne.studentStrokes = [...s.oneToOne.studentStrokes, p];
+    if (p) {
+      s.oneToOne.studentStrokes = [...s.oneToOne.studentStrokes, p];
+    } else {
+      s.oneToOne.studentStrokes = [];
+    }
+  },
+  setClearOneStudentDrawsLine(s: AnnotationState, p: {}) {
+    s.oneToOne.studentStrokes = [];
   },
   setInfo(s: AnnotationState, p: AnnotationModel) {
     if (!p) return;
@@ -74,6 +107,17 @@ const mutations: AnnotationMutation<AnnotationState> = {
       s.drawing = p.drawing;
     } else {
       s.drawing = {
+        pencil: null,
+        brushstrokes: [],
+        studentShapes: [],
+        teacherShapes: [],
+        studentStrokes: [],
+      };
+    }
+    if (p.oneToOne) {
+      s.oneToOne = p.oneToOne;
+    } else {
+      s.oneToOne = {
         pencil: null,
         brushstrokes: [],
         studentShapes: [],

@@ -273,6 +273,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setClearBrush", {}, { root: true });
       await dispatch("annotation/setTeacherAddShape", { teacherShapes: null }, { root: true });
       await dispatch("annotation/setStudentDrawsLine", null, { root: true });
+      await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
+      await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
     },
     onTeacherDeleteBrush: async (payload: any) => {
       await dispatch("annotation/setDeleteBrush", {}, { root: true });
@@ -309,6 +311,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         );
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
+        await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
+        await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
       }
       dispatch("updateAudioAndVideoFeed", {});
     },
@@ -325,13 +329,13 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: Array<UserShape>) => {
-      await commit("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
+      await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
     },
     onTeacherAddShape: async (payload: any) => {
-      await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
+      await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
     },
     onStudentDrawsLine: async (payload: string) => {
-      await commit("annotation/setStudentDrawsLine", payload, { root: true });
+      await dispatch("annotation/setStudentDrawsLine", payload, { root: true });
     },
   };
   return handler;

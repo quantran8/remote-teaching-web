@@ -200,8 +200,13 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherAddBrush: async (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherClearAllBrush(payload: any) {
-      //   console.log(payload);
+    onTeacherClearAllBrush: async (payload: any) => {
+      await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });
+      await dispatch("annotation/setClearBrush", {}, { root: true });
+      await dispatch("annotation/setTeacherAddShape", { teacherShapes: null }, { root: true });
+      await dispatch("annotation/setStudentDrawsLine", null, { root: true });
+      await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
+      await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
     },
     onTeacherDeleteBrush(payload: any) {
       //   console.log(payload);
@@ -226,6 +231,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         );
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
+        await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
+        await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
       }
       dispatch("updateAudioAndVideoFeed", {});
     },
