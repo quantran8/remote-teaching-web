@@ -55,22 +55,23 @@ export default defineComponent({
       if (isSignedIn.value) onUserSignedIn();
     });
 
-    const route = useRoute();
-    const router = useRouter();
-    watch(route, () => {
+    const isTeacher = computed(() => getters["auth/isTeacher"]);
+    const isParent = computed(() => getters["auth/isParent"]);
+    watch([isTeacher, isParent], () => {
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
-	  if((!isParent && !isTeacher) || (isParent && isTeacher)) return
+      if ((!isParent && !isTeacher) || (isParent && isTeacher)) return;
+      const { pathname } = window.location;
       if (isTeacher) {
-        const matchIndex = route.path.search(PARENT_PATH_REGEX);
+        const matchIndex = pathname.search(PARENT_PATH_REGEX);
         if (matchIndex > -1) {
-          router.push(route.path.replace(PARENT_PATH_REGEX, "/teacher"));
+          location.pathname = pathname.replace(PARENT_PATH_REGEX, "/teacher");
         }
       }
       if (isParent) {
-        const matchIndex = route.path.search(TEACHER_PATH_REGEX);
+        const matchIndex = pathname.search(TEACHER_PATH_REGEX);
         if (matchIndex > -1) {
-          router.push(route.path.replace(TEACHER_PATH_REGEX, "/parent"));
+          location.pathname = pathname.replace(TEACHER_PATH_REGEX, "/parent");
         }
       }
     });
