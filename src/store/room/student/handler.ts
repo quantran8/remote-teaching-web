@@ -332,7 +332,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
     },
     onStudentDrawsLine: async (payload: string) => {
-      await commit("annotation/setStudentDrawsLine", payload, { root: true });
+      await dispatch("annotation/setStudentDrawsLine", payload, { root: true });
     },
   };
   return handler;
