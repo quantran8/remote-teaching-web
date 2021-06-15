@@ -127,22 +127,22 @@
     <Modal :visible="recurringVisible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container">
         <span class="modal-title-select">Group</span>
-        <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal">
+        <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal" disabled>
           <Option v-for="val in listGroupModal" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>
       </div>
       <div class="select-container">
-        <span class="modal-title-select">Start</span>
-        <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
-        <span class="modal-title-select ml-20">End</span>
-        <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
+        <span class="modal-title-select" v-if="disableTimePicker()">Start</span>
+        <TimePicker class="modal-size-time-picker" v-if="disableTimePicker()" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
+        <span class="modal-title-select ml-20" v-if="disableTimePicker()">End</span>
+        <TimePicker class="modal-size-time-picker" v-if="disableTimePicker()" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
       </div>
       <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button type="primary" @click="onSubmit('Skip')">Skip</Button>
+          <Button type="primary" v-if="disableSkipButton()" @click="onSubmit('Skip')">Skip</Button>
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Close</Button>
