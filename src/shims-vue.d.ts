@@ -5,6 +5,7 @@ declare module '*.vue' {
 }
 
 declare module 'fabric';
+declare module 'vue-dragscroll';
 // declare const UnityLoader;
 
 declare module 'vue-lottie'
