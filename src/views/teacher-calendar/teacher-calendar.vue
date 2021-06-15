@@ -142,7 +142,7 @@
       <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button type="primary" @click="onSubmit('Skip')">Skip</Button>
+          <Button type="primary" v-if="disableSkipButton()" @click="onSubmit('Skip')">Skip</Button>
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Close</Button>

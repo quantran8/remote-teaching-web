@@ -566,6 +566,10 @@ export default defineComponent({
       return selectedEndDateModal.value.length > 0;
     };
 
+    const disableSkipButton = () => {
+      return selectedTimeIdModal.value;
+    };
+
     return {
       listClassSelect,
       listGroupSelect,
@@ -606,6 +610,7 @@ export default defineComponent({
       checkOverlapTime,
       warningOverlap,
       disableTimePicker,
+      disableSkipButton,
     };
   },
 });
