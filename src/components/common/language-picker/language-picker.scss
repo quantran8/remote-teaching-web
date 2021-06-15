@@ -22,11 +22,22 @@
     }
   }
   &__menu {
-    width: 145px;
+    width: 155px;
     &--item {
+      display: flex !important;
+      align-items: center !important;
+      margin-bottom: 5px;
       &__text {
         font-weight: 500;
         color: rgba(0, 0, 0, 0.65);
+      }
+      &__logo {
+        margin: 0 10px 0 0;
+        background-size: cover;
+        background-position: center center;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
       }
     }
   }

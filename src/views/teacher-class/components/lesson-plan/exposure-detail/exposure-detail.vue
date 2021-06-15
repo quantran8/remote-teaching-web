@@ -18,14 +18,7 @@
       </div>
     </div>
     <div class="exposure-content">
-      <ExposureItem
-        v-for="item in exposure.items"
-        :key="item.id"
-        :title="item.name"
-        :collapsed="false"
-        :items="item.media"
-        @on-click-item="onClickItem"
-      />
+      <ExposureItem :items="listMedia" @on-click-item="onClickItem" />
     </div>
   </div>
 </template>

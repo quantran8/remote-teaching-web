@@ -1,46 +1,43 @@
 export const languages = [
   {
-    value: "en",
-    label: "English",
-  },
-  {
-    value: "ar-sa",
-    label: "العربية",
-  },
-  {
-    value: "es",
-    label: "Español",
-  },
-  {
     value: "zh-cn",
-    label: "中文",
-  },
-  {
-    value: "ms",
-    label: "中文(马来西亚)",
+    label: "China",
   },
   {
     value: "js",
-    label: "日本語",
+    label: "Japan",
   },
   {
     value: "ko",
-    label: "한국어",
+    label: "Korea",
   },
   {
-    value: "ru",
-    label: "Русский",
-  },
-  {
-    value: "vi",
-    label: "Tiếng Việt",
+    value: "ml",
+    label: "Malaysia",
   },
   {
     value: "mn",
-    label: "Монгол",
+    label: "Mongolia",
+  },
+  {
+    value: "my",
+    label: "Myanmar",
+  },
+
+  {
+    value: "ru",
+    label: "Russia",
   },
   {
     value: "th",
-    label: "ภาษาไทย",
+    label: "Thailand",
+  },
+  {
+    value: "en",
+    label: "USA",
+  },
+  {
+    value: "vi",
+    label: "Vietnam",
   },
 ];

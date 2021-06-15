@@ -21,11 +21,11 @@
       </Select>
     </div>
     <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right">
-      <span>Schedule</span>
+    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()">
+        <span>Schedule</span>
       <img class="calendar" src="@/assets/images/calendar.png" @click="onClickCalendar" />
     </div>
-    <div class="group-class-container">
+    <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-if="loading">
         <Spin tip="Loading..."></Spin>
       </div>
@@ -43,6 +43,7 @@
         @click-to-access="groupId => onClickClass(cl, groupId)"
       />
     </div>
+   <Empty v-show="!hasClassesShowUp()"/>
   </div>
 <!--  <div class="concurrent-connection" v-if="policy && concurrent">-->
 <!--    <h1>{{ accessDenied }}</h1>-->

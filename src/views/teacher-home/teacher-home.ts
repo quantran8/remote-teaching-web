@@ -6,7 +6,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
-import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
+import { Select, Spin, Modal, Checkbox, Button, Row, Empty } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
@@ -23,6 +23,7 @@ export default defineComponent({
     Checkbox,
     Button,
     Row,
+    Empty
   },
   setup() {
     const store = useStore();
@@ -151,6 +152,20 @@ export default defineComponent({
       });
     });
 
+    const hasClassesShowUp = () => {
+      if (loading.value == false) {
+        return classes.value.length != 0;
+      } else {
+        return true;
+      }
+    }
+
+    const hasClassesShowUpSchedule = () => {
+      if (loading.value == false) {
+        return classes.value.length != 0;
+      } else return loading.value != true;
+    }
+
     return {
       schools,
       classes,
@@ -183,6 +198,8 @@ export default defineComponent({
       concurrentMess,
       accessDenied,
       loadingStartClass,
+      hasClassesShowUp,
+      hasClassesShowUpSchedule,
     };
   },
 });
