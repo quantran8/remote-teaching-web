@@ -1,29 +1,24 @@
+import IconHand from "@/assets/student-class/hand-jb.png";
+import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import { ErrorCode, LoginInfo, MatIcon, RoleName } from "@/commonui";
-import { Howl, Howler } from "howler";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
+import { useTimer } from "@/hooks/use-timer";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, StudentState } from "@/store/room/interface";
-import gsap from "gsap";
-import { computed, ComputedRef, defineComponent, onBeforeMount, onMounted, onUnmounted, ref, watch, reactive } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useStore } from "vuex";
-import { StudentGallery } from "./components/student-gallery";
-import { UnitPlayer } from "./components/unit-player";
-
-import IconAudioOn from "@/assets/student-class/audio-on.svg";
-import IconAudioOff from "@/assets/student-class/audio-off.svg";
-import IconVideoOn from "@/assets/student-class/video-on.svg";
-import IconVideoOff from "@/assets/student-class/video-off.svg";
-import IconHandRaised from "@/assets/student-class/hand-raised.png";
-import IconHand from "@/assets/student-class/hand-jb.png";
-import { Breackpoint, breakpointChange } from "@/utils/breackpoint";
-import { Modal } from "ant-design-vue";
+import * as audioSource from "@/utils/audioGenerator";
+import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { useTimer } from "@/hooks/use-timer";
-import * as audioSource from "@/utils/audioGenerator";
+import { computed, ComputedRef, defineComponent, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 import * as clockData from "../../assets/lotties/clock.json";
+import { StudentAction } from "./components/student-action";
+import { StudentGallery } from "./components/student-gallery";
+import { StudentGalleryItem } from "./components/student-gallery-item";
+import { StudentHeader } from "./components/student-header";
+import { UnitPlayer } from "./components/unit-player";
 
 const fpPromise = FingerprintJS.load();
 
@@ -38,7 +33,10 @@ export default defineComponent({
     UnityView,
     MatIcon,
     StudentGallery,
+    StudentGalleryItem,
+    StudentHeader,
     UnitPlayer,
+	StudentAction
   },
 
   async created() {
@@ -89,11 +87,8 @@ export default defineComponent({
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
-    const classAction = computed(() => store.getters["studentRoom/classAction"]);
     const isConnected = computed(() => store.getters["studentRoom/isConnected"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
-    const audioIcon = computed(() => (student.value?.audioEnabled ? IconAudioOn : IconAudioOff));
-    const videoIcon = computed(() => (student.value?.videoEnabled ? IconVideoOn : IconVideoOff));
     const handIcon = computed(() => (raisedHand.value ? IconHandRaised : IconHand));
     const contentSectionRef = ref<HTMLDivElement>();
     const videoContainerRef = ref<HTMLDivElement>();
@@ -109,8 +104,6 @@ export default defineComponent({
     const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
-
-    const classActionImageRef = ref<HTMLDivElement | null>(null);
 
     const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
@@ -135,21 +128,21 @@ export default defineComponent({
     });
 
     // Left section animation
-    const animate = () => {
-      if (videoContainerRef.value) {
-        const isOtherSectionVisible = [isLessonPlan.value].find(check => check);
-        const timeline = gsap.timeline();
-        if (isOtherSectionVisible) {
-          const width = breakpoint.value < Breackpoint.Large ? 120 : 250;
-          const height = breakpoint.value < Breackpoint.Large ? 100 : 160;
-          timeline.to(videoContainerRef.value, { width, height });
-        } else {
-          timeline.to(videoContainerRef.value, { width: "100%", height: "100%" });
-        }
-      }
-    };
+    // const animate = () => {
+    //   if (videoContainerRef.value) {
+    //     const isOtherSectionVisible = [isLessonPlan.value].find(check => check);
+    //     const timeline = gsap.timeline();
+    //     if (isOtherSectionVisible) {
+    //       const width = breakpoint.value < Breackpoint.Large ? 120 : 250;
+    //       const height = breakpoint.value < Breackpoint.Large ? 100 : 160;
+    //       timeline.to(videoContainerRef.value, { width, height });
+    //     } else {
+    //       timeline.to(videoContainerRef.value, { width: "100%", height: "100%" });
+    //     }
+    //   }
+    // };
 
-    onMounted(animate);
+    // onMounted(animate);
 
     watch(studentOneAndOneId, () => {
       isOneToOne.value = !!studentOneAndOneId.value;
@@ -172,9 +165,9 @@ export default defineComponent({
       }
     });
 
-    watch(breakpoint, animate);
+    // watch(breakpoint, animate);
 
-    watch([isLessonPlan], animate);
+    // watch([isLessonPlan], animate);
 
     watch(isConnected, async () => {
       if (!isConnected.value) return;
@@ -190,51 +183,12 @@ export default defineComponent({
       }
     });
 
-    watch(classAction, () => {
-      if (classActionImageRef.value) {
-        const timeline = gsap.timeline();
-        timeline.to(classActionImageRef.value, { scale: 2.5, transformOrigin: "top", zIndex: 99 });
-        timeline.to(classActionImageRef.value, { delay: 3, scale: 1 });
-      }
-    });
-
-    const toggleAudio = async () => {
-      await store.dispatch("studentRoom/setStudentAudio", {
-        id: student.value.id,
-        enable: !student.value.audioEnabled,
-      });
-    };
-
-    const toggleVideo = async () => {
-      await store.dispatch("studentRoom/setStudentVideo", {
-        id: student.value.id,
-        enable: !student.value.videoEnabled,
-      });
-    };
-
-    const onClickRaisingHand = async () => {
-      await store.dispatch("studentRoom/studentRaisingHand", {});
-    };
     const onClickLike = async () => {
       await store.dispatch("studentRoom/studentLike", {});
     };
 
     const onClickContentView = async (payload: { x: number; y: number; contentId: string }) => {
       await store.dispatch("studentRoom/studentAnswer", payload);
-    };
-
-    const onClickEnd = () => {
-      Modal.confirm({
-        title: "Are you sure you wish to leave the session?",
-        okText: "Yes",
-        cancelText: "No",
-        okButtonProps: { type: "danger" },
-        onOk: async () => {
-          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
-          await store.dispatch("studentRoom/studentLeaveClass");
-          await router.push(Paths.Home);
-        },
-      });
     };
 
     const disconnectSignalR = async () => {
@@ -298,17 +252,10 @@ export default defineComponent({
       student,
       students,
       teacher,
-      audioIcon,
-      videoIcon,
       handIcon,
-      toggleAudio,
-      toggleVideo,
       isLessonPlan,
       isBlackOutContent,
-      onClickRaisingHand,
       onClickLike,
-      classAction,
-      classActionImageRef,
       currentExposureItemMedia,
       previousExposureItemMedia,
       designateTargets,
@@ -324,15 +271,8 @@ export default defineComponent({
       videoContainerRef,
       contentSectionRef,
       classInfo,
-      onClickEnd,
       raisedHand,
       disconnectSignalR,
-      IconHandRaised,
-      IconHand,
-      IconAudioOn,
-      IconAudioOff,
-      IconVideoOn,
-      IconVideoOff,
       studentIsDisconnected,
       teacherIsDisconnected,
       showBearConfused,
