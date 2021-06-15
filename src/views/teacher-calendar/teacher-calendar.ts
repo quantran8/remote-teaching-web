@@ -50,6 +50,7 @@ export default defineComponent({
     const month = ref<Moment>(moment());
     const formatTime = "HH:mm";
     const formatDateTime = "YYYY-MM-DDTHH:mm:ss";
+    const filterAll = "all";
     const isCreate = ref<boolean>(false);
     const classes = computed(() => store.getters["teacher/classes"]);
     const recurringCustomIdFistFormat = "0000-";
@@ -83,7 +84,7 @@ export default defineComponent({
         schoolId,
         classId,
         groupId,
-        startDate: month.startOf("month").format(),
+        startDate: month.startOf("month").format(formatDateTime),
         endDate: month.endOf("month").format(formatDateTime),
       });
       loading.value = false;
@@ -545,7 +546,7 @@ export default defineComponent({
         case "Update":
           await onUpdateSchedule(createData(type));
           isActionUpdate.value = false;
-          if(selectedGroupIdCache.value != "all") {
+          if(selectedGroupIdCache.value != filterAll) {
             await handleChangeGroup(selectedGroupIdCache.value);
           }
           break;
