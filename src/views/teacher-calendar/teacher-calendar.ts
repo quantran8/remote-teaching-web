@@ -37,6 +37,7 @@ export default defineComponent({
     const selectedClassId = ref<string>("all");
     const selectedClassIdModal = ref<string>("");
     const selectedGroupId = ref<string>("all");
+    const selectedGroupIdCache = ref<string>("all");
     const selectedGroupIdModal = ref<string>("");
     const selectedTimeIdModal = ref<string>("");
     const selectedStartDateModal = ref<string>("");
@@ -143,6 +144,7 @@ export default defineComponent({
 
     const handleChangeGroup = async (vl: string) => {
       selectedGroupId.value = vl;
+      selectedGroupIdCache.value = vl;
       if (vl != "all") {
         await getSchedules(selectedClassId.value, vl, month.value);
       } else {
@@ -154,11 +156,13 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == selectedDate.value.date() && moment(daySchedule.day).month() == selectedDate.value.month();
       });
-      const group = listData[0].schedules.filter((schedule: any) => {
-        return schedule.groupId == groupId;
-      });
-      selectedStartDateModal.value = !isCreate.value ? group[0].start : "00:00";
-      selectedEndDateModal.value = !isCreate.value ? group[0].end : "00:00";
+      if(listData[0]) {
+        const group = listData[0].schedules.filter((schedule: any) => {
+          return schedule.groupId == groupId;
+        });
+        selectedStartDateModal.value = !isCreate.value ? group[0].start : "00:00";
+        selectedEndDateModal.value = !isCreate.value ? group[0].end : "00:00";
+      }
     };
 
     const handleChangeClassModal = (vl: string) => {
@@ -395,8 +399,13 @@ export default defineComponent({
         selectedCustomScheduleId.value = item.customizedScheduleId;
         selectedGroupIdModal.value = item.groupId;
         selectedTimeIdModal.value = item.timeId;
-        selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
-        selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
+        if (item.start != null || item.end != null) {
+          selectedStartDateModal.value = moment(item.start, formatTime).format(formatTime);
+          selectedEndDateModal.value = moment(item.end, formatTime).format(formatTime);
+        } else {
+          selectedStartDateModal.value = "";
+          selectedEndDateModal.value = "";
+        }
         recurringVisible.value = true;
       }
       setCacheWhenUpdate(convertTime(selectedStartDateModal.value), convertTime(selectedEndDateModal.value));
@@ -529,10 +538,16 @@ export default defineComponent({
           break;
         case "Create":
           await onCreateSchedule(createData(type));
+          if(selectedGroupIdCache.value != "all") {
+            await handleChangeGroup(selectedGroupIdCache.value);
+          }
           break;
         case "Update":
           await onUpdateSchedule(createData(type));
           isActionUpdate.value = false;
+          if(selectedGroupIdCache.value != "all") {
+            await handleChangeGroup(selectedGroupIdCache.value);
+          }
           break;
         case "Delete":
           await onDeleteSchedule(createData(type));
@@ -544,6 +559,10 @@ export default defineComponent({
 
     const disableEndTime = (startTime: string) => {
       return startTime == "00:00";
+    };
+
+    const disableTimePicker = () => {
+      return selectedEndDateModal.value.length > 0;
     };
 
     return {
@@ -585,6 +604,7 @@ export default defineComponent({
       IconWarning,
       checkOverlapTime,
       warningOverlap,
+      disableTimePicker,
     };
   },
 });
