@@ -1,7 +1,6 @@
 import { useStore } from "vuex";
 import { AuthService, LoginInfo } from "@/commonui";
 import { computed, defineComponent, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
 import { CommonLocale } from "@/locales/localeid";
@@ -24,6 +23,8 @@ export default defineComponent({
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
+    const isTeacher = computed(() => getters["auth/isTeacher"]);
+    const isParent = computed(() => getters["auth/isParent"]);
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
@@ -55,13 +56,16 @@ export default defineComponent({
       if (isSignedIn.value) onUserSignedIn();
     });
 
-    const isTeacher = computed(() => getters["auth/isTeacher"]);
-    const isParent = computed(() => getters["auth/isParent"]);
     watch([isTeacher, isParent], () => {
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
-      if ((!isParent && !isTeacher) || (isParent && isTeacher)) return;
       const { pathname } = window.location;
+      if ((!isParent && !isTeacher) || (isParent && isTeacher)) {
+        if (pathname !== "/") {
+          location.pathname = "/";
+        }
+        return;
+      }
       if (isTeacher) {
         const matchIndex = pathname.search(PARENT_PATH_REGEX);
         if (matchIndex > -1) {
