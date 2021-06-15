@@ -244,23 +244,24 @@ export default defineComponent({
     const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
     const { start, pause, stop, formattedTime, toSecond } = useTimer();
     const milestonesHms = {
-      first: "02:30",
-      second: "00:00",
+      first: "00:02:30",
+      second: "00:00:00",
     };
     const milestonesSecond = {
-      first: 150,
-      second: 0,
+      first: 150, // 00:02:30
+      second: 0, // 00:00:00
+      third: 30, //00:00:30
     };
     const isPlayVideo = ref(false);
     watch(formattedTime, async currentFormattedTime => {
-      if (currentFormattedTime === milestonesHms.first) {
+      if (toSecond(currentFormattedTime) === milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
         audioSource.watchStory.on("end", () => {
           isPlayVideo.value = true;
         });
       }
-      if (currentFormattedTime === milestonesHms.second) {
+      if (toSecond(currentFormattedTime) === milestonesSecond.second) {
         pause();
         audioSource.canGoToClassRoomToday.play();
         audioSource.canGoToClassRoomToday.on("end", () => {
@@ -268,7 +269,7 @@ export default defineComponent({
           router.push("/disconnect-issue");
         });
       }
-      if (toSecond(`00:${currentFormattedTime}`) < milestonesSecond.first && toSecond(`00:${currentFormattedTime}`) > milestonesSecond.second) {
+      if (toSecond(currentFormattedTime) < milestonesSecond.first && toSecond(currentFormattedTime) > milestonesSecond.second) {
         isPlayVideo.value = true;
       }
     });
@@ -280,10 +281,13 @@ export default defineComponent({
           initialTimeSecond = Math.floor(initialTimeMillis / 1000);
         }
         start(initialTimeSecond);
-        audioSource.reconnectFailedSound.play();
-        audioSource.reconnectFailedSound.on("end", () => {
-          audioSource.tryReconnectLoop2.play();
-        });
+        if (initialTimeSecond < milestonesSecond.third) {
+          audioSource.pleaseWaitTeacher.play();
+          audioSource.pleaseWaitTeacher.on("end", () => {
+            audioSource.tryReconnectLoop2.play();
+          });
+        }
+
         return;
       } else {
         stop();

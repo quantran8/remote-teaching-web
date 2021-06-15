@@ -7,10 +7,10 @@ export const useTimer = () => {
   const formatTime = (seconds: number) => {
     const measuredTime = new Date(0);
     measuredTime.setSeconds(seconds);
-    const MHSTime = measuredTime.toISOString().substr(14, 5);
+    const MHSTime = measuredTime.toISOString().substr(11, 8);
     return MHSTime;
   };
-  const formattedTime = ref<string>("03:00");
+  const formattedTime = ref<string>("00:03:00");
   const timerState = ref<string>("stopped");
   const tick = (initialTime: number) => {
     currentTimer = currentTimer - initialTime;
@@ -35,7 +35,7 @@ export const useTimer = () => {
   const stop = () => {
     window.clearInterval(ticker);
     currentTimer = 180;
-    formattedTime.value = "03:00";
+    formattedTime.value = "00:03:00";
     timerState.value = "stopped";
   };
 
