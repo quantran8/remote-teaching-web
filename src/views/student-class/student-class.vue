@@ -3,6 +3,19 @@
     <StudentHeader />
     <div class="sc-body" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">
+        <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
+        <div v-show="showBearConfused" class="sc-content__top--confused">
+          <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
+          <div :class="['sc-content__top--confused__clock', isPlayVideo && 'sticky']">
+            <div class="sc-content__top--confused__clock--img">
+              <Lottie :options="option" />
+            </div>
+            <div v-if="teacherIsDisconnected" class="sc-content__top--confused__clock--text">
+              <span v-if="isSecondPhase">{{ formattedTime.substring(3) }}</span>
+              <span v-else>{{ formattedTimeFirstPhase.substring(3) }}</span>
+            </div>
+          </div>
+        </div>
         <AnnotationView
           v-show="!isBlackOutContent && isLessonPlan"
           :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
@@ -35,7 +48,6 @@
       <div class="sc-teacher" ref="videoContainerRef">
         <div v-show="showBearConfused" class="sc-teacher__content">
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
-          <span v-if="teacherIsDisconnected" class="sc-teacher__time">{{ formattedTime }}</span>
         </div>
         <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
         <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">

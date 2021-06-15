@@ -2,21 +2,30 @@ import { ref } from "vue";
 
 export const useTimer = () => {
   let currentTimer = 180;
+  let currentTimerFirstPhase = 30;
   let ticker: any;
 
   const formatTime = (seconds: number) => {
     const measuredTime = new Date(0);
     measuredTime.setSeconds(seconds);
-    const MHSTime = measuredTime.toISOString().substr(14, 5);
+    const MHSTime = measuredTime.toISOString().substr(11, 8);
     return MHSTime;
   };
-  const formattedTime = ref<string>("03:00");
+  const formattedTime = ref<string>("00:03:00");
+  const formattedTimeFirstPhase = ref<string>("00:00:30");
   const timerState = ref<string>("stopped");
+
   const tick = (initialTime: number) => {
     currentTimer = currentTimer - initialTime;
+    currentTimerFirstPhase = currentTimerFirstPhase - initialTime;
     ticker = setInterval(() => {
       currentTimer--;
       formattedTime.value = formatTime(currentTimer);
+
+      if (currentTimerFirstPhase > 0) {
+        currentTimerFirstPhase--;
+        formattedTimeFirstPhase.value = formatTime(currentTimerFirstPhase);
+      }
     }, 1000);
   };
 
@@ -35,7 +44,9 @@ export const useTimer = () => {
   const stop = () => {
     window.clearInterval(ticker);
     currentTimer = 180;
-    formattedTime.value = "03:00";
+    currentTimerFirstPhase = 30;
+    formattedTime.value = "00:03:00";
+    formattedTimeFirstPhase.value = "00:00:30";
     timerState.value = "stopped";
   };
 
@@ -49,6 +60,7 @@ export const useTimer = () => {
     pause,
     stop,
     formattedTime,
+    formattedTimeFirstPhase,
     toSecond,
   };
 };

@@ -82,6 +82,52 @@
   @media (min-width: $lg) {
     grid-column-end: 2;
     grid-row-end: 3;
+    grid-column-end: unset;
+    grid-column-start: unset;
+  }
+  &__top {
+    &--confused {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        position: relative;
+      }
+      &__clock {
+        top: 70%;
+        right: -5%;
+        position: absolute;
+        width: 30%;
+        height: 30%;
+        @media (min-width: 1800px) {
+          top: 65%;
+        }
+        @media (min-width: $xxl) {
+          top: 60%;
+        }
+        @media (min-width: $xl) {
+          top: 55%;
+        }
+        // @media (min-width: $xl) {
+        //   top: 50%;
+        // }
+        &--text {
+          text-align: center;
+          font-weight: 600;
+          color: #39a6a3;
+          font-size: 1.5em;
+        }
+        &.sticky {
+          position: fixed;
+          top: 45%;
+          right: -5%;
+          z-index: 20;
+        }
+      }
+    }
   }
 }
 

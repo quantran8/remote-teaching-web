@@ -12,7 +12,7 @@ import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { computed, ComputedRef, defineComponent, reactive, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import * as clockData from "../../assets/lotties/clock.json";
@@ -200,37 +200,50 @@ export default defineComponent({
       await store.dispatch("studentRoom/disconnectSignalR");
     };
 
+    const isSecondPhase = ref(false);
+
     const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
-    const { start, pause, stop, formattedTime, toSecond } = useTimer();
+    const { start, pause, stop, formattedTime, toSecond, formattedTimeFirstPhase } = useTimer();
     const milestonesHms = {
-      first: "02:30",
-      second: "00:00",
+      first: "00:02:30",
+      second: "00:00:00",
     };
     const milestonesSecond = {
-      first: 150,
-      second: 0,
+      first: 150, // 00:02:30
+      second: 0, // 00:00:00
+      third: 30, //00:00:30
     };
     const isPlayVideo = ref(false);
     watch(formattedTime, async currentFormattedTime => {
-      if (currentFormattedTime === milestonesHms.first) {
+      if (toSecond(currentFormattedTime) === milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
+        isSecondPhase.value = true;
         audioSource.watchStory.on("end", () => {
           isPlayVideo.value = true;
         });
       }
-      if (currentFormattedTime === milestonesHms.second) {
+      if (toSecond(currentFormattedTime) < milestonesSecond.first && toSecond(currentFormattedTime) > milestonesSecond.second) {
+        isPlayVideo.value = true;
+        isSecondPhase.value = true;
+      }
+      if (toSecond(currentFormattedTime) === milestonesSecond.second) {
         pause();
         audioSource.canGoToClassRoomToday.play();
         audioSource.canGoToClassRoomToday.on("end", () => {
           isPlayVideo.value = false;
+          isSecondPhase.value = false;
           router.push("/disconnect-issue");
         });
       }
-      if (toSecond(`00:${currentFormattedTime}`) < milestonesSecond.first && toSecond(`00:${currentFormattedTime}`) > milestonesSecond.second) {
-        isPlayVideo.value = true;
-      }
     });
+
+    const handleMyTeacherReconnect = () => {
+      stop();
+      audioSource.tryReconnectLoop2.stop();
+      isPlayVideo.value = false;
+      isSecondPhase.value = false;
+    };
     watch(myTeacherDisconnected, async isDisconnected => {
       if (isDisconnected) {
         let initialTimeSecond = 0;
@@ -239,16 +252,20 @@ export default defineComponent({
           initialTimeSecond = Math.floor(initialTimeMillis / 1000);
         }
         start(initialTimeSecond);
-        audioSource.reconnectFailedSound.play();
-        audioSource.reconnectFailedSound.on("end", () => {
-          audioSource.tryReconnectLoop2.play();
-        });
+        if (initialTimeSecond < milestonesSecond.third) {
+          audioSource.pleaseWaitTeacher.play();
+          audioSource.pleaseWaitTeacher.on("end", () => {
+            audioSource.tryReconnectLoop2.play();
+          });
+        }
         return;
       } else {
-        stop();
-        audioSource.tryReconnectLoop2.stop();
-        isPlayVideo.value = false;
+        handleMyTeacherReconnect();
       }
+    });
+
+    onUnmounted(() => {
+      handleMyTeacherReconnect();
     });
 
     const option = reactive({ animationData: clockData.default });
@@ -281,7 +298,9 @@ export default defineComponent({
       studentIsDisconnected,
       teacherIsDisconnected,
       showBearConfused,
+      isSecondPhase,
       formattedTime,
+      formattedTimeFirstPhase,
       option,
       sourceVideo,
       isPlayVideo,
