@@ -1,7 +1,7 @@
 <template>
   <teleport to="body" v-if="toast">
-    <div v-if="toast.bigIcon" class="medal">
-      <Lottie :options="option" :height="140" :width="140" />
+    <div v-if="toast.bigIcon" :class="toast.isMedal ? 'medalPosition' : 'iconPosition'">
+      <Lottie :options="toast.bigIcon" :height="toast.isMedal ? 140 : 70" :width="toast.isMedal ? 140 : 70" />
     </div>
     <div v-if="toast.message" :class="cssClass">
       <div>
