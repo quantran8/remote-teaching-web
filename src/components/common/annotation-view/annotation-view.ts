@@ -191,7 +191,11 @@ export default defineComponent({
         watch(oneOneTeacherStrokes, () => {
           renderOneTeacherStrokes();
         });
+        // disable shapes student not 1-1
+        // disable move shapes of teacher on students not 1-1
+        // disable move shapes of student 1-1 on students not 1-1
       } else {
+        // enable shapes of each students
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
       }
     });

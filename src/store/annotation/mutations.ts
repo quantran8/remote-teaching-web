@@ -73,8 +73,14 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
     s.drawing.studentShapes = p.studentShapes;
   },
+  setOneStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
+    s.oneToOne.studentShapes = p.studentShapes;
+  },
   setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
     s.drawing.teacherShapes = p.teacherShapes;
+  },
+  setOneTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
+    s.oneToOne.teacherShapes = p.teacherShapes;
   },
   setStudentDrawsLine(s: AnnotationState, p: string) {
     if (p) {
