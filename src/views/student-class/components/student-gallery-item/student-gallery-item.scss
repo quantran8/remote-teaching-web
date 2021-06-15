@@ -14,7 +14,7 @@
 
   width: 60px;
 
-  &::before {
+  &__video::before {
     content: "";
     position: absolute;
     width: 100%;
@@ -32,7 +32,9 @@
   }
 
   &--help {
-    @include cycle(#dd0d0d, flickerAnimation);
+    #{$self}__video {
+      @include cycle(#dd0d0d, flickerAnimation);
+    }
   }
 
   &__img {
@@ -163,12 +165,14 @@
       max-height: 500px;
     }
   }
-}
-
-.sc-gallery-item--speaking {
-  @include cycle(#00a1ed, flickerAnimationVoice);
-}
-
-.sc-gallery-item--palette {
-  @include cycle(#030303, flickerAnimationPalette);
+  &--speaking {
+    #{$self}__video {
+      @include cycle(#00a1ed, flickerAnimationVoice);
+    }
+  }
+  &--palette {
+    #{$self}__video {
+      @include cycle(#030303, flickerAnimationPalette);
+    }
+  }
 }
