@@ -33,9 +33,9 @@
         <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
       <div class="sc-teacher" ref="videoContainerRef">
-        <div v-show="showBearConfused" class="sc-content__top--confused">
-          <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
-          <span v-if="teacherIsDisconnected" class="sc-content__top--confused__time">{{ formattedTime }}</span>
+        <div v-show="showBearConfused" class="sc-teacher__content">
+          <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
+          <span v-if="teacherIsDisconnected" class="sc-teacher__time">{{ formattedTime }}</span>
         </div>
         <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
         <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
