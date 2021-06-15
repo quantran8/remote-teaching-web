@@ -254,7 +254,10 @@ export default defineComponent({
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
           if (canvas.getObjects("path").length) {
-            const itemDelete = canvas.getObjects("path").pop();
+            const itemDelete = canvas
+              .getObjects("path")
+              .filter((item: any) => item.id === isTeacher.value.id)
+              .pop();
             canvas.remove(itemDelete);
             await store.dispatch("teacherRoom/setDeleteBrush", {});
             toolSelected.value = Tools.Pen;

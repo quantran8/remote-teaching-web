@@ -30,6 +30,8 @@ const actions: ActionTree<AnnotationState, any> = {
   addShape({ commit, rootGetters }, p: string) {
     if (rootGetters["studentRoom/getStudentModeOneId"]) {
       commit("setOneTeacherDrawsStrokes", p);
+    } else if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneTeacherDrawsStrokes", p);
     } else {
       commit("addShape", p);
     }
@@ -54,6 +56,8 @@ const actions: ActionTree<AnnotationState, any> = {
   },
   setStudentDrawsLine({ commit, rootGetters }, p: string) {
     if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneStudentDrawsLine", p);
+    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
       commit("setOneStudentDrawsLine", p);
     } else {
       commit("setStudentDrawsLine", p);

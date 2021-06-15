@@ -101,8 +101,6 @@ export default defineComponent({
     const renderTeacherStrokes = () => {
       if (canvasData.value && canvasData.value.length > 0) {
         renderStrokes(canvasData.value, null);
-      } else {
-        canvas.remove(...canvas.getObjects());
       }
     };
     watch(canvasData, () => {
