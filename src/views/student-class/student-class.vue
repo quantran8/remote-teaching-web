@@ -22,7 +22,7 @@
           <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
           <div v-show="showBearConfused" class="sc-content__top--confused">
             <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
-            <div class="sc-content__top--confused__clock">
+            <div :class="['sc-content__top--confused__clock', isPlayVideo && 'sticky']">
               <div class="sc-content__top--confused__clock--img">
                 <Lottie :options="option" />
               </div>
