@@ -155,12 +155,17 @@ export default defineComponent({
       if (teacherShapes.value) {
         teacherShapes.value.forEach((item: any) => {
           if (item.userId === teacherForST.value.id) {
-            canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+            canvas.remove(
+              ...canvas
+                .getObjects()
+                .filter((obj: any) => obj.type !== "path")
+                .filter((obj: any) => obj.id === teacherForST.value.id),
+            );
             brushstrokesRender(item);
           }
         });
       } else {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
+        // canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
       }
     };
     watch(teacherShapes, () => {
