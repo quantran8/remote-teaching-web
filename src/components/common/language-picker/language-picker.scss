@@ -18,12 +18,16 @@
       font-size: 24px;
     }
     &--text {
-      padding-bottom: 5px;
+      padding-bottom: 4px;
     }
   }
   &__menu {
     width: 155px;
     &--item {
+      &.ant-dropdown-menu-item {
+        display: flex;
+        align-items: center;
+      }
       margin-bottom: 5px;
       &__text {
         font-weight: 500;
@@ -38,9 +42,5 @@
         height: 30px;
       }
     }
-  }
-  .ant-dropdown-menu-item {
-    display: flex !important;
-    align-items: center !important;
   }
 }
