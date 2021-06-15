@@ -5,6 +5,6 @@
 	"common.warning.overlap": "There seems to be a session already existing in that timeslot",
 	"disconnect.title": "Oops! There is an issue" ,
 	"disconnect.content1": "There were connection issue for your teacher",
-	"disconnect.content2": "Teacher will contact you about rescheduling",
+	"disconnect.content2": "Your school or teacher will contact you about how they will handle the issue",
 	"disconnect.goto": "Go To Home Page"
 }

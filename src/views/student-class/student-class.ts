@@ -241,8 +241,10 @@ export default defineComponent({
       await store.dispatch("studentRoom/disconnectSignalR");
     };
 
+    const isSecondPhase = ref(false);
+
     const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
-    const { start, pause, stop, formattedTime, toSecond } = useTimer();
+    const { start, pause, stop, formattedTime, toSecond, formattedTimeFirstPhase } = useTimer();
     const milestonesHms = {
       first: "00:02:30",
       second: "00:00:00",
@@ -257,22 +259,32 @@ export default defineComponent({
       if (toSecond(currentFormattedTime) === milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
+        isSecondPhase.value = true;
         audioSource.watchStory.on("end", () => {
           isPlayVideo.value = true;
         });
+      }
+      if (toSecond(currentFormattedTime) < milestonesSecond.first && toSecond(currentFormattedTime) > milestonesSecond.second) {
+        isPlayVideo.value = true;
+        isSecondPhase.value = true;
       }
       if (toSecond(currentFormattedTime) === milestonesSecond.second) {
         pause();
         audioSource.canGoToClassRoomToday.play();
         audioSource.canGoToClassRoomToday.on("end", () => {
           isPlayVideo.value = false;
+          isSecondPhase.value = false;
           router.push("/disconnect-issue");
         });
       }
-      if (toSecond(currentFormattedTime) < milestonesSecond.first && toSecond(currentFormattedTime) > milestonesSecond.second) {
-        isPlayVideo.value = true;
-      }
     });
+
+    const handleMyTeacherReconnect = () => {
+      stop();
+      audioSource.tryReconnectLoop2.stop();
+      isPlayVideo.value = false;
+      isSecondPhase.value = false;
+    };
     watch(myTeacherDisconnected, async isDisconnected => {
       if (isDisconnected) {
         let initialTimeSecond = 0;
@@ -287,13 +299,14 @@ export default defineComponent({
             audioSource.tryReconnectLoop2.play();
           });
         }
-
         return;
       } else {
-        stop();
-        audioSource.tryReconnectLoop2.stop();
-        isPlayVideo.value = false;
+        handleMyTeacherReconnect();
       }
+    });
+
+    onUnmounted(() => {
+      handleMyTeacherReconnect();
     });
 
     const option = reactive({ animationData: clockData.default });
@@ -340,7 +353,9 @@ export default defineComponent({
       studentIsDisconnected,
       teacherIsDisconnected,
       showBearConfused,
+      isSecondPhase,
       formattedTime,
+      formattedTimeFirstPhase,
       option,
       sourceVideo,
       isPlayVideo,

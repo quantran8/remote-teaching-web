@@ -26,7 +26,10 @@
               <div class="sc-content__top--confused__clock--img">
                 <Lottie :options="option" />
               </div>
-              <div v-if="teacherIsDisconnected" class="sc-content__top--confused__clock--text">{{ formattedTime }}</div>
+              <div v-if="teacherIsDisconnected" class="sc-content__top--confused__clock--text">
+                <span v-if="isSecondPhase">{{ formattedTime.substring(3) }}</span>
+                <span v-else>{{ formattedTimeFirstPhase.substring(3) }}</span>
+              </div>
             </div>
           </div>
           <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
