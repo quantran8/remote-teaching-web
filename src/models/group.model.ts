@@ -1,21 +1,18 @@
 
 export interface SchoolClassTimeModel {
-	id: string;
-	start: string;
-	end: string;
-	type: number;
-	day: any;
-	daysOfWeek: number;
-	duration: number;
-  }
-
-export interface SchoolClassTimeSchedulesModel {
-  timeId: string;
-  customizedScheduleId: string;
-  start: string,
+  id: string;
+  start: string;
   end: string;
   type: number;
-  dates: string[];
+  day: any;
+  daysOfWeek: number;
+  duration: number;
+}
+
+export interface SchoolClassTimeRecurringModel {
+  timeId: string;
+  start: string,
+  end: string;
   daysOfWeek: number;
   duration: number;
 }
@@ -34,8 +31,11 @@ export interface GroupModel {
 export interface GroupModelSchedules {
   groupId: string;
   groupName: string;
-  schedules: SchoolClassTimeSchedulesModel[];
   studentCount: number;
+  customizedScheduleId: string;
+  timeId: string;
+  timeStart: string;
+  timeEnd: string;
   next?: string;
   isCurrentDay?: boolean;
   startClass?: boolean;

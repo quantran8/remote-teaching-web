@@ -21,9 +21,9 @@
       </Select>
     </div>
     <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()">
+    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
         <span>Schedule</span>
-      <img class="calendar" src="@/assets/images/calendar.png" @click="onClickCalendar" />
+      <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-if="loading">
@@ -37,8 +37,9 @@
         :id="cl.classId"
         :title="cl.className"
         :description="cl.campusName"
-        :remoteClassGroups="cl.remoteClassGroups"
+        :remoteClassGroups="cl.groups"
         :active="cl.isActive"
+        :isTeacher="cl.isTeacher"
         :loadingStart="loadingStartClass"
         @click-to-access="groupId => onClickClass(cl, groupId)"
       />
