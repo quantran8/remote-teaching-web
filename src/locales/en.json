@@ -66,5 +66,7 @@
 	"disconnect.goto": "Go To Home Page",
 	"access_denied.we_are_sorry": "We are sorry...",
   	"access_denied.description": "The page you're trying to access has restricted access.",
-  	"access_denied.suggest": "Please refer your administrator"
+  	"access_denied.suggest": "Please refer your administrator",
+	"student_class.exit": "Exit",
+    "student_class.go_to_home_page": "Go To Home Page"
 }

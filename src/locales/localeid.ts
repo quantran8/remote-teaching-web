@@ -79,3 +79,8 @@ export class AccessDeniedLocale {
   static AccessDeniedDescription = "access_denied.description";
   static AccessDeniedSuggest = "access_denied.suggest";
 }
+
+export class StudentClassLocale {
+  static Exit = "student_class.exit";
+  static GoToHomePage = "student_class.go_to_home_page";
+}

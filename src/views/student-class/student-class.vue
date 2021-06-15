@@ -1,7 +1,7 @@
 <template>
   <div class="sc">
     <StudentHeader />
-    <div class="sc-body">
+    <div class="sc-body" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">
         <AnnotationView
           v-show="!isBlackOutContent && isLessonPlan"
@@ -69,7 +69,13 @@
         <StudentAction />
       </div>
     </div>
-    <StudentGallery :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
+    <StudentGallery v-if="!showMessage" :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
+    <div class="sc-message" v-else>
+      <p class="message">{{ errors.message }}</p>
+      <router-link to="/">
+        <div class="btn-homepage">{{ goToHomePageText }}</div>
+      </router-link>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped src="./student-class.scss"></style>

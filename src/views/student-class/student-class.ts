@@ -1,6 +1,8 @@
+import { StudentClassLocale } from "./../../locales/localeid";
+import { ErrorCode, fmtMsg, LoginInfo, MatIcon, RoleName } from "@/commonui";
+import { Howl, Howler } from "howler";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
-import { ErrorCode, LoginInfo, MatIcon, RoleName } from "@/commonui";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
 import { TeacherModel } from "@/models";
@@ -36,7 +38,7 @@ export default defineComponent({
     StudentGalleryItem,
     StudentHeader,
     UnitPlayer,
-	StudentAction
+    StudentAction,
   },
 
   async created() {
@@ -74,6 +76,8 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
+    const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
+    const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
@@ -102,6 +106,7 @@ export default defineComponent({
     const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
     const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
+    const showMessage = ref(false);
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
@@ -153,14 +158,14 @@ export default defineComponent({
       }
     });
 
-    watch(errors, () => {
+    watch(errors, async () => {
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
-          window.confirm(errors.value.message);
-          router.replace("/");
+          showMessage.value = true;
+          await store.dispatch("setToast", { message: errors.value.message });
         } else if (errors.value.errorCode === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
-          window.confirm(errors.value.message);
-          router.replace("/");
+          showMessage.value = true;
+          await store.dispatch("setToast", { message: errors.value.message });
         }
       }
     });
@@ -282,6 +287,10 @@ export default defineComponent({
       isPlayVideo,
       avatarTeacher,
       avatarStudentOneToOne,
+      showMessage,
+      errors,
+      exitText,
+      goToHomePageText,
     };
   },
 });
