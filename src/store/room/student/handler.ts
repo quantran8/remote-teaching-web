@@ -7,6 +7,12 @@ import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
 import { Pointer, UserShape } from "@/store/annotation/state";
+import * as medal from "@/assets/lotties/medal.json";
+import * as cameraOff from "@/assets/lotties/camera_off.json";
+import * as cameraOn from "@/assets/lotties/camera_on.json";
+import * as soundOff from "@/assets/lotties/sound_off.json";
+import * as soundOn from "@/assets/lotties/sound_on.json";
+import { reactive } from "vue";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
   const { commit, dispatch, state, getters } = store;
@@ -39,7 +45,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
       commit("setWhiteboard", payload.isShowWhiteBoard);
-      if (payload.teacher.disconnectTime) {		  
+      if (payload.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
       }
     },
@@ -115,8 +121,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         enable: !payload.isMuteVideo,
       });
       if (payload.id === state.student?.id) {
-        const message = `Your video has been turn ${payload.isMuteVideo ? "off" : "on"} by your teacher!`;
-        store.dispatch("setToast", { message: message }, { root: true });
+        const icon = payload.isMuteVideo ? reactive({ animationData: cameraOff.default }) : reactive({ animationData: cameraOn.default });
+        store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
       }
     },
     onTeacherMuteStudentAudio: async (payload: StudentModel) => {
@@ -125,8 +131,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         enable: !payload.isMuteAudio,
       });
       if (payload.id === state.student?.id) {
-        const message = `Your microphone has been turn ${payload.isMuteAudio ? "off" : "on"} by your teacher!`;
-        store.dispatch("setToast", { message: message }, { root: true });
+        const icon = payload.isMuteAudio ? reactive({ animationData: soundOff.default }) : reactive({ animationData: soundOn.default });
+        store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
       }
     },
     onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
@@ -183,7 +189,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           badge: item.badge,
         });
         if (item.id === state.student?.id) {
-          store.dispatch("setToast", { message: "", isPlayingSound: true, bigIcon: "sticker" }, { root: true });
+          const icon = reactive({ animationData: medal.default });
+          store.dispatch("setToast", { message: "", isPlayingSound: true, bigIcon: icon, isMedal: true }, { root: true });
         }
       });
     },

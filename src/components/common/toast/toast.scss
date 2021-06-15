@@ -27,10 +27,17 @@
   animation: fadein 0.5s, fadeout 0.5s 2.5s forwards;
 }
 
-.medal {
+.medalPosition {
   position: fixed;
   z-index: 10;
   top: 30px;
+  right: 5%;
+}
+
+.iconPosition {
+  position: fixed;
+  z-index: 10;
+  top: 60px;
   right: 5%;
 }
 
@@ -77,4 +84,3 @@
     opacity: 0;
   }
 }
-
