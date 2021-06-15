@@ -44,29 +44,6 @@ export default defineComponent({
   setup: function(props, { emit }) {
     const groups = ref();
     const clickedGroup = ref<string>("");
-    // const isActiveClass = (daysOfWeek: number, startDate: string, endDate: string) => {
-    //   //check daysOfWeek, startDate, endDate, return false if one of them is null or undefined
-    //   if ([daysOfWeek, startDate, endDate].some(t => t == null)) return false;
-    //   // get system local time
-    //   const current = new Date();
-    //   const day = current.getDay();
-    //   const m = current.getMinutes();
-    //   const h = current.getHours();
-    //   if (!startDate || !endDate || day !== daysOfWeek) {
-    //     return false;
-    //   }
-    //   const currentTime = 1440 * day + h * 60 + m;
-    //   // get input time
-    //   const timeStart = startDate.split(":");
-    //   const hourStart = parseInt(timeStart[0], 10);
-    //   const minStart = parseInt(timeStart[1], 10);
-    //   const inputTimeStart = 1440 * daysOfWeek + hourStart * 60 + minStart - 15;
-    //   const timeEnd = endDate.split(":");
-    //   const hourEnd = parseInt(timeEnd[0], 10);
-    //   const minEnd = parseInt(timeEnd[1], 10);
-    //   const inputTimeEnd = 1440 * daysOfWeek + hourEnd * 60 + minEnd;
-    //   return (inputTimeStart <= currentTime && currentTime <= inputTimeEnd) || (inputTimeStart < 0 && currentTime > 7 * 1440 + inputTimeStart);
-    // };
 
     const validatedGroupHighlighted = () => {
       let min = 999999;
