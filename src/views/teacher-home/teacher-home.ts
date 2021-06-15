@@ -152,13 +152,18 @@ export default defineComponent({
       });
     });
 
-    const hasClassesShowUp = () =>
-    {
+    const hasClassesShowUp = () => {
       if (loading.value == false) {
         return classes.value.length != 0;
       } else {
         return true;
       }
+    }
+
+    const hasClassesShowUpSchedule = () => {
+      if (loading.value == false) {
+        return classes.value.length != 0;
+      } else return loading.value != true;
     }
 
     return {
@@ -194,6 +199,7 @@ export default defineComponent({
       accessDenied,
       loadingStartClass,
       hasClassesShowUp,
+      hasClassesShowUpSchedule,
     };
   },
 });

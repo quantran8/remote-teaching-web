@@ -5,21 +5,16 @@
 .sc-gallery-item {
   $self: &;
 
-  $one-on-one-size: 400px;
+  $current-item-size: 80px;
+  $current-item-size-md: 130px;
+  $current-item-size-xxl: 160px;
 
-  $current-item-size: 150px;
-  $current-item-size-lg: 200px;
-  $current-item-size-xxl: 300px;
+  $star-size: 22px;
+  $star-size-xl: 30px;
 
-  $star-size: 28px;
-  $star-size-xl: 38px;
+  width: 60px;
 
-  background-color: #ccc;
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-
-  &::before {
+  &__video::before {
     content: "";
     position: absolute;
     width: 100%;
@@ -37,7 +32,9 @@
   }
 
   &--help {
-    @include cycle(#dd0d0d, flickerAnimation);
+    #{$self}__video {
+      @include cycle(#dd0d0d, flickerAnimation);
+    }
   }
 
   &__img {
@@ -48,32 +45,15 @@
     -webkit-user-drag: none;
   }
   &__video {
+    position: relative;
     width: 100%;
-    height: 100%;
+    height: 60px;
     border-radius: 50%;
-    overflow: hidden;
+    border: 1px solid #707070;
     // For safari
     &::v-deep video {
       border-radius: 50%;
     }
-  }
-
-  &__disable {
-    color: rgb(194, 190, 190);
-  }
-
-  &__enable {
-    color: black;
-  }
-
-  &__title-container {
-    margin: 0;
-    margin-top: 5px;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    min-width: 100%;
-    height: 20px;
   }
 
   &__title {
@@ -82,6 +62,9 @@
     margin: 0;
     text-overflow: ellipsis;
     overflow: hidden;
+    color: black;
+    text-align: center;
+    white-space: nowrap;
   }
 
   &__star {
@@ -93,8 +76,8 @@
     transform: rotate(20deg);
     display: inline-block;
     text-align: center;
-    right: 15%;
-    bottom: 5%;
+    right: 0;
+    bottom: 0;
     &::before {
       content: "";
       position: absolute;
@@ -116,63 +99,52 @@
       font-weight: 600;
     }
   }
-  &--current,
-  &--one-on-one {
-    transform: translate(-50%, -50%);
-    margin: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transition: 0.2s;
-  }
+
   &--current {
     width: $current-item-size;
-    height: $current-item-size;
-    #{$self}__title {
-      min-width: 100%;
-      transform: none;
+    #{$self}__video {
+      width: 100%;
+      height: $current-item-size;
+      border: 3px solid #f1f1f1;
     }
   }
-  &--one-on-one {
-    width: $one-on-one-size;
-    height: $one-on-one-size;
 
-    #{$self}__title-container {
-      margin-top: 30px;
-      height: 50px;
-    }
-
+  &--disabled {
     #{$self}__title {
-      font-size: 32px;
+      color: #c2bebe;
     }
+  }
 
-    #{$self}__star {
-      width: 50px;
-      height: 50px;
-      right: 50px;
-      bottom: 40px;
-      &__content {
-        font-size: 24px;
-        line-height: 50px;
+  @media (min-width: $md) {
+    &--current {
+      width: $current-item-size-md;
+      #{$self}__video {
+        height: $current-item-size-md;
+        border-width: 5px;
+      }
+    }
+    &__title {
+      font-size: 16px;
+    }
+  }
+
+  @media (min-width: $lg) {
+    &:not(#{$self}--current) {
+      width: 80px;
+      #{$self}__video {
+        height: 80px;
       }
     }
   }
 
   @media (min-width: $xl) {
-    &__title-container {
-      height: 50px;
-    }
-
-    &__title {
-      font-size: 16px;
-    }
-    &--current {
-      width: $current-item-size-lg;
-      height: $current-item-size-lg;
-    }
-    &__video {
-      max-height: 500px;
-    }
+    // &--current {
+    //   width: $current-item-size-lg;
+    //   height: $current-item-size-lg;
+    // }
+    // &__video {
+    //   max-height: 500px;
+    // }
     &__star {
       width: $star-size-xl;
       height: $star-size-xl;
@@ -183,27 +155,24 @@
     }
   }
   @media (min-width: $xxl) {
-    &__title-container {
-      height: 50px;
-    }
-
-    &__title {
-      font-size: 16px;
-    }
     &--current {
       width: $current-item-size-xxl;
-      height: $current-item-size-xxl;
+      #{$self}__video {
+        height: $current-item-size-xxl;
+      }
     }
     &__video {
       max-height: 500px;
     }
   }
-}
-
-.sc-gallery-item--speaking {
-  @include cycle(#00a1ed, flickerAnimationVoice);
-}
-
-.sc-gallery-item--palette {
-  @include cycle(#030303, flickerAnimationPalette);
+  &--speaking {
+    #{$self}__video {
+      @include cycle(#00a1ed, flickerAnimationVoice);
+    }
+  }
+  &--palette {
+    #{$self}__video {
+      @include cycle(#030303, flickerAnimationPalette);
+    }
+  }
 }
