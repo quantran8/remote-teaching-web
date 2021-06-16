@@ -21,7 +21,7 @@
               <Spin spin type="loading" />
             </span>
             <div v-else>
-              <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.id)" />
+              <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.groupId)" />
             </div>
           </div>
         </div>

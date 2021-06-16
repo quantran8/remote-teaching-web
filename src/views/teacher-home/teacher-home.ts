@@ -60,9 +60,9 @@ export default defineComponent({
         const result = await fp.get();
         const visitorId = result.visitorId;
         await RemoteTeachingService.getActiveClassRoom(visitorId);
-        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
+        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.classId, groupId);
         if (response && response.success) {
-          await router.push("/class/" + teacherClass.schoolClassId);
+          await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {
         loadingStartClass.value = false;
@@ -96,14 +96,16 @@ export default defineComponent({
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
-        await store.dispatch("setToast", { message: err.body.message });
+        if(err != null) {
+          await store.dispatch("setToast", { message: err.body.message });
+        }
       }
       loading.value = false;
     };
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       if (teacherClass.isActive) {
-        await router.push("/class/" + teacherClass.schoolClassId);
+        await router.push("/class/" + teacherClass.classId);
       } else {
         await startClass(teacherClass, groupId);
       }
