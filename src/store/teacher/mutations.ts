@@ -10,14 +10,10 @@ const mutations: MutationTree<TeacherState> = {
     state.schools = payload;
   },
   setClasses(state: TeacherState, payload: Array<ClassModel>) {
-    if (payload && payload.length != 0) {
-      state.classes = payload;
-    }
+    state.classes = payload;
   },
   setClassesSchedules(state: TeacherState, payload: Array<ClassModelSchedules>) {
-    if (payload && payload.length != 0) {
-      state.classesSchedules = payload;
-    }
+    state.classesSchedules = payload;
   },
   clearCalendarSchedule(state: TeacherState, payload: any) {
     state.calendarSchedules = [];

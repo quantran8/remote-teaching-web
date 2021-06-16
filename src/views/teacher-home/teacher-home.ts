@@ -90,7 +90,6 @@ export default defineComponent({
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        //await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId});
         await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId, browserFingerPrinting: visitorId});
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;

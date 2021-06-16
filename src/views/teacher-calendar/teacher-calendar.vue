@@ -63,20 +63,25 @@
       </template>
       <template #dateCellRender="{ current: value }">
         <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
-          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`position: 'relative' color: ${item.color}; font-weight: 500`">
+          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`position: 'relative'; color: ${item.color}; font-weight: 500`">
             <Tooltip placement="top">
               <template #title>
                 <span>{{warningOverlap}}</span>
               </template>
               <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
             </Tooltip>
+            <PlusCircleOutlined class="add-icon" v-if="canCreate(value)"/>
             <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
               >{{ item.className }} <br />
+              <span style="font-weight: normal; font-size: 13px;">{{`Group ${item.groupName}:`}}</span>
+              <br>
+              <span style="font-weight: normal; font-size: 13px;">
               {{
-                `Group ${item.groupName}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
+                `${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
                   item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
                 }`
               }}
+              </span>
             </a>
             <br />
             <br />
