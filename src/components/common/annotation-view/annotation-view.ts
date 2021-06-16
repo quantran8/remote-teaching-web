@@ -8,6 +8,11 @@ import { TeacherModel } from "@/models";
 
 const randomPosition = () => Math.random() * 100;
 
+const defaultCanvasDimension = {
+  width: 717,
+  height: 435,
+};
+
 export default defineComponent({
   props: ["image"],
   setup(props) {
@@ -255,14 +260,15 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
     };
-
+    const canvasRef = ref(null);
     const boardSetup = () => {
-      const canvasEl = document.getElementById("canvasOnStudent");
-      if (!canvasEl) return;
-      canvas = new fabric.Canvas("canvasOnStudent");
-      const containerClientRect = containerRef.value?.getBoundingClientRect();
-      canvas.setWidth(containerClientRect?.width);
-      canvas.setHeight(containerClientRect?.height);
+      if (!canvasRef.value) return;
+      const { width, height } = defaultCanvasDimension;
+      canvas = new fabric.Canvas(canvasRef.value, {
+        width,
+        height,
+      });
+
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
@@ -272,6 +278,20 @@ export default defineComponent({
       teacherSharingShapes();
       studentSharingStrokes();
       listenToCanvasEvents();
+      resizeCanvas();
+    };
+
+    const resizeCanvas = () => {
+      const outerCanvasContainer = containerRef.value;
+      if (!outerCanvasContainer) {
+        return;
+      }
+      const ratio = canvas.getWidth() / canvas.getHeight();
+      const containerWidth = outerCanvasContainer.clientWidth;
+      const scale = containerWidth / canvas.getWidth();
+      const zoom = canvas.getZoom() * scale;
+      canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
+      canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
@@ -348,14 +368,12 @@ export default defineComponent({
       canvas.freeDrawingBrush.width = 2;
     };
 
-    const canvasRef = ref(null);
     onMounted(() => {
-      // calcScaleRatio();
       boardSetup();
-      // window.addEventListener("resize", calcScaleRatio);
+      window.addEventListener("resize", resizeCanvas);
     });
     onUnmounted(() => {
-      // window.removeEventListener("resize", calcScaleRatio);
+      window.removeEventListener("resize", resizeCanvas);
     });
 
     const paletteTools: Array<toolType> = [
@@ -400,7 +418,7 @@ export default defineComponent({
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
     };
-
+    const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
     return {
       containerRef,
       pointerStyle,
@@ -420,6 +438,7 @@ export default defineComponent({
       actionLeave,
       animationDone,
       isPaletteVisible,
+      hasPalette,
     };
   },
 });

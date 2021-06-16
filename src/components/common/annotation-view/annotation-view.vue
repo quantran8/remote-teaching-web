@@ -1,12 +1,20 @@
 <template>
-  <div :class="['annotation-view', isPaletteVisible && 'annotation-view--palette']" ref="containerRef">
-    <img :src="imageUrl" id="annotation-img" />
-    <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
-      <img src="@/assets/icon-select.png" alt="" />
+  <!-- <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
+    <img src="@/assets/icon-select.png" alt="" />
+  </div> -->
+  <div
+    class="annotation-view-container"
+    ref="containerRef"
+    :style="{
+      borderBottomLeftRadius: hasPalette ? '10px' : '0px',
+      borderBottomRightRadius: hasPalette ? '10px' : '0px',
+      borderBottomWidth: hasPalette ? '1px' : '0px',
+    }"
+  >
+    <div class="annotation-view-container__image">
+      <img :src="imageUrl" id="annotation-img" />
     </div>
-    <div class="canvas-wrap-container" :class="{ 'has-whiteboard': isShowWhiteBoard, 'has-palette-tools': student?.isPalette }">
-      <canvas class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
-    </div>
+    <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
     <div class="palette-tool" v-if="isPaletteVisible">
