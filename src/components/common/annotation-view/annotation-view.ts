@@ -410,9 +410,7 @@ export default defineComponent({
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
     };
-
     const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
-
     return {
       containerRef,
       pointerStyle,
