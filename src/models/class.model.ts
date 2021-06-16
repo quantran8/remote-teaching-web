@@ -32,6 +32,6 @@ export interface ClassModelSchedules {
   groups: GroupModelSchedules[];
 }
 
-export interface TeacherClassModel extends ClassModel {
+export interface TeacherClassModel extends ClassModelSchedules {
   isActive?: boolean;
 }
