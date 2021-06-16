@@ -282,6 +282,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setStudentDrawsLine", null, { root: true });
       await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
       await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+      // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
+      // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
     },
     onTeacherDeleteBrush: async (payload: any) => {
       await dispatch("annotation/setDeleteBrush", {}, { root: true });
@@ -320,8 +322,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
         await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
         await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+        // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
+        // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
       }
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetWhiteboard: async (payload: any) => {
       await commit("setWhiteboard", payload);
