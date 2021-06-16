@@ -17,6 +17,11 @@ const mutations: MutationTree<TeacherState> = {
   clearCalendarSchedule(state: TeacherState, payload: any) {
     state.calendarSchedules = [];
   },
+  setClasses(state: TeacherState, payload: Array<ClassModel>) {
+    if (payload && payload.length != 0) {
+      state.classes = payload;
+    }
+  },
   setCalendarSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
     if (payload) {
       state.calendarSchedules = payload.map(calendarSchedule => {
@@ -37,7 +42,7 @@ const mutations: MutationTree<TeacherState> = {
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
     state.classes.forEach(cl => {
-      cl.isActive = state.room?.classId === cl.classId;
+      cl.isActive = state.room?.classId === cl.schoolClassId;
     });
   },
   setInfo(state: TeacherState, payload: UserModel) {

@@ -35,3 +35,7 @@ export interface ClassModelSchedules {
 export interface TeacherClassModel extends ClassModelSchedules {
   isActive?: boolean;
 }
+
+export interface TeacherClassCalendarModel extends ClassModel {
+  isActive?: boolean;
+}
