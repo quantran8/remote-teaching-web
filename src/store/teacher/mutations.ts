@@ -9,11 +9,6 @@ const mutations: MutationTree<TeacherState> = {
   setSchools(state: TeacherState, payload: Array<ResourceModel>) {
     state.schools = payload;
   },
-  setClasses(state: TeacherState, payload: Array<ClassModel>) {
-    if (payload && payload.length != 0) {
-      state.classes = payload;
-    }
-  },
   setClassesSchedules(state: TeacherState, payload: Array<ClassModelSchedules>) {
     if (payload && payload.length != 0) {
       state.classesSchedules = payload;
@@ -42,7 +37,7 @@ const mutations: MutationTree<TeacherState> = {
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
     state.classes.forEach(cl => {
-      cl.isActive = state.room?.classId === cl.schoolClassId;
+      cl.isActive = state.room?.classId === cl.classId;
     });
   },
   setInfo(state: TeacherState, payload: UserModel) {
