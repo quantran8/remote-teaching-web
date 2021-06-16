@@ -3,7 +3,6 @@
 .annotation-view-container {
   border: 1px solid black;
   width: 100%;
-  border: 1px solid;
   position: relative;
   border-radius: 10px;
   &__image {
@@ -18,7 +17,7 @@
       object-fit: contain;
     }
   }
-  canvas {
+  &__canvas {
     border: 1px solid transparent;
   }
 }

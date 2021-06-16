@@ -14,7 +14,7 @@
     <div class="annotation-view-container__image">
       <img :src="imageUrl" id="annotation-img" />
     </div>
-    <canvas class="canvas-content" id="canvasOnStudent" ref="canvasRef" />
+    <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
     <div class="palette-tool" v-if="isPaletteVisible">

@@ -8,6 +8,11 @@ import { TeacherModel } from "@/models";
 
 const randomPosition = () => Math.random() * 100;
 
+const defaultCanvasDimension = {
+  width: 717,
+  height: 435,
+};
+
 export default defineComponent({
   props: ["image"],
   setup(props) {
@@ -258,9 +263,10 @@ export default defineComponent({
     const canvasRef = ref(null);
     const boardSetup = () => {
       if (!canvasRef.value) return;
+      const { width, height } = defaultCanvasDimension;
       canvas = new fabric.Canvas(canvasRef.value, {
-        width: 717,
-        height: 435,
+        width,
+        height,
       });
 
       canvas.selectionFullyContained = false;
@@ -277,7 +283,9 @@ export default defineComponent({
 
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
-      if (!outerCanvasContainer) return;
+      if (!outerCanvasContainer) {
+        return;
+      }
       const ratio = canvas.getWidth() / canvas.getHeight();
       const containerWidth = outerCanvasContainer.clientWidth;
       const scale = containerWidth / canvas.getWidth();
