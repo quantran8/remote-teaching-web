@@ -411,6 +411,8 @@ export default defineComponent({
       animationCheck.value = true;
     };
 
+    const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
+
     return {
       containerRef,
       pointerStyle,
@@ -430,6 +432,7 @@ export default defineComponent({
       actionLeave,
       animationDone,
       isPaletteVisible,
+      hasPalette,
     };
   },
 });
