@@ -322,8 +322,17 @@ export default defineComponent({
     };
 
     const onValidateTime = () => {
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
       const totalTimeStart = cacheHoursStart.value * 60 + cacheMinutesStart.value;
       const totalTimeEnd = cacheHoursEnd.value * 60 + cacheMinutesEnd.value;
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
+        const totalTimeNow = current.getHours() * 60 + current.getMinutes();
+        if (totalTimeNow > totalTimeStart) {
+          return true;
+        }
+      }
       return totalTimeStart >= totalTimeEnd;
     };
 
