@@ -123,9 +123,9 @@ export default defineComponent({
       await store.dispatch("teacher/setAcceptPolicy");
       await onSchoolChange(schools.value[0].id);
     };
-    const cancelPolicy = () => {
+    const cancelPolicy = async () => {
       visible.value = false;
-      store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
     };
 
     onMounted(async () => {
