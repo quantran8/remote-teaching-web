@@ -63,7 +63,7 @@ export default defineComponent({
     const warningOverlap = computed(() => fmtMsg(CommonLocale.OverlapWarningSession));
 
     const getClassBySchoolId = async (schoolId: any) => {
-      await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
+        await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
     };
 
     onMounted(async () => {

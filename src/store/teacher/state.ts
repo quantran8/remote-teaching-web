@@ -1,4 +1,9 @@
-import { RoomModel, TeacherClassModel, CalendarSchedulesModel, ClassModelSchedules } from "@/models";
+import {
+  RoomModel,
+  CalendarSchedulesModel,
+  ClassModelSchedules,
+  TeacherClassCalendarModel
+} from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
 
@@ -6,7 +11,7 @@ import { UserModel } from "@/models/user.model";
 export interface TeacherState {
   info?: UserModel;
   schools: Array<ResourceModel>;
-  classes: Array<TeacherClassModel>;
+  classes: Array<TeacherClassCalendarModel>;
   classesSchedules: Array<ClassModelSchedules>;
   room?: RoomModel;
   acceptPolicy: boolean;
