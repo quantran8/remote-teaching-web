@@ -128,7 +128,6 @@ export default defineComponent({
     });
 
     const clickToAccess = (groupId: string) => {
-      console.log(groupId)
       clickedGroup.value = groupId;
       emit("click-to-access", groupId);
     };

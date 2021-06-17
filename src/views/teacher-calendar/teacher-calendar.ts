@@ -276,6 +276,10 @@ export default defineComponent({
       return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD");
     };
 
+    const canShowCreate = (vl: Moment) => {
+      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") && vl.month() == moment().month();
+    };
+
     const isUpdate = (item: any) => {
       return !item.customizedScheduleId.includes(recurringCustomIdFistFormat);
     };
@@ -336,16 +340,56 @@ export default defineComponent({
       return totalTimeStart >= totalTimeEnd;
     };
 
+    const getDisableHoursStart = () => {
+      const hours = [];
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+        for (let i = 0; i < current.getHours(); i++) {
+          hours.push(i);
+        }
+      }
+      return hours;
+    };
+
+    const getDisableMinutesStart = () => {
+      const minutes = [];
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+        if (moment(selectedStartDateModal.value, formatTime).hour() == current.getHours()) {
+          for (let i = 0; i < current.getMinutes(); i++) {
+            minutes.push(i);
+          }
+        } else if (moment(selectedStartDateModal.value, formatTime).hour() < current.getHours()) {
+          for (let i = 0; i < 60; i++) {
+            minutes.push(i);
+          }
+        }
+      }
+      return minutes;
+    };
+
     const getDisabledHoursEnd = () => {
       const hours = [];
       for (let i = 0; i < moment(selectedStartDateModal.value, formatTime).hour(); i++) {
         hours.push(i);
       }
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+        for (let i = 0; i < current.getHours(); i++) {
+          hours.push(i);
+        }
+      }
       return hours;
     };
 
     const getDisabledMinutesEnd = () => {
-      const minutes = [-1];
+      const minutes = [];
       if (cacheHoursEnd.value < moment(selectedStartDateModal.value, formatTime).hour()) {
         for (let i = 0; i < 60; i++) {
           minutes.push(i);
@@ -355,12 +399,36 @@ export default defineComponent({
           minutes.push(i);
         }
       }
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+        if (moment(selectedEndDateModal.value, formatTime).hour() == current.getHours()) {
+          for (let i = 0; i < current.getMinutes(); i++) {
+            minutes.push(i);
+          }
+        } else if (moment(selectedEndDateModal.value, formatTime).hour() < current.getHours()) {
+          for (let i = 0; i < 60; i++) {
+            minutes.push(i);
+          }
+        }
+      }
       return minutes;
     };
 
     const onPanelChange = async (value: any, _mode: any) => {
       month.value = value;
       await getSchedules(selectedClassId.value, selectedGroupId.value, value);
+    };
+
+    const setSelectedStartDateModal = () => {
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+        selectedStartDateModal.value = moment().format("HH:mm");
+        selectedEndDateModal.value = moment().format("HH:mm");
+      }
     };
 
     const scheduleAction = async (type: string, timeLong: any, item?: any) => {
@@ -377,6 +445,7 @@ export default defineComponent({
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";
+        setSelectedStartDateModal();
         isCreate.value = true;
         visible.value = true;
       } else if (type == "Update") {
@@ -599,6 +668,7 @@ export default defineComponent({
       onSubmit,
       scheduleAction,
       canCreate,
+      canShowCreate,
       isCreate,
       isUpdate,
       loading,
@@ -611,6 +681,8 @@ export default defineComponent({
       warningOverlap,
       disableTimePicker,
       disableSkipButton,
+      getDisableHoursStart,
+      getDisableMinutesStart,
     };
   },
 });

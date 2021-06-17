@@ -67,7 +67,9 @@ export default defineComponent({
       } catch (err) {
         loadingStartClass.value = false;
         const message = err.body.message;
-        await store.dispatch("setToast", { message: message });
+        if(message != null) {
+          await store.dispatch("setToast", { message: message });
+        }
       }
     };
 
@@ -96,7 +98,7 @@ export default defineComponent({
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
-        if(err != null) {
+        if (err.body.message != null) {
           await store.dispatch("setToast", { message: err.body.message });
         }
       }
