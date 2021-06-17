@@ -369,15 +369,15 @@ export default defineComponent({
     };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
-      canvas.remove(
-        ...canvas
-          .getObjects()
-          .filter((obj: any) => obj.type !== "path")
-          .filter((obj: any) => obj.id !== isTeacher.value.id),
-      );
       if (studentShapes.value !== null) {
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== isTeacher.value.id) {
+            canvas.remove(
+              ...canvas
+                .getObjects()
+                .filter((obj: any) => obj.type !== "path")
+                .filter((obj: any) => obj.id === item.userId),
+            );
             shapeRender(item, null);
           }
         });
@@ -394,7 +394,7 @@ export default defineComponent({
       if (studentStrokes.value.length > 0) {
         studentStrokes.value.forEach((s: any) => {
           const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-            item.isOneToOne = oneAndOne.value || null;
+            item.isOneToOne = null;
             canvas.add(item);
           });
         });
@@ -439,7 +439,12 @@ export default defineComponent({
     });
     const renderSelfShapes = () => {
       if (selfShapes.value && selfShapes.value.length > 0) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === isTeacher.value.id));
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === isTeacher.value.id)
+            .filter((obj: any) => obj.type !== "path"),
+        );
         selfShapes.value.forEach((item: any) => {
           if (item.userId === isTeacher.value.id) {
             shapeRender(item, null);
