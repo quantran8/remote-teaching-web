@@ -24,17 +24,6 @@ export const useDisconnection = () => {
   let timeoutId: any;
   const router = useRouter();
 
-  //handle teacher disconnection in student's side
-
-  watch(myTeacherDisconnected, async isDisconnected => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    if (isDisconnected) {
-      audioSource.reconnectFailedSound.play();
-    }
-  });
-
   //handle teacher disconnection in teacher's side
   let modalRef: any;
   watch(teacherDisconnected, async isDisconnected => {

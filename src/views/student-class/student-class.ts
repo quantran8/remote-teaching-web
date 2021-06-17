@@ -230,11 +230,16 @@ export default defineComponent({
     });
     const handleMyTeacherReconnect = () => {
       stop();
+      audioSource.pleaseWaitTeacher.stop();
       audioSource.tryReconnectLoop2.stop();
       isPlayVideo.value = false;
       isSecondPhase.value = false;
     };
     watch(myTeacherDisconnected, async isDisconnected => {
+      if (!isDisconnected) {
+        handleMyTeacherReconnect();
+        return;
+      }
       if (isDisconnected) {
         let initialTimeSecond = 0;
         const initialTimeMillis = store.getters["studentRoom/teacher"].disconnectTime;
@@ -248,9 +253,6 @@ export default defineComponent({
             audioSource.tryReconnectLoop2.play();
           });
         }
-        return;
-      } else {
-        handleMyTeacherReconnect();
       }
     });
     onUnmounted(() => {
