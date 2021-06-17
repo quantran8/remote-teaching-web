@@ -8,7 +8,12 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get("teacher/online-session", { browserFingerPrinting: bfp });
   }
   teacherStartClassRoom(classId: string, groupId?: string): Promise<any> {
-    return this.create(`teacher/join/${classId}/${groupId}`);
+    return this.create(`teacher/join/${classId}/${groupId}`, {
+      device: "test-windown10",
+      browser: "test-Chrome",
+      resolution: "test-1024x1024",
+      bandwidth: "test-5555",
+    });
   }
   teacherEndClassRoom(roomId?: string): Promise<any> {
     if (!roomId) return Promise.resolve(null);
