@@ -18,7 +18,7 @@
           {{ val.name }}
         </Option>
       </Select>
-      <div class="loading" v-if="loading">
+      <div class="loading-center" v-if="loading">
         <Spin></Spin>
       </div>
     </div>
@@ -70,16 +70,17 @@
               </template>
               <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
             </Tooltip>
-            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
-              >{{ item.className }} <br />
-              <span style="font-weight: normal; font-size: 13px;">{{`Group ${item.groupName}:`}}</span>
-              <br>
-              <span style="font-weight: normal; font-size: 13px;">
-              {{
-                `${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
-                  item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
-                }`
-              }}
+            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)">
+              <span class="session-info">
+                <span class="session-info__class-name">{{ item.className }}</span>
+                <span class="session-info__group">{{`Group ${item.groupName}:`}}</span>
+                <span>
+                {{
+                    `${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
+                        item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
+                    }`
+                  }}
+                </span>
               </span>
             </a>
             <br />

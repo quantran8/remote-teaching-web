@@ -441,7 +441,7 @@ export default defineComponent({
       if (type == "Create") {
         await getDataModal(date);
         selectedClassIdModal.value = listClassSelect.value[0]?.id;
-        getGroupsModalByClass(listClassSelect.value[0]?.id);
+        await getGroupsModalByClass(listClassSelect.value[0]?.id);
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";

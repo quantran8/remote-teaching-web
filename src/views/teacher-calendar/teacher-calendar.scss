@@ -10,39 +10,48 @@
     justify-content: center;
     flex-direction: row;
   }
+
   .select-container {
     display: flex;
     align-items: center;
     flex-direction: row;
     margin-top: 20px;
   }
+
   .size-select {
     width: 200px;
   }
+
   .title-select {
     font-size: 18px;
     font-weight: 500;
     margin-right: 10px;
   }
+
   .mt-20 {
     margin-top: 20px;
   }
+
   .calendar {
     border: 1px solid rgba(235, 234, 234, 0.719);
     margin-top: 30px;
     margin-bottom: 50px;
   }
+
   .month-select {
     width: 100px;
     margin-left: 10px;
   }
+
   .year-select {
     width: 100px;
   }
 }
+
 .ml-20 {
   margin-left: 20px;
 }
+
 .select-container {
   display: flex;
   align-items: center;
@@ -50,49 +59,75 @@
   min-width: 300px;
   margin-top: 10px;
 }
+
 .modal-title-select {
   width: 70px;
 }
+
 .modal-size-group {
   width: 100%;
 }
+
 .modal-size-time-picker {
   width: 40%;
 }
+
 .note {
   margin-top: 30px;
   font-size: 12px;
   font-style: italic;
 }
+
 .btn-cancel {
   margin-right: 10px;
 }
+
 .modal-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 30px;
 }
+
 .delete-position {
   align-self: flex-start;
 }
+
 .save-position {
   align-self: flex-end;
 }
 
-.loading {
-  margin-left: 30px;
-  margin-top: 5px;
+.loading-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
+
 .warning-icon {
   width: 15px;
   position: absolute;
   top: 12px;
 }
+
 .add-icon {
   width: 15px;
   position: absolute;
   top: 12px;
   right: 32px;
   color: black;
+}
+
+.session-info {
+  font-weight: normal;
+  font-size: 13px;
+
+  &__class-name {
+    font-weight: 500;
+    display: block;
+  }
+
+  &__group {
+    margin-right: 5px;
+  }
 }
