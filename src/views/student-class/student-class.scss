@@ -47,7 +47,7 @@
   @media (min-width: $md) {
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
-    padding: 30px;
+    padding: 70px 30px 5px 30px;
   }
   @media (min-width: $lg) {
     grid-template-columns: 60% 40%;
@@ -70,10 +70,9 @@
   grid-row-start: 1;
   grid-row-end: 3;
   padding: 10px;
-
-  display: grid;
-  grid-template-rows: 1fr auto;
-
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   @media (min-width: $md) {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -138,7 +137,7 @@
   &__video {
     background: #eaeaea;
     width: 100%;
-    height: 100%;
+    height: 70%;
     max-height: 420px;
     max-width: 600px;
     border-radius: 30px;
@@ -148,6 +147,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     transition: 0.3s;
+    @media (min-width: $lg) {
+      height: 100%;
+      top: 50%;
+    }
   }
   &__one-to-one {
     width: 100%;

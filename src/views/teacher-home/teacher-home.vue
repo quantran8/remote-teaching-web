@@ -21,9 +21,9 @@
       </Select>
     </div>
     <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()">
+    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
         <span>Schedule</span>
-      <img class="calendar" src="@/assets/images/calendar.png" @click="onClickCalendar" />
+      <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-if="loading">
@@ -32,24 +32,20 @@
       <ClassCard
         v-else
         class="card-margin"
-        v-for="cl in classes"
-        :key="cl.schoolClassId"
-        :id="cl.schoolClassId"
-        :title="cl.schoolClassName"
+        v-for="cl in classesSchedules"
+        :key="cl.classId"
+        :id="cl.classId"
+        :title="cl.className"
         :description="cl.campusName"
-        :remoteClassGroups="cl.remoteClassGroups"
+        :remoteClassGroups="cl.groups"
         :active="cl.isActive"
+        :isTeacher="cl.isTeacher"
         :loadingStart="loadingStartClass"
         @click-to-access="groupId => onClickClass(cl, groupId)"
       />
     </div>
    <Empty v-show="!hasClassesShowUp()"/>
   </div>
-<!--  <div class="concurrent-connection" v-if="policy && concurrent">-->
-<!--    <h1>{{ accessDenied }}</h1>-->
-<!--    <p>{{ concurrentMess }}</p>-->
-<!--  </div>-->
-  <h1 class="access-denied" v-if="!visible && !policy">{{ accessDenied }}</h1>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>
     <p>{{ readPolicy }}</p>

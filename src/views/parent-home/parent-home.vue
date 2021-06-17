@@ -7,11 +7,6 @@
       <StudentCard v-for="child in children" :key="child.id" :name="child.englishName" @click="() => onClickChild(child)"> </StudentCard>
     </div>
   </div>
-  <!--  <div class="concurrent-connection" v-if="policy && concurrent">-->
-  <!--    <h1>{{ accessDenied }}</h1>-->
-  <!--    <p>{{ concurrentMess }}</p>-->
-  <!--  </div>-->
-  <h1 class="access-denied" v-if="!visible && !policy">{{ accessDenied }}</h1>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>
     <p>{{ readPolicy }}</p>

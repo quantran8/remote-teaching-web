@@ -1,4 +1,4 @@
-import { GroupModel } from "./group.model";
+import { GroupModel, GroupModelSchedules } from "./group.model";
 
 export interface ClassModel {
   schoolId: string;
@@ -24,6 +24,18 @@ export interface ClassModel {
   remoteClassGroups: GroupModel[];
 }
 
-export interface TeacherClassModel extends ClassModel {
+export interface ClassModelSchedules {
+  classId: string;
+  className: string;
+  campusName: string;
+  isTeacher: boolean;
+  groups: GroupModelSchedules[];
+}
+
+export interface TeacherClassModel extends ClassModelSchedules {
+  isActive?: boolean;
+}
+
+export interface TeacherClassCalendarModel extends ClassModel {
   isActive?: boolean;
 }
