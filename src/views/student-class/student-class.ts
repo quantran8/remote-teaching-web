@@ -204,10 +204,6 @@ export default defineComponent({
 
     const myTeacherDisconnected = computed<boolean>(() => store.getters["studentRoom/teacherIsDisconnected"]);
     const { start, pause, stop, formattedTime, toSecond, formattedTimeFirstPhase } = useTimer();
-    const milestonesHms = {
-      first: "00:02:30",
-      second: "00:00:00",
-    };
     const milestonesSecond = {
       first: 150, // 00:02:30
       second: 0, // 00:00:00
@@ -229,15 +225,9 @@ export default defineComponent({
       }
       if (toSecond(currentFormattedTime) === milestonesSecond.second) {
         pause();
-        audioSource.canGoToClassRoomToday.play();
-        audioSource.canGoToClassRoomToday.on("end", () => {
-          isPlayVideo.value = false;
-          isSecondPhase.value = false;
-          router.push("/disconnect-issue");
-        });
+        router.push("/disconnect-issue");
       }
     });
-
     const handleMyTeacherReconnect = () => {
       stop();
       audioSource.tryReconnectLoop2.stop();
@@ -263,13 +253,10 @@ export default defineComponent({
         handleMyTeacherReconnect();
       }
     });
-
     onUnmounted(() => {
       handleMyTeacherReconnect();
     });
-
     const option = reactive({ animationData: clockData.default });
-
     return {
       student,
       students,

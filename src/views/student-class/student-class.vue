@@ -16,10 +16,12 @@
             </div>
           </div>
         </div>
-        <AnnotationView
-          v-show="!isBlackOutContent && isLessonPlan"
-          :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
-        />
+        <div v-if="!teacherIsDisconnected">
+          <AnnotationView
+            v-show="!isBlackOutContent && isLessonPlan"
+            :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
+          />
+        </div>
         <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
             v-if="isGameView"
