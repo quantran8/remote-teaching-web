@@ -1,7 +1,7 @@
 import { GLServiceBase, ServiceRoute } from "../base.service";
 import { RemoteTeachingServiceInterface } from "@/services";
 import { StudentGetRoomResponse, TeacherGetRoomResponse } from "./model";
-import { JoinSession } from "@/models/join-session.model";
+import { JoinSessionModel } from "@/models/join-session.model";
 
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
@@ -10,7 +10,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get("teacher/online-session", { browserFingerPrinting: bfp });
   }
 
-  teacherStartClassRoom(startModel: JoinSession): Promise<any> {
+  teacherStartClassRoom(startModel: JoinSessionModel): Promise<any> {
     return this.create("teacher/join-session", startModel);
   }
 

@@ -1,4 +1,4 @@
-export interface JoinSession {
+export interface JoinSessionModel {
   classId: string,
   groupId: string,
   browser: string,
