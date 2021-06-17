@@ -1,9 +1,11 @@
 import { computed, defineComponent, ref, onMounted, watch } from "vue";
 import { Calendar, Select, Spin, Modal, Button, Row, Col, TimePicker } from "ant-design-vue";
+import { PlusCircleOutlined } from "@ant-design/icons-vue";
+
 import { Moment } from "moment";
 import { useStore } from "vuex";
 import moment from "moment";
-import { ClassModel } from "@/models";
+import { ClassModelSchedules } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
 import { fmtMsg, LoginInfo } from "@/commonui";
@@ -23,6 +25,7 @@ export default defineComponent({
     Col,
     TimePicker,
     Tooltip,
+    PlusCircleOutlined,
   },
   setup() {
     const store = useStore();
@@ -51,8 +54,9 @@ export default defineComponent({
     const formatTime = "HH:mm";
     const formatDateTime = "YYYY-MM-DDTHH:mm:ss";
     const filterAll = "all";
+    const totalColor = 10;
     const isCreate = ref<boolean>(false);
-    const classes = computed(() => store.getters["teacher/classes"]);
+    const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
     const recurringCustomIdFistFormat = "0000-";
     const loading = ref(false);
     const isActionUpdate = ref(false);
@@ -63,12 +67,12 @@ export default defineComponent({
     const warningOverlap = computed(() => fmtMsg(CommonLocale.OverlapWarningSession));
 
     const getClassBySchoolId = async (schoolId: any) => {
-        await store.dispatch("teacher/loadClasses", { schoolId: schoolId });
+      await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId });
     };
 
     onMounted(async () => {
       await getClassBySchoolId(schoolId);
-      await getListClassSelect(classes.value);
+      await getListClassSelect(classesSchedules.value);
       await getSchedules(null, null, month.value);
     });
 
@@ -90,26 +94,31 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const getListClassSelect = async (listClass: ClassModel[]) => {
+    const getListClassSelect = async (listClass: ClassModelSchedules[]) => {
       const listClassFilter = listClass
         .map((cl: any) => {
           let listGroup = [];
-          listGroup = cl.remoteClassGroups.map((group: any) => {
-            return { id: group.id, name: group.groupName };
+          listGroup = cl.groups.map((group: any) => {
+            return { id: group.groupId, name: group.groupName };
           });
           if (listGroup.length > 0) {
-            return { id: cl.schoolClassId, name: cl.schoolClassName, groups: listGroup };
+            return { id: cl.classId, name: cl.className, groups: listGroup };
           }
         })
         .filter(function(el) {
           return el != null;
         });
+      let colorIndex = 0;
       color.value = listClassFilter
         .map((cl: any) => {
           return cl.id;
         })
         .reduce((hash: any, elem: any) => {
-          hash[elem] = getRandomColor();
+          hash[elem] = getRandomColor(colorIndex);
+          colorIndex++;
+          if(colorIndex == totalColor) {
+            colorIndex = 0;
+          }
           return hash;
         }, {});
       listClassSelect.value = listClassFilter;
@@ -201,27 +210,9 @@ export default defineComponent({
       }
     };
 
-    const getRandomColor = () => {
-      const lum = -0.25;
-      let hex = String(
-        "#" +
-          Math.random()
-            .toString(16)
-            .slice(2, 8)
-            .toUpperCase(),
-      ).replace(/[^0-9a-f]/gi, "");
-      if (hex.length < 6) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-      }
-      let rgb = "#",
-        c,
-        i;
-      for (i = 0; i < 3; i++) {
-        c = parseInt(hex.substr(i * 2, 2), 16);
-        c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(16);
-        rgb += ("00" + c).substr(c.length);
-      }
-      return rgb;
+    const getRandomColor = (index: number) => {
+      const strArr = ["#000000", "#0000FF", "#FF8C00", "#00FF00", "#FF00FF", "#00FFFF", "#808080", "#006400", "#191970", "#8B4513"];
+      return strArr[index];
     };
 
     const getListData = (vl: Moment) => {
@@ -331,8 +322,17 @@ export default defineComponent({
     };
 
     const onValidateTime = () => {
+      const current = new Date();
+      const m = current.getMonth();
+      const d = current.getDate();
       const totalTimeStart = cacheHoursStart.value * 60 + cacheMinutesStart.value;
       const totalTimeEnd = cacheHoursEnd.value * 60 + cacheMinutesEnd.value;
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
+        const totalTimeNow = current.getHours() * 60 + current.getMinutes();
+        if (totalTimeNow > totalTimeStart) {
+          return true;
+        }
+      }
       return totalTimeStart >= totalTimeEnd;
     };
 
