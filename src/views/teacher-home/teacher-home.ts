@@ -11,6 +11,7 @@ import { fmtMsg } from "@/commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
+import { JoinSessionModel } from "@/models/join-session.model";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -58,9 +59,16 @@ export default defineComponent({
       try {
         const fp = await fpPromise;
         const result = await fp.get();
-        const visitorId = result.visitorId;
-        await RemoteTeachingService.getActiveClassRoom(visitorId);
-        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.classId, groupId);
+        const model: JoinSessionModel = {
+          classId: teacherClass.classId,
+          groupId: groupId,
+          browser: "",
+          device: "",
+          bandwidth: "",
+          resolution: "",
+          browserFingerprint: result.visitorId
+        };
+        const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
           await router.push("/class/" + teacherClass.classId);
         }
