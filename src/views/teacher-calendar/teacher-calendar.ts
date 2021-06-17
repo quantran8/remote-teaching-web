@@ -141,6 +141,7 @@ export default defineComponent({
 
     const handleChangeClass = async (vl: string) => {
       selectedClassId.value = vl;
+      selectedGroupIdCache.value = filterAll;
       if (vl != "all") {
         await getSchedules(vl, null, month.value);
         await getGroupsByClass(vl);
