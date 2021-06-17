@@ -48,8 +48,6 @@ export default defineComponent({
         await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
       } catch (err) {
         if (err.code === ErrorCode.ConcurrentUserException) {
-          // concurrent.value = true;
-          // concurrentMess.value = err.message;
           await store.dispatch("setToast", { message: err.message });
         } else {
           const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
@@ -65,9 +63,9 @@ export default defineComponent({
       await RemoteTeachingService.submitPolicy("parent");
       await store.dispatch("parent/setAcceptPolicy");
     };
-    const cancelPolicy = () => {
+    const cancelPolicy = async () => {
       visible.value = false;
-      store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
     };
     onMounted(async () => {
       window.addEventListener("keyup", ev => {
