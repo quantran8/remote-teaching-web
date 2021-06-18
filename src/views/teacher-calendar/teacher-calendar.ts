@@ -278,7 +278,7 @@ export default defineComponent({
     };
 
     const canShowCreate = (vl: Moment) => {
-      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") && vl.month() == moment().month();
+      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") && vl.month() == month.value.month();
     };
 
     const isUpdate = (item: any) => {
