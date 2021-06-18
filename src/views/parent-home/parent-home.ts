@@ -50,7 +50,7 @@ export default defineComponent({
         if (err.code === ErrorCode.ConcurrentUserException) {
           await store.dispatch("setToast", { message: err.message });
         } else {
-          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.name }));
+          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
           await store.dispatch("setToast", { message: message });
         }
       }

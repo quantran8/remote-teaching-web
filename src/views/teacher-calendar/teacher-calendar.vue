@@ -70,7 +70,6 @@
               </template>
               <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
             </Tooltip>
-            <PlusCircleOutlined class="add-icon" v-if="canCreate(value)"/>
             <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)">
               <span class="session-info">
                 <span class="session-info__class-name">{{ item.className }}</span>
@@ -88,6 +87,7 @@
             <br />
           </div>
         </div>
+        <PlusCircleOutlined class="add-icon" v-if="canShowCreate(value)" @click="canCreate(value) && scheduleAction('Create', value)"/>
       </template>
     </Calendar>
     <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
@@ -109,7 +109,14 @@
       </div>
       <div class="select-container">
         <span class="modal-title-select">Start</span>
-        <TimePicker class="modal-size-time-picker" @change="onChangeStartDateModal" :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
+        <TimePicker
+          class="modal-size-time-picker"
+          @change="onChangeStartDateModal"
+          :value="moment(selectedStartDateModal, 'HH:mm')"
+          format="HH:mm"
+          :disabledHours="getDisableHoursStart"
+          :disabledMinutes="getDisableMinutesStart"
+        />
         <span class="modal-title-select ml-20">End</span>
         <TimePicker
           class="modal-size-time-picker"
