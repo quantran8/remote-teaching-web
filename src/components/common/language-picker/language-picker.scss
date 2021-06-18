@@ -24,10 +24,6 @@
   &__menu {
     width: 155px;
     &--item {
-      &.ant-dropdown-menu-item {
-        display: flex !important;
-        align-items: center !important;
-      }
       margin-bottom: 5px;
       &__text {
         font-weight: 500;
@@ -43,10 +39,4 @@
       }
     }
   }
-}
-
-//this is temporary block to fix not working in production, will revert in the future
-.ant-dropdown-menu-item {
-  display: flex;
-  align-items: center;
 }
