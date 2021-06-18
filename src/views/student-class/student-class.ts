@@ -215,7 +215,7 @@ export default defineComponent({
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
         isSecondPhase.value = true;
-        audioSource.watchStory.on("end", () => {
+        audioSource.watchStory.once("end", () => {
           isPlayVideo.value = true;
         });
       }
@@ -232,15 +232,16 @@ export default defineComponent({
       stop();
       audioSource.pleaseWaitTeacher.stop();
       audioSource.tryReconnectLoop2.stop();
+      audioSource.watchStory.stop();
       isPlayVideo.value = false;
       isSecondPhase.value = false;
     };
-    watch(myTeacherDisconnected, async isDisconnected => {
-      if (!isDisconnected) {
+    watch(myTeacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
+      if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
         handleMyTeacherReconnect();
         return;
       }
-      if (isDisconnected) {
+      if (prevIsDisconnected !== isDisconnected && isDisconnected) {
         let initialTimeSecond = 0;
         const initialTimeMillis = store.getters["studentRoom/teacher"].disconnectTime;
         if (initialTimeMillis) {
@@ -249,7 +250,7 @@ export default defineComponent({
         start(initialTimeSecond);
         if (initialTimeSecond < milestonesSecond.third) {
           audioSource.pleaseWaitTeacher.play();
-          audioSource.pleaseWaitTeacher.on("end", () => {
+          audioSource.pleaseWaitTeacher.once("end", () => {
             audioSource.tryReconnectLoop2.play();
           });
         }
