@@ -1,5 +1,4 @@
-import { defineComponent } from "@vue/runtime-core";
-import { ref } from "vue";
+import { ref, defineComponent, onUnmounted } from "vue";
 import { technologyType } from "./interfaces";
 
 const AMP_LOAD_TIMEOUT = 300;
@@ -65,6 +64,11 @@ export default defineComponent({
         videoPlayer.autoplay();
       })
       .catch(e => console.error("Could not found Azure Media Player plugin", e));
+
+    onUnmounted(() => {
+      videoPlayer.dispose();
+    });
+
     return {
       videoRef,
     };

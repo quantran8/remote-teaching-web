@@ -110,6 +110,11 @@
           position: fixed;
           bottom: 0;
           z-index: 23;
+          @media (min-width: $xl) {
+            bottom: 10%;
+			width: 20%;
+			height: 20%;
+          }
         }
       }
     }
