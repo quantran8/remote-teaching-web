@@ -436,7 +436,7 @@ export default defineComponent({
 
     const paletteTools: Array<toolType> = [
       {
-        name: "cursor",
+        name: "move",
         action: cursorHand,
       },
       {
