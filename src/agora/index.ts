@@ -14,7 +14,6 @@ import AgoraRTC, {
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraError, AgoraConnectionState } from "./interfaces";
-import {store} from "@/store"
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -102,12 +101,9 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
-	this.client.on("connection-state-change", (payload) => {
-		if(payload === AgoraConnectionState.DISCONNECTED) {
-			if(!store.getters["studentRoom/isJoined"]) return
-			store.dispatch('studentRoom/setOffline')
-		}
-	})
+    this.client.on("connection-state-change", () => {
+      console.log("connection state changed!");
+    });
   }
 
   subscribedVideos: Array<{

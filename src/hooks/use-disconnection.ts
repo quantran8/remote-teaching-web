@@ -71,8 +71,8 @@ export const useDisconnection = () => {
 
   //handle student disconnection
 
-  watch(studentDisconnected, async isDisconnected => {
-    if (isDisconnected) {
+  watch(studentDisconnected, async (isDisconnected, prevIssDisconnected) => {
+    if (isDisconnected !== prevIssDisconnected && isDisconnected) {
       await dispatch("studentRoom/leaveRoom");
       timeoutId = setTimeout(async () => {
         audioSource.reconnectFailedSound.play();
@@ -85,22 +85,24 @@ export const useDisconnection = () => {
       }, POPUP_TIMING);
       return;
     }
-    clearTimeout(timeoutId);
-    audioSource.reconnectSuccessSound.play();
-    const { studentId, classId } = route.params;
-    if (!studentId || !classId) return;
-    const fp = await fpPromise;
-    const result = await fp.get();
-    const visitorId = result.visitorId;
-    await dispatch("studentRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.value.profile.sub,
-      userName: loginInfo.value.profile.name,
-      studentId: studentId,
-      role: RoleName.parent,
-      browserFingerPrinting: visitorId,
-    });
-    await dispatch("studentRoom/joinRoom");
+    if (isDisconnected !== prevIssDisconnected && !isDisconnected) {
+      clearTimeout(timeoutId);
+      audioSource.reconnectSuccessSound.play();
+      const { studentId, classId } = route.params;
+      if (!studentId || !classId) return;
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      await dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.value.profile.sub,
+        userName: loginInfo.value.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+        browserFingerPrinting: visitorId,
+      });
+      await dispatch("studentRoom/joinRoom");
+    }
   });
 
   window.addEventListener("online", () => {
