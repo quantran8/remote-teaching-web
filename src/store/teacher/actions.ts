@@ -23,8 +23,10 @@ const actions: ActionTree<TeacherState, any> = {
     const response = await TeacherService.getAllClassesSchedule(payload.schoolId);
     commit("setClassesSchedules", response);
     try {
-      const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
-      commit("setClassRoom", responseActive.data);
+      if (payload.browserFingerPrinting != null) {
+        const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
+        commit("setClassRoom", responseActive.data);
+      }
     } catch (err) {
       // process with err
     }
