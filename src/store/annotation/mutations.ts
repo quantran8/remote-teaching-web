@@ -6,15 +6,21 @@ export interface AnnotationMutationInterface<S> {
   setPointer(s: S, pointer: Pointer): void;
   setMode(s: S, p: { mode: number }): void;
   addShape(s: S, p: string): void;
+  setOneTeacherDrawsStrokes(s: S, p: string): void;
   setClearBrush(s: S, p: {}): void;
   setDeleteBrush(s: S, p: {}): void;
   setStickers(s: S, p: { stickers: Array<Sticker> }): void;
   setClearStickers(s: S, p: {}): void;
   setStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
+  setOneStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
+  setOneTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
   setStudentDrawsLine(s: S, p: string): void;
+  setOneStudentDrawsLine(s: S, p: string): void;
   setClearOneTeacherDrawsStrokes(s: S, p: {}): void;
   setClearOneStudentDrawsLine(s: S, p: {}): void;
+  setClearOneStudentAddShape(s: S, p: {}): void;
+  setClearOneTeacherAddShape(s: S, p: {}): void;
   setInfo(s: S, p: AnnotationModel): void;
 }
 
@@ -76,11 +82,17 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setOneStudentAddShape(s: AnnotationState, p: { studentShapes: Array<UserShape> }) {
     s.oneToOne.studentShapes = p.studentShapes;
   },
+  setClearOneStudentAddShape(s: AnnotationState, p: {}) {
+    s.oneToOne.studentShapes = [];
+  },
   setTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
     s.drawing.teacherShapes = p.teacherShapes;
   },
   setOneTeacherAddShape(s: AnnotationState, p: { teacherShapes: Array<UserShape> }) {
     s.oneToOne.teacherShapes = p.teacherShapes;
+  },
+  setClearOneTeacherAddShape(s: AnnotationState, p: {}) {
+    s.oneToOne.teacherShapes = [];
   },
   setStudentDrawsLine(s: AnnotationState, p: string) {
     if (p) {

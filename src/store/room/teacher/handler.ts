@@ -207,6 +207,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("annotation/setStudentDrawsLine", null, { root: true });
       await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
       await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+      // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
+      // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
     },
     onTeacherDeleteBrush(payload: any) {
       //   console.log(payload);
@@ -233,8 +235,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
         await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
         await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+        // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
+        // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
       }
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetWhiteboard: (payload: RoomModel) => {
       //   console.log(payload);
@@ -249,10 +253,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: any) => {
-      await commit("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
+      await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
     },
     onTeacherAddShape: async (payload: Array<UserShape>) => {
-      await commit("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
+      await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
     },
     onStudentDrawsLine: async (payload: string) => {
       await dispatch("annotation/setStudentDrawsLine", payload, {

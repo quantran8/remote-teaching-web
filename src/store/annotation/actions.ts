@@ -58,9 +58,9 @@ const actions: ActionTree<AnnotationState, any> = {
     }
   },
   setTeacherAddShape({ commit, rootGetters }, p: { teacherShapes: Array<UserShape> }) {
-    if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+    if (rootGetters["studentRoom/getStudentModeOneId"]) {
       commit("setOneTeacherAddShape", p);
-    } else if (rootGetters["studentRoom/getStudentModeOneId"]) {
+    } else if (rootGetters["teacherRoom/getStudentModeOneId"]) {
       commit("setOneTeacherAddShape", p);
     } else {
       commit("setTeacherAddShape", p);
