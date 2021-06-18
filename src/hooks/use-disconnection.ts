@@ -24,21 +24,10 @@ export const useDisconnection = () => {
   let timeoutId: any;
   const router = useRouter();
 
-  //handle teacher disconnection in student's side
-
-  watch(myTeacherDisconnected, async isDisconnected => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    if (isDisconnected) {
-      audioSource.reconnectFailedSound.play();
-    }
-  });
-
   //handle teacher disconnection in teacher's side
   let modalRef: any;
-  watch(teacherDisconnected, async isDisconnected => {
-    if (isDisconnected) {
+  watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
+    if (prevIsDisconnected !== isDisconnected && isDisconnected) {
       await dispatch("teacherRoom/leaveRoom");
       timeoutId = setTimeout(() => {
         audioSource.teacherTryReconnectSound.stop();
@@ -54,30 +43,30 @@ export const useDisconnection = () => {
       });
       return;
     }
-    modalRef.destroy();
-    const { classId } = route.params;
-    if (!classId) {
-      window.location.reload();
-      // const schools: ResourceModel[] =  getters["teacher/schools"]
-      // dispatch("teacher/loadClasses", { schoolId: schools[0].id });
+    if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
+      modalRef.destroy();
+      const { classId } = route.params;
+      if (!classId) {
+        window.location.reload();
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      audioSource.teacherTryReconnectSound.stop();
+      audioSource.reconnectSuccessSound.play();
+      const loginInfo: LoginInfo = getters["auth/loginInfo"];
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      await dispatch("teacherRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.profile.sub,
+        userName: loginInfo.profile.name,
+        role: RoleName.teacher,
+        browserFingerPrinting: visitorId,
+      });
+      await dispatch("teacherRoom/joinRoom");
     }
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    audioSource.teacherTryReconnectSound.stop();
-    audioSource.reconnectSuccessSound.play();
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    const fp = await fpPromise;
-    const result = await fp.get();
-    const visitorId = result.visitorId;
-    await dispatch("teacherRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.profile.sub,
-      userName: loginInfo.profile.name,
-      role: RoleName.teacher,
-      browserFingerPrinting: visitorId,
-    });
-    await dispatch("teacherRoom/joinRoom");
   });
 
   //handle student disconnection

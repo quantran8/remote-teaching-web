@@ -4,7 +4,7 @@
     <div class="sc-body" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">
         <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
-        <div v-show="showBearConfused" class="sc-content__top--confused">
+        <div v-show="teacherIsDisconnected" class="sc-content__top--confused">
           <img :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
           <div :class="['sc-content__top--confused__clock', isPlayVideo && 'sticky']">
             <div class="sc-content__top--confused__clock--img">
@@ -16,10 +16,12 @@
             </div>
           </div>
         </div>
-        <AnnotationView
-          v-show="!isBlackOutContent && isLessonPlan"
-          :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
-        />
+        <div v-if="!teacherIsDisconnected">
+          <AnnotationView
+            v-show="!isBlackOutContent && isLessonPlan"
+            :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
+          />
+        </div>
         <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
             v-if="isGameView"
@@ -46,7 +48,7 @@
         <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
       <div class="sc-teacher" ref="videoContainerRef">
-        <div v-show="showBearConfused" class="sc-teacher__content">
+        <div v-show="studentIsDisconnected" class="sc-teacher__content">
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
         </div>
         <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>

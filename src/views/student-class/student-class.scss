@@ -73,6 +73,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
   @media (min-width: $md) {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -86,44 +87,29 @@
   }
   &__top {
     &--confused {
-      position: relative;
-      width: 100%;
-      height: 100%;
+      position: absolute;
       img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        position: relative;
       }
       &__clock {
-        top: 70%;
-        right: -5%;
-        position: absolute;
         width: 30%;
         height: 30%;
-        @media (min-width: 1800px) {
-          top: 65%;
-        }
-        @media (min-width: $xxl) {
-          top: 60%;
-        }
-        @media (min-width: $xl) {
-          top: 55%;
-        }
-        // @media (min-width: $xl) {
-        //   top: 50%;
-        // }
+        position: absolute;
+        bottom: 5%;
+        right: -5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         &--text {
-          text-align: center;
           font-weight: 600;
-          color: #39a6a3;
-          font-size: 1.5em;
+          color: #39a9cb;
         }
         &.sticky {
           position: fixed;
-          top: 45%;
-          right: -5%;
-          z-index: 20;
+          bottom: 0;
+          z-index: 23;
         }
       }
     }
