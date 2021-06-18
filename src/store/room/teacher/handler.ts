@@ -53,9 +53,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);
-      if (student && student.name) {
-        const message = `${student.name} left the class.`;
-        dispatch("setToast", { message: message }, { root: true });
+      if (student && student.englishName) {
+        const message = `${student.englishName} left the class.`;
+        await dispatch("setToast", { message: message }, { root: true });
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
@@ -63,9 +63,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
-      if (student && student.name) {
-        const message = `${student.name} has lost connection.`;
-        dispatch("setToast", { message: message }, { root: true });
+      if (student && student.englishName) {
+        const message = `${student.englishName} has lost connection.`;
+        await dispatch("setToast", { message: message }, { root: true });
       }
     },
     onStudentSendUnity: async (payload: any) => {
