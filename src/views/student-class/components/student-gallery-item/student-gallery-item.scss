@@ -2,6 +2,13 @@
 @import "../../../../style/abstracts/animation";
 @import "../../../../style/abstracts/variables";
 
+.item-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .sc-gallery-item {
   $self: &;
 
@@ -13,6 +20,7 @@
   $star-size-xl: 30px;
 
   width: 60px;
+  border-radius: 50%;
 
   &__video::before {
     content: "";
@@ -32,9 +40,7 @@
   }
 
   &--help {
-    #{$self}__video {
-      @include cycle(#dd0d0d, flickerAnimation);
-    }
+    @include cycle(#dd0d0d, flickerAnimation);
   }
 
   &__img {
@@ -166,13 +172,9 @@
     }
   }
   &--speaking {
-    #{$self}__video {
-      @include cycle(#00a1ed, flickerAnimationVoice);
-    }
+    @include cycle(#00a1ed, flickerAnimationVoice);
   }
   &--palette {
-    #{$self}__video {
-      @include cycle(#030303, flickerAnimationPalette);
-    }
+    @include cycle(#030303, flickerAnimationPalette);
   }
 }
