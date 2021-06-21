@@ -79,6 +79,19 @@ const mutations: LessonMutation<LessonState> = {
       if (s.previousExposureItemMedia) break;
     }
   },
+  clearLessonData(s: LessonState) {
+    s.exposures = [];
+    s.currentExposure = undefined;
+    s.nextExposure = undefined;
+    s.currentExposureItemMedia = undefined;
+    s.nextExposureItemMedia = undefined;
+    s.prevExposureItemMedia = undefined;
+    s.isBlackout = false;
+    s.totalTime = "";
+    s.playedTime = "";
+    s.previousExposure = undefined;
+    s.previousExposureItemMedia = undefined;
+  },
 };
 
 export default mutations;
