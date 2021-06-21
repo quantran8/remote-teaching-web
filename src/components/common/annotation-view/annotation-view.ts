@@ -429,7 +429,7 @@ export default defineComponent({
     const addDraw = () => {
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush.color = activeColor.value;
-      canvas.freeDrawingBrush.width = 2;
+      canvas.freeDrawingBrush.width = 4;
     };
 
     onMounted(() => {
