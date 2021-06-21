@@ -165,7 +165,11 @@ const mutations: TeacherRoomMutation<State> = {
   },
   studentLeftClass(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
-    if (student) student.status = InClassStatus.LEFT;
+    if (student) {
+      student.raisingHand = false;
+      student.isPalette = false;
+      student.status = InClassStatus.LEFT;
+    }
   },
   studentDisconnectClass(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
@@ -227,17 +231,17 @@ const mutations: TeacherRoomMutation<State> = {
     s.students.map(student => (student.isPalette = false));
   },
   setOnline(state: TeacherRoomState) {
-    state.isDisconnected = false
+    state.isDisconnected = false;
   },
   setOffline(state: TeacherRoomState) {
-    state.isDisconnected = true
+    state.isDisconnected = true;
   },
   setTeacherLowBandWidth(state: TeacherRoomState, p) {
-    state.isLowBandWidth = p
+    state.isLowBandWidth = p;
   },
   setListStudentLowBandWidth(state: TeacherRoomState, p) {
-	  state.listStudentLowBandWidth = p
-  }
+    state.listStudentLowBandWidth = p;
+  },
 };
 
 export default mutations;
