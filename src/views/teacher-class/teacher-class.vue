@@ -4,7 +4,7 @@
       class="tc__header"
       v-if="teacher"
       :teacher-name="teacher.name"
-      :className="roomInfo.classInfo.name"
+      :className="roomInfo.classInfo.className"
       @end="onClickEnd"
     ></teacher-page-header>
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
@@ -26,7 +26,6 @@
           @unmute-all="onClickUnmuteAll"
           @end="onClickEnd"
         />
-		
       </div>
       <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
       <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->

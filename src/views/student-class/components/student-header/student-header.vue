@@ -9,7 +9,7 @@
     </div>
     <div class="sc-header__right">
       <!-- <div class="try-button" v-if="!studentIsDisconnected" @click="disconnectSignalR">Manual disconnect SIGNALR/AGORA</div> -->
-      <h1 class="sc-header__title">{{ classInfo?.name }}</h1>
+      <h1 class="sc-header__title">{{ classInfo?.className }}</h1>
       <a class="sc-header__exit" @click="onClickEnd">
         <MatIcon type="close" class="red-close" />
         <span>Exit</span>
