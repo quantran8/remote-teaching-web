@@ -1,16 +1,14 @@
-import { computed, defineComponent, ref, onMounted, watch } from "vue";
-import { Calendar, Select, Spin, Modal, Button, Row, Col, TimePicker } from "ant-design-vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { Button, Calendar, Col, Modal, Row, Select, Spin, TimePicker, Tooltip } from "ant-design-vue";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
 
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { useStore } from "vuex";
-import moment from "moment";
 import { ClassModelSchedules } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
 import { fmtMsg, LoginInfo } from "@/commonui";
 import IconWarning from "@/assets/calendar-warning.svg";
-import { Tooltip } from "ant-design-vue";
 import { CommonLocale } from "@/locales/localeid";
 
 export default defineComponent({
@@ -35,6 +33,7 @@ export default defineComponent({
     const visible = ref<boolean>(false);
     const recurringVisible = ref<boolean>(false);
     const listClassSelect = ref<any[]>([]);
+    const listClassCreateNew = ref<any[]>([]);
     const listGroupSelect = ref<any[]>([]);
     const listGroupModal = ref<any[]>([]);
     const selectedClassId = ref<string>("all");
@@ -102,7 +101,7 @@ export default defineComponent({
             return { id: group.groupId, name: group.groupName };
           });
           if (listGroup.length > 0) {
-            return { id: cl.classId, name: cl.className, groups: listGroup };
+            return { id: cl.classId, name: cl.className, startDate: cl.startDate, endDate: cl.endDate, groups: listGroup };
           }
         })
         .filter(function(el) {
@@ -116,7 +115,7 @@ export default defineComponent({
         .reduce((hash: any, elem: any) => {
           hash[elem] = getRandomColor(colorIndex);
           colorIndex++;
-          if(colorIndex == totalColor) {
+          if (colorIndex == totalColor) {
             colorIndex = 0;
           }
           return hash;
@@ -132,7 +131,7 @@ export default defineComponent({
     };
 
     const getGroupsModalByClass = async (classId: string) => {
-      const currentClass = listClassSelect.value.filter((cl: any) => {
+      const currentClass = listClassCreateNew.value.filter((cl: any) => {
         return cl.id == classId;
       })[0];
       listGroupModal.value = currentClass.groups;
@@ -188,13 +187,11 @@ export default defineComponent({
 
     const onChangeStartDateModal = (_time: any, timeString: any) => {
       if (timeString.length > 0) {
+        cacheHoursStart.value = parseInt(timeString.split(":")[0]);
+        cacheMinutesStart.value = parseInt(timeString.split(":")[1]);
         selectedStartDateModal.value = timeString;
       } else {
         selectedStartDateModal.value = "00:00";
-      }
-      if (timeString != null) {
-        cacheHoursStart.value = parseInt(timeString.split(":")[0]);
-        cacheMinutesStart.value = parseInt(timeString.split(":")[1]);
       }
     };
 
@@ -274,14 +271,44 @@ export default defineComponent({
     };
 
     const canCreate = (vl: Moment) => {
-      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD");
+      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") && canCreateInCurrentDate(vl);
     };
 
     const canShowCreate = (vl: Moment) => {
-      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") && vl.month() == month.value.month();
+      return vl.format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") && vl.month() == month.value.month() && canCreateInCurrentDate(vl);
     };
 
-    const isUpdate = (item: any) => {
+    const canCreateInCurrentDate = (vl: Moment) => {
+      let result = false;
+      const currentValue = vl.year() * 400 + (vl.month() + 1) * 31 + vl.date();
+      classesSchedules.value.map((cl: ClassModelSchedules) => {
+        if (selectedClassId.value == "all" || selectedClassId.value == cl.classId) {
+          const start = cl.startDate;
+          const end = cl.endDate;
+          let startValue = 0;
+          let endValue = 0;
+          if (start) {
+            const startDateTotalValue = start.split("T")[0];
+            const startDateSingleValue = startDateTotalValue.split("-");
+            startValue = parseInt(startDateSingleValue[0]) * 400 + parseInt(startDateSingleValue[1]) * 31 + parseInt(startDateSingleValue[2]);
+          }
+          if (end) {
+            const endDateTotalValue = end.split("T")[0];
+            const endDateSingleValue = endDateTotalValue.split("-");
+            endValue = parseInt(endDateSingleValue[0]) * 400 + parseInt(endDateSingleValue[1]) * 31 + parseInt(endDateSingleValue[2]);
+          }
+          if (endValue == 0) {
+            result = true;
+          }
+          if (currentValue >= startValue && currentValue <= endValue) {
+            result = true;
+          }
+        }
+      } );
+      return result;
+    };
+
+    const isUpdate = (vl: Moment, item: any) => {
       return !item.customizedScheduleId.includes(recurringCustomIdFistFormat);
     };
 
@@ -432,6 +459,23 @@ export default defineComponent({
       }
     };
 
+    const updateListClassCreateNew = (vl: Moment) => {
+      listClassCreateNew.value = listClassSelect.value.filter((cl: any) => {
+        if (cl.endDate === null) {
+          return true;
+        } else if (cl.startDate.length > 0 && cl.endDate.length > 0) {
+          const currentDate = vl.year() * 400 + (vl.month() + 1) * 31 + vl.date();
+          const endDateTotalValue = cl.endDate.split("T")[0];
+          const endDateSingleValue = endDateTotalValue.split("-");
+          const endValue = parseInt(endDateSingleValue[0]) * 400 + parseInt(endDateSingleValue[1]) * 31 + parseInt(endDateSingleValue[2]);
+          if (currentDate <= endValue) {
+            return true;
+          }
+        }
+        return false;
+      });
+    };
+
     const scheduleAction = async (type: string, timeLong: any, item?: any) => {
       const date = moment(timeLong).startOf("day");
       selectedDate.value = date;
@@ -440,9 +484,10 @@ export default defineComponent({
         return;
       }
       if (type == "Create") {
+        updateListClassCreateNew(timeLong);
         await getDataModal(date);
-        selectedClassIdModal.value = listClassSelect.value[0]?.id;
-        await getGroupsModalByClass(listClassSelect.value[0]?.id);
+        selectedClassIdModal.value = listClassCreateNew.value[0]?.id;
+        await getGroupsModalByClass(listClassCreateNew.value[0]?.id);
         selectedGroupIdModal.value = listGroupModal.value[0]?.id;
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";
@@ -450,10 +495,11 @@ export default defineComponent({
         isCreate.value = true;
         visible.value = true;
       } else if (type == "Update") {
+        updateListClassCreateNew(timeLong);
         if (item.history) return;
         await getDataModal(date, item.customizedScheduleId);
         isActionUpdate.value = true;
-        listGroupModal.value = listClassSelect.value.filter((cl: any) => {
+        listGroupModal.value = listClassCreateNew.value.filter((cl: any) => {
           return cl.id == item.classId;
         })[0].groups;
         selectedCustomScheduleId.value = item.customizedScheduleId;
@@ -538,7 +584,7 @@ export default defineComponent({
             groupName: listGroupModal.value.filter(group => {
               return group.id == selectedGroupIdModal.value;
             })[0].name,
-            className: listClassSelect.value.filter(group => {
+            className: listClassCreateNew.value.filter(group => {
               return group.id == selectedClassIdModal.value;
             })[0].name,
             data: {
@@ -609,6 +655,9 @@ export default defineComponent({
           break;
         case "Create":
           await onCreateSchedule(createData(type));
+          if(selectedClassId.value != "all") {
+            await handleChangeClass(selectedClassId.value);
+          }
           if(selectedGroupIdCache.value != "all") {
             await handleChangeGroup(selectedGroupIdCache.value);
           }
@@ -616,6 +665,9 @@ export default defineComponent({
         case "Update":
           await onUpdateSchedule(createData(type));
           isActionUpdate.value = false;
+          if(selectedClassId.value != "all") {
+            await handleChangeClass(selectedClassId.value);
+          }
           if(selectedGroupIdCache.value != filterAll) {
             await handleChangeGroup(selectedGroupIdCache.value);
           }
@@ -642,6 +694,7 @@ export default defineComponent({
 
     return {
       listClassSelect,
+      listClassCreateNew,
       listGroupSelect,
       listGroupModal,
       visible,
@@ -684,6 +737,7 @@ export default defineComponent({
       disableSkipButton,
       getDisableHoursStart,
       getDisableMinutesStart,
+      canCreateInCurrentDate,
     };
   },
 });
