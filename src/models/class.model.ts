@@ -29,6 +29,8 @@ export interface ClassModelSchedules {
   className: string;
   campusName: string;
   isTeacher: boolean;
+  startDate: string;
+  endDate: string;
   groups: GroupModelSchedules[];
 }
 
