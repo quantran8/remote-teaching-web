@@ -308,7 +308,7 @@ export default defineComponent({
       return result;
     };
 
-    const isUpdate = (vl: Moment, item: any) => {
+    const isUpdate = (item: any) => {
       return !item.customizedScheduleId.includes(recurringCustomIdFistFormat);
     };
 
