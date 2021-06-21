@@ -71,7 +71,20 @@ const actions: ActionTree<TeacherRoomState, any> = {
       audios = [...globalAudios];
     }
     if (idOne) {
-      return manager?.oneToOneSubscribeAudio(cameras, audios, idOne, teacher);
+      const otherStudentsCamId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
+      const otherStudentsAudioId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+      for (const id of otherStudentsCamId) {
+        const index = cameras.findIndex(camId => camId === id);
+        if (index > -1) {
+          cameras.splice(index, 1);
+        }
+      }
+      for (const id of otherStudentsAudioId) {
+        const index = audios.findIndex(audioId => audioId === id);
+        if (index > -1) {
+          audios.splice(index, 1);
+        }
+      }
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
