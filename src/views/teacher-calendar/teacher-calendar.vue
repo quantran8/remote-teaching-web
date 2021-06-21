@@ -94,7 +94,7 @@
       <div class="select-container" v-if="isCreate">
         <span class="modal-title-select">Class</span>
         <Select :value="selectedClassIdModal" class="modal-size-group" @change="handleChangeClassModal">
-          <Option v-for="val in listClassSelect" :key="val.id">
+          <Option v-for="val in listClassCreateNew" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>

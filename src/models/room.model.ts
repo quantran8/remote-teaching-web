@@ -62,8 +62,9 @@ export interface AnnotationModel {
 }
 
 export interface ClassRoomModel {
-  id: string;
-  name: string;
+  classId: string;
+  className: string;
+  groupId: string;
 }
 
 export interface LessonPlanModel {

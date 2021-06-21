@@ -54,8 +54,8 @@
   &__title {
     margin: 0;
     font-size: 22px;
-    font-weight: 600;
     line-height: 1;
+    color: #fff;
     @include ellipse(1, 22px);
   }
   &__exit {

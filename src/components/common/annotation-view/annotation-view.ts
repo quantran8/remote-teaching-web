@@ -22,7 +22,9 @@ export default defineComponent({
     const scaleRatio = ref(1);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
+    const isGalleryView = computed(() => store.getters["studentRoom/isGalleryView"]);
     const activeColor = ref("black");
+    const toolActive = ref("move");
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
@@ -123,7 +125,13 @@ export default defineComponent({
             duration: 1000,
             easing: fabric.util.ease.easeInOutExpo,
             onChange: () => {
-              canvas.add(item);
+              if (oneOneStatus.value) {
+                if (studentOneAndOneId.value === student.value.id) {
+                  canvas.add(item);
+                }
+              } else {
+                canvas.add(item);
+              }
             },
             onComplete: async () => {
               canvas.remove(item);
@@ -363,9 +371,11 @@ export default defineComponent({
     };
     const cursorHand = () => {
       canvas.isDrawingMode = false;
+      toolActive.value = "move";
       objectCanvasProcess();
     };
     const addStar = async () => {
+      toolActive.value = "star";
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
         stroke: activeColor.value,
@@ -383,6 +393,7 @@ export default defineComponent({
     };
 
     const addCircle = async () => {
+      toolActive.value = "circle";
       const circle = new fabric.Circle({
         left: randomPosition(),
         top: randomPosition(),
@@ -399,6 +410,7 @@ export default defineComponent({
     };
 
     const addSquare = async () => {
+      toolActive.value = "square";
       const square = new fabric.Rect({
         left: randomPosition(),
         top: randomPosition(),
@@ -421,6 +433,7 @@ export default defineComponent({
     };
 
     const addDraw = () => {
+      toolActive.value = "pen";
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush.color = activeColor.value;
       canvas.freeDrawingBrush.width = 2;
@@ -497,6 +510,8 @@ export default defineComponent({
       animationDone,
       isPaletteVisible,
       hasPalette,
+      isGalleryView,
+      toolActive,
     };
   },
 });

@@ -4,11 +4,12 @@
   </div> -->
   <div
     class="annotation-view-container"
+    :class="isGalleryView ? 'gallery-view' : ''"
     ref="containerRef"
     :style="{
-      borderBottomLeftRadius: hasPalette ? '10px' : '0px',
-      borderBottomRightRadius: hasPalette ? '10px' : '0px',
-      borderBottomWidth: hasPalette ? '1px' : '0px',
+      borderBottomLeftRadius: hasPalette || isGalleryView ? '10px' : '0px',
+      borderBottomRightRadius: hasPalette || isGalleryView ? '10px' : '0px',
+      borderBottomWidth: hasPalette || isGalleryView ? '1px' : '0px',
     }"
   >
     <div class="annotation-view-container__image">
@@ -17,8 +18,8 @@
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
-    <div class="palette-tool" v-if="isPaletteVisible">
-      <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" @click="action">
+    <div class="palette-tool" v-if="isPaletteVisible && !isGalleryView">
+      <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" :class="name === toolActive ? 'active' : ''" @click="action">
         <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
       </div>
       <div class="palette-tool__colors">

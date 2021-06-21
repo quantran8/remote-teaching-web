@@ -77,7 +77,41 @@ const actions: ActionTree<StudentRoomState, any> = {
       }
     }
     if (idOne) {
-      return manager?.oneToOneSubscribeAudio(cameras, audios, idOne, teacher, student);
+      //handle one to one student
+      if (idOne === student?.id) {
+        const cameraOtherStudentId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
+        const audioOtherStudentId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+        for (const id of cameraOtherStudentId) {
+          const cameraIndex = cameras.findIndex(camId => camId === id);
+          cameras.splice(cameraIndex, 1);
+        }
+        for (const id of audioOtherStudentId) {
+          const audioIndex = audios.findIndex(audioId => audioId === id);
+          audios.splice(audioIndex, 1);
+        }
+      }
+
+      //handle other students
+      if (idOne !== student?.id) {
+        //remove student one to one
+        const studentCameraIndex = cameras.findIndex(camId => camId === idOne);
+        if (studentCameraIndex > -1) {
+          cameras.splice(studentCameraIndex, 1);
+        }
+        const studentAudioIndex = audios.findIndex(audioId => audioId === idOne);
+        if (studentAudioIndex > -1) {
+          audios.splice(studentAudioIndex, 1);
+        }
+        //remove teacher one to one
+        const teacherCameraIndex = cameras.findIndex(camId => camId === teacher?.id);
+        if (teacherCameraIndex > -1) {
+          cameras.splice(teacherCameraIndex, 1);
+        }
+        const teacherAudioIndex = audios.findIndex(audioId => audioId === teacher?.id);
+        if (teacherAudioIndex > -1) {
+          audios.splice(teacherAudioIndex, 1);
+        }
+      }
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
