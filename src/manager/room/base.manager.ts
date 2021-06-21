@@ -53,16 +53,6 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
   }
 
-  oneToOneSubscribeAudio(
-    cameras: Array<string>,
-    audios: Array<string>,
-    idOne: string,
-    teacher?: TeacherState | undefined,
-    student?: StudentState | undefined,
-  ) {
-    return this.agoraClient.oneToOneSubscribeAudio(cameras, audios, idOne, teacher, student);
-  }
-
   async close() {
     return this.agoraClient.reset();
   }

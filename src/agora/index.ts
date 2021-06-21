@@ -253,37 +253,6 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
-  async oneToOneSubscribeAudio(
-    videos: Array<string>,
-    audios: Array<string>,
-    idOne: string,
-    teacher?: TeacherState | undefined,
-    student?: StudentState | undefined,
-  ) {
-    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
-    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
-
-    for (let studentId of unSubscribeVideos) {
-      await this._unSubscribe(studentId, "video");
-    }
-
-    for (let studentId of unSubscribeAudios) {
-      await this._unSubscribe(studentId, "audio");
-    }
-
-    for (let studentId of videos) {
-      await this._subscribeVideo(studentId);
-    }
-
-    if (student) {
-      if (teacher && student.id === idOne) await this._subscribeAudio(teacher.id);
-      if (student.id === idOne) await this._subscribeAudio(student.id);
-    } else {
-      if (teacher) await this._subscribeAudio(teacher.id);
-      await this._subscribeAudio(idOne);
-    }
-  }
-
   async _subscribeAudio(userId: string) {
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
