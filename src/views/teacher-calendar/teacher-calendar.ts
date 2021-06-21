@@ -54,6 +54,8 @@ export default defineComponent({
     const formatDateTime = "YYYY-MM-DDTHH:mm:ss";
     const filterAll = "all";
     const totalColor = 10;
+    const totalDayOfYear = 500;
+    const totalDayOfMonth = 31;
     const isCreate = ref<boolean>(false);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
     const recurringCustomIdFistFormat = "0000-";
@@ -280,31 +282,28 @@ export default defineComponent({
 
     const canCreateInCurrentDate = (vl: Moment) => {
       let result = false;
-      const currentValue = vl.year() * 400 + (vl.month() + 1) * 31 + vl.date();
+      const currentDate = vl.year() * totalDayOfYear + (vl.month() + 1) * totalDayOfMonth + vl.date();
       classesSchedules.value.map((cl: ClassModelSchedules) => {
         if (selectedClassId.value == "all" || selectedClassId.value == cl.classId) {
           const start = cl.startDate;
           const end = cl.endDate;
-          let startValue = 0;
-          let endValue = 0;
+          let startDate = 0;
+          let endDate = 0;
           if (start) {
             const startDateTotalValue = start.split("T")[0];
             const startDateSingleValue = startDateTotalValue.split("-");
-            startValue = parseInt(startDateSingleValue[0]) * 400 + parseInt(startDateSingleValue[1]) * 31 + parseInt(startDateSingleValue[2]);
+            startDate = parseInt(startDateSingleValue[0]) * totalDayOfYear + parseInt(startDateSingleValue[1]) * totalDayOfMonth + parseInt(startDateSingleValue[2]);
           }
           if (end) {
             const endDateTotalValue = end.split("T")[0];
             const endDateSingleValue = endDateTotalValue.split("-");
-            endValue = parseInt(endDateSingleValue[0]) * 400 + parseInt(endDateSingleValue[1]) * 31 + parseInt(endDateSingleValue[2]);
+            endDate = parseInt(endDateSingleValue[0]) * totalDayOfYear + parseInt(endDateSingleValue[1]) * totalDayOfMonth + parseInt(endDateSingleValue[2]);
           }
-          if (endValue == 0) {
-            result = true;
-          }
-          if (currentValue >= startValue && currentValue <= endValue) {
+          if (endDate == 0 || (currentDate >= startDate && currentDate <= endDate)) {
             result = true;
           }
         }
-      } );
+      });
       return result;
     };
 
