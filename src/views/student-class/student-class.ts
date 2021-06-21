@@ -211,6 +211,9 @@ export default defineComponent({
     };
     const isPlayVideo = ref(false);
     watch(formattedTime, async currentFormattedTime => {
+      if (toSecond(currentFormattedTime) <= milestonesSecond.first) {
+        audioSource.tryReconnectLoop2.stop();
+      }
       if (toSecond(currentFormattedTime) === milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
         audioSource.watchStory.play();
@@ -256,6 +259,7 @@ export default defineComponent({
         }
       }
     });
+
     onUnmounted(() => {
       handleMyTeacherReconnect();
     });

@@ -4,7 +4,6 @@ import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionSt
 
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
-import { store } from "@/store";
 export interface GLSocketOptions {
   url: string;
 }
@@ -38,9 +37,6 @@ export class GLSocketClient {
     this._isConnected = false;
   }
   onClosed() {
-    if (store.getters["studentRoom/isJoined"]) {
-      store.dispatch("studentRoom/setOffline");
-    }
     this._isConnected = false;
   }
   get isConnected(): boolean {
