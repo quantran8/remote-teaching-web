@@ -123,7 +123,13 @@ export default defineComponent({
             duration: 1000,
             easing: fabric.util.ease.easeInOutExpo,
             onChange: () => {
-              canvas.add(item);
+              if (oneOneStatus.value) {
+                if (studentOneAndOneId.value === student.value.id) {
+                  canvas.add(item);
+                }
+              } else {
+                canvas.add(item);
+              }
             },
             onComplete: async () => {
               canvas.remove(item);
