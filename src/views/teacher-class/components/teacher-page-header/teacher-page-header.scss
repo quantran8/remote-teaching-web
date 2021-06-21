@@ -1,5 +1,5 @@
 @import "../../../../style/abstracts/variables";
-$header-height: 85px;
+$header-height: 70px;
 $font-size: 2.2em;
 .header {
   height: $header-height;
@@ -57,7 +57,7 @@ $font-size: 2.2em;
 Reaction
  */
 $icon-size: 50px;
-$action-icon-container-size: 70px;
+$action-icon-container-size: 55px;
 
 .box:hover [class*="reaction-"] {
   clip: auto;

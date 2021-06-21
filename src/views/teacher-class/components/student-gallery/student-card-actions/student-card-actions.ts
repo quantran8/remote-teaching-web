@@ -9,13 +9,18 @@ import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
 import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
+import { MatIcon } from "commonui";
 
 export default defineComponent({
-  components: {},
+  components: {
+    MatIcon,
+  },
   props: {
     student: { type: Object as () => StudentState, required: true },
     show: Boolean,
     isLarge: Boolean,
+    allowExpend: Boolean,
+    isExpended: Boolean,
   },
   setup(props) {
     const store = useStore();
@@ -67,12 +72,12 @@ export default defineComponent({
     };
 
     const actionEnter = (element: HTMLElement) => {
-      gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
+      gsap.from(element.children[0], { translateY: -20, opacity: 0, clearProps: "all", ease: "Power2.easeInOut", duration: 0.2 });
     };
 
-	const toolEnter = (element: HTMLElement) => {
-		gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
-	  }
+    const toolEnter = (element: HTMLElement) => {
+      gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
+    };
 
     return {
       isRasingHand,
@@ -85,7 +90,7 @@ export default defineComponent({
       toggleAnnotation,
       addABadge,
       actionEnter,
-	  toolEnter
+      toolEnter,
     };
   },
 });
