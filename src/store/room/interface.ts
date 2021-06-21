@@ -116,6 +116,6 @@ export interface InitClassRoomPayload {
 }
 
 export interface NetworkQualityPayload {
-	uplinkNetworkQuality: number;
-	downlinkNetworkQuality: number;
+  uplinkNetworkQuality: number;
+  downlinkNetworkQuality: number;
 }

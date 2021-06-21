@@ -1,5 +1,4 @@
-import { TeacherModel } from "@/models";
-import { StudentState } from "@/store/room/interface";
+import { ClassRoomModel, TeacherModel } from "@/models";
 import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
 import { computed, defineComponent, ref, watch } from "vue";
@@ -18,7 +17,7 @@ export default defineComponent({
     const router = useRouter();
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const classAction = computed(() => store.getters["studentRoom/classAction"]);
-    const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const classInfo = computed<ClassRoomModel>(() => store.getters["studentRoom/classInfo"]);
     const classActionImageRef = ref<HTMLDivElement | null>(null);
 
     watch(classAction, () => {
