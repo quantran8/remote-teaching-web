@@ -162,10 +162,8 @@ export default defineComponent({
       if (errors.value) {
         if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
           showMessage.value = true;
-          await store.dispatch("setToast", { message: errors.value.message });
         } else if (errors.value.errorCode === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           showMessage.value = true;
-          await store.dispatch("setToast", { message: errors.value.message });
         }
       }
     });
