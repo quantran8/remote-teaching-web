@@ -12,7 +12,7 @@
 .sc-gallery-item {
   $self: &;
 
-  $current-item-size: 80px;
+  $current-item-size: 90px;
   $current-item-size-md: 130px;
   $current-item-size-xxl: 160px;
 
@@ -21,26 +21,13 @@
 
   width: 60px;
   border-radius: 50%;
+  border: 1px solid #030303;
 
   &__video::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #00a1ed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(0);
     border-radius: 50%;
-    z-index: -1;
-    transition: 0.1s;
   }
   &--highlight::before {
     transform: translate(-50%, -50%) scale(1.2);
-  }
-
-  &--help {
-    @include cycle(#dd0d0d, flickerAnimation);
   }
 
   &__img {
@@ -51,14 +38,21 @@
     -webkit-user-drag: none;
   }
   &__video {
-    position: relative;
-    width: 100%;
     height: 60px;
     border-radius: 50%;
-    border: 1px solid #707070;
     // For safari
     &::v-deep video {
       border-radius: 50%;
+      border-radius: 5rgb (190, 172, 172);
+    }
+  }
+
+  &__container {
+    border-radius: 50%;
+    // For safari
+    &::v-deep video {
+      border-radius: 50%;
+      border-radius: 5rgb (190, 172, 172);
     }
   }
 
@@ -111,13 +105,6 @@
     #{$self}__video {
       width: 100%;
       height: $current-item-size;
-      border: 3px solid #f1f1f1;
-    }
-  }
-
-  &--disabled {
-    #{$self}__title {
-      color: #c2bebe;
     }
   }
 
@@ -136,7 +123,7 @@
 
   @media (min-width: $lg) {
     &:not(#{$self}--current) {
-      width: 80px;
+      width: 90px;
       #{$self}__video {
         height: 80px;
       }
@@ -144,13 +131,6 @@
   }
 
   @media (min-width: $xl) {
-    // &--current {
-    //   width: $current-item-size-lg;
-    //   height: $current-item-size-lg;
-    // }
-    // &__video {
-    //   max-height: 500px;
-    // }
     &__star {
       width: $star-size-xl;
       height: $star-size-xl;
@@ -170,6 +150,15 @@
     &__video {
       max-height: 500px;
     }
+  }
+  &--disabled {
+    border: 1px solid #c2bebe;
+  }
+  &--disabled-tittle {
+    color: #c2bebe;
+  }
+  &--help {
+    @include cycle(#dd0d0d, flickerAnimation);
   }
   &--speaking {
     @include cycle(#00a1ed, flickerAnimationVoice);

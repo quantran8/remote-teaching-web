@@ -10,7 +10,7 @@
       ]"
       ref="containerRef"
     >
-      <div class="sc-gallery-item__video" :class="[student.isPalette && 'sc-gallery-item--palette']">
+      <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
         <div
           class="sc-gallery-item__video"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
@@ -28,9 +28,7 @@
         </span>
       </div>
     </div>
-    <div class="sc-gallery-item__title-container">
-      <h3 class="sc-gallery-item__title">{{ student.englishName }}</h3>
-    </div>
+    <h3 class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">{{ student.englishName }}</h3>
   </div>
 </template>
 <script lang="ts" src="./student-gallery-item.ts"></script>
