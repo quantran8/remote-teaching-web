@@ -14,7 +14,7 @@
   </div>
   <div class="whiteboard">
     <div class="whiteboard__wrap">
-      <div class="whiteboard__wrap--content">
+      <div class="whiteboard__wrap--content" :class="isGalleryView && !showHideWhiteboard ? 'gallery-whiteboard-hidden' : 'gallery-whiteboard-show'">
         <div class="whiteboard__button-show" v-if="!showHideWhiteboard" @click="showWhiteboard">
           Show Whiteboard
           <div class="whiteboard__button-show--icon"><img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
@@ -23,14 +23,14 @@
           Hide Whiteboard
           <div class="whiteboard__button-hide--icon"><img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
         </div>
-        <div v-if="!showHideWhiteboard" class="whiteboard__space" />
+        <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
         <div id="canvas-container" @mousemove="cursorPosition">
-          <img :src="imageUrl" id="annotation-img" @load="imgLoad" />
+          <img :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />
           <div class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
         </div>
-        <div v-if="showHideWhiteboard" class="whiteboard__space" />
+        <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>
     </div>
   </div>

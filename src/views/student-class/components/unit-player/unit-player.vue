@@ -8,7 +8,10 @@
       tabIndex="0"
       ref="videoRef"
       data-setup="{}"
-	  autoplay
+      autoplay
+      loop
+      muted
+      playsinline
     />
   </div>
 </template>

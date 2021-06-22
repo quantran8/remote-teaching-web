@@ -1,6 +1,5 @@
 import { defineComponent, Ref, ref, watch } from "vue";
 import { Tools } from "@/commonui";
-import { times } from "lodash";
 
 export default defineComponent({
   emits: ["tool-selected", "update-color", "update-stroke"],
@@ -45,7 +44,7 @@ export default defineComponent({
     const colors: any = {};
     //currently the design just have 8 color belows
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
-    const strokeSize = [2, 6, 10];
+    const strokeSize = [2, 4];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
     };
