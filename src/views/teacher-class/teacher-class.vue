@@ -10,8 +10,8 @@
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
-    <div class="tc__content">
-      <div class="tc__content__teacher">
+    <div class="tc__content" :style="{ paddingTop: !isLessonPlan ? '200px' : '0px' }">
+      <div class="tc__content__teacher" :class="{ 'tc__content__teacher--gallery': isGalleryView }">
         <TeacherCard
           v-if="teacher"
           class="teacher-card"
@@ -49,7 +49,9 @@
       <!--          <GlobalAudioBar />-->
       <!--        </div>-->
     </div>
-    <StudentGallery class="tc__gallery" />
+    <div class="tc__gallery">
+      <StudentGallery />
+    </div>
     <ErrorModal v-if="isClassNotActive" @dismiss="onClickCloseError" @confirm="onClickLeave" />
     <!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->
   </div>

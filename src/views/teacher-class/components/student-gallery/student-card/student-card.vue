@@ -1,43 +1,36 @@
 <template>
   <div
     v-show="!studentOneAndOneId || isStudentOne"
-    :class="[
-      'student',
-      (isMouseEntered || isExpended) && 'student--hover',
-      isExpended && 'student--expended',
-      false && 'student--speaking',
-      false && 'student--hand-raised',
-      isStudentOne && 'student--large',
-    ]"
+    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
     @mouseleave="onMouseChange(false)"
   >
-    <div class="student__content" ref="containerRef">
-      <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
-        <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
-          <div :class="[isSpeaking && 'student__is-speaking']" v-show="student.videoEnabled && !isNotJoinned" :id="student.id"></div>
-          <img
-            class="student__img"
-            :class="[isSpeaking && 'student__is-speaking']"
-            v-show="!student.videoEnabled || isNotJoinned"
-            src="@/assets/student-class/no-avatar.png"
-          />
-        </div>
-      </figure>
-      <div :class="['student__info', isNotJoinned && 'student__info--disabled']">
-        <h4 class="student__name" :class="{ 'student__info--active': isMouseEntered && !isNotJoinned }" @click="onOneAndOne">
-          <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
-          {{ student.englishName }}
-        </h4>
+    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
+      <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+        <div
+          class="student__video"
+          :class="[isSpeaking && 'student__is-speaking']"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :id="student.id"
+        ></div>
+        <img
+          class="student__img"
+          :class="[isSpeaking && 'student__is-speaking']"
+          v-show="!student.videoEnabled || isNotJoinned"
+          src="@/assets/student-class/no-avatar.png"
+        />
       </div>
-      <StudentCardActions
-        :student="student"
-        :show="isMouseEntered && !isNotJoinned"
-        :isLarge="isStudentOne"
-        :allowExpend="allowExpend"
-        :isExpended="isExpended"
-        @expend="expendToggleHandler"
-      />
+    </figure>
+    <div class="student__info">
+      <h4
+        class="student__name"
+        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, 'student__enable--active': isMouseEntered && !isNotJoinned }"
+        @click="onOneAndOne"
+      >
+        <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
+        {{ student.englishName }}
+      </h4>
     </div>
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isStudentOne" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->

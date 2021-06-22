@@ -31,11 +31,6 @@
         <span class="student-action__badge-count">{{ student.badge }}</span>
       </div>
     </a>
-    <a v-if="show && allowExpend" href="javascript:void(0)" @click="$emit('expend')" class="student-action__item">
-      <div class="student-action__btn student-action--icon">
-        <MatIcon class="student-action__icon" :type="isExpended ? 'close_fullscreen' : 'open_in_full'" />
-      </div>
-    </a>
   </transition-group>
 </template>
 
