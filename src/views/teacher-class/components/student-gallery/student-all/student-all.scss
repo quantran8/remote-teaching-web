@@ -6,20 +6,21 @@
 
 .student-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   align-content: start;
+  justify-content: center;
   overflow: auto;
-  padding: 16px 10px 16px 0;
-  row-gap: 12px;
+  gap: 5px;
+  padding: 5px;
   @media (min-width: $lg) {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
   @media (min-width: $xl) {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  @media (min-width: $xxl) {
-    grid-template-columns: 1fr 1fr 1fr;
-    row-gap: 20px;
+    grid-template-columns: 1fr 1fr;
     align-content: center;
   }
+}
+
+.tt {
+	position: absolute;
 }

@@ -3,6 +3,8 @@
 #student-controls {
   display: flex;
   justify-content: space-evenly;
+  border-bottom: 1px solid #f2f2f2;
+  background: #fbfbfb;
 
   .button-group {
     display: flex;
@@ -58,12 +60,5 @@
         right: 6px;
       }
     }
-  }
-
-  @media (min-width: $xl) {
-    padding: 20px 0 0;
-  }
-  @media (min-width: $xxl) {
-    padding: 30px 0 0;
   }
 }

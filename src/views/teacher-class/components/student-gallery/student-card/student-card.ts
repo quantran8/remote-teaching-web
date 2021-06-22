@@ -4,6 +4,7 @@ import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import gsap from "gsap";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -23,6 +24,7 @@ export default defineComponent({
     },
     student: { type: Object as () => StudentState, required: true },
     isLarge: Boolean,
+    allowExpend: Boolean,
   },
   setup(props) {
     const store = useStore();
@@ -37,6 +39,8 @@ export default defineComponent({
       const listStudentLowBandWidth = store.getters["teacherRoom/listStudentLowBandWidth"];
       return listStudentLowBandWidth.findIndex((id: string) => id === props.student.id) > -1;
     });
+    const isExpended = ref<boolean>(false);
+    const containerRef = ref<HTMLDivElement>();
 
     watch(studentOneAndOneId, () => {
       isStudentOne.value = props.student.id == studentOneAndOneId.value;
@@ -76,6 +80,31 @@ export default defineComponent({
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
+    const expendToggleHandler = () => {
+      const containerBoundingClientRect = containerRef.value?.getBoundingClientRect();
+      if (!containerBoundingClientRect) {
+        return;
+      }
+
+      const onComplete = () => {
+        isExpended.value = !isExpended.value;
+      };
+
+      const { width, height, left, top } = containerBoundingClientRect;
+      const scalePer = 40;
+      const newWidth = width + (width * scalePer) / 100;
+      const newHeight = height + (height * scalePer) / 100;
+
+      const x = window.innerWidth - left - newWidth > 20 ? "left" : "right";
+      const y = window.innerHeight - top - newHeight > 20 ? "top" : "bottom";
+
+      if (!isExpended.value) {
+        gsap.to(containerRef.value!, { position: "absolute", zIndex: 9, width: newWidth, [x]: 0, [y]: 0, onComplete });
+      } else {
+        gsap.to(containerRef.value!, { width: "100%", zIndex: 0, [x]: 0, [y]: 0, clearProps: true, onComplete });
+      }
+    };
+
     return {
       isNotJoinned,
       onDragStart,
@@ -90,6 +119,9 @@ export default defineComponent({
       isStudentOne,
       IconLowWifi,
       isLowBandWidth,
+      isExpended,
+      expendToggleHandler,
+      containerRef,
     };
   },
 });
