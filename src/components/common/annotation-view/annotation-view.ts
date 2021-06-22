@@ -23,6 +23,7 @@ export default defineComponent({
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
     const isGalleryView = computed(() => store.getters["studentRoom/isGalleryView"]);
+    const isLessonPlan = computed(() => store.getters["studentRoom/isLessonPlan"]);
     const activeColor = ref("black");
     const toolActive = ref("move");
     const pointerStyle = computed(() => {
@@ -59,6 +60,7 @@ export default defineComponent({
         }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        canvas.isDrawingMode = false;
       }
     });
     const brushstrokesRender = (data: any, oneId: any) => {
@@ -512,6 +514,7 @@ export default defineComponent({
       hasPalette,
       isGalleryView,
       toolActive,
+      isLessonPlan,
     };
   },
 });
