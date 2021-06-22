@@ -24,7 +24,7 @@ export default defineComponent({
     Checkbox,
     Button,
     Row,
-    Empty
+    Empty,
   },
   setup() {
     const store = useStore();
@@ -55,18 +55,34 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
+    const detectBrowser = () => {
+      if ((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf("OPR")) != -1) {
+        return "Opera";
+      } else if (navigator.userAgent.indexOf("Chrome") != -1) {
+        return "Chrome";
+      } else if (navigator.userAgent.indexOf("Safari") != -1) {
+        return "Safari";
+      } else if (navigator.userAgent.indexOf("Firefox") != -1) {
+        return "Firefox";
+      } else if (navigator.userAgent.indexOf("MSIE") != -1) {
+        return "IE"; //crap
+      } else {
+        return "Unknown";
+      }
+    };
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
         const fp = await fpPromise;
         const result = await fp.get();
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: "",
+          browser: detectBrowser(),
           device: "",
           bandwidth: "",
-          resolution: "",
-          browserFingerprint: result.visitorId
+          resolution: resolution,
+          browserFingerprint: result.visitorId,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
@@ -75,7 +91,7 @@ export default defineComponent({
       } catch (err) {
         loadingStartClass.value = false;
         const message = err.body.message;
-        if(message) {
+        if (message) {
           await store.dispatch("setToast", { message: message });
         }
       }
@@ -100,7 +116,7 @@ export default defineComponent({
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId, browserFingerPrinting: visitorId});
+        await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
       } catch (err) {
@@ -171,13 +187,13 @@ export default defineComponent({
       } else {
         return true;
       }
-    }
+    };
 
     const hasClassesShowUpSchedule = () => {
       if (loading.value == false) {
         return classesSchedules.value.length != 0;
       } else return loading.value != true;
-    }
+    };
 
     return {
       schools,

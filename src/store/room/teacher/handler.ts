@@ -5,7 +5,7 @@ import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import {UserShape} from "@/store/annotation/state";
+import { UserShape } from "@/store/annotation/state";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
