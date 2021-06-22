@@ -61,6 +61,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+      commit("clearCircleStatus", { id: payload.id });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
@@ -68,6 +69,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+      commit("clearCircleStatus", { id: payload.id });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (_payload: any) => {
