@@ -143,6 +143,9 @@
       height: 100%;
       top: 50%;
     }
+    @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+      max-width: 400px;
+    }
   }
   &__one-to-one {
     width: 100%;

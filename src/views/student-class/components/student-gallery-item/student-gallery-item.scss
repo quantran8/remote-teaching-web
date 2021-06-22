@@ -177,4 +177,13 @@
   &--palette {
     @include cycle(#030303, flickerAnimationPalette);
   }
+
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    &:not(#{$self}--current) {
+      width: 60px;
+      #{$self}__video {
+        height: 60px;
+      }
+    }
+  }
 }
