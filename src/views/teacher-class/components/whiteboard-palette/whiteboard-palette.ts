@@ -8,7 +8,20 @@ import { ClassView } from "@/store/room/interface";
 const DEFAULT_COLOR = "red";
 
 export default defineComponent({
-  props: ["image"],
+  props: {
+    image: Object,
+    id: String,
+    name: String,
+    isGalleryView: Boolean,
+    audioEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    videoEnabled: {
+      type: Boolean,
+      default: true,
+    },
+  },
   components: {
     ToolsCanvas,
   },

@@ -1,17 +1,19 @@
 <template>
+  <div class="palette">
+    <ToolsCanvas
+      v-if="currentExposureItemMedia"
+      :selector-open="selectorOpen"
+      :tool-selected="toolSelected"
+      :stroke-width="strokeWidth"
+      :stroke-color="strokeColor"
+      :sticker-tool="hasStickerTool"
+      @tool-selected="clickedTool"
+      @update-color="updateColorValue"
+      @update-stroke="updateStrokeWidth"
+    />
+  </div>
   <div class="whiteboard">
     <div class="whiteboard__wrap">
-      <ToolsCanvas
-        v-if="currentExposureItemMedia"
-        :selector-open="selectorOpen"
-        :tool-selected="toolSelected"
-        :stroke-width="strokeWidth"
-        :stroke-color="strokeColor"
-        :sticker-tool="hasStickerTool"
-        @tool-selected="clickedTool"
-        @update-color="updateColorValue"
-        @update-stroke="updateStrokeWidth"
-      />
       <div class="whiteboard__wrap--content">
         <div class="whiteboard__button-show" v-if="!showHideWhiteboard" @click="showWhiteboard">
           Show Whiteboard

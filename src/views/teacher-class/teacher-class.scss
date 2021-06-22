@@ -19,27 +19,28 @@
     }
   }
   &__content {
-    display: flex;
-    flex-direction: column;
-	align-items: center;
+	  padding: 5px;
     &__teacher {
-	  height: 300px;
-	  width: 800px;
-      &--gallery{
-        height: 500px;
+    //   height: 300px;
+	// width: 500px;
+      &--gallery {
+        // height: 500px;
       }
-	  img {
-		  width: 100px;
-		  height: 100px;
-	  }
+      img {
+        width: 100px;
+        height: 100px;
+      }
     }
     &__activity-content {
       flex: auto;
       min-height: 70%;
     }
     &__whiteboard-content {
-		width: 800px;
-		margin: 0 auto;
+      display: grid;
+      grid-template-columns: 520px 1fr;
+      grid-gap: 10px;
+    //   background-color: #2196f3;
+	  width: 717px;
     }
   }
   &__gallery {

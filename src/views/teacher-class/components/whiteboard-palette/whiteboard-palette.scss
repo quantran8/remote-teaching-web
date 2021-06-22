@@ -15,9 +15,9 @@
 
 .whiteboard {
   position: relative;
+  grid-column-start: 1;
+  grid-column-end: 3;
   &__wrap {
-    display: flex;
-    padding-bottom: 45px;
     #canvas-container {
       width: 717px;
       height: 435px;
@@ -81,6 +81,12 @@
   .canvas-designate {
     border-top-right-radius: 10px;
   }
+}
+
+
+.palette {
+	// 
+	padding: 5px 0;
 }
 
 //animations

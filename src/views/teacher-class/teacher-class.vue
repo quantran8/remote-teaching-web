@@ -10,27 +10,27 @@
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
       <LessonPlan @open-gallery-mode="toggleView" />
     </div>
-    <div class="tc__content" :style="{ paddingTop: !isLessonPlan ? '200px' : '0px' }">
-      <div class="tc__content__teacher" :class="{ 'tc__content__teacher--gallery': isGalleryView }">
-        <TeacherCard
-          v-if="teacher"
-          class="teacher-card"
-          :id="teacher.id"
-          :name="teacher.name"
-          :audioEnabled="teacher.audioEnabled"
-          :videoEnabled="teacher.videoEnabled"
-          :isGalleryView="isGalleryView"
-          @hide-all="onClickHideAll"
-          @mute-all="onClickMuteAll"
-          @show-all="onClickShowAll"
-          @unmute-all="onClickUnmuteAll"
-          @end="onClickEnd"
-        />
-      </div>
+    <div class="tc__content">
       <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
       <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
       <!--      </div>-->
       <div v-show="isLessonPlan" class="tc__content__whiteboard-content">
+        <div class="tc__content__teacher" :class="{ 'tc__content__teacher--gallery': isGalleryView }">
+          <TeacherCard
+            v-if="teacher"
+            class="teacher-card"
+            :id="teacher.id"
+            :name="teacher.name"
+            :audioEnabled="teacher.audioEnabled"
+            :videoEnabled="teacher.videoEnabled"
+            :isGalleryView="isGalleryView"
+            @hide-all="onClickHideAll"
+            @mute-all="onClickMuteAll"
+            @show-all="onClickShowAll"
+            @unmute-all="onClickUnmuteAll"
+            @end="onClickEnd"
+          />
+        </div>
         <WhiteboardPalette v-show="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
       </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
