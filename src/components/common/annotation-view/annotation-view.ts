@@ -52,9 +52,6 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
-    const isWhiteboardGallery = computed(
-      () => isGalleryView.value && isShowWhiteBoard.value
-    );
     watch(isShowWhiteBoard, () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
