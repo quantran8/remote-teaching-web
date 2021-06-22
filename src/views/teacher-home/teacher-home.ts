@@ -12,6 +12,8 @@ import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
+import DeviceDetector from "device-detector-js";
+
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -29,6 +31,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const deviceDetector = new DeviceDetector();
+    const device = deviceDetector.parse(navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
@@ -55,21 +59,6 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
-    const detectBrowser = () => {
-      if ((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf("OPR")) != -1) {
-        return "Opera";
-      } else if (navigator.userAgent.indexOf("Chrome") != -1) {
-        return "Chrome";
-      } else if (navigator.userAgent.indexOf("Safari") != -1) {
-        return "Safari";
-      } else if (navigator.userAgent.indexOf("Firefox") != -1) {
-        return "Firefox";
-      } else if (navigator.userAgent.indexOf("MSIE") != -1) {
-        return "IE"; //crap
-      } else {
-        return "Unknown";
-      }
-    };
     const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
@@ -78,8 +67,8 @@ export default defineComponent({
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: detectBrowser(),
-          device: "",
+          browser: device.client ? device.client.name : "",
+          device: device.device ? device.device.type : "",
           bandwidth: "",
           resolution: resolution,
           browserFingerprint: result.visitorId,
