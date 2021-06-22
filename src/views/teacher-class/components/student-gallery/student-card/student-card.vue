@@ -4,7 +4,7 @@
     :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
     @mouseleave="onMouseChange(false)"
   >
-    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
+    <div class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
       <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
         <div
           class="student__video"
@@ -19,7 +19,7 @@
           src="@/assets/student-class/no-avatar.png"
         />
       </div>
-    </figure>
+    </div>
     <div class="student__info">
       <h4
         class="student__name"
