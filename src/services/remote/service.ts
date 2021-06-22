@@ -9,19 +9,9 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   getActiveClassRoom(bfp: string): Promise<TeacherGetRoomResponse> {
     return this.get("teacher/online-session", { browserFingerPrinting: bfp });
   }
-<<<<<<< HEAD
-  teacherStartClassRoom(classId: string, groupId?: string): Promise<any> {
-    return this.create(`teacher/join/${classId}/${groupId}`, {
-      device: "test-windown10",
-      browser: "test-Chrome",
-      resolution: "test-1024x1024",
-      bandwidth: "test-5555",
-    });
-=======
 
   teacherStartClassRoom(startModel: JoinSessionModel): Promise<any> {
     return this.create("teacher/join-session", startModel);
->>>>>>> v7
   }
 
   teacherEndClassRoom(roomId?: string): Promise<any> {
@@ -32,7 +22,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
     return this.get(`student/join-session`, {
       studentId: childId,
-      browserFingerPrinting: bfp
+      browserFingerPrinting: bfp,
     });
   }
 
