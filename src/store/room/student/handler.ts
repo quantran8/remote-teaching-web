@@ -61,6 +61,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+      commit("clearCircleStatus", { id: payload.id });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
@@ -68,6 +69,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+      commit("clearCircleStatus", { id: payload.id });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (_payload: any) => {
@@ -136,21 +138,29 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       }
     },
     onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
+      let status = false;
       for (const student of payload) {
         await dispatch("setStudentVideo", {
           id: student.id,
           enable: !student.isMuteVideo,
         });
+        status = student.isMuteVideo;
       }
+      const icon = status ? reactive({ animationData: cameraOff.default }) : reactive({ animationData: cameraOn.default });
+      store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentAudio: async (payload: Array<StudentModel>) => {
+      let status = false;
       for (const student of payload) {
         await dispatch("setStudentAudio", {
           id: student.id,
           enable: !student.isMuteAudio,
         });
+        status = student.isMuteAudio;
       }
+      const icon = status ? reactive({ animationData: soundOff.default }) : reactive({ animationData: soundOn.default });
+      store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: async (_payload: any) => {

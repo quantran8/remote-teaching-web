@@ -92,6 +92,9 @@ const actions: LessonActions<LessonState, any> = {
   setPreviousExposureItemMedia(store: ActionContext<LessonState, any>, payload: { id: string }) {
     store.commit("setPreviousExposureItemMedia", payload);
   },
+  clearLessonData(store: ActionContext<LessonState, any>) {
+    store.commit("clearLessonData");
+  },
 };
 
 export default actions;

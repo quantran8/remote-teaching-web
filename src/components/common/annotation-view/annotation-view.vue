@@ -4,22 +4,32 @@
   </div> -->
   <div
     class="annotation-view-container"
-    :class="isGalleryView ? 'gallery-view' : ''"
+    :class="{
+      'gallery-view': isGalleryView,
+      whiteboard: isGalleryView && isShowWhiteBoard,
+      'whiteboard-palette': isGalleryView && isShowWhiteBoard && isPaletteVisible,
+    }"
     ref="containerRef"
     :style="{
-      borderBottomLeftRadius: hasPalette || isGalleryView ? '10px' : '0px',
-      borderBottomRightRadius: hasPalette || isGalleryView ? '10px' : '0px',
-      borderBottomWidth: hasPalette || isGalleryView ? '1px' : '0px',
+      borderBottomLeftRadius: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '10px' : '0px',
+      borderBottomRightRadius: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '10px' : '0px',
+      borderBottomWidth: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '1px' : '0px',
     }"
   >
-    <div class="annotation-view-container__image">
+    <div class="annotation-view-container__image" v-show="!isGalleryView">
       <img :src="imageUrl" id="annotation-img" />
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
-    <div class="palette-tool" v-if="isPaletteVisible && !isGalleryView">
-      <div v-for="{ name, action } in paletteTools" :key="name" class="palette-tool__item" :class="name === toolActive ? 'active' : ''" @click="action">
+    <div class="palette-tool" v-if="(isLessonPlan && isPaletteVisible) || (isGalleryView && isShowWhiteBoard && isPaletteVisible)">
+      <div
+        v-for="{ name, action } in paletteTools"
+        :key="name"
+        class="palette-tool__item"
+        :class="name === toolActive ? 'active' : ''"
+        @click="action"
+      >
         <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
       </div>
       <div class="palette-tool__colors">

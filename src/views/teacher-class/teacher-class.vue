@@ -14,7 +14,7 @@
       <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
       <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
       <!--      </div>-->
-      <div v-show="isLessonPlan" class="tc__content__whiteboard-content">
+      <div class="tc__content__whiteboard-content">
         <div class="tc__content__teacher" :class="{ 'tc__content__teacher--gallery': isGalleryView }">
           <TeacherCard
             v-if="teacher"
@@ -31,7 +31,11 @@
             @end="onClickEnd"
           />
         </div>
-        <WhiteboardPalette v-show="!isBlackOutContent" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
+        <WhiteboardPalette
+          v-show="!isBlackOutContent"
+          :isGalleryView="isGalleryView"
+          :image="isLessonPlan ? currentExposureItemMedia?.image : null"
+        />
       </div>
       <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->
       <!--        <UnityView-->

@@ -1,4 +1,4 @@
-import {ErrorCode, LoginInfo, RoleName} from "@/commonui";
+import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Paths } from "@/utils/paths";
@@ -144,6 +144,7 @@ export default defineComponent({
         onOk: async () => {
           try {
             await dispatch("teacherRoom/endClass");
+            await dispatch("lesson/clearLessonData");
             await router.push("/teacher");
           } catch (err) {
             Modal.destroyAll();
