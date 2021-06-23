@@ -1,3 +1,4 @@
+import { preloadImage } from "@/utils/preloadImage";
 import { LessonPlanModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
 import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState } from "./state";
@@ -44,7 +45,6 @@ const actions: LessonActions<LessonState, any> = {
           media: media,
         };
       });
-
       return {
         id: e.id,
         name: e.title,
@@ -54,6 +54,18 @@ const actions: LessonActions<LessonState, any> = {
         items: items,
       };
     });
+    const listUrl = exposures
+      .map(expo => {
+        const url = expo.items.map(item => {
+          const urlImage = item.media.map(img => {
+            return img.image.url;
+          });
+          return urlImage;
+        });
+        return url;
+      })
+      .flat(2);
+    preloadImage(listUrl, 5000);
     store.commit("setIsBlackOut", { IsBlackOut: payload.isBlackout });
     store.commit("setExposures", { exposures: exposures });
     store.commit("setCurrentExposure", { id: payload.contentSelected });
