@@ -5,10 +5,10 @@
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{
-      top: focusedStudent ? `${currentPosition?.y}px` : '',
-      left: focusedStudent ? `${currentPosition?.x}px` : '',
-      position: focusedStudent ? 'absolute' : '',
-      transform: focusedStudent ? 'scale(2)' : '',
+      top: focusedStudent || isStudentOne ? `${currentPosition?.y}px` : '',
+      left: focusedStudent || isStudentOne ? `${currentPosition?.x}px` : '',
+      position: focusedStudent || isStudentOne ? 'sticky' : '',
+      transform: focusedStudent || isStudentOne ? 'scale(2)' : '',
     }"
   >
     <div class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
@@ -30,21 +30,14 @@
     <div class="student__info">
       <h4
         class="student__name"
-        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, 'student__enable--active': isMouseEntered && !isNotJoinned }"
+        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned }"
         @click="onOneAndOne"
       >
         <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
         {{ student.englishName }}
       </h4>
     </div>
-    <StudentCardActions
-      v-if="!isNotJoinned"
-      @handle-expand="handleExpand"
-      :student="student"
-      :show="isMouseEntered"
-      :isLarge="isStudentOne"
-      :focusedStudent="focusedStudent"
-    />
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isStudentOne" :focusedStudent="focusedStudent" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->

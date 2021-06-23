@@ -5,6 +5,7 @@ import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
+import student from "@/store/room/student";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -24,6 +25,7 @@ export default defineComponent({
     },
     student: { type: Object as () => StudentState, required: true },
     isLarge: Boolean,
+    focusStudentId: String,
   },
   setup(props) {
     const store = useStore();
@@ -77,21 +79,10 @@ export default defineComponent({
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
-    const focusedStudent = ref<string>("");
-
-    const handleExpand = (studentId?: string) => {
-      if (studentId) {
-        return (focusedStudent.value = studentId);
-      }
-      focusedStudent.value = "";
-    };
-
     const studentRef = ref<any>(null);
     const currentPosition = ref<any>(null);
     const handleResize = debounce(() => {
       if (!studentRef.value) return;
-    //   const rect = studentRef.value.getBoundingClientRect();
-	//   const offsetTop = studentRef.value.offsetTop
       currentPosition.value = {
         x: studentRef.value.offsetLeft,
         y: studentRef.value.offsetTop,
@@ -104,6 +95,8 @@ export default defineComponent({
     onUnmounted(() => {
       window.removeEventListener("resize", handleResize);
     });
+
+    const focusedStudent = computed(() => props.focusStudentId === props.student.id);
 
     return {
       isNotJoinned,
@@ -119,7 +112,6 @@ export default defineComponent({
       isStudentOne,
       IconLowWifi,
       isLowBandWidth,
-      handleExpand,
       focusedStudent,
       studentRef,
       currentPosition,

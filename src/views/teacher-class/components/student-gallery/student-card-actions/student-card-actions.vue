@@ -26,7 +26,7 @@
         <span class="student-action__badge-count">{{ student.badge }}</span>
       </div>
     </span>
-    <span v-if="show" @click="handleExpand" class="student-action__item">
+    <span v-if="show && !isLarge" @click="handleExpand" class="student-action__item">
       <div class="student-action__btn">
         <img :src="arrowIcon" />
       </div>

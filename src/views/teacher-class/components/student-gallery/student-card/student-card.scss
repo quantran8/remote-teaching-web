@@ -8,6 +8,7 @@
   -webkit-text-underline-position: under;
   -ms-text-underline-position: below;
   text-underline-position: under;
+  cursor: pointer;
 }
 
 .student {
@@ -20,6 +21,7 @@
   &.expand {
     transition: all 0.1s ease-out;
     z-index: 3;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
   }
   position: relative;
   width: 180px;
@@ -70,8 +72,7 @@
     border-radius: 2px;
     color: #fff;
     text-align: center;
-    &:hover,
-    &--active {
+    &:hover {
       @include hyperlinkName;
     }
     &--disabled {
@@ -169,4 +170,8 @@
       font-size: 16px;
     }
   }
+}
+
+.active {
+  @include hyperlinkName;
 }

@@ -24,9 +24,8 @@ export default defineComponent({
     isLarge: Boolean,
     allowExpend: Boolean,
     isExpended: Boolean,
-    focusedStudent: String,
+    focusedStudent: Boolean,
   },
-  emits: ["handle-expand"],
   setup(props, { emit }) {
     const store = useStore();
     const audioIcon = computed(() => (props.student.audioEnabled ? IconAudioOn : IconAudioOff));
@@ -85,16 +84,16 @@ export default defineComponent({
       gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
     };
 
-    const arrowIcon = computed(() => (props.focusedStudent === props.student.id ? IconShrink : IconExpand));
+    const arrowIcon = computed(() => (props.focusedStudent ? IconShrink : IconExpand));
+
+    const updateFocusStudent: any = inject("updateFocusStudent");
 
     const handleExpand = () => {
-      if (props.focusedStudent === props.student.id) {
-        return emit("handle-expand");
+      if (props.focusedStudent) {
+        return updateFocusStudent();
       }
-      emit("handle-expand", props.student.id);
+      updateFocusStudent(props.student.id);
     };
-
-    const updateFocusStudent = inject("updateFocusStudent");
 
     return {
       isRasingHand,

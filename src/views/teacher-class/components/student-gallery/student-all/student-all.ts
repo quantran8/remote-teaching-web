@@ -1,4 +1,5 @@
 import { StudentState } from "@/store/room/interface";
+import student from "@/store/room/student";
 import { computed, ComputedRef, defineComponent, ref, provide } from "vue";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
