@@ -1,8 +1,15 @@
 <template>
   <div
     v-show="!studentOneAndOneId || isStudentOne"
-    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
+    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large', focusedStudent && 'expand']"
     @mouseleave="onMouseChange(false)"
+    ref="studentRef"
+    :style="{
+      top: focusedStudent ? `${currentPosition?.y}px` : '',
+      left: focusedStudent ? `${currentPosition?.x}px` : '',
+      position: focusedStudent ? 'absolute' : '',
+      transform: focusedStudent ? 'scale(2)' : '',
+    }"
   >
     <div class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
       <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
@@ -12,12 +19,12 @@
           v-show="student.videoEnabled && !isNotJoinned"
           :id="student.id"
         ></div>
-        <img
+        <!-- <img
           class="student__img"
           :class="[isSpeaking && 'student__is-speaking']"
           v-show="!student.videoEnabled || isNotJoinned"
           src="@/assets/student-class/no-avatar.png"
-        />
+        /> -->
       </div>
     </div>
     <div class="student__info">
@@ -30,7 +37,14 @@
         {{ student.englishName }}
       </h4>
     </div>
-    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isStudentOne" />
+    <StudentCardActions
+      v-if="!isNotJoinned"
+      @handle-expand="handleExpand"
+      :student="student"
+      :show="isMouseEntered"
+      :isLarge="isStudentOne"
+      :focusedStudent="focusedStudent"
+    />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->

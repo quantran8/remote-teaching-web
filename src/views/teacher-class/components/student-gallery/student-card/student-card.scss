@@ -16,10 +16,15 @@
   $card-figure-size-xl: 90px;
   $card-figure-size-xxl: 120px;
 
-  $radius: 0;
-// min-height: 200px;
+  $radius: 5px;
+  &.expand {
+    transition: all 0.1s ease-out;
+    z-index: 3;
+  }
   position: relative;
-
+  width: 180px;
+  height: 150px;
+  border-radius: 5px;
   &__content {
     width: 100%;
     position: relative;
@@ -30,7 +35,7 @@
   &__figure {
     margin: 0;
     padding-top: 66.66%; /* 3:2 Aspect Ratio (divide 2 by 3 = 0.6666)  */
-    position: relative;
+    // position: relative;
   }
   &__video,
   &__img {
@@ -55,12 +60,14 @@
     }
   }
   &__info {
-    padding: 5px;
+    padding: 0px;
+    // margin: 1px;
     position: absolute;
     bottom: 0;
     z-index: 1;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    width: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
     color: #fff;
     text-align: center;
     &:hover,
@@ -133,7 +140,7 @@
   }
 
   &--large {
-	  margin: 50px;
+    margin: 50px;
   }
 
   &--hover {

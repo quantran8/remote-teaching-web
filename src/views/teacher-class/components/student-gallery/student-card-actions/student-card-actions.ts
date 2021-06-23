@@ -1,5 +1,5 @@
 import { defineComponent } from "@vue/runtime-core";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, inject } from "vue";
 import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
 import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
 import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
@@ -12,6 +12,7 @@ import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
 import { MatIcon } from "commonui";
+import { emit } from "superagent";
 
 export default defineComponent({
   components: {
@@ -23,13 +24,15 @@ export default defineComponent({
     isLarge: Boolean,
     allowExpend: Boolean,
     isExpended: Boolean,
+    focusedStudent: String,
   },
-  setup(props) {
+  emits: ["handle-expand"],
+  setup(props, { emit }) {
     const store = useStore();
     const audioIcon = computed(() => (props.student.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (props.student.videoEnabled ? IconVideoOn : IconVideoOff));
     const paletteIcon = computed(() => (props.student.isPalette ? IconPaletteOff : IconPaletteOn));
-	// const Arrow
+
     const isRasingHand = ref(false);
 
     watch(props, () => {
@@ -82,6 +85,17 @@ export default defineComponent({
       gsap.from(element.children[0], { translateX: 0, translateY: 0, opacity: 0, clearProps: "all", ease: "Power2.easeInOut" });
     };
 
+    const arrowIcon = computed(() => (props.focusedStudent === props.student.id ? IconShrink : IconExpand));
+
+    const handleExpand = () => {
+      if (props.focusedStudent === props.student.id) {
+        return emit("handle-expand");
+      }
+      emit("handle-expand", props.student.id);
+    };
+
+    const updateFocusStudent = inject("updateFocusStudent");
+
     return {
       isRasingHand,
       audioIcon,
@@ -94,6 +108,8 @@ export default defineComponent({
       addABadge,
       actionEnter,
       toolEnter,
+      arrowIcon,
+      handleExpand,
     };
   },
 });

@@ -1,9 +1,10 @@
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { debounce } from "lodash";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -76,6 +77,34 @@ export default defineComponent({
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
+    const focusedStudent = ref<string>("");
+
+    const handleExpand = (studentId?: string) => {
+      if (studentId) {
+        return (focusedStudent.value = studentId);
+      }
+      focusedStudent.value = "";
+    };
+
+    const studentRef = ref<any>(null);
+    const currentPosition = ref<any>(null);
+    const handleResize = debounce(() => {
+      if (!studentRef.value) return;
+    //   const rect = studentRef.value.getBoundingClientRect();
+	//   const offsetTop = studentRef.value.offsetTop
+      currentPosition.value = {
+        x: studentRef.value.offsetLeft,
+        y: studentRef.value.offsetTop,
+      };
+    }, 100);
+    onMounted(() => {
+      handleResize();
+      window.addEventListener("resize", handleResize);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("resize", handleResize);
+    });
+
     return {
       isNotJoinned,
       onDragStart,
@@ -90,6 +119,10 @@ export default defineComponent({
       isStudentOne,
       IconLowWifi,
       isLowBandWidth,
+      handleExpand,
+      focusedStudent,
+      studentRef,
+      currentPosition,
     };
   },
 });
