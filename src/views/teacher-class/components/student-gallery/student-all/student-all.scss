@@ -9,8 +9,8 @@
   grid-template-columns: repeat(5, 1fr);
   align-content: start;
   overflow: auto;
-  padding: 16px 10px 16px 0;
-  row-gap: 12px;
+  //   padding: 16px 10px 16px 0;
+  grid-gap: 10px;
   position: relative;
   @media (min-width: $lg) {
     grid-template-columns: repeat(6, 1fr);
@@ -20,7 +20,7 @@
   }
   @media (min-width: $xxl) {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 20px;
-    align-content: center;
+    // grid-gap: 20px;
+    align-content: space-between;
   }
 }

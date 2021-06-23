@@ -24,8 +24,16 @@
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
   }
   position: relative;
-  width: 180px;
-  height: 150px;
+  //   width: 180px;
+  //   height: 150px;
+  width: 90%;
+  height: 100%;
+  @media (max-width: 1850px) {
+    height: 150%;
+  }
+  @media (max-width: 1400px) {
+    height: 100%;
+  }
   border-radius: 5px;
   &__content {
     width: 100%;
@@ -37,11 +45,18 @@
   &__figure {
     margin: 0;
     padding-top: 66.66%; /* 3:2 Aspect Ratio (divide 2 by 3 = 0.6666)  */
-    // position: relative;
   }
-  &__video,
+
   &__img {
-    background-color: #ddd;
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+    border-radius: $radius;
+    overflow: hidden;
+  }
+  &__video {
+    background-color: #fff;
+    border: 1px solid black;
     width: 100%;
     height: 100%;
     border-radius: $radius;
@@ -62,38 +77,41 @@
     }
   }
   &__info {
-    padding: 0px;
-    // margin: 1px;
     position: absolute;
     bottom: 0;
     z-index: 1;
-    width: 50%;
-    background: rgba(0, 0, 0, 0.2);
     border-radius: 2px;
-    color: #fff;
-    text-align: center;
-    &:hover {
-      @include hyperlinkName;
-    }
-    &--disabled {
-      pointer-events: none;
-      opacity: 0.6;
-    }
-  }
-  &__name {
-    margin: 0;
-    font-size: 14px;
-    line-height: normal;
-    position: relative;
-    color: inherit;
-    &--wifi {
-      width: 20px;
-      position: absolute;
-      left: 5px;
-      top: 3px;
-    }
-    &--text {
-      display: inline-block;
+    text-align: start;
+    padding: 5px;
+    &--name {
+      width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+      margin: 0;
+      font-size: 14px;
+      line-height: normal;
+      position: relative;
+      color: gray;
+
+      &.enable {
+        color: #fff;
+        background: rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      &.active {
+        @include hyperlinkName;
+      }
+      &--wifi {
+        width: 20px;
+        position: absolute;
+        left: 5px;
+        top: 3px;
+      }
+      &--text {
+        display: inline-block;
+      }
     }
   }
 
@@ -170,8 +188,4 @@
       font-size: 16px;
     }
   }
-}
-
-.active {
-  @include hyperlinkName;
 }

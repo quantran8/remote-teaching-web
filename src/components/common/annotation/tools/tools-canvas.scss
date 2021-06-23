@@ -1,8 +1,11 @@
 .tools {
   display: grid;
   grid-template-columns: auto auto;
-  max-height: 481px;
+  //   max-height: 481px;
+  height: 100%;
   background-color: #d8dddf;
+  border-radius: 10px;
+  padding: 5px;
   &--has-sticker {
     .tools__item {
       &--sticker {
@@ -16,7 +19,6 @@
     position: relative;
     padding: 2px;
     margin: 0 5px;
-    border-radius: 5px;
     cursor: pointer;
     flex: auto;
     &--sticker {

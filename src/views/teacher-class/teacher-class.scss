@@ -35,8 +35,10 @@
     &__whiteboard-content {
       display: grid;
       grid-template-columns: 520px 1fr;
-      grid-gap: 10px;
+      grid-template-rows: 1fr 510px;
+      grid-gap: 5px;
       width: 717px;
+      height: 100%;
     }
   }
   &__gallery {
@@ -72,8 +74,8 @@
     }
   }
   @media (min-width: $xxl) {
-    grid-template-columns: auto 1fr 35%;
-
+    grid-template-columns: auto auto 1fr;
+    grid-column-gap: 5px;
     &__content {
       &__activity-content {
         min-height: 60%;

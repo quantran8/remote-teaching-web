@@ -19,20 +19,16 @@
           v-show="student.videoEnabled && !isNotJoinned"
           :id="student.id"
         ></div>
-        <!-- <img
+        <img
           class="student__img"
           :class="[isSpeaking && 'student__is-speaking']"
           v-show="!student.videoEnabled || isNotJoinned"
-          src="@/assets/student-class/no-avatar.png"
-        /> -->
+          src="@/assets/images/user-default.png"
+        />
       </div>
     </div>
     <div class="student__info">
-      <h4
-        class="student__name"
-        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned }"
-        @click="onOneAndOne"
-      >
+      <h4 class="student__info--name" :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned }" @click="onOneAndOne">
         <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
         {{ student.englishName }}
       </h4>
