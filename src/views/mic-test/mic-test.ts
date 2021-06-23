@@ -20,9 +20,8 @@ export default defineComponent({
   },
   emits: ["on-join-session", "on-cancel"],
   setup(props, { emit }) {
-    const visible = ref<boolean>(true);
-    const unit = ref<{ id: number; number: number }[]>([]);
-    const lesson = ref<{ id: number; number: number }[]>([]);
+    const units = ref<{ id: number; number: number }[]>([]);
+    const lessons = ref<{ id: number; number: number }[]>([]);
     const selectedUnit = ref(14);
     const selectedLesson = ref(1);
 
@@ -35,8 +34,8 @@ export default defineComponent({
       for (let i = 1; i <= 14; i++) {
         dummyLesson.push({ id: i, number: i });
       }
-      unit.value = dummyUnit;
-      lesson.value = dummyLesson;
+      units.value = dummyUnit;
+      lessons.value = dummyLesson;
     });
 
     const handleChangeUnit = async (value: any) => {
@@ -48,7 +47,6 @@ export default defineComponent({
     };
 
     const cancel = async () => {
-      visible.value = false;
       emit("on-cancel");
     };
 
@@ -59,8 +57,8 @@ export default defineComponent({
     return {
       cancel,
       joinSession,
-      unit,
-      lesson,
+      units,
+      lessons,
       selectedUnit,
       selectedLesson,
       handleChangeUnit,
