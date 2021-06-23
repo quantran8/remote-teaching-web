@@ -47,6 +47,12 @@ export default defineComponent({
     const strokeSize = [2, 4];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
+      if (toolName !== Tools.StrokeColor) {
+        showColorsPopover.value = false;
+      }
+      if (toolName !== Tools.Stroke) {
+        showFontWeightPopover.value = false;
+      }
     };
     const updateColor = (value: any) => {
       emit("update-color", value);
@@ -55,8 +61,9 @@ export default defineComponent({
       emit("update-stroke", value);
     };
     const handleToolClick = (toolName: string) => {
-      if (toolName === "stroke-color") {
+      if (toolName === Tools.StrokeColor) {
         showColorsPopover.value = !showColorsPopover.value;
+        showFontWeightPopover.value = false;
       }
     };
 
@@ -78,10 +85,11 @@ export default defineComponent({
     const handleIconClick = (toolName: any) => {
       if (toolName === Tools.Stroke) {
         showFontWeightPopover.value = !showFontWeightPopover.value;
+        showColorsPopover.value = false;
       }
     };
 
-    const hideColorsPopover = () => {		
+    const hideColorsPopover = () => {
       showColorsPopover.value = false;
     };
 
