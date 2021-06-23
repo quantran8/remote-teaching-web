@@ -148,7 +148,13 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: any) {
         // console.log("onLocalNetworkUpdate", payload);
-        RemoteTeachingService.getStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
+        let timeSendBandwidth = 0;
+        if (timeSendBandwidth == 150) {
+          RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
+          timeSendBandwidth = 0;
+        } else {
+          timeSendBandwidth += 1;
+        }
       },
     });
   },

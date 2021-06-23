@@ -28,7 +28,7 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import _ from "lodash";
+import _, { times } from "lodash";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -121,7 +121,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+        let timeSendBandwidth = 0;
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
+        if (timeSendBandwidth == 150) {
+          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`);
+          timeSendBandwidth = 0;
+        } else {
+          timeSendBandwidth += 1;
+        }
         if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", true);
         }
@@ -153,7 +160,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
         if (hasChange) {
           dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
         }
-        RemoteTeachingService.getTeacherBandwidth(`${uplinkNetworkQuality}`);
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
