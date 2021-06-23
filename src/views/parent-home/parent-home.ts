@@ -65,24 +65,26 @@ export default defineComponent({
     };
     const cancelPolicy = async () => {
       visible.value = false;
-      if (!policy.value) await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      if (!policy.value) {
+        await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      }
     };
+
+    const escapeEvent = async (ev: KeyboardEvent) => {
+      // check press escape key
+      if (ev.keyCode === 27) {
+        await cancelPolicy();
+      }
+    };
+
     onMounted(async () => {
-      window.addEventListener("keyup", ev => {
-        // check press escape key
-        if (ev.keyCode === 27) {
-          cancelPolicy();
-        }
-      });
+      window.addEventListener("keyup", escapeEvent);
     });
+
     onUnmounted(async () => {
-      window.removeEventListener("keyup", ev => {
-        // check press escape key
-        if (ev.keyCode === 27) {
-          cancelPolicy();
-        }
-      });
+      window.removeEventListener("keyup", escapeEvent);
     });
+
     return {
       children,
       username,
