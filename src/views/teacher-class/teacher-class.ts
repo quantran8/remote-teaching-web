@@ -194,11 +194,6 @@ export default defineComponent({
         }
       }
     });
-
-
-	provide('teacher', teacher)
-
-
     return {
       onClickHideAll,
       onClickShowAll,

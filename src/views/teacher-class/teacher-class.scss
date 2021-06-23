@@ -19,12 +19,9 @@
     }
   }
   &__content {
-	  padding: 5px;
+    padding: 5px;
     &__teacher {
-    //   height: 300px;
-	// width: 500px;
       &--gallery {
-        // height: 500px;
       }
       img {
         width: 100px;
@@ -39,8 +36,7 @@
       display: grid;
       grid-template-columns: 520px 1fr;
       grid-gap: 10px;
-    //   background-color: #2196f3;
-	  width: 717px;
+      width: 717px;
     }
   }
   &__gallery {
