@@ -123,6 +123,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
+	let timeSendBandwidth = 0;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
@@ -148,7 +149,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: any) {
         // console.log("onLocalNetworkUpdate", payload);
-        let timeSendBandwidth = 0;
         if (timeSendBandwidth == 150) {
           RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
           timeSendBandwidth = 0;

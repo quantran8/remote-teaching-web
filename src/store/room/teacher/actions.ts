@@ -99,6 +99,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
+	let timeSendBandwidth = 0;
     if (!state.info || !state.teacher || !state.manager) return;
     await state.manager?.join({
       camera: state.teacher.videoEnabled,
@@ -121,7 +122,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: NetworkQualityPayload) {
-        let timeSendBandwidth = 0;
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
         if (timeSendBandwidth == 150) {
           RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`);
