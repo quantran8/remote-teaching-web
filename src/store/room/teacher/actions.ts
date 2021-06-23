@@ -153,7 +153,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         if (hasChange) {
           dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
         }
-        RemoteTeachingService.getTeacherBandwidth(state.user ? state.user.id : "", `${uplinkNetworkQuality}`);
+        RemoteTeachingService.getTeacherBandwidth(`${uplinkNetworkQuality}`);
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
