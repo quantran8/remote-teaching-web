@@ -13,6 +13,7 @@ import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
+import lesson from "@/store/lesson";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -26,7 +27,7 @@ export default defineComponent({
     Checkbox,
     Button,
     Row,
-    Empty
+    Empty,
   },
   setup() {
     const store = useStore();
@@ -41,6 +42,8 @@ export default defineComponent({
     const haveClassActive = ref(false);
     const classActive = ref();
     const visible = ref<boolean>(true);
+    const startPopupVisible = ref<boolean>(false);
+    const infoStart = ref<{ teacherClass: TeacherClassModel; groupId: string }>();
     const agreePolicy = ref<boolean>(false);
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));
     const policySubtitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicySubtitle));
@@ -57,7 +60,7 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
       try {
         const fp = await fpPromise;
         const result = await fp.get();
@@ -68,7 +71,9 @@ export default defineComponent({
           device: "",
           bandwidth: "",
           resolution: "",
-          browserFingerprint: result.visitorId
+          unit: unit,
+          lesson: lesson,
+          browserFingerprint: result.visitorId,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
@@ -77,7 +82,7 @@ export default defineComponent({
       } catch (err) {
         loadingStartClass.value = false;
         const message = err.body.message;
-        if(message) {
+        if (message) {
           await store.dispatch("setToast", { message: message });
         }
       }
@@ -102,7 +107,7 @@ export default defineComponent({
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId, browserFingerPrinting: visitorId});
+        await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId, browserFingerPrinting: visitorId });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
       } catch (err) {
@@ -116,11 +121,20 @@ export default defineComponent({
     };
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      if (teacherClass.isActive) {
-        await router.push("/class/" + teacherClass.classId);
+      startPopupVisible.value = true;
+      infoStart.value = { teacherClass, groupId };
+    };
+
+    const onStartClass = async (data: { unit: number; lesson: number }) => {
+      if (infoStart.value?.teacherClass.isActive) {
+        await router.push("/class/" + infoStart.value.teacherClass.classId);
       } else {
-        await startClass(teacherClass, groupId);
+        if (infoStart.value) await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
       }
+    };
+
+    const onCancelStartClass = async () => {
+      startPopupVisible.value = false;
     };
 
     const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -173,13 +187,13 @@ export default defineComponent({
       } else {
         return true;
       }
-    }
+    };
 
     const hasClassesShowUpSchedule = () => {
       if (loading.value == false) {
         return classesSchedules.value.length != 0;
       } else return loading.value != true;
-    }
+    };
 
     return {
       schools,
@@ -216,6 +230,9 @@ export default defineComponent({
       loadingStartClass,
       hasClassesShowUp,
       hasClassesShowUpSchedule,
+      startPopupVisible,
+      onStartClass,
+      onCancelStartClass,
     };
   },
 });
