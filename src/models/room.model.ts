@@ -76,7 +76,6 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
-  annotation: AnnotationModel;
 }
 export interface RoomModel {
   id: string;
@@ -98,4 +97,5 @@ export interface RoomModel {
   studentsAudio: Array<string>;
   globalStudentsAudio: Array<string>;
   isShowWhiteBoard: boolean;
+  annotation: AnnotationModel;
 }

@@ -16,6 +16,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
         root: true,
       });
+      await dispatch("annotation/setInfo", payload.annotation, {
+        root: true,
+      });
       if (payload.studentOneToOne) {
         await dispatch(
           "teacherRoom/setStudentOneId",

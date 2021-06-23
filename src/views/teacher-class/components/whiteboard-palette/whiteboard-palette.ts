@@ -369,7 +369,7 @@ export default defineComponent({
     };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
-      if (studentShapes.value !== null) {
+      if (studentShapes.value !== null && studentShapes.value !== undefined) {
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== isTeacher.value.id) {
             canvas.remove(
@@ -391,7 +391,7 @@ export default defineComponent({
     });
     const renderStudentStrokes = () => {
       if (!canvas && !studentStrokes.value) return;
-      if (studentStrokes.value.length > 0) {
+      if (studentStrokes.value !== undefined && studentStrokes.value.length > 0) {
         studentStrokes.value.forEach((s: any) => {
           const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
             item.isOneToOne = null;

@@ -3,6 +3,7 @@ import { MutationTree } from "vuex";
 import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationMutationInterface<S> {
+  setInfo(s: S, p: AnnotationModel): void;
   setPointer(s: S, pointer: Pointer): void;
   setMode(s: S, p: { mode: number }): void;
   addShape(s: S, p: string): void;
@@ -21,12 +22,39 @@ export interface AnnotationMutationInterface<S> {
   setClearOneStudentDrawsLine(s: S, p: {}): void;
   setClearOneStudentAddShape(s: S, p: {}): void;
   setClearOneTeacherAddShape(s: S, p: {}): void;
-  setInfo(s: S, p: AnnotationModel): void;
 }
 
 export interface AnnotationMutation<S> extends MutationTree<S>, AnnotationMutationInterface<S> {}
 
 const mutations: AnnotationMutation<AnnotationState> = {
+  setInfo(s: AnnotationState, p: AnnotationModel) {
+    if (!p) return;
+    s.pointer = p.pointer;
+    s.mode = p.mode;
+    if (p.drawing) {
+      s.drawing = p.drawing;
+    } else {
+      s.drawing = {
+        pencil: null,
+        brushstrokes: [],
+        studentShapes: [],
+        teacherShapes: [],
+        studentStrokes: [],
+      };
+    }
+    if (p.oneToOne) {
+      s.oneToOne = p.oneToOne;
+    } else {
+      s.oneToOne = {
+        pencil: null,
+        brushstrokes: [],
+        studentShapes: [],
+        teacherShapes: [],
+        studentStrokes: [],
+      };
+    }
+    s.stickers = p.stickers;
+  },
   setPointer(s: AnnotationState, p: Pointer) {
     s.pointer = p;
   },
@@ -110,34 +138,6 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setClearOneStudentDrawsLine(s: AnnotationState, p: {}) {
     s.oneToOne.studentStrokes = [];
-  },
-  setInfo(s: AnnotationState, p: AnnotationModel) {
-    if (!p) return;
-    s.pointer = p.pointer;
-    s.mode = p.mode;
-    if (p.drawing) {
-      s.drawing = p.drawing;
-    } else {
-      s.drawing = {
-        pencil: null,
-        brushstrokes: [],
-        studentShapes: [],
-        teacherShapes: [],
-        studentStrokes: [],
-      };
-    }
-    if (p.oneToOne) {
-      s.oneToOne = p.oneToOne;
-    } else {
-      s.oneToOne = {
-        pencil: null,
-        brushstrokes: [],
-        studentShapes: [],
-        teacherShapes: [],
-        studentStrokes: [],
-      };
-    }
-    s.stickers = p.stickers;
   },
 };
 
