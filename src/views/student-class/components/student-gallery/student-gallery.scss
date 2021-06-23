@@ -65,8 +65,7 @@
       grid-column-gap: 15px;
     }
   }
-  @media (min-width: $xl) {
-  }
-  @media (min-width: $xxl) {
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    height: 105px;
   }
 }

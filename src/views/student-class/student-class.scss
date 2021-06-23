@@ -143,6 +143,9 @@
       height: 100%;
       top: 50%;
     }
+    @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+      max-width: 400px;
+    }
   }
   &__one-to-one {
     width: 100%;
@@ -206,6 +209,8 @@
   width: 100%;
 
   &__avatar-container {
+    max-width: 70px;
+    max-height: 70px;
     display: flex;
     justify-content: center;
     border-radius: 50%;
@@ -214,6 +219,18 @@
     &__avatar {
       width: 100%;
       object-fit: cover;
+    }
+    @media screen and (min-width: $md) {
+      max-width: 100px;
+      max-height: 100px;
+    }
+    @media screen and (min-width: $xl) {
+      max-width: 150px;
+      max-height: 150px;
+    }
+    @media screen and (min-width: $xxl) {
+      max-width: 200px;
+      max-height: 200px;
     }
   }
 
