@@ -22,7 +22,7 @@
     </div>
     <hr class="mr-10 ml-10" />
     <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-        <span>Schedule</span>
+      <span>Schedule</span>
       <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
@@ -44,12 +44,13 @@
         @click-to-access="groupId => onClickClass(cl, groupId)"
       />
     </div>
-   <Empty v-show="!hasClassesShowUp()"/>
+    <Empty v-show="!hasClassesShowUp()" />
+    <MicTest :is-teacher="true" />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>
     <p>{{ readPolicy }}</p>
-    <hr/>
+    <hr />
     <div class="policy-content">
       <p>
         <b>{{ policyTitle }}</b>
