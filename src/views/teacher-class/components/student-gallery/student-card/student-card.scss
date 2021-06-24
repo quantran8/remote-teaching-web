@@ -4,7 +4,7 @@
 
 @mixin hyperlinkName {
   color: #00a1ed;
-  text-decoration: underline;
+  // text-decoration: underline;
   -webkit-text-underline-position: under;
   -ms-text-underline-position: below;
   text-underline-position: under;
@@ -17,7 +17,7 @@
   $card-figure-size-xl: 90px;
   $card-figure-size-xxl: 120px;
 
-  $radius: 5px;
+  $radius: 7px;
   &.expand {
     transition: all 0.1s ease-out;
     z-index: 3;
@@ -82,6 +82,7 @@
     position: absolute;
     border: 1px solid $border-color-main;
     border-radius: $radius;
+    overflow: hidden;
     top: 0;
     left: 0;
     bottom: 0;
@@ -119,6 +120,8 @@
         background: rgba(0, 0, 0, 0.2);
         text-align: center;
         word-wrap: break-word;
+        border-radius: 5px;
+        padding: 3px;
       }
       &.active {
         @include hyperlinkName;

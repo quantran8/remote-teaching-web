@@ -27,7 +27,7 @@
             :id="student.id"
           ></div>
           <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
-            <img alt="boys-avatar" src="@/assets/boy.svg" />
+            <img alt="boys-avatar" src="@/assets/images/user-default-gray.png" />
           </div>
         </div>
       </div>
@@ -35,8 +35,9 @@
     <div class="student__info" @mouseover="onMouseChange(true)">
       <p
         class="student__info--name"
-        :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned, ellipText: !isMouseEntered }"
+        :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned, ellipText: true }"
         @click="onOneAndOne"
+        :title="student.englishName"
       >
         <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
         {{ student.englishName }}

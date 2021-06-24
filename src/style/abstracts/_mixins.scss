@@ -74,6 +74,7 @@
 
 @mixin cycle($color, $animation: none) {
   border: 4px solid $color;
+  border-radius: $border-radius-main;
   @if $animation {
     -webkit-animation: $animation 1s infinite;
     -moz-animation: $animation 1s infinite;

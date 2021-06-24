@@ -1,7 +1,7 @@
 @import "../../../../style/abstracts/variables";
 
 @mixin whiteboard-button-base {
-  box-shadow: 0 6px 6px -5px #333;
+  border-bottom: 1px solid $border-color-main;
   background-color: white;
   position: absolute;
   font-weight: 500;
@@ -100,6 +100,7 @@
   border: none;
   .whiteboard__button-show {
     border: 1px solid $border-color-main;
+    border-radius: 10px;
   }
   #canvas-container {
     opacity: 0;
@@ -109,15 +110,11 @@
 
 .gallery-whiteboard-show {
   border: 1px solid $border-color-main;
+  overflow: hidden;
   #canvas-container {
     opacity: 1;
     visibility: visible;
   }
-}
-
-.palette {
-  //
-  // padding: 5px 0;
 }
 
 //animations
