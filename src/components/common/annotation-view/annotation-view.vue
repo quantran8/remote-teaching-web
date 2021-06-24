@@ -1,7 +1,4 @@
 <template>
-  <!-- <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
-    <img src="@/assets/icon-select.png" alt="" />
-  </div> -->
   <div
     class="annotation-view-container"
     :class="{ 'gallery-view': isGalleryView, whiteboard: isShowWhiteBoard }"
@@ -13,6 +10,9 @@
     }"
   >
     <div class="annotation-view-container__image" v-show="!isGalleryView">
+      <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
+        <img src="@/assets/icon-select.png" alt="" />
+      </div>
       <img :src="imageUrl" id="annotation-img" />
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
