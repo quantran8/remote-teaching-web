@@ -257,19 +257,22 @@ export default defineComponent({
         }
       }
     });
-    const fullHeightMobile = () => {
-      if (mobileDevice) {
+    const deviceMobile = () => {
+      if (mobileDevice && router.currentRoute.value.name === "StudentClass") {
+        document.body.classList.add("mobile-device");
         const vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
+      } else {
+        document.body.classList.remove("mobile-device");
       }
     };
     onMounted(() => {
-      fullHeightMobile();
-      window.addEventListener("resize", fullHeightMobile);
+      deviceMobile();
+      window.addEventListener("resize", deviceMobile);
     });
     onUnmounted(() => {
       handleMyTeacherReconnect();
-      window.addEventListener("resize", fullHeightMobile);
+      window.addEventListener("resize", deviceMobile);
     });
     const option = reactive({ animationData: clockData.default });
     return {
