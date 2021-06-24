@@ -122,16 +122,26 @@ export default defineComponent({
       loading.value = false;
     };
 
+    const joinTheCurrentSession = async () => {
+      if (infoStart.value?.teacherClass.isActive) {
+        await router.push("/class/" + infoStart.value.teacherClass.classId);
+        return true;
+      }
+      return false;
+    };
+
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      startPopupVisible.value = true;
-      infoStart.value = { teacherClass, groupId };
+      if (!(await joinTheCurrentSession())) {
+        startPopupVisible.value = true;
+        infoStart.value = { teacherClass, groupId };
+      }
     };
 
     const onStartClass = async (data: { unit: number; lesson: number }) => {
-      if (infoStart.value?.teacherClass.isActive) {
-        await router.push("/class/" + infoStart.value.teacherClass.classId);
-      } else {
-        if (infoStart.value) await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
+      if (!(await joinTheCurrentSession())) {
+        if (infoStart.value) {
+          await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
+        }
       }
     };
 
