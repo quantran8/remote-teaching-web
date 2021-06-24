@@ -253,6 +253,7 @@ export default defineComponent({
       startPopupVisible,
       onStartClass,
       onCancelStartClass,
+      infoStart,
     };
   },
 });
