@@ -12,6 +12,7 @@ export default defineComponent({
       type: Object as () => TeacherClassModel,
     },
     groupId: String,
+    messageStartClass: String,
   },
   components: {
     Select,

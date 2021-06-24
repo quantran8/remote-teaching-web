@@ -50,6 +50,7 @@
       :visible="startPopupVisible"
       :teacherClass="infoStart?.teacherClass"
       :groupId="infoStart?.groupId"
+      :messageStartClass="messageStartClass"
       @on-join-session="onStartClass"
       @on-cancel="onCancelStartClass"
     />

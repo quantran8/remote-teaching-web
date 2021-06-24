@@ -16,6 +16,7 @@
       </Select>
     </div>
     <Row type="flex" justify="end">
+      <p v-if="messageStartClass" class="message">{{ messageStartClass }}</p>
       <Button class="btn-cancel-policy" @click="cancel">Cancel</Button>
       <Button class="ml-10" type="primary" @click="joinSession">Join session</Button>
     </Row>
