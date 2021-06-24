@@ -132,7 +132,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       if (payload.id === state.student?.id) {
         const icon = payload.isMuteVideo ? reactive({ animationData: cameraOff.default }) : reactive({ animationData: cameraOn.default });
-        store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+        await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
       }
     },
     onTeacherMuteStudentAudio: async (payload: StudentModel) => {
@@ -142,7 +142,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       if (payload.id === state.student?.id) {
         const icon = payload.isMuteAudio ? reactive({ animationData: soundOff.default }) : reactive({ animationData: soundOn.default });
-        store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+        await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
       }
     },
     onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
@@ -152,11 +152,13 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           id: student.id,
           enable: !student.isMuteVideo,
         });
-        status = student.isMuteVideo;
+        if (student.id === state.student?.id) {
+          status = student.isMuteVideo;
+        }
       }
       const icon = status ? reactive({ animationData: cameraOff.default }) : reactive({ animationData: cameraOn.default });
-      store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
-      dispatch("updateAudioAndVideoFeed", {});
+      await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentAudio: async (payload: Array<StudentModel>) => {
       let status = false;
@@ -165,11 +167,13 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           id: student.id,
           enable: !student.isMuteAudio,
         });
-        status = student.isMuteAudio;
+        if (student.id === state.student?.id) {
+          status = student.isMuteAudio;
+        }
       }
       const icon = status ? reactive({ animationData: soundOff.default }) : reactive({ animationData: soundOn.default });
-      store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
-      dispatch("updateAudioAndVideoFeed", {});
+      await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherEndClass: async (_payload: any) => {
       await dispatch("setIsJoined", { isJoined: false });
