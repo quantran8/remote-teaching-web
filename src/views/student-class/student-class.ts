@@ -1,5 +1,5 @@
 import { StudentClassLocale } from "./../../locales/localeid";
-import { ErrorCode, fmtMsg, LoginInfo, MatIcon, RoleName } from "@/commonui";
+import {ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName} from "@/commonui";
 import { Howl, Howler } from "howler";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
@@ -12,7 +12,7 @@ import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted } from "vue";
+import {computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted, onMounted} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import * as clockData from "../../assets/lotties/clock.json";
@@ -257,9 +257,22 @@ export default defineComponent({
         }
       }
     });
-
+    const deviceMobile = () => {
+      if (mobileDevice && router.currentRoute.value.name === "StudentClass") {
+        document.body.classList.add("mobile-device");
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      } else {
+        document.body.classList.remove("mobile-device");
+      }
+    };
+    onMounted(() => {
+      deviceMobile();
+      window.addEventListener("resize", deviceMobile);
+    });
     onUnmounted(() => {
       handleMyTeacherReconnect();
+      window.addEventListener("resize", deviceMobile);
     });
     const option = reactive({ animationData: clockData.default });
     return {

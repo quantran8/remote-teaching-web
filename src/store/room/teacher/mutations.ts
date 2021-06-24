@@ -163,6 +163,18 @@ const mutations: TeacherRoomMutation<State> = {
     const student = s.students.find(student => student.id === p.id);
     if (student) student.status = InClassStatus.JOINED;
   },
+  updateRaisingHand(state: State, payload: { id: string; isRaisingHand: boolean }): void {
+    const student = state.students.find(student => student.id === payload.id);
+    if (student) {
+      student.raisingHand = payload.isRaisingHand;
+    }
+  },
+  updateIsPalette(state: State, payload: { id: string; isPalette: boolean }) {
+    const student = state.students.find(student => student.id === payload.id);
+    if (student) {
+      student.isPalette = payload.isPalette;
+    }
+  },
   studentLeftClass(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
     if (student) {

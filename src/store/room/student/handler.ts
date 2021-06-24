@@ -54,6 +54,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+      commit("updateRaisingHand", {
+        id: payload.id,
+        isRaisingHand: payload.isRaisingHand,
+      });
+      commit("updateIsPalette", {
+        id: payload.id,
+        isPalette: payload.isPalette,
+      });
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentLeave: (payload: StudentModel) => {
