@@ -42,6 +42,7 @@ export default defineComponent({
     const classActive = ref();
     const visible = ref<boolean>(true);
     const startPopupVisible = ref<boolean>(false);
+    const messageStartClass = ref("");
     const infoStart = ref<{ teacherClass: TeacherClassModel; groupId: string }>();
     const agreePolicy = ref<boolean>(false);
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));
@@ -82,7 +83,7 @@ export default defineComponent({
         loadingStartClass.value = false;
         const message = err.body.message;
         if (message) {
-          await store.dispatch("setToast", { message: message });
+          messageStartClass.value = message;
         }
       }
     };
@@ -254,6 +255,7 @@ export default defineComponent({
       onStartClass,
       onCancelStartClass,
       infoStart,
+      messageStartClass,
     };
   },
 });
