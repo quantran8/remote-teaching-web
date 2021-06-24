@@ -1,5 +1,5 @@
 import { ChildModel, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
@@ -38,6 +38,7 @@ export default defineComponent({
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
+    const listSessionInfo = ref([]);
     const onClickChild = async (student: ChildModel) => {
       const fp = await fpPromise;
       const result = await fp.get();
@@ -55,6 +56,35 @@ export default defineComponent({
         }
       }
     };
+    const getNextSessionInfo = async () => {
+      try {
+        let listStudentIds = "";
+        const listIds = children.value.map((child: any) => {
+          return child.id;
+        });
+        listIds.map((id: string, index: number) => {
+          if (index != 0) {
+            listStudentIds += "&";
+          }
+          listStudentIds += "studentId=" + id;
+        });
+        const response = await RemoteTeachingService.getStudentNextSession(listStudentIds);
+        if (response && response.length > 0) {
+          listSessionInfo.value = response;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    const studentNextSessionInfo = (childrenId: string) => {
+      const info = listSessionInfo.value.filter((session: any) => {
+        return session.studentId == childrenId;
+      })[0];
+      return info;
+    };
+    watch(children, () => {
+      if (children.value) getNextSessionInfo();
+    });
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
@@ -107,6 +137,7 @@ export default defineComponent({
       concurrent,
       concurrentMess,
       accessDenied,
+      studentNextSessionInfo,
     };
   },
 });

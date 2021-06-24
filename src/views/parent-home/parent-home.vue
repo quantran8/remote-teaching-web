@@ -4,7 +4,14 @@
     <p>Choose a student to start</p>
     <hr />
     <div class="list-student">
-      <StudentCard v-for="child in children" :key="child.id" :name="child.englishName" @click="() => onClickChild(child)"> </StudentCard>
+      <StudentCard
+        v-for="child in children"
+        :key="child.id"
+        :nextSessionInfo="studentNextSessionInfo(child.id)"
+        :name="child.englishName"
+        @click="() => onClickChild(child)"
+      >
+      </StudentCard>
     </div>
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">

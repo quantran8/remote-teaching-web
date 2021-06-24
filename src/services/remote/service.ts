@@ -37,6 +37,10 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<any> {
     return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }
+
+  getStudentNextSession(listStudentIds: string): Promise<any> {
+    return this.get(`student/next-session?${listStudentIds}&`);
+  }
 }
 
 export const RemoteTeachingService = new GLRemoteTeachingService();
