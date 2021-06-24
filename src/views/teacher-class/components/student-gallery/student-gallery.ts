@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch, inject } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentOne from "./student-one/student-one.vue";
@@ -83,7 +83,7 @@ export default defineComponent({
       onClickStickerAll,
       onClickDisableAll,
       timeCount,
-      backToClass,
+      backToClass
     };
   },
 });

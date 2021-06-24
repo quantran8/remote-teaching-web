@@ -98,6 +98,10 @@ export default defineComponent({
       return props.student.videoEnabled;
     });
 
+    const isOneToOneStudent = computed(() => {
+      return store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
+    });
+
     return {
       isNotJoinned,
       onDragStart,
@@ -115,6 +119,7 @@ export default defineComponent({
       studentRef,
       currentPosition,
       isTurnOnCamera,
+	  isOneToOneStudent
     };
   },
 });

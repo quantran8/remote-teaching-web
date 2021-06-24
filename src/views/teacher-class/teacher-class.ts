@@ -194,6 +194,9 @@ export default defineComponent({
         }
       }
     });
+
+    provide("isSidebarCollapsed", isSidebarCollapsed);
+
     return {
       onClickHideAll,
       onClickShowAll,

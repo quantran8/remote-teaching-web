@@ -1,5 +1,5 @@
 <template>
-  <div class="tc">
+  <div :class="['tc', isSidebarCollapsed && 'no-sidebar']">
     <teacher-page-header
       class="tc__header"
       v-if="teacher"
@@ -53,7 +53,7 @@
       <!--          <GlobalAudioBar />-->
       <!--        </div>-->
     </div>
-    <div class="tc__gallery">
+    <div :class="['tc__gallery', isSidebarCollapsed && 'no-sidebar']">
       <StudentGallery />
     </div>
     <ErrorModal v-if="isClassNotActive" @dismiss="onClickCloseError" @confirm="onClickLeave" />

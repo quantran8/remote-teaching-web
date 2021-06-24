@@ -1,14 +1,20 @@
 <template>
   <div
     v-if="isShow"
-    :class="['student', false && 'student--speaking', false && 'student--hand-raised', focusedStudent && 'expand']"
+    :class="[
+      'student',
+      false && 'student--speaking',
+      false && 'student--hand-raised',
+      focusedStudent && 'expand',
+      isOneToOneStudent && 'one-student-mode',
+    ]"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{
-      top: focusedStudent ? `${currentPosition?.y}px` : '',
-      left: focusedStudent ? `${currentPosition?.x}px` : '',
-      position: focusedStudent ? 'sticky' : '',
-      transform: focusedStudent ? 'scale(2)' : '',
+      top: focusedStudent && !isOneToOneStudent ? `${currentPosition?.y}px` : '',
+      left: focusedStudent && !isOneToOneStudent ? `${currentPosition?.x}px` : '',
+      position: focusedStudent && !isOneToOneStudent ? 'sticky' : '',
+      transform: focusedStudent && !isOneToOneStudent ? 'scale(2)' : '',
     }"
   >
     <div class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
@@ -19,7 +25,9 @@
           v-show="!isNotJoinned"
           :id="student.id"
         ></div>
-        <img class="student__img" :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" src="@/assets/images/user-default.png" />
+        <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
+          <img alt="boys-avatar" src="@/assets/boy.svg" />
+        </div>
       </div>
     </div>
     <div class="student__info" @mouseover="onMouseChange(true)">

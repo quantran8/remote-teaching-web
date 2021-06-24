@@ -1,14 +1,18 @@
 @import "../../../../../style/abstracts/variables";
 
 .oneToOne {
-  align-self: center;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .student-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   align-content: start;
-  overflow: auto;
+  //   overflow: auto;
   //   padding: 16px 10px 16px 0;
   grid-gap: 10px;
   position: relative;

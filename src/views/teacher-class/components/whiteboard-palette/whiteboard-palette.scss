@@ -1,3 +1,5 @@
+@import "../../../../style/abstracts/variables";
+
 @mixin whiteboard-button-base {
   box-shadow: 0 6px 6px -5px #333;
   background-color: white;
@@ -23,9 +25,9 @@
       height: 435px;
       position: relative;
       border-bottom-right-radius: 10px;
-	  border-bottom-left-radius: 10px;
+      border-bottom-left-radius: 10px;
       border-top-right-radius: 10px;
-	  border-top-left-radius: 10px;
+      border-top-left-radius: 10px;
       #annotation-img {
         width: 100%;
         height: 100%;
@@ -40,18 +42,17 @@
         z-index: 11;
         .canvas-container {
           border-top-right-radius: 10px;
-	  border-top-left-radius: 10px;
-
+          border-top-left-radius: 10px;
         }
       }
     }
     &--content {
       position: relative;
       width: 719px;
-      border: 1px solid #000;
+      border: 1px solid $border-color-main;
       border-top-right-radius: 10px;
-	  border-top-left-radius: 10px;
-	  border-bottom-right-radius: 10px;
+      border-top-left-radius: 10px;
+      border-bottom-right-radius: 10px;
       border-bottom-left-radius: 10px;
     }
   }
@@ -64,7 +65,7 @@
   &__button-show {
     @include whiteboard-button-base;
     border-top-right-radius: 10px;
-	border-top-left-radius: 10px;
+    border-top-left-radius: 10px;
 
     animation: expandUp 0.1s ease-out;
     &--icon {
@@ -78,7 +79,7 @@
     @include whiteboard-button-base;
     border-top-width: 0;
     border-bottom-right-radius: 10px;
-	border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 10px;
     animation: expandDown 0.1s ease-out;
     padding: 10px;
     top: 425px;
@@ -98,7 +99,7 @@
 .gallery-whiteboard-hidden {
   border: none;
   .whiteboard__button-show {
-    border: 1px solid #000;
+    border: 1px solid $border-color-main;
   }
   #canvas-container {
     opacity: 0;
@@ -107,7 +108,7 @@
 }
 
 .gallery-whiteboard-show {
-  border: 1px solid #000;
+  border: 1px solid $border-color-main;
   #canvas-container {
     opacity: 1;
     visibility: visible;
@@ -115,8 +116,8 @@
 }
 
 .palette {
-	// 
-	// padding: 5px 0;
+  //
+  // padding: 5px 0;
 }
 
 //animations

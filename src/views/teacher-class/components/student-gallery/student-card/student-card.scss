@@ -24,16 +24,21 @@
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
   }
   position: relative;
-  //   width: 180px;
-  //   height: 150px;
-  width: 90%;
-  height: 100%;
+  margin: 0 auto;
+
+  width: 275px;
+  height: 190px;
+  &.one-student-mode {
+    width: 90%;
+    height: 70%;
+  }
   @media (max-width: 1850px) {
-    height: 140%;
+    width: 135px;
+    height: 135px;
   }
-  @media (max-width: 1400px) {
-    height: 100%;
-  }
+  //   @media (max-width: 1400px) {
+  //     height: 100%;
+  //   }
   border-radius: 5px;
   &__content {
     width: 100%;
@@ -52,7 +57,13 @@
     width: 100%;
     height: 100%;
     border-radius: $radius;
-    overflow: hidden;
+    padding: 15%;
+    img {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
+    // overflow: hidden;
   }
   &__video--sub {
     background-color: #fff;
@@ -62,7 +73,6 @@
     &.student__video--disabled {
       background-color: #333;
     }
-    border-radius: $radius;
   }
   &__img {
     object-fit: cover;
@@ -70,7 +80,7 @@
   &__video {
     z-index: 1;
     position: absolute;
-    border: 1px solid black;
+    border: 1px solid $border-color-main;
     border-radius: $radius;
     top: 0;
     left: 0;
