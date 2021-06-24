@@ -209,8 +209,8 @@
   width: 100%;
 
   &__avatar-container {
-    max-width: 70px;
-    max-height: 70px;
+    width: 70px;
+    height: 70px;
     display: flex;
     justify-content: center;
     border-radius: 50%;
@@ -221,16 +221,16 @@
       object-fit: cover;
     }
     @media screen and (min-width: $md) {
-      max-width: 100px;
-      max-height: 100px;
+      width: 100px;
+      height: 100px;
     }
     @media screen and (min-width: $xl) {
-      max-width: 150px;
-      max-height: 150px;
+      width: 150px;
+      height: 150px;
     }
-    @media screen and (min-width: $xxl) {
-      max-width: 200px;
-      max-height: 200px;
+    @media screen and (min-width: 1500px) {
+      width: 200px;
+      height: 200px;
     }
   }
 
@@ -240,6 +240,13 @@
     flex-direction: column;
     margin-left: 30px;
     margin-right: 30px;
+    @media screen and (max-width: $xl) {
+      margin: 0 20px;
+    }
+    @media screen and (max-width: $md) {
+      margin: 0 5px;
+      width: 50px;
+    }
     &__size-talk {
       width: 50px;
       height: 50px;
