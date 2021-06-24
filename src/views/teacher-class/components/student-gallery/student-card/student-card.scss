@@ -98,14 +98,16 @@
     text-align: start;
     padding: 5px;
     &--name {
-      width: 100px;
+      @media (min-width: $large-lap) {
+        width: 100px;
+      }
+      width: 50px;
       font-weight: 500;
       margin: 0;
       font-size: 14px;
       line-height: normal;
       position: relative;
       color: gray;
-      width: 100px;
       &.ellipText {
         white-space: nowrap;
         overflow: hidden;
