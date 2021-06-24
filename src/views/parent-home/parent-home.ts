@@ -1,5 +1,5 @@
 import { ChildModel, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
@@ -65,16 +65,26 @@ export default defineComponent({
     };
     const cancelPolicy = async () => {
       visible.value = false;
-      await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      if (!policy.value) {
+        await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      }
     };
+
+    const escapeEvent = async (ev: KeyboardEvent) => {
+      // check press escape key
+      if (ev.keyCode === 27) {
+        await cancelPolicy();
+      }
+    };
+
     onMounted(async () => {
-      window.addEventListener("keyup", ev => {
-        // check press escape key
-        if (ev.keyCode === 27) {
-          cancelPolicy();
-        }
-      });
+      window.addEventListener("keyup", escapeEvent);
     });
+
+    onUnmounted(async () => {
+      window.removeEventListener("keyup", escapeEvent);
+    });
+
     return {
       children,
       username,

@@ -113,6 +113,18 @@ const mutations: MutationTree<StudentRoomState> = {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.status = payload.status;
   },
+  updateRaisingHand(state: StudentRoomState, payload: { id: string; isRaisingHand: boolean }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    if (student) {
+      student.raisingHand = payload.isRaisingHand;
+    }
+  },
+  updateIsPalette(state: StudentRoomState, payload: { id: string; isPalette: boolean }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    if (student) {
+      student.isPalette = payload.isPalette;
+    }
+  },
   clearCircleStatus(state: StudentRoomState, payload: { id: string }) {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) {
