@@ -45,7 +45,14 @@
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
-    <MicTest :is-teacher="true" :visible="startPopupVisible" @on-join-session="onStartClass" @on-cancel="onCancelStartClass" />
+    <MicTest
+      :is-teacher="true"
+      :visible="startPopupVisible"
+      :teacherClass="infoStart?.teacherClass"
+      :groupId="infoStart?.groupId"
+      @on-join-session="onStartClass"
+      @on-cancel="onCancelStartClass"
+    />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>
