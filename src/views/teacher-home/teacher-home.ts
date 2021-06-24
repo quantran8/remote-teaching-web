@@ -123,17 +123,17 @@ export default defineComponent({
     };
 
     const joinTheCurrentSession = async () => {
-      if (infoStart.value?.teacherClass.isActive) {
-        await router.push("/class/" + infoStart.value.teacherClass.classId);
+      if (haveClassActive.value) {
+        await router.push("/class/" + infoStart.value?.teacherClass.classId);
         return true;
       }
       return false;
     };
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      infoStart.value = { teacherClass, groupId };
       if (!(await joinTheCurrentSession())) {
         startPopupVisible.value = true;
-        infoStart.value = { teacherClass, groupId };
       }
     };
 
