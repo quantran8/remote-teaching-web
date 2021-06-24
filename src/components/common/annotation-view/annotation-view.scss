@@ -5,6 +5,10 @@
   width: 100%;
   position: relative;
   border-radius: 10px;
+  @media screen and (min-width: 800px) and (max-width: $lg){
+    width: 80%;
+    margin: auto;
+  }
   &__image {
     position: absolute;
     left: 0;

@@ -22,7 +22,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
     return this.get(`student/join-session`, {
       studentId: childId,
-      browserFingerPrinting: bfp
+      browserFingerPrinting: bfp,
     });
   }
 
@@ -32,6 +32,10 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
 
   submitPolicy(role: string): Promise<any> {
     return this.create(`policy/${role}/accept/true`);
+  }
+
+  getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<any> {
+    return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }
 }
 
