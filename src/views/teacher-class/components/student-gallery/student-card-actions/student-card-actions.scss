@@ -10,15 +10,18 @@
   top: 0;
   z-index: 1;
   margin: 0 !important;
-  display: grid;
-  grid-auto-flow: column;
+  //   display: grid;
+  //   grid-auto-flow: column;
+  //   justify-content: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
   transform: translateY(-2px);
 
   &__item {
     width: 35px;
-	cursor: pointer;
+    cursor: pointer;
   }
 
   &__btn {

@@ -81,3 +81,14 @@
     animation: $animation 1s infinite;
   }
 }
+
+@mixin cycle2($color, $animation: none) {
+	border: 5px solid $color;
+	@if $animation {
+	  -webkit-animation: $animation 1s infinite;
+	  -moz-animation: $animation 1s infinite;
+	  -o-animation: $animation 1s infinite;
+	  animation: $animation 1s infinite;
+	}
+  }
+  

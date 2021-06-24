@@ -5,7 +5,6 @@ import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
-import student from "@/store/room/student";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -32,17 +31,14 @@ export default defineComponent({
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const isMouseEntered = ref<boolean>(false);
-    const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
-    const isStudentOne = ref(props.student.id == studentOneAndOneId.value);
+    const isShow = computed(() => {
+      return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
+    });
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isLowBandWidth = computed(() => {
       const listStudentLowBandWidth = store.getters["teacherRoom/listStudentLowBandWidth"];
       return listStudentLowBandWidth.findIndex((id: string) => id === props.student.id) > -1;
-    });
-
-    watch(studentOneAndOneId, () => {
-      isStudentOne.value = props.student.id == studentOneAndOneId.value;
     });
 
     const isAudioHightlight = computed(() => {
@@ -98,6 +94,10 @@ export default defineComponent({
 
     const focusedStudent = computed(() => props.focusStudentId === props.student.id);
 
+    const isTurnOnCamera = computed(() => {
+      return props.student.videoEnabled;
+    });
+
     return {
       isNotJoinned,
       onDragStart,
@@ -108,13 +108,13 @@ export default defineComponent({
       onMouseChange,
       isMouseEntered,
       isSpeaking,
-      studentOneAndOneId,
-      isStudentOne,
+      isShow,
       IconLowWifi,
       isLowBandWidth,
       focusedStudent,
       studentRef,
       currentPosition,
+      isTurnOnCamera,
     };
   },
 });
