@@ -139,7 +139,7 @@
     content: "";
     width: 100%;
     height: 100%;
-    background-color: #00a1ed;
+    background-color: white;
     top: 0;
     left: 0;
     z-index: -1;
@@ -173,6 +173,12 @@
   }
 
   &__is-question {
+    position: absolute;
+    border-radius: $radius;
+    top: 5px;
+    left: 5px;
+    bottom: 5px;
+    right: 5px;
     @include cycle(#dd0d0d, flickerAnimation);
   }
 

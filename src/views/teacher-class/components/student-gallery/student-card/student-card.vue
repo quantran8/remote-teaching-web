@@ -17,16 +17,18 @@
       transform: focusedStudent && !isOneToOneStudent ? 'scale(2)' : '',
     }"
   >
-    <div class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
-      <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
-        <div
-          class="student__video--sub"
-          :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
-          v-show="!isNotJoinned"
-          :id="student.id"
-        ></div>
-        <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
-          <img alt="boys-avatar" src="@/assets/boy.svg" />
+    <div class="student__figure" @mouseover="onMouseChange(true)">
+      <div :class="student.raisingHand && 'student__is-question'">
+        <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+          <div
+            class="student__video--sub"
+            :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
+            v-show="!isNotJoinned"
+            :id="student.id"
+          ></div>
+          <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
+            <img alt="boys-avatar" src="@/assets/boy.svg" />
+          </div>
         </div>
       </div>
     </div>
