@@ -40,6 +40,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   classView(state: StudentRoomState): ClassView {
     return state.classView;
   },
+  isLessonPlan(state: StudentRoomState) {
+    return state.classView === ClassView.LESSON_PLAN;
+  },
   isGalleryView(state: StudentRoomState) {
     return state.classView === ClassView.GALLERY;
   },
