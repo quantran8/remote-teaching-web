@@ -2,9 +2,9 @@
   <div class="item-container">
     <div class="item-content nice-scroll">
       <div
+        v-for="(item, index) in items"
         @click="() => onClickItem(item)"
         class="item-media"
-        v-for="(item, index) in items"
         :key="item.id"
         :class="{ 'item-active': item.id === currentExposureItemMedia?.id }"
       >

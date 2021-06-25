@@ -4,7 +4,7 @@
       class="tc__header"
       v-if="teacher"
       :teacher-name="teacher.name"
-      :className="roomInfo.classInfo.className"
+      :className="roomInfo?.classInfo?.className"
       @end="onClickEnd"
     ></teacher-page-header>
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">

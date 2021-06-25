@@ -14,6 +14,27 @@ export interface ExposureItemModel {
   title: string;
   page: Array<ExposureItemMediaModel>;
 }
+
+export interface TeachingActivityModel {
+  contentId: any;
+  id: string;
+  isCommon: boolean;
+  text: string;
+  versionGroupId: string;
+}
+export interface TeachingActivityItemModel {
+  contentExposureId: string;
+  imageName: any;
+  imageUrl: any;
+  metaData: any;
+  pageId: any;
+  sequence: number;
+  teachingActivity: TeachingActivityModel;
+  teachingActivityId: string;
+}
+
+export interface ContentItemModel {}
+
 export interface ExposureContentModel {
   id: string;
   title: string;
@@ -26,6 +47,8 @@ export interface ExposureContentModel {
   played: boolean;
   maxDuration: string;
   contents: Array<ExposureItemModel>;
+  contentExposureTeachingActivity: Array<TeachingActivityItemModel>;
+  page: Array<ExposureItemMediaModel>;
 }
 export interface InteractiveModel {
   answerMode: number;
