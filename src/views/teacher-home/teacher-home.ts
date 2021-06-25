@@ -12,7 +12,7 @@ import { fmtMsg } from "@/commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
-import { JoinSessionModel } from "@/models/join-session.model.ts";
+import { JoinSessionModel } from "@/models/join-session.model";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
