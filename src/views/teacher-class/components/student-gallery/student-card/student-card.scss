@@ -20,7 +20,7 @@
   $radius: 7px;
   &.expand {
     transition: all 0.1s ease-out;
-    z-index: 3;
+    z-index: 25;
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
   }
   position: relative;
@@ -126,12 +126,6 @@
       &.active {
         @include hyperlinkName;
       }
-      &--wifi {
-        width: 20px;
-        position: absolute;
-        left: 5px;
-        top: 3px;
-      }
       &--text {
         display: inline-block;
       }
@@ -170,11 +164,11 @@
   }
 
   &__is-speaking {
-    @include cycle(#00a1ed, flickerAnimationVoice);
+    @include round-square(#00a1ed, flickerAnimationVoice);
   }
 
   &__is-palette {
-    @include cycle(#030303, flickerAnimationPalette);
+    @include round-square(#030303, flickerAnimationPalette);
   }
 
   &__is-question {
@@ -184,7 +178,7 @@
     left: 5px;
     bottom: 5px;
     right: 5px;
-    @include cycle(#dd0d0d, flickerAnimation);
+    @include round-square(#dd0d0d, flickerAnimation);
   }
 
   &--hover {
@@ -207,7 +201,13 @@
   &--hand-raised &__figure::after {
     transform: scale(1.2);
   }
-
+  &--low-wifi{
+    width: 20px;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 1;
+  }
   @media (min-width: $xl) {
     &__name {
       font-size: 16px;
