@@ -3,14 +3,14 @@
   padding: 1rem;
 }
 
-.next-session-info-online {
-  display: flex;
-}
-
 .next-session-info {
   display: flex;
   flex-direction: column;
   &__class {
+    display: block;
+    align-self: flex-start;
+  }
+  &__group {
     display: block;
     align-self: flex-start;
   }
@@ -25,10 +25,11 @@
 }
 
 .indicator-container {
+  position: absolute;
+  bottom: 25px;
+  right: 80px;
   display: flex;
   flex-direction: row;
-  margin-top: 11px;
-  margin-left: 20px;
 
   &__out {
     width: 15px;

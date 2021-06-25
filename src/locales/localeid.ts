@@ -84,3 +84,16 @@ export class StudentClassLocale {
   static Exit = "student_class.exit";
   static GoToHomePage = "student_class.go_to_home_page";
 }
+
+export class ParentHomeLocale {
+  static Welcome = "parent_home.welcome";
+  static ChooseStudent = "parent_home.choose_student";
+  static Cancel = "parent_home.cancel";
+  static Submit = "parent_home.submit";
+}
+
+export class ParentStudentCardLocale {
+  static Class = "parent_student_card.class";
+  static Group = "parent_student_card.group";
+  static NextSession = "parent_student_card.next_session";
+}

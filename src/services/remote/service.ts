@@ -38,8 +38,15 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }
 
-  getStudentNextSession(listStudentIds: string): Promise<any> {
-    return this.get(`student/next-session?${listStudentIds}&`);
+  getStudentNextSession(listIds: string[]): Promise<any> {
+    let studentId = "";
+    listIds.map((id: string, index: number) => {
+      if (index != 0) {
+        studentId += "&";
+      }
+      studentId += "studentId=" + id;
+    });
+    return this.get(`student/next-session?${studentId}&`);
   }
 }
 

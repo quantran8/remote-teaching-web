@@ -68,5 +68,12 @@
   	"access_denied.description": "The page you're trying to access has restricted access.",
   	"access_denied.suggest": "Please refer your administrator",
 	"student_class.exit": "Exit",
-    "student_class.go_to_home_page": "Go To Home Page"
+    "student_class.go_to_home_page": "Go To Home Page",
+	"parent_home.welcome": "Welcome ",
+	"parent_home.choose_student": "Choose a student to start",
+	"parent_home.cancel": "Cancel",
+	"parent_home.submit": "Submit",
+	"parent_student_card.class": "Class: ",
+    "parent_student_card.group": "Group: ",
+    "parent_student_card.next_session": "Next Session: "
 }

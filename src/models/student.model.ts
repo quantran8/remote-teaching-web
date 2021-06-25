@@ -23,6 +23,7 @@ export interface StudentNextSessionModel {
     classId: string;
     className: string;
     groupId: string;
+    groupName: string;
   };
   nextTime: string;
   sessionId: string;

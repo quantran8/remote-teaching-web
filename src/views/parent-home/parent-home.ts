@@ -1,3 +1,4 @@
+import { ParentHomeLocale } from "./../../locales/localeid";
 import { ChildModel, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -25,6 +26,10 @@ export default defineComponent({
     const username = computed(() => store.getters["auth/username"]);
     const visible = ref<boolean>(true);
     const agreePolicy = ref<boolean>(false);
+    const welcomeText = computed(() => fmtMsg(ParentHomeLocale.Welcome));
+    const chooseStudentText = computed(() => fmtMsg(ParentHomeLocale.ChooseStudent));
+    const cancelText = computed(() => fmtMsg(ParentHomeLocale.Cancel));
+    const submitText = computed(() => fmtMsg(ParentHomeLocale.Submit));
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyTitle));
     const policySubtitle = computed(() => fmtMsg(PrivacyPolicy.StudentPolicySubtitle));
     const policyText1 = computed(() => fmtMsg(PrivacyPolicy.StudentPolicyText1));
@@ -58,17 +63,10 @@ export default defineComponent({
     };
     const getNextSessionInfo = async () => {
       try {
-        let listStudentIds = "";
         const listIds = children.value.map((child: any) => {
           return child.id;
         });
-        listIds.map((id: string, index: number) => {
-          if (index != 0) {
-            listStudentIds += "&";
-          }
-          listStudentIds += "studentId=" + id;
-        });
-        const response = await RemoteTeachingService.getStudentNextSession(listStudentIds);
+        const response = await RemoteTeachingService.getStudentNextSession(listIds);
         if (response && response.length > 0) {
           listSessionInfo.value = response;
         }
@@ -116,6 +114,10 @@ export default defineComponent({
     });
 
     return {
+      welcomeText,
+      chooseStudentText,
+      cancelText,
+      submitText,
       children,
       username,
       onClickChild,

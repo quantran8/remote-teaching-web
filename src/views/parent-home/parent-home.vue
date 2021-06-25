@@ -1,7 +1,7 @@
 <template>
   <div class="student-page" v-if="policy">
-    <h2>Welcome {{ username }}</h2>
-    <p>Choose a student to start</p>
+    <h2>{{ welcomeText }} {{ username }}</h2>
+    <p>{{ chooseStudentText }}</p>
     <hr />
     <div class="list-student">
       <StudentCard
@@ -30,8 +30,8 @@
     </div>
     <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">
-      <Button class="btn-cancel-policy" @click="cancelPolicy">Cancel</Button>
-      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
+      <Button class="btn-cancel-policy" @click="cancelPolicy">{{ cancelText }}</Button>
+      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">{{ submitText }}</Button>
     </Row>
   </Modal>
 </template>
