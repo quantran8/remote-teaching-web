@@ -44,7 +44,7 @@
       </p>
     </div>
 
-    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="true" :focusedStudent="focusedStudent" />
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :focusedStudent="focusedStudent" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->
