@@ -5,8 +5,12 @@
   width: 100%;
   position: relative;
   border-radius: 10px;
-  @media screen and (min-width: 800px) and (max-width: $lg) {
-    width: 80%;
+  @media screen and (min-width: $md) and (max-width: $lg) {
+    max-width: 550px;
+    margin: auto;
+  }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    max-width: 500px;
     margin: auto;
   }
   &__image {
@@ -95,7 +99,14 @@
   border-bottom-left-radius: 10px;
   border: 1px solid black;
   padding: 5px 10px;
-
+  @media screen and (min-width: $md) and (max-width: $lg) {
+    max-width: 550px;
+    margin: auto;
+  }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    max-width: 500px;
+    margin: auto;
+  }
   &__item {
     width: 36px;
     height: 36px;
