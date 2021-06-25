@@ -209,7 +209,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
     },
     onTeacherAddBrush: async (payload: any) => {
-      //   console.log(payload);
+      await dispatch("annotation/addShape", payload, {
+        root: true,
+      });
     },
     onTeacherClearAllBrush: async (payload: any) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });

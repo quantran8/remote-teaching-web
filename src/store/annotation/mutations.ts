@@ -33,6 +33,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
     s.mode = p.mode;
     if (p.drawing) {
       s.drawing = p.drawing;
+      s.drawing.studentStrokes = p.drawing.studentBrushstrokes;
+      s.drawing.teacherShapes = p.drawing.shapes;
+      s.drawing.studentShapes = p.drawing.shapes;
     } else {
       s.drawing = {
         pencil: null,
@@ -44,6 +47,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
     }
     if (p.oneToOne) {
       s.oneToOne = p.oneToOne;
+      s.oneToOne.studentStrokes = p.oneToOne.studentBrushstrokes;
+      s.oneToOne.teacherShapes = p.oneToOne.shapes;
+      s.oneToOne.studentShapes = p.oneToOne.shapes;
     } else {
       s.oneToOne = {
         pencil: null,
