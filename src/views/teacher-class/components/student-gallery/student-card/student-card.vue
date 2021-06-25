@@ -32,6 +32,7 @@
         </div>
       </div>
     </div>
+    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi" />
     <div class="student__info" @mouseover="onMouseChange(true)">
       <p
         class="student__info--name"
@@ -39,11 +40,11 @@
         @click="onOneAndOne"
         :title="student.englishName"
       >
-        <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
         {{ student.englishName }}
       </p>
     </div>
-    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :focusedStudent="focusedStudent" />
+
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="true" :focusedStudent="focusedStudent" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->
