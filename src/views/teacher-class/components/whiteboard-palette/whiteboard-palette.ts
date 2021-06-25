@@ -191,7 +191,7 @@ export default defineComponent({
     };
     watch(selfStrokes, async () => {
       await nextTick();
-      renderSelfStrokes();
+      // renderSelfStrokes();
     });
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
