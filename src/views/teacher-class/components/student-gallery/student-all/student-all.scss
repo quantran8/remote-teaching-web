@@ -1,16 +1,21 @@
 @import "../../../../../style/abstracts/variables";
 
 .oneToOne {
-  align-self: center;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .student-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   align-content: start;
-  overflow: auto;
-  padding: 16px 10px 16px 0;
-  row-gap: 12px;
+  //   overflow: auto;
+  //   padding: 16px 10px 16px 0;
+  grid-gap: 10px;
+  position: relative;
   @media (min-width: $lg) {
     grid-template-columns: repeat(6, 1fr);
   }
@@ -19,7 +24,7 @@
   }
   @media (min-width: $xxl) {
     grid-template-columns: 1fr 1fr 1fr;
-    row-gap: 20px;
-    align-content: center;
+    // grid-gap: 20px;
+    align-content: space-between;
   }
 }

@@ -58,7 +58,7 @@
   }
 
   &__title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     margin: 0;
     text-overflow: ellipsis;
@@ -66,6 +66,7 @@
     color: black;
     text-align: center;
     white-space: nowrap;
+    max-width: 90px;
   }
 
   &__star {
@@ -118,7 +119,7 @@
       }
     }
     &__title {
-      font-size: 16px;
+      font-size: 15px;
     }
   }
 

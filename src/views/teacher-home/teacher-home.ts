@@ -12,7 +12,7 @@ import { fmtMsg } from "@/commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
-import { JoinSessionModel } from "@/models/join-session.model";
+import { JoinSessionModel } from "@/models/join-session.model.ts";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -42,6 +42,7 @@ export default defineComponent({
     const classActive = ref();
     const visible = ref<boolean>(true);
     const startPopupVisible = ref<boolean>(false);
+    const messageStartClass = ref("");
     const infoStart = ref<{ teacherClass: TeacherClassModel; groupId: string }>();
     const agreePolicy = ref<boolean>(false);
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));
@@ -82,7 +83,7 @@ export default defineComponent({
         loadingStartClass.value = false;
         const message = err.body.message;
         if (message) {
-          await store.dispatch("setToast", { message: message });
+          messageStartClass.value = message;
         }
       }
     };
@@ -253,6 +254,8 @@ export default defineComponent({
       startPopupVisible,
       onStartClass,
       onCancelStartClass,
+      infoStart,
+      messageStartClass,
     };
   },
 });

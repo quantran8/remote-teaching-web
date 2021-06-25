@@ -82,6 +82,10 @@
     grid-column-gap: 50px;
     grid-template-columns: 55% 1fr;
   }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    grid-column-gap: 50px;
+    grid-template-columns: 50% 1fr;
+  }
   @media (min-width: $xxl) {
     padding: 50px 100px;
     grid-column-gap: 100px;
