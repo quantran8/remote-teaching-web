@@ -4,7 +4,7 @@ import { ClassView, TeacherState } from "@/store/room/interface";
 import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
 import { gsap } from "gsap";
-import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch, provide } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
@@ -194,6 +194,9 @@ export default defineComponent({
         }
       }
     });
+
+    provide("isSidebarCollapsed", isSidebarCollapsed);
+
     return {
       onClickHideAll,
       onClickShowAll,

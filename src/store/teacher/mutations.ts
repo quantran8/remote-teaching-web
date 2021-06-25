@@ -1,4 +1,4 @@
-import { ClassModel, RoomModel, CalendarSchedulesModel, SchedulesModel, ClassModelSchedules } from "@/models";
+import { ClassModel, RoomModel, CalendarSchedulesModel, ClassModelSchedules } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
 import moment from "moment";
@@ -37,8 +37,8 @@ const mutations: MutationTree<TeacherState> = {
   },
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
-    state.classes.forEach(cl => {
-      cl.isActive = state.room?.classId === cl.schoolClassId;
+    state.classesSchedules.forEach(cl => {
+      cl.isActive = state.room?.classId === cl.classId;
     });
   },
   setInfo(state: TeacherState, payload: UserModel) {

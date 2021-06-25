@@ -1,9 +1,10 @@
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { debounce } from "lodash";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -23,23 +24,21 @@ export default defineComponent({
     },
     student: { type: Object as () => StudentState, required: true },
     isLarge: Boolean,
+    focusStudentId: String,
   },
   setup(props) {
     const store = useStore();
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const isMouseEntered = ref<boolean>(false);
-    const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
-    const isStudentOne = ref(props.student.id == studentOneAndOneId.value);
+    const isShow = computed(() => {
+      return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
+    });
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isLowBandWidth = computed(() => {
       const listStudentLowBandWidth = store.getters["teacherRoom/listStudentLowBandWidth"];
       return listStudentLowBandWidth.findIndex((id: string) => id === props.student.id) > -1;
-    });
-
-    watch(studentOneAndOneId, () => {
-      isStudentOne.value = props.student.id == studentOneAndOneId.value;
     });
 
     const isAudioHightlight = computed(() => {
@@ -76,6 +75,33 @@ export default defineComponent({
       return speakingUsers.indexOf(props.student.id) >= 0;
     });
 
+    const studentRef = ref<any>(null);
+    const currentPosition = ref<any>(null);
+    const handleResize = debounce(() => {
+      if (!studentRef.value) return;
+      currentPosition.value = {
+        x: studentRef.value.offsetLeft,
+        y: studentRef.value.offsetTop,
+      };
+    }, 100);
+    onMounted(() => {
+      handleResize();
+      window.addEventListener("resize", handleResize);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("resize", handleResize);
+    });
+
+    const focusedStudent = computed(() => props.focusStudentId === props.student.id);
+
+    const isTurnOnCamera = computed(() => {
+      return props.student.videoEnabled;
+    });
+
+    const isOneToOneStudent = computed(() => {
+      return store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
+    });
+
     return {
       isNotJoinned,
       onDragStart,
@@ -86,10 +112,14 @@ export default defineComponent({
       onMouseChange,
       isMouseEntered,
       isSpeaking,
-      studentOneAndOneId,
-      isStudentOne,
+      isShow,
       IconLowWifi,
       isLowBandWidth,
+      focusedStudent,
+      studentRef,
+      currentPosition,
+      isTurnOnCamera,
+	  isOneToOneStudent
     };
   },
 });
