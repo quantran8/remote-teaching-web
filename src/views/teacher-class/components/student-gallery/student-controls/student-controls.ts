@@ -1,4 +1,4 @@
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, inject } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
@@ -26,6 +26,9 @@ export default defineComponent({
       emit("disable-all");
     };
 
+    const isSidebarCollapsed: any = inject("isSidebarCollapsed");
+
+
     return {
       onClickDisableAll,
       onClickStickerAll,
@@ -33,6 +36,7 @@ export default defineComponent({
       onClickToggleAudio,
       isAllVideoHidden,
       isAllAudioMuted,
+	  isSidebarCollapsed
     };
   },
 });

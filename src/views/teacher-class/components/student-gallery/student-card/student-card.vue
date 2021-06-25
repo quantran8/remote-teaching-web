@@ -1,36 +1,49 @@
 <template>
   <div
-    v-show="!studentOneAndOneId || isStudentOne"
-    :class="['student', false && 'student--speaking', false && 'student--hand-raised', isStudentOne && 'student--large']"
+    v-if="isShow"
+    :class="[
+      'student',
+      false && 'student--speaking',
+      false && 'student--hand-raised',
+      focusedStudent && 'expand',
+      isOneToOneStudent && 'one-student-mode',
+    ]"
     @mouseleave="onMouseChange(false)"
+    ref="studentRef"
+    :style="{
+      top: focusedStudent && !isOneToOneStudent ? `${currentPosition?.y}px` : '',
+      left: focusedStudent && !isOneToOneStudent ? `${currentPosition?.x}px` : '',
+      position: focusedStudent && !isOneToOneStudent ? 'sticky' : '',
+      transform: focusedStudent && !isOneToOneStudent ? 'scale(2)' : '',
+    }"
   >
-    <figure class="student__figure" :class="student.raisingHand && 'student__is-question'" @mouseover="onMouseChange(true)">
-      <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
-        <div
-          class="student__video"
-          :class="[isSpeaking && 'student__is-speaking']"
-          v-show="student.videoEnabled && !isNotJoinned"
-          :id="student.id"
-        ></div>
-        <img
-          class="student__img"
-          :class="[isSpeaking && 'student__is-speaking']"
-          v-show="!student.videoEnabled || isNotJoinned"
-          src="@/assets/student-class/no-avatar.png"
-        />
+    <div class="student__figure" @mouseover="onMouseChange(true)">
+      <div :class="student.raisingHand && 'student__is-question'">
+        <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+          <div
+            class="student__video--sub"
+            :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
+            v-show="!isNotJoinned"
+            :id="student.id"
+          ></div>
+          <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
+            <img alt="boys-avatar" src="@/assets/images/user-default-gray.png" />
+          </div>
+        </div>
       </div>
-    </figure>
-    <div class="student__info">
-      <h4
-        class="student__name"
-        :class="{ student__disable: isNotJoinned, student__enable: !isNotJoinned, 'student__enable--active': isMouseEntered && !isNotJoinned }"
+    </div>
+    <div class="student__info" @mouseover="onMouseChange(true)">
+      <p
+        class="student__info--name"
+        :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned, ellipText: true }"
         @click="onOneAndOne"
+        :title="student.englishName"
       >
         <img v-if="isLowBandWidth" :src="IconLowWifi" class="student__name--wifi" />
         {{ student.englishName }}
-      </h4>
+      </p>
     </div>
-    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :isLarge="isStudentOne" />
+    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :focusedStudent="focusedStudent" />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->
@@ -44,7 +57,6 @@
 
   <div class="interactive" v-if="showCorrectAnswer">
     <BaseIcon name="icon-check-mark" v-if="interactive.status === 2"></BaseIcon>
-
     <StudentBadge class="interactive-badge" :badge="interactive.correct" v-else-if="interactive.status === 1" />
   </div>
 </template>
