@@ -72,8 +72,5 @@
 	"parent_home.welcome": "Welcome ",
 	"parent_home.choose_student": "Choose a student to start",
 	"parent_home.cancel": "Cancel",
-	"parent_home.submit": "Submit",
-	"parent_student_card.class": "Class: ",
-    "parent_student_card.group": "Group: ",
-    "parent_student_card.next_session": "Next Session: "
+	"parent_home.submit": "Submit"
 }

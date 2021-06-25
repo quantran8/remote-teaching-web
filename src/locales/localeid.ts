@@ -91,9 +91,3 @@ export class ParentHomeLocale {
   static Cancel = "parent_home.cancel";
   static Submit = "parent_home.submit";
 }
-
-export class ParentStudentCardLocale {
-  static Class = "parent_student_card.class";
-  static Group = "parent_student_card.group";
-  static NextSession = "parent_student_card.next_session";
-}
