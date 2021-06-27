@@ -42,6 +42,8 @@ export interface Exposure {
   status: ExposureStatus;
   duration: string;
   items: ExposureItem[];
+//   teachingActivityBlockItems: ExposureItemMedia[];
+//   contentBlockItems: ExposureItemMedia[];
 }
 
 export interface ExposureItem {

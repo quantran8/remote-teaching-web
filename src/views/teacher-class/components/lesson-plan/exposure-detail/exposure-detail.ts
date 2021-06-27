@@ -1,9 +1,10 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
+import { exposureTypes } from "../lesson-plan";
 export default defineComponent({
   emits: ["click-back", "click-media"],
-  props: ["exposure"],
+  props: ["exposure", "type"],
   components: {
     ExposureItem,
   },
@@ -14,7 +15,17 @@ export default defineComponent({
     const listMedia = ref([]);
 
     onMounted(() => {
-      listMedia.value = props.exposure.items
+      let resultList = props.exposure.items;
+      switch (props.type) {
+        case exposureTypes.VCP_BLOCK:
+          break;
+        case exposureTypes.TEACHING_ACTIVITY_BLOCK:
+          resultList = props.exposure.teachingActivityBlockItems;
+          break;
+        default:
+          break;
+      }
+      listMedia.value = resultList
         .map((item: any) => {
           return item.media;
         })

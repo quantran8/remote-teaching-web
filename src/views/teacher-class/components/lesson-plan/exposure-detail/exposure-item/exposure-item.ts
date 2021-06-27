@@ -17,6 +17,8 @@ export default defineComponent({
       };
       selected?: boolean;
     }) => {
+		console.log('item', item);
+		
       emit("on-click-item", item);
     };
     return {

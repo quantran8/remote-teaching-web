@@ -23,9 +23,9 @@
       </div>
       <div class="activities">
         <div v-if="isShowExposureDetail">
-          <ExposureDetail :exposure="currentExposure" @click-back="onClickCloseExposure" />
-          <!-- <ExposureDetail :exposure="currentExposure" @click-back="onClickCloseExposure" />
-          <ExposureDetail :exposure="currentExposure" @click-back="onClickCloseExposure" /> -->
+          <ExposureDetail :type="exposureTypes.VCP_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <ExposureDetail :type="exposureTypes.TEACHING_ACTIVITY_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <!-- <ExposureDetail :exposure="currentExposure" @click-back="onClickCloseExposure" />  -->
         </div>
         <div v-else>
           <LessonActivity

@@ -21,6 +21,8 @@ interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S
 
 const actions: LessonActions<LessonState, any> = {
   async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
+    console.log("payload", payload);
+
     if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
@@ -45,6 +47,39 @@ const actions: LessonActions<LessonState, any> = {
           media: media,
         };
       });
+
+      //handle teaching activity
+      const newContentExposureTeachingActivity = e.contentExposureTeachingActivity?.map(c => ({
+        ...c,
+        page: [
+          {
+            id: c.teachingActivityId,
+            resolution: "1024X722",
+            sequence: c.sequence,
+            url: c.imageUrl,
+          },
+        ],
+      }));
+      const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map(c => {
+        const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
+          const url = p.imageUrl
+            ? "123"
+            : "https://glmediastorage2.blob.core.windows.net/gl-content-page/GSv4/Classroom Materials/14/Card Packs/Vocabulary cards/GSv4-U14-CM-birdhouse- page-1.png?sv=2017-04-17&sr=c&sig=ZZQZ02NSHYTwkjsU9E64D9Pda4V7THD%2Fvrde1Acvovs%3D&st=2021-06-27T03%3A32%3A28Z&se=2021-06-27T05%3A32%3A28Z&sp=r";
+          return {
+            id: p.id, // need to confirm is contentExposureId or teachingActivity.id
+            image: {
+              url,
+              width: 1024, //not sent from BE => hard code
+              height: 722, //not sent from BE => hard code
+            },
+          };
+        });
+        return {
+          id: c.contentExposureId,
+          name: c.imageName || "Teaching Activity",
+          media,
+        };
+      });
       return {
         id: e.id,
         name: e.title,
@@ -52,8 +87,13 @@ const actions: LessonActions<LessonState, any> = {
         status: e.played ? ExposureStatus.COMPLETED : ExposureStatus.DEFAULT,
         type: ExposureTypeFromValue(e.contentType.id),
         items: items,
+        contentBlockItems: items,
+        teachingActivityBlockItems: teachingActivityBlockItems,
       };
     });
+
+    console.log("exposures", exposures);
+
     const listUrl = exposures
       .map(expo => {
         const url = expo.items.map(item => {
