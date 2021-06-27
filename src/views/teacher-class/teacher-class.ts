@@ -69,9 +69,6 @@ export default defineComponent({
     const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
     const teacher: ComputedRef<TeacherState> = computed(() => getters["teacherRoom/teacher"]);
     const error = computed(() => getters["teacherRoom/error"]);
-    const isClassNotActive = computed(() => {
-      return error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE;
-    });
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
     const roomInfo = computed(() => {
@@ -207,7 +204,6 @@ export default defineComponent({
       teacher,
       onClickEnd,
       onClickLeave,
-      isClassNotActive,
       onClickCloseError,
       ctaVisible,
       isDesignatingTarget,

@@ -113,6 +113,15 @@ export default defineComponent({
         });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
+        if (classesSchedules.value) {
+          haveClassActive.value = false;
+          classesSchedules.value.map((cl: TeacherClassModel) => {
+            if (cl.isActive) {
+              classActive.value = cl;
+              haveClassActive.value = true;
+            }
+          });
+        }
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
@@ -187,14 +196,6 @@ export default defineComponent({
         }
       }
       await store.dispatch("teacher/clearSchedules");
-      if (classesSchedules.value) {
-        classesSchedules.value.map((cl: TeacherClassModel) => {
-          if (cl.isActive) {
-            classActive.value = cl;
-            haveClassActive.value = true;
-          }
-        });
-      }
       window.addEventListener("keyup", escapeEvent);
     });
 
