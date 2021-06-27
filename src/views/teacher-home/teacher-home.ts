@@ -5,6 +5,7 @@ import { computed, defineComponent, ref, onMounted, watch, onUnmounted } from "v
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
+import MicTest from "../mic-test/mic-test.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row, Empty } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
@@ -19,6 +20,7 @@ const fpPromise = FingerprintJS.load();
 export default defineComponent({
   components: {
     ClassCard,
+    MicTest,
     Select,
     Spin,
     Option: Select.Option,
@@ -43,6 +45,9 @@ export default defineComponent({
     const haveClassActive = ref(false);
     const classActive = ref();
     const visible = ref<boolean>(true);
+    const startPopupVisible = ref<boolean>(false);
+    const messageStartClass = ref("");
+    const infoStart = ref<{ teacherClass: TeacherClassModel; groupId: string }>();
     const agreePolicy = ref<boolean>(false);
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));
     const policySubtitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicySubtitle));
@@ -59,7 +64,7 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
       const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
         const fp = await fpPromise;
@@ -71,6 +76,8 @@ export default defineComponent({
           device: device.device ? device.device.type : "",
           bandwidth: "",
           resolution: resolution,
+          unit: unit,
+          lesson: lesson,
           browserFingerprint: result.visitorId,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
@@ -81,7 +88,7 @@ export default defineComponent({
         loadingStartClass.value = false;
         const message = err.body.message;
         if (message) {
-          await store.dispatch("setToast", { message: message });
+          messageStartClass.value = message;
         }
       }
     };
@@ -121,12 +128,31 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      if (teacherClass.isActive) {
-        await router.push("/class/" + teacherClass.classId);
-      } else {
-        await startClass(teacherClass, groupId);
+    const joinTheCurrentSession = async () => {
+      if (haveClassActive.value) {
+        await router.push("/class/" + infoStart.value?.teacherClass.classId);
+        return true;
       }
+      return false;
+    };
+
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      infoStart.value = { teacherClass, groupId };
+      if (!(await joinTheCurrentSession())) {
+        startPopupVisible.value = true;
+      }
+    };
+
+    const onStartClass = async (data: { unit: number; lesson: number }) => {
+      if (!(await joinTheCurrentSession())) {
+        if (infoStart.value) {
+          await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
+        }
+      }
+    };
+
+    const onCancelStartClass = async () => {
+      startPopupVisible.value = false;
     };
 
     const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -230,6 +256,11 @@ export default defineComponent({
       loadingStartClass,
       hasClassesShowUp,
       hasClassesShowUpSchedule,
+      startPopupVisible,
+      onStartClass,
+      onCancelStartClass,
+      infoStart,
+      messageStartClass,
     };
   },
 });

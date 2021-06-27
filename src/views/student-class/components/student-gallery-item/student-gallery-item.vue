@@ -16,19 +16,22 @@
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
           :id="student.id"
+          :title="student.englishName"
         ></div>
         <img
           class="sc-gallery-item__img"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="!student.videoEnabled || isNotJoinned"
           src="@/assets/student-class/no-avatar.png"
+          :alt="student.englishName"
+          :title="student.englishName"
         />
         <span class="sc-gallery-item__star" v-if="isCurrent">
           <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
         </span>
       </div>
     </div>
-    <h3 class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">{{ student.englishName }}</h3>
+    <h3 :title="student.englishName" class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">{{ student.englishName }}</h3>
   </div>
 </template>
 <script lang="ts" src="./student-gallery-item.ts"></script>

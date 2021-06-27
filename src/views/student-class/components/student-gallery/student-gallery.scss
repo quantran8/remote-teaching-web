@@ -20,7 +20,7 @@
     overflow: hidden;
     display: grid;
     grid-auto-flow: column;
-    grid-column-gap: 5px;
+    grid-column-gap: 10px;
     padding: 5px;
     height: 100%;
     align-content: center;
@@ -62,7 +62,7 @@
   @media (min-width: $lg) {
     height: 135px;
     &__container {
-      grid-column-gap: 15px;
+      grid-column-gap: 30px;
     }
   }
   @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {

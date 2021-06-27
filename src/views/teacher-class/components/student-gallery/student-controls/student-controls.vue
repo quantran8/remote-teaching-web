@@ -1,5 +1,5 @@
 <template>
-  <div id="student-controls">
+  <div :class="['student-controls', !isSidebarCollapsed && 'have-sidebar']">
     <div class="button-group">
       <div class="student-controls__button">
         <span @click="onClickStickerAll" class="student-controls__button--clickable">

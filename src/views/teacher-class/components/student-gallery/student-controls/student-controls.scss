@@ -1,9 +1,8 @@
 @import "../../../../../style/abstracts/variables";
 
-#student-controls {
+.student-controls {
   display: flex;
-  justify-content: space-evenly;
-
+  justify-content: center;
   .button-group {
     display: flex;
     flex-direction: collumn;
@@ -14,13 +13,13 @@
       display: flex;
     }
   }
-
   .student-controls__button {
     flex: 1;
     text-align: center;
     margin: 5px 10px 0 10px;
-    width: 130px;
-
+    @media (min-width: $large-lap) {
+      width: 130px;
+    }
     .student-controls__button--clickable {
       cursor: pointer;
       display: inline-block;
@@ -33,37 +32,46 @@
       }
 
       .sticker-icon {
-        height: 45px;
+        @media (min-width: $large-lap) {
+          height: 45px;
+        }
+        height: 33px;
         position: relative;
         top: 5px;
         right: 5px;
       }
 
       .disable-icon {
-        height: 40px;
+        @media (min-width: $large-lap) {
+          height: 40px;
+        }
+        height: 30px;
         position: relative;
       }
 
       .audio-icon {
-        height: 40px;
+        @media (min-width: $large-lap) {
+          height: 40px;
+        }
+        height: 33px;
         position: relative;
         top: 5px;
         left: 5px;
         margin-right: 15px;
       }
       .video-icon {
+        @media (min-width: $large-lap) {
+          height: 45px;
+        }
+        height: 33px;
         position: relative;
-        height: 45px;
         top: 3px;
         right: 6px;
       }
     }
   }
 
-  @media (min-width: $xl) {
-    padding: 20px 0 0;
-  }
-  @media (min-width: $xxl) {
-    padding: 30px 0 0;
-  }
+  //   @media (min-width: $xl) {
+  //     padding: 5px 0 0;
+  //   }
 }
