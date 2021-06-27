@@ -144,11 +144,10 @@ const actions: ActionTree<StudentRoomState, any> = {
         // Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        // console.log("onLocalNetworkUpdate", payload);
+        // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
         if (timeSendBandwidth == 150) {
           RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
           timeSendBandwidth = 0;
