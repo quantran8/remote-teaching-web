@@ -9,10 +9,10 @@ import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 
 export const exposureTypes = {
-	VCP_BLOCK: 'VPC_BLOCK',
-	CONTENT_BLOCK: 'CONTENT_BLOCK',
-	TEACHING_ACTIVITY_BLOCK: 'TEACHING_ACTIVITY_BLOCK'
-}
+  VCP_BLOCK: "VPC_BLOCK",
+  CONTENT_BLOCK: "CONTENT_BLOCK",
+  TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
+};
 
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
@@ -21,11 +21,7 @@ export default defineComponent({
     const { getters, dispatch } = useStore();
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(() => getters["lesson/activityStatistic"]);
-    const currentExposure = computed(() => {
-      console.log("1", getters["lesson/currentExposure"]);
-
-      return getters["lesson/currentExposure"];
-    });
+    const currentExposure = computed(() => getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
     const progress = computed(() => getters["lesson/progressStatistic"]);
     const remainingTime = computed(() => getters["lesson/remainingTimeStatistic"]);
@@ -180,7 +176,7 @@ export default defineComponent({
       nextExposureItemMedia,
       iconNext,
       NEXT_EXPOSURE,
-	  exposureTypes,
+      exposureTypes,
     };
   },
 });

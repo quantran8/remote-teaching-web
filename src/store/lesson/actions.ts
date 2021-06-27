@@ -17,12 +17,13 @@ interface LessonActionsInterface<S, R> {
   setIsBlackOut(store: ActionContext<S, R>, p: { IsBlackOut: boolean }): any;
 }
 
+const DEFAULT_CONTENT_BLOCK_ITEM_NAME = "Content";
+const DEFAULT_TEACHING_ACTIVITY_BLOCK_ITEM_NAME = "Teaching Activity";
+
 interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S, R> {}
 
 const actions: LessonActions<LessonState, any> = {
   async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
-    console.log("payload", payload);
-
     if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
@@ -63,7 +64,7 @@ const actions: LessonActions<LessonState, any> = {
         });
         return {
           id: c.id,
-          name: "Content",
+          name: DEFAULT_CONTENT_BLOCK_ITEM_NAME,
           media: media,
         };
       });
@@ -95,7 +96,7 @@ const actions: LessonActions<LessonState, any> = {
         });
         return {
           id: c.contentExposureId,
-          name: c.imageName || "Teaching Activity",
+          name: c.imageName || DEFAULT_TEACHING_ACTIVITY_BLOCK_ITEM_NAME,
           media,
         };
       });
@@ -110,8 +111,6 @@ const actions: LessonActions<LessonState, any> = {
         teachingActivityBlockItems: teachingActivityBlockItems,
       };
     });
-
-    console.log("exposures", exposures);
 
     const listUrl = exposures
       .map(expo => {

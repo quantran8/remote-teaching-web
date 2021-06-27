@@ -37,7 +37,8 @@ const mutations: LessonMutation<LessonState> = {
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
-    for (const item of s.currentExposure.items) {
+    const combinedItems = [...s.currentExposure.items, ...s.currentExposure.teachingActivityBlockItems, ...s.currentExposure.contentBlockItems];
+    for (const item of combinedItems) {
       s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
       if (s.currentExposureItemMedia) break;
     }
