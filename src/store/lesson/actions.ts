@@ -48,7 +48,27 @@ const actions: LessonActions<LessonState, any> = {
         };
       });
 
-      //handle teaching activity
+      //handle content block
+      const newPage = e.page.map(p => ({ ...p, page: [{ ...p }] }));
+      const contentBlockItems: Array<ExposureItem> = newPage.map(c => {
+        const media: Array<ExposureItemMedia> = c.page.map(p => {
+          return {
+            id: p.id,
+            image: {
+              url: payload.contentStorageUrl + p.url + signalture,
+              width: parseInt(p.resolution.split("X")[0]),
+              height: parseInt(p.resolution.split("X")[1]),
+            },
+          };
+        });
+        return {
+          id: c.id,
+          name: "Content",
+          media: media,
+        };
+      });
+
+      //handle teaching activity block
       const newContentExposureTeachingActivity = e.contentExposureTeachingActivity?.map(c => ({
         ...c,
         page: [
@@ -62,9 +82,8 @@ const actions: LessonActions<LessonState, any> = {
       }));
       const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map(c => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
-          const url = p.imageUrl
-            ? "123"
-            : "https://glmediastorage2.blob.core.windows.net/gl-content-page/GSv4/Classroom Materials/14/Card Packs/Vocabulary cards/GSv4-U14-CM-birdhouse- page-1.png?sv=2017-04-17&sr=c&sig=ZZQZ02NSHYTwkjsU9E64D9Pda4V7THD%2Fvrde1Acvovs%3D&st=2021-06-27T03%3A32%3A28Z&se=2021-06-27T05%3A32%3A28Z&sp=r";
+          const url =
+            payload.contentStorageUrl + "GSv4/Classroom Materials/14/Card Packs/Vocabulary cards/GSv4-U14-CM-birdhouse- page-1.png" + signalture;
           return {
             id: p.id, // need to confirm is contentExposureId or teachingActivity.id
             image: {
@@ -87,7 +106,7 @@ const actions: LessonActions<LessonState, any> = {
         status: e.played ? ExposureStatus.COMPLETED : ExposureStatus.DEFAULT,
         type: ExposureTypeFromValue(e.contentType.id),
         items: items,
-        contentBlockItems: items,
+        contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
       };
     });

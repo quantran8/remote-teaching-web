@@ -22,6 +22,9 @@ export default defineComponent({
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
           resultList = props.exposure.teachingActivityBlockItems;
           break;
+        case exposureTypes.CONTENT_BLOCK:
+          resultList = props.exposure.contentBlockItems;
+          break;
         default:
           break;
       }
