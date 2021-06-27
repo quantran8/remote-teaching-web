@@ -25,8 +25,6 @@ interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S
 const actions: LessonActions<LessonState, any> = {
   async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
     if (!payload) return;
-    console.log("payload", payload);
-
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
       await store.dispatch("loadContentSignature", {}, { root: true });
@@ -52,7 +50,7 @@ const actions: LessonActions<LessonState, any> = {
       });
 
       //handle content block
-      const newPage = e.page.map(p => ({ ...p, page: [{ ...p }] }));
+      const newPage = e.page ? e.page.map(p => ({ ...p, page: [{ ...p }] })) : [];
       const contentBlockItems: Array<ExposureItem> = newPage.map(c => {
         const media: Array<ExposureItemMedia> = c.page.map(p => {
           return {
@@ -72,17 +70,19 @@ const actions: LessonActions<LessonState, any> = {
       });
 
       //handle teaching activity block
-      const newContentExposureTeachingActivity = e.contentExposureTeachingActivity?.map(c => ({
-        ...c,
-        page: [
-          {
-            id: c.teachingActivityId,
-            resolution: "1024X722",
-            sequence: c.sequence,
-            url: c.imageUrl,
-          },
-        ],
-      }));
+      const newContentExposureTeachingActivity = e.contentExposureTeachingActivity
+        ? e.contentExposureTeachingActivity?.map(c => ({
+            ...c,
+            page: [
+              {
+                id: c.teachingActivityId,
+                resolution: "1024X722",
+                sequence: c.sequence,
+                url: c.imageUrl,
+              },
+            ],
+          }))
+        : [];
       const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map(c => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
           const url =
