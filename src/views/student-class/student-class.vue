@@ -16,7 +16,7 @@
             </div>
           </div>
         </div>
-        <div v-if="!teacherIsDisconnected">
+        <div v-show="!teacherIsDisconnected">
           <AnnotationView
             v-show="!isBlackOutContent && isLessonPlan"
             :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"

@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick} from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
@@ -37,6 +37,7 @@ export default defineComponent({
     const oneOneStudentStrokes = computed(() => store.getters["annotation/oneOneStudentStrokes"]);
     const oneStudentShape = computed(() => store.getters["annotation/oneStudentShape"]);
     const selfShapes = computed(() => store.getters["annotation/teacherShape"]);
+    const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -155,11 +156,43 @@ export default defineComponent({
         obj.path.isOneToOne = oneAndOne.value || null;
       });
     };
+    const listenSelfTeacher = () => {
+      canvas
+        .getObjects()
+        .filter((obj: any) => obj.type !== "path")
+        .filter((obj: any) => obj.id === isTeacher.value.id)
+        .forEach((item: any) => {
+          item.selectable = true;
+        });
+    };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
       listenCreatedPath();
+      listenSelfTeacher();
     };
+    const renderSelfStrokes = () => {
+      if (selfStrokes.value) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === isTeacher.value.id)
+            .filter((obj: any) => obj.type === "path"),
+        );
+        selfStrokes.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            item.id = isTeacher.value.id;
+            item.isOneToOne = null;
+            canvas.add(item);
+          });
+        });
+        objectCanvasProcess();
+      }
+    };
+    watch(selfStrokes, async () => {
+      await nextTick();
+      // renderSelfStrokes();
+    });
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
       if (!canvasEl) return;
@@ -167,9 +200,6 @@ export default defineComponent({
       canvas.setWidth(717);
       canvas.setHeight(435);
       canvas.selectionFullyContained = false;
-      // renderStudentsShapes();
-      // renderStudentStrokes();
-      // renderOneStudentStrokes();
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {
@@ -382,7 +412,7 @@ export default defineComponent({
     };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
-      if (studentShapes.value !== null) {
+      if (studentShapes.value !== null && studentShapes.value !== undefined) {
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== isTeacher.value.id) {
             canvas.remove(
@@ -404,7 +434,7 @@ export default defineComponent({
     });
     const renderStudentStrokes = () => {
       if (!canvas && !studentStrokes.value) return;
-      if (studentStrokes.value.length > 0) {
+      if (studentStrokes.value !== undefined && studentStrokes.value.length > 0) {
         studentStrokes.value.forEach((s: any) => {
           const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
             item.isOneToOne = null;
@@ -463,8 +493,12 @@ export default defineComponent({
             shapeRender(item, null);
           }
         });
+        listenSelfTeacher();
       }
     };
+    watch(selfShapes, () => {
+      renderSelfShapes();
+    });
     watch(oneAndOne, async () => {
       if (!canvas) return;
       if (!oneAndOne.value) {
@@ -474,13 +508,7 @@ export default defineComponent({
         renderStudentsShapes();
         // remove and render objects again of teacher, set object can move
         renderSelfShapes();
-        canvas
-          .getObjects()
-          .filter((obj: any) => obj.type !== "path")
-          .filter((obj: any) => obj.id === isTeacher.value.id)
-          .forEach((item: any) => {
-            item.selectable = true;
-          });
+        listenSelfTeacher();
       }
     });
     onMounted(async () => {

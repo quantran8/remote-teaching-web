@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import {computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
@@ -111,13 +111,15 @@ export default defineComponent({
         });
       });
       objectCanvasProcess();
+      listenSelfStudent();
     };
     const renderTeacherStrokes = () => {
       if (canvasData.value && canvasData.value.length > 0) {
         renderStrokes(canvasData.value, null);
       }
     };
-    watch(canvasData, () => {
+    watch(canvasData, async () => {
+      await nextTick();
       renderTeacherStrokes();
     });
     const laserPathByTeacher = () => {
@@ -162,12 +164,14 @@ export default defineComponent({
             }
           }
         });
+        listenSelfStudent();
       } else {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path"));
       }
     };
     watch(studentShapes, () => {
       studentSharingShapes();
+      selfStudentShapes();
     });
     const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
       if (dataShapes) {
@@ -238,6 +242,7 @@ export default defineComponent({
             brushstrokesRender(item, null);
           }
         });
+        listenSelfStudent();
       }
     };
     watch(studentOneAndOneId, () => {
@@ -340,11 +345,6 @@ export default defineComponent({
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
-      renderTeacherStrokes();
-      studentSharingShapes();
-      teacherSharingShapes(teacherShapes.value, null);
-      studentSharingStrokes();
-      selfStudentShapes();
       listenToCanvasEvents();
       resizeCanvas();
     };
@@ -442,7 +442,6 @@ export default defineComponent({
       canvas.freeDrawingBrush.color = activeColor.value;
       canvas.freeDrawingBrush.width = 4;
     };
-
     onMounted(() => {
       boardSetup();
       window.addEventListener("resize", resizeCanvas);

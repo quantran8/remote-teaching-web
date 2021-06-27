@@ -30,7 +30,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
         root: true,
       });
-      await dispatch("annotation/setInfo", payload.lessonPlan.annotation, {
+      await dispatch("annotation/setInfo", payload.annotation, {
         root: true,
       });
       if (payload.studentOneToOne) {
