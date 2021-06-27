@@ -123,6 +123,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
+	let timeSendBandwidth = 0;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
@@ -143,11 +144,16 @@ const actions: ActionTree<StudentRoomState, any> = {
         // Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        // console.log("onLocalNetworkUpdate", payload);
+        // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
+        if (timeSendBandwidth == 150) {
+          RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
+          timeSendBandwidth = 0;
+        } else {
+          timeSendBandwidth += 1;
+        }
       },
     });
   },

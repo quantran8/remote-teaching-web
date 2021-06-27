@@ -3,22 +3,23 @@
 @import "../../../../../style/abstracts/animation";
 
 .student-action {
-  //   border-bottom: 2px solid #000;
-  background: rgba(0, 0, 0, 0.1);
+  background: #ffffff70;
   position: absolute !important;
-  left: 0;
-  top: 0;
+  left: 5px;
+  top: 7px;
   z-index: 1;
+  right: 5px;
   margin: 0 !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   transform: translateY(-2px);
+  border-radius: 10px;
 
   &__item {
     width: 35px;
     cursor: pointer;
+    margin: 5px;
   }
 
   &__btn {

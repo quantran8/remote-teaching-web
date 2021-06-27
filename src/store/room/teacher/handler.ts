@@ -16,6 +16,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
         root: true,
       });
+      await dispatch("annotation/setInfo", payload.annotation, {
+        root: true,
+      });
       if (payload.studentOneToOne) {
         await dispatch(
           "teacherRoom/setStudentOneId",
@@ -206,7 +209,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
     },
     onTeacherAddBrush: async (payload: any) => {
-      //   console.log(payload);
+      await dispatch("annotation/addShape", payload, {
+        root: true,
+      });
     },
     onTeacherClearAllBrush: async (payload: any) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });

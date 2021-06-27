@@ -6,13 +6,12 @@ import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
 import IconAudioOff from "@/assets/teacher-class/audio-off-small.svg";
 import IconPaletteOn from "@/assets/teacher-class/touch-on-small.svg";
 import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
-import IconExpand from "@/assets/teacher-class/expand-action.svg";
-import IconShrink from "@/assets/teacher-class/shrink-action.svg";
+import IconExpand from "@/assets/teacher-class/expanded.png";
+import IconShrink from "@/assets/teacher-class/minimum.png";
 import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
 import { MatIcon } from "commonui";
-import { emit } from "superagent";
 
 export default defineComponent({
   components: {
