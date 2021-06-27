@@ -49,6 +49,7 @@ export interface ExposureContentModel {
   contents: Array<ExposureItemModel>;
   contentExposureTeachingActivity: Array<TeachingActivityItemModel>;
   page: Array<ExposureItemMediaModel>;
+  thumbnailUrl: any;
 }
 export interface InteractiveModel {
   answerMode: number;

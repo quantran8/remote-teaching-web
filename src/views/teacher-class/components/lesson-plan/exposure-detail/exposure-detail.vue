@@ -1,12 +1,19 @@
 <template>
-  <div class="exposure-detail-container">
+  <div
+    :class="['exposure-detail-container', isContentBlock && 'content-block', isTeachingActivityBlock && 'teaching-block', isVCPBlock && 'vcp-block']"
+  >
     <div class="header-container">
       <!-- <BaseButton @click="onClickBack">Back</BaseButton> -->
-      <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
-        <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
-      </BaseButton>
-      <div class="exposure-title">{{ exposure.name }} ({{ exposure.duration }})</div>
-      <div class="exposure-info">
+      <div class="header-container__left" v-if="isVCPBlock || isTeachingActivityBlock">
+        <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
+          <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
+        </BaseButton>
+      </div>
+      <div :class="['header-container__left', isContentBlock && 'thumbnail']" v-if="isContentBlock">
+        <img class="" :src="listMedia[0]?.image?.url" />
+      </div>
+      <div class="exposure-title">{{ exposureTitle }}</div>
+      <div v-if="isContentBlock" class="exposure-info">
         <img class="exposure-info__icon-info" src="@/assets/images/info.png" @mouseover="toggleInformationBox" @mouseout="toggleInformationBox" />
         <span class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat vivamus
@@ -18,7 +25,7 @@
       </div>
     </div>
     <div class="exposure-content">
-      <ExposureItem :items="listMedia" @on-click-item="onClickItem" />
+      <ExposureItem :isContentBlock="isContentBlock" :items="listMedia" @on-click-item="onClickItem" />
     </div>
   </div>
 </template>

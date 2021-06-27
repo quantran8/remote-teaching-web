@@ -25,6 +25,8 @@ interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S
 const actions: LessonActions<LessonState, any> = {
   async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
     if (!payload) return;
+    console.log("payload", payload);
+
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
       await store.dispatch("loadContentSignature", {}, { root: true });
@@ -109,6 +111,7 @@ const actions: LessonActions<LessonState, any> = {
         items: items,
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
+        thumbnailURL: e.thumbnailUrl,
       };
     });
 
