@@ -28,7 +28,7 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import _ from "lodash";
+import _, { times } from "lodash";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -99,6 +99,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
+	let timeSendBandwidth = 0;
     if (!state.info || !state.teacher || !state.manager) return;
     await state.manager?.join({
       camera: state.teacher.videoEnabled,
@@ -117,11 +118,17 @@ const actions: ActionTree<TeacherRoomState, any> = {
         // Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
+        // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
+        if (timeSendBandwidth == 150) {
+          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`);
+          timeSendBandwidth = 0;
+        } else {
+          timeSendBandwidth += 1;
+        }
         if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", true);
         }

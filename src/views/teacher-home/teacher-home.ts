@@ -12,7 +12,9 @@ import { fmtMsg } from "@/commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
-import { JoinSessionModel } from "@/models/join-session.model.ts";
+import { JoinSessionModel } from "@/models/join-session.model";
+import DeviceDetector from "device-detector-js";
+
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -31,6 +33,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const deviceDetector = new DeviceDetector();
+    const device = deviceDetector.parse(navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
@@ -61,16 +65,17 @@ export default defineComponent({
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
+      const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
         const fp = await fpPromise;
         const result = await fp.get();
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: "",
-          device: "",
+          browser: device.client ? device.client.name : "",
+          device: device.device ? device.device.type : "",
           bandwidth: "",
-          resolution: "",
+          resolution: resolution,
           unit: unit,
           lesson: lesson,
           browserFingerprint: result.visitorId,
