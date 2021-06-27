@@ -10,7 +10,8 @@
         </BaseButton>
       </div>
       <div :class="['header-container__left', isContentBlock && 'thumbnail']" v-if="isContentBlock">
-        <img class="" :src="listMedia[0]?.image?.url" />
+        <img v-if="thumbnailContentURL.url" :src="thumbnailContentURL.url" />
+        <img v-if="!thumbnailContentURL.url" src="@/assets/teacher-class/default-thumbnail.svg" />
       </div>
       <div class="exposure-title">{{ exposureTitle }}</div>
       <div v-if="isContentBlock" class="exposure-info">

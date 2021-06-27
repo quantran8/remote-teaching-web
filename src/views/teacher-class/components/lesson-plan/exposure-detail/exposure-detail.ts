@@ -33,6 +33,7 @@ export default defineComponent({
           break;
       }
       listMedia.value = resultList
+        .filter((m: any) => m.media[0].image.url)
         .map((item: any) => {
           return item.media;
         })
@@ -61,7 +62,8 @@ export default defineComponent({
     const isContentBlock = computed(() => props.type === exposureTypes.CONTENT_BLOCK);
     const isVCPBlock = computed(() => props.type === exposureTypes.VCP_BLOCK);
     const isTeachingActivityBlock = computed(() => props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
-	
+    const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
+
     return {
       onClickItem,
       onClickBack,
@@ -73,6 +75,7 @@ export default defineComponent({
       isVCPBlock,
       isTeachingActivityBlock,
       exposureTitle,
+      thumbnailContentURL,
     };
   },
 });

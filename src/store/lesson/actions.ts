@@ -19,6 +19,7 @@ interface LessonActionsInterface<S, R> {
 
 const DEFAULT_CONTENT_BLOCK_ITEM_NAME = "Content";
 const DEFAULT_TEACHING_ACTIVITY_BLOCK_ITEM_NAME = "Teaching Activity";
+const DEFAULT_RESOLUTION = "1024X722";
 
 interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S, R> {}
 
@@ -76,7 +77,7 @@ const actions: LessonActions<LessonState, any> = {
             page: [
               {
                 id: c.teachingActivityId,
-                resolution: "1024X722",
+                resolution: DEFAULT_RESOLUTION,
                 sequence: c.sequence,
                 url: c.imageUrl,
               },
@@ -85,14 +86,13 @@ const actions: LessonActions<LessonState, any> = {
         : [];
       const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map(c => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
-          const url =
-            payload.contentStorageUrl + "GSv4/Classroom Materials/14/Card Packs/Vocabulary cards/GSv4-U14-CM-birdhouse- page-1.png" + signalture;
+          const url = p.url ? payload.contentStorageUrl + p.url + signalture : "";
           return {
             id: p.id, // need to confirm is contentExposureId or teachingActivity.id
             image: {
               url,
-              width: 1024, //not sent from BE => hard code
-              height: 722, //not sent from BE => hard code
+              width: parseInt(p.resolution.split("X")[0]),
+              height: parseInt(p.resolution.split("X")[1]),
             },
           };
         });
@@ -111,7 +111,7 @@ const actions: LessonActions<LessonState, any> = {
         items: items,
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
-        thumbnailURL: e.thumbnailUrl,
+        thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
       };
     });
 
