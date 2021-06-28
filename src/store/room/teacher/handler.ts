@@ -122,9 +122,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherDisconnect: (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherSetFocusTab: (payload: RoomModel) => {
+    onTeacherSetFocusTab: (payload: number) => {
       commit("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
+        classView: ClassViewFromValue(payload),
       });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
