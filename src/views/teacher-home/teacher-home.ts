@@ -41,6 +41,7 @@ export default defineComponent({
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
+    const popUpLoading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
     const haveClassActive = ref(false);
     const classActive = ref();
@@ -153,11 +154,13 @@ export default defineComponent({
     };
 
     const onStartClass = async (data: { unit: number; lesson: number }) => {
+      popUpLoading.value = true;
       if (!(await joinTheCurrentSession())) {
         if (infoStart.value) {
           await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
         }
       }
+      popUpLoading.value = false;
     };
 
     const onCancelStartClass = async () => {
@@ -262,6 +265,7 @@ export default defineComponent({
       onCancelStartClass,
       infoStart,
       messageStartClass,
+      popUpLoading,
     };
   },
 });

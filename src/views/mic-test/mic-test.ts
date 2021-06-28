@@ -13,6 +13,7 @@ export default defineComponent({
     },
     groupId: String,
     messageStartClass: String,
+    loading: Boolean,
   },
   components: {
     Select,
@@ -80,11 +81,11 @@ export default defineComponent({
     };
 
     const cancel = async () => {
-      emit("on-cancel");
+      await emit("on-cancel");
     };
 
     const joinSession = async () => {
-      emit("on-join-session", { unit: selectedUnit.value, lesson: selectedLesson.value });
+      await emit("on-join-session", { unit: selectedUnit.value, lesson: selectedLesson.value });
     };
 
     return {
