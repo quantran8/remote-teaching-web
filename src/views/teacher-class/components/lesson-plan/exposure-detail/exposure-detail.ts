@@ -34,7 +34,7 @@ export default defineComponent({
           break;
         case exposureTypes.CONTENT_BLOCK:
           resultList = props.exposure.contentBlockItems;
-          exposureTitle.value = `${props.exposure.name} ( ${props.exposure.duration})`;
+          exposureTitle.value = `${props.exposure.name}`;
           thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
           break;
         default:
