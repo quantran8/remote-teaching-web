@@ -106,6 +106,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      if (children.value) getNextSessionInfo();
       window.addEventListener("keyup", escapeEvent);
     });
 
