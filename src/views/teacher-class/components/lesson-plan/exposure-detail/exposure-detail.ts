@@ -1,22 +1,28 @@
-import { defineComponent, onMounted, ref, computed } from "vue";
+import { defineComponent, onMounted, ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 import { exposureTypes } from "../lesson-plan";
+import { Empty } from "ant-design-vue";
+
 export default defineComponent({
   emits: ["click-back", "click-media"],
   props: ["exposure", "type"],
   components: {
     ExposureItem,
+    Empty,
   },
-
   setup(props, { emit }) {
     const { dispatch } = useStore();
     const showInfo = ref(false);
     const listMedia = ref([]);
     const exposureTitle = ref("");
-
+    const thumbnailURLDefault = ref("");
+    const hasZeroTeachingContent = ref(true);
     onMounted(() => {
       let resultList = props.exposure.items;
+      if (props.exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
+        hasZeroTeachingContent.value = false;
+      }
       switch (props.type) {
         case exposureTypes.VCP_BLOCK:
           exposureTitle.value = `${props.exposure.name} ( ${props.exposure.duration})`;
@@ -24,10 +30,12 @@ export default defineComponent({
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
           resultList = props.exposure.teachingActivityBlockItems;
           exposureTitle.value = "Teaching Activity";
+
           break;
         case exposureTypes.CONTENT_BLOCK:
           resultList = props.exposure.contentBlockItems;
-          exposureTitle.value = "Content";
+          exposureTitle.value = `${props.exposure.name}`;
+          thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
           break;
         default:
           break;
@@ -35,6 +43,8 @@ export default defineComponent({
       listMedia.value = resultList
         .filter((m: any) => m.media[0].image.url)
         .map((item: any) => {
+          if (!item.media[0]) return;
+          item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
           return item.media;
         })
         .flat(1);
@@ -76,6 +86,8 @@ export default defineComponent({
       isTeachingActivityBlock,
       exposureTitle,
       thumbnailContentURL,
+      thumbnailURLDefault,
+      hasZeroTeachingContent,
     };
   },
 });

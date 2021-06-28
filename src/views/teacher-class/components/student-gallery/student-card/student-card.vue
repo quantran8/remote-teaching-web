@@ -1,13 +1,7 @@
 <template>
   <div
     v-if="isShow"
-    :class="[
-      'student',
-      false && 'student--speaking',
-      false && 'student--hand-raised',
-      focusedStudent && 'expand',
-      isOneToOneStudent && 'one-student-mode',
-    ]"
+    :class="['student', focusedStudent && 'expand', isOneToOneStudent && 'one-student-mode']"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{

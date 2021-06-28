@@ -20,7 +20,6 @@ interface LessonActionsInterface<S, R> {
 const DEFAULT_CONTENT_BLOCK_ITEM_NAME = "Content";
 const DEFAULT_TEACHING_ACTIVITY_BLOCK_ITEM_NAME = "Teaching Activity";
 const DEFAULT_RESOLUTION = "1024X722";
-
 interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S, R> {}
 
 const actions: LessonActions<LessonState, any> = {
@@ -100,6 +99,7 @@ const actions: LessonActions<LessonState, any> = {
           id: c.contentExposureId,
           name: c.imageName || DEFAULT_TEACHING_ACTIVITY_BLOCK_ITEM_NAME,
           media,
+          textContent: c?.teachingActivity?.text,
         };
       });
       return {
@@ -114,7 +114,6 @@ const actions: LessonActions<LessonState, any> = {
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
       };
     });
-
     const listUrl = exposures
       .map(expo => {
         const url = expo.items.map(item => {
