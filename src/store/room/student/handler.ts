@@ -192,9 +192,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherSetFocusTab: (payload: any) => {
+    onTeacherSetFocusTab: (payload: number) => {
       dispatch("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
+        classView: ClassViewFromValue(payload),
       });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
