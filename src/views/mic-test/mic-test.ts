@@ -13,6 +13,7 @@ export default defineComponent({
     },
     groupId: String,
     messageStartClass: String,
+    loading: Boolean,
   },
   components: {
     Select,
@@ -41,7 +42,14 @@ export default defineComponent({
 
     watch(props, () => {
       if (props.teacherClass && props.groupId) {
-        selectedUnit.value = 14;
+        const checkUnitExist = units.value.filter((unit: any) => {
+          return unit.id == props.teacherClass?.unit;
+        });
+        if (props.teacherClass?.unit && checkUnitExist.length > 0) {
+          selectedUnit.value = props.teacherClass?.unit;
+        } else {
+          selectedUnit.value = 14;
+        }
         getListLessonByUnit(props.teacherClass, props.groupId, selectedUnit.value);
       }
     });
@@ -54,14 +62,21 @@ export default defineComponent({
             lessons.value = response.data.map((lesson: any) => {
               return { id: lesson.sequence, number: lesson.sequence };
             });
-            selectedLesson.value = lessons.value[0].number;
+            const checkLessonExist = lessons.value.filter((lesson: any) => {
+              return lesson.id == props.teacherClass?.lessonNumber;
+            });
+            if (props.teacherClass?.lessonNumber && checkLessonExist.length > 0) {
+              selectedLesson.value = props.teacherClass?.lessonNumber;
+            } else {
+              selectedLesson.value = lessons.value[0].number;
+            }
           } else {
             lessons.value = [];
             selectedLesson.value = null;
           }
         }
       } catch (err) {
-        const message = err.body.message;
+        const message = err?.body?.message;
         if (message) {
           await store.dispatch("setToast", { message: message });
         }
@@ -80,11 +95,11 @@ export default defineComponent({
     };
 
     const cancel = async () => {
-      emit("on-cancel");
+      await emit("on-cancel");
     };
 
     const joinSession = async () => {
-      emit("on-join-session", { unit: selectedUnit.value, lesson: selectedLesson.value });
+      await emit("on-join-session", { unit: selectedUnit.value, lesson: selectedLesson.value });
     };
 
     return {

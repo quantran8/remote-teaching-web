@@ -12,19 +12,28 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   align-content: start;
-  //   overflow: auto;
-  //   padding: 16px 10px 16px 0;
   grid-gap: 10px;
   position: relative;
   @media (min-width: $lg) {
     grid-template-columns: repeat(6, 1fr);
   }
-  @media (min-width: $xl) {
-    grid-template-columns: 1fr 1fr 1fr;
+  @media screen and (min-width: $xl) and (max-width: 1480px){
+    grid-template-columns: repeat(2, 135px);
   }
-  @media (min-width: $xxl) {
+  @media screen and (min-width: 1480px) and (max-width: $large-lap){
+    grid-template-columns: repeat(3, 135px);
+  }
+  @media (min-width: $large-lap) {
     grid-template-columns: 1fr 1fr 1fr;
     // grid-gap: 20px;
     align-content: space-between;
+  }
+}
+
+.no-sidebar {
+  .student-list {
+    @media screen and (min-width: $xl) and (max-width: $large-lap){
+      grid-template-columns: 1fr 1fr 1fr;
+    }
   }
 }

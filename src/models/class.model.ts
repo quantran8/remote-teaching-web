@@ -32,6 +32,8 @@ export interface ClassModelSchedules {
   startDate: string;
   endDate: string;
   groups: GroupModelSchedules[];
+  lessonNumber: number;
+  unit: number;
 }
 
 export interface TeacherClassModel extends ClassModelSchedules {

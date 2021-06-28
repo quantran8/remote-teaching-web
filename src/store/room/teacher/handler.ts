@@ -122,9 +122,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherDisconnect: (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherSetFocusTab: (payload: RoomModel) => {
+    onTeacherSetFocusTab: (payload: number) => {
       commit("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
+        classView: ClassViewFromValue(payload),
       });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
@@ -154,7 +154,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
-      commit("lesson/setCurrentExposureItemMedia", { id: payload.pageSelected }, { root: true });
+      commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
     },
     onStudentRaisingHand: async (student: StudentModel) => {
       const payload = { id: student.id, raisingHand: student.isRaisingHand };

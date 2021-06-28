@@ -192,9 +192,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherSetFocusTab: (payload: any) => {
+    onTeacherSetFocusTab: (payload: number) => {
       dispatch("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
+        classView: ClassViewFromValue(payload),
       });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
@@ -227,7 +227,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
-      commit("lesson/setCurrentExposureItemMedia", { id: payload.pageSelected }, { root: true });
+      commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
     },
     onStudentRaisingHand: (payload: any) => {
       //   console.log(payload);

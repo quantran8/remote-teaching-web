@@ -8,6 +8,12 @@ import IconNextDisable from "@/assets/images/arrow-disable.png";
 import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 
+export const exposureTypes = {
+  VCP_BLOCK: "VPC_BLOCK",
+  CONTENT_BLOCK: "CONTENT_BLOCK",
+  TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
+};
+
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
   emits: ["open-gallery-mode"],
@@ -170,6 +176,7 @@ export default defineComponent({
       nextExposureItemMedia,
       iconNext,
       NEXT_EXPOSURE,
+      exposureTypes,
     };
   },
 });
