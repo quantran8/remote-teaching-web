@@ -4,7 +4,8 @@ import {
   CalendarSchedulesModel,
   SchedulesModel,
   ClassModelSchedules,
-  TeacherClassModel, TeacherClassCalendarModel
+  TeacherClassModel,
+  TeacherClassCalendarModel,
 } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { GetterTree } from "vuex";
