@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { Exposure, ExposureItemMedia, ExposureStatus, LessonState } from "./state";
+import { Exposure, ExposureItemMedia, ExposureStatus, LessonState, ExposureItem } from "./state";
 
 const getSeconds = (time: string) => {
   if (!time || time.indexOf(":") === -1) return 0;
@@ -52,7 +52,12 @@ const getters: LessonGetters<LessonState, any> = {
   nextExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
     if (!s.currentExposure) return;
     const groupMedia = [];
-    for (const item of s.currentExposure?.items) {
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+    ].filter((item: ExposureItem) => item.media[0]?.image?.url);
+    for (const item of combinedItems) {
       groupMedia.push(item.media);
     }
     const allMedia = groupMedia.flat();
@@ -67,7 +72,12 @@ const getters: LessonGetters<LessonState, any> = {
   prevExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
     if (!s.currentExposure) return;
     const groupMedia = [];
-    for (const item of s.currentExposure?.items) {
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+    ].filter((item: ExposureItem) => item.media[0]?.image?.url);
+    for (const item of combinedItems) {
       groupMedia.push(item.media);
     }
     const allMedia = groupMedia.flat();
