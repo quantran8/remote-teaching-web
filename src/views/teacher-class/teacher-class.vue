@@ -4,7 +4,7 @@
       class="tc__header"
       v-if="teacher"
       :teacher-name="teacher.name"
-      :className="roomInfo.classInfo.className"
+      :className="roomInfo ? roomInfo.classInfo.className : ''"
       @end="onClickEnd"
     ></teacher-page-header>
     <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
@@ -56,7 +56,6 @@
     <div :class="['tc__gallery', isSidebarCollapsed && 'no-sidebar']">
       <StudentGallery />
     </div>
-    <ErrorModal v-if="isClassNotActive" @dismiss="onClickCloseError" @confirm="onClickLeave" />
     <!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->
   </div>
 </template>

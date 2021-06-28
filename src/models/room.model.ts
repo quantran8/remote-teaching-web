@@ -51,6 +51,8 @@ export interface DrawingModel {
   studentShapes: UserShapeModel[];
   teacherShapes: UserShapeModel[];
   studentStrokes: Array<string>;
+  studentBrushstrokes: Array<string>;
+  shapes: UserShapeModel[];
 }
 
 export interface AnnotationModel {
@@ -76,7 +78,6 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
-  annotation: AnnotationModel;
 }
 export interface RoomModel {
   id: string;
@@ -98,4 +99,5 @@ export interface RoomModel {
   studentsAudio: Array<string>;
   globalStudentsAudio: Array<string>;
   isShowWhiteBoard: boolean;
+  annotation: AnnotationModel;
 }
