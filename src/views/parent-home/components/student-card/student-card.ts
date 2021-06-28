@@ -1,6 +1,8 @@
 import { StudentNextSessionModel } from "@/models";
 import { computed, defineComponent } from "vue";
 import moment from "moment";
+import { fmtMsg } from "@/commonui";
+import { ParentStudentCardLocale } from "@/locales/localeid";
 
 export default defineComponent({
   props: {
@@ -18,12 +20,23 @@ export default defineComponent({
   },
   setup(props) {
     const userAvatar = props.avatar ? props.avatar : "/assets/images/user-default.png";
+    const classGroupText = computed(() => fmtMsg(ParentStudentCardLocale.ClassGroup));
+    const startTimeText = computed(() => fmtMsg(ParentStudentCardLocale.StartTime));
+
     const convertDate = (time: string) => {
-      return moment(time).format("MM/DD - HH:mm");
+      let timeString = "";
+      if (time) {
+        timeString = startTimeText.value + moment(time).format("MM/DD - HH:mm");
+        if (timeString.includes("00:00")) {
+          timeString = timeString.replace(" - 00:00", "");
+        }
+      }
+      return timeString;
     };
     return {
       userAvatar,
       convertDate,
+      classGroupText,
     };
   },
 });
