@@ -6,13 +6,13 @@
       <p class="next-session-info__class">
         {{ classGroupText }}{{ nextSessionInfo && nextSessionInfo.classInfo.className
         }}{{ nextSessionInfo && nextSessionInfo.classInfo.groupName && "/" + nextSessionInfo.classInfo.groupName }}
+        <span class="indicator-container" v-if="nextSessionInfo && nextSessionInfo.sessionId">
+          <span class="indicator-container__out">
+            <span class="indicator-container__in"></span>
+          </span>
+        </span>
       </p>
       <p class="next-session-info__time">{{ nextSessionInfo && convertDate(nextSessionInfo.nextTime) }}</p>
-      <div class="indicator-container" v-if="nextSessionInfo && nextSessionInfo.sessionId">
-        <span class="indicator-container__out">
-          <span class="indicator-container__in"></span>
-        </span>
-      </div>
     </div>
   </BaseCard>
 </template>
