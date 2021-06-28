@@ -2,7 +2,7 @@
   <div class="lesson-container">
     <div class="lesson-container__header">
       <div class="lesson-container__header-title" :class="[isGalleryView && 'lesson-container__header-title--text-right']">
-        Unit 1:14
+        Unit {{ currentUnit }}:{{ currentLesson }}
       </div>
       <span @click="backToGalleryMode" class="lesson-container__header-back">
         <span v-if="isGalleryView">&#8250;</span>
@@ -24,6 +24,7 @@
       </div>
       <div class="activities">
         <div v-if="isShowExposureDetail">
+          <div>Hallo</div>
           <ExposureDetail :type="exposureTypes.VCP_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
           <ExposureDetail :type="exposureTypes.CONTENT_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
           <ExposureDetail :type="exposureTypes.TEACHING_ACTIVITY_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />

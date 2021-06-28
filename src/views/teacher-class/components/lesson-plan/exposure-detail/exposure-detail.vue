@@ -19,7 +19,9 @@
           <div v-if="!hasZeroTeachingContent">
             <span v-for="{ id, textContent } in exposure.teachingActivityBlockItems" :key="id"> + {{ textContent }}</span>
           </div>
-          <Empty v-if="hasZeroTeachingContent" />
+          <div v-if="hasZeroTeachingContent">
+            <Empty />
+          </div>
         </div>
       </div>
     </div>

@@ -102,7 +102,15 @@ const getters: LessonGetters<LessonState, any> = {
   },
   getPage(s: LessonState): string {
     const listMedia: string[] = [];
-    s.currentExposure?.items.map(item => {
+    if (!s.currentExposure) {
+      return "";
+    }
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+    ].filter((item: ExposureItem) => item.media[0]?.image?.url);
+    combinedItems.map(item => {
       item.media.map(media => {
         listMedia.push(media.id);
       });

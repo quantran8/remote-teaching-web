@@ -97,6 +97,12 @@ const getters: GetterTree<TeacherRoomState, any> = {
   listStudentLowBandWidth(state: TeacherRoomState): string[] {
     return state.listStudentLowBandWidth;
   },
+  currentLesson(state: TeacherRoomState): number {
+    return state.currentLesson;
+  },
+  currentUnit(state: TeacherRoomState): number {
+    return state.currentUnit;
+  },
 };
 
 export default getters;
