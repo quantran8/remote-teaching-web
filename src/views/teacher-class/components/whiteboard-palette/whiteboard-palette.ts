@@ -190,8 +190,8 @@ export default defineComponent({
       }
     };
     watch(selfStrokes, async () => {
-      await nextTick();
-      // renderSelfStrokes();
+      // await nextTick();
+      renderSelfStrokes();
     });
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -375,7 +375,7 @@ export default defineComponent({
     };
     const imgLoad = async () => {
       if (!canvas) return;
-      canvas.remove(...canvas.getObjects());
+      // canvas.remove(...canvas.getObjects());
       showHideWhiteboard.value = false;
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       await clickedTool(Tools.Cursor);
@@ -411,19 +411,29 @@ export default defineComponent({
       });
     };
     const renderStudentsShapes = () => {
+      console.log('renderStudentsShapes',studentShapes.value);
       if (!canvas && !studentShapes.value) return;
       if (studentShapes.value !== null && studentShapes.value !== undefined) {
-        studentShapes.value.forEach((item: any) => {
-          if (item.userId !== isTeacher.value.id) {
-            canvas.remove(
+        if(studentShapes.value.length>0){
+          studentShapes.value.forEach((item: any) => {
+            if (item.userId !== isTeacher.value.id) {
+              canvas.remove(
+                  ...canvas
+                      .getObjects()
+                      .filter((obj: any) => obj.type !== "path")
+                      .filter((obj: any) => obj.id === item.userId),
+              );
+              shapeRender(item, null);
+            }
+          });
+        }else {
+          canvas.remove(
               ...canvas
-                .getObjects()
-                .filter((obj: any) => obj.type !== "path")
-                .filter((obj: any) => obj.id === item.userId),
-            );
-            shapeRender(item, null);
-          }
-        });
+                  .getObjects()
+                  .filter((obj: any) => obj.type !== "path")
+          );
+        }
+
       }
       if (showHideWhiteboard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
@@ -434,13 +444,17 @@ export default defineComponent({
     });
     const renderStudentStrokes = () => {
       if (!canvas && !studentStrokes.value) return;
-      if (studentStrokes.value !== undefined && studentStrokes.value.length > 0) {
-        studentStrokes.value.forEach((s: any) => {
-          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
-            item.isOneToOne = null;
-            canvas.add(item);
+      if (studentStrokes.value !== undefined) {
+        if (studentStrokes.value.length > 0) {
+          studentStrokes.value.forEach((s: any) => {
+            const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+              item.isOneToOne = null;
+              canvas.add(item);
+            });
           });
-        });
+        } else {
+          canvas.remove(...canvas.getObjects("path"));
+        }
       }
       objectCanvasProcess();
     };
