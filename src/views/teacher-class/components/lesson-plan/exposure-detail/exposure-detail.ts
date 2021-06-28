@@ -20,6 +20,9 @@ export default defineComponent({
     const hasZeroTeachingContent = ref(true);
     onMounted(() => {
       let resultList = props.exposure.items;
+      if (props.exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
+        hasZeroTeachingContent.value = false;
+      }
       switch (props.type) {
         case exposureTypes.VCP_BLOCK:
           exposureTitle.value = `${props.exposure.name} ( ${props.exposure.duration})`;
@@ -27,14 +30,11 @@ export default defineComponent({
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
           resultList = props.exposure.teachingActivityBlockItems;
           exposureTitle.value = "Teaching Activity";
-          if (resultList.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
-            hasZeroTeachingContent.value = false;
-          }
-          break;
 
+          break;
         case exposureTypes.CONTENT_BLOCK:
           resultList = props.exposure.contentBlockItems;
-          exposureTitle.value = "Content";
+          exposureTitle.value = `${props.exposure.name} ( ${props.exposure.duration})`;
           thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
           break;
         default:

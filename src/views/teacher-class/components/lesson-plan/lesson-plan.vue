@@ -11,7 +11,7 @@
     </div>
     <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div id="lesson-container__remaining-time">
-        <p>Remaining times: {{ remainingTime }}</p>
+        <p>Remaining: {{ remainingTime }}</p>
         <p>
           Item: {{ activityStatistic }} <br />
           Page: {{ page }}
