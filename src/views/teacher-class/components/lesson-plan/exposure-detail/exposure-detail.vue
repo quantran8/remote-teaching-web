@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="exposure-content">
-      <ExposureItem :isContentBlock="isContentBlock" :items="listMedia" @on-click-item="onClickItem" />
+      <ExposureItem :isTeachingBlock="isTeachingActivityBlock" :isContentBlock="isContentBlock" :items="listMedia" @on-click-item="onClickItem" />
     </div>
   </div>
 </template>

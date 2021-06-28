@@ -25,6 +25,8 @@ interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S
 
 const actions: LessonActions<LessonState, any> = {
   async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
+    console.log("hello payload", payload);
+
     if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
@@ -100,6 +102,7 @@ const actions: LessonActions<LessonState, any> = {
           id: c.contentExposureId,
           name: c.imageName || DEFAULT_TEACHING_ACTIVITY_BLOCK_ITEM_NAME,
           media,
+          textContent: c?.teachingActivity?.text,
         };
       });
       return {
@@ -114,6 +117,9 @@ const actions: LessonActions<LessonState, any> = {
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
       };
     });
+
+	console.log('exposures', exposures);
+	
 
     const listUrl = exposures
       .map(expo => {

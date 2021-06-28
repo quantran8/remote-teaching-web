@@ -8,8 +8,15 @@
         :key="item.id"
         :class="{ 'item-active': item.id === currentExposureItemMedia?.id, 'content-block': isContent }"
       >
-        <img :src="item.image.url" class="media-image" />
-        <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
+        <img v-if="!isTeaching" :src="item.image.url" class="media-image" />
+        <div v-if="items.length > 1 && !isTeaching" class="item-tag">{{ index + 1 }}</div>
+        <Tooltip v-else placement="topRight">
+          <template #title>
+            <span>{{ item?.textContent }}</span>
+          </template>
+          <img :src="item.image.url" class="media-image" />
+          <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
+        </Tooltip>
       </div>
     </div>
   </div>

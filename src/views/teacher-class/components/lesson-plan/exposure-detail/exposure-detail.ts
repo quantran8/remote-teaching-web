@@ -2,13 +2,13 @@ import { defineComponent, onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 import { exposureTypes } from "../lesson-plan";
+
 export default defineComponent({
   emits: ["click-back", "click-media"],
   props: ["exposure", "type"],
   components: {
     ExposureItem,
   },
-
   setup(props, { emit }) {
     const { dispatch } = useStore();
     const showInfo = ref(false);
@@ -33,7 +33,7 @@ export default defineComponent({
           break;
       }
       listMedia.value = resultList
-        .filter((m: any) => m.media[0].image.url)
+        // .filter((m: any) => m.media[0].image.url)
         .map((item: any) => {
           return item.media;
         })
