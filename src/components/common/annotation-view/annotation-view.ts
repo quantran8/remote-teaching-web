@@ -358,8 +358,8 @@ export default defineComponent({
 
       const containerWidth = outerCanvasContainer.clientWidth;
       const scale = containerWidth / canvas.getWidth();
-      scaleRatio.value = scale;
       const zoom = canvas.getZoom() * scale;
+      scaleRatio.value = zoom;
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
     };
