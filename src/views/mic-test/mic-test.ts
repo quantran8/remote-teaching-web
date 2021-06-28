@@ -61,7 +61,7 @@ export default defineComponent({
           }
         }
       } catch (err) {
-        const message = err.body.message;
+        const message = err?.body?.message;
         if (message) {
           await store.dispatch("setToast", { message: message });
         }

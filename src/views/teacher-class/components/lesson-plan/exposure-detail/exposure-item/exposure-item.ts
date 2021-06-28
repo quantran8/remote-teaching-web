@@ -5,6 +5,7 @@ export default defineComponent({
   emits: ["on-click-item"],
   props: {
     items: Array,
+	isContentBlock: Boolean
   },
   setup(props, { emit }) {
     const store = useStore();
@@ -19,9 +20,11 @@ export default defineComponent({
     }) => {
       emit("on-click-item", item);
     };
+	const isContent = computed(() => props.isContentBlock);
     return {
       onClickItem,
       currentExposureItemMedia,
+	  isContent
     };
   },
 });

@@ -1,7 +1,6 @@
 <template>
   <div class="palette">
     <ToolsCanvas
-      v-if="currentExposureItemMedia"
       :selector-open="selectorOpen"
       :tool-selected="toolSelected"
       :stroke-width="strokeWidth"
