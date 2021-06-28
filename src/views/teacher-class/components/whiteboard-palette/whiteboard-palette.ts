@@ -411,7 +411,6 @@ export default defineComponent({
       });
     };
     const renderStudentsShapes = () => {
-      console.log('renderStudentsShapes',studentShapes.value);
       if (!canvas && !studentShapes.value) return;
       if (studentShapes.value !== null && studentShapes.value !== undefined) {
         if(studentShapes.value.length>0){
