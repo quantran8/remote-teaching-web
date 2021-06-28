@@ -1,4 +1,6 @@
-import { defineComponent } from "vue";
+import { StudentNextSessionModel } from "@/models";
+import { computed, defineComponent } from "vue";
+import moment from "moment";
 
 export default defineComponent({
   props: {
@@ -10,13 +12,18 @@ export default defineComponent({
       type: String,
       required: false,
     },
+    nextSessionInfo: {
+      type: Object as () => StudentNextSessionModel,
+    },
   },
   setup(props) {
-    const userAvatar = props.avatar
-      ? props.avatar
-      : "/assets/images/user-default.png";
+    const userAvatar = props.avatar ? props.avatar : "/assets/images/user-default.png";
+    const convertDate = (time: string) => {
+      return moment(time).format("MM/DD - HH:mm");
+    };
     return {
       userAvatar,
+      convertDate,
     };
   },
 });

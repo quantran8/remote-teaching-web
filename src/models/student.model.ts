@@ -17,3 +17,15 @@ export interface StudentModel extends UserModel {
   connectionStatus: number;
   isPalette: boolean;
 }
+
+export interface StudentNextSessionModel {
+  classInfo: {
+    classId: string;
+    className: string;
+    groupId: string;
+    groupName: string;
+  };
+  nextTime: string;
+  sessionId: string;
+  studentId: string;
+}
