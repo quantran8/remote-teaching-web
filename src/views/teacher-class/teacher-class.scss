@@ -47,7 +47,10 @@
     grid-column-start: 1;
     grid-column-end: 3;
     @media (max-width: $large-lap) {
-      max-width: 470px;
+      //max-width: 470px;
+    }
+    @media screen and (min-width: $xl) and (max-width: $xxl) {
+      padding-right: 20px;
     }
     &.no-sidebar {
       max-width: 100%;
@@ -64,7 +67,6 @@
     }
   }
   @media (min-width: $xl) {
-    grid-template-columns: auto 1fr 35%;
     grid-template-rows: auto 1fr;
 
     &__header {
@@ -75,10 +77,15 @@
       grid-column-start: unset;
       grid-column-end: unset;
       height: 100%;
-      //   overflow: hidden;
     }
     &__content {
       flex-direction: column;
+    }
+  }
+  @media screen and (min-width: $xl) and (max-width: $large-lap) {
+    grid-template-columns: auto 1fr auto;
+    &.no-sidebar {
+      grid-template-columns: auto 1fr 1fr;
     }
   }
   @media (min-width: 1600px) {

@@ -25,20 +25,20 @@
   }
   position: relative;
   margin: 0 auto;
-
-  width: 275px;
+  width: 250px;
   height: 190px;
+  @media (min-width: $xl) and (max-width: $xxl){
+    width: 135px;
+    height: 135px;
+  }
+  @media (min-width: $xxl) and (max-width: $large-lap){
+    width: 160px;
+    height: 150px;
+  }
   &.one-student-mode {
     width: 90%;
     height: 70%;
   }
-  @media (max-width: 1850px) {
-    width: 135px;
-    height: 135px;
-  }
-  //   @media (max-width: 1400px) {
-  //     height: 100%;
-  //   }
   border-radius: 5px;
   &__content {
     width: 100%;
@@ -211,6 +211,19 @@
   @media (min-width: $xl) {
     &__name {
       font-size: 16px;
+    }
+  }
+}
+
+.has-sidebar {
+  .student {
+    @media (min-width: $xl) {
+      width: 135px;
+      height: 135px;
+    }
+    @media (min-width: $large-lap){
+      width: 160px;
+      height: 150px;
     }
   }
 }
