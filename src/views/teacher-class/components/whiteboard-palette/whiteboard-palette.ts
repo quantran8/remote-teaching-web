@@ -515,7 +515,7 @@ export default defineComponent({
       }
     };
     watch(selfShapes, () => {
-      renderSelfShapes();
+      // renderSelfShapes();
     });
     watch(oneAndOne, async () => {
       if (!canvas) return;
