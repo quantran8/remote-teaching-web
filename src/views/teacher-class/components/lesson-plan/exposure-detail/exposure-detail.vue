@@ -17,7 +17,7 @@
         <img class="exposure-info__icon-info" src="@/assets/images/info.png" @mouseover="toggleInformationBox" @mouseout="toggleInformationBox" />
         <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
           <div v-if="!hasZeroTeachingContent">
-            <span v-for="{ id, textContent } in exposure.teachingActivityBlockItems" :key="id"> + {{ textContent }}</span>
+            <div v-for="{ id, textContent } in exposure.teachingActivityBlockItems" :key="id">+ {{ textContent }}</div>
           </div>
           <div v-if="hasZeroTeachingContent">
             <Empty />

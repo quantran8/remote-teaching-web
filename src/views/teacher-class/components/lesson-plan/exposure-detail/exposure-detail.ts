@@ -3,6 +3,7 @@ import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 import { exposureTypes } from "../lesson-plan";
 import { Empty } from "ant-design-vue";
+import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 
 export default defineComponent({
   emits: ["click-back", "click-media"],
@@ -25,7 +26,7 @@ export default defineComponent({
       }
       switch (props.type) {
         case exposureTypes.VCP_BLOCK:
-          exposureTitle.value = `${props.exposure.name} ( ${props.exposure.duration})`;
+          exposureTitle.value = `${props.exposure.name} (${secondsToTimeStr(getSeconds(props.exposure.duration))})`;
           break;
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
           resultList = props.exposure.teachingActivityBlockItems;

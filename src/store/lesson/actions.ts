@@ -114,6 +114,7 @@ const actions: LessonActions<LessonState, any> = {
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
       };
     });
+	
     const listUrl = exposures
       .map(expo => {
         const url = expo.items.map(item => {
