@@ -1,5 +1,5 @@
 <template>
-  <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar']">
+  <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', oneAndOneStatus !== '' ? 'mode-one-one' : '']">
     <teacher-page-header
       class="tc__header"
       v-if="teacher"

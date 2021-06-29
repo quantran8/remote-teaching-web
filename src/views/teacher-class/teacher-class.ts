@@ -81,7 +81,7 @@ export default defineComponent({
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
     });
-
+    const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
@@ -219,6 +219,7 @@ export default defineComponent({
       isLessonPlan,
       currentExposureItemMedia,
       isBlackOutContent,
+      oneAndOneStatus,
     };
   },
 });
