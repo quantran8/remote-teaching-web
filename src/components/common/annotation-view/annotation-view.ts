@@ -171,7 +171,7 @@ export default defineComponent({
     };
     watch(studentShapes, () => {
       studentSharingShapes();
-      selfStudentShapes();
+      // selfStudentShapes();
     });
     const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
       if (dataShapes) {
