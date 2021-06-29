@@ -10,7 +10,7 @@
       <div class="description">
         <span v-if="type">{{ type }}</span>
         <span v-if="type" class="dot"></span>
-        <span>{{ duration }}</span>
+        <span>{{ formattedDuration }}</span>
       </div>
     </div>
     <div class="item-right" v-if="isCompleted">
