@@ -82,7 +82,7 @@ export default defineComponent({
       let right = 0;
       const { width } = studentRef.value.getBoundingClientRect();
       if (width + 10 <= studentRef.value.offsetLeft) {
-        right = 85;
+        right = width - 50;
       }
       console.log(studentRef.value.getBoundingClientRect(), "llllllllllllll");
       currentPosition.value = {
