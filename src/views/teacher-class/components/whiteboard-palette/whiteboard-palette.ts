@@ -48,6 +48,7 @@ export default defineComponent({
     const modeAnnotation: Ref<number> = ref(-1);
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
+    const firstLoadImage: Ref<boolean> = ref(false);
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -375,7 +376,11 @@ export default defineComponent({
     };
     const imgLoad = async () => {
       if (!canvas) return;
-      // canvas.remove(...canvas.getObjects());
+      if (!firstLoadImage.value) {
+        firstLoadImage.value = true;
+      }else{
+        canvas.remove(...canvas.getObjects());
+      }
       showHideWhiteboard.value = false;
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       await clickedTool(Tools.Cursor);
@@ -426,11 +431,11 @@ export default defineComponent({
             }
           });
         }else {
-          canvas.remove(
-              ...canvas
-                  .getObjects()
-                  .filter((obj: any) => obj.type !== "path")
-          );
+          // canvas.remove(
+          //     ...canvas
+          //         .getObjects()
+          //         .filter((obj: any) => obj.type !== "path")
+          // );
         }
 
       }
@@ -443,7 +448,7 @@ export default defineComponent({
     });
     const renderStudentStrokes = () => {
       if (!canvas && !studentStrokes.value) return;
-      if (studentStrokes.value !== undefined) {
+      if (studentStrokes.value) {
         if (studentStrokes.value.length > 0) {
           studentStrokes.value.forEach((s: any) => {
             const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
@@ -452,7 +457,7 @@ export default defineComponent({
             });
           });
         } else {
-          canvas.remove(...canvas.getObjects("path"));
+          // canvas.remove(...canvas.getObjects("path"));
         }
       }
       objectCanvasProcess();
