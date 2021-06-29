@@ -1,5 +1,6 @@
 import { ExposureStatus, ExposureType } from "@/store/lesson/state";
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
+import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 
 const exposureIcon = (type: ExposureType) => {
   let icon = "icon-bigbook";
@@ -43,9 +44,11 @@ export default defineComponent({
   setup(props) {
     const activityIcon = exposureIcon(props.type);
     const isCompleted = props.status === ExposureStatus.COMPLETED;
+    const formattedDuration = computed(() => secondsToTimeStr(getSeconds(props.duration)));
     return {
       activityIcon,
       isCompleted,
+	  formattedDuration
     };
   },
 });
