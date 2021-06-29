@@ -44,10 +44,7 @@ export interface AgoraEventHandler {
   ): void;
   onLocalNetworkUpdate(payload: any): void;
 }
-
-const DEFAULT_DEBOUNCE = 600;
 export class AgoraClient implements AgoraClientSDK {
-  timeoutId: any;
   _client?: IAgoraRTCClient;
   _options: AgoraClientOptions;
   _cameraTrack?: ICameraVideoTrack;
@@ -79,7 +76,6 @@ export class AgoraClient implements AgoraClientSDK {
   }
   constructor(options: AgoraClientOptions) {
     this._options = options;
-    this.timeoutId = null;
   }
   joined: boolean = false;
   publishedVideo: boolean = false;
@@ -238,25 +234,23 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
+    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
+    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
+    for (let studentId of unSubscribeVideos) {
+      await this._unSubscribe(studentId, "video");
     }
-    this.timeoutId = setTimeout(async () => {
-      const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
-      const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
-      for (let studentId of unSubscribeVideos) {
-        await this._unSubscribe(studentId, "video");
-      }
-      for (let studentId of unSubscribeAudios) {
-        await this._unSubscribe(studentId, "audio");
-      }
-      for (let studentId of videos) {
-        await this._subscribeVideo(studentId);
-      }
-      for (let studentId of audios) {
-        await this._subscribeAudio(studentId);
-      }
-    }, DEFAULT_DEBOUNCE);
+
+    for (let studentId of unSubscribeAudios) {
+      await this._unSubscribe(studentId, "audio");
+    }
+
+    for (let studentId of videos) {
+      await this._subscribeVideo(studentId);
+    }
+
+    for (let studentId of audios) {
+      await this._subscribeAudio(studentId);
+    }
   }
 
   async _subscribeAudio(userId: string) {
