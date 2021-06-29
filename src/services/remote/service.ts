@@ -33,12 +33,12 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     });
   }
 
-  putTeacherBandwidth(bandwidth: string): Promise<any> {
-    return this.update("logs/teacher?bandwidth=" + bandwidth);
+  putTeacherBandwidth(bandwidth: string, resolution: string): Promise<any> {
+    return this.update(`logs/teacher?bandwidth=${bandwidth}&resolution=${resolution}&`);
   }
 
-  putStudentBandwidth(studentId: string, bandwidth: string): Promise<any> {
-    return this.update("logs/student/" + studentId + "?bandwidth=" + bandwidth);
+  putStudentBandwidth(studentId: string, bandwidth: string, resolution: string): Promise<any> {
+    return this.update(`logs/student/${studentId}?bandwidth=${bandwidth}&resolution=${resolution}&`);
   }
 
   acceptPolicy(role: string): Promise<any> {

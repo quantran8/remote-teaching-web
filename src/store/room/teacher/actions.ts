@@ -99,7 +99,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
-	let timeSendBandwidth = 0;
+    let timeSendBandwidth = 0;
     if (!state.info || !state.teacher || !state.manager) return;
     await state.manager?.join({
       camera: state.teacher.videoEnabled,
@@ -124,7 +124,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
         // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
         if (timeSendBandwidth == 150) {
-          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`);
+          const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`, resolution);
           timeSendBandwidth = 0;
         } else {
           timeSendBandwidth += 1;
