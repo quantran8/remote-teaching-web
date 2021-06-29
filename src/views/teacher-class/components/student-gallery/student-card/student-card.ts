@@ -79,9 +79,15 @@ export default defineComponent({
     const currentPosition = ref<any>(null);
     const handleResize = debounce(() => {
       if (!studentRef.value) return;
+      let right = 0;
+      const { width } = studentRef.value.getBoundingClientRect();
+      if (width + 10 <= studentRef.value.offsetLeft) {
+        right = width - 50;
+      }
       currentPosition.value = {
         x: studentRef.value.offsetLeft,
         y: studentRef.value.offsetTop,
+        right: right,
       };
     }, 100);
     onMounted(() => {
