@@ -4,29 +4,35 @@
   >
     <div class="header-container">
       <!-- <BaseButton @click="onClickBack">Back</BaseButton> -->
-      <div class="header-container__left" v-if="isVCPBlock || isTeachingActivityBlock">
+      <div class="header-container__left" v-if="isVCPBlock">
         <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
           <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
         </BaseButton>
       </div>
       <div :class="['header-container__left', isContentBlock && 'thumbnail']" v-if="isContentBlock">
-        <img v-if="thumbnailContentURL.url" :src="thumbnailContentURL.url" />
-        <img v-if="!thumbnailContentURL.url" src="@/assets/teacher-class/default-thumbnail.svg" />
+        <img v-if="thumbnailContentURL" :src="thumbnailURLDefault" />
       </div>
       <div class="exposure-title">{{ exposureTitle }}</div>
       <div v-if="isContentBlock" class="exposure-info">
         <img class="exposure-info__icon-info" src="@/assets/images/info.png" @mouseover="toggleInformationBox" @mouseout="toggleInformationBox" />
-        <span class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat vivamus
-          at augue eget arcu dictum varius duis. Vitae elementum curabitur vitae nunc. Elementum sagittis vitae et leo duis ut diam quam nulla. Lectus
-          urna duis convallis convallis tellus. Suspendisse faucibus interdum posuere lorem ipsum. Adipiscing enim eu turpis egestas pretium. Nibh
-          nisl condimentum id venenatis a condimentum vitae. Volutpat commodo sed egestas egestas fringilla phasellus. Sed lectus vestibulum mattis
-          ullamcorper velit sed.
-        </span>
+        <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
+          <div v-if="!hasZeroTeachingContent">
+            <span v-for="{ id, textContent } in exposure.teachingActivityBlockItems" :key="id"> + {{ textContent }}</span>
+          </div>
+          <div v-if="hasZeroTeachingContent">
+            <Empty />
+          </div>
+        </div>
       </div>
     </div>
     <div class="exposure-content">
-      <ExposureItem :isContentBlock="isContentBlock" :items="listMedia" @on-click-item="onClickItem" />
+      <ExposureItem
+        :teachingContent="exposure.teachingActivityBlockItems"
+        :isTeachingBlock="isTeachingActivityBlock"
+        :isContentBlock="isContentBlock"
+        :items="listMedia"
+        @on-click-item="onClickItem"
+      />
     </div>
   </div>
 </template>

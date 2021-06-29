@@ -2,7 +2,7 @@ import { ExposureStatus, ExposureType } from "@/store/lesson/state";
 import { defineComponent } from "vue";
 
 const exposureIcon = (type: ExposureType) => {
-  let icon = "";
+  let icon = "icon-bigbook";
   switch (type) {
     case ExposureType.ACTIVITY:
       icon = "icon-bigbook";
@@ -45,7 +45,7 @@ export default defineComponent({
     const isCompleted = props.status === ExposureStatus.COMPLETED;
     return {
       activityIcon,
-      isCompleted
+      isCompleted,
     };
   },
 });

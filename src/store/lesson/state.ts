@@ -51,6 +51,7 @@ export interface ExposureItem {
   id: string;
   name: string;
   media: ExposureItemMedia[];
+  textContent?: string;
 }
 
 export interface ExposureItemMedia {

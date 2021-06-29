@@ -37,10 +37,13 @@ const mutations: LessonMutation<LessonState> = {
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
-    const combinedItems = [...s.currentExposure.items, ...s.currentExposure.teachingActivityBlockItems, ...s.currentExposure.contentBlockItems];
+    const combinedItems = [...s.currentExposure.items, ...s.currentExposure.contentBlockItems, ...s.currentExposure.teachingActivityBlockItems];
     for (const item of combinedItems) {
-      s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
-      if (s.currentExposureItemMedia) break;
+      const matchItemMedia = item.media.find(m => m.id === p.id);
+      if (matchItemMedia) {
+        s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
+        if (s.currentExposureItemMedia) break;
+      }
     }
   },
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {

@@ -86,6 +86,8 @@ const mutations: TeacherRoomMutation<State> = {
   setRoomInfo(s: State, p: RoomModel): void {
     s.info = p;
     s.idOne = p.studentOneToOne ? p.studentOneToOne : "";
+    s.currentLesson = p.classInfo?.lesson;
+    s.currentUnit = p.classInfo?.unit;
     s.teacher = {
       id: p.teacher.id,
       name: p.teacher.name,

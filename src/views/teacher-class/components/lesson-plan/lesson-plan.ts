@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref, watch, onBeforeUnmount, onBeforeMount, onUnmounted } from "vue";
+import { computed, defineComponent, ref, watch, onUnmounted, onMounted } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
@@ -22,6 +22,8 @@ export default defineComponent({
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(() => getters["lesson/activityStatistic"]);
     const currentExposure = computed(() => getters["lesson/currentExposure"]);
+    const currentLesson = computed(() => getters["teacherRoom/currentLesson"]);
+    const currentUnit = computed(() => getters["teacherRoom/currentUnit"]);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
     const progress = computed(() => getters["lesson/progressStatistic"]);
     const remainingTime = computed(() => getters["lesson/remainingTimeStatistic"]);
@@ -62,6 +64,15 @@ export default defineComponent({
         isBlackOut: exposure.type === ExposureType.TRANSITION,
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
+      const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems].filter(
+        item => item.media[0]?.image?.url,
+      )[0]?.id;
+      setTimeout(() => {
+        dispatch("teacherRoom/setCurrentExposureMediaItem", {
+          id: firstItemMediaNewExposureId,
+        });
+      }, 0);
+
       await dispatch("teacherRoom/setMode", {
         mode: 1,
       });
@@ -151,7 +162,7 @@ export default defineComponent({
         onClickPrevNextMedia(PREV_EXPOSURE);
       }
     };
-    onBeforeMount(() => {
+    onMounted(() => {
       window.addEventListener("keydown", handleKeyDown);
     });
 
@@ -177,6 +188,8 @@ export default defineComponent({
       iconNext,
       NEXT_EXPOSURE,
       exposureTypes,
+      currentLesson,
+      currentUnit,
     };
   },
 });

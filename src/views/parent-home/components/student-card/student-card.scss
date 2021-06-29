@@ -14,7 +14,8 @@
   justify-content: center;
   max-height: 25px;
   &__class {
-    display: block;
+    display: flex;
+    flex-direction: row;
     height: 10px;
     color: rgb(112, 110, 110);
   }
@@ -30,11 +31,9 @@
 }
 
 .indicator-container {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: row;
+  display: inline-flex;
+  margin-left: 20px;
+  margin-top: 10px;
 
   &__out {
     width: 15px;
