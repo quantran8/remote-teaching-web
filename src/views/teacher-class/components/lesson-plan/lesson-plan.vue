@@ -2,7 +2,9 @@
   <div class="lesson-container">
     <div class="lesson-container__header">
       <div class="lesson-container__header-title" :class="[isGalleryView && 'lesson-container__header-title--text-right']">
-        Unit {{ currentUnit }}:{{ currentLesson }}
+        <span class="lesson-container__header-title--wrap">
+          <span class="lesson-container__header-title--wrap__unit"> Unit: {{ currentUnit }} </span><span class="lesson-container__header-title--wrap__lesson"> (Lesson {{ currentLesson }})</span>
+        </span>
       </div>
       <span @click="backToGalleryMode" class="lesson-container__header-back">
         <span v-if="isGalleryView">&#8250;</span>
