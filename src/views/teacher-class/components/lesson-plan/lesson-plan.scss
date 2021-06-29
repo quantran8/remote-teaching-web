@@ -20,8 +20,19 @@
       padding: 10px 15px;
       font-size: 24px;
       &--text-right {
-        // text-align: right;
         margin-right: 20px;
+      }
+      &--wrap {
+        border-bottom: 3px solid white;
+        display: inline-block;
+        &__lesson {
+          font-size: 18px;
+          display: inline-block;
+        }
+        &__unit {
+          display: inline-block;
+          margin-right: 10px;
+        }
       }
     }
 
