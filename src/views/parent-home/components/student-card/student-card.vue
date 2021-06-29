@@ -2,10 +2,9 @@
   <BaseCard class="user-container">
     <img class="user-avatar" :src="userAvatar" />
     <div class="user-name">{{ name }}</div>
-    <div class="next-session-info mt-20">
+    <div class="next-session-info mt-20" v-if="nextSessionInfo">
       <p class="next-session-info__class">
-        {{ classGroupText }}{{ nextSessionInfo && nextSessionInfo.classInfo.className
-        }}{{ nextSessionInfo && nextSessionInfo.classInfo.groupName && "/" + nextSessionInfo.classInfo.groupName }}
+        {{ getInfo(nextSessionInfo) }}
         <span class="indicator-container" v-if="nextSessionInfo && nextSessionInfo.sessionId">
           <span class="indicator-container__out">
             <span class="indicator-container__in"></span>
