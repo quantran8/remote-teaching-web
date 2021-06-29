@@ -22,13 +22,15 @@ export default defineComponent({
     const userAvatar = props.avatar ? props.avatar : "/assets/images/user-default.png";
     const classGroupText = computed(() => fmtMsg(ParentStudentCardLocale.ClassGroup));
     const startTimeText = computed(() => fmtMsg(ParentStudentCardLocale.StartTime));
-
-    const getInfo = (nextSessionInfo: any) => {
+    const getInfo = () => {
       let info = "";
-      if (!nextSessionInfo) return info;
-      info = classGroupText.value + nextSessionInfo.classInfo.className;
-      if (nextSessionInfo.classInfo.groupName) {
-        info += "/" + nextSessionInfo.classInfo.groupName;
+      if (!props.nextSessionInfo || !props.nextSessionInfo.classInfo) {
+        return info;
+      }
+
+      info = classGroupText.value + props.nextSessionInfo.classInfo.className;
+      if (props.nextSessionInfo.classInfo.groupName) {
+        info += "/" + props.nextSessionInfo.classInfo.groupName;
       }
       return info;
     };

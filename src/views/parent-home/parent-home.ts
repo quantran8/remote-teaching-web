@@ -77,11 +77,16 @@ export default defineComponent({
     const studentNextSessionInfo = (childrenId: string) => {
       const info = listSessionInfo.value.filter((session: any) => {
         return session.studentId == childrenId;
-      })[0];
-      return info;
+      });
+      if (info) {
+        return info[0];
+      }
+      return null;
     };
-    watch(children, () => {
-      if (children.value) getNextSessionInfo();
+    watch(children, async () => {
+      if (children.value) {
+        await getNextSessionInfo();
+      }
     });
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
@@ -106,7 +111,9 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      if (children.value) getNextSessionInfo();
+      if (children.value) {
+        await getNextSessionInfo();
+      }
       window.addEventListener("keyup", escapeEvent);
     });
 
