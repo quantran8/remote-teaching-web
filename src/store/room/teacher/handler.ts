@@ -116,6 +116,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
+    onTeacherDisableAllStudentPallete: async (payload: any) => {
+      await commit("teacherRoom/disableAnnotationStatus", payload, { root: true });
+    },
+    onTeacherToggleStudentPallete: async (payload: any) => {
+      await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
+    },
     onTeacherEndClass: (payload: any) => {
       //   console.log(payload);
     },
@@ -258,12 +264,6 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     },
     onTeacherDrawLaser: (payload: any) => {
       //   console.log(payload);
-    },
-    onTeacherDisableAllStudentPallete: async (payload: any) => {
-      await commit("teacherRoom/disableAnnotationStatus", payload, { root: true });
-    },
-    onTeacherToggleStudentPallete: async (payload: any) => {
-      await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: any) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });

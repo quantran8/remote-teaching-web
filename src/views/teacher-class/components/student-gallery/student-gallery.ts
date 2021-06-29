@@ -55,7 +55,11 @@ export default defineComponent({
     };
 
     const onClickDisableAll = async () => {
-      await dispatch("teacherRoom/disableAllAnnotation");
+      await dispatch("teacherRoom/disableAllStudents");
+    };
+
+    const onClickEnableAll = async () => {
+      await dispatch("teacherRoom/enableAllStudents");
     };
 
     const previousExposure = computed(() => getters["lesson/previousExposure"]);
@@ -82,6 +86,7 @@ export default defineComponent({
       onClickUnmuteAll,
       onClickStickerAll,
       onClickDisableAll,
+      onClickEnableAll,
       timeCount,
       backToClass
     };

@@ -17,7 +17,7 @@ export default defineComponent({
       if (timeoutId.value) {
         clearTimeout(timeoutId.value);
       }
-      const hasMessage = !!(toast.value.message || toast.value.bigIcon);
+      const hasMessage = !!(toast.value.message || toast.value.bigIcon || toast.value.icon);
       if (toast.value && hasMessage) {
         setTimeout(async () => {
           if (toast.value.isPlayingSound) {

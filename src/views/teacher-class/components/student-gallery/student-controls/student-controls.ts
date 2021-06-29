@@ -2,13 +2,14 @@ import { computed, defineComponent, inject } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
-  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all", "disable-all"],
+  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all", "disable-all", "enable-all"],
 
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
 
     const isAllVideoHidden = computed(() => getters["teacherRoom/isAllVideoHidden"]);
     const isAllAudioMuted = computed(() => getters["teacherRoom/isAllAudioMuted"]);
+    const isAllPaletteHidden = computed(() => getters["teacherRoom/isAllPaletteHidden"]);
 
     const onClickToggleVideo = () => {
       emit(isAllVideoHidden.value ? "show-all" : "hide-all");
@@ -22,8 +23,8 @@ export default defineComponent({
       emit("add-sticker-all");
     };
 
-    const onClickDisableAll = async () => {
-      emit("disable-all");
+    const onClickDisableAll = () => {
+      emit(isAllPaletteHidden.value ? "enable-all" : "disable-all");
     };
 
     const isSidebarCollapsed: any = inject("isSidebarCollapsed");
@@ -36,7 +37,8 @@ export default defineComponent({
       onClickToggleAudio,
       isAllVideoHidden,
       isAllAudioMuted,
-	  isSidebarCollapsed
+      isAllPaletteHidden,
+      isSidebarCollapsed,
     };
   },
 });
