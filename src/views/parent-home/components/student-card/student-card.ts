@@ -23,6 +23,16 @@ export default defineComponent({
     const classGroupText = computed(() => fmtMsg(ParentStudentCardLocale.ClassGroup));
     const startTimeText = computed(() => fmtMsg(ParentStudentCardLocale.StartTime));
 
+    const getInfo = (nextSessionInfo: any) => {
+      let info = "";
+      if (!nextSessionInfo) return info;
+      info = classGroupText.value + nextSessionInfo.classInfo.className;
+      if (nextSessionInfo.classInfo.groupName) {
+        info += "/" + nextSessionInfo.classInfo.groupName;
+      }
+      return info;
+    };
+
     const convertDate = (time: string) => {
       let timeString = "";
       if (time) {
@@ -33,10 +43,12 @@ export default defineComponent({
       }
       return timeString;
     };
+
     return {
       userAvatar,
       convertDate,
       classGroupText,
+      getInfo,
     };
   },
 });
