@@ -12,7 +12,8 @@
     ref="studentRef"
     :style="{
       top: focusedStudent && !isOneToOneStudent ? `${currentPosition?.y}px` : '',
-      left: focusedStudent && !isOneToOneStudent ? `${currentPosition?.x}px` : '',
+      left: focusedStudent && !isOneToOneStudent && currentPosition.right < 85 ? `${currentPosition?.x}px` : '',
+      right: focusedStudent && !isOneToOneStudent && currentPosition.right === 85 ? `${currentPosition?.right}px` : '',
       position: focusedStudent && !isOneToOneStudent ? 'sticky' : '',
       transform: focusedStudent && !isOneToOneStudent ? 'scale(2)' : '',
     }"
