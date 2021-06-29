@@ -4,7 +4,7 @@
     <div class="user-name">{{ name }}</div>
     <div class="next-session-info mt-20" v-if="nextSessionInfo">
       <p class="next-session-info__class">
-        {{ getInfo(nextSessionInfo) }}
+        {{ getInfo() }}
         <span class="indicator-container" v-if="nextSessionInfo && nextSessionInfo.sessionId">
           <span class="indicator-container__out">
             <span class="indicator-container__in"></span>
