@@ -91,6 +91,7 @@ export interface ClassRoomModel {
   classId: string;
   className: string;
   groupId: string;
+  groupName: string;
   lesson: number;
   unit: number;
 }

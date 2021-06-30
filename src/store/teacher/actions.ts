@@ -26,6 +26,7 @@ const actions: ActionTree<TeacherState, any> = {
       if (payload.browserFingerPrinting != null) {
         const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
         commit("setClassRoom", responseActive.data);
+        commit("setClassOnline", responseActive.data.classInfo);
       }
     } catch (err) {
       // process with err
