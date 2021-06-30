@@ -18,7 +18,9 @@
     <p v-if="messageStartClass" class="message">{{ messageStartClass }}</p>
     <Row type="flex" justify="end">
       <Button class="btn-cancel-policy" @click="cancel">Cancel</Button>
-      <Button class="ml-10 btn-loading" :loading="loading" type="primary" @click="joinSession">Join session</Button>
+      <Button class="ml-10 btn-loading" :disabled="!selectedUnit || !selectedLesson" :loading="loading" type="primary" @click="joinSession"
+        >Join session</Button
+      >
     </Row>
   </Modal>
 </template>

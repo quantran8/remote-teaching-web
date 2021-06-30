@@ -43,7 +43,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       device: device.device ? device.device.type : "",
       resolution,
       bandwidth,
-      browserFingerPrinting: bfp,
+      browserFingerprint: bfp,
     });
   }
 
