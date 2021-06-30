@@ -7,7 +7,7 @@ import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
-import { ClassView, StudentState } from "@/store/room/interface";
+import { ClassView, LessonInfo, StudentState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
@@ -21,6 +21,7 @@ import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
+import { RemoteTeachingService } from "@/services";
 
 const fpPromise = FingerprintJS.load();
 
@@ -80,6 +81,7 @@ export default defineComponent({
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
@@ -114,6 +116,18 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
+
+    watch(lessonInfo, async () => {
+      console.log(lessonInfo.value.unit + "  " + lessonInfo.value.lesson);
+
+      try {
+        const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value.unit, lessonInfo.value.lesson);
+        console.log(response);
+        //console.log(lessonInfo.value.unit + "  " + lessonInfo.value.lesson);
+      } catch (error){
+        console.log(error);
+      }
+    });
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
