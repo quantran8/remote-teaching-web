@@ -1,3 +1,10 @@
+.exposure-detail-container {
+  &:not(:first-child) {
+    & > .header-container {
+      border-top: solid 1px #ccc;
+    }
+  }
+}
 .header-container {
   display: flex;
   align-items: center;
@@ -28,17 +35,14 @@
   min-height: 100%;
   border-radius: 5px;
 }
-
 .exposure-info {
   position: relative;
   cursor: pointer;
-
   &__icon-info {
     margin-right: 5px;
     width: 20px;
     height: 20px;
   }
-
   &__popup-text::before {
     content: "";
     position: absolute;
@@ -49,7 +53,6 @@
     border-style: solid;
     border-color: transparent transparent rgb(161, 151, 36) transparent;
   }
-
   &__popup-text {
     visibility: hidden;
     line-break: auto;
@@ -65,11 +68,10 @@
     left: -258px;
     border: 0.3px solid rgb(161, 151, 36);
     padding-left: 10px;
-	font-size: 14px;
-	color: gray;
-	text-align: start;
+    font-size: 14px;
+    color: gray;
+    text-align: start;
   }
-
   &__show {
     visibility: visible;
     -webkit-animation: fadeIn 1s;
