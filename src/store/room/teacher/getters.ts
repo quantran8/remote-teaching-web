@@ -79,6 +79,13 @@ const getters: GetterTree<TeacherRoomState, any> = {
     }
     return true;
   },
+  isAllPaletteHidden(state: TeacherRoomState) {
+    const allStudents = state.students.filter(s => s.status === InClassStatus.JOINED);
+    for (const student of allStudents) {
+      if (student.isPalette) return false;
+    }
+    return true;
+  },
   classAction(state: TeacherRoomState): ClassAction {
     return state.classAction;
   },

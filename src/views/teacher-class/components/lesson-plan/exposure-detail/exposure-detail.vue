@@ -9,8 +9,8 @@
           <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
         </BaseButton>
       </div>
-      <div :class="['header-container__left', isContentBlock && 'thumbnail']" v-if="isContentBlock">
-        <img v-if="thumbnailContentURL" :src="thumbnailURLDefault" />
+      <div :class="['header-container__left', isContentBlock && thumbnailContentURL && thumbnailURLDefault && 'thumbnail']" v-if="isContentBlock">
+        <img v-if="thumbnailContentURL && thumbnailURLDefault" :src="thumbnailURLDefault" />
       </div>
       <div class="exposure-title">{{ exposureTitle }}</div>
       <div v-if="isContentBlock" class="exposure-info">

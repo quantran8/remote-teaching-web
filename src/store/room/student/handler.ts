@@ -8,10 +8,10 @@ import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
 import { Pointer, UserShape } from "@/store/annotation/state";
 import * as medal from "@/assets/lotties/medal.json";
-import * as cameraOff from "@/assets/lotties/camera_off.json";
-import * as cameraOn from "@/assets/lotties/camera_on.json";
-import * as soundOff from "@/assets/lotties/sound_off.json";
-import * as soundOn from "@/assets/lotties/sound_on.json";
+import * as cameraOff from "@/assets/icons/camera_off.png";
+import * as cameraOn from "@/assets/icons/camera_on.png";
+import * as soundOff from "@/assets/icons/sound_off.png";
+import * as soundOn from "@/assets/icons/sound_on.png";
 import { reactive } from "vue";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
@@ -131,8 +131,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         enable: !payload.isMuteVideo,
       });
       if (payload.id === state.student?.id) {
-        const icon = payload.isMuteVideo ? reactive({ animationData: cameraOff.default }) : reactive({ animationData: cameraOn.default });
-        await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+        const icon = payload.isMuteVideo ? cameraOff : cameraOn;
+        await store.dispatch("setToast", { message: "", isPlayingSound: false, icon: icon, isMedal: false }, { root: true });
       }
     },
     onTeacherMuteStudentAudio: async (payload: StudentModel) => {
@@ -141,8 +141,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         enable: !payload.isMuteAudio,
       });
       if (payload.id === state.student?.id) {
-        const icon = payload.isMuteAudio ? reactive({ animationData: soundOff.default }) : reactive({ animationData: soundOn.default });
-        await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+        const icon = payload.isMuteAudio ? soundOff : soundOn;
+        await store.dispatch("setToast", { message: "", isPlayingSound: false, icon: icon, isMedal: false }, { root: true });
       }
     },
     onTeacherMuteAllStudentVideo: async (payload: Array<StudentModel>) => {
@@ -156,8 +156,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           status = student.isMuteVideo;
         }
       }
-      const icon = status ? reactive({ animationData: cameraOff.default }) : reactive({ animationData: cameraOn.default });
-      await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+      const icon = status ? cameraOff : cameraOn;
+      await store.dispatch("setToast", { message: "", isPlayingSound: false, icon: icon, isMedal: false }, { root: true });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentAudio: async (payload: Array<StudentModel>) => {
@@ -171,9 +171,16 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           status = student.isMuteAudio;
         }
       }
-      const icon = status ? reactive({ animationData: soundOff.default }) : reactive({ animationData: soundOn.default });
-      await store.dispatch("setToast", { message: "", isPlayingSound: false, bigIcon: icon, isMedal: false }, { root: true });
+      const icon = status ? soundOff : soundOn;
+      await store.dispatch("setToast", { message: "", isPlayingSound: false, icon: icon, isMedal: false }, { root: true });
       await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onTeacherDisableAllStudentPallete: async (payload: any) => {
+      await commit("disableAnnotationStatus", payload, { root: false });
+    },
+    onTeacherToggleStudentPallete: async (payload: any) => {
+      console.log("Toggle");
+      await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onTeacherEndClass: async (_payload: any) => {
       await dispatch("setIsJoined", { isJoined: false });
@@ -354,12 +361,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherDrawLaser: async (payload: any) => {
       await commit("setDrawLaser", payload);
-    },
-    onTeacherDisableAllStudentPallete: async (payload: any) => {
-      await commit("studentRoom/disableAnnotationStatus", payload, { root: true });
-    },
-    onTeacherToggleStudentPallete: async (payload: any) => {
-      await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onStudentSetBrushstrokes: async (payload: Array<UserShape>) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });

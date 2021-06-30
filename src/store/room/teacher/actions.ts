@@ -206,17 +206,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setStudentVideo", payload);
     state.manager?.WSClient.sendRequestMuteStudentVideo(payload.id, !payload.enable);
   },
+  async toggleAnnotation({ state, commit }, payload: { studentId: string; isEnable: boolean }) {
+    commit("setStudentPalette", payload);
+    state.manager?.WSClient.sendRequestToggleAnnotation(payload.studentId, payload.isEnable);
+  },
   setStudentBadge({ state }, payload: StudentBadgePayload) {
     state.manager?.WSClient.sendRequestSetStudentBadge([payload.id], payload.badge);
   },
   async setAllStudentBadge({ state }) {
     state.manager?.WSClient.sendRequestSetStudentBadge([], 1);
-  },
-  async disableAllAnnotation({ state }) {
-    state.manager?.WSClient.sendRequestDisableAllAnnotation();
-  },
-  async toggleAnnotation({ state }, payload: { studentId: string; isEnable: boolean }) {
-    state.manager?.WSClient.sendRequestToggleAnnotation(payload.studentId, payload.isEnable);
   },
   async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;
@@ -250,6 +248,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
   unmuteAllStudents({ state, commit }) {
     commit("unmuteAllStudents", {});
     state.manager?.WSClient.sendRequestMuteAllStudentAudio(false);
+  },
+  disableAllStudents({ commit, state }) {
+    commit("disableAllStudents", {});
+    state.manager?.WSClient.sendRequestDisableAllAnnotation(true);
+  },
+  enableAllStudents({ state, commit }) {
+    commit("enableAllStudents", {});
+    state.manager?.WSClient.sendRequestDisableAllAnnotation(false);
   },
   studentJoinned(store, payload: UserIdPayload) {
     store.commit("studentJoinned", payload);

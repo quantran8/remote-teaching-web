@@ -162,6 +162,20 @@ const mutations: MutationTree<StudentRoomState> = {
   unmuteAllStudents(state: StudentRoomState) {
     state.students.forEach(student => (student.audioEnabled = true));
   },
+  disableAllStudents(state: StudentRoomState) {
+    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
+  },
+  enableAllStudents(state: StudentRoomState) {
+    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = true));
+  },
+  setAnnotationStatus(s: StudentRoomState, p: { id: string; isPalette: boolean }) {
+    const student = p.id === s.student?.id ? s.student : s.students.find(st => st.id === p.id);
+    if (student) student.isPalette = p.isPalette;
+  },
+  disableAnnotationStatus(state: StudentRoomState, p: any) {
+    state.student ? state.student.isPalette = !p : null;
+    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
+  },
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
     state.classAction = payload.action;
   },
@@ -189,14 +203,6 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   clearLaserPen(state: StudentRoomState, p: "") {
     state.laserPath = p;
-  },
-  setAnnotationStatus(s: StudentRoomState, p: { id: string; isPalette: boolean }) {
-    const student = p.id === s.student?.id ? s.student : s.students.find(st => st.id === p.id);
-    if (student) student.isPalette = p.isPalette;
-  },
-  disableAnnotationStatus(s: StudentRoomState, p: any) {
-    s.students.map(student => (student.isPalette = false));
-    if (s.student) s.student.isPalette = false;
   },
   setOnline(state: StudentRoomState) {
     state.isDisconnected = false;
