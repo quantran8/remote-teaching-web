@@ -3,6 +3,7 @@ import { RemoteTeachingServiceInterface } from "@/services";
 import { StudentGetRoomResponse, TeacherGetRoomResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
 import DeviceDetector from "device-detector-js";
+
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
 
@@ -33,11 +34,21 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     });
   }
 
-  putTeacherBandwidth(bandwidth: string, resolution: string): Promise<any> {
-    return this.update(`logs/teacher?bandwidth=${bandwidth}&resolution=${resolution}&`);
+  putTeacherBandwidth(bandwidth: string, bfp: string): Promise<any> {
+    const deviceDetector = new DeviceDetector();
+    const device = deviceDetector.parse(navigator.userAgent);
+    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+    return this.update(`logs/teacher`, {
+      browser: device.client ? device.client.name : "",
+      device: device.device ? device.device.type : "",
+      resolution,
+      bandwidth,
+      browserFingerPrinting: bfp,
+    });
   }
 
-  putStudentBandwidth(studentId: string, bandwidth: string, resolution: string): Promise<any> {
+  putStudentBandwidth(studentId: string, bandwidth: string): Promise<any> {
+    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
     return this.update(`logs/student/${studentId}?bandwidth=${bandwidth}&resolution=${resolution}&`);
   }
 

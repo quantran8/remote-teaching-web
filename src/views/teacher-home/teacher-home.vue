@@ -2,7 +2,7 @@
   <div class="teacher-page" v-if="policy">
     <div class="teacher-title mt-40">
       <h2>Welcome {{ username }}</h2>
-      <span class="teacher-title__indicator-out" v-if="haveClassActive" @click="onClickClass(classActive)">
+      <span class="teacher-title__indicator-out" v-if="classOnline" @click="onClickClass(classOnline, classOnline.groupId)">
         <span class="teacher-title__indicator-in"></span>
       </span>
     </div>

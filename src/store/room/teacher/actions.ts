@@ -29,6 +29,9 @@ import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import _, { times } from "lodash";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+
+const fpPromise = FingerprintJS.load();
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -120,12 +123,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
       },
-      onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+      async onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
         // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
         if (timeSendBandwidth == 150) {
-          const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
-          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`, resolution);
+          const fp = await fpPromise;
+          const result = await fp.get();
+          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`, result.visitorId);
           timeSendBandwidth = 0;
         } else {
           timeSendBandwidth += 1;

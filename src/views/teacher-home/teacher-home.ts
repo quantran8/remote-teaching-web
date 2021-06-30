@@ -38,13 +38,12 @@ export default defineComponent({
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
+    const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const popUpLoading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
-    const haveClassActive = ref(false);
-    const classActive = ref();
     const visible = ref<boolean>(true);
     const startPopupVisible = ref<boolean>(false);
     const messageStartClass = ref("");
@@ -119,15 +118,6 @@ export default defineComponent({
         });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
-        if (classesSchedules.value) {
-          haveClassActive.value = false;
-          classesSchedules.value.map((cl: TeacherClassModel) => {
-            if (cl.isActive) {
-              classActive.value = cl;
-              haveClassActive.value = true;
-            }
-          });
-        }
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
@@ -139,7 +129,7 @@ export default defineComponent({
     };
 
     const joinTheCurrentSession = async () => {
-      if (haveClassActive.value) {
+      if (classOnline.value) {
         await router.push("/class/" + infoStart.value?.teacherClass.classId);
         return true;
       }
@@ -149,6 +139,7 @@ export default defineComponent({
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       infoStart.value = { teacherClass, groupId };
       if (!(await joinTheCurrentSession())) {
+        messageStartClass.value = "";
         startPopupVisible.value = true;
       }
     };
@@ -229,8 +220,6 @@ export default defineComponent({
       schools,
       //classes,
       classesSchedules,
-      haveClassActive,
-      classActive,
       username,
       onClickClass,
       filterSchools,
@@ -266,6 +255,7 @@ export default defineComponent({
       infoStart,
       messageStartClass,
       popUpLoading,
+      classOnline,
     };
   },
 });

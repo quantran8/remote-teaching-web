@@ -1,3 +1,4 @@
+import { ClassRoomModel } from "./../../models/room.model";
 import { RoomModel, CalendarSchedulesModel, TeacherClassCalendarModel, TeacherClassModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
@@ -10,6 +11,7 @@ export interface TeacherState {
   room?: RoomModel;
   acceptPolicy: boolean;
   calendarSchedules: Array<CalendarSchedulesModel>;
+  classOnline: ClassRoomModel | undefined;
 }
 
 const state: TeacherState = {
@@ -20,6 +22,7 @@ const state: TeacherState = {
   acceptPolicy: true,
   calendarSchedules: [],
   classesSchedules: [],
+  classOnline: undefined,
 };
 
 export default state;
