@@ -84,6 +84,9 @@ export default defineComponent({
       if (width + 10 <= studentRef.value.offsetLeft) {
         right = width - 50;
       }
+      if (width > studentRef.value.offsetParent.offsetWidth / 2) {
+        right = width + 150;
+      }
       currentPosition.value = {
         x: studentRef.value.offsetLeft,
         y: studentRef.value.offsetTop,
