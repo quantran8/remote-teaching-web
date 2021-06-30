@@ -1,7 +1,16 @@
+.exposure-detail-container {
+  &:not(:first-child) {
+    & > .header-container {
+      border-top: solid 1px #ccc;
+    }
+  }
+}
+
 .header-container {
   display: flex;
   align-items: center;
   border-bottom: solid 1px #ccc;
+
   padding-left: 0.5rem;
   .exposure-title {
     flex: 1;
@@ -23,6 +32,7 @@
     }
   }
 }
+
 .exposure-content {
   background-color: white;
   min-height: 100%;
@@ -65,9 +75,9 @@
     left: -258px;
     border: 0.3px solid rgb(161, 151, 36);
     padding-left: 10px;
-	font-size: 14px;
-	color: gray;
-	text-align: start;
+    font-size: 14px;
+    color: gray;
+    text-align: start;
   }
 
   &__show {
