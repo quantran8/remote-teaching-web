@@ -126,7 +126,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       async onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
         // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
-        if (timeSendBandwidth == 150) {
+        if (timeSendBandwidth == 60) {
           const fp = await fpPromise;
           const result = await fp.get();
           RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`, result.visitorId);
