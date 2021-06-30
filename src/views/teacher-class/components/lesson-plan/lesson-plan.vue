@@ -12,7 +12,6 @@
       </span>
     </div>
     <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
-      <div v-if="isGalleryView">Loading ...</div>
       <div id="lesson-container__remaining-time">
         <p>Remaining: {{ remainingTime }}</p>
         <p>
