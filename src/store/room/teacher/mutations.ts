@@ -32,6 +32,7 @@ export interface TeacherRoomMutationInterface<S> {
   setRoomInfo(s: S, p: RoomModel): void;
   setStudentAudio(s: S, p: UserMediaPayload): void;
   setStudentVideo(s: S, p: UserMediaPayload): void;
+  setStudentPalette(s: S, p: UserMediaPayload): void;
   setStudentBadge(s: S, p: StudentBadgePayload): void;
   setTeacherAudio(s: S, p: UserMediaPayload): void;
   setTeacherVideo(s: S, p: UserMediaPayload): void;
@@ -39,6 +40,8 @@ export interface TeacherRoomMutationInterface<S> {
   showAllStudents(s: S, p: DefaultPayload): void;
   muteAllStudents(s: S, p: DefaultPayload): void;
   unmuteAllStudents(s: S, p: DefaultPayload): void;
+  disableAllStudents(s: S, p: DefaultPayload): void;
+  enableAllStudents(s: S, p: DefaultPayload): void;
   studentJoinned(s: S, p: UserIdPayload): void;
   studentLeftClass(s: S, p: UserIdPayload): void;
   studentLeaving(s: S, p: UserIdPayload): void;
@@ -139,6 +142,10 @@ const mutations: TeacherRoomMutation<State> = {
     const student = s.students.find(st => st.id === p.id);
     if (student) student.videoEnabled = p.enable;
   },
+  setStudentPalette(s: State, p: UserMediaPayload): void {
+    const student = s.students.find(st => st.id === p.id);
+    if (student) student.isPalette = p.enable;
+  },
   setStudentBadge(s: State, p: StudentBadgePayload): void {
     const student = s.students.find(st => st.id === p.id);
     if (student) student.badge = p.badge;
@@ -159,6 +166,12 @@ const mutations: TeacherRoomMutation<State> = {
     s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = false));
   },
   unmuteAllStudents(s: State, _): void {
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = true));
+  },
+  disableAllStudents(s: State, _): void {
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
+  },
+  enableAllStudents(s: State, _): void {
     s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = true));
   },
   studentJoinned(s: State, p: UserIdPayload): void {
@@ -250,7 +263,7 @@ const mutations: TeacherRoomMutation<State> = {
     if (student) student.isPalette = p.isPalette;
   },
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
-    s.students.map(student => (student.isPalette = false));
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
   },
   setOnline(state: TeacherRoomState) {
     state.isDisconnected = false;
