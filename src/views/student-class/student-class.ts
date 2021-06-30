@@ -116,15 +116,18 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
+    const defaultUrl =
+      "https://devmediaservice-jpea.streaming.media.azure.net/8b604fd3-7a56-4a32-acc8-ad2227a47430/GSv4-U10-REP-Jonny Bear Paints w.ism/manifest";
 
     watch(lessonInfo, async () => {
-      console.log(lessonInfo.value.unit + "  " + lessonInfo.value.lesson);
-
       try {
         const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value.unit, lessonInfo.value.lesson);
-        console.log(response);
-        //console.log(lessonInfo.value.unit + "  " + lessonInfo.value.lesson);
-      } catch (error){
+        if (response.url) {
+          sourceVideo.src = response.url;
+        } else {
+          sourceVideo.src = defaultUrl;
+        }
+      } catch (error) {
         console.log(error);
       }
     });
