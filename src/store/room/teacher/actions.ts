@@ -16,6 +16,7 @@ import {
   WhiteboardPayload,
   NetworkQualityPayload,
 } from "../interface";
+import _ from "lodash";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
