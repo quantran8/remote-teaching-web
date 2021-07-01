@@ -53,6 +53,7 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
+    const firstTimeVisit = ref(false);
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
@@ -172,9 +173,12 @@ export default defineComponent({
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path"));
       }
     };
-    watch(studentShapes, () => {
+    watch(studentShapes, async () => {
       studentSharingShapes();
-      // selfStudentShapes();
+      if (!firstTimeVisit.value) {
+        selfStudentShapes();
+        firstTimeVisit.value = true;
+      }
     });
     const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
       if (dataShapes) {
@@ -351,7 +355,6 @@ export default defineComponent({
       resizeCanvas();
       processCanvasWhiteboard();
     };
-
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
       if (!outerCanvasContainer) {
@@ -398,7 +401,6 @@ export default defineComponent({
       canvas.add(star);
       await studentAddShapes();
     };
-
     const addCircle = async () => {
       toolActive.value = "circle";
       const circle = new fabric.Circle({
@@ -415,7 +417,6 @@ export default defineComponent({
       canvas.add(circle);
       await studentAddShapes();
     };
-
     const addSquare = async () => {
       toolActive.value = "square";
       const square = new fabric.Rect({
@@ -433,12 +434,10 @@ export default defineComponent({
       canvas.add(square);
       await studentAddShapes();
     };
-
     const clearStar = () => {
       canvas.remove(...canvas.getObjects("polygon"));
       canvas.renderAll();
     };
-
     const addDraw = () => {
       toolActive.value = "pen";
       canvas.isDrawingMode = true;
