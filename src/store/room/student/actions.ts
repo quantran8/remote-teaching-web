@@ -1,3 +1,4 @@
+import { checkStudentBandwidth } from "@/utils/checkBandwidth";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -12,6 +13,7 @@ import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
+import { computed } from "vue";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -122,7 +124,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
-    const { state, dispatch } = store;
+    const { state, dispatch, rootState } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
@@ -132,10 +134,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    // 120000 means 2 minutes
-    setInterval(() => {
-      RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${state.bandWidth}`);
-    }, 120000);
+    checkStudentBandwidth(rootState, state.user ? state.user.id : "");
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
