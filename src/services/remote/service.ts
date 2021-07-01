@@ -23,7 +23,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
     const deviceDetector = new DeviceDetector();
     const device = deviceDetector.parse(navigator.userAgent);
-    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+    const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     return this.get(`student/join-session`, {
       studentId: childId,
       browser: device.client ? device.client.name : "",
@@ -61,7 +61,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   }
 
   getLinkStoryDictionary(unitId: string, lessonId: string): Promise<any> {
-    return this.get(`student/story-dictionary/unit/${unitId}/lesson/${lessonId}`)
+    return this.get(`student/story-dictionary/unit/${unitId}/lesson/${lessonId}`);
   }
 
   getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<any> {

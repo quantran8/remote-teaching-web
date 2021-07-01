@@ -65,7 +65,7 @@ export default defineComponent({
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
-      const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+      const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
       try {
         const fp = await fpPromise;
         const result = await fp.get();

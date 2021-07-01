@@ -6,7 +6,7 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, studentId: string, browserFingerPrinting: string) {
     const deviceDetector = new DeviceDetector();
     const device = deviceDetector.parse(navigator.userAgent);
-    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+    const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     return this.send(WSCmd.JOIN_CLASS, {
       roomId: roomId,
       studentId: studentId,
