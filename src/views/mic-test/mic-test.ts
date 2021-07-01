@@ -1,8 +1,7 @@
 import { defineComponent, ref, onMounted, watch } from "vue";
 import { Select, Spin, Modal, Button, Row, Empty } from "ant-design-vue";
-import { TeacherClassModel } from "@/models";
+import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { useStore } from "vuex";
-import { RemoteTeachingService } from "@/services";
 
 export default defineComponent({
   props: {
@@ -13,6 +12,9 @@ export default defineComponent({
     },
     groupId: String,
     messageStartClass: String,
+    unitInfo: {
+      type: Object as () => UnitAndLesson[],
+    },
     loading: Boolean,
   },
   components: {
@@ -26,67 +28,32 @@ export default defineComponent({
   },
   emits: ["on-join-session", "on-cancel"],
   setup(props, { emit }) {
-    const store = useStore();
-    const units = ref<{ id: number; number: number }[]>([]);
-    const lessons = ref<{ id: number; number: number }[]>([]);
+    const lessons = ref<number[]>([]);
     const selectedUnit = ref();
     const selectedLesson = ref();
 
-    onMounted(async () => {
-      const dummyUnit = [];
-      for (let i = 14; i <= 40; i++) {
-        dummyUnit.push({ id: i, number: i });
-      }
-      units.value = dummyUnit;
-    });
-
     watch(props, () => {
-      if (props.teacherClass && props.groupId) {
-        const checkUnitExist = units.value.filter((unit: any) => {
-          return unit.id == props.teacherClass?.unit;
-        });
-        if (props.teacherClass?.unit && checkUnitExist.length > 0) {
-          selectedUnit.value = props.teacherClass?.unit;
+      if (props.unitInfo) {
+        selectedUnit.value = props.unitInfo[0].unit;
+        if (props.unitInfo[0].lesson[0]) {
+          selectedLesson.value = props.unitInfo[0].lesson[0];
         } else {
-          selectedUnit.value = 14;
+          selectedLesson.value = "";
         }
-        getListLessonByUnit(props.teacherClass, props.groupId, selectedUnit.value);
+        lessons.value = props.unitInfo[0].lesson;
+      } else {
+        selectedUnit.value = props.teacherClass?.unit;
+        selectedLesson.value = "";
       }
     });
-
-    const getListLessonByUnit = async (teacherClass: TeacherClassModel, groupId: string, unit: number) => {
-      try {
-        const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, unit);
-        if (response && response.success) {
-          if (response.data.length > 0) {
-            lessons.value = response.data.map((lesson: any) => {
-              return { id: lesson.sequence, number: lesson.sequence };
-            });
-            const checkLessonExist = lessons.value.filter((lesson: any) => {
-              return lesson.id == props.teacherClass?.lessonNumber;
-            });
-            if (props.teacherClass?.lessonNumber && checkLessonExist.length > 0) {
-              selectedLesson.value = props.teacherClass?.lessonNumber;
-            } else {
-              selectedLesson.value = lessons.value[0].number;
-            }
-          } else {
-            lessons.value = [];
-            selectedLesson.value = null;
-          }
-        }
-      } catch (err) {
-        const message = err?.body?.message;
-        if (message) {
-          await store.dispatch("setToast", { message: message });
-        }
-      }
-    };
 
     const handleChangeUnit = async (value: any) => {
+      selectedLesson.value = "";
       selectedUnit.value = value;
-      if (props.teacherClass && props.groupId) {
-        getListLessonByUnit(props.teacherClass, props.groupId, value);
+      const lessonInfo = props.unitInfo?.find((unitSelect: any) => {return unitSelect.unit == value})?.lesson;
+      lessons.value = lessonInfo ? lessonInfo : [];
+      if (lessons.value) {
+        selectedLesson.value = lessons.value[0];
       }
     };
 
@@ -105,7 +72,6 @@ export default defineComponent({
     return {
       cancel,
       joinSession,
-      units,
       lessons,
       selectedUnit,
       selectedLesson,
