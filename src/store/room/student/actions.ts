@@ -148,7 +148,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onLocalNetworkUpdate(payload: any) {
         // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
-        if (timeSendBandwidth == 150) {
+        if (timeSendBandwidth == 60) {
           RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
           timeSendBandwidth = 0;
         } else {
