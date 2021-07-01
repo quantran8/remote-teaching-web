@@ -26,6 +26,9 @@
       <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
+      <div class="loading" v-show="loadingInfo">
+        <Spin></Spin>
+      </div>
       <div class="loading" v-if="loading">
         <Spin tip="Loading..."></Spin>
       </div>
@@ -50,8 +53,9 @@
       :visible="startPopupVisible"
       :teacherClass="infoStart?.teacherClass"
       :groupId="infoStart?.groupId"
-      :loading="popUpLoading"
+      :unitInfo="unitInfo"
       :messageStartClass="messageStartClass"
+      :loading="popUpLoading"
       @on-join-session="onStartClass"
       @on-cancel="onCancelStartClass"
     />

@@ -1,5 +1,5 @@
 import { LoginInfo } from "@/commonui";
-import { TeacherClassModel } from "@/models";
+import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted, watch, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
@@ -64,6 +64,9 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
+    const unitInfo = ref<UnitAndLesson[]>();
+    const loadingInfo = ref(false);
+
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
       const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
@@ -138,10 +141,40 @@ export default defineComponent({
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       infoStart.value = { teacherClass, groupId };
+
       if (!(await joinTheCurrentSession())) {
+        await getListLessonByUnit(teacherClass, groupId);
         messageStartClass.value = "";
         startPopupVisible.value = true;
       }
+    };
+
+    const getListLessonByUnit = async (teacherClass: TeacherClassModel, groupId: string) => {
+      try {
+        loadingInfo.value = true;
+        const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
+        const listUnit: UnitAndLesson[] = [];
+        for (let i = 14; i <= 40; i++) {
+          listUnit.push({ unit: i, lesson: [] });
+        }
+
+        if (response && response.success) {
+          response.data.map((res: any) => {
+            listUnit.map((singleUnit: UnitAndLesson, index) => {
+              if (singleUnit.unit == res.unitId) {
+                listUnit[index].lesson.push(res.sequence);
+              }
+            });
+          });
+        }
+        unitInfo.value = listUnit;
+      } catch (err) {
+        const message = err?.body?.message;
+        if (message) {
+          await store.dispatch("setToast", { message: message });
+        }
+      }
+      loadingInfo.value = false;
     };
 
     const onStartClass = async (data: { unit: number; lesson: number }) => {
@@ -256,6 +289,8 @@ export default defineComponent({
       messageStartClass,
       popUpLoading,
       classOnline,
+      unitInfo,
+      loadingInfo,
     };
   },
 });

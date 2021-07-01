@@ -23,7 +23,6 @@ export interface ClassModel {
   regionEnglishName: string;
   remoteClassGroups: GroupModel[];
 }
-
 export interface ClassModelSchedules {
   classId: string;
   className: string;
@@ -34,6 +33,11 @@ export interface ClassModelSchedules {
   groups: GroupModelSchedules[];
   lessonNumber: number;
   unit: number;
+}
+
+export interface UnitAndLesson {
+  unit: number;
+  lesson: number[];
 }
 
 export interface TeacherClassModel extends ClassModelSchedules {

@@ -4,14 +4,14 @@
     <div class="select-container">
       <span class="title-select">Unit</span>
       <Select :value="selectedUnit" class="size-select" @change="handleChangeUnit">
-        <Option v-for="val in units" :key="val.id">
-          {{ val.number }}
+        <Option v-for="val in unitInfo" :key="val.unit">
+          {{ val.unit }}
         </Option>
       </Select>
       <span class="title-select ml-20">Lesson</span>
       <Select :value="selectedLesson" class="size-select" @change="handleChangeLesson">
-        <Option v-for="val in lessons" :key="val.id">
-          {{ val.number }}
+        <Option v-for="val in lessons" :key="val">
+          {{ val }}
         </Option>
       </Select>
     </div>
