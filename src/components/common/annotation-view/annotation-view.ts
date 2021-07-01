@@ -53,7 +53,7 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
-    watch(isShowWhiteBoard, () => {
+    const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
           canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
@@ -62,6 +62,9 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         canvas.isDrawingMode = false;
       }
+    };
+    watch(isShowWhiteBoard, () => {
+      processCanvasWhiteboard();
     });
     const brushstrokesRender = (data: any, oneId: any) => {
       data.brushstrokes.forEach((s: any) => {
@@ -340,13 +343,13 @@ export default defineComponent({
         width,
         height,
       });
-
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
       listenToCanvasEvents();
       resizeCanvas();
+      processCanvasWhiteboard();
     };
 
     const resizeCanvas = () => {

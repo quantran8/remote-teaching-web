@@ -1,4 +1,4 @@
-import {computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick} from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
@@ -191,7 +191,7 @@ export default defineComponent({
       }
     };
     watch(selfStrokes, async () => {
-      // await nextTick();
+      await nextTick();
       renderSelfStrokes();
     });
     const boardSetup = async () => {
@@ -378,12 +378,15 @@ export default defineComponent({
       if (!canvas) return;
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
-      }else{
+      } else {
         canvas.remove(...canvas.getObjects());
       }
-      showHideWhiteboard.value = false;
-      canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-      await clickedTool(Tools.Cursor);
+      if (showHideWhiteboard.value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+      } else {
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Cursor);
+      }
     };
     const defaultWhiteboard = async () => {
       await setCursorMode();
@@ -418,26 +421,25 @@ export default defineComponent({
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
       if (studentShapes.value !== null && studentShapes.value !== undefined) {
-        if(studentShapes.value.length>0){
+        if (studentShapes.value.length > 0) {
           studentShapes.value.forEach((item: any) => {
             if (item.userId !== isTeacher.value.id) {
               canvas.remove(
-                  ...canvas
-                      .getObjects()
-                      .filter((obj: any) => obj.type !== "path")
-                      .filter((obj: any) => obj.id === item.userId),
+                ...canvas
+                  .getObjects()
+                  .filter((obj: any) => obj.type !== "path")
+                  .filter((obj: any) => obj.id === item.userId),
               );
               shapeRender(item, null);
             }
           });
-        }else {
+        } else {
           // canvas.remove(
           //     ...canvas
           //         .getObjects()
           //         .filter((obj: any) => obj.type !== "path")
           // );
         }
-
       }
       if (showHideWhiteboard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
