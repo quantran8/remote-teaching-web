@@ -9,6 +9,7 @@ import { ErrorCode, fmtMsg } from "commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
+import { DeviceTester } from "@/components/common";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -44,7 +45,9 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const listSessionInfo = ref([]);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const onClickChild = async (student: ChildModel) => {
+      deviceTesterRef.value?.showModal();
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
@@ -148,6 +151,7 @@ export default defineComponent({
       concurrentMess,
       accessDenied,
       studentNextSessionInfo,
+      deviceTesterRef,
     };
   },
 });
