@@ -7,7 +7,7 @@ import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
-import { ClassView, StudentState } from "@/store/room/interface";
+import { ClassView, LessonInfo, StudentState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
@@ -21,6 +21,7 @@ import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
+import { RemoteTeachingService } from "@/services";
 
 const fpPromise = FingerprintJS.load();
 
@@ -80,6 +81,7 @@ export default defineComponent({
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
@@ -114,6 +116,21 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
+    const defaultUrl =
+      "https://devmediaservice-jpea.streaming.media.azure.net/8b604fd3-7a56-4a32-acc8-ad2227a47430/GSv4-U10-REP-Jonny Bear Paints w.ism/manifest";
+
+    watch(lessonInfo, async () => {
+      try {
+        const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value.unit, lessonInfo.value.lesson);
+        if (response.url) {
+          sourceVideo.src = response.url;
+        } else {
+          sourceVideo.src = defaultUrl;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {

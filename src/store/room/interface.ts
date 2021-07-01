@@ -12,6 +12,10 @@ export interface StudentState {
   isPalette: boolean;
 }
 
+export interface LessonInfo {
+  unit: string;
+  lesson: string;
+}
 export interface TeacherState {
   id: string;
   name: string;

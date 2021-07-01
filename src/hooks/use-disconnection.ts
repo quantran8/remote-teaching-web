@@ -12,6 +12,7 @@ const POPUP_TIMING = 6000 * 10 * 5;
 
 //three minutes
 const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
+const TEACHER_PATH_REGEX = /\/teacher/;
 
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
@@ -27,45 +28,49 @@ export const useDisconnection = () => {
   //handle teacher disconnection in teacher's side
   let modalRef: any;
   watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
-    if (prevIsDisconnected !== isDisconnected && isDisconnected) {
-      await dispatch("teacherRoom/leaveRoom");
-      timeoutId = setTimeout(() => {
+    const pathname = window.location.pathname;
+    const matchIndex = pathname.search(TEACHER_PATH_REGEX);
+    if (matchIndex < 0) {
+      if (prevIsDisconnected !== isDisconnected && isDisconnected) {
+        await dispatch("teacherRoom/leaveRoom");
+        timeoutId = setTimeout(() => {
+          audioSource.teacherTryReconnectSound.stop();
+          audioSource.reconnectFailedSound.play();
+          router.push("/teacher");
+        }, TEACHER_RECONNECT_TIMING);
+        audioSource.teacherTryReconnectSound.play();
+        modalRef = Modal.warning({
+          content: "So Sorry! It seems you lost network connectivity.",
+          onOk: () => {
+            console.log("OK");
+          },
+        });
+        return;
+      }
+      if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
+        modalRef.destroy();
+        const { classId } = route.params;
+        if (!classId) {
+          window.location.reload();
+        }
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
         audioSource.teacherTryReconnectSound.stop();
-        audioSource.reconnectFailedSound.play();
-        router.push("/teacher");
-      }, TEACHER_RECONNECT_TIMING);
-      audioSource.teacherTryReconnectSound.play();
-      modalRef = Modal.warning({
-        content: "So Sorry! It seems you lost network connectivity.",
-        onOk: () => {
-          console.log("OK");
-        },
-      });
-      return;
-    }
-    if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
-      modalRef.destroy();
-      const { classId } = route.params;
-      if (!classId) {
-        window.location.reload();
+        audioSource.reconnectSuccessSound.play();
+        const loginInfo: LoginInfo = getters["auth/loginInfo"];
+        const fp = await fpPromise;
+        const result = await fp.get();
+        const visitorId = result.visitorId;
+        await dispatch("teacherRoom/initClassRoom", {
+          classId: classId,
+          userId: loginInfo.profile.sub,
+          userName: loginInfo.profile.name,
+          role: RoleName.teacher,
+          browserFingerPrinting: visitorId,
+        });
+        await dispatch("teacherRoom/joinRoom");
       }
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      audioSource.teacherTryReconnectSound.stop();
-      audioSource.reconnectSuccessSound.play();
-      const loginInfo: LoginInfo = getters["auth/loginInfo"];
-      const fp = await fpPromise;
-      const result = await fp.get();
-      const visitorId = result.visitorId;
-      await dispatch("teacherRoom/initClassRoom", {
-        classId: classId,
-        userId: loginInfo.profile.sub,
-        userName: loginInfo.profile.name,
-        role: RoleName.teacher,
-        browserFingerPrinting: visitorId,
-      });
-      await dispatch("teacherRoom/joinRoom");
     }
   });
 
