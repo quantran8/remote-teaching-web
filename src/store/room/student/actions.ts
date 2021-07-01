@@ -123,7 +123,6 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
-    let timeSendBandwidth = 0;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       await state.manager?.join({
@@ -133,6 +132,10 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
+    // 120000 means 2 minutes
+    setInterval(() => {
+      RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${state.bandWidth}`);
+    }, 120000);
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -147,13 +150,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
-        if (timeSendBandwidth == 60) {
-          RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${payload.uplinkNetworkQuality}`);
-          timeSendBandwidth = 0;
-        } else {
-          timeSendBandwidth += 1;
-        }
+        store.commit("setStudentBandwidth", payload.uplinkNetworkQuality);
       },
     });
   },

@@ -173,7 +173,7 @@ const mutations: MutationTree<StudentRoomState> = {
     if (student) student.isPalette = p.isPalette;
   },
   disableAnnotationStatus(state: StudentRoomState, p: any) {
-    state.student ? state.student.isPalette = !p : null;
+    state.student ? (state.student.isPalette = !p) : null;
     state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
   },
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
@@ -224,6 +224,9 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
     state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
+  },
+  setStudentBandwidth(state: StudentRoomState, p) {
+    state.bandWidth = p;
   },
 };
 
