@@ -33,17 +33,19 @@ export default defineComponent({
     const selectedLesson = ref();
 
     watch(props, () => {
-      if (props.unitInfo) {
-        selectedUnit.value = props.unitInfo[0].unit;
-        if (props.unitInfo[0].lesson[0]) {
-          selectedLesson.value = props.unitInfo[0].lesson[0];
+      if (props.loading == false) {
+        if (props.unitInfo) {
+          selectedUnit.value = props.unitInfo[0].unit;
+          if (props.unitInfo[0].lesson[0]) {
+            selectedLesson.value = props.unitInfo[0].lesson[0];
+          } else {
+            selectedLesson.value = "";
+          }
+          lessons.value = props.unitInfo[0].lesson;
         } else {
+          selectedUnit.value = props.teacherClass?.unit;
           selectedLesson.value = "";
         }
-        lessons.value = props.unitInfo[0].lesson;
-      } else {
-        selectedUnit.value = props.teacherClass?.unit;
-        selectedLesson.value = "";
       }
     });
 
