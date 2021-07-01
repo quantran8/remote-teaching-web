@@ -1,11 +1,11 @@
 import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Modal } from "ant-design-vue";
-import { computed, ComputedRef, defineComponent, onUnmounted, ref, watch, provide, onMounted } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, provide } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import DeviceDetector from "device-detector-js";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 
 const fpPromise = FingerprintJS.load();
 import {
@@ -20,6 +20,7 @@ import {
 } from "./components";
 export default defineComponent({
   components: {
+    PreventEscFirefox,
     TeacherCard,
     LessonPlan,
     ActivityContent,
@@ -187,20 +188,6 @@ export default defineComponent({
           await dispatch("setToast", { message: err.message });
         }
       }
-    });
-
-    const handleKeyDown = (e: any) => {
-      const deviceDetector = new DeviceDetector();
-      const device = deviceDetector.parse(navigator.userAgent);
-      if (e.which == 27 && device?.client?.name == "Firefox") {
-        e.preventDefault();
-      }
-    };
-    onMounted(() => {
-      window.addEventListener("keydown", handleKeyDown);
-    });
-    onUnmounted(() => {
-      window.removeEventListener("keydown", handleKeyDown);
     });
 
     provide("isSidebarCollapsed", isSidebarCollapsed);

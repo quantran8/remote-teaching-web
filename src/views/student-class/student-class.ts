@@ -1,6 +1,5 @@
 import { StudentClassLocale } from "./../../locales/localeid";
 import { ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName } from "@/commonui";
-import { Howl, Howler } from "howler";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
@@ -22,7 +21,7 @@ import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
 import { RemoteTeachingService } from "@/services";
-import DeviceDetector from "device-detector-js";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 
 const fpPromise = FingerprintJS.load();
 
@@ -34,6 +33,7 @@ const sourceVideo = {
 
 export default defineComponent({
   components: {
+    PreventEscFirefox,
     UnityView,
     MatIcon,
     StudentGallery,
@@ -284,22 +284,13 @@ export default defineComponent({
         document.body.classList.remove("mobile-device");
       }
     };
-    const handleKeyDown = (e: any) => {
-      const deviceDetector = new DeviceDetector();
-      const device = deviceDetector.parse(navigator.userAgent);
-      if (e.which == 27 && device?.client?.name == "Firefox") {
-        e.preventDefault();
-      }
-    };
     onMounted(() => {
       deviceMobile();
       window.addEventListener("resize", deviceMobile);
-      window.addEventListener("keydown", handleKeyDown);
     });
     onUnmounted(() => {
       handleMyTeacherReconnect();
       window.addEventListener("resize", deviceMobile);
-      window.removeEventListener("keydown", handleKeyDown);
     });
     const option = reactive({ animationData: clockData.default });
     return {

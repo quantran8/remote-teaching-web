@@ -1,5 +1,6 @@
 <template>
   <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', oneAndOneStatus !== '' ? 'mode-one-one' : '']">
+    <prevent-esc-firefox />
     <teacher-page-header
       class="tc__header"
       v-if="teacher"
