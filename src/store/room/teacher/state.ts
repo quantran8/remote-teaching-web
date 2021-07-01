@@ -30,6 +30,7 @@ export interface TeacherRoomState {
   listStudentLowBandWidth: string[];
   currentLesson: number;
   currentUnit: number;
+  bandWidth: number;
 }
 
 const state: TeacherRoomState = {
@@ -53,6 +54,7 @@ const state: TeacherRoomState = {
   listStudentLowBandWidth: [],
   currentLesson: DEFAULT_LESSON,
   currentUnit: DEFAULT_LESSON,
+  bandWidth: 0,
 };
 
 export default state;
