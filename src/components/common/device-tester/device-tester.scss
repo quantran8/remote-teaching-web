@@ -1,5 +1,14 @@
 .device-tester {
-  &__mute {
-    width: 20%;
+  &__micro {
+    padding-bottom: 30px;
+    &--select {
+      padding: 20px 0;
+    }
+  }
+  &__camera {
+    &--player {
+      width: 480px;
+      height: 300px;
+    }
   }
 }

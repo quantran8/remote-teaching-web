@@ -1,13 +1,25 @@
 <template>
   <div class="device-tester">
     <Modal v-model:visible="visible" title="System check" :footer="null" @ok="handleOk">
-      <div class="device-tester__mute">
-        <div>Mute</div>
-        <Switch v-model:checked="checked" />
+      <div class="device-tester__micro">
+        <!-- <h5>Mute</h5>
+        <Switch v-model:checked="checked" /> -->
+        <h4>Microphone</h4>
+        <h5>Produce sounds to check if the mic works.</h5>
+        <div class="device-tester__micro--select">
+          <Select v-model:value="value1" style="width: 100%" @focus="focus" ref="select" @change="handleChange">
+            <SelectOption value="jack">Jack</SelectOption>
+            <SelectOption value="lucy">Lucy</SelectOption>
+            <SelectOption value="disabled" disabled>Disabled</SelectOption>
+            <SelectOption value="Yiminghe">yiminghe</SelectOption>
+          </Select>
+        </div>
+        <Progress :strokeWidth="25" :percent="volumeByPercent" :show-info="false" />
       </div>
-      <div class="device-tester__volumn">
-        <div>Mic Test</div>
-        <Switch v-model:checked="checked" />
+      <div class="device-tester__camera">
+        <h4>Camera</h4>
+        <h5>Move in front of the camera to check if it works.</h5>
+        <div ref="playerRef" id="pre-local-player" class="device-tester__camera--player"></div>
       </div>
     </Modal>
   </div>
