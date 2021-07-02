@@ -38,6 +38,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state.error = null;
     state.globalAudios = [];
     state.idOne = "";
+    state.teacherIsDisconnected = false;
   },
   setError(state: StudentRoomState, payload: GLError | null) {
     state.error = payload;
@@ -61,6 +62,7 @@ const mutations: MutationTree<StudentRoomState> = {
       audioEnabled: !room.teacher.isMuteAudio,
       videoEnabled: !room.teacher.isMuteVideo,
       status: room.teacher.connectionStatus,
+      disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
     state.students = [];
     for (const st of room.students) {
@@ -111,6 +113,25 @@ const mutations: MutationTree<StudentRoomState> = {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.status = payload.status;
   },
+  updateRaisingHand(state: StudentRoomState, payload: { id: string; isRaisingHand: boolean }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    if (student) {
+      student.raisingHand = payload.isRaisingHand;
+    }
+  },
+  updateIsPalette(state: StudentRoomState, payload: { id: string; isPalette: boolean }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    if (student) {
+      student.isPalette = payload.isPalette;
+    }
+  },
+  clearCircleStatus(state: StudentRoomState, payload: { id: string }) {
+    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    if (student) {
+      student.raisingHand = false;
+      student.isPalette = false;
+    }
+  },
   setStudentVideo(state: StudentRoomState, payload: { id: string; enable: boolean }) {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.videoEnabled = payload.enable;
@@ -141,6 +162,20 @@ const mutations: MutationTree<StudentRoomState> = {
   unmuteAllStudents(state: StudentRoomState) {
     state.students.forEach(student => (student.audioEnabled = true));
   },
+  disableAllStudents(state: StudentRoomState) {
+    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
+  },
+  enableAllStudents(state: StudentRoomState) {
+    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = true));
+  },
+  setAnnotationStatus(s: StudentRoomState, p: { id: string; isPalette: boolean }) {
+    const student = p.id === s.student?.id ? s.student : s.students.find(st => st.id === p.id);
+    if (student) student.isPalette = p.isPalette;
+  },
+  disableAnnotationStatus(state: StudentRoomState, p: any) {
+    state.student ? (state.student.isPalette = !p) : null;
+    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
+  },
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
     state.classAction = payload.action;
   },
@@ -169,14 +204,6 @@ const mutations: MutationTree<StudentRoomState> = {
   clearLaserPen(state: StudentRoomState, p: "") {
     state.laserPath = p;
   },
-  setAnnotationStatus(s: StudentRoomState, p: { id: string; isPalette: boolean }) {
-    const student = p.id === s.student?.id ? s.student : s.students.find(st => st.id === p.id);
-    if (student) student.isPalette = p.isPalette;
-  },
-  disableAnnotationStatus(s: StudentRoomState, p: any) {
-    s.students.map(student => (student.isPalette = false));
-    if (s.student) s.student.isPalette = false;
-  },
   setOnline(state: StudentRoomState) {
     state.isDisconnected = false;
   },
@@ -188,6 +215,18 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   setTeacherDisconnected(state: StudentRoomState, p: boolean) {
     state.teacherIsDisconnected = p;
+    if (!p && state.teacher) {
+      state.teacher.disconnectTime = null;
+    }
+  },
+  setAvatarTeacher(state: StudentRoomState, p: string) {
+    state.avatarTeacher = p;
+  },
+  setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
+    state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
+  },
+  setStudentBandwidth(state: StudentRoomState, p) {
+    state.bandWidth = p;
   },
 };
 

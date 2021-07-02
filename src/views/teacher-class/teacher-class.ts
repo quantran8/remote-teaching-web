@@ -1,13 +1,12 @@
-import {ErrorCode, LoginInfo, RoleName} from "@/commonui";
-import { GLErrorCode } from "@/models/error.model";
+import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
-import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
-import { gsap } from "gsap";
-import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, provide } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+
 const fpPromise = FingerprintJS.load();
 import {
   TeacherCard,
@@ -15,19 +14,18 @@ import {
   ActivityContent,
   StudentGallery,
   GlobalAudioBar,
-  ErrorModal,
   DesignateTarget,
   TeacherPageHeader,
   WhiteboardPalette,
 } from "./components";
 export default defineComponent({
   components: {
+    PreventEscFirefox,
     TeacherCard,
     LessonPlan,
     ActivityContent,
     GlobalAudioBar,
     StudentGallery,
-    ErrorModal,
     DesignateTarget,
     TeacherPageHeader,
     WhiteboardPalette,
@@ -71,9 +69,6 @@ export default defineComponent({
     const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
     const teacher: ComputedRef<TeacherState> = computed(() => getters["teacherRoom/teacher"]);
     const error = computed(() => getters["teacherRoom/error"]);
-    const isClassNotActive = computed(() => {
-      return error.value && error.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE;
-    });
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
     const roomInfo = computed(() => {
@@ -86,7 +81,7 @@ export default defineComponent({
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
     });
-
+    const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
@@ -144,6 +139,7 @@ export default defineComponent({
         onOk: async () => {
           try {
             await dispatch("teacherRoom/endClass");
+            await dispatch("lesson/clearLessonData");
             await router.push("/teacher");
           } catch (err) {
             Modal.destroyAll();
@@ -193,6 +189,9 @@ export default defineComponent({
         }
       }
     });
+
+    provide("isSidebarCollapsed", isSidebarCollapsed);
+
     return {
       onClickHideAll,
       onClickShowAll,
@@ -205,7 +204,6 @@ export default defineComponent({
       teacher,
       onClickEnd,
       onClickLeave,
-      isClassNotActive,
       onClickCloseError,
       ctaVisible,
       isDesignatingTarget,
@@ -221,6 +219,7 @@ export default defineComponent({
       isLessonPlan,
       currentExposureItemMedia,
       isBlackOutContent,
+      oneAndOneStatus,
     };
   },
 });

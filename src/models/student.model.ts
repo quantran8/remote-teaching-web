@@ -6,6 +6,8 @@ export interface StudentModel extends UserModel {
   englishName: string;
   updateTime: any;
   subscriptionType: number;
+  unit: string;
+  lesson: string;
   streamId?: string;
   signalrConnectId?: string;
   signature: string;
@@ -16,4 +18,16 @@ export interface StudentModel extends UserModel {
   isRaisingHand: boolean;
   connectionStatus: number;
   isPalette: boolean;
+}
+
+export interface StudentNextSessionModel {
+  classInfo: {
+    classId: string;
+    className: string;
+    groupId: string;
+    groupName: string;
+  };
+  nextTime: string;
+  sessionId: string;
+  studentId: string;
 }

@@ -18,7 +18,7 @@
           {{ val.name }}
         </Option>
       </Select>
-      <div class="loading" v-if="loading">
+      <div class="loading-center" v-if="loading">
         <Spin></Spin>
       </div>
     </div>
@@ -63,26 +63,38 @@
       </template>
       <template #dateCellRender="{ current: value }">
         <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
-          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`color: ${item.color}; font-weight: 500`">
-            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)"
-              >{{ item.className }} <br />
-              {{
-                `Group ${item.groupName}: ${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
-                  item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
-                }`
-              }}
+          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`position: 'relative'; color: ${item.color}; font-weight: 500`">
+            <Tooltip placement="top">
+              <template #title>
+                <span>{{warningOverlap}}</span>
+              </template>
+              <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
+            </Tooltip>
+            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)">
+              <span class="session-info">
+                <span class="session-info__class-name">{{ item.className }}</span>
+                <span class="session-info__group">{{`Group ${item.groupName}:`}}</span>
+                <span>
+                {{
+                    `${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
+                        item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
+                    }`
+                  }}
+                </span>
+              </span>
             </a>
             <br />
             <br />
           </div>
         </div>
+        <PlusCircleOutlined class="add-icon" v-if="canShowCreate(value)" @click="canCreate(value) && scheduleAction('Create', value)"/>
       </template>
     </Calendar>
     <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container" v-if="isCreate">
         <span class="modal-title-select">Class</span>
         <Select :value="selectedClassIdModal" class="modal-size-group" @change="handleChangeClassModal">
-          <Option v-for="val in listClassSelect" :key="val.id">
+          <Option v-for="val in listClassCreateNew" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>
@@ -97,11 +109,17 @@
       </div>
       <div class="select-container">
         <span class="modal-title-select">Start</span>
-        <TimePicker class="modal-size-time-picker" @change="onChangeStartDateModal" :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
+        <TimePicker
+          class="modal-size-time-picker"
+          @change="onChangeStartDateModal"
+          :value="moment(selectedStartDateModal, 'HH:mm')"
+          format="HH:mm"
+          :disabledHours="getDisableHoursStart"
+          :disabledMinutes="getDisableMinutesStart"
+        />
         <span class="modal-title-select ml-20">End</span>
         <TimePicker
           class="modal-size-time-picker"
-          :disabled="disableEndTime(selectedStartDateModal)"
           :disabledHours="getDisabledHoursEnd"
           :disabledMinutes="getDisabledMinutesEnd"
           @change="onChangeEndDateModal"
@@ -115,31 +133,29 @@
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Cancel</Button>
-          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')">Save</Button>
+          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">Save</Button>
         </div>
       </div>
     </Modal>
     <Modal :visible="recurringVisible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container">
         <span class="modal-title-select">Group</span>
-        <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal">
+        <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal" disabled>
           <Option v-for="val in listGroupModal" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>
       </div>
       <div class="select-container">
-        <span class="modal-title-select">Start</span>
-        <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
-      </div>
-      <div class="select-container">
-        <span class="modal-title-select">End</span>
-        <TimePicker class="modal-size-time-picker" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
+        <span class="modal-title-select" v-if="disableTimePicker()">Start</span>
+        <TimePicker class="modal-size-time-picker" v-if="disableTimePicker()" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
+        <span class="modal-title-select ml-20" v-if="disableTimePicker()">End</span>
+        <TimePicker class="modal-size-time-picker" v-if="disableTimePicker()" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
       </div>
       <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button type="primary" @click="onSubmit('Skip')">Skip</Button>
+          <Button type="primary" v-if="disableSkipButton()" @click="onSubmit('Skip')">Skip</Button>
         </div>
         <div class="save-position">
           <Button class="btn-cancel" @click="onCancel">Close</Button>

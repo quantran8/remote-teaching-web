@@ -1,11 +1,9 @@
 <template>
-  <div class="sc-gallery">
-    <transition-group v-show="!isOneToOne" name="list" tag="div" @enter="onEnter" @leave="onLeave" :css="false">
-      <div class="sc-gallery__item" v-for="student in topStudents" :key="student.id">
-        <StudentGalleryItem :student="student" />
-      </div>
-    </transition-group>
-    <StudentGalleryItem v-if="currentStudent" :student="currentStudent" :isCurrent="true" :isOneToOne="isOneToOne" :raisedHand="raisedHand" />
+  <div :class="['sc-gallery', !isVisible && 'sc-gallery--hide']" v-show="!isOneToOne">
+    <div class="sc-gallery__container" v-dragscroll.x>
+      <StudentGalleryItem v-for="student in topStudents" :key="student.id" :student="student" :raisedHand="student.raisingHand ?? false" />
+    </div>
+    <button class="sc-gallery__toggle" @click="toggle"><MatIcon :type="isVisible ? 'expand_more' : 'expand_less'" /></button>
   </div>
 </template>
 

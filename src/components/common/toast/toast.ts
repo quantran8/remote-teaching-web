@@ -1,7 +1,6 @@
-import { computed, defineComponent, Ref, ref, watch, reactive } from "vue";
+import { computed, defineComponent, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { Howl, Howler } from "howler";
-import * as medalData from "../../../assets/lotties/medal.json";
 
 export default defineComponent({
   setup() {
@@ -18,7 +17,7 @@ export default defineComponent({
       if (timeoutId.value) {
         clearTimeout(timeoutId.value);
       }
-      const hasMessage = !!(toast.value.message || toast.value.bigIcon);
+      const hasMessage = !!(toast.value.message || toast.value.bigIcon || toast.value.icon);
       if (toast.value && hasMessage) {
         setTimeout(async () => {
           if (toast.value.isPlayingSound) {
@@ -34,7 +33,6 @@ export default defineComponent({
         }, 2500);
       }
     });
-    const option = reactive({ animationData: medalData.default });
-    return { toast, cssClass, option };
+    return { toast, cssClass };
   },
 });

@@ -1,21 +1,23 @@
 <template>
   <div class="student-page" v-if="policy">
-    <h2>Welcome {{ username }}</h2>
-    <p>Choose a student to start</p>
+    <h2>{{ welcomeText }} {{ username }}</h2>
+    <p>{{ chooseStudentText }}</p>
     <hr />
     <div class="list-student">
-      <StudentCard v-for="child in children" :key="child.id" :name="child.name" @click="() => onClickChild(child)"> </StudentCard>
+      <StudentCard
+        v-for="child in children"
+        :key="child.id"
+        :nextSessionInfo="studentNextSessionInfo(child.id)"
+        :name="child.englishName"
+        @click="() => onClickChild(child)"
+      >
+      </StudentCard>
     </div>
   </div>
-<!--  <div class="concurrent-connection" v-if="policy && concurrent">-->
-<!--    <h1>{{ accessDenied }}</h1>-->
-<!--    <p>{{ concurrentMess }}</p>-->
-<!--  </div>-->
-  <h1 class="access-denied" v-if="!visible && !policy">{{ accessDenied }}</h1>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>
     <p>{{ readPolicy }}</p>
-    <hr/>
+    <hr />
     <div class="policy-content">
       <p>
         <b>{{ policyTitle }}</b>
@@ -28,8 +30,8 @@
     </div>
     <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">
-      <Button class="btn-cancel-policy" @click="cancelPolicy">Cancel</Button>
-      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
+      <Button class="btn-cancel-policy" @click="cancelPolicy">{{ cancelText }}</Button>
+      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">{{ submitText }}</Button>
     </Row>
   </Modal>
 </template>

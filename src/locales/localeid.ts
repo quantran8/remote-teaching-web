@@ -39,6 +39,7 @@ export class CommonLocale {
   static CommonSiteTitle = "common.site.title";
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
+  static OverlapWarningSession = "common.warning.overlap";
 }
 
 export class ErrorLocale {
@@ -65,4 +66,33 @@ export class PrivacyPolicy {
   static StudentAcceptPolicy = "student.accept.policy";
   static StudentMessageJoin = "student.message.join";
   static ReadPolicy = "read.policy";
+}
+
+export class DisconnectScreenLocale {
+  static Title = "disconnect.title";
+  static Content1 = "disconnect.content1";
+  static Content2 = "disconnect.content2";
+  static Goto = "disconnect.goto";
+}
+export class AccessDeniedLocale {
+  static AccessDeniedWeAreSorry = "access_denied.we_are_sorry";
+  static AccessDeniedDescription = "access_denied.description";
+  static AccessDeniedSuggest = "access_denied.suggest";
+}
+
+export class StudentClassLocale {
+  static Exit = "student_class.exit";
+  static GoToHomePage = "student_class.go_to_home_page";
+}
+
+export class ParentHomeLocale {
+  static Welcome = "parent_home.welcome";
+  static ChooseStudent = "parent_home.choose_student";
+  static Cancel = "parent_home.cancel";
+  static Submit = "parent_home.submit";
+}
+
+export class ParentStudentCardLocale {
+  static ClassGroup = "parent_student_card.class_group";
+  static StartTime = "parent_student_card.start_time";
 }

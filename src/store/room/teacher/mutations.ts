@@ -17,7 +17,7 @@ import {
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { StudentShape } from "@/store/annotation/state";
+import { UserShape } from "@/store/annotation/state";
 
 type State = TeacherRoomState;
 
@@ -32,6 +32,7 @@ export interface TeacherRoomMutationInterface<S> {
   setRoomInfo(s: S, p: RoomModel): void;
   setStudentAudio(s: S, p: UserMediaPayload): void;
   setStudentVideo(s: S, p: UserMediaPayload): void;
+  setStudentPalette(s: S, p: UserMediaPayload): void;
   setStudentBadge(s: S, p: StudentBadgePayload): void;
   setTeacherAudio(s: S, p: UserMediaPayload): void;
   setTeacherVideo(s: S, p: UserMediaPayload): void;
@@ -39,6 +40,8 @@ export interface TeacherRoomMutationInterface<S> {
   showAllStudents(s: S, p: DefaultPayload): void;
   muteAllStudents(s: S, p: DefaultPayload): void;
   unmuteAllStudents(s: S, p: DefaultPayload): void;
+  disableAllStudents(s: S, p: DefaultPayload): void;
+  enableAllStudents(s: S, p: DefaultPayload): void;
   studentJoinned(s: S, p: UserIdPayload): void;
   studentLeftClass(s: S, p: UserIdPayload): void;
   studentLeaving(s: S, p: UserIdPayload): void;
@@ -84,7 +87,10 @@ const mutations: TeacherRoomMutation<State> = {
     s.user = p;
   },
   setRoomInfo(s: State, p: RoomModel): void {
+    s.info = p;
     s.idOne = p.studentOneToOne ? p.studentOneToOne : "";
+    s.currentLesson = p.classInfo?.lesson;
+    s.currentUnit = p.classInfo?.unit;
     s.teacher = {
       id: p.teacher.id,
       name: p.teacher.name,
@@ -111,7 +117,6 @@ const mutations: TeacherRoomMutation<State> = {
     });
     s.globalAudios = s.students.filter(ele => p.globalStudentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
     s.localAudios = s.students.filter(ele => p.studentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
-    s.info = p;
     const role = p.streamInfo?.userId === p.teacher.id ? "host" : "audience";
     if (!s.manager) {
       s.manager = new TeacherRoomManager({
@@ -137,6 +142,10 @@ const mutations: TeacherRoomMutation<State> = {
     const student = s.students.find(st => st.id === p.id);
     if (student) student.videoEnabled = p.enable;
   },
+  setStudentPalette(s: State, p: UserMediaPayload): void {
+    const student = s.students.find(st => st.id === p.id);
+    if (student) student.isPalette = p.enable;
+  },
   setStudentBadge(s: State, p: StudentBadgePayload): void {
     const student = s.students.find(st => st.id === p.id);
     if (student) student.badge = p.badge;
@@ -159,21 +168,51 @@ const mutations: TeacherRoomMutation<State> = {
   unmuteAllStudents(s: State, _): void {
     s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = true));
   },
+  disableAllStudents(s: State, _): void {
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
+  },
+  enableAllStudents(s: State, _): void {
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = true));
+  },
   studentJoinned(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
     if (student) student.status = InClassStatus.JOINED;
   },
+  updateRaisingHand(state: State, payload: { id: string; isRaisingHand: boolean }): void {
+    const student = state.students.find(student => student.id === payload.id);
+    if (student) {
+      student.raisingHand = payload.isRaisingHand;
+    }
+  },
+  updateIsPalette(state: State, payload: { id: string; isPalette: boolean }) {
+    const student = state.students.find(student => student.id === payload.id);
+    if (student) {
+      student.isPalette = payload.isPalette;
+    }
+  },
   studentLeftClass(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
-    if (student) student.status = InClassStatus.LEFT;
+    if (student) {
+      student.raisingHand = false;
+      student.isPalette = false;
+      student.status = InClassStatus.LEFT;
+    }
   },
   studentDisconnectClass(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
-    if (student) student.status = InClassStatus.DISCONNECTED;
+    if (student) {
+      student.raisingHand = false;
+      student.isPalette = false;
+      student.status = InClassStatus.DISCONNECTED;
+    }
   },
   studentLeaving(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
-    if (student) student.status = InClassStatus.LEAVING;
+    if (student) {
+      student.raisingHand = false;
+      student.isPalette = false;
+      student.status = InClassStatus.LEAVING;
+    }
   },
   studentRaisingHand(s: State, p: { id: string; raisingHand: boolean }): void {
     const student = s.students.find(student => student.id === p.id);
@@ -224,13 +263,22 @@ const mutations: TeacherRoomMutation<State> = {
     if (student) student.isPalette = p.isPalette;
   },
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
-    s.students.map(student => (student.isPalette = false));
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
   },
   setOnline(state: TeacherRoomState) {
-    state.isDisconnected = false
+    state.isDisconnected = false;
   },
   setOffline(state: TeacherRoomState) {
-    state.isDisconnected = true
+    state.isDisconnected = true;
+  },
+  setTeacherLowBandWidth(state: TeacherRoomState, p) {
+    state.isLowBandWidth = p;
+  },
+  setListStudentLowBandWidth(state: TeacherRoomState, p) {
+    state.listStudentLowBandWidth = p;
+  },
+  setTeacherBandwidth(state: TeacherRoomState, p) {
+    state.bandWidth = p;
   },
 };
 

@@ -1,11 +1,11 @@
 <template>
   <div class="page-container">
     <img src="@/assets/student-class/bear-confuse.png" alt="" />
-    <h1>Oops! There is an issue</h1>
-    <p>There were connection issues and the teacher will contact you about rescheduling.</p>
-    <p>Please refer your administrator</p>
+    <h1>{{ title }}</h1>
+    <p>{{ contentFirst }}</p>
+    <p>{{ contentSecond }}</p>
     <router-link to="/">
-      <div class="btn-homepage">Go To Home Page</div>
+      <div class="btn-homepage">{{ goTo }}</div>
     </router-link>
   </div>
 </template>

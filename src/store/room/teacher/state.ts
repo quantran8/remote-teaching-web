@@ -6,6 +6,9 @@ import { UserModel } from "@/models/user.model";
 import { ClassView, StudentState, TeacherState } from "../interface";
 import { ClassAction } from "../student/state";
 
+const DEFAULT_LESSON = 0;
+const DEFAULT_UNIT = 0;
+
 export interface TeacherRoomState {
   info?: RoomModel;
   user?: UserModel;
@@ -23,6 +26,11 @@ export interface TeacherRoomState {
   idOne: string;
   speakingUsers: Array<string>;
   isDisconnected: boolean;
+  isLowBandWidth: boolean;
+  listStudentLowBandWidth: string[];
+  currentLesson: number;
+  currentUnit: number;
+  bandWidth: number;
 }
 
 const state: TeacherRoomState = {
@@ -42,6 +50,11 @@ const state: TeacherRoomState = {
   idOne: "",
   speakingUsers: [],
   isDisconnected: !navigator.onLine,
+  isLowBandWidth: false,
+  listStudentLowBandWidth: [],
+  currentLesson: DEFAULT_LESSON,
+  currentUnit: DEFAULT_LESSON,
+  bandWidth: 0,
 };
 
 export default state;

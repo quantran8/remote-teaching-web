@@ -1,29 +1,6 @@
 import { GetterTree } from "vuex";
-import { Exposure, ExposureItemMedia, ExposureStatus, LessonState } from "./state";
-
-const getSeconds = (time: string) => {
-  if (!time || time.indexOf(":") === -1) return 0;
-  const totalSecondsArr: Array<number> = time.split(":").map((e, index) => {
-    const val = parseInt(e);
-    if (index === 0) return val * 60 * 60;
-    if (index === 1) return val * 60;
-    return val;
-  });
-  let sum = 0;
-  for (const s of totalSecondsArr) sum += s;
-  return sum;
-};
-const toStr = (val: number): string => {
-  return `${val < 10 ? "0" : ""}${val}`;
-};
-
-const secondsToTimeStr = (time: number): string => {
-  const hh = Math.floor(time / 3600);
-  const mm = Math.floor((time - hh * 3600) / 60);
-  const ss = time % 60;
-  return `${toStr(hh)}:${toStr(mm)}:${toStr(ss)}`;
-};
-
+import { Exposure, ExposureItemMedia, LessonState, ExposureItem } from "./state";
+import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 interface LessonGetterInterface<S> {
   currentExposure(s: S): Exposure | undefined;
   nextExposure(s: S): Exposure | undefined;
@@ -52,7 +29,12 @@ const getters: LessonGetters<LessonState, any> = {
   nextExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
     if (!s.currentExposure) return;
     const groupMedia = [];
-    for (const item of s.currentExposure?.items) {
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+    ].filter((item: ExposureItem) => item.media[0]?.image?.url);
+    for (const item of combinedItems) {
       groupMedia.push(item.media);
     }
     const allMedia = groupMedia.flat();
@@ -67,7 +49,12 @@ const getters: LessonGetters<LessonState, any> = {
   prevExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
     if (!s.currentExposure) return;
     const groupMedia = [];
-    for (const item of s.currentExposure?.items) {
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+    ].filter((item: ExposureItem) => item.media[0]?.image?.url);
+    for (const item of combinedItems) {
       groupMedia.push(item.media);
     }
     const allMedia = groupMedia.flat();
@@ -92,7 +79,15 @@ const getters: LessonGetters<LessonState, any> = {
   },
   getPage(s: LessonState): string {
     const listMedia: string[] = [];
-    s.currentExposure?.items.map(item => {
+    if (!s.currentExposure) {
+      return "";
+    }
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+    ].filter((item: ExposureItem) => item.media[0]?.image?.url);
+    combinedItems.map(item => {
       item.media.map(media => {
         listMedia.push(media.id);
       });

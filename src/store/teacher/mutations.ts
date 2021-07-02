@@ -1,4 +1,4 @@
-import { ClassModel, RoomModel, CalendarSchedulesModel } from "@/models";
+import { ClassModel, RoomModel, CalendarSchedulesModel, ClassModelSchedules, ClassRoomModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
 import moment from "moment";
@@ -10,15 +10,16 @@ const mutations: MutationTree<TeacherState> = {
     state.schools = payload;
   },
   setClasses(state: TeacherState, payload: Array<ClassModel>) {
-    if (payload && payload.length != 0) {
-      state.classes = payload;
-    }
+    state.classes = payload;
+  },
+  setClassesSchedules(state: TeacherState, payload: Array<ClassModelSchedules>) {
+    state.classesSchedules = payload;
   },
   clearCalendarSchedule(state: TeacherState, payload: any) {
     state.calendarSchedules = [];
   },
   setCalendarSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
-    if (payload && payload.length != 0) {
+    if (payload) {
       state.calendarSchedules = payload.map(calendarSchedule => {
         calendarSchedule.schedules.map(schedule => {
           if (schedule.customizedScheduleId == null) {
@@ -36,9 +37,12 @@ const mutations: MutationTree<TeacherState> = {
   },
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
-    state.classes.forEach(cl => {
-      cl.isActive = state.room?.classId === cl.schoolClassId;
+    state.classesSchedules.forEach(cl => {
+      cl.isActive = state.room?.classId === cl.classId;
     });
+  },
+  setClassOnline(state: TeacherState, payload: ClassRoomModel) {
+    state.classOnline = payload;
   },
   setInfo(state: TeacherState, payload: UserModel) {
     state.info = payload;
@@ -63,6 +67,7 @@ const mutations: MutationTree<TeacherState> = {
                 end: moment(payload.data.end).format("HH:mm:ss"),
                 start: moment(payload.data.start).format("HH:mm:ss"),
                 customizedScheduleId: payload.id,
+                timeId: payload.data.timeId,
                 isHistory: false,
               });
             }
@@ -80,6 +85,7 @@ const mutations: MutationTree<TeacherState> = {
                 end: moment(payload.data.end).format("HH:mm:ss"),
                 start: moment(payload.data.start).format("HH:mm:ss"),
                 customizedScheduleId: payload.id,
+                timeId: payload.data.timeId,
                 isHistory: false,
               },
             ],

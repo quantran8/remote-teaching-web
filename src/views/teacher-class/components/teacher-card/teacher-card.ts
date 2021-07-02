@@ -4,6 +4,7 @@ import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
+import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 
 export default defineComponent({
   props: {
@@ -60,6 +61,9 @@ export default defineComponent({
     const onClickClearAll = () => {
       dispatch("teacherRoom/clearStudentAudio");
     };
+
+	const isLowBandWidth = computed(() => getters["teacherRoom/isLowBandWidth"]);
+
     return {
       audioIcon,
       videoIcon,
@@ -72,6 +76,8 @@ export default defineComponent({
       onDrop,
       onDragOver,
       onClickClearAll,
+	  isLowBandWidth,
+	  IconLowWifi
     };
   },
 });

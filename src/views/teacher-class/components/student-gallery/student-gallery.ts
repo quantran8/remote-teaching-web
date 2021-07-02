@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch, inject } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentOne from "./student-one/student-one.vue";
@@ -55,7 +55,11 @@ export default defineComponent({
     };
 
     const onClickDisableAll = async () => {
-      await dispatch("teacherRoom/disableAllAnnotation");
+      await dispatch("teacherRoom/disableAllStudents");
+    };
+
+    const onClickEnableAll = async () => {
+      await dispatch("teacherRoom/enableAllStudents");
     };
 
     const previousExposure = computed(() => getters["lesson/previousExposure"]);
@@ -82,8 +86,9 @@ export default defineComponent({
       onClickUnmuteAll,
       onClickStickerAll,
       onClickDisableAll,
+      onClickEnableAll,
       timeCount,
-      backToClass,
+      backToClass
     };
   },
 });

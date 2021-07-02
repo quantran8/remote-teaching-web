@@ -1,26 +1,21 @@
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
+import { Tooltip, Empty } from "ant-design-vue";
 
 export default defineComponent({
   emits: ["on-click-item"],
   props: {
-    title: {
-      type: String,
-    },
-    collapsed: {
-      type: Boolean,
-      default: false,
-    },
     items: Array,
+    isContentBlock: Boolean,
+    isTeachingBlock: Boolean,
+  },
+  components: {
+    Tooltip,
+	Empty
   },
   setup(props, { emit }) {
     const store = useStore();
-    const currentExposureItemMedia = computed(()=> store.getters["lesson/currentExposureItemMedia"]);
-    const isToggle = ref(props.collapsed);
-
-    const toggleContent = () => {
-      isToggle.value = !isToggle.value;
-    };
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const onClickItem = (item: {
       id: string;
       image: {
@@ -30,11 +25,15 @@ export default defineComponent({
     }) => {
       emit("on-click-item", item);
     };
+    const isContent = computed(() => props.isContentBlock);
+    const isTeaching = computed(() => props.isTeachingBlock);
+    const hasZeroImage = computed(() => !props.items?.length);
     return {
-      isToggle,
-      toggleContent,
       onClickItem,
-      currentExposureItemMedia
+      currentExposureItemMedia,
+      isContent,
+      isTeaching,
+	  hasZeroImage
     };
   },
 });

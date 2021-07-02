@@ -1,10 +1,3 @@
-.student-gallery {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100%;
-  overflow: scroll;
-}
-
 .tc-one {
   display: flex;
   align-items: center;
@@ -18,6 +11,7 @@
     display: grid;
     column-gap: 20px;
     grid-auto-flow: column;
+    z-index: 9999;
   }
   &__time {
     font-size: 20px;

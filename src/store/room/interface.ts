@@ -12,6 +12,10 @@ export interface StudentState {
   isPalette: boolean;
 }
 
+export interface LessonInfo {
+  unit: string;
+  lesson: string;
+}
 export interface TeacherState {
   id: string;
   name: string;
@@ -19,6 +23,7 @@ export interface TeacherState {
   audioEnabled: boolean;
   videoEnabled: boolean;
   status: InClassStatus;
+  disconnectTime?: number | null;
 }
 export enum ClassView {
   GALLERY = "gallery",
@@ -112,4 +117,9 @@ export interface InitClassRoomPayload {
   userName: string;
   role: string;
   browserFingerPrinting: string;
+}
+
+export interface NetworkQualityPayload {
+  uplinkNetworkQuality: number;
+  downlinkNetworkQuality: number;
 }

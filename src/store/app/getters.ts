@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import {AppState, AppView, LayoutType, ToastData} from "./state";
+import { AppState, AppView, LayoutType, ToastData } from "./state";
 
 const getters: GetterTree<AppState, any> = {
   appLayout(state: AppState): LayoutType {

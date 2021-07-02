@@ -1,56 +1,57 @@
-.annotation-view {
-  width: 717px;
-  height: 435px;
+@import "../../../style/abstracts/variables";
+
+.annotation-view-container {
+  border: 1px solid black;
+  width: 100%;
   position: relative;
-  //left: 0;
-  //top: 50%;
-  z-index: 10;
-  //transform: translateY(-50%);
   border-radius: 10px;
-  #annotation-img {
-    max-width: 100%;
-    position: relative;
-    z-index: 11;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  @media screen and (min-width: $md) and (max-width: $lg) {
+    max-width: 550px;
+    margin: auto;
   }
-  .cursor {
-    display: inline-block;
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    left: -16px;
-    top: -16px;
-    z-index: 13;
-    text-align: right;
-    padding-top: 16px;
-    img {
-      z-index: 13;
-      max-width: 25px;
-    }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    max-width: 500px;
+    margin: auto;
   }
-  .canvas-wrap-container {
-    border: 1px solid black;
-    border-radius: 10px;
+  &__image {
     position: absolute;
-    z-index: 12;
     left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    &.has-whiteboard {
-      border: 1px solid #000;
-      border-radius: 10px;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
-    .canvas-content {
-      border-radius: 10px;
+  }
+  &__canvas {
+    border-radius: 10px;
+  }
+  &.gallery-view {
+    background: #f1f1f1;
+    border-bottom-width: 1px !important;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+    canvas {
+      opacity: 0;
+      visibility: hidden;
     }
-    &.has-palette-tools {
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
+    &.whiteboard {
+      background: none;
+      canvas {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+    &.whiteboard-palette {
+      border-bottom-width: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
     }
   }
 }
+
 .sticker-control {
   position: absolute;
   right: -45px;
@@ -90,19 +91,26 @@
 
 .palette-tool {
   display: flex;
-  width: 719px;
-  height: 100px;
-  padding: 0 20px;
+  width: 100%;
   background: #d8dddf;
   align-items: center;
+  justify-content: center;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border: 1px solid black;
+  padding: 5px 10px;
+  @media screen and (min-width: $md) and (max-width: $lg) {
+    max-width: 550px;
+    margin: auto;
+  }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    max-width: 500px;
+    margin: auto;
+  }
   &__item {
-    width: 45px;
-    height: 45px;
+    width: 36px;
+    height: 36px;
     cursor: pointer;
-    margin-right: 25px;
     border-radius: 5px;
     padding: 5px;
     &:hover {
@@ -112,14 +120,18 @@
       width: 100%;
       height: 100%;
     }
+    &.active {
+      background: #fff;
+    }
   }
   &__colors {
     display: grid;
     grid-template-columns: auto auto auto auto;
-    grid-gap: 10px 10px;
+    grid-gap: 5px;
+    margin-left: 10px;
     &--item {
-      width: 25px;
-      height: 25px;
+      width: 18px;
+      height: 18px;
       border-radius: 12.5px;
       cursor: pointer;
       box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
@@ -127,4 +139,34 @@
       border-color: white;
     }
   }
+
+  @media (min-width: $lg) {
+    height: 100px;
+    &__item {
+      width: 45px;
+      height: 45px;
+      margin-right: 25px;
+    }
+    &__colors {
+      grid-gap: 10px;
+      &--item {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+}
+
+.cursor {
+  width: 10%;
+  height: 10%;
+  position: absolute;
+  img {
+    left: -45%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+  }
+  z-index: 9999;
 }

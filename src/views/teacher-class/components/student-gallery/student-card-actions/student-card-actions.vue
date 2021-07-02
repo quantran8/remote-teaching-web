@@ -1,36 +1,36 @@
 <template>
   <transition-group :class="['student-action', isLarge && 'student-action--large']" tag="div" @enter="actionEnter" :css="false">
-    <a
-      v-if="show"
-      href="javascript:void(0)"
-      @click="onClickClearRaisingHand"
-      :class="['student-action__item', !isRasingHand && 'student-action--hide']"
-    >
+    <span v-if="show" @click="onClickClearRaisingHand" :class="['student-action__item', !isRasingHand && 'student-action--hide']">
       <div class="student-action__btn">
         <img src="@/assets/teacher-class/question-small.svg" />
       </div>
-    </a>
-    <a v-if="show" href="javascript:void(0)" @click="toggleVideo" class="student-action__item">
+    </span>
+    <span v-if="show" @click="toggleVideo" class="student-action__item">
       <div class="student-action__btn">
         <img :src="videoIcon" />
       </div>
-    </a>
-    <a v-if="show" href="javascript:void(0)" @click="toggleAudio" class="student-action__item" draggable="true" @dragstart="onDragStart">
+    </span>
+    <span v-if="show" @click="toggleAudio" class="student-action__item" draggable="true" @dragstart="onDragStart">
       <div class="student-action__btn">
         <img :src="audioIcon" />
       </div>
-    </a>
-    <a v-if="show" href="javascript:void(0)" @click="toggleAnnotation" class="student-action__item">
+    </span>
+    <span v-if="show" @click="toggleAnnotation" class="student-action__item">
       <div class="student-action__btn">
         <img :src="paletteIcon" />
       </div>
-    </a>
-    <a v-if="show" href="javascript:void(0)" @click="addABadge" class="student-action__item">
+    </span>
+    <span v-if="show" @click="addABadge" class="student-action__item">
       <div class="student-action__btn">
         <img src="@/assets/teacher-class/sticker-star-small.svg" />
         <span class="student-action__badge-count">{{ student.badge }}</span>
       </div>
-    </a>
+    </span>
+    <span v-if="show && isShowExpandIcon" @click="handleExpand" class="student-action__item">
+      <div class="student-action__btn">
+        <img :src="arrowIcon" style="width: 27px;border-radius: 50%" />
+      </div>
+    </span>
   </transition-group>
 </template>
 

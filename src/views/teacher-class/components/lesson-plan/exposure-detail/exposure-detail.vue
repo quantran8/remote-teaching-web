@@ -1,29 +1,36 @@
 <template>
-  <div class="exposure-detail-container">
+  <div
+    :class="['exposure-detail-container', isContentBlock && 'content-block', isTeachingActivityBlock && 'teaching-block', isVCPBlock && 'vcp-block']"
+  >
     <div class="header-container">
       <!-- <BaseButton @click="onClickBack">Back</BaseButton> -->
-      <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
-        <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
-      </BaseButton>
-      <div class="exposure-title">{{ exposure.name }} ({{ exposure.duration }})</div>
-      <div class="exposure-info">
+      <div class="header-container__left" v-if="isVCPBlock">
+        <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
+          <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
+        </BaseButton>
+      </div>
+      <div :class="['header-container__left', isContentBlock && thumbnailContentURL && thumbnailURLDefault && 'thumbnail']" v-if="isContentBlock">
+        <img v-if="thumbnailContentURL && thumbnailURLDefault" :src="thumbnailURLDefault" />
+      </div>
+      <div class="exposure-title">{{ exposureTitle }}</div>
+      <div v-if="isContentBlock" class="exposure-info">
         <img class="exposure-info__icon-info" src="@/assets/images/info.png" @mouseover="toggleInformationBox" @mouseout="toggleInformationBox" />
-        <span class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat vivamus
-          at augue eget arcu dictum varius duis. Vitae elementum curabitur vitae nunc. Elementum sagittis vitae et leo duis ut diam quam nulla. Lectus
-          urna duis convallis convallis tellus. Suspendisse faucibus interdum posuere lorem ipsum. Adipiscing enim eu turpis egestas pretium. Nibh
-          nisl condimentum id venenatis a condimentum vitae. Volutpat commodo sed egestas egestas fringilla phasellus. Sed lectus vestibulum mattis
-          ullamcorper velit sed.
-        </span>
+        <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
+          <div v-if="!hasZeroTeachingContent">
+            <div v-for="{ id, textContent } in exposure.teachingActivityBlockItems" :key="id">+ {{ textContent }}</div>
+          </div>
+          <div v-if="hasZeroTeachingContent">
+            <Empty />
+          </div>
+        </div>
       </div>
     </div>
     <div class="exposure-content">
       <ExposureItem
-        v-for="item in exposure.items"
-        :key="item.id"
-        :title="item.name"
-        :collapsed="false"
-        :items="item.media"
+        :teachingContent="exposure.teachingActivityBlockItems"
+        :isTeachingBlock="isTeachingActivityBlock"
+        :isContentBlock="isContentBlock"
+        :items="listMedia"
         @on-click-item="onClickItem"
       />
     </div>

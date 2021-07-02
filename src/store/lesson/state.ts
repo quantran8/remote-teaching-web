@@ -11,6 +11,7 @@ export enum ExposureType {
   VPC = "vpc",
   STORY = "story",
   ACTIVITY = "activity",
+  STORY_DICTIONARY = "Story Dictionary",
 }
 
 export const ExposureTypeFromValue = (val: number) => {
@@ -25,6 +26,7 @@ export const ExposureTypeFromValue = (val: number) => {
   if (val === 20) return ExposureType.VPC;
   if (val === 23) return ExposureType.CHANT;
   if (val === 25) return ExposureType.BIG_BOOK;
+  if (val === 34) return ExposureType.STORY_DICTIONARY;
   throw new Error("UnSupported Exposure Type " + val);
 };
 
@@ -40,12 +42,16 @@ export interface Exposure {
   status: ExposureStatus;
   duration: string;
   items: ExposureItem[];
+  teachingActivityBlockItems: ExposureItem[];
+  contentBlockItems: ExposureItem[];
+  thumbnailURL?: string;
 }
 
 export interface ExposureItem {
   id: string;
   name: string;
   media: ExposureItemMedia[];
+  textContent?: string;
 }
 
 export interface ExposureItemMedia {

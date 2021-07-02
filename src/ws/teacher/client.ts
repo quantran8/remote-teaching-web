@@ -44,9 +44,8 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestEndRoom(roomId: string) {
     return this.send(WSCmd.END_CLASS, { roomId: roomId });
   }
-
-  sendRequestDisableAllAnnotation() {
-    return this.send(WSCmd.DISABLE_ALL_STUDENT_PALETTE, {});
+  sendRequestDisableAllAnnotation(showPalette: boolean) {
+    return this.send(WSCmd.TOGGLE_STUDENTS_PALETTES, showPalette);
   }
   sendRequestToggleAnnotation(StudentId: string, IsEnable: boolean) {
     return this.send(WSCmd.SET_STUDENT_PALETTE, {
@@ -142,5 +141,8 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestDrawLaser(payload: any) {
     const data = JSON.stringify(payload);
     return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);
+  }
+  sendRequestShapesForStudent(payload: any) {
+    return this.send(WSCmd.TEACHER_DRAWS_SHAPE, payload);
   }
 }

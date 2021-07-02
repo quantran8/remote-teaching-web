@@ -12,6 +12,7 @@ const POPUP_TIMING = 6000 * 10 * 5;
 
 //three minutes
 const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
+const TEACHER_PATH_REGEX = /\/teacher/;
 
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
@@ -24,65 +25,59 @@ export const useDisconnection = () => {
   let timeoutId: any;
   const router = useRouter();
 
-  //handle teacher disconnection in student's side
-
-  watch(myTeacherDisconnected, async isDisconnected => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    if (isDisconnected) {
-      audioSource.reconnectFailedSound.play();
-    }
-  });
-
   //handle teacher disconnection in teacher's side
-
-  watch(teacherDisconnected, async isDisconnected => {
-    if (isDisconnected) {
-      await dispatch("teacherRoom/leaveRoom");
-      timeoutId = setTimeout(() => {
+  let modalRef: any;
+  watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
+    const pathname = window.location.pathname;
+    const matchIndex = pathname.search(TEACHER_PATH_REGEX);
+    if (matchIndex < 0) {
+      if (prevIsDisconnected !== isDisconnected && isDisconnected) {
+        await dispatch("teacherRoom/leaveRoom");
+        timeoutId = setTimeout(() => {
+          audioSource.teacherTryReconnectSound.stop();
+          audioSource.reconnectFailedSound.play();
+          router.push("/teacher");
+        }, TEACHER_RECONNECT_TIMING);
+        audioSource.teacherTryReconnectSound.play();
+        modalRef = Modal.warning({
+          content: "So Sorry! It seems you lost network connectivity.",
+          onOk: () => {
+            console.log("OK");
+          },
+        });
+        return;
+      }
+      if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
+        modalRef.destroy();
+        const { classId } = route.params;
+        if (!classId) {
+          window.location.reload();
+        }
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
         audioSource.teacherTryReconnectSound.stop();
-        audioSource.reconnectFailedSound.play();
-        router.push("/teacher");
-      }, TEACHER_RECONNECT_TIMING);
-      audioSource.teacherTryReconnectSound.play();
-      Modal.warning({
-        content: "So Sorry! It seems you lost network connectivity.",
-        onOk: () => {
-          console.log("OK");
-        },
-      });
-      return;
+        audioSource.reconnectSuccessSound.play();
+        const loginInfo: LoginInfo = getters["auth/loginInfo"];
+        const fp = await fpPromise;
+        const result = await fp.get();
+        const visitorId = result.visitorId;
+        await dispatch("teacherRoom/initClassRoom", {
+          classId: classId,
+          userId: loginInfo.profile.sub,
+          userName: loginInfo.profile.name,
+          role: RoleName.teacher,
+          browserFingerPrinting: visitorId,
+        });
+        await dispatch("teacherRoom/joinRoom");
+      }
     }
-    const { classId } = route.params;
-    if (!classId) {
-      window.location.reload();
-      // const schools: ResourceModel[] =  getters["teacher/schools"]
-      // dispatch("teacher/loadClasses", { schoolId: schools[0].id });
-    }
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    audioSource.teacherTryReconnectSound.stop();
-    audioSource.reconnectSuccessSound.play();
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    const fp = await fpPromise;
-    const result = await fp.get();
-    const visitorId = result.visitorId;
-    await dispatch("teacherRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.profile.sub,
-      userName: loginInfo.profile.name,
-      role: RoleName.teacher,
-      browserFingerPrinting: visitorId,
-    });
-    await dispatch("teacherRoom/joinRoom");
   });
 
   //handle student disconnection
 
-  watch(studentDisconnected, async isDisconnected => {
-    if (isDisconnected) {
+  watch(studentDisconnected, async (isDisconnected, prevIssDisconnected) => {
+    if (isDisconnected !== prevIssDisconnected && isDisconnected) {
       await dispatch("studentRoom/leaveRoom");
       timeoutId = setTimeout(async () => {
         audioSource.reconnectFailedSound.play();
@@ -95,22 +90,24 @@ export const useDisconnection = () => {
       }, POPUP_TIMING);
       return;
     }
-    clearTimeout(timeoutId);
-    audioSource.reconnectSuccessSound.play();
-    const { studentId, classId } = route.params;
-    if (!studentId || !classId) return;
-    const fp = await fpPromise;
-    const result = await fp.get();
-    const visitorId = result.visitorId;
-    await dispatch("studentRoom/initClassRoom", {
-      classId: classId,
-      userId: loginInfo.value.profile.sub,
-      userName: loginInfo.value.profile.name,
-      studentId: studentId,
-      role: RoleName.parent,
-      browserFingerPrinting: visitorId,
-    });
-    await dispatch("studentRoom/joinRoom");
+    if (isDisconnected !== prevIssDisconnected && !isDisconnected) {
+      clearTimeout(timeoutId);
+      audioSource.reconnectSuccessSound.play();
+      const { studentId, classId } = route.params;
+      if (!studentId || !classId) return;
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      await dispatch("studentRoom/initClassRoom", {
+        classId: classId,
+        userId: loginInfo.value.profile.sub,
+        userName: loginInfo.value.profile.name,
+        studentId: studentId,
+        role: RoleName.parent,
+        browserFingerPrinting: visitorId,
+      });
+      await dispatch("studentRoom/joinRoom");
+    }
   });
 
   window.addEventListener("online", () => {

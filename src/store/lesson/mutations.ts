@@ -37,9 +37,13 @@ const mutations: LessonMutation<LessonState> = {
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
-    for (const item of s.currentExposure.items) {
-      s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
-      if (s.currentExposureItemMedia) break;
+    const combinedItems = [...s.currentExposure.items, ...s.currentExposure.contentBlockItems, ...s.currentExposure.teachingActivityBlockItems];
+    for (const item of combinedItems) {
+      const matchItemMedia = item.media.find(m => m.id === p.id);
+      if (matchItemMedia) {
+        s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
+        if (s.currentExposureItemMedia) break;
+      }
     }
   },
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {
@@ -78,6 +82,19 @@ const mutations: LessonMutation<LessonState> = {
       s.previousExposureItemMedia = item.media.find(m => m.id === p.id);
       if (s.previousExposureItemMedia) break;
     }
+  },
+  clearLessonData(s: LessonState) {
+    s.exposures = [];
+    s.currentExposure = undefined;
+    s.nextExposure = undefined;
+    s.currentExposureItemMedia = undefined;
+    s.nextExposureItemMedia = undefined;
+    s.prevExposureItemMedia = undefined;
+    s.isBlackout = false;
+    s.totalTime = "";
+    s.playedTime = "";
+    s.previousExposure = undefined;
+    s.previousExposureItemMedia = undefined;
   },
 };
 

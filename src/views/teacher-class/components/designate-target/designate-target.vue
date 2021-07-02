@@ -80,7 +80,7 @@
                   v-for="student in studentIds"
                   :key="student.id"
                   :id="student.id"
-                  :name="student.name"
+                  :name="student.englishName"
                   :index="student.index"
                   :status="student.status"
                   :selected="student.selected"
@@ -91,11 +91,9 @@
                 <BaseButton class="btn-primary green" @click="onClickAssignDesignate">Assign All Targets</BaseButton>
               </div>
               <div class="designate-box-right--button">
-                <BaseButton class="btn-primary" @click="onClickClearAllTargets"
-                  >Clear All Targets</BaseButton
+                <BaseButton class="btn-primary" @click="onClickClearAllTargets">Clear All Targets</BaseButton
                 >
-                <BaseButton class="btn-primary" @click="onClickRevealAllTargets"
-                  >Reveal All Targets</BaseButton
+                <BaseButton class="btn-primary" @click="onClickRevealAllTargets">Reveal All Targets</BaseButton
                 >
               </div>
             </div>

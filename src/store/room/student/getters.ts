@@ -40,6 +40,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   classView(state: StudentRoomState): ClassView {
     return state.classView;
   },
+  isLessonPlan(state: StudentRoomState) {
+    return state.classView === ClassView.LESSON_PLAN;
+  },
   isGalleryView(state: StudentRoomState) {
     return state.classView === ClassView.GALLERY;
   },
@@ -52,6 +55,12 @@ const getters: GetterTree<StudentRoomState, any> = {
   isAllAudioMuted(state: StudentRoomState) {
     for (const student of state.students) {
       if (student.audioEnabled) return false;
+    }
+    return true;
+  },
+  isAllPaletteHidden(state: StudentRoomState) {
+    for (const student of state.students) {
+      if (student.isPalette) return false;
     }
     return true;
   },
@@ -78,6 +87,12 @@ const getters: GetterTree<StudentRoomState, any> = {
   },
   teacherIsDisconnected(state: StudentRoomState): boolean {
     return state.teacherIsDisconnected;
+  },
+  getAvatarTeacher(state: StudentRoomState): string {
+    return state.avatarTeacher;
+  },
+  getAvatarStudentOneToOne(state: StudentRoomState): string {
+    return state.avatarStudentOneToOne;
   },
 };
 

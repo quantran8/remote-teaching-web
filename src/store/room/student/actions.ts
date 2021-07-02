@@ -1,17 +1,17 @@
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse } from "@/services";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, StudentService, InfoService } from "@/services";
 import { ActionTree } from "vuex";
 import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import {ErrorCode, fmtMsg} from "commonui";
+import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
-import {Paths} from "@/utils/paths";
-import {ErrorLocale} from "@/locales/localeid";
+import { Paths } from "@/utils/paths";
+import { ErrorLocale } from "@/locales/localeid";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -77,7 +77,41 @@ const actions: ActionTree<StudentRoomState, any> = {
       }
     }
     if (idOne) {
-      return manager?.oneToOneSubscribeAudio(cameras, audios, idOne, teacher, student);
+      //handle one to one student
+      if (idOne === student?.id) {
+        const cameraOtherStudentId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
+        const audioOtherStudentId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+        for (const id of cameraOtherStudentId) {
+          const cameraIndex = cameras.findIndex(camId => camId === id);
+          cameras.splice(cameraIndex, 1);
+        }
+        for (const id of audioOtherStudentId) {
+          const audioIndex = audios.findIndex(audioId => audioId === id);
+          audios.splice(audioIndex, 1);
+        }
+      }
+
+      //handle other students
+      if (idOne !== student?.id) {
+        //remove student one to one
+        const studentCameraIndex = cameras.findIndex(camId => camId === idOne);
+        if (studentCameraIndex > -1) {
+          cameras.splice(studentCameraIndex, 1);
+        }
+        const studentAudioIndex = audios.findIndex(audioId => audioId === idOne);
+        if (studentAudioIndex > -1) {
+          audios.splice(studentAudioIndex, 1);
+        }
+        //remove teacher one to one
+        const teacherCameraIndex = cameras.findIndex(camId => camId === teacher?.id);
+        if (teacherCameraIndex > -1) {
+          cameras.splice(teacherCameraIndex, 1);
+        }
+        const teacherAudioIndex = audios.findIndex(audioId => audioId === teacher?.id);
+        if (teacherAudioIndex > -1) {
+          audios.splice(teacherAudioIndex, 1);
+        }
+      }
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
@@ -98,6 +132,10 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
+    // 120000 means 2 minutes
+    setInterval(() => {
+      RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${state.bandWidth}`);
+    }, 120000);
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -109,11 +147,10 @@ const actions: ActionTree<StudentRoomState, any> = {
         // Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        // console.log("speaking", JSON.stringify(result));
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        // console.log("onLocalNetworkUpdate", payload);
+        store.commit("setStudentBandwidth", payload.uplinkNetworkQuality);
       },
     });
   },
@@ -233,6 +270,17 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   setTeacherDisconnected({ commit }, p: boolean) {
     commit("setTeacherDisconnected", p);
+  },
+  async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
+    const response = await InfoService.getAvatarTeacher(payload.teacherId);
+    if (response) commit("setAvatarTeacher", response);
+  },
+  async getAvatarStudent({ commit }, payload: { studentId: string }) {
+    const response = await StudentService.getAvatarStudent(payload.studentId);
+    if (response) commit("setAvatarStudentOneToOne", response);
+  },
+  async studentDrawsLine({ state }, payload: Array<string>) {
+    await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
   },
 };
 

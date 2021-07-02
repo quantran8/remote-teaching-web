@@ -9,5 +9,5 @@ export interface TeacherModel extends UserModel {
   isMuteAudio: boolean;
   isMuteVideo: boolean;
   connectionStatus: number;
-  disconnectTime?: any;
+  disconnectTime?: number | null;
 }

@@ -4,7 +4,7 @@
 
   <MainLayout v-else-if="appView === 2">
     <template v-slot:header>
-      <AppHeader :title="siteTitle" />      
+      <AppHeader :title="siteTitle" />
     </template>
     <AccessDeniedPage />
     <template v-slot:footer>
@@ -23,5 +23,5 @@
   <Toast></Toast>
   <Notification></Notification>
 </template>
-<script lang="ts" src="./app.ts"/>
-<style lang="scss" src="./app.scss"/>
+<script lang="ts" src="./app.ts" />
+<style lang="scss" src="./app.scss" />

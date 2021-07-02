@@ -39,6 +39,7 @@
 	"common.role.parent": "Parent",
 	"common.site.title": "Remote Teaching",
 	"common.access.denied": "Access Denied",
+	"common.warning.overlap": "There seems to be a session already existing in that timeslot",
 	"error.unauthorized": "It seems you do not have access to the Curriculum Vault. Please reach out to the support team for further assistance",
 	"error.notfound": "Sorry, the page you visited does not exist.",
 	"teacher.policy.title": "RTSI Release",
@@ -58,5 +59,21 @@
 	"student.accept.policy": "I accept the policies",
 	"read.policy": "Please read the privacy policy carefully.",
 	"privacy.policy": "Privacy Policy",
-	"error.class.not.started": "Your class has not been started!"
+	"error.class.not.started": "Your class has not been started!",
+	"disconnect.title": "Oops! There is an issue." ,
+	"disconnect.content1": "There were connection issue for your teacher.",
+	"disconnect.content2": "Your school or teacher will contact you about how they will handle the issue.",
+	"disconnect.goto": "Go To Home Page",
+	"access_denied.we_are_sorry": "We are sorry...",
+  	"access_denied.description": "The page you're trying to access has restricted access.",
+  	"access_denied.suggest": "Please refer your administrator",
+	"student_class.exit": "Exit",
+    "student_class.go_to_home_page": "Go To Home Page",
+	"parent_home.welcome": "Welcome ",
+	"parent_home.choose_student": "Choose a student to start",
+	"parent_home.cancel": "Cancel",
+	"parent_home.submit": "Submit",
+	"parent_student_card.class_group": "Class/group: ",
+    "parent_student_card.start_time": "Start time: "
+
 }

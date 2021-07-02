@@ -19,6 +19,23 @@ const actions: ActionTree<TeacherState, any> = {
       // process with err
     }
   },
+  async loadAllClassesSchedules({ commit }: ActionContext<TeacherState, any>, payload: { schoolId: string; browserFingerPrinting: string }) {
+    const response = await TeacherService.getAllClassesSchedule(payload.schoolId);
+    commit("setClassesSchedules", response);
+    try {
+      if (payload.browserFingerPrinting != null) {
+        const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
+        if (responseActive.data) {
+          commit("setClassRoom", responseActive.data);
+          commit("setClassOnline", responseActive.data.classInfo);
+        } else {
+          commit("setClassOnline", undefined);
+        }
+      }
+    } catch (err) {
+      // process with err
+    }
+  },
   async clearSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
     commit("clearCalendarSchedule");
   },

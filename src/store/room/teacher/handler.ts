@@ -5,6 +5,7 @@ import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
+import { UserShape } from "@/store/annotation/state";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -13,6 +14,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch("annotation/setInfo", payload.annotation, {
         root: true,
       });
       if (payload.studentOneToOne) {
@@ -29,6 +33,14 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
+      commit("updateRaisingHand", {
+        id: payload.id,
+        isRaisingHand: payload.isRaisingHand,
+      });
+      commit("updateIsPalette", {
+        id: payload.id,
+        isPalette: payload.isPalette,
+      });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
@@ -52,9 +64,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);
-      if (student && student.name) {
-        const message = `${student.name} left the class.`;
-        dispatch("setToast", { message: message }, { root: true });
+      if (student && student.englishName) {
+        const message = `${student.englishName} left the class.`;
+        await dispatch("setToast", { message: message }, { root: true });
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
@@ -62,9 +74,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
-      if (student && student.name) {
-        const message = `${student.name} has lost connection.`;
-        dispatch("setToast", { message: message }, { root: true });
+      if (student && student.englishName) {
+        const message = `${student.englishName} has lost connection.`;
+        await dispatch("setToast", { message: message }, { root: true });
       }
     },
     onStudentSendUnity: async (payload: any) => {
@@ -104,15 +116,21 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
+    onTeacherDisableAllStudentPallete: async (payload: any) => {
+      await commit("teacherRoom/disableAnnotationStatus", payload, { root: true });
+    },
+    onTeacherToggleStudentPallete: async (payload: any) => {
+      await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
+    },
     onTeacherEndClass: (payload: any) => {
       //   console.log(payload);
     },
     onTeacherDisconnect: (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherSetFocusTab: (payload: RoomModel) => {
+    onTeacherSetFocusTab: (payload: number) => {
       commit("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
+        classView: ClassViewFromValue(payload),
       });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
@@ -142,7 +160,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
-      commit("lesson/setCurrentExposureItemMedia", { id: payload.pageSelected }, { root: true });
+      commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
     },
     onStudentRaisingHand: async (student: StudentModel) => {
       const payload = { id: student.id, raisingHand: student.isRaisingHand };
@@ -197,10 +215,19 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
     },
     onTeacherAddBrush: async (payload: any) => {
-      //   console.log(payload);
+      await dispatch("annotation/addShape", payload, {
+        root: true,
+      });
     },
-    onTeacherClearAllBrush(payload: any) {
-      //   console.log(payload);
+    onTeacherClearAllBrush: async (payload: any) => {
+      await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });
+      await dispatch("annotation/setClearBrush", {}, { root: true });
+      await dispatch("annotation/setTeacherAddShape", { teacherShapes: null }, { root: true });
+      await dispatch("annotation/setStudentDrawsLine", null, { root: true });
+      await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
+      await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+      // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
+      // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
     },
     onTeacherDeleteBrush(payload: any) {
       //   console.log(payload);
@@ -225,8 +252,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         );
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
+        await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
+        await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+        // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
+        // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
       }
-      dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetWhiteboard: (payload: RoomModel) => {
       //   console.log(payload);
@@ -234,14 +265,16 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherDrawLaser: (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherDisableAllStudentPallete: async (payload: any) => {
-      await commit("teacherRoom/disableAnnotationStatus", payload, { root: true });
-    },
-    onTeacherToggleStudentPallete: async (payload: any) => {
-      await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
-    },
     onStudentSetBrushstrokes: async (payload: any) => {
-      await commit("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
+      await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
+    },
+    onTeacherAddShape: async (payload: Array<UserShape>) => {
+      await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload }, { root: true });
+    },
+    onStudentDrawsLine: async (payload: string) => {
+      await dispatch("annotation/setStudentDrawsLine", payload, {
+        root: true,
+      });
     },
   };
   return handler;

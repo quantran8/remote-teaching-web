@@ -1,11 +1,14 @@
-import { ClassModel, RoomModel, CalendarSchedulesModel } from "@/models";
+import { RoomModel, CalendarSchedulesModel, ClassModelSchedules, TeacherClassCalendarModel, ClassRoomModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { GetterTree } from "vuex";
 import { TeacherState } from "./state";
 
 const getters: GetterTree<TeacherState, any> = {
-  classes(state: TeacherState): Array<ClassModel> {
+  classes(state: TeacherState): Array<TeacherClassCalendarModel> {
     return state.classes;
+  },
+  classesSchedules(state: TeacherState): Array<ClassModelSchedules> {
+    return state.classesSchedules;
   },
   schools(state: TeacherState): Array<ResourceModel> {
     return state.schools;
@@ -18,6 +21,9 @@ const getters: GetterTree<TeacherState, any> = {
   },
   calendarSchedules(state: TeacherState): Array<CalendarSchedulesModel> {
     return state.calendarSchedules;
+  },
+  getClassOnline(state: TeacherState): ClassRoomModel | undefined {
+    return state.classOnline;
   },
 };
 

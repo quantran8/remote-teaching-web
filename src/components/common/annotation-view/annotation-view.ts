@@ -1,21 +1,31 @@
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import {computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
+import { TeacherModel } from "@/models";
 
 const randomPosition = () => Math.random() * 100;
+
+const defaultCanvasDimension = {
+  width: 717,
+  height: 435,
+};
 
 export default defineComponent({
   props: ["image"],
   setup(props) {
     const store = useStore();
     let canvas: any;
+    const containerRef = ref<HTMLDivElement>();
     const scaleRatio = ref(1);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
+    const isGalleryView = computed(() => store.getters["studentRoom/isGalleryView"]);
+    const isLessonPlan = computed(() => store.getters["studentRoom/isLessonPlan"]);
     const activeColor = ref("black");
+    const toolActive = ref("move");
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
@@ -33,38 +43,103 @@ export default defineComponent({
     const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
-    const renderCanvas = () => {
-      if (!canvas) return;
-      // whiteboard processing
+    const teacherShapes = computed(() => store.getters["annotation/teacherShape"]);
+    const teacherForST = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
+    const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
+    const oneOneTeacherStrokes = computed(() => store.getters["annotation/oneOneTeacherStrokes"]);
+    const oneTeacherShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
+    const oneOneStatus = ref<boolean>(false);
+    const oneOneIdNear = ref<string>("");
+    const isPaletteVisible = computed(
+      () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
+    );
+    const firstTimeVisit = ref(false);
+    const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
-        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
+          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        canvas.isDrawingMode = false;
       }
-      if (undoCanvas.value) {
-        canvas.remove(...canvas.getObjects("path"));
-      }
-      // teacher drawing
-      if (canvasData.value) {
-        canvasData.value.forEach((s: any) => {
-          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+    };
+    watch(isShowWhiteBoard, () => {
+      processCanvasWhiteboard();
+    });
+    const brushstrokesRender = (data: any, oneId: any) => {
+      data.brushstrokes.forEach((s: any) => {
+        const shape = JSON.parse(s);
+        if (shape.type === "polygon") {
+          const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneId;
             canvas.add(item);
+            item.selectable = false;
           });
-        });
-        canvas.getObjects("path").forEach((obj: any) => {
-          obj.selectable = false;
-        });
-      } else {
-        canvas.remove(...canvas.getObjects());
+        }
+        if (shape.type === "rect") {
+          const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneId;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "circle") {
+          const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneId;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+      });
+    };
+    const undoStrokeByTeacher = () => {
+      if (undoCanvas.value) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === teacherForST.value.id)
+            .filter((obj: any) => obj.type === "path"),
+        );
       }
-      // laser processing
+    };
+    watch(undoCanvas, () => {
+      undoStrokeByTeacher();
+    });
+    const renderStrokes = (data: any, oneId: any) => {
+      data.forEach((s: any) => {
+        const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+          item.isOneToOne = oneId;
+          item.id = teacherForST.value.id;
+          canvas.add(item);
+        });
+      });
+      objectCanvasProcess();
+      listenSelfStudent();
+    };
+    const renderTeacherStrokes = () => {
+      if (canvasData.value && canvasData.value.length > 0) {
+        renderStrokes(canvasData.value, null);
+      }
+    };
+    watch(canvasData, async () => {
+      await nextTick();
+      renderTeacherStrokes();
+    });
+    const laserPathByTeacher = () => {
       if (laserPath.value) {
         const laserPathLine = new fabric.Path.fromObject(JSON.parse(laserPath.value), (item: any) => {
           item.animate("opacity", "0", {
             duration: 1000,
             easing: fabric.util.ease.easeInOutExpo,
             onChange: () => {
-              canvas.add(item);
+              if (oneOneStatus.value) {
+                if (studentOneAndOneId.value === student.value.id) {
+                  canvas.add(item);
+                }
+              } else {
+                canvas.add(item);
+              }
             },
             onComplete: async () => {
               canvas.remove(item);
@@ -73,67 +148,142 @@ export default defineComponent({
           });
         });
       }
-      // students sharing shapes
+    };
+    watch(laserPath, () => {
+      laserPathByTeacher();
+    });
+    const studentSharingShapes = () => {
       if (studentShapes.value) {
         studentShapes.value.forEach((item: any) => {
-          console.log(item, "students shape sharing");
-          if (item.studentId !== student.value.id) {
-            console.log(item.studentId, student.value.id, "check id student");
+          if (item.userId !== teacherForST.value.id) {
+            if (item.userId !== student.value.id) {
+              canvas.remove(
+                ...canvas
+                  .getObjects()
+                  .filter((obj: any) => obj.id !== student.value.id)
+                  .filter((obj: any) => obj.id !== teacherForST.value.id)
+                  .filter((obj: any) => obj.type !== "path"),
+              );
+              brushstrokesRender(item, null);
+            }
+          }
+        });
+        listenSelfStudent();
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path"));
+      }
+    };
+    watch(studentShapes, async () => {
+      studentSharingShapes();
+      if (!firstTimeVisit.value) {
+        selfStudentShapes();
+        firstTimeVisit.value = true;
+      }
+    });
+    const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
+      if (dataShapes) {
+        dataShapes.forEach((item: any) => {
+          if (item.userId === teacherForST.value.id) {
             canvas.remove(
               ...canvas
                 .getObjects()
-                .filter((obj: any) => obj.id !== student.value.id)
-                .filter((obj: any) => obj.type !== "path"),
+                .filter((obj: any) => obj.type !== "path")
+                .filter((obj: any) => obj.id === teacherForST.value.id),
             );
-            item.brushstrokes.forEach((s: any) => {
-              const shape = JSON.parse(s);
-              if (shape.type === "polygon") {
-                const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "rect") {
-                const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-              if (shape.type === "circle") {
-                const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-                  canvas.add(item);
-                  item.selectable = false;
-                });
-              }
-            });
+            brushstrokesRender(item, studentOneId);
           }
         });
       } else {
-        canvas.remove(...canvas.getObjects("polygon"));
-        canvas.remove(...canvas.getObjects("rect"));
-        canvas.remove(...canvas.getObjects("circle"));
+        // canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id));
       }
     };
-    watch(isShowWhiteBoard, () => {
-      if (isShowWhiteBoard.value) {
-        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+    watch(teacherShapes, () => {
+      teacherSharingShapes(teacherShapes.value, null);
+    });
+    const studentSharingStrokes = () => {
+      if (studentStrokes.value && studentStrokes.value.length > 0) {
+        if (!studentOneAndOneId.value) {
+          studentStrokes.value.forEach((s: any) => {
+            if (s.id !== student.value.id) {
+              const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+                item.isOneToOne = null;
+                canvas.add(item);
+              });
+            }
+          });
+          objectCanvasProcess();
         }
       } else {
-        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        canvas.remove(...canvas.getObjects("path"));
       }
+    };
+    watch(studentStrokes, () => {
+      studentSharingStrokes();
     });
-    watch(undoCanvas, () => {
-      renderCanvas();
+    const renderOneTeacherStrokes = () => {
+      if (oneOneTeacherStrokes.value && oneOneTeacherStrokes.value.length > 0 && studentOneAndOneId.value === student.value.id) {
+        renderStrokes(oneOneTeacherStrokes.value, studentOneAndOneId.value);
+      }
+    };
+    watch(oneOneTeacherStrokes, () => {
+      renderOneTeacherStrokes();
     });
-    watch(canvasData, () => {
-      renderCanvas();
+    const renderOneTeacherShapes = () => {
+      if (oneTeacherShapes.value && oneTeacherShapes.value.length > 0 && studentOneAndOneId.value === student.value.id) {
+        teacherSharingShapes(oneTeacherShapes.value, studentOneAndOneId.value);
+      }
+    };
+    watch(oneTeacherShapes, () => {
+      renderOneTeacherShapes();
     });
-    watch(laserPath, () => {
-      renderCanvas();
-    });
-    watch(studentShapes, () => {
-      renderCanvas();
+    const selfStudentShapes = () => {
+      if (studentShapes.value) {
+        studentShapes.value.forEach((item: any) => {
+          if (item.userId === student.value.id) {
+            canvas.remove(
+              ...canvas
+                .getObjects()
+                .filter((obj: any) => obj.id === student.value.id)
+                .filter((obj: any) => obj.type !== "path"),
+            );
+            brushstrokesRender(item, null);
+          }
+        });
+        listenSelfStudent();
+      }
+    };
+    watch(studentOneAndOneId, () => {
+      if (studentOneAndOneId.value) {
+        oneOneIdNear.value = studentOneAndOneId.value;
+        oneOneStatus.value = true;
+        if (studentOneAndOneId.value !== student.value.id) {
+          // disable shapes of student not 1-1
+          canvas.isDrawingMode = false;
+          canvas.discardActiveObject();
+          canvas
+            .getObjects()
+            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => obj.id !== studentOneAndOneId.value)
+            .forEach((item: any) => {
+              item.selectable = false;
+              item.hasControls = false;
+              item.hasBorders = false;
+              item.hoverCursor = "cursor";
+            });
+        }
+      } else {
+        oneOneStatus.value = false;
+        if (student.value.id === oneOneIdNear.value) {
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+          // render shapes objects again
+          teacherSharingShapes(teacherShapes.value, null);
+          studentSharingShapes();
+          selfStudentShapes();
+          oneOneIdNear.value = "";
+        }
+        // enable shapes of each students
+        listenSelfStudent();
+      }
     });
     const studentAddShapes = async () => {
       const shapes: Array<string> = [];
@@ -148,31 +298,94 @@ export default defineComponent({
         await store.dispatch("studentRoom/studentAddShape", shapes);
       }
     };
+    const processPushShapes = async () => {
+      if (oneOneStatus.value) {
+        if (studentOneAndOneId.value === student.value.id) {
+          await studentAddShapes();
+        }
+      } else {
+        await studentAddShapes();
+      }
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         canvas.renderAll();
-        await studentAddShapes();
+        if (canvas.isDrawingMode) {
+          const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
+          const lastStroke = studentStrokes[studentStrokes.length - 1];
+          await store.dispatch("studentRoom/studentDrawsLine", JSON.stringify(lastStroke));
+        } else {
+          await processPushShapes();
+        }
       });
+    };
+    const listenCreatedPath = () => {
+      canvas.on("path:created", (obj: any) => {
+        obj.path.id = student.value.id;
+        obj.path.isOneToOne = studentOneAndOneId.value || null;
+      });
+    };
+    const listenSelfStudent = () => {
+      canvas
+        .getObjects()
+        .filter((obj: any) => obj.type !== "path")
+        .filter((obj: any) => obj.id === student.value.id)
+        .forEach((item: any) => {
+          item.selectable = true;
+        });
     };
     const listenToCanvasEvents = () => {
       listenToMouseUp();
+      listenCreatedPath();
+      listenSelfStudent();
     };
+    const canvasRef = ref(null);
     const boardSetup = () => {
-      const canvasEl = document.getElementById("canvasOnStudent");
-      if (!canvasEl) return;
-      canvas = new fabric.Canvas("canvasOnStudent");
-      canvas.setWidth(717);
-      canvas.setHeight(435);
+      if (!canvasRef.value) return;
+      const { width, height } = defaultCanvasDimension;
+      canvas = new fabric.Canvas(canvasRef.value, {
+        width,
+        height,
+      });
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
       });
-
-      renderCanvas();
       listenToCanvasEvents();
+      resizeCanvas();
+      processCanvasWhiteboard();
     };
+    const resizeCanvas = () => {
+      const outerCanvasContainer = containerRef.value;
+      if (!outerCanvasContainer) {
+        return;
+      }
+      const ratio = canvas.getWidth() / canvas.getHeight();
 
+      const containerWidth = outerCanvasContainer.clientWidth;
+      const scale = containerWidth / canvas.getWidth();
+      const zoom = canvas.getZoom() * scale;
+      scaleRatio.value = zoom;
+      canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
+      canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+    };
+    const objectCanvasProcess = () => {
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.type === "path") {
+          obj.selectable = false;
+          obj.hasControls = false;
+          obj.hasBorders = false;
+          obj.hoverCursor = "cursor";
+        }
+      });
+    };
+    const cursorHand = () => {
+      canvas.isDrawingMode = false;
+      toolActive.value = "move";
+      objectCanvasProcess();
+    };
     const addStar = async () => {
+      toolActive.value = "star";
       const points = starPolygonPoints(5, 35, 15);
       const star = new fabric.Polygon(points, {
         stroke: activeColor.value,
@@ -182,13 +395,14 @@ export default defineComponent({
         strokeLineJoin: "round",
         fill: "",
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
-
+      canvas.isDrawingMode = false;
       canvas.add(star);
       await studentAddShapes();
     };
-
     const addCircle = async () => {
+      toolActive.value = "circle";
       const circle = new fabric.Circle({
         left: randomPosition(),
         top: randomPosition(),
@@ -197,12 +411,14 @@ export default defineComponent({
         stroke: activeColor.value,
         strokeWidth: 3,
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
+      canvas.isDrawingMode = false;
       canvas.add(circle);
       await studentAddShapes();
     };
-
     const addSquare = async () => {
+      toolActive.value = "square";
       const square = new fabric.Rect({
         left: randomPosition(),
         top: randomPosition(),
@@ -212,32 +428,35 @@ export default defineComponent({
         stroke: activeColor.value,
         strokeWidth: 3,
         id: student.value.id,
+        isOneToOne: studentOneAndOneId.value || null,
       });
-
+      canvas.isDrawingMode = false;
       canvas.add(square);
       await studentAddShapes();
     };
-
     const clearStar = () => {
       canvas.remove(...canvas.getObjects("polygon"));
       canvas.renderAll();
     };
-
     const addDraw = () => {
-      console.log("drawing");
+      toolActive.value = "pen";
+      canvas.isDrawingMode = true;
+      canvas.freeDrawingBrush.color = activeColor.value;
+      canvas.freeDrawingBrush.width = 4;
     };
-
-    const canvasRef = ref(null);
     onMounted(() => {
-      // calcScaleRatio();
       boardSetup();
-      // window.addEventListener("resize", calcScaleRatio);
+      window.addEventListener("resize", resizeCanvas);
     });
     onUnmounted(() => {
-      // window.removeEventListener("resize", calcScaleRatio);
+      window.removeEventListener("resize", resizeCanvas);
     });
 
     const paletteTools: Array<toolType> = [
+      {
+        name: "move",
+        action: cursorHand,
+      },
       {
         name: "star",
         action: addStar,
@@ -257,12 +476,15 @@ export default defineComponent({
 
     const changeColor = (color: string) => {
       activeColor.value = color;
+      if (canvas.isDrawingMode) {
+        canvas.freeDrawingBrush.color = color;
+      }
     };
     const animationCheck = ref(true);
     const animationDone = computed(() => animationCheck.value);
     const actionEnter = (element: HTMLElement) => {
       animationCheck.value = false;
-      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce" });
+      gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
       gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
     };
@@ -272,8 +494,9 @@ export default defineComponent({
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
     };
-
+    const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
     return {
+      containerRef,
       pointerStyle,
       imageUrl,
       isPointerMode,
@@ -290,6 +513,11 @@ export default defineComponent({
       actionEnter,
       actionLeave,
       animationDone,
+      isPaletteVisible,
+      hasPalette,
+      isGalleryView,
+      toolActive,
+      isLessonPlan,
     };
   },
 });

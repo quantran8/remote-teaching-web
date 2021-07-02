@@ -2,7 +2,9 @@
   <div class="lesson-container">
     <div class="lesson-container__header">
       <div class="lesson-container__header-title" :class="[isGalleryView && 'lesson-container__header-title--text-right']">
-        Unit 1:14
+        <span class="lesson-container__header-title--wrap">
+          <span class="lesson-container__header-title--wrap__unit"> Unit: {{ currentUnit }} </span><span class="lesson-container__header-title--wrap__lesson"> (Lesson {{ currentLesson }})</span>
+        </span>
       </div>
       <span @click="backToGalleryMode" class="lesson-container__header-back">
         <span v-if="isGalleryView">&#8250;</span>
@@ -11,7 +13,7 @@
     </div>
     <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div id="lesson-container__remaining-time">
-        <p>Remaining times: {{ remainingTime }}</p>
+        <p>Remaining: {{ remainingTime }}</p>
         <p>
           Item: {{ activityStatistic }} <br />
           Page: {{ page }}
@@ -23,7 +25,9 @@
       </div>
       <div class="activities">
         <div v-if="isShowExposureDetail">
-          <ExposureDetail :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <ExposureDetail :type="exposureTypes.VCP_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <ExposureDetail :type="exposureTypes.CONTENT_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <ExposureDetail :type="exposureTypes.TEACHING_ACTIVITY_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
         </div>
         <div v-else>
           <LessonActivity

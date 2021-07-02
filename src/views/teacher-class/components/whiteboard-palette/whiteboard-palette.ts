@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
@@ -8,7 +8,20 @@ import { ClassView } from "@/store/room/interface";
 const DEFAULT_COLOR = "red";
 
 export default defineComponent({
-  props: ["image"],
+  props: {
+    image: Object,
+    id: String,
+    name: String,
+    isGalleryView: Boolean,
+    audioEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    videoEnabled: {
+      type: Boolean,
+      default: true,
+    },
+  },
   components: {
     ToolsCanvas,
   },
@@ -17,8 +30,14 @@ export default defineComponent({
     const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
+    const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
+    const oneOneStudentStrokes = computed(() => store.getters["annotation/oneOneStudentStrokes"]);
+    const oneStudentShape = computed(() => store.getters["annotation/oneStudentShape"]);
+    const selfShapes = computed(() => store.getters["annotation/teacherShape"]);
+    const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -29,6 +48,7 @@ export default defineComponent({
     const modeAnnotation: Ref<number> = ref(-1);
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
+    const firstLoadImage: Ref<boolean> = ref(false);
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -58,24 +78,6 @@ export default defineComponent({
         }
       }
     });
-    watch(oneAndOne, async () => {
-      if (!canvas) return;
-      if (!oneAndOne.value) {
-        hideWhiteboard();
-        canvas.remove(
-          ...canvas
-            .getObjects()
-            .filter((obj: any) => obj.type !== "path")
-            .filter((obj: any) => obj.id !== ""),
-        );
-        toolSelected.value = Tools.Clear;
-        canvas.remove(...canvas.getObjects("path"));
-        await store.dispatch("teacherRoom/setClearBrush", {});
-        toolSelected.value = Tools.Pen;
-        canvas.isDrawingMode = true;
-        await setDrawMode();
-      }
-    });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
     });
@@ -93,8 +95,8 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
-      const canvasAsJSON = canvas.toJSON();
-      const lastObject = canvasAsJSON.objects[canvasAsJSON.objects.length - 1];
+      const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
+      const lastObject = teacherStrokes[teacherStrokes.length - 1];
       if (toolSelected.value === Tools.Pen) {
         await store.dispatch("teacherRoom/setBrush", {
           drawing: lastObject,
@@ -115,6 +117,19 @@ export default defineComponent({
         },
       });
     };
+    const teacherAddShapes = async () => {
+      const shapes: Array<string> = [];
+      canvas.getObjects().forEach((obj: any) => {
+        if (obj.id === isTeacher.value.id) {
+          obj = obj.toJSON();
+          obj.id = isTeacher.value.id;
+          shapes.push(JSON.stringify(obj));
+        }
+      });
+      if (shapes.length) {
+        await store.dispatch("teacherRoom/setShapesForStudent", shapes);
+      }
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         if (toolSelected.value === "pen") {
@@ -126,12 +141,59 @@ export default defineComponent({
           await objectsCanvas();
           laserDraw();
         }
+        if (
+          toolSelected.value === Tools.Star ||
+          toolSelected.value === Tools.Circle ||
+          toolSelected.value === Tools.Square ||
+          toolSelected.value === Tools.Cursor
+        ) {
+          await teacherAddShapes();
+        }
       });
+    };
+    const listenCreatedPath = () => {
+      canvas.on("path:created", (obj: any) => {
+        obj.path.id = isTeacher.value.id;
+        obj.path.isOneToOne = oneAndOne.value || null;
+      });
+    };
+    const listenSelfTeacher = () => {
+      canvas
+        .getObjects()
+        .filter((obj: any) => obj.type !== "path")
+        .filter((obj: any) => obj.id === isTeacher.value.id)
+        .forEach((item: any) => {
+          item.selectable = true;
+        });
     };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
+      listenCreatedPath();
+      listenSelfTeacher();
     };
+    const renderSelfStrokes = () => {
+      if (selfStrokes.value) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === isTeacher.value.id)
+            .filter((obj: any) => obj.type === "path"),
+        );
+        selfStrokes.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            item.id = isTeacher.value.id;
+            item.isOneToOne = null;
+            canvas.add(item);
+          });
+        });
+        objectCanvasProcess();
+      }
+    };
+    watch(selfStrokes, async () => {
+      await nextTick();
+      renderSelfStrokes();
+    });
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
       if (!canvasEl) return;
@@ -143,7 +205,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || obj.id !== "teacher-symbol") {
+        if (obj.type === "path" || obj.id !== isTeacher.value.id) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -160,9 +222,11 @@ export default defineComponent({
         strokeWidth: 3,
         strokeLineJoin: "round",
         fill: "",
-        id: "teacher-symbol",
+        id: isTeacher.value.id,
+        isOneToOne: oneAndOne.value || null,
       });
       canvas.add(star);
+      await teacherAddShapes();
     };
     const addCircle = async () => {
       const circle = new fabric.Circle({
@@ -172,9 +236,11 @@ export default defineComponent({
         fill: "",
         stroke: strokeColor.value,
         strokeWidth: 3,
-        id: "teacher-symbol",
+        id: isTeacher.value.id,
+        isOneToOne: oneAndOne.value || null,
       });
       canvas.add(circle);
+      await teacherAddShapes();
     };
     const addSquare = async () => {
       const square = new fabric.Rect({
@@ -185,9 +251,11 @@ export default defineComponent({
         fill: "",
         stroke: strokeColor.value,
         strokeWidth: 3,
-        id: "teacher-symbol",
+        id: isTeacher.value.id,
+        isOneToOne: oneAndOne.value || null,
       });
       canvas.add(square);
+      await teacherAddShapes();
     };
     const clickedTool = async (tool: string) => {
       canvas.selection = false;
@@ -232,7 +300,10 @@ export default defineComponent({
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
           if (canvas.getObjects("path").length) {
-            const itemDelete = canvas.getObjects("path").pop();
+            const itemDelete = canvas
+              .getObjects("path")
+              .filter((item: any) => item.id === isTeacher.value.id)
+              .pop();
             canvas.remove(itemDelete);
             await store.dispatch("teacherRoom/setDeleteBrush", {});
             toolSelected.value = Tools.Pen;
@@ -305,52 +376,160 @@ export default defineComponent({
     };
     const imgLoad = async () => {
       if (!canvas) return;
-      canvas.remove(...canvas.getObjects());
-      showHideWhiteboard.value = false;
-      canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-      await clickedTool(Tools.Cursor);
+      if (!firstLoadImage.value) {
+        firstLoadImage.value = true;
+      } else {
+        canvas.remove(...canvas.getObjects());
+      }
+      if (showHideWhiteboard.value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+      } else {
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Cursor);
+      }
     };
     const defaultWhiteboard = async () => {
       await setCursorMode();
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
+    const shapeRender = (data: any, oneId: any) => {
+      data.brushstrokes.forEach((s: any) => {
+        const shape = JSON.parse(s);
+        if (shape.type === "polygon") {
+          const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneId;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "rect") {
+          const rect = new fabric.Rect.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneId;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+        if (shape.type === "circle") {
+          const circle = new fabric.Circle.fromObject(shape, (item: any) => {
+            item.isOneToOne = oneId;
+            canvas.add(item);
+            item.selectable = false;
+          });
+        }
+      });
+    };
     const renderStudentsShapes = () => {
       if (!canvas && !studentShapes.value) return;
-      canvas.remove(
-        ...canvas
-          .getObjects()
-          .filter((obj: any) => obj.type !== "path")
-          .filter((obj: any) => obj.id !== "teacher-symbol"),
-      );
-      studentShapes.value.forEach((item: any) => {
-        item.brushstrokes.forEach((s: any) => {
-          const shape = JSON.parse(s);
-          if (shape.type === "polygon") {
-            const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-              canvas.add(item);
-              item.selectable = false;
-            });
-          }
-          if (shape.type === "rect") {
-            const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-              canvas.add(item);
-              item.selectable = false;
-            });
-          }
-          if (shape.type === "circle") {
-            const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-              canvas.add(item);
-              item.selectable = false;
-            });
-          }
-        });
-      });
+      if (studentShapes.value !== null && studentShapes.value !== undefined) {
+        if (studentShapes.value.length > 0) {
+          studentShapes.value.forEach((item: any) => {
+            if (item.userId !== isTeacher.value.id) {
+              canvas.remove(
+                ...canvas
+                  .getObjects()
+                  .filter((obj: any) => obj.type !== "path")
+                  .filter((obj: any) => obj.id === item.userId),
+              );
+              shapeRender(item, null);
+            }
+          });
+        } else {
+          // canvas.remove(
+          //     ...canvas
+          //         .getObjects()
+          //         .filter((obj: any) => obj.type !== "path")
+          // );
+        }
+      }
       if (showHideWhiteboard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       }
     };
     watch(studentShapes, () => {
       renderStudentsShapes();
+    });
+    const renderStudentStrokes = () => {
+      if (!canvas && !studentStrokes.value) return;
+      if (studentStrokes.value) {
+        if (studentStrokes.value.length > 0) {
+          studentStrokes.value.forEach((s: any) => {
+            const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+              item.isOneToOne = null;
+              canvas.add(item);
+            });
+          });
+        } else {
+          // canvas.remove(...canvas.getObjects("path"));
+        }
+      }
+      objectCanvasProcess();
+    };
+    watch(studentStrokes, () => {
+      renderStudentStrokes();
+    });
+    const renderOneStudentStrokes = () => {
+      if (oneOneStudentStrokes.value && oneOneStudentStrokes.value.length > 0) {
+        oneOneStudentStrokes.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            item.isOneToOne = oneAndOne.value;
+            canvas.add(item);
+          });
+        });
+        objectCanvasProcess();
+      }
+    };
+    watch(oneOneStudentStrokes, () => {
+      renderOneStudentStrokes();
+    });
+    const renderOneStudentShape = () => {
+      if (oneStudentShape.value && oneStudentShape.value.length > 0) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => obj.id !== isTeacher.value.id)
+            .filter((obj: any) => obj.id === oneAndOne.value),
+        );
+        oneStudentShape.value.forEach((item: any) => {
+          if (item.userId !== isTeacher.value.id) {
+            shapeRender(item, oneAndOne.value);
+          }
+        });
+      }
+    };
+    watch(oneStudentShape, () => {
+      renderOneStudentShape();
+    });
+    const renderSelfShapes = () => {
+      if (selfShapes.value && selfShapes.value.length > 0) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === isTeacher.value.id)
+            .filter((obj: any) => obj.type !== "path"),
+        );
+        selfShapes.value.forEach((item: any) => {
+          if (item.userId === isTeacher.value.id) {
+            shapeRender(item, null);
+          }
+        });
+        listenSelfTeacher();
+      }
+    };
+    watch(selfShapes, () => {
+      // renderSelfShapes();
+    });
+    watch(oneAndOne, async () => {
+      if (!canvas) return;
+      if (!oneAndOne.value) {
+        // remove all objects in mode 1-1
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        // render objects again before into mode 1-1
+        renderStudentsShapes();
+        // remove and render objects again of teacher, set object can move
+        renderSelfShapes();
+        listenSelfTeacher();
+      }
     });
     onMounted(async () => {
       await boardSetup();

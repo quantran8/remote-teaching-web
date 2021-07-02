@@ -1,20 +1,26 @@
 import { LoginInfo } from "@/commonui";
-import { TeacherClassModel } from "@/models";
+import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted } from "vue";
+import { computed, defineComponent, ref, onMounted, watch, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
+import MicTest from "../mic-test/mic-test.vue";
 import { ResourceModel } from "@/models/resource.model";
-import { Select, Spin, Modal, Checkbox, Button, Row } from "ant-design-vue";
+import { Select, Spin, Modal, Checkbox, Button, Row, Empty } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
-import {CommonLocale, PrivacyPolicy} from "@/locales/localeid";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { AppView } from "@/store/app/state";
+import { JoinSessionModel } from "@/models/join-session.model";
+import DeviceDetector from "device-detector-js";
+
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
   components: {
     ClassCard,
+    MicTest,
     Select,
     Spin,
     Option: Select.Option,
@@ -22,19 +28,26 @@ export default defineComponent({
     Checkbox,
     Button,
     Row,
+    Empty,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
+    const deviceDetector = new DeviceDetector();
+    const device = deviceDetector.parse(navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
-    const classes = computed(() => store.getters["teacher/classes"]);
+    //const classes = computed(() => store.getters["teacher/classes"]);
+    const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
+    const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
+    const popUpLoading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
-    const haveClassActive = ref(false);
-    const classActive = ref();
     const visible = ref<boolean>(true);
+    const startPopupVisible = ref<boolean>(false);
+    const messageStartClass = ref("");
+    const infoStart = ref<{ teacherClass: TeacherClassModel; groupId: string }>();
     const agreePolicy = ref<boolean>(false);
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));
     const policySubtitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicySubtitle));
@@ -45,26 +58,41 @@ export default defineComponent({
     const acceptPolicyText = computed(() => fmtMsg(PrivacyPolicy.TeacherAcceptPolicy));
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
-    const accessDenied = computed(() => CommonLocale.CommonAccessDenied);
+    const accessDenied = computed(() => fmtMsg(CommonLocale.CommonAccessDenied));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+    const unitInfo = ref<UnitAndLesson[]>();
+    const loadingInfo = ref(false);
+
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
+      const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
         const fp = await fpPromise;
         const result = await fp.get();
-        const visitorId = result.visitorId;
-        await RemoteTeachingService.getActiveClassRoom(visitorId);
-        const response = await RemoteTeachingService.teacherStartClassRoom(teacherClass.schoolClassId, groupId);
+        const model: JoinSessionModel = {
+          classId: teacherClass.classId,
+          groupId: groupId,
+          browser: device.client ? device.client.name : "",
+          device: device.device ? device.device.type : "",
+          bandwidth: "",
+          resolution: resolution,
+          unit: unit,
+          lesson: lesson,
+          browserFingerprint: result.visitorId,
+        };
+        const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
-          await router.push("/class/" + teacherClass.schoolClassId);
+          await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {
         loadingStartClass.value = false;
         const message = err.body.message;
-        await store.dispatch("setToast", { message: message });
+        if (message) {
+          messageStartClass.value = message;
+        }
       }
     };
 
@@ -87,23 +115,80 @@ export default defineComponent({
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        await store.dispatch("teacher/loadClasses", { schoolId: schoolId, browserFingerPrinting: visitorId });
+        await store.dispatch("teacher/loadAllClassesSchedules", {
+          schoolId: schoolId,
+          browserFingerPrinting: visitorId,
+        });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
-        await store.dispatch("setToast", { message: err.body.message });
+        if (err.body.message) {
+          await store.dispatch("setToast", { message: err.body.message });
+        }
       }
       loading.value = false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      if (teacherClass.isActive) {
-        await router.push("/class/" + teacherClass.schoolClassId);
-      } else {
-        await startClass(teacherClass, groupId);
+    const joinTheCurrentSession = async () => {
+      if (classOnline.value) {
+        await router.push("/class/" + infoStart.value?.teacherClass.classId);
+        return true;
       }
+      return false;
+    };
+
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      infoStart.value = { teacherClass, groupId };
+
+      if (!(await joinTheCurrentSession())) {
+        await getListLessonByUnit(teacherClass, groupId);
+        messageStartClass.value = "";
+        startPopupVisible.value = true;
+      }
+    };
+
+    const getListLessonByUnit = async (teacherClass: TeacherClassModel, groupId: string) => {
+      try {
+        loadingInfo.value = true;
+        const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
+        const listUnit: UnitAndLesson[] = [];
+        for (let i = 14; i <= 40; i++) {
+          listUnit.push({ unit: i, lesson: [] });
+        }
+
+        if (response && response.success) {
+          response.data.map((res: any) => {
+            listUnit.map((singleUnit: UnitAndLesson, index) => {
+              if (singleUnit.unit == res.unitId) {
+                listUnit[index].lesson.push(res.sequence);
+              }
+            });
+          });
+        }
+        unitInfo.value = listUnit;
+      } catch (err) {
+        const message = err?.body?.message;
+        if (message) {
+          await store.dispatch("setToast", { message: message });
+        }
+      }
+      loadingInfo.value = false;
+    };
+
+    const onStartClass = async (data: { unit: number; lesson: number }) => {
+      popUpLoading.value = true;
+      if (!(await joinTheCurrentSession())) {
+        if (infoStart.value) {
+          await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
+        }
+      }
+      popUpLoading.value = false;
+    };
+
+    const onCancelStartClass = async () => {
+      startPopupVisible.value = false;
     };
 
     const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -117,8 +202,18 @@ export default defineComponent({
       await store.dispatch("teacher/setAcceptPolicy");
       await onSchoolChange(schools.value[0].id);
     };
-    const cancelPolicy = () => {
+    const cancelPolicy = async () => {
       visible.value = false;
+      if (!policy.value) {
+        await store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      }
+    };
+
+    const escapeEvent = async (ev: KeyboardEvent) => {
+      // check press escape key
+      if (ev.keyCode === 27) {
+        await cancelPolicy();
+      }
     };
 
     onMounted(async () => {
@@ -133,27 +228,31 @@ export default defineComponent({
         }
       }
       await store.dispatch("teacher/clearSchedules");
-      if (classes.value) {
-        classes.value.map((cl: TeacherClassModel) => {
-          if (cl.isActive) {
-            classActive.value = cl;
-            haveClassActive.value = true;
-          }
-        });
-      }
-      window.addEventListener("keyup", ev => {
-        // check press escape key
-        if (ev.keyCode === 27) {
-          cancelPolicy();
-        }
-      });
+      window.addEventListener("keyup", escapeEvent);
     });
+
+    onUnmounted(async () => {
+      window.removeEventListener("keyup", escapeEvent);
+    });
+
+    const hasClassesShowUp = () => {
+      if (loading.value == false) {
+        return classesSchedules.value.length != 0;
+      } else {
+        return true;
+      }
+    };
+
+    const hasClassesShowUpSchedule = () => {
+      if (loading.value == false) {
+        return classesSchedules.value.length != 0;
+      } else return loading.value != true;
+    };
 
     return {
       schools,
-      classes,
-      haveClassActive,
-      classActive,
+      //classes,
+      classesSchedules,
       username,
       onClickClass,
       filterSchools,
@@ -181,6 +280,17 @@ export default defineComponent({
       concurrentMess,
       accessDenied,
       loadingStartClass,
+      hasClassesShowUp,
+      hasClassesShowUpSchedule,
+      startPopupVisible,
+      onStartClass,
+      onCancelStartClass,
+      infoStart,
+      messageStartClass,
+      popUpLoading,
+      classOnline,
+      unitInfo,
+      loadingInfo,
     };
   },
 });

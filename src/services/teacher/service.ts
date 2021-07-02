@@ -7,8 +7,7 @@ class GLTeacherService extends AdminService implements TeacherServiceInterface {
     return this.get("schools/accessibleschools", params);
   }
   getScheduleCalendar(schoolId: string, classId: string, groupId: string, startDate: string, endDate: string): Promise<any> {
-    const url = `schedule/${schoolId}/${startDate}?endDate=${endDate}&classId=${classId}&groupId=${groupId}&`;
-    return this.get(url);
+    return this.get(`schedule/${schoolId}/${startDate}`, { endDate: endDate, classId: classId, groupId: groupId });
   }
   createSchedule(params: ScheduleParam): Promise<any> {
     const url = `schedule/create`;
@@ -26,6 +25,10 @@ class GLTeacherService extends AdminService implements TeacherServiceInterface {
   }
   getClasses(teacherId: string, schoolId: string): Promise<GetClassesModel> {
     const url = `resources/users/${teacherId}/landingresources/0?filterText=&disabled=false&sortBy=schoolName&schoolId=${schoolId}&isDescending=false&includeGroup=true&offset=0&limit=20`;
+    return this.get(url);
+  }
+  getAllClassesSchedule(schoolId: string): Promise<GetClassesModel> {
+    const url = `schoolclass/${schoolId}`;
     return this.get(url);
   }
 }

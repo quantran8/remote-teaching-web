@@ -14,7 +14,6 @@ import AgoraRTC, {
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraError, AgoraConnectionState } from "./interfaces";
-import {store} from "@/store"
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -85,14 +84,14 @@ export class AgoraClient implements AgoraClientSDK {
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-    this.agoraRTC.setLogLevel(4);
+    this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
       await this.openCamera(options.videoEncoderConfigurationPreset);
     }
     if (options.microphone) await this.openMicrophone();
-    this.client.enableAudioVolumeIndicator();
+    this.client?.enableAudioVolumeIndicator();
     await this._publish();
   }
 
@@ -102,12 +101,9 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
-	this.client.on("connection-state-change", (payload) => {
-		if(payload === AgoraConnectionState.DISCONNECTED) {
-			if(!store.getters["studentRoom/isJoined"]) return
-			store.dispatch('studentRoom/setOffline')
-		}
-	})
+    this.client.on("connection-state-change", () => {
+      console.log("connection state changed!");
+    });
   }
 
   subscribedVideos: Array<{
@@ -254,37 +250,6 @@ export class AgoraClient implements AgoraClientSDK {
 
     for (let studentId of audios) {
       await this._subscribeAudio(studentId);
-    }
-  }
-
-  async oneToOneSubscribeAudio(
-    videos: Array<string>,
-    audios: Array<string>,
-    idOne: string,
-    teacher?: TeacherState | undefined,
-    student?: StudentState | undefined,
-  ) {
-    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
-    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
-
-    for (let studentId of unSubscribeVideos) {
-      await this._unSubscribe(studentId, "video");
-    }
-
-    for (let studentId of unSubscribeAudios) {
-      await this._unSubscribe(studentId, "audio");
-    }
-
-    for (let studentId of videos) {
-      await this._subscribeVideo(studentId);
-    }
-
-    if (student) {
-      if (teacher && student.id === idOne) await this._subscribeAudio(teacher.id);
-      if (student.id === idOne) await this._subscribeAudio(student.id);
-    } else {
-      if (teacher) await this._subscribeAudio(teacher.id);
-      await this._subscribeAudio(idOne);
     }
   }
 

@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { AnnotationState, Pointer, Sticker, StudentShape } from "./state";
+import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
 
 const getters: GetterTree<AnnotationState, any> = {
   pointer(state: AnnotationState): Pointer {
@@ -20,14 +20,32 @@ const getters: GetterTree<AnnotationState, any> = {
   shapes(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },
+  oneOneTeacherStrokes(state: AnnotationState): Array<string> {
+    return state.oneToOne?.brushstrokes;
+  },
   undoShape(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },
   stickers(state: AnnotationState): Array<Sticker> {
     return state.stickers;
   },
-  studentShape(state: AnnotationState): Array<StudentShape> {
+  studentShape(state: AnnotationState): Array<UserShape> {
     return state.drawing?.studentShapes;
+  },
+  oneStudentShape(state: AnnotationState): Array<UserShape> {
+    return state.oneToOne?.studentShapes;
+  },
+  teacherShape(state: AnnotationState): Array<UserShape> {
+    return state.drawing?.teacherShapes;
+  },
+  oneTeacherShape(state: AnnotationState): Array<UserShape> {
+    return state.oneToOne?.teacherShapes;
+  },
+  studentStrokes(state: AnnotationState): Array<string> {
+    return state.drawing?.studentStrokes;
+  },
+  oneOneStudentStrokes(state: AnnotationState): Array<string> {
+    return state.oneToOne?.studentStrokes;
   },
 };
 

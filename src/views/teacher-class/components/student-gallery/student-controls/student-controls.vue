@@ -1,5 +1,5 @@
 <template>
-  <div id="student-controls">
+  <div :class="['student-controls', !isSidebarCollapsed && 'have-sidebar']">
     <div class="button-group">
       <div class="student-controls__button">
         <span @click="onClickStickerAll" class="student-controls__button--clickable">
@@ -19,8 +19,8 @@
     <div class="button-group">
       <div class="student-controls__button">
         <span @click="onClickDisableAll" class="student-controls__button--clickable">
-          <img class="disable-icon" :src="require(`@/assets/teacher-class/touch-off-small.svg`)" />
-          <span>Disable all</span>
+          <img class="disable-icon" :src="isAllPaletteHidden ? require(`@/assets/teacher-class/touch-on-small.svg`) : require(`@/assets/teacher-class/touch-off-small.svg`)" />
+          <span>{{ isAllPaletteHidden ? "Enable all" : "Disable all" }}</span>
         </span>
       </div>
       <div class="student-controls__button">
