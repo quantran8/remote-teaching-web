@@ -1,4 +1,4 @@
 <template>
-  <div></div>
+  <span v-if="false" />
 </template>
 <script lang="ts" src="./prevent-esc-firefox.ts"></script>
