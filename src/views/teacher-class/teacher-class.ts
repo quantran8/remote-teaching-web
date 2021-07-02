@@ -1,13 +1,12 @@
 import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
-import { GLErrorCode } from "@/models/error.model";
 import { ClassView, TeacherState } from "@/store/room/interface";
-import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
-import { gsap } from "gsap";
-import { computed, ComputedRef, defineComponent, onBeforeMount, onUnmounted, ref, watch, provide } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, provide } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+
 const fpPromise = FingerprintJS.load();
 import {
   TeacherCard,
@@ -21,6 +20,7 @@ import {
 } from "./components";
 export default defineComponent({
   components: {
+    PreventEscFirefox,
     TeacherCard,
     LessonPlan,
     ActivityContent,

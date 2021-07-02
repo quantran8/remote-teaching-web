@@ -17,11 +17,12 @@
   $card-figure-size-xl: 90px;
   $card-figure-size-xxl: 120px;
 
-  $radius: 7px;
+  $radius: 10px;
   &.expand {
     transition: all 0.1s ease-out;
     z-index: 25;
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
     &:not(.one-student-mode) {
       .student__info,
       .student-action {
@@ -39,17 +40,9 @@
   margin: 0 auto;
   width: 250px;
   height: 190px;
-  @media (min-width: $xl) and (max-width: $xxl){
-    width: 135px;
-    height: 135px;
-  }
-  @media (min-width: $xxl) and (max-width: $large-lap){
-    width: 160px;
-    height: 150px;
-  }
   &.one-student-mode {
-    width: 90%;
-    height: 50%;
+    width: 90% !important;
+    height: 50% !important;
     @media screen and (min-width: $xl) and (max-width: $xxl) {
       max-height: 300px;
     }
@@ -78,7 +71,6 @@
       width: 100%;
       height: 100%;
     }
-    // overflow: hidden;
   }
   &__video--sub {
     background-color: #fff;
@@ -96,15 +88,12 @@
     z-index: 1;
     position: absolute;
     border: 1px solid $border-color-main;
-    border-radius: $radius;
+    border-radius: 5px;
     overflow: hidden;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    &::v-deep video {
-      border-radius: $radius;
-    }
   }
   &__info {
     position: absolute;
@@ -150,7 +139,7 @@
   &__figure::before,
   &__figure::after {
     position: absolute;
-    content: "";
+    //content: "";
     width: 100%;
     height: 100%;
     background-color: white;
@@ -160,6 +149,7 @@
     border-radius: $radius;
     transition: 0.1s;
     transform: scale(0.95);
+    border: none;
   }
   &__figure::after {
     background-color: #000;
@@ -180,20 +170,25 @@
 
   &__is-speaking {
     @include round-square(#00a1ed, flickerAnimationVoice);
+    border-radius: 5px;
   }
 
   &__is-palette {
     @include round-square(#030303, flickerAnimationPalette);
+    border-radius: 5px;
   }
 
   &__is-question {
     position: absolute;
     border-radius: $radius;
-    top: 5px;
-    left: 5px;
-    bottom: 5px;
-    right: 5px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     @include round-square(#dd0d0d, flickerAnimation);
+    .student__video {
+      border: none;
+    }
   }
 
   &--hover {
@@ -232,21 +227,49 @@
 
 .has-sidebar {
   .student {
-    @media (min-width: $xl) {
-      width: 135px;
-      height: 135px;
+    @media (min-width: $xl) and (max-width: $lap){
+      width: 180px;
+      height: 160px;
     }
-    @media (min-width: $large-lap){
-      width: 160px;
-      height: 150px;
+    @media (min-width: $lap) and (max-width: $xxl){
+      width: 200px;
+      height: 180px;
     }
-    @media (min-width: 1900px) {
-      width: 250px;
-      height: 190px;
+    @media (min-width: $xxl) and (max-width: 1450px) {
+      width: 170px;
+      height: 160px;
+    }
+    @media (min-width: 1450px) and (max-width: 1500px) {
+      width: 190px;
+      height: 160px;
+    }
+    @media (min-width: 1500px) and (max-width: $large-lap) {
+      width: 210px;
+      height: 180px;
     }
     &.one-student-mode {
       width: 90%;
       height: 50%;
+    }
+  }
+}
+.no-sidebar {
+  .student {
+    @media (min-width: $xl) and (max-width: $lap){
+      width: 190px;
+      height: 160px;
+    }
+    @media (min-width: $lap) and (max-width: $xxl){
+      width: 180px;
+      height: 160px;
+    }
+    @media (min-width: $xxl) and (max-width: 1500px){
+      width: 190px;
+      height: 160px;
+    }
+    @media (min-width: 1500px) and (max-width: $large-lap){
+      width: 210px;
+      height: 190px;
     }
   }
 }

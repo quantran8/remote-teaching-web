@@ -1,18 +1,17 @@
 import { StudentClassLocale } from "./../../locales/localeid";
-import {ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName} from "@/commonui";
-import { Howl, Howler } from "howler";
+import { ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName } from "@/commonui";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
 import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
-import { ClassView, StudentState } from "@/store/room/interface";
+import { ClassView, LessonInfo, StudentState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import {computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted, onMounted} from "vue";
+import { computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import * as clockData from "../../assets/lotties/clock.json";
@@ -21,6 +20,8 @@ import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
+import { RemoteTeachingService } from "@/services";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 
 const fpPromise = FingerprintJS.load();
 
@@ -32,6 +33,7 @@ const sourceVideo = {
 
 export default defineComponent({
   components: {
+    PreventEscFirefox,
     UnityView,
     MatIcon,
     StudentGallery,
@@ -80,6 +82,7 @@ export default defineComponent({
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
+    const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
@@ -114,6 +117,21 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
+    const defaultUrl =
+      "https://devmediaservice-jpea.streaming.media.azure.net/8b604fd3-7a56-4a32-acc8-ad2227a47430/GSv4-U10-REP-Jonny Bear Paints w.ism/manifest";
+
+    watch(lessonInfo, async () => {
+      try {
+        const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value.unit, lessonInfo.value.lesson);
+        if (response.url) {
+          sourceVideo.src = response.url;
+        } else {
+          sourceVideo.src = defaultUrl;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
@@ -261,7 +279,7 @@ export default defineComponent({
       if (mobileDevice && router.currentRoute.value.name === "StudentClass") {
         document.body.classList.add("mobile-device");
         const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
       } else {
         document.body.classList.remove("mobile-device");
       }

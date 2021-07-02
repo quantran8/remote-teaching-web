@@ -102,7 +102,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
-    let timeSendBandwidth = 0;
     if (!state.info || !state.teacher || !state.manager) return;
     await state.manager?.join({
       camera: state.teacher.videoEnabled,
@@ -110,6 +109,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
       classId: state.info.id,
       teacherId: state.user?.id,
     });
+    // 120000 means 2 minutes
+    const fp = await fpPromise;
+    const result = await fp.get();
+    setInterval(() => {
+      RemoteTeachingService.putTeacherBandwidth(`${state.bandWidth}`, result.visitorId);
+    }, 120000);
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -125,15 +130,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       },
       async onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
-        // 150 means 5 minutes, because onLocalNetworkUpdate is executed every 2 seconds
-        if (timeSendBandwidth == 150) {
-          const fp = await fpPromise;
-          const result = await fp.get();
-          RemoteTeachingService.putTeacherBandwidth(`${uplinkNetworkQuality}`, result.visitorId);
-          timeSendBandwidth = 0;
-        } else {
-          timeSendBandwidth += 1;
-        }
+        store.commit("setTeacherBandwidth", uplinkNetworkQuality);
         if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", true);
         }

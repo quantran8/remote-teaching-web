@@ -60,6 +60,10 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.create(`policy/${role}/accept/true`);
   }
 
+  getLinkStoryDictionary(unitId: string, lessonId: string): Promise<any> {
+    return this.get(`student/story-dictionary/unit/${unitId}/lesson/${lessonId}`)
+  }
+
   getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<any> {
     return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }

@@ -77,6 +77,7 @@ export interface StudentRoomState {
   teacherIsDisconnected: boolean;
   avatarTeacher: string;
   avatarStudentOneToOne: string;
+  bandWidth: number;
 }
 
 const state: StudentRoomState = {
@@ -101,6 +102,7 @@ const state: StudentRoomState = {
   isJoined: false,
   avatarTeacher: "",
   avatarStudentOneToOne: "",
+  bandWidth: 0,
 };
 
 export default state;

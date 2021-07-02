@@ -1,5 +1,6 @@
 <template>
   <div class="sc">
+    <prevent-esc-firefox />
     <StudentHeader />
     <div class="sc-body" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">

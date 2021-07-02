@@ -6,6 +6,8 @@ export interface StudentModel extends UserModel {
   englishName: string;
   updateTime: any;
   subscriptionType: number;
+  unit: string;
+  lesson: string;
   streamId?: string;
   signalrConnectId?: string;
   signature: string;
