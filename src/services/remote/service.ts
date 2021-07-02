@@ -22,12 +22,12 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
 
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
     const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
+    const detector = deviceDetector.parse(window.navigator.userAgent);
     const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     return this.get(`student/join-session`, {
       studentId: childId,
-      browser: device.client ? device.client.name : "",
-      device: device.device ? device.device.type : "",
+      browser: detector.client ? detector.client.name : "",
+      device: detector.device ? detector.device.type : "",
       bandwidth: "",
       resolution: resolution,
       browserFingerPrinting: bfp,
@@ -36,11 +36,11 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
 
   putTeacherBandwidth(bandwidth: string, bfp: string): Promise<any> {
     const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
+    const detector = deviceDetector.parse(window.navigator.userAgent);
     const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
     return this.update(`logs/teacher`, {
-      browser: device.client ? device.client.name : "",
-      device: device.device ? device.device.type : "",
+      browser: detector.client ? detector.client.name : "",
+      device: detector.device ? detector.device.type : "",
       resolution,
       bandwidth,
       browserFingerprint: bfp,

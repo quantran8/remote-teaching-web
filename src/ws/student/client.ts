@@ -5,13 +5,13 @@ import DeviceDetector from "device-detector-js";
 export class StudentWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, studentId: string, browserFingerPrinting: string) {
     const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
+    const detector = deviceDetector.parse(window.navigator.userAgent);
     const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     return this.send(WSCmd.JOIN_CLASS, {
       roomId: roomId,
       studentId: studentId,
-      browser: device.client ? device.client.name : "",
-      device: device.device ? device.device.type : "",
+      browser: detector.client ? detector.client.name : "",
+      device: detector.device ? detector.device.type : "",
       bandwidth: "",
       resolution: resolution,
       browserFingerPrinting: browserFingerPrinting,

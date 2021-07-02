@@ -1,7 +1,7 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted, watch, onUnmounted } from "vue";
+import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
@@ -34,7 +34,7 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
+    const detector = deviceDetector.parse(window.navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
@@ -72,8 +72,8 @@ export default defineComponent({
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: device.client ? device.client.name : "",
-          device: device.device ? device.device.type : "",
+          browser: detector.client ? detector.client.name : "",
+          device: detector.device ? detector.device.type : "",
           bandwidth: "",
           resolution: resolution,
           unit: unit,
