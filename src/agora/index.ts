@@ -84,7 +84,7 @@ export class AgoraClient implements AgoraClientSDK {
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-    this.agoraRTC.setLogLevel(3);
+    this.agoraRTC.setLogLevel(4);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
