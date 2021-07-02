@@ -227,10 +227,12 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("lesson/setIsBlackOut", { IsBlackOut: payload.isBlackOut }, { root: true });
     },
     onTeacherStartLessonPlan: (payload: any) => {
-      commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
+      commit("lesson/setCurrentExposure", { id: payload }, { root: true });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      commit("lesson/setExposureStatus", { id: payload.content.id, status: ExposureStatus.COMPLETED }, { root: true });
+
+      commit("lesson/setExposureStatus", { id: payload.ContentId, status: ExposureStatus.COMPLETED }, { root: true });
+      if(payload.playedTime)
       commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
