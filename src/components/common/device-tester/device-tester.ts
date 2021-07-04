@@ -1,6 +1,8 @@
 import { defineComponent, computed, ref, onMounted, watch } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
-import { Modal, Switch, Progress, Select } from "ant-design-vue";
+import { useStore } from "vuex";
+import { Modal, Switch, Progress, Select, Button } from "ant-design-vue";
+import { UnitAndLesson } from "@/models";
 
 interface DeviceType {
   deviceId: string;
@@ -16,10 +18,14 @@ export default defineComponent({
     Progress,
     Select,
     SelectOption: Select.Option,
+    Button,
   },
-  props: ["classIsActive"],
-  emits: ["go-to-class"],
+  props: ["classIsActive", "unitInfo"],
+  emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
+    const { getters, dispatch } = useStore();
+    const isTeacher = computed(() => getters["auth/isTeacher"]);
+    const isParent = computed(() => getters["auth/isParent"]);
     const visible = ref(false);
     const isMute = ref<boolean>(false);
     const isHide = ref<boolean>(false);
@@ -67,11 +73,12 @@ export default defineComponent({
         };
         setupDevice();
       } catch (error) {
-        console.log("Error => ", error);
+        console.log("Initial setup have error => ", error);
       }
     };
 
     const setVolumeWave = () => {
+      if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       volumeByPercent.value = localTracks.value.audioTrack.getVolumeLevel() * 100;
     };
@@ -114,6 +121,41 @@ export default defineComponent({
       emit("go-to-class");
     };
 
+    const currentUnit = ref();
+    const currentLesson = ref();
+
+    watch(visible, currentVisible => {
+      if (currentVisible) {
+        const initUnit = props.unitInfo?.[0]?.unit;
+        if (initUnit) {
+          currentUnit.value = initUnit;
+        }
+      }
+    });
+
+    const listLessonByUnit = ref();
+    watch(currentUnit, currentUnitValue => {
+      const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
+      currentLesson.value = props.unitInfo[currentUnitIndex]?.lesson?.[0];
+      listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.lesson;
+    });
+
+    const handleUnitChange = (unit: any) => {
+      currentUnit.value = unit;
+    };
+
+    const handleLessonChange = (lesson: any) => {
+      currentLesson.value = lesson;
+    };
+
+    const handleSubmit = () => {
+      emit("on-join-session", { unit: currentUnit.value, lesson: currentLesson.value });
+      visible.value = false;
+    };
+    const handleCancel = () => {
+      visible.value = false;
+    };
+
     return {
       visible,
       showModal,
@@ -131,7 +173,16 @@ export default defineComponent({
       currentCamLabel,
       handleMicroChange,
       handleCameraChange,
-	  goToClass
+      goToClass,
+      isTeacher,
+      isParent,
+      currentUnit,
+      currentLesson,
+      handleUnitChange,
+      handleLessonChange,
+      listLessonByUnit,
+      handleSubmit,
+      handleCancel,
     };
   },
 });

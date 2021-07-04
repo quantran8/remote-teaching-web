@@ -33,9 +33,34 @@
         <div ref="playerRef" id="pre-local-player" v-show="isHide" :class="['device-tester__camera--player', 'hided']"></div>
       </div>
       <div class="device-tester__cl-status">
-        <h4>Class status</h4>
-        <h5 v-if="!classIsActive">No class in progress. We will notify you once the class starts</h5>
-        <h5 v-else>Class in progress. <span @click="goToClass" class="device-tester__cl-status--join">Join now</span></h5>
+        <div v-if="isParent" class="device-tester__cl-status--student">
+          <h4>Class status</h4>
+          <h5 v-if="!classIsActive">No class in progress. We will notify you once the class starts</h5>
+          <h5 v-else>Class in progress. <span @click="goToClass" class="device-tester__cl-status--student__join">Join now</span></h5>
+        </div>
+        <div v-if="isTeacher" class="device-tester__cl-status--teacher">
+          <h4>Lesson & unit</h4>
+          <div v-if="unitInfo" class="device-tester__cl-status--teacher__content">
+            <div class="device-tester__cl-status--teacher__content--item">
+              <div class="device-tester__cl-status--teacher__content--item__label">Unit</div>
+              <Select v-model:value="currentUnit" style="width: 100%" ref="select" @change="handleUnitChange">
+                <SelectOption v-for="item in unitInfo" :key="item.unit" :value="item.unit">{{ item.unit }}</SelectOption>
+              </Select>
+            </div>
+            <div class="device-tester__cl-status--teacher__content--item">
+              <div class="device-tester__cl-status--teacher__content--item__label">Lesson</div>
+              <Select v-model:value="currentLesson" style="width: 100%" ref="select" @change="handleLessonChange">
+                <SelectOption v-for="lesson in listLessonByUnit" :key="lesson" :value="lesson">{{ lesson }}</SelectOption>
+              </Select>
+            </div>
+          </div>
+          <div class="device-tester__cl-status--teacher__button">
+            <div class="device-tester__cl-status--teacher__button--1">
+              <Button @click="handleCancel">Cancel</Button>
+            </div>
+            <Button @click="handleSubmit" type="primary">Join session</Button>
+          </div>
+        </div>
       </div>
     </Modal>
   </div>

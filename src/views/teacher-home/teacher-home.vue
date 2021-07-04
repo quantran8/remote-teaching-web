@@ -48,7 +48,7 @@
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
-    <MicTest
+    <!-- <MicTest
       :is-teacher="true"
       :visible="startPopupVisible"
       :teacherClass="infoStart?.teacherClass"
@@ -58,7 +58,8 @@
       :loading="popUpLoading"
       @on-join-session="onStartClass"
       @on-cancel="onCancelStartClass"
-    />
+    /> -->
+    <DeviceTester :unitInfo="unitInfo" @on-join-session="onStartClass" ref="deviceTesterRef" />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>
