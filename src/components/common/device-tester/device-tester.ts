@@ -18,14 +18,16 @@ export default defineComponent({
     SelectOption: Select.Option,
   },
   setup() {
+    const visible = ref(false);
+    const isMute = ref<boolean>(false);
+    const isHide = ref<boolean>(false);
+
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
     const listMicsId = ref<string[]>([]);
     const listCams = ref<DeviceType[]>([]);
     const listCamsId = ref<string[]>([]);
-    const visible = ref(false);
-    const checked = ref<boolean>(false);
     const playerRef = ref();
     const currentMic = ref<DeviceType>();
     const currentMicLabel = ref("");
@@ -110,7 +112,8 @@ export default defineComponent({
     return {
       visible,
       showModal,
-      checked,
+      isMute,
+      isHide,
       playerRef,
       volumeByPercent,
       listMics,
