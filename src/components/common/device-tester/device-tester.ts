@@ -37,6 +37,23 @@ export default defineComponent({
       initialSetup();
     });
 
+    const setupDevice = async () => {
+      const mics = await AgoraRTC.getMicrophones();
+      if (mics) {
+        currentMic.value = mics[0];
+        currentMicLabel.value = mics[0]?.label;
+        listMics.value = mics;
+        listMicsId.value = mics.map(mic => mic.deviceId);
+      }
+      const cams = await AgoraRTC.getCameras();
+      if (cams) {
+        currentCam.value = cams[0];
+        currentCamLabel.value = cams[0]?.label;
+        listCams.value = cams;
+        listCamsId.value = cams.map(cam => cam.deviceId);
+      }
+    };
+
     const initialSetup = async () => {
       try {
         const localTracksResult = await Promise.all([AgoraRTC.createMicrophoneAudioTrack(), AgoraRTC.createCameraVideoTrack()]);
@@ -45,20 +62,7 @@ export default defineComponent({
           audioTrack,
           videoTrack,
         };
-        const mics = await AgoraRTC.getMicrophones();
-        if (mics) {
-          currentMic.value = mics[0];
-          currentMicLabel.value = mics[0]?.label;
-          listMics.value = mics;
-          listMicsId.value = mics.map(mic => mic.deviceId);
-        }
-        const cams = await AgoraRTC.getCameras();
-        if (cams) {
-          currentCam.value = cams[0];
-          currentCamLabel.value = cams[0]?.label;
-          listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
-        }
+        setupDevice();
       } catch (error) {
         console.log("Error => ", error);
       }
@@ -69,19 +73,26 @@ export default defineComponent({
       volumeByPercent.value = localTracks.value.audioTrack.getVolumeLevel() * 100;
     };
 
-    const handleOk = (e: MouseEvent) => {
-      visible.value = false;
-    };
     const showModal = () => {
       visible.value = true;
     };
 
-    const focus = () => {
-      console.log("focus");
+    const handleMicroChange = async (micId: string) => {
+      try {
+        await localTracks.value.audioTrack.setDevice(micId);
+        currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
+      } catch (error) {
+        console.log("Error => ", error);
+      }
     };
 
-    const handleChange = (value: any) => {
-      console.log("hello value", value);
+    const handleCameraChange = async (camId: any) => {
+      try {
+        await localTracks.value.videoTrack.setDevice(camId);
+        currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
+      } catch (error) {
+        console.log("Error => ", error);
+      }
     };
 
     watch(visible, currentValue => {
@@ -89,6 +100,7 @@ export default defineComponent({
         cancelAnimationFrame(volumeAnimation.value);
         return;
       }
+      setupDevice();
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       setTimeout(() => {
         localTracks.value?.videoTrack.play("pre-local-player");
@@ -97,13 +109,10 @@ export default defineComponent({
 
     return {
       visible,
-      handleOk,
       showModal,
       checked,
       playerRef,
       volumeByPercent,
-      focus,
-      handleChange,
       listMics,
       listCams,
       listCamsId,
@@ -111,7 +120,9 @@ export default defineComponent({
       currentMic,
       currentCam,
       currentMicLabel,
-	  currentCamLabel
+      currentCamLabel,
+      handleMicroChange,
+      handleCameraChange,
     };
   },
 });
