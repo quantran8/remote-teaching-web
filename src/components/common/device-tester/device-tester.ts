@@ -1,6 +1,14 @@
 import { defineComponent, computed, ref, onMounted, watch } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Modal, Switch, Progress, Select } from "ant-design-vue";
+
+interface DeviceType {
+  deviceId: string;
+  groupId: string;
+  kind: string;
+  label: string;
+}
+
 export default defineComponent({
   components: {
     Modal,
@@ -12,12 +20,17 @@ export default defineComponent({
   setup() {
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
-    const mics = ref([]);
+    const listMics = ref<DeviceType[]>([]);
+    const listMicsId = ref<string[]>([]);
+    const listCams = ref<DeviceType[]>([]);
+    const listCamsId = ref<string[]>([]);
     const visible = ref(false);
     const checked = ref<boolean>(false);
     const playerRef = ref();
-    const currentMic = ref(null);
-    const currentCam = ref(null);
+    const currentMic = ref<DeviceType>();
+    const currentMicLabel = ref("");
+    const currentCam = ref<DeviceType>();
+    const currentCamLabel = ref("");
     const volumeByPercent = ref(0);
     const volumeAnimation = ref();
     onMounted(() => {
@@ -25,13 +38,32 @@ export default defineComponent({
     });
 
     const initialSetup = async () => {
-      const localTracksResult = await Promise.all([AgoraRTC.createMicrophoneAudioTrack(), AgoraRTC.createCameraVideoTrack()]);
-      const [audioTrack, videoTrack] = localTracksResult;
-      localTracks.value = {
-        audioTrack,
-        videoTrack,
-      };
+      try {
+        const localTracksResult = await Promise.all([AgoraRTC.createMicrophoneAudioTrack(), AgoraRTC.createCameraVideoTrack()]);
+        const [audioTrack, videoTrack] = localTracksResult;
+        localTracks.value = {
+          audioTrack,
+          videoTrack,
+        };
+        const mics = await AgoraRTC.getMicrophones();
+        if (mics) {
+          currentMic.value = mics[0];
+          currentMicLabel.value = mics[0]?.label;
+          listMics.value = mics;
+          listMicsId.value = mics.map(mic => mic.deviceId);
+        }
+        const cams = await AgoraRTC.getCameras();
+        if (cams) {
+          currentCam.value = cams[0];
+          currentCamLabel.value = cams[0]?.label;
+          listCams.value = cams;
+          listCamsId.value = cams.map(cam => cam.deviceId);
+        }
+      } catch (error) {
+        console.log("Error => ", error);
+      }
     };
+
     const setVolumeWave = () => {
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       volumeByPercent.value = localTracks.value.audioTrack.getVolumeLevel() * 100;
@@ -48,8 +80,8 @@ export default defineComponent({
       console.log("focus");
     };
 
-    const handleChange = (value: string) => {
-      console.log(`selected ${value}`);
+    const handleChange = (value: any) => {
+      console.log("hello value", value);
     };
 
     watch(visible, currentValue => {
@@ -72,9 +104,14 @@ export default defineComponent({
       volumeByPercent,
       focus,
       handleChange,
-      value1: ref("lucy"),
-      value2: ref("lucy"),
-      value3: ref("lucy"),
+      listMics,
+      listCams,
+      listCamsId,
+      listMicsId,
+      currentMic,
+      currentCam,
+      currentMicLabel,
+	  currentCamLabel
     };
   },
 });

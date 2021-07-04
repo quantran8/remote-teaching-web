@@ -48,21 +48,21 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const onClickChild = async (student: ChildModel) => {
       deviceTesterRef.value?.showModal();
-      const fp = await fpPromise;
-      const result = await fp.get();
-      const visitorId = result.visitorId;
-      try {
-        await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
-        await store.dispatch("studentRoom/setOnline");
-        await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
-      } catch (err) {
-        if (err.code === ErrorCode.ConcurrentUserException) {
-          await store.dispatch("setToast", { message: err.message });
-        } else {
-          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
-          await store.dispatch("setToast", { message: message });
-        }
-      }
+    //   const fp = await fpPromise;
+    //   const result = await fp.get();
+    //   const visitorId = result.visitorId;
+    //   try {
+    //     await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+    //     await store.dispatch("studentRoom/setOnline");
+    //     await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
+    //   } catch (err) {
+    //     if (err.code === ErrorCode.ConcurrentUserException) {
+    //       await store.dispatch("setToast", { message: err.message });
+    //     } else {
+    //       const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
+    //       await store.dispatch("setToast", { message: message });
+    //     }
+    //   }
     };
     const getNextSessionInfo = async () => {
       try {

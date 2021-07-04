@@ -6,12 +6,11 @@
         <Switch v-model:checked="checked" /> -->
         <h4>Microphone</h4>
         <h5>Produce sounds to check if the mic works.</h5>
-        <div class="device-tester__micro--select">
-          <Select v-model:value="value1" style="width: 100%" @focus="focus" ref="select" @change="handleChange">
-            <SelectOption value="jack">Jack</SelectOption>
-            <SelectOption value="lucy">Lucy</SelectOption>
-            <SelectOption value="disabled" disabled>Disabled</SelectOption>
-            <SelectOption value="Yiminghe">yiminghe</SelectOption>
+        <div v-if="currentMic" class="device-tester__micro--select">
+          <Select v-model:value="currentMicLabel" style="width: 100%" ref="select" @change="handleChange">
+            <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">{{
+              listMics.find(mic => mic.deviceId === deviceId)?.label
+            }}</SelectOption>
           </Select>
         </div>
         <Progress :strokeWidth="25" :percent="volumeByPercent" :show-info="false" />
@@ -19,6 +18,13 @@
       <div class="device-tester__camera">
         <h4>Camera</h4>
         <h5>Move in front of the camera to check if it works.</h5>
+        <div v-if="currentMic" class="device-tester__micro--select">
+          <Select v-model:value="currentCamLabel" style="width: 100%" ref="select" @change="handleChange">
+            <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">{{
+              listCams.find(cam => cam.deviceId === deviceId)?.label
+            }}</SelectOption>
+          </Select>
+        </div>
         <div ref="playerRef" id="pre-local-player" class="device-tester__camera--player"></div>
       </div>
     </Modal>
