@@ -11,6 +11,8 @@ export interface AppState {
   appView: AppView;
   toast: ToastData;
   contentSignature: string;
+  isMuteAudio: boolean;
+  isHideVideo: boolean;
 }
 
 export interface ToastData {
@@ -25,6 +27,8 @@ const state: AppState = {
   appView: AppView.Blank,
   toast: { message: "", isPlayingSound: false },
   contentSignature: "",
+  isMuteAudio: false,
+  isHideVideo: false
 };
 
 export default state;

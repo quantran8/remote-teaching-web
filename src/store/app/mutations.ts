@@ -1,4 +1,4 @@
-import {AppState, AppView, LayoutType, ToastData} from "./state";
+import { AppState, AppView, LayoutType, ToastData } from "./state";
 import { MutationTree } from "vuex";
 
 const mutations: MutationTree<AppState> = {
@@ -13,6 +13,12 @@ const mutations: MutationTree<AppState> = {
   },
   setContentSignature(state, payload: string) {
     state.contentSignature = payload;
+  },
+  setMuteAudio(state, payload: { isMute: boolean }) {
+    state.isMuteAudio = payload.isMute;
+  },
+  setHideVideo(state, payload: { isHide: boolean }) {
+    state.isHideVideo = payload.isHide;
   },
 };
 

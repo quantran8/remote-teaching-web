@@ -1,6 +1,6 @@
 import { ContentService } from "@/services";
 import { ActionTree } from "vuex";
-import {AppState, AppView, LayoutType, ToastData} from "./state";
+import { AppState, AppView, LayoutType, ToastData } from "./state";
 
 const actions: ActionTree<AppState, any> = {
   setToast(store, payload: ToastData) {
@@ -17,6 +17,12 @@ const actions: ActionTree<AppState, any> = {
     if (res && res.pageContainer) {
       store.commit("setContentSignature", res.pageContainer);
     }
+  },
+  setMuteAudio(store, payload: { isMute: boolean }) {
+    store.commit("setMuteAudio", payload);
+  },
+  setHideVideo(store, payload: { isHide: boolean }) {
+    store.commit("setHideVideo", payload);
   },
 };
 
