@@ -6,12 +6,20 @@
     }
   }
   &__camera {
+    padding-bottom: 30px;
     &--player {
       width: 480px;
       height: 300px;
       &.hided {
         background-color: black;
       }
+    }
+  }
+  &__cl-status {
+    &--join {
+      text-decoration: underline;
+      color: #00a1ed;
+	  cursor: pointer;
     }
   }
 }

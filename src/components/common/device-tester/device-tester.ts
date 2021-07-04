@@ -17,11 +17,12 @@ export default defineComponent({
     Select,
     SelectOption: Select.Option,
   },
-  setup() {
+  props: ["classIsActive"],
+  emits: ["go-to-class"],
+  setup(props, { emit }) {
     const visible = ref(false);
     const isMute = ref<boolean>(false);
     const isHide = ref<boolean>(false);
-
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
@@ -109,6 +110,10 @@ export default defineComponent({
       }, 0);
     });
 
+    const goToClass = () => {
+      emit("go-to-class");
+    };
+
     return {
       visible,
       showModal,
@@ -126,6 +131,7 @@ export default defineComponent({
       currentCamLabel,
       handleMicroChange,
       handleCameraChange,
+	  goToClass
     };
   },
 });

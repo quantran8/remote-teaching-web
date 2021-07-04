@@ -32,6 +32,11 @@
         <div ref="playerRef" id="pre-local-player" v-show="!isHide" :class="['device-tester__camera--player']"></div>
         <div ref="playerRef" id="pre-local-player" v-show="isHide" :class="['device-tester__camera--player', 'hided']"></div>
       </div>
+      <div class="device-tester__cl-status">
+        <h4>Class status</h4>
+        <h5 v-if="!classIsActive">No class in progress. We will notify you once the class starts</h5>
+        <h5 v-else>Class in progress. <span @click="goToClass" class="device-tester__cl-status--join">Join now</span></h5>
+      </div>
     </Modal>
   </div>
 </template>

@@ -46,23 +46,32 @@ export default defineComponent({
     const concurrentMess = ref("");
     const listSessionInfo = ref([]);
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
+    const classIsActive = ref(false);
+    const currentStudent = ref<ChildModel>();
+    const goToClass = () => {
+      router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
+    };
     const onClickChild = async (student: ChildModel) => {
+      currentStudent.value = student;
       deviceTesterRef.value?.showModal();
-    //   const fp = await fpPromise;
-    //   const result = await fp.get();
-    //   const visitorId = result.visitorId;
-    //   try {
-    //     await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
-    //     await store.dispatch("studentRoom/setOnline");
-    //     await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
-    //   } catch (err) {
-    //     if (err.code === ErrorCode.ConcurrentUserException) {
-    //       await store.dispatch("setToast", { message: err.message });
-    //     } else {
-    //       const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
-    //       await store.dispatch("setToast", { message: message });
-    //     }
-    //   }
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+      try {
+        const response = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+        await store.dispatch("studentRoom/setOnline");
+        classIsActive.value = true;
+      } catch (err) {
+        if (classIsActive.value) {
+          classIsActive.value = false;
+        }
+        if (err.code === ErrorCode.ConcurrentUserException) {
+          await store.dispatch("setToast", { message: err.message });
+        } else {
+          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
+          await store.dispatch("setToast", { message: message });
+        }
+      }
     };
     const getNextSessionInfo = async () => {
       try {
@@ -152,6 +161,8 @@ export default defineComponent({
       accessDenied,
       studentNextSessionInfo,
       deviceTesterRef,
+      classIsActive,
+      goToClass,
     };
   },
 });
