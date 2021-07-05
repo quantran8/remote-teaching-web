@@ -29,11 +29,17 @@ export default defineComponent({
   emits: ["on-join-session", "on-cancel"],
   setup(props, { emit }) {
     const lessons = ref<number[]>([]);
+    const sequence = ref<number[]>([]);
     const selectedUnit = ref();
     const selectedLesson = ref();
+    const resetWarningMessage = ref<string>();
+    let updateInformation = false;
 
     watch(props, () => {
-      if (props.loading == false) {
+      if (props.loading == true){
+        updateInformation = true;
+      }
+      if (!updateInformation) {
         if (props.unitInfo) {
           selectedUnit.value = props.unitInfo[0].unit;
           if (props.unitInfo[0].lesson[0]) {
@@ -42,24 +48,34 @@ export default defineComponent({
             selectedLesson.value = "";
           }
           lessons.value = props.unitInfo[0].lesson;
+          sequence.value = props.unitInfo[0].sequence;
         } else {
           selectedUnit.value = props.teacherClass?.unit;
           selectedLesson.value = "";
         }
+      }
+      if(props.messageStartClass){
+        resetWarningMessage.value = props.messageStartClass;
       }
     });
 
     const handleChangeUnit = async (value: any) => {
       selectedLesson.value = "";
       selectedUnit.value = value;
+      resetWarningMessage.value = "";
       const lessonInfo = props.unitInfo?.find((unitSelect: any) => {return unitSelect.unit == value})?.lesson;
+      const sequenceInfo = props.unitInfo?.find((unitSelect: any) => {return unitSelect.unit == value})?.sequence;
+
       lessons.value = lessonInfo ? lessonInfo : [];
+      sequence.value = sequenceInfo ? sequenceInfo : [];
+
       if (lessons.value) {
         selectedLesson.value = lessons.value[0];
       }
     };
 
     const handleChangeLesson = async (value: any) => {
+      resetWarningMessage.value = "";
       selectedLesson.value = value;
     };
 
@@ -68,7 +84,13 @@ export default defineComponent({
     };
 
     const joinSession = async () => {
-      await emit("on-join-session", { unit: selectedUnit.value, lesson: selectedLesson.value });
+      let sequenceChosen = 0;
+      lessons.value.map((les: number, index) => {
+        if (les == selectedLesson.value) {
+          sequenceChosen = sequence.value[index];
+        }
+      });
+      await emit("on-join-session", { unit: selectedUnit.value, lesson: sequenceChosen });
     };
 
     return {
@@ -79,6 +101,7 @@ export default defineComponent({
       selectedLesson,
       handleChangeUnit,
       handleChangeLesson,
+      resetWarningMessage,
     };
   },
 });
