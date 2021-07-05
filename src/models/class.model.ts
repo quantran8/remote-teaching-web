@@ -37,6 +37,7 @@ export interface ClassModelSchedules {
 
 export interface UnitAndLesson {
   unit: number;
+  sequence: number[];
   lesson: number[];
 }
 
