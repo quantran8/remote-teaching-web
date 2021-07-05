@@ -26,3 +26,4 @@ pnpm-debug.log*
 
 component-template
 documents
+/*.log
