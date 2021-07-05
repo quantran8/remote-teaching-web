@@ -64,19 +64,14 @@ export default defineComponent({
       }
     };
 
-    // const setupDeviceStatus = () => {
-    //   dispatch("app/setMuteAudio", { status: MediaStatus.isFalse });
-    //   dispatch("app/setHideAudio", { status: MediaStatus.isFalse });
-    // };
-
     watch(
       isMute,
       currentIsMute => {
         if (currentIsMute) {
-          dispatch("setMuteAudio", { status: MediaStatus.isTrue });
+          dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
         }
         if (!currentIsMute) {
-          dispatch("setMuteAudio", { status: MediaStatus.isFalse });
+          dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         }
       },
       { immediate: true },
@@ -86,10 +81,10 @@ export default defineComponent({
       isHide,
       currentIsHide => {
         if (currentIsHide) {
-          dispatch("setHideVideo", { status: MediaStatus.isTrue });
+          dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
         }
         if (!currentIsHide) {
-          dispatch("setHideVideo", { status: MediaStatus.isFalse });
+          dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
         }
       },
       { immediate: true },
@@ -104,7 +99,6 @@ export default defineComponent({
           videoTrack,
         };
         setupDevice();
-        // setupDeviceStatus();
       } catch (error) {
         console.log("Initial setup have error => ", error);
       }
