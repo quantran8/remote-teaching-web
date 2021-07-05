@@ -54,7 +54,7 @@
         </div>
         <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
         <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
-          <div class="sc-independent__align-text">
+          <div class="sc-independent__info-container">
             <div class="sc-independent__avatar-container">
               <img class="sc-independent__avatar-container__avatar" v-if="avatarTeacher && avatarTeacher.length > 0" :src="avatarTeacher" />
               <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
@@ -63,9 +63,9 @@
           </div>
           <div class="sc-independent__icon-container">
             <img class="sc-independent__icon-container__size-talk" src="@/assets/images/talk.jpeg" />
-            <Lottie :options="iconSand" :height="60" :width="60" />
+            <Lottie :options="iconSand" class="sc-independent__size-clock" />
           </div>
-          <div class="sc-independent__align-text">
+          <div class="sc-independent__info-container">
             <div class="sc-independent__avatar-container">
               <img
                 class="sc-independent__avatar-container__avatar"
