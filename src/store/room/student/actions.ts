@@ -1,4 +1,4 @@
-import { checkStudentBandwidth } from "@/utils/checkBandwidth";
+import { checkBandwidth } from "@/utils/checkBandwidth";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -162,7 +162,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    checkStudentBandwidth(rootState, state.user ? state.user.id : "");
+    checkBandwidth(rootState, state.user ? state.user.id : "");
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});

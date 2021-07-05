@@ -27,7 +27,7 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import { checkTeacherBandwidth } from "@/utils/checkBandwidth";
+import { checkBandwidth } from "@/utils/checkBandwidth";
 import { MediaStatus } from "@/models";
 
 const networkQualityStats = {
@@ -128,7 +128,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       classId: state.info.id,
       teacherId: state.user?.id,
     });
-    checkTeacherBandwidth(rootState);
+    checkBandwidth(rootState);
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
