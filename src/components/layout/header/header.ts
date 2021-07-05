@@ -16,12 +16,8 @@ export default defineComponent({
     const userRole = computed(() => store.getters["auth/userRole"]);
     const userAvatar = computed(() => store.getters["auth/userAvatar"]);
     const showInfo = ref<boolean>(false);
-    const handleClickLogo = (role: string) => {
-      if (role == "Teacher") {
-        window.open(process.env.VUE_APP_SCHOOL_URL);
-      } else {
-        window.open(process.env.VUE_APP_PARENT_URL);
-      }
+    const handleClickLogo = () => {
+      window.open(process.env.VUE_APP_URL_AUTO_PORTAL);
     };
     const onClickShowInfo = () => {
       showInfo.value = true;

@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <slot name="leading">
-      <div @click="handleClickLogo(userRole)">
+      <div @click="handleClickLogo">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
       </div>
     </slot>
