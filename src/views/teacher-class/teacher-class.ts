@@ -140,6 +140,7 @@ export default defineComponent({
           try {
             await dispatch("teacherRoom/endClass");
             await dispatch("lesson/clearLessonData");
+            await dispatch("teacherRoom/setClearBrush", {});
             await router.push("/teacher");
           } catch (err) {
             Modal.destroyAll();
