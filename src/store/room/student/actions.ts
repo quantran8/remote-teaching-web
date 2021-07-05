@@ -12,6 +12,7 @@ import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
+import { MediaStatus } from "@/models";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -133,9 +134,29 @@ const actions: ActionTree<StudentRoomState, any> = {
     const { state, dispatch } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
+      let cameraStatus = state.student?.videoEnabled;
+      let microphoneStatus = state.student?.audioEnabled;
+      const isMuteAudio = store.rootGetters["isMuteAudio"];
+      if (isMuteAudio !== MediaStatus.default) {
+        if (isMuteAudio === MediaStatus.isFalse) {
+          microphoneStatus = true;
+        }
+        if (isMuteAudio === MediaStatus.isTrue) {
+          microphoneStatus = false;
+        }
+      }
+      const isHideVideo = store.rootGetters["isHideVideo"];
+      if (isHideVideo !== MediaStatus.default) {
+        if (isHideVideo === MediaStatus.isFalse) {
+          cameraStatus = true;
+        }
+        if (isHideVideo === MediaStatus.isTrue) {
+          cameraStatus = false;
+        }
+      }
       await state.manager?.join({
-        camera: state.student?.videoEnabled,
-        microphone: state.student?.audioEnabled,
+        camera: cameraStatus,
+        microphone: microphoneStatus,
         classId: state.info?.id,
         studentId: state.user?.id,
       });

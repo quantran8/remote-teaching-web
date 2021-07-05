@@ -30,6 +30,7 @@ import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import _, { times } from "lodash";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { MediaStatus } from "@/models";
 
 const fpPromise = FingerprintJS.load();
 
@@ -105,9 +106,29 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async joinRoom(store, _payload: any) {
     const { state, dispatch } = store;
     if (!state.info || !state.teacher || !state.manager) return;
+    let cameraStatus = state.teacher?.videoEnabled;
+    let microphoneStatus = state.teacher?.audioEnabled;
+    const isMuteAudio = store.rootGetters["isMuteAudio"];
+    if (isMuteAudio !== MediaStatus.default) {
+      if (isMuteAudio === MediaStatus.isFalse) {
+        microphoneStatus = true;
+      }
+      if (isMuteAudio === MediaStatus.isTrue) {
+        microphoneStatus = false;
+      }
+    }
+    const isHideVideo = store.rootGetters["isHideVideo"];
+    if (isHideVideo !== MediaStatus.default) {
+      if (isHideVideo === MediaStatus.isFalse) {
+        cameraStatus = true;
+      }
+      if (isHideVideo === MediaStatus.isTrue) {
+        cameraStatus = false;
+      }
+    }
     await state.manager?.join({
-      camera: state.teacher.videoEnabled,
-      microphone: state.teacher.audioEnabled,
+      camera: cameraStatus,
+      microphone: microphoneStatus,
       classId: state.info.id,
       teacherId: state.user?.id,
     });
