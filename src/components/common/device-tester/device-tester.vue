@@ -58,7 +58,10 @@
             <div class="device-tester__cl-status--teacher__button--1">
               <Button @click="handleCancel">Cancel</Button>
             </div>
-            <Button @click="handleSubmit" type="primary">Join session</Button>
+            <Button @click="handleSubmit" type="primary" :loading="loading">Join session</Button>
+          </div>
+          <div class="device-tester__cl-status--teacher__msg">
+            {{ messageStartClass }}
           </div>
         </div>
       </div>

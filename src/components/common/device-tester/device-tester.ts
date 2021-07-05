@@ -20,7 +20,7 @@ export default defineComponent({
     SelectOption: Select.Option,
     Button,
   },
-  props: ["classIsActive", "unitInfo"],
+  props: ["classIsActive", "unitInfo", "loading", "messageStartClass"],
   emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -150,7 +150,7 @@ export default defineComponent({
 
     const handleSubmit = () => {
       emit("on-join-session", { unit: currentUnit.value, lesson: currentLesson.value });
-      visible.value = false;
+    //   visible.value = false;
     };
     const handleCancel = () => {
       visible.value = false;
