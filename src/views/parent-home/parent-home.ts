@@ -9,6 +9,7 @@ import { ErrorCode, fmtMsg } from "commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
+import { DeviceTester } from "@/components/common";
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -44,15 +45,26 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const listSessionInfo = ref([]);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
+    const classIsActive = ref(false);
+    const currentStudent = ref<ChildModel>();
+    const goToClass = () => {
+      router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
+    };
     const onClickChild = async (student: ChildModel) => {
+      currentStudent.value = student;
+      deviceTesterRef.value?.showModal();
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+        const response = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
         await store.dispatch("studentRoom/setOnline");
-        await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
+        classIsActive.value = true;
       } catch (err) {
+        if (classIsActive.value) {
+          classIsActive.value = false;
+        }
         if (err.code === ErrorCode.ConcurrentUserException) {
           await store.dispatch("setToast", { message: err.message });
         } else {
@@ -148,6 +160,9 @@ export default defineComponent({
       concurrentMess,
       accessDenied,
       studentNextSessionInfo,
+      deviceTesterRef,
+      classIsActive,
+      goToClass,
     };
   },
 });

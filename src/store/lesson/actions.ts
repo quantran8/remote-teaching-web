@@ -114,7 +114,7 @@ const actions: LessonActions<LessonState, any> = {
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
       };
     });
-	
+
     const listUrl = exposures
       .map(expo => {
         const url = expo.items.map(item => {
@@ -151,6 +151,7 @@ const actions: LessonActions<LessonState, any> = {
     store.commit("setCurrentExposure", payload);
   },
   setCurrentExposureItemMedia(store: ActionContext<LessonState, any>, payload: { id: string }) {
+
     store.commit("setCurrentExposureItemMedia", payload);
   },
   setExposureStatus(store: ActionContext<LessonState, any>, payload: { id: string; status: ExposureStatus }) {

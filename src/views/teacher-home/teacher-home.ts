@@ -14,6 +14,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
 import DeviceDetector from "device-detector-js";
+import { DeviceTester } from "@/components/common";
 
 const fpPromise = FingerprintJS.load();
 
@@ -29,6 +30,7 @@ export default defineComponent({
     Button,
     Row,
     Empty,
+    DeviceTester,
   },
   setup() {
     const store = useStore();
@@ -66,6 +68,7 @@ export default defineComponent({
     const loadingStartClass = ref<boolean>(true);
     const unitInfo = ref<UnitAndLesson[]>();
     const loadingInfo = ref(false);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
 
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
@@ -147,7 +150,8 @@ export default defineComponent({
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         await getListLessonByUnit(teacherClass, groupId);
-        startPopupVisible.value = true;
+        // startPopupVisible.value = true;
+        deviceTesterRef.value?.showModal();
       }
     };
 
@@ -296,6 +300,7 @@ export default defineComponent({
       classOnline,
       unitInfo,
       loadingInfo,
+	  deviceTesterRef
     };
   },
 });

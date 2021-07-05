@@ -6,5 +6,6 @@ import DesignateRectangle from "./designate-rectangle/designate-rectangle.vue";
 import ContentView from "./content-view/content-view.vue";
 import AnnotationView from "./annotation-view/annotation-view.vue";
 import LanguagePicker from "./language-picker/language-picker.vue";
+import DeviceTester from "./device-tester/device-tester.vue";
 
-export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, LanguagePicker };
+export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, LanguagePicker, DeviceTester };

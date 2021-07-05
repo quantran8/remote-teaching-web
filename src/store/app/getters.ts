@@ -14,6 +14,12 @@ const getters: GetterTree<AppState, any> = {
   contentSignature(state: AppState): string {
     return state.contentSignature;
   },
+  isMuteAudio(state: AppState): number {
+    return state.isMuteAudio;
+  },
+  isHideVideo(state: AppState): number {
+    return state.isHideVideo;
+  },
 };
 
 export default getters;
