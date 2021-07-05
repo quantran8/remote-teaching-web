@@ -2,8 +2,7 @@ import { defineComponent, computed, ref, onMounted, watch } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button } from "ant-design-vue";
-import { UnitAndLesson } from "@/models";
-
+import { UnitAndLesson, MediaStatus } from "@/models";
 interface DeviceType {
   deviceId: string;
   groupId: string;
@@ -26,6 +25,8 @@ export default defineComponent({
     const { getters, dispatch } = useStore();
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isParent = computed(() => getters["auth/isParent"]);
+    const isMuteAudio = computed(() => getters["app/isMuteAudio"]);
+    const isHideAudio = computed(() => getters["app/isHideAudio"]);
     const visible = ref(false);
     const isMute = ref<boolean>(false);
     const isHide = ref<boolean>(false);
@@ -63,6 +64,37 @@ export default defineComponent({
       }
     };
 
+    // const setupDeviceStatus = () => {
+    //   dispatch("app/setMuteAudio", { status: MediaStatus.isFalse });
+    //   dispatch("app/setHideAudio", { status: MediaStatus.isFalse });
+    // };
+
+    watch(
+      isMute,
+      currentIsMute => {
+        if (currentIsMute) {
+          dispatch("setMuteAudio", { status: MediaStatus.isTrue });
+        }
+        if (!currentIsMute) {
+          dispatch("setMuteAudio", { status: MediaStatus.isFalse });
+        }
+      },
+      { immediate: true },
+    );
+
+    watch(
+      isHide,
+      currentIsHide => {
+        if (currentIsHide) {
+          dispatch("setHideVideo", { status: MediaStatus.isTrue });
+        }
+        if (!currentIsHide) {
+          dispatch("setHideVideo", { status: MediaStatus.isFalse });
+        }
+      },
+      { immediate: true },
+    );
+
     const initialSetup = async () => {
       try {
         const localTracksResult = await Promise.all([AgoraRTC.createMicrophoneAudioTrack(), AgoraRTC.createCameraVideoTrack()]);
@@ -72,6 +104,7 @@ export default defineComponent({
           videoTrack,
         };
         setupDevice();
+        // setupDeviceStatus();
       } catch (error) {
         console.log("Initial setup have error => ", error);
       }
@@ -150,7 +183,6 @@ export default defineComponent({
 
     const handleSubmit = () => {
       emit("on-join-session", { unit: currentUnit.value, lesson: currentLesson.value });
-    //   visible.value = false;
     };
     const handleCancel = () => {
       visible.value = false;

@@ -14,11 +14,11 @@ const mutations: MutationTree<AppState> = {
   setContentSignature(state, payload: string) {
     state.contentSignature = payload;
   },
-  setMuteAudio(state, payload: { isMute: boolean }) {
-    state.isMuteAudio = payload.isMute;
+  setMuteAudio(state, payload: { status: number }) {
+    state.isMuteAudio = payload.status;
   },
-  setHideVideo(state, payload: { isHide: boolean }) {
-    state.isHideVideo = payload.isHide;
+  setHideVideo(state, payload: { status: number }) {
+    state.isHideVideo = payload.status;
   },
 };
 

@@ -18,10 +18,10 @@ const actions: ActionTree<AppState, any> = {
       store.commit("setContentSignature", res.pageContainer);
     }
   },
-  setMuteAudio(store, payload: { isMute: boolean }) {
+  setMuteAudio(store, payload: { status: number }) {
     store.commit("setMuteAudio", payload);
   },
-  setHideVideo(store, payload: { isHide: boolean }) {
+  setHideVideo(store, payload: { status: number }) {
     store.commit("setHideVideo", payload);
   },
 };

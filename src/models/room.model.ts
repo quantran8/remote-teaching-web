@@ -33,8 +33,6 @@ export interface TeachingActivityItemModel {
   teachingActivityId: string;
 }
 
-export interface ContentItemModel {}
-
 export interface ExposureContentModel {
   id: string;
   title: string;

@@ -1,3 +1,5 @@
+import { MediaStatus } from "@/models";
+
 export type LayoutType = "" | "full" | "main";
 export enum AppView {
   Authorized = 1,
@@ -11,8 +13,8 @@ export interface AppState {
   appView: AppView;
   toast: ToastData;
   contentSignature: string;
-  isMuteAudio: boolean;
-  isHideVideo: boolean;
+  isMuteAudio: number;
+  isHideVideo: number;
 }
 
 export interface ToastData {
@@ -27,8 +29,8 @@ const state: AppState = {
   appView: AppView.Blank,
   toast: { message: "", isPlayingSound: false },
   contentSignature: "",
-  isMuteAudio: false,
-  isHideVideo: false
+  isMuteAudio: MediaStatus.default,
+  isHideVideo: MediaStatus.default,
 };
 
 export default state;
