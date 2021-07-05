@@ -3,7 +3,7 @@ import { RemoteTeachingService } from "@/services";
 const downloadSize = 4995374; //bytes
 const download = new Image();
 
-//120000 = 2 minutes;
+//300000 = 5 minutes;
 export const checkBandwidth = async (rootState: any, studentId?: string) => {
   setInterval(() => {
     if (!rootState.lesson.exposures[0]) return;
@@ -24,5 +24,5 @@ export const checkBandwidth = async (rootState: any, studentId?: string) => {
         RemoteTeachingService.putTeacherBandwidth(Math.round(speedMbps).toString());
       }
     };
-  }, 120000);
+  }, 300000);
 };
