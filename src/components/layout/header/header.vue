@@ -1,9 +1,9 @@
 <template>
   <div class="header">
     <slot name="leading">
-      <router-link to="/">
+      <div @click="handleClickLogo(userRole)">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
-      </router-link>
+      </div>
     </slot>
     <div class="h-spacer"></div>
     <div class="content">
