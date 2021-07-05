@@ -1,9 +1,9 @@
 <template>
   <div class="header">
     <slot name="leading">
-      <div @click="handleClickLogo">
+      <a :href="url">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
-      </div>
+      </a>
     </slot>
     <div class="h-spacer"></div>
     <div class="content">
