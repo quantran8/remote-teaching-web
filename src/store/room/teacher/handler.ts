@@ -156,7 +156,6 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("lesson/setCurrentExposure", { id: payload }, { root: true });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      console.log('onTeacherEndLessonPlan',payload);
       commit("lesson/setExposureStatus", { id: payload.contentId, status: ExposureStatus.COMPLETED }, { root: true });
       if(payload.playedTime)
       commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
