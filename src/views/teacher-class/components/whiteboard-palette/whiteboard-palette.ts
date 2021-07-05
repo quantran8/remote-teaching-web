@@ -49,6 +49,8 @@ export default defineComponent({
     const hasStickerTool: Ref<boolean> = ref(false);
     const showHideWhiteboard: Ref<boolean> = ref(false);
     const firstLoadImage: Ref<boolean> = ref(false);
+    const firstTimeLoadStrokes: Ref<boolean> = ref(false);
+    const firstTimeLoadShapes: Ref<boolean> = ref(false);
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -191,8 +193,11 @@ export default defineComponent({
       }
     };
     watch(selfStrokes, async () => {
-      await nextTick();
-      renderSelfStrokes();
+      // await nextTick();
+      if (!firstTimeLoadStrokes.value && selfStrokes.value) {
+        renderSelfStrokes();
+        firstTimeLoadStrokes.value = true;
+      }
     });
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -278,7 +283,7 @@ export default defineComponent({
         case Tools.Pen:
           toolSelected.value = Tools.Pen;
           // canvas.remove(...canvas.getObjects("rect"));
-          await store.dispatch("teacherRoom/setClearStickers", {});
+          // await store.dispatch("teacherRoom/setClearStickers", {});
           await setDrawMode();
           canvas.freeDrawingBrush.color = strokeColor.value;
           canvas.freeDrawingBrush.width = strokeWidth.value;
@@ -516,8 +521,11 @@ export default defineComponent({
         listenSelfTeacher();
       }
     };
-    watch(selfShapes, () => {
-      // renderSelfShapes();
+    watch(selfShapes, async () => {
+      if (!firstTimeLoadShapes.value && selfShapes.value) {
+        renderSelfShapes();
+        firstTimeLoadShapes.value = true;
+      }
     });
     watch(oneAndOne, async () => {
       if (!canvas) return;

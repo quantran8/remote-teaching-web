@@ -13,6 +13,7 @@
       >
       </StudentCard>
     </div>
+    <DeviceTester @go-to-class="goToClass" :classIsActive="classIsActive" ref="deviceTesterRef" />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
     <h3>{{ policyTitleModal }}</h3>

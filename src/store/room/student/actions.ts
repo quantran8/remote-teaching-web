@@ -13,7 +13,7 @@ import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
-import { computed } from "vue";
+import { MediaStatus } from "@/models";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -119,7 +119,15 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
-    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id, _payload.browserFingerPrinting);
+    const isMuteAudio = store.rootGetters["isMuteAudio"];
+    const isHideVideo = store.rootGetters["isHideVideo"];
+    await store.state.manager?.WSClient.sendRequestJoinRoom(
+      store.state.info.id,
+      store.state.user.id,
+      _payload.browserFingerPrinting,
+      isMuteAudio,
+      isHideVideo,
+    );
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },
@@ -127,9 +135,29 @@ const actions: ActionTree<StudentRoomState, any> = {
     const { state, dispatch, rootState } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
+      let cameraStatus = state.student?.videoEnabled;
+      let microphoneStatus = state.student?.audioEnabled;
+      const isMuteAudio = store.rootGetters["isMuteAudio"];
+      if (isMuteAudio !== MediaStatus.default) {
+        if (isMuteAudio === MediaStatus.isFalse) {
+          microphoneStatus = true;
+        }
+        if (isMuteAudio === MediaStatus.isTrue) {
+          microphoneStatus = false;
+        }
+      }
+      const isHideVideo = store.rootGetters["isHideVideo"];
+      if (isHideVideo !== MediaStatus.default) {
+        if (isHideVideo === MediaStatus.isFalse) {
+          cameraStatus = true;
+        }
+        if (isHideVideo === MediaStatus.isTrue) {
+          cameraStatus = false;
+        }
+      }
       await state.manager?.join({
-        camera: state.student?.videoEnabled,
-        microphone: state.student?.audioEnabled,
+        camera: cameraStatus,
+        microphone: microphoneStatus,
         classId: state.info?.id,
         studentId: state.user?.id,
       });

@@ -14,6 +14,7 @@ import {
   DesignateRectangle,
   AnnotationView,
   LanguagePicker,
+  DeviceTester,
 } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
@@ -44,6 +45,7 @@ app.component("ContentView", ContentView);
 app.component("AnnotationView", AnnotationView);
 app.component("DesignateCircle", DesignateCircle);
 app.component("LanguagePicker", LanguagePicker);
+app.component("DeviceTester", DeviceTester);
 app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
 //app.component("UnityView", UnityView);

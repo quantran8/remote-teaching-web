@@ -1,21 +1,43 @@
 import { StudentWSCommand as WSCmd } from "./command";
 import { GLSocketClient } from "../base";
-import DeviceDetector from "device-detector-js";
+import { MediaStatus } from "@/models";
+
+interface JoinRoomParams {
+  roomId: string;
+  studentId: string;
+  browserFingerPrinting: string;
+  isMuteAudio?: boolean;
+  isMuteVideo?: boolean;
+}
 
 export class StudentWSClient extends GLSocketClient {
-  sendRequestJoinRoom(roomId: string, studentId: string, browserFingerPrinting: string) {
-    const deviceDetector = new DeviceDetector();
-    const detector = deviceDetector.parse(window.navigator.userAgent);
-    const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
-    return this.send(WSCmd.JOIN_CLASS, {
+  sendRequestJoinRoom(
+    roomId: string,
+    studentId: string,
+    browserFingerPrinting: string,
+    isMuteAudio = MediaStatus.default,
+    isHideVideo = MediaStatus.default,
+  ) {
+    const params: JoinRoomParams = {
       roomId: roomId,
       studentId: studentId,
-      browser: detector.client ? detector.client.name : "",
-      device: detector.device ? detector.device.type : "",
-      bandwidth: "",
-      resolution: resolution,
       browserFingerPrinting: browserFingerPrinting,
-    });
+    };
+    if (isMuteAudio !== MediaStatus.default) {
+      let status = false;
+      if (isMuteAudio === MediaStatus.isTrue) {
+        status = true;
+      }
+      params.isMuteAudio = status;
+    }
+    if (isHideVideo !== MediaStatus.default) {
+      let status = false;
+      if (isHideVideo === MediaStatus.isTrue) {
+        status = true;
+      }
+      params.isMuteVideo = status;
+    }
+    return this.send(WSCmd.JOIN_CLASS, params);
   }
   sendRequestMuteVideo(IsMute: boolean) {
     return this.send(WSCmd.MUTE_VIDEO, { IsMute: IsMute });

@@ -4,7 +4,7 @@ const downloadSize = 4995374; //bytes
 const download = new Image();
 
 //120000 = 2 minutes;
-export const checkTeacherBandwidth = async (rootState: any, fbp: string, interval = 120000) => {
+export const checkTeacherBandwidth = async (rootState: any, interval = 120000) => {
   setInterval(() => {
     if (!rootState.lesson.exposures[0]) return;
     const startTime = new Date().getTime();
@@ -18,7 +18,7 @@ export const checkTeacherBandwidth = async (rootState: any, fbp: string, interva
       const speedBps = +(bitsLoaded / duration).toFixed(2);
       const speedKbps = +(speedBps / 1024).toFixed(2);
       const speedMbps = +(speedKbps / 1024).toFixed(2);
-      RemoteTeachingService.putTeacherBandwidth(Math.round(speedMbps).toString() + " Mbps", fbp);
+      RemoteTeachingService.putTeacherBandwidth(Math.round(speedMbps).toString() + " Mbps");
     };
   }, interval);
 };

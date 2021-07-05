@@ -1,0 +1,57 @@
+.device-tester {
+  &__micro {
+    padding-bottom: 30px;
+    &--select {
+      padding: 20px 0;
+    }
+  }
+  &__camera {
+    padding-bottom: 30px;
+    &--player {
+      width: 480px;
+      height: 300px;
+      &.hided {
+        background-color: black;
+      }
+    }
+  }
+  &__cl-status {
+    &--student {
+      &__join {
+        text-decoration: underline;
+        color: #00a1ed;
+        cursor: pointer;
+      }
+    }
+    &--teacher {
+      &__content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        &--item {
+          width: 45%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          &__label {
+            font-size: 18px;
+            padding-right: 10px;
+          }
+        }
+      }
+      &__button {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        &--1 {
+          margin-right: 10px;
+        }
+      }
+      &__msg {
+        color: red;
+        text-align: center;
+      }
+    }
+  }
+}

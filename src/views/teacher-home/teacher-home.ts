@@ -1,5 +1,5 @@
 import { LoginInfo } from "@/commonui";
-import { TeacherClassModel } from "@/models";
+import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
@@ -13,7 +13,7 @@ import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
-import DeviceDetector from "device-detector-js";
+import { DeviceTester } from "@/components/common";
 
 const fpPromise = FingerprintJS.load();
 
@@ -29,12 +29,11 @@ export default defineComponent({
     Button,
     Row,
     Empty,
+    DeviceTester,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
-    const deviceDetector = new DeviceDetector();
-    const detector = deviceDetector.parse(window.navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
@@ -64,18 +63,19 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const loadingStartClass = ref<boolean>(true);
+    const unitInfo = ref<UnitAndLesson[]>();
+    const loadingInfo = ref(false);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
+    const selectedGroupId = ref();
+
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
-      const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
+      messageStartClass.value = "";
       try {
         const fp = await fpPromise;
         const result = await fp.get();
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: detector.client ? detector.client.name : "",
-          device: detector.device ? detector.device.type : "",
-          bandwidth: "",
-          resolution: resolution,
           unit: unit,
           lesson: lesson,
           browserFingerprint: result.visitorId,
@@ -128,8 +128,8 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const joinTheCurrentSession = async () => {
-      if (classOnline.value) {
+    const joinTheCurrentSession = async (currentGroupId: string) => {
+      if (classOnline.value && currentGroupId == classOnline.value.groupId) {
         await router.push("/class/" + infoStart.value?.teacherClass.classId);
         return true;
       }
@@ -138,17 +138,51 @@ export default defineComponent({
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       infoStart.value = { teacherClass, groupId };
-      if (!(await joinTheCurrentSession())) {
-        messageStartClass.value = "";
-        startPopupVisible.value = true;
+      selectedGroupId.value = groupId;
+      messageStartClass.value = "";
+      if (!(await joinTheCurrentSession(groupId))) {
+        await getListLessonByUnit(teacherClass, groupId);
+        // startPopupVisible.value = true;
+        deviceTesterRef.value?.showModal();
       }
+    };
+
+    const getListLessonByUnit = async (teacherClass: TeacherClassModel, groupId: string) => {
+      try {
+        loadingInfo.value = true;
+        const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
+        const listUnit: UnitAndLesson[] = [];
+        for (let i = 14; i <= 40; i++) {
+          listUnit.push({ unit: i, lesson: [], sequence: [] });
+        }
+
+        if (response && response.success) {
+          listUnit.map((singleUnit: UnitAndLesson, index) => {
+            let lessonNumber = 1;
+            response.data.map((res: any) => {
+              if (singleUnit.unit == res.unitId) {
+                listUnit[index].sequence.push(res.sequence);
+                listUnit[index].lesson.push(lessonNumber);
+                lessonNumber++;
+              }
+            });
+          });
+        }
+        unitInfo.value = listUnit;
+      } catch (err) {
+        const message = err?.body?.message;
+        if (message) {
+          await store.dispatch("setToast", { message: message });
+        }
+      }
+      loadingInfo.value = false;
     };
 
     const onStartClass = async (data: { unit: number; lesson: number }) => {
       popUpLoading.value = true;
-      if (!(await joinTheCurrentSession())) {
+      if (!(await joinTheCurrentSession(selectedGroupId.value))) {
         if (infoStart.value) {
-          await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
+          await startClass(infoStart.value.teacherClass, selectedGroupId.value, data.unit, data.lesson);
         }
       }
       popUpLoading.value = false;
@@ -256,6 +290,9 @@ export default defineComponent({
       messageStartClass,
       popUpLoading,
       classOnline,
+      unitInfo,
+      loadingInfo,
+      deviceTesterRef,
     };
   },
 });

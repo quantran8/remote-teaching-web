@@ -1,15 +1,13 @@
 <template>
   <div class="loading-container">
-    <img src="@/assets/images/logo-dark.png" />
-    <div class="loading">
-      <div class="obj"></div>
-      <div class="obj"></div>
-      <div class="obj"></div>
-      <div class="obj"></div>
-      <div class="obj"></div>
-      <div class="obj"></div>
-      <div class="obj"></div>
-      <div class="obj"></div>
+    <div class="gl-splash__container">
+      <img class="gl-splash__logo" src="@/assets/images/logo-light.png" />
+      <div class="gl-splash__divider ant-divider ant-divider-horizontal">
+        <div class="gl-progress gl-splash__progress gl-progress--visible">
+          <div class="gl-progress__indeterminate"></div>
+        </div>
+      </div>
+      <h1 class="gl-splash__title">Remote Teaching</h1>
     </div>
   </div>
 </template>

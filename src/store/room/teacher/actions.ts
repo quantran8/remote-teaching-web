@@ -27,10 +27,8 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { checkTeacherBandwidth } from "@/utils/checkBandwidth";
-
-const fpPromise = FingerprintJS.load();
+import { MediaStatus } from "@/models";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -95,22 +93,42 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager) return;
-    store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, _payload.browserFingerPrinting);
+    const isMuteAudio = store.rootGetters["isMuteAudio"];
+    const isHideVideo = store.rootGetters["isHideVideo"];
+    store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, _payload.browserFingerPrinting, isMuteAudio, isHideVideo);
     const eventHandler = useTeacherRoomWSHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
     if (!state.info || !state.teacher || !state.manager) return;
+    let cameraStatus = state.teacher?.videoEnabled;
+    let microphoneStatus = state.teacher?.audioEnabled;
+    const isMuteAudio = store.rootGetters["isMuteAudio"];
+    if (isMuteAudio !== MediaStatus.default) {
+      if (isMuteAudio === MediaStatus.isFalse) {
+        microphoneStatus = true;
+      }
+      if (isMuteAudio === MediaStatus.isTrue) {
+        microphoneStatus = false;
+      }
+    }
+    const isHideVideo = store.rootGetters["isHideVideo"];
+    if (isHideVideo !== MediaStatus.default) {
+      if (isHideVideo === MediaStatus.isFalse) {
+        cameraStatus = true;
+      }
+      if (isHideVideo === MediaStatus.isTrue) {
+        cameraStatus = false;
+      }
+    }
     await state.manager?.join({
-      camera: state.teacher.videoEnabled,
-      microphone: state.teacher.audioEnabled,
+      camera: cameraStatus,
+      microphone: microphoneStatus,
       classId: state.info.id,
       teacherId: state.user?.id,
     });
-    const fp = await fpPromise;
-    const result = await fp.get();
-    checkTeacherBandwidth(rootState, result.visitorId);
+    checkTeacherBandwidth(rootState);
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -124,7 +142,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
       },
-      async onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+      onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
         if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", true);
