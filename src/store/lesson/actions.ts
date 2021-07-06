@@ -37,8 +37,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id,
             image: {
               url: payload.contentStorageUrl + p.url + signalture,
-              width: parseInt(p.resolution.split("X")[0]),
-              height: parseInt(p.resolution.split("X")[1]),
+              width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+              height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
           };
         });
@@ -57,8 +57,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id,
             image: {
               url: payload.contentStorageUrl + p.url + signalture,
-              width: parseInt(p.resolution.split("X")[0]),
-              height: parseInt(p.resolution.split("X")[1]),
+              width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+              height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
           };
         });
@@ -90,8 +90,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id, // need to confirm is contentExposureId or teachingActivity.id
             image: {
               url,
-              width: parseInt(p.resolution.split("X")[0]),
-              height: parseInt(p.resolution.split("X")[1]),
+              width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+              height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
           };
         });
@@ -151,7 +151,6 @@ const actions: LessonActions<LessonState, any> = {
     store.commit("setCurrentExposure", payload);
   },
   setCurrentExposureItemMedia(store: ActionContext<LessonState, any>, payload: { id: string }) {
-
     store.commit("setCurrentExposureItemMedia", payload);
   },
   setExposureStatus(store: ActionContext<LessonState, any>, payload: { id: string; status: ExposureStatus }) {

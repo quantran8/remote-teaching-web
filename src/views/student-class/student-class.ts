@@ -22,6 +22,7 @@ import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
 import { RemoteTeachingService } from "@/services";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+import * as sandClock from "@/assets/lotties/sand-clock.json";
 
 const fpPromise = FingerprintJS.load();
 
@@ -118,8 +119,9 @@ export default defineComponent({
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
     const defaultUrl =
-      "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest"
-    
+      "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
+    const iconSand = reactive({ animationData: sandClock.default });
+
     watch(lessonInfo, async () => {
       try {
         const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value.unit, lessonInfo.value.lesson);
@@ -333,6 +335,7 @@ export default defineComponent({
       errors,
       exitText,
       goToHomePageText,
+      iconSand,
     };
   },
 });
