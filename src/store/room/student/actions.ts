@@ -177,7 +177,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        store.commit("setStudentBandwidth", payload.uplinkNetworkQuality);
+        //   console.log(payload);
       },
     });
   },
