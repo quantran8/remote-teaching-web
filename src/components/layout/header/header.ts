@@ -28,6 +28,9 @@ export default defineComponent({
     const onClickSignOut = () => {
       AuthService.storePagethenSignoutRedirect();
     };
+    const onClickTestDevice = () => {
+      console.log("click");
+    };
     return {
       isLoggedIn,
       userAvatar,
@@ -38,6 +41,7 @@ export default defineComponent({
       onClickHideInfo,
       onClickSignOut,
       onClickOpenAccountPage,
+      onClickTestDevice,
     };
   },
 });

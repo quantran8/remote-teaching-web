@@ -28,6 +28,7 @@
             <BaseIcon class="item-action" name="reply" />
           </div>
           <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
+          <div class="menu-item" @click.prevent="onClickTestDevice">Test Connection</div>
         </template>
       </MenuItem>
     </slot>

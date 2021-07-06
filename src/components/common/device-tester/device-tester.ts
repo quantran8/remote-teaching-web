@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, onMounted, watch } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
-import { Modal, Switch, Progress, Select, Button } from "ant-design-vue";
+import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
 interface DeviceType {
   deviceId: string;
@@ -18,6 +18,8 @@ export default defineComponent({
     Select,
     SelectOption: Select.Option,
     Button,
+    Skeleton,
+    Divider,
   },
   props: ["classIsActive", "unitInfo", "loading", "messageStartClass"],
   emits: ["go-to-class", "on-join-session"],
@@ -25,8 +27,6 @@ export default defineComponent({
     const { getters, dispatch } = useStore();
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isParent = computed(() => getters["auth/isParent"]);
-    const isMuteAudio = computed(() => getters["app/isMuteAudio"]);
-    const isHideAudio = computed(() => getters["app/isHideAudio"]);
     const visible = ref(false);
     const isMute = ref<boolean>(false);
     const isHide = ref<boolean>(false);
@@ -43,9 +43,6 @@ export default defineComponent({
     const currentCamLabel = ref("");
     const volumeByPercent = ref(0);
     const volumeAnimation = ref();
-    onMounted(() => {
-      initialSetup();
-    });
 
     const setupDevice = async () => {
       const mics = await AgoraRTC.getMicrophones();
@@ -69,9 +66,11 @@ export default defineComponent({
       currentIsMute => {
         if (currentIsMute) {
           dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
+          localTracks.value?.audioTrack.setEnabled(false);
         }
         if (!currentIsMute) {
           dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
+          localTracks.value?.audioTrack.setEnabled(true);
         }
       },
       { immediate: true },
@@ -79,12 +78,14 @@ export default defineComponent({
 
     watch(
       isHide,
-      currentIsHide => {
-        if (currentIsHide) {
+      currentIsHideValue => {
+        if (currentIsHideValue) {
           dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
+          localTracks.value?.videoTrack.setEnabled(false);
         }
-        if (!currentIsHide) {
+        if (!currentIsHideValue) {
           dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
+          localTracks.value?.videoTrack.setEnabled(true);
         }
       },
       { immediate: true },
@@ -132,12 +133,18 @@ export default defineComponent({
       }
     };
 
-    watch(visible, currentValue => {
+    const destroy = () => {
+      localTracks.value?.audioTrack.close();
+      localTracks.value?.videoTrack.close();
+    };
+
+    watch(visible, async currentValue => {
       if (!currentValue) {
         cancelAnimationFrame(volumeAnimation.value);
+        destroy();
         return;
       }
-      setupDevice();
+      await initialSetup();
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       setTimeout(() => {
         localTracks.value?.videoTrack.play("pre-local-player");
@@ -181,6 +188,10 @@ export default defineComponent({
     const handleCancel = () => {
       visible.value = false;
     };
+
+    watch(playerRef, currentPlayerRefValue => {
+      console.log("playerRef", currentPlayerRefValue);
+    });
 
     return {
       visible,
