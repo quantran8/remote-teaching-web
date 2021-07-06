@@ -12,18 +12,18 @@ interface JoinRoomParams {
 }
 
 export class TeacherWSClient extends GLSocketClient {
-  sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.default, isHideVideo = MediaStatus.default) {
+  sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.noStatus, isHideVideo = MediaStatus.noStatus) {
     const params: JoinRoomParams = { roomId: roomId, browserFingerPrinting: browserFingerPrinting };
-    if (isMuteAudio !== MediaStatus.default) {
+    if (isMuteAudio !== MediaStatus.noStatus) {
       let status = false;
-      if (isMuteAudio === MediaStatus.isTrue) {
+      if (isMuteAudio === MediaStatus.mediaLocked) {
         status = true;
       }
       params.isMuteAudio = status;
     }
-    if (isHideVideo !== MediaStatus.default) {
+    if (isHideVideo !== MediaStatus.noStatus) {
       let status = false;
-      if (isHideVideo === MediaStatus.isTrue) {
+      if (isHideVideo === MediaStatus.mediaLocked) {
         status = true;
       }
       params.isMuteVideo = status;

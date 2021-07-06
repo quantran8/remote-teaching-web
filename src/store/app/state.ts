@@ -29,8 +29,8 @@ const state: AppState = {
   appView: AppView.Blank,
   toast: { message: "", isPlayingSound: false },
   contentSignature: "",
-  isMuteAudio: MediaStatus.default,
-  isHideVideo: MediaStatus.default,
+  isMuteAudio: MediaStatus.noStatus,
+  isHideVideo: MediaStatus.noStatus,
 };
 
 export default state;

@@ -65,12 +65,6 @@ export default defineComponent({
         if (classIsActive.value) {
           classIsActive.value = false;
         }
-        if (err.code === ErrorCode.ConcurrentUserException) {
-          await store.dispatch("setToast", { message: err.message });
-        } else {
-          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
-          await store.dispatch("setToast", { message: message });
-        }
       }
     };
     const getNextSessionInfo = async () => {
