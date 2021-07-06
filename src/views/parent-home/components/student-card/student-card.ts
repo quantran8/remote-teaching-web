@@ -27,11 +27,7 @@ export default defineComponent({
       if (!props.nextSessionInfo || !props.nextSessionInfo.classInfo) {
         return info;
       }
-
       info = classGroupText.value + props.nextSessionInfo.classInfo.className;
-      if (props.nextSessionInfo.classInfo.groupName) {
-        info += "/" + props.nextSessionInfo.classInfo.groupName;
-      }
       return info;
     };
 
