@@ -1,6 +1,13 @@
 <template>
   <div class="device-tester">
-    <Modal style="top: 5%" class="device-tester__modal" v-model:visible="visible" title="System check" width="700px" :footer="null">
+    <Modal
+      :style="{ top: hasJoinAction ? '5%' : '10%' }"
+      class="device-tester__modal"
+      v-model:visible="visible"
+      title="System check"
+      width="700px"
+      :footer="null"
+    >
       <div>
         <div class="device-tester__micro block-gutter">
           <div class="device-tester__micro--header">
@@ -41,7 +48,7 @@
             <span class="device-tester__camera--switch__text" v-else>Unhide</span>
             <Switch v-model:checked="isOpenCam" />
           </div>
-          <div ref="playerRef" id="pre-local-player" v-show="isOpenCam" :class="['device-tester__camera--player']"></div>
+          <div ref="playerRef" :id="videoElementId" v-show="isOpenCam" :class="['device-tester__camera--player']"></div>
           <div v-show="!isOpenCam" :class="['device-tester__camera--player', 'hided']">
             <div class="device-tester__camera--player__icon">
               <img src="@/assets/video-off-white.svg" alt="" />
@@ -51,7 +58,7 @@
             </div>
           </div>
         </div>
-        <div class="device-tester__cl-status">
+        <div v-if="hasJoinAction" class="device-tester__cl-status">
           <div v-if="isParent" class="device-tester__cl-status--student">
             <div class="title">Class status</div>
             <div v-if="!classIsActive">No class in progress. We will notify you once the class starts</div>

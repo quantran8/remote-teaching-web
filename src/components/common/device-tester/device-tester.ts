@@ -21,7 +21,7 @@ export default defineComponent({
     Skeleton,
     Divider,
   },
-  props: ["classIsActive", "unitInfo", "loading", "messageStartClass"],
+  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin"],
   emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -43,6 +43,7 @@ export default defineComponent({
     const currentCamLabel = ref("");
     const volumeByPercent = ref(0);
     const volumeAnimation = ref();
+    const videoElementId = props.notJoin ? "pre-local-player-header" : "pre-local-player";
 
     const setupDevice = async () => {
       const mics = await AgoraRTC.getMicrophones();
@@ -147,7 +148,7 @@ export default defineComponent({
       await initialSetup();
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       setTimeout(() => {
-        localTracks.value?.videoTrack.play("pre-local-player");
+        localTracks.value?.videoTrack.play(videoElementId);
       }, 0);
     });
 
@@ -193,6 +194,9 @@ export default defineComponent({
       console.log("playerRef", currentPlayerRefValue);
     });
 
+    const hasJoinAction = computed(() => !props.notJoin);
+
+
     return {
       visible,
       showModal,
@@ -220,6 +224,8 @@ export default defineComponent({
       listLessonByUnit,
       handleSubmit,
       handleCancel,
+      hasJoinAction,
+	  videoElementId
     };
   },
 });

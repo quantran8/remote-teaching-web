@@ -1,5 +1,6 @@
 <template>
   <div class="header">
+    <DeviceTester :notJoin="true" ref="deviceTesterRef" />
     <slot name="leading">
       <a :href="url">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
