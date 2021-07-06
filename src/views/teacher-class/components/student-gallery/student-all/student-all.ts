@@ -1,6 +1,5 @@
 import { StudentState } from "@/store/room/interface";
-import student from "@/store/room/student";
-import { computed, ComputedRef, defineComponent, ref, provide } from "vue";
+import {computed, ComputedRef, defineComponent, ref, provide, watch} from "vue";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
 
@@ -14,6 +13,18 @@ export default defineComponent({
     const topStudents = computed(() => students.value.slice(0, 12));
     const oneAndOneStatus = computed(() => {
       return store.getters["teacherRoom/getStudentModeOneId"];
+    });
+
+    const studentLayout = ref<number>(6);
+    watch(topStudents, value => {
+      const totalStudents = value ? value.length : 12;
+      if (totalStudents <= 3) {
+        studentLayout.value = 3;
+      } else if (totalStudents <= 6) {
+        studentLayout.value = 6;
+      } else {
+        studentLayout.value = 12;
+      }
     });
 
     const focusedStudent = ref<string>("");
@@ -30,6 +41,7 @@ export default defineComponent({
       topStudents,
       oneAndOneStatus,
       focusedStudent,
+      studentLayout
     };
   },
 });
