@@ -16,8 +16,8 @@ export class StudentWSClient extends GLSocketClient {
     roomId: string,
     studentId: string,
     browserFingerPrinting: string,
-    isMuteAudio = MediaStatus.default,
-    isHideVideo = MediaStatus.default,
+    isMuteAudio = MediaStatus.noStatus,
+    isHideVideo = MediaStatus.noStatus,
   ) {
     const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
     const params: JoinRoomParams = {
@@ -26,16 +26,16 @@ export class StudentWSClient extends GLSocketClient {
       resolution,
       browserFingerPrinting: browserFingerPrinting,
     };
-    if (isMuteAudio !== MediaStatus.default) {
+    if (isMuteAudio !== MediaStatus.noStatus) {
       let status = false;
-      if (isMuteAudio === MediaStatus.isTrue) {
+      if (isMuteAudio === MediaStatus.mediaLocked) {
         status = true;
       }
       params.isMuteAudio = status;
     }
-    if (isHideVideo !== MediaStatus.default) {
+    if (isHideVideo !== MediaStatus.noStatus) {
       let status = false;
-      if (isHideVideo === MediaStatus.isTrue) {
+      if (isHideVideo === MediaStatus.mediaLocked) {
         status = true;
       }
       params.isMuteVideo = status;

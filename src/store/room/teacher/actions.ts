@@ -105,20 +105,20 @@ const actions: ActionTree<TeacherRoomState, any> = {
     let cameraStatus = state.teacher?.videoEnabled;
     let microphoneStatus = state.teacher?.audioEnabled;
     const isMuteAudio = store.rootGetters["isMuteAudio"];
-    if (isMuteAudio !== MediaStatus.default) {
-      if (isMuteAudio === MediaStatus.isFalse) {
+    if (isMuteAudio !== MediaStatus.noStatus) {
+      if (isMuteAudio === MediaStatus.mediaNotLocked) {
         microphoneStatus = true;
       }
-      if (isMuteAudio === MediaStatus.isTrue) {
+      if (isMuteAudio === MediaStatus.mediaLocked) {
         microphoneStatus = false;
       }
     }
     const isHideVideo = store.rootGetters["isHideVideo"];
-    if (isHideVideo !== MediaStatus.default) {
-      if (isHideVideo === MediaStatus.isFalse) {
+    if (isHideVideo !== MediaStatus.noStatus) {
+      if (isHideVideo === MediaStatus.mediaNotLocked) {
         cameraStatus = true;
       }
-      if (isHideVideo === MediaStatus.isTrue) {
+      if (isHideVideo === MediaStatus.mediaLocked) {
         cameraStatus = false;
       }
     }

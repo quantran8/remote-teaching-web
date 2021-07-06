@@ -5,7 +5,6 @@ import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
-import MicTest from "../mic-test/mic-test.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row, Empty } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
@@ -20,7 +19,6 @@ const fpPromise = FingerprintJS.load();
 export default defineComponent({
   components: {
     ClassCard,
-    MicTest,
     Select,
     Spin,
     Option: Select.Option,
