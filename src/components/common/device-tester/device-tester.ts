@@ -28,8 +28,8 @@ export default defineComponent({
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isParent = computed(() => getters["auth/isParent"]);
     const visible = ref(false);
-    const isMute = ref<boolean>(false);
-    const isHide = ref<boolean>(false);
+    const isOpenMic = ref<boolean>(true);
+    const isOpenCam = ref<boolean>(true);
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
@@ -62,13 +62,13 @@ export default defineComponent({
     };
 
     watch(
-      isMute,
-      currentIsMute => {
-        if (currentIsMute) {
+      isOpenMic,
+      currentIsOpenMic => {
+        if (!currentIsOpenMic) {
           dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
           localTracks.value?.audioTrack.setEnabled(false);
         }
-        if (!currentIsMute) {
+        if (currentIsOpenMic) {
           dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
           localTracks.value?.audioTrack.setEnabled(true);
         }
@@ -77,13 +77,13 @@ export default defineComponent({
     );
 
     watch(
-      isHide,
-      currentIsHideValue => {
-        if (currentIsHideValue) {
+      isOpenCam,
+      currentIsOpenCamValue => {
+        if (!currentIsOpenCamValue) {
           dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
           localTracks.value?.videoTrack.setEnabled(false);
         }
-        if (!currentIsHideValue) {
+        if (currentIsOpenCamValue) {
           dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
           localTracks.value?.videoTrack.setEnabled(true);
         }
@@ -196,8 +196,8 @@ export default defineComponent({
     return {
       visible,
       showModal,
-      isMute,
-      isHide,
+      isOpenMic,
+      isOpenCam,
       playerRef,
       volumeByPercent,
       listMics,
