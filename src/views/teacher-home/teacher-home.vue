@@ -48,17 +48,6 @@
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
-    <!-- <MicTest
-      :is-teacher="true"
-      :visible="startPopupVisible"
-      :teacherClass="infoStart?.teacherClass"
-      :groupId="infoStart?.groupId"
-      :unitInfo="unitInfo"
-      :messageStartClass="messageStartClass"
-      :loading="popUpLoading"
-      @on-join-session="onStartClass"
-      @on-cancel="onCancelStartClass"
-    /> -->
     <DeviceTester
       :unitInfo="unitInfo"
       @on-join-session="onStartClass"
