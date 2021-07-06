@@ -5,7 +5,17 @@ import "./registerServiceWorker";
 import router from "./router";
 import i18n from "./commonui/locales/i18n";
 import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components/base";
-import { LiveCircle, Toast, Notification, ContentView, DesignateCircle, DesignateRectangle, AnnotationView, LanguagePicker, DeviceTester } from "./components/common";
+import {
+  LiveCircle,
+  Toast,
+  Notification,
+  ContentView,
+  DesignateCircle,
+  DesignateRectangle,
+  AnnotationView,
+  LanguagePicker,
+  DeviceTester,
+} from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
 import DisconnectIssuePage from "@/views/disconnect-issue/disconnect-issue.vue";

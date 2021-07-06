@@ -1,7 +1,7 @@
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted, watch, onUnmounted } from "vue";
+import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
@@ -12,7 +12,6 @@ import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
-import DeviceDetector from "device-detector-js";
 import { DeviceTester } from "@/components/common";
 
 const fpPromise = FingerprintJS.load();
@@ -33,8 +32,6 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
@@ -71,17 +68,14 @@ export default defineComponent({
 
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
       messageStartClass.value = "";
-      const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
       try {
         const fp = await fpPromise;
         const result = await fp.get();
+        const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: device.client ? device.client.name : "",
-          device: device.device ? device.device.type : "",
-          bandwidth: "",
-          resolution: resolution,
+          resolution,
           unit: unit,
           lesson: lesson,
           browserFingerprint: result.visitorId,
@@ -298,7 +292,7 @@ export default defineComponent({
       classOnline,
       unitInfo,
       loadingInfo,
-	  deviceTesterRef
+      deviceTesterRef,
     };
   },
 });
