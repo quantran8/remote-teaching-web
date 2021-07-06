@@ -179,7 +179,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("disableAnnotationStatus", payload, { root: false });
     },
     onTeacherToggleStudentPallete: async (payload: any) => {
-      console.log("Toggle");
       await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onTeacherEndClass: async (_payload: any) => {
@@ -340,7 +339,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         },
       );
     },
-    onTeacherSetOneToOne: async (payload: { status: boolean; id: string }) => {
+    onTeacherSetOneToOne: async (payload: { status: boolean; id: string, drawing: any }) => {
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -351,12 +350,20 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         );
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
-        await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
-        await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
-        // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
-        // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
       }
       await dispatch("updateAudioAndVideoFeed", {});
+      if (payload.id) {
+        // process in one one
+        await dispatch("annotation/setOneTeacherStrokes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+      } else {
+        await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+      }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
       await commit("setWhiteboard", payload);
