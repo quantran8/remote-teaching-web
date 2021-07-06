@@ -15,6 +15,7 @@ export default defineComponent({
     const userName = computed(() => store.getters["auth/username"]);
     const userRole = computed(() => store.getters["auth/userRole"]);
     const userAvatar = computed(() => store.getters["auth/userAvatar"]);
+    const url = computed(() => process.env.VUE_APP_URL_AUTO_PORTAL);
     const showInfo = ref<boolean>(false);
     const onClickShowInfo = () => {
       showInfo.value = true;
@@ -38,6 +39,7 @@ export default defineComponent({
       onClickHideInfo,
       onClickSignOut,
       onClickOpenAccountPage,
+      url,
     };
   },
 });
