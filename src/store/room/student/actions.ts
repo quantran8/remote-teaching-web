@@ -162,7 +162,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    checkBandwidth(rootState, state.user ? state.user.id : "");
+    checkBandwidth(state.user ? state.user.id : "");
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});

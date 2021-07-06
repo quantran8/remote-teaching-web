@@ -128,7 +128,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       classId: state.info.id,
       teacherId: state.user?.id,
     });
-    checkBandwidth(rootState);
+    checkBandwidth();
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
