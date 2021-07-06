@@ -7,9 +7,11 @@ export interface AnnotationMutationInterface<S> {
   setPointer(s: S, pointer: Pointer): void;
   setMode(s: S, p: { mode: number }): void;
   addShape(s: S, p: string): void;
+  setTeacherBrushes(s: S, p: Array<string>): void;
   setOneTeacherDrawsStrokes(s: S, p: string): void;
   setClearBrush(s: S, p: {}): void;
   setDeleteBrush(s: S, p: {}): void;
+  setDeleteBrushOneOne(s: S, p: {}): void;
   setStickers(s: S, p: { stickers: Array<Sticker> }): void;
   setClearStickers(s: S, p: {}): void;
   setStudentAddShape(s: S, p: { studentShapes: Array<UserShape> }): void;
@@ -17,7 +19,10 @@ export interface AnnotationMutationInterface<S> {
   setTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
   setOneTeacherAddShape(s: S, p: { teacherShapes: Array<UserShape> }): void;
   setStudentDrawsLine(s: S, p: string): void;
+  setStudentStrokes(s: S, p: Array<string>): void;
+  setOneStudentStrokes(s: S, p: Array<string>): void;
   setOneStudentDrawsLine(s: S, p: string): void;
+  setOneTeacherStrokes(s: S, p: Array<string>): void;
   setClearOneTeacherDrawsStrokes(s: S, p: {}): void;
   setClearOneStudentDrawsLine(s: S, p: {}): void;
   setClearOneStudentAddShape(s: S, p: {}): void;
@@ -74,6 +79,12 @@ const mutations: AnnotationMutation<AnnotationState> = {
       s.drawing.brushstrokes = [];
     }
   },
+  setTeacherBrushes(s: AnnotationState, p: Array<string>) {
+    s.drawing.brushstrokes = p;
+  },
+  setOneTeacherStrokes(s: AnnotationState, p: Array<string>) {
+    s.oneToOne.brushstrokes = p;
+  },
   setOneTeacherDrawsStrokes(s: AnnotationState, p: string) {
     if (p) {
       s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes, p];
@@ -103,6 +114,10 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setDeleteBrush(s: AnnotationState, p: {}) {
     s.drawing.brushstrokes.pop();
     s.drawing.brushstrokes = [...s.drawing.brushstrokes];
+  },
+  setDeleteBrushOneOne(s: AnnotationState, p: {}) {
+    s.oneToOne.brushstrokes.pop();
+    s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes];
   },
   setStickers(s: AnnotationState, p: { stickers: Array<Sticker> }) {
     s.stickers = p.stickers;
@@ -134,6 +149,12 @@ const mutations: AnnotationMutation<AnnotationState> = {
     } else {
       s.drawing.studentStrokes = [];
     }
+  },
+  setStudentStrokes(s: AnnotationState, p: Array<string>) {
+    s.drawing.studentStrokes = p;
+  },
+  setOneStudentStrokes(s: AnnotationState, p: Array<string>) {
+    s.oneToOne.studentStrokes = p;
   },
   setOneStudentDrawsLine(s: AnnotationState, p: string) {
     if (p) {
