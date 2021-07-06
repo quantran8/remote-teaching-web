@@ -5,6 +5,7 @@ import { MediaStatus } from "@/models";
 interface JoinRoomParams {
   roomId: string;
   studentId: string;
+  resolution: string;
   browserFingerPrinting: string;
   isMuteAudio?: boolean;
   isMuteVideo?: boolean;
@@ -18,9 +19,11 @@ export class StudentWSClient extends GLSocketClient {
     isMuteAudio = MediaStatus.default,
     isHideVideo = MediaStatus.default,
   ) {
+    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
     const params: JoinRoomParams = {
       roomId: roomId,
       studentId: studentId,
+      resolution,
       browserFingerPrinting: browserFingerPrinting,
     };
     if (isMuteAudio !== MediaStatus.default) {

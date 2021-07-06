@@ -19,8 +19,10 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   }
 
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
+    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
     return this.get(`student/join-session`, {
       studentId: childId,
+      resolution,
       browserFingerPrinting: bfp,
     });
   }
