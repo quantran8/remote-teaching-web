@@ -57,7 +57,7 @@ export class GLSocketClient {
     }
   }
   async send(command: string, payload: any): Promise<any> {
-    if (!this.isConnected || this.hubConnection.state === HubConnectionState.Disconnected) {
+    if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
       console.error("SEND/TRY-TO-RECONNECT-MANUALLY");
       this._isConnected = false;
       await this.connect();
@@ -66,7 +66,7 @@ export class GLSocketClient {
   }
 
   async invoke(command: string, payload: any): Promise<any> {
-    if (!this.isConnected || this.hubConnection.state === HubConnectionState.Disconnected) {
+    if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
       console.error("INVOKE/TRY-TO-RECONNECT-MANUALLY");
       this._isConnected = false;
       await this.connect();
