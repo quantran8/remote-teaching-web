@@ -37,10 +37,10 @@
 
   &.lesson-plan-mode{
     .student{
-      @media (max-width: 1499px) {
+      @media (max-width: 1599px) {
         margin-bottom: 20px;
       }
-      @media (min-width: 1500px) {
+      @media (min-width: 1600px) {
         @include style-layout-3;
       }
     }
