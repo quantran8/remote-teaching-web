@@ -19,7 +19,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   }
 
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
-    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+    const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     return this.get(`student/join-session`, {
       studentId: childId,
       resolution,
@@ -28,7 +28,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   }
 
   putTeacherBandwidth(bandwidth: string): Promise<any> {
-    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+    const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     return this.update(`logs/teacher?bandwidth=${bandwidth}&resolution=${resolution}&`);
   }
 

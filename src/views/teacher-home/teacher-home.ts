@@ -71,7 +71,7 @@ export default defineComponent({
       try {
         const fp = await fpPromise;
         const result = await fp.get();
-        const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+        const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,

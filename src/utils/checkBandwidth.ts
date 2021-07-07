@@ -1,34 +1,46 @@
-import {RemoteTeachingService} from "@/services";
-
-const imageAddr = "/img/checkBandwidthImage.jpg";
-const downloadSize = 1075; //kb
-const download = new Image();
-
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
+import { RemoteTeachingService } from "@/services";
 
 export const checkBandwidth = async (studentId?: string) => {
-    setInterval(() => {
-        const startTime = new Date().getTime();
-        download.onload = function () {
-            const endTime = new Date().getTime();
-            const duration = (endTime - startTime) / 1000;
-            if (duration > 0) {
-                const bitsLoaded = downloadSize * 8;
-                const speedKbps = +(bitsLoaded / duration);//.toFixed(2);
-                const speedMbps = +(speedKbps / 1024).toFixed(2);
-                if (studentId) {
-                    RemoteTeachingService.putStudentBandwidth(studentId, Math.round(speedMbps).toString());
-                } else {
-                    RemoteTeachingService.putTeacherBandwidth(Math.round(speedMbps).toString());
-                }
-            }
-        };
-        download.src = imageAddr + "?" + uuidv4();
-    }, 300000); //300000 = 5 minutes;
+  setInterval(() => {
+    bandWidthSpeed.measure(function(speedMbps: any) {
+      if (studentId) {
+        RemoteTeachingService.putStudentBandwidth(studentId, Math.round(speedMbps).toString());
+      } else {
+        RemoteTeachingService.putTeacherBandwidth(Math.round(speedMbps).toString());
+      }
+      console.log(speedMbps);
+    });
+  }, 300000); //300000 = 5 minutes;
+};
+
+const bandWidthSpeed = {
+  downloadSize: 1500000, //1MB
+
+  measure: function(cb: any) {
+    const image = new Image();
+    let endTime: any;
+
+    image.onload = function() {
+      endTime = new Date().getTime();
+      const speedKbps = bandWidthSpeed.calculate(startTime, endTime);
+      cb(speedKbps);
+    };
+
+    image.onerror = function(err, msg) {
+      console.log("Invalid image, or error downloading");
+    };
+
+    const startTime = new Date().getTime();
+    const cacheBuster = "?nnn=" + startTime;
+    image.src = "https://raw.githubusercontent.com/TruongNguyen95/images/main/bandwidth-test.jpeg" + cacheBuster;
+  },
+
+  calculate: function(startTime: any, endTime: any) {
+    const duration = (endTime - startTime) / 1000;
+    const bitsLoaded = this.downloadSize * 8;
+    const speedBps = +(bitsLoaded / duration).toFixed(2);
+    const speedKbps = +(speedBps / 1024).toFixed(2);
+    const speedMbps = +(speedKbps / 1024).toFixed(2);
+    return Math.round(speedMbps);
+  },
 };
