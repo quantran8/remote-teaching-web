@@ -177,8 +177,8 @@ export default defineComponent({
     const listLessonByUnit = ref();
     watch(currentUnit, currentUnitValue => {
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
-      currentLesson.value = props.unitInfo[currentUnitIndex]?.lesson?.[0];
-      listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.lesson;
+      currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[0];
+      listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
     });
 
     const handleUnitChange = (unit: any) => {
