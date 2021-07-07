@@ -105,8 +105,7 @@
   &--current {
     width: $current-item-size;
     #{$self}__video {
-      width: 100%;
-      height: $current-item-size;
+      height: 75px;
     }
   }
 
@@ -114,7 +113,7 @@
     &--current {
       width: $current-item-size-md;
       #{$self}__video {
-        height: $current-item-size-md;
+        height: 120px;
         border-width: 5px;
       }
     }
@@ -127,7 +126,7 @@
     &:not(#{$self}--current) {
       width: 90px;
       #{$self}__video {
-        height: 80px;
+        height: 75px;
       }
     }
   }
@@ -146,7 +145,7 @@
     &--current {
       width: $current-item-size-xxl;
       #{$self}__video {
-        height: $current-item-size-xxl;
+        height: 150px;
       }
     }
     &__video {
@@ -173,7 +172,7 @@
     &:not(#{$self}--current) {
       width: 60px;
       #{$self}__video {
-        height: 60px;
+        width: 50px;
       }
     }
   }
