@@ -59,6 +59,17 @@
       display: none;
     }
   }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    height: 90px;
+    position: absolute;
+    overflow: unset;
+    &--hide {
+      transform: translateY(100%);
+    }
+    &__toggle {
+      display: flex;
+    }
+  }
   @media (min-width: $lg) {
     height: 135px;
     &__container {
