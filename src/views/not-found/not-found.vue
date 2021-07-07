@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <img src="@/assets/images/not-found.png" alt="" />
-    <h1>Error 404 - Page Not Found...</h1>
-    <p>We can't seem to find the page you're looking for.</p>
+    <h1>{{ pageNotFoundText }}</h1>
+    <p>{{ descriptionText }}</p>
     <router-link to="/">
-      <div class="btn-homepage">Go To Home Page</div>
+      <div class="btn-homepage">{{ goToPageText }}</div>
     </router-link>
   </div>
 </template>

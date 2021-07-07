@@ -3,6 +3,8 @@ import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentOne from "./student-one/student-one.vue";
 import StudentControls from "./student-controls/student-controls.vue";
+import { fmtMsg } from "@/commonui";
+import { TeacherClassGallery } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -13,6 +15,7 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
+    const returnText = computed(() => fmtMsg(TeacherClassGallery.Return));
 
     const minute = ref(0);
     const second = ref(0);
@@ -88,7 +91,8 @@ export default defineComponent({
       onClickDisableAll,
       onClickEnableAll,
       timeCount,
-      backToClass
+      backToClass,
+      returnText,
     };
   },
 });

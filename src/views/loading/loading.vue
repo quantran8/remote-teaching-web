@@ -7,7 +7,7 @@
           <div class="gl-progress__indeterminate"></div>
         </div>
       </div>
-      <h1 class="gl-splash__title">Remote Teaching</h1>
+      <h1 class="gl-splash__title">{{ titleLoadingText }}</h1>
     </div>
   </div>
 </template>

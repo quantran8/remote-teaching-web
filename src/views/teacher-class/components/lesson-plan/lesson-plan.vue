@@ -5,10 +5,10 @@
         <span :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']">
           <span>
             <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut']">
-              {{ isGalleryView ? `${currentUnit}:` : `Unit: ${currentUnit}` }}
+              {{ isGalleryView ? `${currentUnit}:` : `${unitText} ${currentUnit}` }}
             </span>
             <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut']">
-              {{ isGalleryView ? currentLesson : `(Lesson: ${currentLesson})` }}
+              {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
             </span>
           </span>
         </span>
@@ -21,10 +21,10 @@
     <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
         <div id="lesson-container__remaining-time">
-          <p>Remaining: {{ remainingTime }}</p>
+          <p>{{ remainingText }} {{ remainingTime }}</p>
           <p>
-            Item: {{ activityStatistic }} <br />
-            Page: {{ page }}
+            {{ itemText }} {{ activityStatistic }} <br />
+            {{ pageText }} {{ page }}
           </p>
           <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" />
         </div>

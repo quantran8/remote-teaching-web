@@ -96,3 +96,81 @@ export class ParentStudentCardLocale {
   static ClassGroup = "parent_student_card.class_group";
   static StartTime = "parent_student_card.start_time";
 }
+
+export class HomeLocale {
+  static Welcome = "home.welcome";
+  static ChooseRole = "home.choose_role";
+  static Teacher = "home.teacher";
+  static Student = "home.student";
+}
+
+export class LoadingLocale {
+  static Title = "loading.title";
+}
+
+export class NotFoundLocale {
+  static PageNotFound = "not_found.page_not_found";
+  static Description = "not_found.description";
+  static GoToPage = "not_found.go_to_page";
+}
+
+export class StudentClassHeaderLocale {
+  static Exit = "student_class_header.exit";
+}
+
+export class TeacherCalendarLocale {
+  static Title = "teacher_calendar.title";
+  static ClassLabel = "teacher_calendar.class_label";
+  static GroupLabel = "teacher_calendar.group_label";
+  static StartTimeLabel = "teacher_calendar.start_time_label";
+  static EndTimeLabel = "teacher_calendar.end_time_label";
+  static Delete = "teacher_calendar.delete";
+  static Cancel = "teacher_calendar.cancel";
+  static Save = "teacher_calendar.save";
+  static Skip = "teacher_calendar.skip";
+  static Close = "teacher_calendar.close";
+  static Note = "teacher_calendar.note";
+  static School = "teacher_calendar.school";
+  static All = "teacher_calendar.all";
+}
+
+export class TeacherClassDesignate {
+  static DesignateBtn = "teacher_class_designate.designate_btn";
+  static AnnotationBtn = "teacher_class_designate.annotation_btn";
+  static StudentTitle = "teacher_class_designate.student_title";
+  static AssignAll = "teacher_class_designate.assign_all";
+  static ClearAll = "teacher_class_designate.clear_all";
+  static RevealAll = "teacher_class_designate.reveal_all";
+  static Previous = "teacher_class_designate.previous";
+  static Next = "teacher_class_designate.next";
+  static ClickToAssignAll = "teacher_class_designate.click_to_assign_all";
+  static ClickToUnAssignAll = "teacher_class_designate.click_to_unassign_all";
+}
+
+export class TeacherClassLessonPlan {
+  static Unit = "teacher_class_lesson_plan.unit";
+  static Lesson = "teacher_class_lesson_plan.lesson";
+  static Remaining = "teacher_class_lesson_plan.remaining";
+  static Item = "teacher_class_lesson_plan.item";
+  static Page = "teacher_class_lesson_plan.page";
+}
+
+export class TeacherClassGallery {
+  static Return = "teacher_class_gallery.return";
+  static StickerAll = "teacher_class_gallery.sticker_all";
+  static UnmuteAll = "teacher_class_gallery.unmute_all";
+  static MuteAll = "teacher_class_gallery.mute_all";
+  static EnableAll = "teacher_class_gallery.enable_all";
+  static DisableAll = "teacher_class_gallery.disable_all";
+  static ShowAll = "teacher_class_gallery.show_all";
+  static HideAll = "teacher_class_gallery.hide_all";
+}
+
+export class TeacherHome {
+  static Welcome = "teacher_home.welcome";
+  static Schedule = "teacher_home.schedule";
+  static Cancel = "teacher_home.cancel";
+  static Submit = "teacher_home.submit";
+  static Group = "teacher_home.group";
+  static Next = "teacher_home.next";
+}
