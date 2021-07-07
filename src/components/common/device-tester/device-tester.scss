@@ -16,7 +16,7 @@
         }
         position: absolute;
         left: 0;
-        font-weight: 500;
+        font-weight: 600;
         top: 5px;
       }
     }
@@ -51,8 +51,17 @@
         }
         position: absolute;
         left: 0;
-        font-weight: 500;
+        font-weight: 600;
         top: 5px;
+      }
+      &__switch {
+        position: absolute;
+        left: 100px;
+        font-weight: 600;
+        top: 5px;
+        @media (max-width: $sm) {
+          left: 0;
+        }
       }
     }
     &--switch {
@@ -64,11 +73,12 @@
     }
     &--player {
       margin: 0 auto;
-      width: 60%;
-      height: 200px;
+      width: 55%;
+      height: 180px;
+      margin-top: 20px;
       @media (min-width: $large-lap) {
-        width: 420px;
-        height: 270px;
+        width: 380px;
+        height: 250px;
         margin-top: 20px;
       }
       &__icon {
@@ -98,6 +108,18 @@
   }
   &__cl-status {
     &--student {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      &__title {
+        @media (max-width: $sm) {
+          display: none;
+        }
+        position: absolute;
+        left: 0;
+        font-weight: 600;
+      }
       &__join {
         text-decoration: underline;
         color: #00a1ed;
@@ -109,6 +131,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        width: 70%;
+        margin: 0 auto;
         &--item {
           width: 45%;
           display: flex;
@@ -120,7 +144,7 @@
         }
       }
       &__button {
-        padding-top: 10px;
+        padding-top: 20px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -142,7 +166,7 @@
 }
 
 .title {
-  font-weight: 500;
+  font-weight: 600;
   padding-bottom: 10px;
   margin-right: 10px;
 }
