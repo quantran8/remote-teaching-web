@@ -81,7 +81,7 @@ export default defineComponent({
         }
       }
     });
-    watch(isShowWhiteBoard, async () => {
+    const processCanvasWhiteboard = async () => {
       if (!canvas) return;
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
@@ -92,6 +92,9 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         await clickedTool(Tools.Cursor);
       }
+    };
+    watch(isShowWhiteBoard, async () => {
+      await processCanvasWhiteboard();
     });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
@@ -194,6 +197,7 @@ export default defineComponent({
       canvas.setWidth(717);
       canvas.setHeight(435);
       canvas.selectionFullyContained = false;
+      await processCanvasWhiteboard();
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {

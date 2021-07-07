@@ -30,6 +30,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+      commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
