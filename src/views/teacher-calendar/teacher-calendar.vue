@@ -1,19 +1,19 @@
 <template>
   <div class="calendar-page">
     <div class="calendar-title mt-20">
-      <h2>Calendar</h2>
+      <h2>{{ titleText }}</h2>
     </div>
     <div class="select-container">
-      <span class="title-select">Class</span>
+      <span class="title-select">{{ classText }}</span>
       <Select :value="selectedClassId" class="size-select" @change="handleChangeClass">
-        <Option value="all">All</Option>
+        <Option value="all">{{ allText }}</Option>
         <Option v-for="val in listClassSelect" :key="val.id">
           {{ val.name }}
         </Option>
       </Select>
-      <span class="title-select ml-20">Group</span>
+      <span class="title-select ml-20">{{ groupText }}</span>
       <Select :value="selectedGroupId" :disabled="isDisableGroup" class="size-select" @change="handleChangeGroup">
-        <Option value="all">All</Option>
+        <Option value="all">{{ allText }}</Option>
         <Option v-for="val in listGroupSelect" :key="val.id">
           {{ val.name }}
         </Option>
@@ -63,21 +63,25 @@
       </template>
       <template #dateCellRender="{ current: value }">
         <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
-          <div v-for="item in getListData(value)" :key="item.customizedScheduleId" :style="`position: 'relative'; color: ${item.color}; font-weight: 500`">
+          <div
+            v-for="item in getListData(value)"
+            :key="item.customizedScheduleId"
+            :style="`position: 'relative'; color: ${item.color}; font-weight: 500`"
+          >
             <Tooltip placement="top">
               <template #title>
-                <span>{{warningOverlap}}</span>
+                <span>{{ warningOverlap }}</span>
               </template>
-              <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)"/>
+              <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)" />
             </Tooltip>
             <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)">
               <span class="session-info">
                 <span class="session-info__class-name">{{ item.className }}</span>
-                <span class="session-info__group">{{`Group ${item.groupName}:`}}</span>
+                <span class="session-info__group">{{ `Group ${item.groupName}:` }}</span>
                 <span>
-                {{
+                  {{
                     `${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${
-                        item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
+                      item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""
                     }`
                   }}
                 </span>
@@ -87,12 +91,12 @@
             <br />
           </div>
         </div>
-        <PlusCircleOutlined class="add-icon" v-if="canShowCreate(value)" @click="canCreate(value) && scheduleAction('Create', value)"/>
+        <PlusCircleOutlined class="add-icon" v-if="canShowCreate(value)" @click="canCreate(value) && scheduleAction('Create', value)" />
       </template>
     </Calendar>
     <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container" v-if="isCreate">
-        <span class="modal-title-select">Class</span>
+        <span class="modal-title-select">{{ classText }}</span>
         <Select :value="selectedClassIdModal" class="modal-size-group" @change="handleChangeClassModal">
           <Option v-for="val in listClassCreateNew" :key="val.id">
             {{ val.name }}
@@ -100,7 +104,7 @@
         </Select>
       </div>
       <div class="select-container">
-        <span class="modal-title-select">Group</span>
+        <span class="modal-title-select">{{ groupText }}</span>
         <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal">
           <Option v-for="val in listGroupModal" :key="val.id">
             {{ val.name }}
@@ -108,7 +112,7 @@
         </Select>
       </div>
       <div class="select-container">
-        <span class="modal-title-select">Start</span>
+        <span class="modal-title-select">{{ startTimeText }}</span>
         <TimePicker
           class="modal-size-time-picker"
           @change="onChangeStartDateModal"
@@ -117,7 +121,7 @@
           :disabledHours="getDisableHoursStart"
           :disabledMinutes="getDisableMinutesStart"
         />
-        <span class="modal-title-select ml-20">End</span>
+        <span class="modal-title-select ml-20">{{ endTimeText }}</span>
         <TimePicker
           class="modal-size-time-picker"
           :disabledHours="getDisabledHoursEnd"
@@ -129,17 +133,17 @@
       </div>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button v-if="!isCreate" type="danger" @click="onSubmit('Delete')">Delete</Button>
+          <Button v-if="!isCreate" type="danger" @click="onSubmit('Delete')">{{ deleteText }}</Button>
         </div>
         <div class="save-position">
-          <Button class="btn-cancel" @click="onCancel">Cancel</Button>
-          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">Save</Button>
+          <Button class="btn-cancel" @click="onCancel">{{ cancelText }}</Button>
+          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">{{ saveText }}</Button>
         </div>
       </div>
     </Modal>
     <Modal :visible="recurringVisible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container">
-        <span class="modal-title-select">Group</span>
+        <span class="modal-title-select">{{ groupText }}</span>
         <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal" disabled>
           <Option v-for="val in listGroupModal" :key="val.id">
             {{ val.name }}
@@ -147,18 +151,33 @@
         </Select>
       </div>
       <div class="select-container">
-        <span class="modal-title-select" v-if="disableTimePicker()">Start</span>
-        <TimePicker class="modal-size-time-picker" v-if="disableTimePicker()" disabled :value="moment(selectedStartDateModal, 'HH:mm')" format="HH:mm" />
-        <span class="modal-title-select ml-20" v-if="disableTimePicker()">End</span>
-        <TimePicker class="modal-size-time-picker" v-if="disableTimePicker()" disabled :value="moment(selectedEndDateModal, 'HH:mm')" format="HH:mm" />
+        <span class="modal-title-select" v-if="disableTimePicker()">{{ startTimeText }}</span>
+        <TimePicker
+          class="modal-size-time-picker"
+          v-if="disableTimePicker()"
+          disabled
+          :value="moment(selectedStartDateModal, 'HH:mm')"
+          format="HH:mm"
+        />
+        <span class="modal-title-select ml-20" v-if="disableTimePicker()">{{ endTimeText }}</span>
+        <TimePicker
+          class="modal-size-time-picker"
+          v-if="disableTimePicker()"
+          disabled
+          :value="moment(selectedEndDateModal, 'HH:mm')"
+          format="HH:mm"
+        />
       </div>
-      <p class="note">Note: This is a recurring schedule managed from <a>school</a>.</p>
+      <p class="note">
+        {{ noteText }}<a>{{ schoolText }}</a
+        >.
+      </p>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button type="primary" v-if="disableSkipButton()" @click="onSubmit('Skip')">Skip</Button>
+          <Button type="primary" v-if="disableSkipButton()" @click="onSubmit('Skip')">{{ skipText }}</Button>
         </div>
         <div class="save-position">
-          <Button class="btn-cancel" @click="onCancel">Close</Button>
+          <Button class="btn-cancel" @click="onCancel">{{ closeText }}</Button>
         </div>
       </div>
     </Modal>

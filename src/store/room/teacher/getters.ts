@@ -110,6 +110,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   currentUnit(state: TeacherRoomState): number {
     return state.currentUnit;
   },
+  isShowWhiteBoard(state: TeacherRoomState): boolean {
+    return state.isShowWhiteboard;
+  },
 };
 
 export default getters;
