@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isShow"
+    v-if="isShow && !isNotJoinned"
     :class="['student', focusedStudent && 'expand', isOneToOneStudent && 'one-student-mode']"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
