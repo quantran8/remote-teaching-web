@@ -1,13 +1,4 @@
-import {
-  computed,
-  ComputedRef,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch
-} from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import interact from "interactjs";
 import hammer from "hammerjs";
@@ -17,10 +8,11 @@ import StudentList from "./student-list/student-list.vue";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { MathUtils } from "@/utils/math.utils";
 import { fabric } from "fabric";
-import { Tools } from "@/commonui";
+import { fmtMsg, Tools } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { Sticker } from "@/store/annotation/state";
 import * as R from "ramda/";
+import { TeacherClassDesignate } from "@/locales/localeid";
 
 export interface Shape {
   id: string;
@@ -49,31 +41,21 @@ interface StudentViewModel {
 export default defineComponent({
   components: {
     StudentList,
-    ToolsCanvas
+    ToolsCanvas,
   },
   props: {
     editable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   setup(props) {
     const store = useStore();
-    const currentExposureItemMedia = computed(
-      () => store.getters["lesson/currentExposureItemMedia"]
-    );
-    const currentExposure = computed(
-      () => store.getters["lesson/currentExposure"]
-    );
-    const nextExposureItemMedia = computed(
-      () => store.getters["lesson/nextExposureItemMedia"]
-    );
-    const prevExposureItemMedia = computed(
-      () => store.getters["lesson/prevExposureItemMedia"]
-    );
-    const designateTargets = computed(
-      () => store.getters["interactive/targets"]
-    );
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
+    const nextExposureItemMedia = computed(() => store.getters["lesson/nextExposureItemMedia"]);
+    const prevExposureItemMedia = computed(() => store.getters["lesson/prevExposureItemMedia"]);
+    const designateTargets = computed(() => store.getters["interactive/targets"]);
     const circles: Ref<Array<Circle>> = ref([]);
     const rectangles: Ref<Array<Rectangle>> = ref([]);
     const addingRect: Ref<Rectangle | null> = ref(null);
@@ -82,9 +64,7 @@ export default defineComponent({
     const editing: Ref<boolean> = ref(false);
     const assignAll: Ref<boolean> = ref(true);
     const activeTab: Ref<string> = ref("designate-target-action");
-    const students: ComputedRef<Array<StudentState>> = computed(
-      () => store.getters["teacherRoom/students"]
-    );
+    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -94,10 +74,7 @@ export default defineComponent({
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
     const hasStickerTool: Ref<boolean> = ref(false);
-    if (
-      currentExposure.value.type == "poem" ||
-      currentExposure.value.type == "bigbook"
-    ) {
+    if (currentExposure.value.type == "poem" || currentExposure.value.type == "bigbook") {
       hasStickerTool.value = true;
     }
     const boundingBox = () => {
@@ -133,20 +110,20 @@ export default defineComponent({
         if (selectorOpen.value && canvas.isDrawingMode) {
           modeAnnotation.value = 2;
           await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
+            mode: modeAnnotation.value,
           });
         } else {
           canvas.isDrawingMode = false;
           modeAnnotation.value = 1;
           await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
+            mode: modeAnnotation.value,
           });
           await store.dispatch("teacherRoom/setClearBrush", {});
         }
       } else {
         modeAnnotation.value = 0;
         await store.dispatch("teacherRoom/setMode", {
-          mode: modeAnnotation.value
+          mode: modeAnnotation.value,
         });
       }
     };
@@ -164,7 +141,7 @@ export default defineComponent({
         const y = (e.clientY - rectBounding.top) / ratio;
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
-          y: Math.floor(y)
+          y: Math.floor(y),
         });
       }
     };
@@ -185,7 +162,7 @@ export default defineComponent({
       lastObject.scaleX = lastObject.scaleX / ratio;
       lastObject.scaleY = lastObject.scaleY / ratio;
       await store.dispatch("teacherRoom/setBrush", {
-        drawing: lastObject
+        drawing: lastObject,
       });
     };
     const deleteIcon =
@@ -237,7 +214,7 @@ export default defineComponent({
         objectCaching: false,
         opacity: 0.35,
         hasBorders: false,
-        lockRotation: true
+        lockRotation: true,
       });
       canvas.add(rect);
       canvas.setActiveObject(rect);
@@ -249,13 +226,11 @@ export default defineComponent({
         R.map((obj: any) => R.assoc("width", obj.getScaledWidth())(obj)),
         R.map((obj: any) => R.assoc("height", obj.getScaledHeight())(obj)),
         R.project(["top", "left", "width", "height"]),
-        R.map((obj: any) =>
-          R.map((x: number) => Math.floor(x / ratio) - 1)(obj)
-        )
+        R.map((obj: any) => R.map((x: number) => Math.floor(x / ratio) - 1)(obj)),
       );
       const stickers = stickerFunc(canvas.getObjects("rect"));
       await store.dispatch("teacherRoom/setStickers", {
-        stickers: stickers
+        stickers: stickers,
       });
     };
     const clickedTool = async (tool: string) => {
@@ -275,7 +250,7 @@ export default defineComponent({
           canvas.isDrawingMode = false;
           modeAnnotation.value = 1;
           await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
+            mode: modeAnnotation.value,
           });
           canvas.getObjects().forEach((obj: any) => {
             obj.selectable = false;
@@ -289,7 +264,7 @@ export default defineComponent({
           await store.dispatch("teacherRoom/setClearStickers", {});
           modeAnnotation.value = 2;
           await store.dispatch("teacherRoom/setMode", {
-            mode: modeAnnotation.value
+            mode: modeAnnotation.value,
           });
           canvas.freeDrawingBrush.color = strokeColor.value;
           canvas.freeDrawingBrush.width = strokeWidth.value;
@@ -377,10 +352,17 @@ export default defineComponent({
       }
     };
     const textAssignAll = computed(() =>
-      assignAll.value
-        ? "Click to unassigned all students"
-        : "Click to assign all students"
+      assignAll.value ? fmtMsg(TeacherClassDesignate.ClickToUnAssignAll) : fmtMsg(TeacherClassDesignate.ClickToAssignAll),
     );
+    const designateBtnText = computed(() => fmtMsg(TeacherClassDesignate.DesignateBtn));
+    const annotationBtnText = computed(() => fmtMsg(TeacherClassDesignate.AnnotationBtn));
+    const studentTitleText = computed(() => fmtMsg(TeacherClassDesignate.StudentTitle));
+    const assignAllText = computed(() => fmtMsg(TeacherClassDesignate.AssignAll));
+    const clearAllText = computed(() => fmtMsg(TeacherClassDesignate.ClearAll));
+    const revealAllText = computed(() => fmtMsg(TeacherClassDesignate.RevealAll));
+    const previousText = computed(() => fmtMsg(TeacherClassDesignate.Previous));
+    const nextText = computed(() => fmtMsg(TeacherClassDesignate.Next));
+
     const touchStart = ref({ x: 0, y: 0 });
     const touchPosition = ref({ x: 0, y: 0 });
 
@@ -402,7 +384,7 @@ export default defineComponent({
             y: offsetY + c.y * ratio,
             color: c.color,
             radius: c.radius * ratio,
-            type: c.type
+            type: c.type,
           };
         });
       rectangles.value = targets
@@ -415,7 +397,7 @@ export default defineComponent({
             color: r.color,
             type: r.type,
             width: r.width * ratio,
-            height: r.height * ratio
+            height: r.height * ratio,
           };
         });
     };
@@ -425,14 +407,13 @@ export default defineComponent({
       studentIds.value = studentIds.value.map(s => {
         return {
           ...s,
-          selected: assignAll.value
+          selected: assignAll.value,
         };
       });
     };
 
     const updateStudentSelected = () => {
-      const studentSelecteds: Array<StudentId> =
-        store.getters["interactive/studentsSelected"];
+      const studentSelecteds: Array<StudentId> = store.getters["interactive/studentsSelected"];
       for (const st of studentSelecteds) {
         const student = studentIds.value.find(s => s.id === st.id);
         if (student) student.selected = true;
@@ -448,7 +429,7 @@ export default defineComponent({
           index: s.index,
           name: s.name,
           status: s.status,
-          selected: true
+          selected: true,
         };
       });
       updateStudentSelected();
@@ -460,7 +441,7 @@ export default defineComponent({
       studentIds.value = studentIds.value.map(st => {
         return {
           ...st,
-          selected: s.id === st.id
+          selected: s.id === st.id,
         };
       });
     };
@@ -479,7 +460,7 @@ export default defineComponent({
               radius: Math.floor(c.radius / ratio),
               width: 0,
               height: 0,
-              reveal: false
+              reveal: false,
             };
           })
           .concat(
@@ -493,29 +474,23 @@ export default defineComponent({
                 radius: 0,
                 width: Math.floor(r.width / ratio),
                 height: Math.floor(r.height / ratio),
-                reveal: false
+                reveal: false,
               };
-            })
+            }),
           );
 
-        const selectedStudents = studentIds.value
-          .filter(s => s.selected)
-          .map(s => s.id);
+        const selectedStudents = studentIds.value.filter(s => s.selected).map(s => s.id);
         const roomManager = await store.getters["teacherRoom/roomManager"];
-        roomManager?.WSClient.sendRequestDesignateTarget(
-          currentExposureItemMedia.value.id,
-          targets,
-          selectedStudents
-        );
+        roomManager?.WSClient.sendRequestDesignateTarget(currentExposureItemMedia.value.id, targets, selectedStudents);
       }
     };
     const onClickCloseDesignate = async () => {
       await store.dispatch("interactive/setModalDesignateTarget", {
-        modalDesignateTarget: false
+        modalDesignateTarget: false,
       });
       modeAnnotation.value = 0;
       await store.dispatch("teacherRoom/setMode", {
-        mode: modeAnnotation.value
+        mode: modeAnnotation.value,
       });
       toolSelected.value = "cursor";
       selectorOpen.value = false;
@@ -536,9 +511,7 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -567,22 +540,18 @@ export default defineComponent({
             if (rectangle.y + rectangle.height > boundingBox().height) {
               rectangle.height = boundingBox().height - rectangle.y;
             }
-          }
-        }
+          },
+        },
       });
       interact(`.circle`).resizable({
         edges: { top: true, left: true, bottom: true, right: true },
-        modifiers: [
-          interact.modifiers.aspectRatio({ enabled: true, equalDelta: true })
-        ],
+        modifiers: [interact.modifiers.aspectRatio({ enabled: true, equalDelta: true })],
         listeners: {
           start(event: any) {
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -603,8 +572,8 @@ export default defineComponent({
             circle.radius = radius;
             circle.x = event.rect.left - boundingBox().left + radius;
             circle.y = event.rect.top - boundingBox().top + radius;
-          }
-        }
+          },
+        },
       });
     };
     const draggable = () => {
@@ -614,9 +583,7 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -630,18 +597,14 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             ele.x += event.dx;
             ele.y += event.dy;
           },
           end(event: any) {
             const targetId = `${event.target.id}`;
-            const ele =
-              rectangles.value.find(ele => ele.id === targetId) ||
-              circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
             if (!ele) return;
             const topleft = { x: 0, y: 0 };
             const bottomRight = { x: 0, y: 0 };
@@ -667,24 +630,17 @@ export default defineComponent({
               x: 0,
               y: 0,
               width: clientBoundingBox.width,
-              height: clientBoundingBox.height
+              height: clientBoundingBox.height,
             };
 
-            if (
-              !MathUtils.isIntersect(rect, topleft) ||
-              !MathUtils.isIntersect(rect, bottomRight)
-            ) {
-              const rectIndex = rectangles.value.findIndex(
-                r => r.id === targetId
-              );
+            if (!MathUtils.isIntersect(rect, topleft) || !MathUtils.isIntersect(rect, bottomRight)) {
+              const rectIndex = rectangles.value.findIndex(r => r.id === targetId);
               if (rectIndex !== -1) rectangles.value.splice(rectIndex, 1);
-              const circleIndex = circles.value.findIndex(
-                r => r.id === targetId
-              );
+              const circleIndex = circles.value.findIndex(r => r.id === targetId);
               if (circleIndex !== -1) circles.value.splice(circleIndex, 1);
             }
-          }
-        }
+          },
+        },
       });
     };
     const init = () => {
@@ -703,7 +659,7 @@ export default defineComponent({
           radius: 30,
           color: "red",
           type: "circle",
-          zIndex: 1
+          zIndex: 1,
         };
         circles.value.push(circle);
       });
@@ -725,7 +681,7 @@ export default defineComponent({
             radius: 0,
             color: "red",
             type: "circle",
-            zIndex: 1
+            zIndex: 1,
           };
         } else {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
@@ -740,22 +696,14 @@ export default defineComponent({
             height: height,
             color: "green",
             type: "rectangle",
-            zIndex: 1
+            zIndex: 1,
           };
         }
       });
       manager.on("panmove", (event: any) => {
         if (!addingRect.value && !addingCircle.value) return;
-        touchPosition.value.x = MathUtils.clamp(
-          event.center.x - boundingBox().x,
-          0,
-          boundingBox().width
-        );
-        touchPosition.value.y = MathUtils.clamp(
-          event.center.y - boundingBox().y,
-          0,
-          boundingBox().height
-        );
+        touchPosition.value.x = MathUtils.clamp(event.center.x - boundingBox().x, 0, boundingBox().width);
+        touchPosition.value.y = MathUtils.clamp(event.center.y - boundingBox().y, 0, boundingBox().height);
         if (addingRect.value) {
           const x = Math.min(touchStart.value.x, touchPosition.value.x);
           const y = Math.min(touchStart.value.y, touchPosition.value.y);
@@ -770,8 +718,7 @@ export default defineComponent({
           const y = touchStart.value.y / 2 + touchPosition.value.y / 2;
           addingCircle.value.x = x;
           addingCircle.value.y = y;
-          addingCircle.value.radius =
-            MathUtils.distance(touchStart.value, touchPosition.value) / 2;
+          addingCircle.value.radius = MathUtils.distance(touchStart.value, touchPosition.value) / 2;
         }
       });
       manager.on("panend", (_: any) => {
@@ -800,10 +747,10 @@ export default defineComponent({
     const onClickNextPrevMedia = async (nextPrev: number) => {
       onClickClearAllTargets();
       await store.dispatch("interactive/setTargets", {
-        targets: []
+        targets: [],
       });
       await store.dispatch("interactive/setLocalTargets", {
-        targets: []
+        targets: [],
       });
       await setTabActive("designate-target-action");
       toolSelected.value = "cursor";
@@ -817,13 +764,13 @@ export default defineComponent({
       if (nextPrev === 1) {
         if (nextExposureItemMedia.value !== undefined) {
           await store.dispatch("teacherRoom/setCurrentExposureMediaItem", {
-            id: nextExposureItemMedia.value.id
+            id: nextExposureItemMedia.value.id,
           });
         }
       } else {
         if (prevExposureItemMedia.value !== undefined) {
           await store.dispatch("teacherRoom/setCurrentExposureMediaItem", {
-            id: prevExposureItemMedia.value.id
+            id: prevExposureItemMedia.value.id,
           });
         }
       }
@@ -875,7 +822,15 @@ export default defineComponent({
       updateStrokeWidth,
       onClickAssignDesignate,
       onClickNextPrevMedia,
-      hasStickerTool
+      hasStickerTool,
+      designateBtnText,
+      annotationBtnText,
+      studentTitleText,
+      assignAllText,
+      clearAllText,
+      revealAllText,
+      previousText,
+      nextText,
     };
-  }
+  },
 });
