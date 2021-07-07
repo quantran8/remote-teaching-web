@@ -1,5 +1,6 @@
 <template>
   <div class="header">
+    <DeviceTester :notJoin="true" ref="deviceTesterRef" />
     <slot name="leading">
       <a :href="url">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
@@ -27,8 +28,8 @@
             <div class="item-title">Edit Profile</div>
             <BaseIcon class="item-action" name="reply" />
           </div>
-          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
           <div class="menu-item" @click.prevent="onClickTestDevice">Test Connection</div>
+          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
         </template>
       </MenuItem>
     </slot>
