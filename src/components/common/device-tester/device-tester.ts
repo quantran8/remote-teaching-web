@@ -28,8 +28,8 @@ export default defineComponent({
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isParent = computed(() => getters["auth/isParent"]);
     const visible = ref(false);
-    const isOpenMic = ref<boolean>(true);
-    const isOpenCam = ref<boolean>(true);
+    const isOpenMic = ref<boolean>(false);
+    const isOpenCam = ref<boolean>(false);
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
@@ -38,74 +38,130 @@ export default defineComponent({
     const listCamsId = ref<string[]>([]);
     const playerRef = ref();
     const currentMic = ref<DeviceType>();
-    const currentMicLabel = ref("");
+    const currentMicLabel = ref();
     const currentCam = ref<DeviceType>();
-    const currentCamLabel = ref("");
+    const currentCamLabel = ref();
     const volumeByPercent = ref(0);
     const volumeAnimation = ref();
     const videoElementId = props.notJoin ? "pre-local-player-header" : "pre-local-player";
     const agoraError = ref(false);
+    const agoraMicError = ref(false);
+    const agoraCamError = ref(false);
+    const currentUnit = ref();
+    const currentLesson = ref();
+    const listLessonByUnit = ref();
+
+    const setupAgora = async () => {
+      let audioTrack = null;
+      let videoTrack = null;
+      try {
+        audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        audioTrack.setEnabled(false);
+      } catch (error) {
+        agoraMicError.value = true;
+      }
+      try {
+        videoTrack = await AgoraRTC.createCameraVideoTrack();
+        videoTrack.setEnabled(false);
+      } catch (error) {
+        agoraCamError.value = true;
+      }
+      localTracks.value = {
+        audioTrack,
+        videoTrack,
+      };
+    };
+
     const setupDevice = async () => {
       const mics = await AgoraRTC.getMicrophones();
       if (mics) {
-        currentMic.value = mics[0];
-        currentMicLabel.value = mics[0]?.label;
+        currentMic.value = undefined;
+        currentMicLabel.value = undefined;
         listMics.value = mics;
         listMicsId.value = mics.map(mic => mic.deviceId);
       }
       const cams = await AgoraRTC.getCameras();
       if (cams) {
-        currentCam.value = cams[0];
-        currentCamLabel.value = cams[0]?.label;
+        currentCam.value = undefined;
+        currentCamLabel.value = undefined;
         listCams.value = cams;
         listCamsId.value = cams.map(cam => cam.deviceId);
       }
     };
 
-    watch(
-      isOpenMic,
-      currentIsOpenMic => {
-        if (!currentIsOpenMic) {
-          dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
-          localTracks.value?.audioTrack.setEnabled(false);
-        }
-        if (currentIsOpenMic) {
-          dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
-          localTracks.value?.audioTrack.setEnabled(true);
-        }
-      },
-      { immediate: true },
-    );
-
-    watch(
-      isOpenCam,
-      currentIsOpenCamValue => {
-        if (!currentIsOpenCamValue) {
-          dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
-          localTracks.value?.videoTrack.setEnabled(false);
-        }
-        if (currentIsOpenCamValue) {
-          dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
-          localTracks.value?.videoTrack.setEnabled(true);
-        }
-      },
-      { immediate: true },
-    );
-
-    const initialSetup = async () => {
-      try {
-        const localTracksResult = await Promise.all([AgoraRTC.createMicrophoneAudioTrack(), AgoraRTC.createCameraVideoTrack()]);
-        const [audioTrack, videoTrack] = localTracksResult;
-        localTracks.value = {
-          audioTrack,
-          videoTrack,
-        };
-        setupDevice();
-      } catch (error) {
-        console.log("Initial setup have error => ", error);
-        agoraError.value = true;
+    const setupUnitAndLesson = () => {
+      const initUnit = props.unitInfo?.[0]?.unit;
+      if (initUnit) {
+        currentUnit.value = initUnit;
       }
     };
+
+    const cancelVolumeAnimation = () => {
+      cancelAnimationFrame(volumeAnimation.value);
+      volumeAnimation.value = null;
+      volumeByPercent.value = 0;
+    };
+
+    const initialSetup = async () => {
+      setupAgora();
+      setupDevice();
+      setupUnitAndLesson();
+      dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
+      dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
+    };
+
+    //handle for microphone
+    watch(isOpenMic, currentIsOpenMic => {
+      if (currentIsOpenMic) {
+        dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
+        if (currentMic.value) {
+          localTracks.value?.audioTrack.setEnabled(true);
+          if (!volumeAnimation.value) {
+            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+          }
+        }
+      }
+      if (!currentIsOpenMic) {
+        dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
+        if (volumeAnimation.value) {
+          cancelVolumeAnimation();
+        }
+        if (currentMic.value) {
+          localTracks.value?.audioTrack.setEnabled(false);
+        }
+      }
+    });
+    watch(currentMic, currentMicValue => {
+      if (currentMicValue) {
+        localTracks.value?.audioTrack.setEnabled(true);
+        if (!volumeAnimation.value) {
+          volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+        }
+      }
+    });
+
+    //handle for camera
+    watch(isOpenCam, async currentIsOpenCamValue => {
+      if (currentIsOpenCamValue) {
+        dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
+        if (currentCam.value) {
+          await localTracks.value?.videoTrack.setEnabled(true);
+        }
+      }
+      if (!currentIsOpenCamValue) {
+        dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
+        if (currentCam.value) {
+          localTracks.value?.videoTrack.setEnabled(false);
+        }
+      }
+    });
+
+    watch(currentCam, async currentCamValue => {
+      if (currentCamValue) {
+        await localTracks.value?.videoTrack.play(videoElementId);
+        await localTracks.value?.videoTrack.setEnabled(true);
+      }
+    });
 
     const setVolumeWave = () => {
       if (!localTracks.value) return;
@@ -136,45 +192,38 @@ export default defineComponent({
     };
 
     const destroy = () => {
-      localTracks.value?.videoTrack.setEnabled(false);
-      localTracks.value?.audioTrack.setEnabled(false);
+      if (volumeAnimation.value) {
+        cancelVolumeAnimation();
+      }
       localTracks.value?.audioTrack.close();
       localTracks.value?.videoTrack.close();
+      currentMic.value = undefined;
+      currentCam.value = undefined;
+      agoraError.value = false;
+      agoraCamError.value = false;
+      agoraMicError.value = false;
+      isOpenMic.value = false;
+      isOpenCam.value = false;
+      volumeAnimation.value = undefined;
     };
 
     watch(visible, async currentValue => {
       if (!currentValue) {
-        cancelAnimationFrame(volumeAnimation.value);
         destroy();
         return;
       }
       await initialSetup();
-      volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-      setTimeout(() => {
-        localTracks.value?.videoTrack.play(videoElementId);
-      }, 0);
     });
 
     const goToClass = () => {
       emit("go-to-class");
     };
 
-    const currentUnit = ref();
-    const currentLesson = ref();
+    const handleGoToClassSuccess = () => {
+      localTracks.value?.audioTrack.close();
+      localTracks.value?.videoTrack.close();
+    };
 
-    watch(visible, currentVisible => {
-      if (currentVisible) {
-        const initUnit = props.unitInfo?.[0]?.unit;
-        if (initUnit) {
-          currentUnit.value = initUnit;
-        }
-      }
-      if (!currentVisible) {
-        agoraError.value = false;
-      }
-    });
-
-    const listLessonByUnit = ref();
     watch(currentUnit, currentUnitValue => {
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
       currentLesson.value = props.unitInfo[currentUnitIndex]?.lesson?.[0];
@@ -228,6 +277,9 @@ export default defineComponent({
       hasJoinAction,
       videoElementId,
       agoraError,
+      agoraCamError,
+      agoraMicError,
+      handleGoToClassSuccess,
     };
   },
 });

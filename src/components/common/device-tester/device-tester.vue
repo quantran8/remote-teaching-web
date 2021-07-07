@@ -13,7 +13,15 @@
           <div class="device-tester__micro--header">
             <div class="device-tester__micro--header__title">Check Microphone</div>
             <div class="device-tester__micro--header__select">
-              <Select style="width: 250px" :disabled="!isOpenMic" v-model:value="currentMicLabel" ref="select" @change="handleMicroChange">
+              <Select
+                placeholder="Select a Device"
+                class=""
+                style="width: 330px"
+                :disabled="!isOpenMic"
+                v-model:value="currentMicLabel"
+                ref="select"
+                @change="handleMicroChange"
+              >
                 <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">{{
                   listMics.find(mic => mic.deviceId === deviceId)?.label
                 }}</SelectOption>
@@ -28,7 +36,7 @@
           <div class="device-tester__micro--progress">
             <div class="device-tester__micro--progress__title">Mic Test</div>
             <div class="device-tester__micro--progress__wave">
-              <Progress v-if="currentMic" :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
+              <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
             </div>
           </div>
         </div>
@@ -36,7 +44,14 @@
           <div class="device-tester__camera--header">
             <div class="device-tester__camera--header__title">Check Camera</div>
             <div class="device-tester__camera--header__select">
-              <Select style="width: 250px" :disabled="!isOpenCam" v-model:value="currentCamLabel" ref="select" @change="handleCameraChange">
+              <Select
+                placeholder="Select a Device"
+                style="width: 330px"
+                :disabled="!isOpenCam"
+                v-model:value="currentCamLabel"
+                ref="select"
+                @change="handleCameraChange"
+              >
                 <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">{{
                   listCams.find(cam => cam.deviceId === deviceId)?.label
                 }}</SelectOption>
@@ -48,8 +63,13 @@
             <span class="device-tester__camera--switch__text" v-else>Unhide</span> -->
             <Switch v-model:checked="isOpenCam" />
           </div>
-          <div ref="playerRef" :id="videoElementId" v-show="isOpenCam && !agoraError" :class="['device-tester__camera--player']"></div>
-          <div v-show="!isOpenCam || agoraError" :class="['device-tester__camera--player', 'hided']">
+          <div
+            ref="playerRef"
+            :id="videoElementId"
+            v-show="isOpenCam && currentCam && !agoraCamError"
+            :class="['device-tester__camera--player']"
+          ></div>
+          <div v-show="!isOpenCam || agoraCamError || !currentCam" :class="['device-tester__camera--player', 'hided']">
             <div class="device-tester__camera--player__icon">
               <img src="@/assets/video-off-white.svg" alt="" />
             </div>
