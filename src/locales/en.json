@@ -74,6 +74,22 @@
 	"parent_home.cancel": "Cancel",
 	"parent_home.submit": "Submit",
 	"parent_student_card.class_group": "Class: ",
-    "parent_student_card.start_time": "Start time: "
-
+    "parent_student_card.start_time": "Start time: ",
+	"device_tester.system_check": "System check",
+	"device_tester.check_mic": "Check Microphone",
+	"device_tester.select_device": "Select a Device",
+	"device_tester.mute": "Mute",
+	"device_tester.un_mute": "UnMute",
+	"device_tester.mic_test": "Mic Test",
+	"device_tester.check_cam": "Check Camera",
+	"device_tester.cam_off": " Your camera is turned off",
+	"device_tester.class_status": "Class status",
+	"device_tester.default_message_1": "No class in progress. We will notify you once the class starts",
+	"device_tester.default_message_2": " Class in progress",
+	"device_tester.join_now": "Join now",
+	"device_tester.lesson_unit": "Lesson & unit",
+	"device_tester.lesson": "Lesson",
+	"device_tester.unit": "Unit",
+	"device_tester.cancel": "Cancel",
+	"device_tester.join_session": "Join session"
 }

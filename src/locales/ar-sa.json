@@ -6,5 +6,22 @@
 	"disconnect.title": "Oops! There is an issue." ,
 	"disconnect.content1": "There were connection issue for your teacher.",
 	"disconnect.content2": "Your school or teacher will contact you about how they will handle the issue.",
-	"disconnect.goto": "Go To Home Page"
+	"disconnect.goto": "Go To Home Page",
+	"device_tester.system_check": "System check",
+	"device_tester.check_mic": "Check Microphone",
+	"device_tester.select_device": "Select a Device",
+	"device_tester.mute": "Mute",
+	"device_tester.un_mute": "UnMute",
+	"device_tester.mic_test": "Mic Test",
+	"device_tester.check_cam": "Check Camera",
+	"device_tester.cam_off": " Your camera is turned off",
+	"device_tester.class_status": "Class status",
+	"device_tester.default_message_1": "No class in progress. We will notify you once the class starts",
+	"device_tester.default_message_2": " Class in progress",
+	"device_tester.join_now": "Join now",
+	"device_tester.lesson_unit": "Lesson & unit",
+	"device_tester.lesson": "Lesson",
+	"device_tester.unit": "Unit",
+	"device_tester.cancel": "Cancel",
+	"device_tester.join_session": "Join session"
 }

@@ -3,6 +3,9 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
+import { fmtMsg } from "@/commonui";
+import { DeviceTesterLocale } from "@/locales/localeid";
+
 interface DeviceType {
   deviceId: string;
   groupId: string;
@@ -247,7 +250,42 @@ export default defineComponent({
 
     const hasJoinAction = computed(() => !props.notJoin);
 
+    const SystemCheck = computed(() => fmtMsg(DeviceTesterLocale.SystemCheck));
+    const CheckMic = computed(() => fmtMsg(DeviceTesterLocale.CheckMic));
+    const SelectDevice = computed(() => fmtMsg(DeviceTesterLocale.SelectDevice));
+    const Mute = computed(() => fmtMsg(DeviceTesterLocale.Mute));
+    const UnMute = computed(() => fmtMsg(DeviceTesterLocale.UnMute));
+    const MicTest = computed(() => fmtMsg(DeviceTesterLocale.MicTest));
+    const CheckCam = computed(() => fmtMsg(DeviceTesterLocale.CheckCam));
+    const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
+    const ClassStatus = computed(() => fmtMsg(DeviceTesterLocale.ClassStatus));
+    const DefaultMessage1 = computed(() => fmtMsg(DeviceTesterLocale.DefaultMessage1));
+    const DefaultMessage2 = computed(() => fmtMsg(DeviceTesterLocale.DefaultMessage2));
+    const JoinNow = computed(() => fmtMsg(DeviceTesterLocale.JoinNow));
+    const LessonUnit = computed(() => fmtMsg(DeviceTesterLocale.LessonUnit));
+    const Lesson = computed(() => fmtMsg(DeviceTesterLocale.Lesson));
+    const Unit = computed(() => fmtMsg(DeviceTesterLocale.Unit));
+    const Cancel = computed(() => fmtMsg(DeviceTesterLocale.Cancel));
+    const JoinSession = computed(() => fmtMsg(DeviceTesterLocale.JoinSession));
+
     return {
+      SystemCheck,
+      CheckMic,
+      SelectDevice,
+      Mute,
+      UnMute,
+      MicTest,
+      CheckCam,
+      CamOff,
+      ClassStatus,
+      DefaultMessage1,
+      DefaultMessage2,
+      JoinNow,
+      LessonUnit,
+      Lesson,
+      Unit,
+      Cancel,
+      JoinSession,
       visible,
       showModal,
       isOpenMic,

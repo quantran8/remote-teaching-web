@@ -96,3 +96,23 @@ export class ParentStudentCardLocale {
   static ClassGroup = "parent_student_card.class_group";
   static StartTime = "parent_student_card.start_time";
 }
+
+export class DeviceTesterLocale {
+  static SystemCheck = "device_tester.system_check";
+  static CheckMic = "device_tester.check_mic";
+  static SelectDevice = "device_tester.select_device";
+  static Mute = "device_tester.mute";
+  static UnMute = "device_tester.un_mute";
+  static MicTest = "device_tester.mic_test";
+  static CheckCam = "device_tester.check_cam";
+  static CamOff = "device_tester.cam_off";
+  static ClassStatus = "device_tester.class_status";
+  static DefaultMessage1 = "device_tester.default_message_1";
+  static DefaultMessage2 = "device_tester.default_message_2";
+  static JoinNow = "device_tester.join_now";
+  static LessonUnit = "device_tester.lesson_unit";
+  static Lesson = "device_tester.lesson";
+  static Unit = "device_tester.unit";
+  static Cancel = "device_tester.cancel";
+  static JoinSession = "device_tester.join_session";
+}
