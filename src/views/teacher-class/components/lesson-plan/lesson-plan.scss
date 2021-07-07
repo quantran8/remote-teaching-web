@@ -15,7 +15,6 @@
     background: #b62424;
     color: #fff;
     position: relative;
-
     .lesson-container__header-title {
       padding: 10px 15px;
       font-size: 24px;
@@ -25,15 +24,11 @@
       &--wrap {
         border-bottom: 3px solid white;
         display: inline-block;
-
         &.shortcut {
           margin-left: 230px;
           border-bottom: 2px solid white;
         }
         &__lesson {
-          &.shortcut {
-            // margin-left: 230px;
-          }
           font-size: 20px;
           display: inline-block;
         }

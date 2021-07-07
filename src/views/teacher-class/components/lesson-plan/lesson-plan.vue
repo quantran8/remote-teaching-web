@@ -11,10 +11,6 @@
               {{ isGalleryView ? currentLesson : `(Lesson: ${currentLesson})` }}
             </span>
           </span>
-          <!-- <span v-if="isGalleryView">
-            <span class="lesson-container__header-title--wrap__unit shortcut"> {{ currentUnit }}: </span
-            ><span class="lesson-container__header-title--wrap__lesson shortcut"> {{ currentLesson }}</span>
-          </span> -->
         </span>
       </div>
       <span @click="backToGalleryMode" class="lesson-container__header-back">
