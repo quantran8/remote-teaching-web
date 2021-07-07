@@ -44,7 +44,7 @@ export default defineComponent({
     const volumeByPercent = ref(0);
     const volumeAnimation = ref();
     const videoElementId = props.notJoin ? "pre-local-player-header" : "pre-local-player";
-
+    const agoraError = ref(false);
     const setupDevice = async () => {
       const mics = await AgoraRTC.getMicrophones();
       if (mics) {
@@ -103,6 +103,7 @@ export default defineComponent({
         setupDevice();
       } catch (error) {
         console.log("Initial setup have error => ", error);
+        agoraError.value = true;
       }
     };
 
@@ -135,6 +136,8 @@ export default defineComponent({
     };
 
     const destroy = () => {
+      localTracks.value?.videoTrack.setEnabled(false);
+      localTracks.value?.audioTrack.setEnabled(false);
       localTracks.value?.audioTrack.close();
       localTracks.value?.videoTrack.close();
     };
@@ -166,6 +169,9 @@ export default defineComponent({
           currentUnit.value = initUnit;
         }
       }
+      if (!currentVisible) {
+        agoraError.value = false;
+      }
     });
 
     const listLessonByUnit = ref();
@@ -190,12 +196,7 @@ export default defineComponent({
       visible.value = false;
     };
 
-    watch(playerRef, currentPlayerRefValue => {
-      console.log("playerRef", currentPlayerRefValue);
-    });
-
     const hasJoinAction = computed(() => !props.notJoin);
-
 
     return {
       visible,
@@ -225,7 +226,8 @@ export default defineComponent({
       handleSubmit,
       handleCancel,
       hasJoinAction,
-	  videoElementId
+      videoElementId,
+      agoraError,
     };
   },
 });

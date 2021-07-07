@@ -44,12 +44,12 @@
             </div>
           </div>
           <div class="device-tester__camera--switch">
-            <span class="device-tester__camera--switch__text" v-if="isOpenCam">Hide</span>
-            <span class="device-tester__camera--switch__text" v-else>Unhide</span>
+            <!-- <span class="device-tester__camera--switch__text" v-if="isOpenCam">Hide</span>
+            <span class="device-tester__camera--switch__text" v-else>Unhide</span> -->
             <Switch v-model:checked="isOpenCam" />
           </div>
-          <div ref="playerRef" :id="videoElementId" v-show="isOpenCam" :class="['device-tester__camera--player']"></div>
-          <div v-show="!isOpenCam" :class="['device-tester__camera--player', 'hided']">
+          <div ref="playerRef" :id="videoElementId" v-show="isOpenCam && !agoraError" :class="['device-tester__camera--player']"></div>
+          <div v-show="!isOpenCam || agoraError" :class="['device-tester__camera--player', 'hided']">
             <div class="device-tester__camera--player__icon">
               <img src="@/assets/video-off-white.svg" alt="" />
             </div>

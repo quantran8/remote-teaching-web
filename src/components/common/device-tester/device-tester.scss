@@ -11,6 +11,9 @@
       position: relative;
       margin-bottom: 10px;
       &__title {
+        @media (max-width: $sm) {
+          display: none;
+        }
         position: absolute;
         left: 0;
         font-weight: 500;
@@ -43,6 +46,9 @@
       position: relative;
       margin-bottom: 10px;
       &__title {
+        @media (max-width: $sm) {
+          display: none;
+        }
         position: absolute;
         left: 0;
         font-weight: 500;

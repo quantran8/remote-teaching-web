@@ -28,8 +28,8 @@
             <div class="item-title">Edit Profile</div>
             <BaseIcon class="item-action" name="reply" />
           </div>
-          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
           <div class="menu-item" @click.prevent="onClickTestDevice">Test Connection</div>
+          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
         </template>
       </MenuItem>
     </slot>
