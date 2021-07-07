@@ -275,8 +275,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         );
       }
     },
-    onTeacherSetWhiteboard: (payload: RoomModel) => {
-      //   console.log(payload);
+    onTeacherSetWhiteboard: async (payload: RoomModel) => {
+      commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
     onTeacherDrawLaser: (payload: any) => {
       //   console.log(payload);

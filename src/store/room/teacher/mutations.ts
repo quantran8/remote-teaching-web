@@ -52,6 +52,7 @@ export interface TeacherRoomMutationInterface<S> {
   addStudentAudio(s: S, p: UserIdPayload): void;
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
+  setWhiteboard(s: S, p: boolean): void;
 }
 
 export interface TeacherRoomMutation<S> extends MutationTree<S>, TeacherRoomMutationInterface<S> {}
@@ -276,6 +277,9 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setListStudentLowBandWidth(state: TeacherRoomState, p) {
     state.listStudentLowBandWidth = p;
+  },
+  setWhiteboard(state: TeacherRoomState, p) {
+    state.isShowWhiteboard = p;
   },
 };
 
