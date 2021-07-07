@@ -9,7 +9,7 @@ import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
 import { fmtMsg, LoginInfo } from "@/commonui";
 import IconWarning from "@/assets/calendar-warning.svg";
-import { CommonLocale } from "@/locales/localeid";
+import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 
 export default defineComponent({
   components: {
@@ -66,6 +66,19 @@ export default defineComponent({
     const cacheMinutesStart = ref<number>(0);
     const cacheHoursStart = ref<number>(0);
     const warningOverlap = computed(() => fmtMsg(CommonLocale.OverlapWarningSession));
+    const titleText = computed(() => fmtMsg(TeacherCalendarLocale.Title));
+    const classText = computed(() => fmtMsg(TeacherCalendarLocale.ClassLabel));
+    const groupText = computed(() => fmtMsg(TeacherCalendarLocale.GroupLabel));
+    const startTimeText = computed(() => fmtMsg(TeacherCalendarLocale.StartTimeLabel));
+    const endTimeText = computed(() => fmtMsg(TeacherCalendarLocale.EndTimeLabel));
+    const deleteText = computed(() => fmtMsg(TeacherCalendarLocale.Delete));
+    const cancelText = computed(() => fmtMsg(TeacherCalendarLocale.Cancel));
+    const saveText = computed(() => fmtMsg(TeacherCalendarLocale.Save));
+    const skipText = computed(() => fmtMsg(TeacherCalendarLocale.Skip));
+    const closeText = computed(() => fmtMsg(TeacherCalendarLocale.Close));
+    const noteText = computed(() => fmtMsg(TeacherCalendarLocale.Note));
+    const schoolText = computed(() => fmtMsg(TeacherCalendarLocale.School));
+    const allText = computed(() => fmtMsg(TeacherCalendarLocale.All));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId });
@@ -168,7 +181,7 @@ export default defineComponent({
       const listData = calendarSchedules.value.filter((daySchedule: any) => {
         return moment(daySchedule.day).date() == selectedDate.value.date() && moment(daySchedule.day).month() == selectedDate.value.month();
       });
-      if(listData[0]) {
+      if (listData[0]) {
         const group = listData[0].schedules.filter((schedule: any) => {
           return schedule.groupId == groupId;
         });
@@ -253,7 +266,7 @@ export default defineComponent({
         const timeEnd = endTime[index];
         if (timeStart != null && timeEnd != null) {
           startTime.forEach((totalTime: string, indexTotal) => {
-            if (index != indexTotal && startTime[indexTotal] != null && endTime[indexTotal]!= null) {
+            if (index != indexTotal && startTime[indexTotal] != null && endTime[indexTotal] != null) {
               const timeStartValue = parseInt(timeStart.split(":")[0]) * 60 + parseInt(timeStart.split(":")[1]);
               const timeEndValue = parseInt(timeEnd.split(":")[0]) * 60 + parseInt(timeEnd.split(":")[1]);
               const timeStartDataValue = parseInt(startTime[indexTotal].split(":")[0]) * 60 + parseInt(startTime[indexTotal].split(":")[1]);
@@ -292,12 +305,16 @@ export default defineComponent({
           if (start) {
             const startDateTotalValue = start.split("T")[0];
             const startDateSingleValue = startDateTotalValue.split("-");
-            startDate = parseInt(startDateSingleValue[0]) * totalDayOfYear + parseInt(startDateSingleValue[1]) * totalDayOfMonth + parseInt(startDateSingleValue[2]);
+            startDate =
+              parseInt(startDateSingleValue[0]) * totalDayOfYear +
+              parseInt(startDateSingleValue[1]) * totalDayOfMonth +
+              parseInt(startDateSingleValue[2]);
           }
           if (end) {
             const endDateTotalValue = end.split("T")[0];
             const endDateSingleValue = endDateTotalValue.split("-");
-            endDate = parseInt(endDateSingleValue[0]) * totalDayOfYear + parseInt(endDateSingleValue[1]) * totalDayOfMonth + parseInt(endDateSingleValue[2]);
+            endDate =
+              parseInt(endDateSingleValue[0]) * totalDayOfYear + parseInt(endDateSingleValue[1]) * totalDayOfMonth + parseInt(endDateSingleValue[2]);
           }
           if (endDate == 0 || (currentDate >= startDate && currentDate <= endDate)) {
             result = true;
@@ -372,7 +389,7 @@ export default defineComponent({
       const current = new Date();
       const m = current.getMonth();
       const d = current.getDate();
-      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
         for (let i = 0; i < current.getHours(); i++) {
           hours.push(i);
         }
@@ -385,7 +402,7 @@ export default defineComponent({
       const current = new Date();
       const m = current.getMonth();
       const d = current.getDate();
-      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
         if (moment(selectedStartDateModal.value, formatTime).hour() == current.getHours()) {
           for (let i = 0; i < current.getMinutes(); i++) {
             minutes.push(i);
@@ -407,7 +424,7 @@ export default defineComponent({
       const current = new Date();
       const m = current.getMonth();
       const d = current.getDate();
-      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
         for (let i = 0; i < current.getHours(); i++) {
           hours.push(i);
         }
@@ -429,7 +446,7 @@ export default defineComponent({
       const current = new Date();
       const m = current.getMonth();
       const d = current.getDate();
-      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
         if (moment(selectedEndDateModal.value, formatTime).hour() == current.getHours()) {
           for (let i = 0; i < current.getMinutes(); i++) {
             minutes.push(i);
@@ -452,7 +469,7 @@ export default defineComponent({
       const current = new Date();
       const m = current.getMonth();
       const d = current.getDate();
-      if (d === selectedDate.value.date() && m === selectedDate.value.month()){
+      if (d === selectedDate.value.date() && m === selectedDate.value.month()) {
         selectedStartDateModal.value = moment().format("HH:mm");
         selectedEndDateModal.value = moment().format("HH:mm");
       }
@@ -654,20 +671,20 @@ export default defineComponent({
           break;
         case "Create":
           await onCreateSchedule(createData(type));
-          if(selectedClassId.value != "all") {
+          if (selectedClassId.value != "all") {
             await handleChangeClass(selectedClassId.value);
           }
-          if(selectedGroupIdCache.value != "all") {
+          if (selectedGroupIdCache.value != "all") {
             await handleChangeGroup(selectedGroupIdCache.value);
           }
           break;
         case "Update":
           await onUpdateSchedule(createData(type));
           isActionUpdate.value = false;
-          if(selectedClassId.value != "all") {
+          if (selectedClassId.value != "all") {
             await handleChangeClass(selectedClassId.value);
           }
-          if(selectedGroupIdCache.value != filterAll) {
+          if (selectedGroupIdCache.value != filterAll) {
             await handleChangeGroup(selectedGroupIdCache.value);
           }
           break;
@@ -737,6 +754,19 @@ export default defineComponent({
       getDisableHoursStart,
       getDisableMinutesStart,
       canCreateInCurrentDate,
+      titleText,
+      classText,
+      groupText,
+      startTimeText,
+      endTimeText,
+      deleteText,
+      cancelText,
+      saveText,
+      skipText,
+      closeText,
+      noteText,
+      schoolText,
+      allText,
     };
   },
 });

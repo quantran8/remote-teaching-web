@@ -31,7 +31,9 @@
         </span>
       </div>
     </div>
-    <h3 :title="student.englishName" class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">{{ student.englishName }}</h3>
+    <h3 :title="student.englishName" class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">
+      {{ student.englishName }}
+    </h3>
   </div>
 </template>
 <script lang="ts" src="./student-gallery-item.ts"></script>

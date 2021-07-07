@@ -4,19 +4,11 @@
       <BaseIcon name="icon-audio-on"></BaseIcon>
     </BaseButton>
     <div class="content">
-      <div
-        class="student-audio"
-        v-for="studentAudio in globalAudios"
-        :key="studentAudio.studentId"
-      >
+      <div class="student-audio" v-for="studentAudio in globalAudios" :key="studentAudio.studentId">
         <BaseTag :tag="studentAudio.tag" />
       </div>
     </div>
-    <BaseButton
-      mode="clear"
-      @click="onClickClearAll"
-      v-if="globalAudios.length"
-    >
+    <BaseButton mode="clear" @click="onClickClearAll" v-if="globalAudios.length">
       <BaseIcon class="close" name="icon-close"></BaseIcon>
     </BaseButton>
   </div>

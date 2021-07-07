@@ -1,3 +1,4 @@
+import { TeacherHome } from "./../../locales/localeid";
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
@@ -56,6 +57,10 @@ export default defineComponent({
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const accessDenied = computed(() => fmtMsg(CommonLocale.CommonAccessDenied));
+    const welcomeText = computed(() => fmtMsg(TeacherHome.Welcome));
+    const scheduleText = computed(() => fmtMsg(TeacherHome.Schedule));
+    const cancelText = computed(() => fmtMsg(TeacherHome.Cancel));
+    const submitText = computed(() => fmtMsg(TeacherHome.Submit));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
@@ -82,6 +87,7 @@ export default defineComponent({
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
+          deviceTesterRef.value?.handleGoToClassSuccess();
           await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {
@@ -299,6 +305,10 @@ export default defineComponent({
       unitInfo,
       loadingInfo,
       deviceTesterRef,
+      welcomeText,
+      scheduleText,
+      cancelText,
+      submitText,
     };
   },
 });

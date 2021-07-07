@@ -202,6 +202,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("setClassView", {
         classView: ClassViewFromValue(payload),
       });
+      commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
       commit("setGlobalAudios", payload);
@@ -227,6 +228,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherStartLessonPlan: (payload: any) => {
       commit("lesson/setCurrentExposure", { id: payload }, { root: true });
+      commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onTeacherEndLessonPlan: (payload: any) => {
 
@@ -236,6 +238,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
       commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
+      commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onStudentRaisingHand: (payload: any) => {
       //   console.log(payload);

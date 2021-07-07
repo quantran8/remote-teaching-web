@@ -51,6 +51,7 @@ export default defineComponent({
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
+    const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -69,16 +70,31 @@ export default defineComponent({
         showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         if (!canvas) return;
         if (infoTeacher.value.isShowWhiteBoard) {
-          canvas.backgroundColor = "white";
+          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
           await clickedTool(Tools.Pen);
           showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         } else {
           canvas.remove(...canvas.getObjects("path"));
-          canvas.backgroundColor = "transparent";
+          canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
           await clickedTool(Tools.Cursor);
           showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         }
       }
+    });
+    const processCanvasWhiteboard = async () => {
+      if (!canvas) return;
+      showHideWhiteboard.value = isShowWhiteBoard.value;
+      if (isShowWhiteBoard.value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Pen);
+      } else {
+        canvas.remove(...canvas.getObjects("path"));
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Cursor);
+      }
+    };
+    watch(isShowWhiteBoard, async () => {
+      await processCanvasWhiteboard();
     });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
@@ -181,6 +197,7 @@ export default defineComponent({
       canvas.setWidth(717);
       canvas.setHeight(435);
       canvas.selectionFullyContained = false;
+      await processCanvasWhiteboard();
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {
@@ -361,11 +378,12 @@ export default defineComponent({
       } else {
         // canvas.remove(...canvas.getObjects());
       }
-      if (showHideWhiteboard.value) {
+      showHideWhiteboard.value = isShowWhiteBoard.value;
+      if (isShowWhiteBoard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {
-        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         await clickedTool(Tools.Cursor);
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
       }
     };
     const defaultWhiteboard = async () => {
