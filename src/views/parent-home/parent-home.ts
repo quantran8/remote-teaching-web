@@ -48,6 +48,7 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const classIsActive = ref(false);
     const currentStudent = ref<ChildModel>();
+    const getRoomInfoError = ref<string>("");
     const goToClass = () => {
       deviceTesterRef.value?.handleGoToClassSuccess();
       router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
@@ -60,9 +61,11 @@ export default defineComponent({
       const visitorId = result.visitorId;
       try {
         const response = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+        getRoomInfoError.value = "";
         await store.dispatch("studentRoom/setOnline");
         classIsActive.value = true;
       } catch (err) {
+        getRoomInfoError.value = err?.message;
         if (classIsActive.value) {
           classIsActive.value = false;
         }
@@ -158,6 +161,7 @@ export default defineComponent({
       deviceTesterRef,
       classIsActive,
       goToClass,
+      getRoomInfoError,
     };
   },
 });

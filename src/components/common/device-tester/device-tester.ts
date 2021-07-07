@@ -21,7 +21,7 @@ export default defineComponent({
     Skeleton,
     Divider,
   },
-  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin"],
+  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError"],
   emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();

@@ -77,7 +77,9 @@
         <div v-if="hasJoinAction" class="device-tester__cl-status">
           <div v-if="isParent" class="device-tester__cl-status--student">
             <div class="device-tester__cl-status--student__title">Class status</div>
-            <div v-if="!classIsActive">No class in progress. We will notify you once the class starts</div>
+            <div v-if="!classIsActive">
+              {{ getRoomInfoError ? getRoomInfoError : "No class in progress. We will notify you once the class starts" }}
+            </div>
             <div v-else>
               Class in progress
               <span class="device-tester__cl-status--student__join"><Button @click="goToClass" type="primary">Join now </Button></span>
