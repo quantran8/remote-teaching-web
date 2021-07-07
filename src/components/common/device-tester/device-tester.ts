@@ -21,15 +21,15 @@ export default defineComponent({
     Skeleton,
     Divider,
   },
-  props: ["classIsActive", "unitInfo", "loading", "messageStartClass"],
+  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin"],
   emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isParent = computed(() => getters["auth/isParent"]);
     const visible = ref(false);
-    const isMute = ref<boolean>(false);
-    const isHide = ref<boolean>(false);
+    const isOpenMic = ref<boolean>(true);
+    const isOpenCam = ref<boolean>(true);
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
@@ -43,7 +43,8 @@ export default defineComponent({
     const currentCamLabel = ref("");
     const volumeByPercent = ref(0);
     const volumeAnimation = ref();
-
+    const videoElementId = props.notJoin ? "pre-local-player-header" : "pre-local-player";
+    const agoraError = ref(false);
     const setupDevice = async () => {
       const mics = await AgoraRTC.getMicrophones();
       if (mics) {
@@ -62,13 +63,13 @@ export default defineComponent({
     };
 
     watch(
-      isMute,
-      currentIsMute => {
-        if (currentIsMute) {
+      isOpenMic,
+      currentIsOpenMic => {
+        if (!currentIsOpenMic) {
           dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
           localTracks.value?.audioTrack.setEnabled(false);
         }
-        if (!currentIsMute) {
+        if (currentIsOpenMic) {
           dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
           localTracks.value?.audioTrack.setEnabled(true);
         }
@@ -77,13 +78,13 @@ export default defineComponent({
     );
 
     watch(
-      isHide,
-      currentIsHideValue => {
-        if (currentIsHideValue) {
+      isOpenCam,
+      currentIsOpenCamValue => {
+        if (!currentIsOpenCamValue) {
           dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
           localTracks.value?.videoTrack.setEnabled(false);
         }
-        if (!currentIsHideValue) {
+        if (currentIsOpenCamValue) {
           dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
           localTracks.value?.videoTrack.setEnabled(true);
         }
@@ -102,6 +103,7 @@ export default defineComponent({
         setupDevice();
       } catch (error) {
         console.log("Initial setup have error => ", error);
+        agoraError.value = true;
       }
     };
 
@@ -134,6 +136,8 @@ export default defineComponent({
     };
 
     const destroy = () => {
+      localTracks.value?.videoTrack.setEnabled(false);
+      localTracks.value?.audioTrack.setEnabled(false);
       localTracks.value?.audioTrack.close();
       localTracks.value?.videoTrack.close();
     };
@@ -147,7 +151,7 @@ export default defineComponent({
       await initialSetup();
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       setTimeout(() => {
-        localTracks.value?.videoTrack.play("pre-local-player");
+        localTracks.value?.videoTrack.play(videoElementId);
       }, 0);
     });
 
@@ -164,6 +168,9 @@ export default defineComponent({
         if (initUnit) {
           currentUnit.value = initUnit;
         }
+      }
+      if (!currentVisible) {
+        agoraError.value = false;
       }
     });
 
@@ -189,15 +196,13 @@ export default defineComponent({
       visible.value = false;
     };
 
-    watch(playerRef, currentPlayerRefValue => {
-      console.log("playerRef", currentPlayerRefValue);
-    });
+    const hasJoinAction = computed(() => !props.notJoin);
 
     return {
       visible,
       showModal,
-      isMute,
-      isHide,
+      isOpenMic,
+      isOpenCam,
       playerRef,
       volumeByPercent,
       listMics,
@@ -220,6 +225,9 @@ export default defineComponent({
       listLessonByUnit,
       handleSubmit,
       handleCancel,
+      hasJoinAction,
+      videoElementId,
+      agoraError,
     };
   },
 });

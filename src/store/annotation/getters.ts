@@ -26,6 +26,9 @@ const getters: GetterTree<AnnotationState, any> = {
   undoShape(state: AnnotationState): Array<string> {
     return state.drawing?.brushstrokes;
   },
+  undoStrokeOneOne(state: AnnotationState): Array<string> {
+    return state.oneToOne?.brushstrokes;
+  },
   stickers(state: AnnotationState): Array<Sticker> {
     return state.stickers;
   },
