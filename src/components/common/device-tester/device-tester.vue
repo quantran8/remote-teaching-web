@@ -43,6 +43,7 @@
         <div class="device-tester__camera block-gutter">
           <div class="device-tester__camera--header">
             <div class="device-tester__camera--header__title">Check Camera</div>
+            <div class="device-tester__camera--header__switch"><Switch v-model:checked="isOpenCam" /></div>
             <div class="device-tester__camera--header__select">
               <Select
                 placeholder="Select a Device"
@@ -57,11 +58,6 @@
                 }}</SelectOption>
               </Select>
             </div>
-          </div>
-          <div class="device-tester__camera--switch">
-            <!-- <span class="device-tester__camera--switch__text" v-if="isOpenCam">Hide</span>
-            <span class="device-tester__camera--switch__text" v-else>Unhide</span> -->
-            <Switch v-model:checked="isOpenCam" />
           </div>
           <div
             ref="playerRef"
@@ -80,9 +76,12 @@
         </div>
         <div v-if="hasJoinAction" class="device-tester__cl-status">
           <div v-if="isParent" class="device-tester__cl-status--student">
-            <div class="title">Class status</div>
+            <div class="device-tester__cl-status--student__title">Class status</div>
             <div v-if="!classIsActive">No class in progress. We will notify you once the class starts</div>
-            <div v-else>Class in progress. <span @click="goToClass" class="device-tester__cl-status--student__join">Join now</span></div>
+            <div v-else>
+              Class in progress
+              <span class="device-tester__cl-status--student__join"><Button @click="goToClass" type="primary">Join now </Button></span>
+            </div>
           </div>
           <div v-if="isTeacher" class="device-tester__cl-status--teacher">
             <div class="title">Lesson & unit</div>
