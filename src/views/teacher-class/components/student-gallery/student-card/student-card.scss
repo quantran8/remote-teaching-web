@@ -11,6 +11,12 @@
   cursor: pointer;
 }
 
+.student-list-3 {
+  .student {
+    margin-bottom: 15px;
+  }
+}
+
 .student-list-6 {
   .student {
     @include grid(2, 2%);

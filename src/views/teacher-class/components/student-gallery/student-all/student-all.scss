@@ -12,11 +12,14 @@
   margin: 0 auto;
   @media (min-width: $large-lap) {
     width: 90%;
-  //  grid-template-columns: repeat(6, 1fr);
   }
   
   @media (min-width: 1921px) {
     width:850px;
+  }
+  
+  &.student-list-3{
+    width:300px;
   }
   
   //.student, .student-card {
