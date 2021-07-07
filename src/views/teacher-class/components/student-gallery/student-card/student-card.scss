@@ -21,6 +21,14 @@
   .student {
     @include grid(2, 2%);
   }
+  &.lesson-plan-mode{
+    @media (max-width: 1500px) {
+      .student {
+        @include grid(1, 3%);
+        width: 90%;
+      }
+    }
+  }
 }
 .student-list-12 {
   @media (max-width: $lap) {

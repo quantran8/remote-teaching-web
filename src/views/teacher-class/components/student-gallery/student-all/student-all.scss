@@ -21,6 +21,15 @@
   &.student-list-3{
     width:300px;
   }
+
+  &.student-list-6{
+    @media (max-width: 1799px) {
+      width:90%;
+    }
+    @media (min-width: 1800px) {
+      width:700px;
+    } 
+  }
   
   //.student, .student-card {
   //  float: left;
