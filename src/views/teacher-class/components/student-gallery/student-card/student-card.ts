@@ -49,7 +49,11 @@ export default defineComponent({
     const showCorrectAnswer = computed(() => {
       return interactive.value.status !== 0 && interactive.value.multiAssign && !isNotJoinned.value;
     });
-
+    
+    watch(isNotJoinned, value => {
+      console.error("ONLINE",value, props.student);
+    });
+    
     const onOneAndOne = async () => {
       if (props.setModeOne && !isNotJoinned.value) {
         await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
