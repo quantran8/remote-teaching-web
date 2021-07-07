@@ -152,22 +152,28 @@ export default defineComponent({
         loadingInfo.value = true;
         const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
         const listUnit: UnitAndLesson[] = [];
-        for (let i = 14; i <= 40; i++) {
-          listUnit.push({ unit: i, lesson: [], sequence: [] });
-        }
 
         if (response && response.success) {
-          listUnit.map((singleUnit: UnitAndLesson, index) => {
-            let lessonNumber = 1;
-            response.data.map((res: any) => {
-              if (singleUnit.unit == res.unitId) {
+          response.data.map((res: any) => {
+            let isUnitExist = false;
+            listUnit.map((singleUnit: UnitAndLesson) => {
+              if (res.unitId == singleUnit.unit) {
+                isUnitExist = true;
+              }
+            });
+            if (!isUnitExist) {
+              listUnit.push({ unit: res.unitId, sequence: [] });
+            }
+          });
+          response.data.map((res: any) => {
+            listUnit.map((singleUnit: UnitAndLesson, index) => {
+              if (res.unitId == singleUnit.unit) {
                 listUnit[index].sequence.push(res.sequence);
-                listUnit[index].lesson.push(lessonNumber);
-                lessonNumber++;
               }
             });
           });
         }
+        listUnit.sort((a, b) => a.unit - b.unit);
         unitInfo.value = listUnit;
       } catch (err) {
         const message = err?.body?.message;
