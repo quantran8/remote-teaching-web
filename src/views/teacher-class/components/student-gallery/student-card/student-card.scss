@@ -11,13 +11,42 @@
   cursor: pointer;
 }
 
-//.student-layout-3 {
-//  .student {
-//    @include grid(2, 2%);
-//  }
-//}
+@mixin style-layout-3{
+  @include grid(2, 2%);
+  &:nth-child(3) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
 
-.student-layout-3,
+.student-layout-3 {
+  .student {
+    @media (max-width: 1399px) {
+      margin: 10px auto;
+      max-width: 300px;
+    } 
+  }
+
+  &:not(.lesson-plan-mode){
+    .student{
+      @media (min-width: 1400px){
+        @include style-layout-3;
+      } 
+    }
+  }
+
+  &.lesson-plan-mode{
+    .student{
+      @media (max-width: 1499px) {
+        margin-bottom: 20px;
+      }
+      @media (min-width: 1500px) {
+        @include style-layout-3;
+      }
+    }
+  } 
+}
+
 .student-layout-6 {
   .student {
     @include grid(2, 2%);
