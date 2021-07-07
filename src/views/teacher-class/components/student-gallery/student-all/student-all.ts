@@ -1,4 +1,4 @@
-import { StudentState } from "@/store/room/interface";
+import {InClassStatus, StudentState} from "@/store/room/interface";
 import {computed, ComputedRef, defineComponent, ref, provide, watch} from "vue";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
@@ -21,10 +21,10 @@ export default defineComponent({
 
     watch(isGalleryView, value => {
       lessonPlanCss.value = value ? "" : "lesson-plan-mode";
-    }); 
+    });
+    
     watch(students, value => {
-      const totalStudents = value.filter(s=>s.status===2).length;
-      console.warn("Student online: ",totalStudents);
+      const totalStudents = value.filter(s => s.status === InClassStatus.JOINED).length;
       if (totalStudents <= 3) {
         studentLayout.value = 3;
       } else if (totalStudents <= 6) {
@@ -32,6 +32,8 @@ export default defineComponent({
       } else {
         studentLayout.value = 12;
       }
+    }, {
+      deep: true
     });
 
     const focusedStudent = ref<string>("");
