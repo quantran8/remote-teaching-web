@@ -16,15 +16,15 @@ export default defineComponent({
       return store.getters["teacherRoom/getStudentModeOneId"];
     });
 
-    const studentLayout = ref<number>(6);
+    const studentLayout = ref<number>(3);
     const lessonPlanCss = ref<string>("");
 
     watch(isGalleryView, value => {
       lessonPlanCss.value = value ? "" : "lesson-plan-mode";
-    });
-    
-    watch(topStudents, value => {
-      const totalStudents = value ? value.length : 12;
+    }); 
+    watch(students, value => {
+      const totalStudents = value.filter(s=>s.status===2).length;
+      console.warn("Student online: ",totalStudents);
       if (totalStudents <= 3) {
         studentLayout.value = 3;
       } else if (totalStudents <= 6) {
@@ -32,7 +32,6 @@ export default defineComponent({
       } else {
         studentLayout.value = 12;
       }
-      console.error("TOOGR SỐ HS", studentLayout.value, totalStudents);
     });
 
     const focusedStudent = ref<string>("");

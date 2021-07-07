@@ -17,12 +17,9 @@
   @media (min-width: 1921px) {
     width:850px;
   }
-  
-  &.student-list-3{
-    width:300px;
-  }
 
-  &.student-list-6{
+  &.student-layout-6,
+  &.student-layout-3{
     @media (max-width: 1799px) {
       width:90%;
     }

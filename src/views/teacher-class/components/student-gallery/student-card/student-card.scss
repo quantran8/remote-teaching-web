@@ -11,13 +11,14 @@
   cursor: pointer;
 }
 
-.student-list-3 {
-  .student {
-    margin-bottom: 15px;
-  }
-}
+//.student-layout-3 {
+//  .student {
+//    @include grid(2, 2%);
+//  }
+//}
 
-.student-list-6 {
+.student-layout-3,
+.student-layout-6 {
   .student {
     @include grid(2, 2%);
   }
@@ -30,7 +31,7 @@
     }
   }
 }
-.student-list-12 {
+.student-layout-12 {
   @media (max-width: $lap) {
     .student {
       @include grid(2, 2%);
