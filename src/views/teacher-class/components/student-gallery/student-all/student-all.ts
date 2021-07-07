@@ -10,12 +10,19 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+    const isGalleryView = computed(() => store.getters["teacherRoom/isGalleryView"]);
     const topStudents = computed(() => students.value.slice(0, 12));
     const oneAndOneStatus = computed(() => {
       return store.getters["teacherRoom/getStudentModeOneId"];
     });
 
     const studentLayout = ref<number>(6);
+    const lessonPlanCss = ref<string>("");
+
+    watch(isGalleryView, value => {
+      lessonPlanCss.value = value ? "" : "lesson-plan-mode";
+    });
+    
     watch(topStudents, value => {
       const totalStudents = value ? value.length : 12;
       if (totalStudents <= 3) {
@@ -25,6 +32,7 @@ export default defineComponent({
       } else {
         studentLayout.value = 12;
       }
+      console.error("TOOGR SỐ HS", studentLayout.value, totalStudents);
     });
 
     const focusedStudent = ref<string>("");
@@ -41,7 +49,8 @@ export default defineComponent({
       topStudents,
       oneAndOneStatus,
       focusedStudent,
-      studentLayout
+      studentLayout,
+      lessonPlanCss
     };
   },
 });

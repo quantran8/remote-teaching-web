@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi" />
+    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi"  alt="Low bandwidth"/>
     <div class="student__info" @mouseover="onMouseChange(true)">
       <p
         class="student__info--name"

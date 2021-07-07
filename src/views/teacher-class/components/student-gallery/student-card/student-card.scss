@@ -11,13 +11,41 @@
   cursor: pointer;
 }
 
+.student-list-6 {
+  .student {
+    @include grid(2, 2%);
+  }
+}
+.student-list-12 {
+  @media (max-width: $lap) {
+    .student {
+      @include grid(2, 2%);
+    }
+  }
+  @media (min-width: $lap + 1) {
+    .student {
+      @include grid(3, 2%);
+    }
+  }
+  &.lesson-plan-mode{
+    @media (max-width: 1599px) {
+      .student {
+        @include grid(2, 3%);
+      }
+    }
+  }
+}
+
+
 .student {
   $self: &;
-  $card-figure-size: 80px;
-  $card-figure-size-xl: 90px;
-  $card-figure-size-xxl: 120px;
-
+  //$card-figure-size: 80px;
+  //$card-figure-size-xl: 90px;
+  //$card-figure-size-xxl: 120px;
   $radius: 10px;
+  
+  // @include grid(2,2%);
+  
   &.expand {
     transition: all 0.1s ease-out;
     z-index: 25;
@@ -37,9 +65,9 @@
     }
   }
   position: relative;
-  margin: 0 auto;
-  width: 250px;
-  height: 190px;
+  // margin: 0 auto;
+  //width: 250px;
+  //height: 190px;
   &.one-student-mode {
     width: 90% !important;
     height: 50% !important;
@@ -226,50 +254,50 @@
 }
 
 .has-sidebar {
-  .student {
-    @media (min-width: $xl) and (max-width: $lap){
-      width: 180px;
-      height: 160px;
-    }
-    @media (min-width: $lap) and (max-width: $xxl){
-      width: 200px;
-      height: 180px;
-    }
-    @media (min-width: $xxl) and (max-width: 1450px) {
-      width: 170px;
-      height: 160px;
-    }
-    @media (min-width: 1450px) and (max-width: 1500px) {
-      width: 190px;
-      height: 160px;
-    }
-    @media (min-width: 1500px) and (max-width: $large-lap) {
-      width: 210px;
-      height: 180px;
-    }
-    &.one-student-mode {
-      width: 90%;
-      height: 50%;
-    }
-  }
+  //.student {
+  //  @media (min-width: $xl) and (max-width: $lap){
+  //    width: 180px;
+  //    height: 160px;
+  //  }
+  //  @media (min-width: $lap) and (max-width: $xxl){
+  //    width: 200px;
+  //    height: 180px;
+  //  }
+  //  @media (min-width: $xxl) and (max-width: 1450px) {
+  //    width: 170px;
+  //    height: 160px;
+  //  }
+  //  @media (min-width: 1450px) and (max-width: 1500px) {
+  //    width: 190px;
+  //    height: 160px;
+  //  }
+  //  @media (min-width: 1500px) and (max-width: $large-lap) {
+  //    width: 210px;
+  //    height: 180px;
+  //  }
+  //  &.one-student-mode {
+  //    width: 90%;
+  //    height: 50%;
+  //  }
+  //}
 }
 .no-sidebar {
-  .student {
-    @media (min-width: $xl) and (max-width: $lap){
-      width: 190px;
-      height: 160px;
-    }
-    @media (min-width: $lap) and (max-width: $xxl){
-      width: 180px;
-      height: 160px;
-    }
-    @media (min-width: $xxl) and (max-width: 1500px){
-      width: 190px;
-      height: 160px;
-    }
-    @media (min-width: 1500px) and (max-width: $large-lap){
-      width: 210px;
-      height: 190px;
-    }
-  }
+  //.student {
+  //  @media (min-width: $xl) and (max-width: $lap){
+  //    width: 190px;
+  //    height: 160px;
+  //  }
+  //  @media (min-width: $lap) and (max-width: $xxl){
+  //    width: 180px;
+  //    height: 160px;
+  //  }
+  //  @media (min-width: $xxl) and (max-width: 1500px){
+  //    width: 190px;
+  //    height: 160px;
+  //  }
+  //  @media (min-width: 1500px) and (max-width: $large-lap){
+  //    width: 210px;
+  //    height: 190px;
+  //  }
+  //}
 }
