@@ -122,7 +122,18 @@
       font-size: 15px;
     }
   }
-
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    &--current {
+      width: $current-item-size;
+      #{$self}__video {
+        width: 100%;
+        height: $current-item-size;
+      }
+    }
+    &__title {
+      font-size: 13px;
+    }
+  }
   @media (min-width: $lg) {
     &:not(#{$self}--current) {
       width: 90px;
