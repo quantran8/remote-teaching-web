@@ -9,6 +9,11 @@
 }
 
 .student-list {
+  &:after{
+    content:'';
+    display: block;
+    clear: both;;
+  }
   margin: 0 auto;
   @media (min-width: $large-lap) {
     width: 90%;
