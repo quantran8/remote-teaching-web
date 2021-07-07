@@ -277,9 +277,6 @@ const mutations: TeacherRoomMutation<State> = {
   setListStudentLowBandWidth(state: TeacherRoomState, p) {
     state.listStudentLowBandWidth = p;
   },
-  setTeacherBandwidth(state: TeacherRoomState, p) {
-    state.bandWidth = p;
-  },
 };
 
 export default mutations;

@@ -1,3 +1,4 @@
+import { checkBandwidth } from "@/utils/checkBandwidth";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -131,7 +132,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
-    const { state, dispatch } = store;
+    const { state, dispatch, rootState } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       let cameraStatus = state.student?.videoEnabled;
@@ -161,10 +162,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    // 120000 means 2 minutes
-    setInterval(() => {
-      RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${state.bandWidth}`);
-    }, 120000);
+    checkBandwidth(state.user ? state.user.id : "");
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -179,7 +177,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        store.commit("setStudentBandwidth", payload.uplinkNetworkQuality);
+        //   console.log(payload);
       },
     });
   },

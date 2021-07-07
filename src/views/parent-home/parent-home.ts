@@ -60,7 +60,7 @@ export default defineComponent({
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
-        const response = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+        await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
         getRoomInfoError.value = "";
         await store.dispatch("studentRoom/setOnline");
         classIsActive.value = true;

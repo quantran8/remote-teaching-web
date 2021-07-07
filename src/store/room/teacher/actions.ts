@@ -1,7 +1,7 @@
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { LessonService, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import { RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
 import {
   ClassViewPayload,
@@ -10,17 +10,16 @@ import {
   InClassStatus,
   InitClassRoomPayload,
   StudentBadgePayload,
-  StudentState,
   UserIdPayload,
   UserMediaPayload,
   ValueOfClassView,
   WhiteboardPayload,
   NetworkQualityPayload,
 } from "../interface";
+import _ from "lodash";
 import { TeacherRoomState } from "./state";
 import { useTeacherRoomWSHandler } from "./handler";
 import { RoomModel } from "@/models";
-import { Logger } from "@/utils/logger";
 import { Sticker } from "@/store/annotation/state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
@@ -28,11 +27,8 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import _, { times } from "lodash";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { checkBandwidth } from "@/utils/checkBandwidth";
 import { MediaStatus } from "@/models";
-
-const fpPromise = FingerprintJS.load();
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -104,7 +100,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
-    const { state, dispatch } = store;
+    const { state, dispatch, rootState } = store;
     if (!state.info || !state.teacher || !state.manager) return;
     let cameraStatus = state.teacher?.videoEnabled;
     let microphoneStatus = state.teacher?.audioEnabled;
@@ -132,12 +128,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       classId: state.info.id,
       teacherId: state.user?.id,
     });
-    // 120000 means 2 minutes
-    const fp = await fpPromise;
-    const result = await fp.get();
-    setInterval(() => {
-      RemoteTeachingService.putTeacherBandwidth(`${state.bandWidth}`, result.visitorId);
-    }, 120000);
+    checkBandwidth();
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -151,9 +142,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
       },
-      async onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+      onLocalNetworkUpdate(payload: NetworkQualityPayload) {
         const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
-        store.commit("setTeacherBandwidth", uplinkNetworkQuality);
         if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
           dispatch("setTeacherLowBandWidth", true);
         }

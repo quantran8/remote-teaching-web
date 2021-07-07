@@ -225,9 +225,6 @@ const mutations: MutationTree<StudentRoomState> = {
   setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
     state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
   },
-  setStudentBandwidth(state: StudentRoomState, p) {
-    state.bandWidth = p;
-  },
 };
 
 export default mutations;

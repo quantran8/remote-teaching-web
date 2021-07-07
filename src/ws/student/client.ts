@@ -1,14 +1,10 @@
 import { StudentWSCommand as WSCmd } from "./command";
 import { GLSocketClient } from "../base";
-import DeviceDetector from "device-detector-js";
 import { MediaStatus } from "@/models";
 
 interface JoinRoomParams {
   roomId: string;
   studentId: string;
-  browser: string;
-  device: any;
-  bandwidth: string;
   resolution: string;
   browserFingerPrinting: string;
   isMuteAudio?: boolean;
@@ -23,16 +19,11 @@ export class StudentWSClient extends GLSocketClient {
     isMuteAudio = MediaStatus.noStatus,
     isHideVideo = MediaStatus.noStatus,
   ) {
-    const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
     const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
     const params: JoinRoomParams = {
       roomId: roomId,
       studentId: studentId,
-      browser: device.client ? device.client.name : "",
-      device: device.device ? device.device.type : "",
-      bandwidth: "",
-      resolution: resolution,
+      resolution,
       browserFingerPrinting: browserFingerPrinting,
     };
     if (isMuteAudio !== MediaStatus.noStatus) {

@@ -73,7 +73,7 @@
 	"parent_home.choose_student": "Choose a student to start",
 	"parent_home.cancel": "Cancel",
 	"parent_home.submit": "Submit",
-	"parent_student_card.class_group": "Class/group: ",
+	"parent_student_card.class_group": "Class: ",
     "parent_student_card.start_time": "Start time: "
 
 }
