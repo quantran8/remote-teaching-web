@@ -30,20 +30,34 @@ export class GLSocketClient {
     };
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: retryContext => {
+          console.log("retryConnect");
+          return 10000;
+        },
+      })
       .configureLogging(LogLevel.Debug)
       .build();
     this._hubConnection.onclose(this.onClosed);
+    // this._hubConnection
+    this._hubConnection.onreconnected((id: any) => {
+      console.log("hello onreconnected", id);
+    });
     this._isConnected = false;
   }
-  onClosed() {
+  onClosed(payload: any) {
+    console.log("2", payload);
+
     this._isConnected = false;
   }
   get isConnected(): boolean {
     return this._isConnected;
   }
   async disconnect(): Promise<void> {
+    console.log("0");
     if (!this.isConnected) return;
+    console.log("1");
+
     return this._hubConnection?.stop();
   }
   async connect(): Promise<any> {
@@ -57,11 +71,11 @@ export class GLSocketClient {
     }
   }
   async send(command: string, payload: any): Promise<any> {
-    if(!this.hubConnection){
-      console.error("this.hubConnection: ",this.hubConnection);
+    if (!this.hubConnection) {
+      console.error("this.hubConnection: ", this.hubConnection);
     }
     if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Connected) {
-      console.error("CONNECTION STATE: "+this.hubConnection.state);
+      console.error("CONNECTION STATE: " + this.hubConnection.state);
     }
     if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
       console.error("SEND/TRY-TO-RECONNECT-MANUALLY");
@@ -72,11 +86,11 @@ export class GLSocketClient {
   }
 
   async invoke(command: string, payload: any): Promise<any> {
-    if(!this.hubConnection){
-      console.error("this.hubConnection: ",this.hubConnection);
+    if (!this.hubConnection) {
+      console.error("this.hubConnection: ", this.hubConnection);
     }
     if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Connected) {
-      console.error("CONNECTION STATE: "+this.hubConnection.state);
+      console.error("CONNECTION STATE: " + this.hubConnection.state);
     }
     if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
       console.error("INVOKE/TRY-TO-RECONNECT-MANUALLY");
