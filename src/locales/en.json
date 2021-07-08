@@ -148,5 +148,6 @@
 	"layout.edit_profile": "Edit Profile",
 	"layout.test_connect": "Test Connection",
 	"layout.sign_out": "Sign Out",
-	"layout.privacy_policy": "Privacy Policy"
+	"layout.privacy_policy": "Privacy Policy",
+	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved"
 }

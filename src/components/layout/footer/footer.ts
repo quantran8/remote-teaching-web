@@ -8,6 +8,8 @@ export default defineComponent({
       window.open(`${GLGlobal.authorityUrl()}/Copyright/PrivacyPolicy`);
     };
     const privacyText = computed(() => fmtMsg(Layout.PrivacyPolicy));
-    return { openPrivacyPolicy, privacyText };
+    const year = new Date().getFullYear();
+    const copyRightText = computed(() => fmtMsg(Layout.CopyRight)).value.replace("{{year}}", `${year}`);
+    return { openPrivacyPolicy, privacyText, copyRightText, year };
   },
 });

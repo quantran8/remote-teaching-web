@@ -204,4 +204,5 @@ export class Layout {
   static TestConnect = "layout.test_connect";
   static SignOut = "layout.sign_out";
   static PrivacyPolicy = "layout.privacy_policy";
+  static CopyRight = "layout.copy_right";
 }
