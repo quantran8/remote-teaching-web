@@ -26,11 +26,6 @@ export default defineComponent({
 
     const containerRef = ref<HTMLDivElement>();
 
-    const isAudioHighlight = computed(() => {
-      const enableAudios: Array<string> = store.getters["studentRoom/globalAudios"];
-      return student.value.id && enableAudios.indexOf(student.value.id) !== -1;
-    });
-
     const isSpeaking = computed(() => {
       const speakingUsers: Array<string> = store.getters["studentRoom/speakingUsers"];
       return speakingUsers.indexOf(student.value.id) >= 0;
@@ -38,7 +33,6 @@ export default defineComponent({
 
     return {
       isNotJoinned,
-      isAudioHighlight,
       containerRef,
       isSpeaking,
       isRaisingHand,
