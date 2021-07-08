@@ -105,7 +105,7 @@
   &--current {
     width: $current-item-size;
     #{$self}__video {
-      height: 75px;
+      height: $current-item-size;
     }
   }
 
@@ -113,7 +113,7 @@
     &--current {
       width: $current-item-size-md;
       #{$self}__video {
-        height: 120px;
+        height: $current-item-size-md;
         border-width: 5px;
       }
     }
@@ -137,7 +137,7 @@
     &:not(#{$self}--current) {
       width: 90px;
       #{$self}__video {
-        height: 75px;
+        height: 100%;
       }
     }
   }
@@ -156,7 +156,7 @@
     &--current {
       width: $current-item-size-xxl;
       #{$self}__video {
-        height: 150px;
+        height: $current-item-size-xxl;
       }
     }
     &__video {
@@ -183,7 +183,29 @@
     &:not(#{$self}--current) {
       width: 60px;
       #{$self}__video {
-        width: 50px;
+        width: 60px;
+      }
+    }
+  }
+}
+
+.sc-gallery {
+  .sc-gallery-item {
+    $self: &;
+    height: 60px;
+    width: 60px;
+
+    &__container {
+      height: 100%;
+    }
+    &__video {
+      height: 100%;
+    }
+
+    @media (min-width: $lg) {
+      &:not(#{$self}--current) {
+        height: 90px;
+        width: 90px;
       }
     }
   }

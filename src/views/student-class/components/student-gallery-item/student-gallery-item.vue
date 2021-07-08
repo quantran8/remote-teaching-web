@@ -4,7 +4,6 @@
       :class="[
         'sc-gallery-item',
         isCurrent && 'sc-gallery-item--current',
-        isAudioHighlight && 'sc-gallery-item--highlight',
         isRaisingHand && 'sc-gallery-item--help',
         isNotJoinned && 'sc-gallery-item--disabled',
       ]"
