@@ -24,7 +24,7 @@ export default defineComponent({
     Skeleton,
     Divider,
   },
-  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError", "infoStart"],
+  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError", "infoStart", "fromParentComponent"],
   emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -136,7 +136,7 @@ export default defineComponent({
     };
 
     const initialSetup = async () => {
-      if (!props.notJoin) {
+      if (!props.notJoin && !props.fromParentComponent) {
         setupUnitAndLesson();
       }
       await setupAgora();
@@ -245,7 +245,7 @@ export default defineComponent({
       isOpenCam.value = true;
       volumeAnimation.value = undefined;
       preventCloseModal.value = true;
-      if (props.notJoin) return;
+      if (props.notJoin || props.fromParentComponent) return;
       currentUnit.value = null;
       currentLesson.value = null;
       firstTimeDefault.value = true;
@@ -269,7 +269,7 @@ export default defineComponent({
     };
 
     watch(currentUnit, currentUnitValue => {
-      if (props.notJoin) return;
+      if (props.notJoin || props.fromParentComponent) return;
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
       const currentLessonIndex = props.unitInfo[currentUnitIndex]?.sequence?.findIndex(
         (item: number) => item === props.infoStart.teacherClass.lessonNumber,

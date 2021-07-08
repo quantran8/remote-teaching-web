@@ -65,7 +65,7 @@ export default defineComponent({
         await store.dispatch("studentRoom/setOnline");
         classIsActive.value = true;
       } catch (err) {
-        getRoomInfoError.value = err?.message;
+        getRoomInfoError.value = err?.code;
         if (classIsActive.value) {
           classIsActive.value = false;
         }
