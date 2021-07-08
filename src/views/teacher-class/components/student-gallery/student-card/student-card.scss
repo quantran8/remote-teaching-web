@@ -80,7 +80,6 @@
   }
 }
 
-
 .student {
   $self: &;
   $radius: 10px;
@@ -93,19 +92,10 @@
       .student__info,
       .student-action {
         transform: scale(0.7);
-        //@media (min-width: $xl) {
-        //  transform: scale(0.6);
-        //}
-        //@media (min-width: $large-lap) {
-        //  transform: scale(0.5);
-        //}
       }
     }
   }
   position: relative;
-  // margin: 0 auto;
-  //width: 250px;
-  //height: 190px;
   &.one-student-mode {
     width: 90% !important;
     height: 50% !important;
@@ -289,53 +279,4 @@
       font-size: 16px;
     }
   }
-}
-
-.has-sidebar {
-  //.student {
-  //  @media (min-width: $xl) and (max-width: $lap){
-  //    width: 180px;
-  //    height: 160px;
-  //  }
-  //  @media (min-width: $lap) and (max-width: $xxl){
-  //    width: 200px;
-  //    height: 180px;
-  //  }
-  //  @media (min-width: $xxl) and (max-width: 1450px) {
-  //    width: 170px;
-  //    height: 160px;
-  //  }
-  //  @media (min-width: 1450px) and (max-width: 1500px) {
-  //    width: 190px;
-  //    height: 160px;
-  //  }
-  //  @media (min-width: 1500px) and (max-width: $large-lap) {
-  //    width: 210px;
-  //    height: 180px;
-  //  }
-  //  &.one-student-mode {
-  //    width: 90%;
-  //    height: 50%;
-  //  }
-  //}
-}
-.no-sidebar {
-  //.student {
-  //  @media (min-width: $xl) and (max-width: $lap){
-  //    width: 190px;
-  //    height: 160px;
-  //  }
-  //  @media (min-width: $lap) and (max-width: $xxl){
-  //    width: 180px;
-  //    height: 160px;
-  //  }
-  //  @media (min-width: $xxl) and (max-width: 1500px){
-  //    width: 190px;
-  //    height: 160px;
-  //  }
-  //  @media (min-width: 1500px) and (max-width: $large-lap){
-  //    width: 210px;
-  //    height: 190px;
-  //  }
-  //}
 }
