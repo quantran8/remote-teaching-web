@@ -49,9 +49,9 @@ export default defineComponent({
     const showCorrectAnswer = computed(() => {
       return interactive.value.status !== 0 && interactive.value.multiAssign && !isNotJoinned.value;
     });
-
+    const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const onOneAndOne = async () => {
-      if (props.setModeOne && !isNotJoinned.value) {
+      if (props.setModeOne && !isNotJoinned.value && props.student.id !== oneAndOne.value) {
         await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
         await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
