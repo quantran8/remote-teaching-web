@@ -1,4 +1,7 @@
 <template>
+   <h2 v-if="!totalOnlineStudents" class="no-students-message">
+    No student has joined the class yet
+  </h2>
   <div :class="oneAndOneStatus ? 'oneToOne' : lessonPlanCss + ' student-list student-layout-' + studentLayout">
     <StudentCard v-for="student in topStudents" :key="student.id" :student="student" :setModeOne="true" :focusStudentId="focusedStudent"/>
   </div>

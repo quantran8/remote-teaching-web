@@ -17,6 +17,7 @@ export default defineComponent({
     });
 
     const studentLayout = ref<number>(3);
+    const totalOnlineStudents = ref<number>(0);
     const lessonPlanCss = ref<string>("");
 
     watch(isGalleryView, value => {
@@ -24,10 +25,11 @@ export default defineComponent({
     });
     
     watch(students, value => {
-      const totalStudents = value.filter(s => s.status === InClassStatus.JOINED).length;
-      if (totalStudents <= 3) {
+      const onlineStudents = value.filter(s => s.status === InClassStatus.JOINED).length;
+      totalOnlineStudents.value = onlineStudents;
+      if (onlineStudents <= 3) {
         studentLayout.value = 3;
-      } else if (totalStudents <= 6) {
+      } else if (onlineStudents <= 6) {
         studentLayout.value = 6;
       } else {
         studentLayout.value = 12;
@@ -51,7 +53,8 @@ export default defineComponent({
       oneAndOneStatus,
       focusedStudent,
       studentLayout,
-      lessonPlanCss
+      lessonPlanCss,
+      totalOnlineStudents
     };
   },
 });

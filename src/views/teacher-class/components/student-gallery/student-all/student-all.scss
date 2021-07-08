@@ -8,6 +8,13 @@
   align-items: center;
 }
 
+.no-students-message{
+  text-align: center;
+  font-size: 16px;
+  padding-top: 50px;
+  color: #7b7b7b;
+}
+
 .student-list {
   &:after{
     content:'';
