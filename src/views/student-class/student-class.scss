@@ -215,20 +215,7 @@
   grid-auto-flow: column;
   align-content: center;
   padding: 0 10px 10px;
-  @media (min-width: $md) {
-    grid-auto-flow: row;
-    justify-content: center;
-
-    &__avatar {
-      justify-self: center;
-    }
-  }
-  @media only screen and (max-width: 812px) and (orientation: landscape) {
-    grid-auto-flow: column;
-    justify-content: unset;
-  }
   @media (min-width: $xl) {
-    grid-auto-flow: column;
     column-gap: 40px;
   }
 }
