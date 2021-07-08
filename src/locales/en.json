@@ -77,7 +77,7 @@
     "parent_student_card.start_time": "Start time: ",
 	"device_tester.system_check": "System check",
 	"device_tester.check_mic": "Check Microphone",
-	"device_tester.select_device": "Select a Device",
+	"device_tester.select_device": "No Device",
 	"device_tester.mute": "Mute",
 	"device_tester.un_mute": "UnMute",
 	"device_tester.mic_test": "Mic Test",

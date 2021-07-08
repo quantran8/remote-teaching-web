@@ -108,7 +108,9 @@
               <div class="device-tester__cl-status--teacher__button--1">
                 <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
               </div>
-              <Button width="100px" @click="handleSubmit" type="primary" :loading="loading">{{ JoinSession }}</Button>
+              <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">{{
+                JoinSession
+              }}</Button>
             </div>
             <div class="device-tester__cl-status--teacher__msg">
               {{ messageStartClass }}
