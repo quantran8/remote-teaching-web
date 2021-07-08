@@ -303,9 +303,6 @@ export default defineComponent({
     const SystemCheck = computed(() => fmtMsg(DeviceTesterLocale.SystemCheck));
     const CheckMic = computed(() => fmtMsg(DeviceTesterLocale.CheckMic));
     const SelectDevice = computed(() => fmtMsg(DeviceTesterLocale.SelectDevice));
-    const Mute = computed(() => fmtMsg(DeviceTesterLocale.Mute));
-    const UnMute = computed(() => fmtMsg(DeviceTesterLocale.UnMute));
-    const MicTest = computed(() => fmtMsg(DeviceTesterLocale.MicTest));
     const CheckCam = computed(() => fmtMsg(DeviceTesterLocale.CheckCam));
     const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
     const ClassStatus = computed(() => fmtMsg(DeviceTesterLocale.ClassStatus));
@@ -322,9 +319,6 @@ export default defineComponent({
       SystemCheck,
       CheckMic,
       SelectDevice,
-      Mute,
-      UnMute,
-      MicTest,
       CheckCam,
       CamOff,
       ClassStatus,

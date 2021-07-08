@@ -30,12 +30,9 @@
             </div>
           </div>
           <div class="device-tester__micro--switch">
-            <span class="device-tester__micro--switch__text" v-if="isOpenMic">{{ Mute }}</span>
-            <span class="device-tester__micro--switch__text" v-else>{{ UnMute }}</span>
             <Switch v-model:checked="isOpenMic" />
           </div>
           <div class="device-tester__micro--progress">
-            <div class="device-tester__micro--progress__title">{{ MicTest }}</div>
             <div class="device-tester__micro--progress__wave">
               <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
             </div>
