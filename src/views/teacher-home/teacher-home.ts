@@ -92,7 +92,7 @@ export default defineComponent({
         }
       } catch (err) {
         loadingStartClass.value = false;
-        const message = err.body.message;
+        const message = err?.body?.message;
         if (message) {
           messageStartClass.value = message;
         }
@@ -145,6 +145,7 @@ export default defineComponent({
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       infoStart.value = { teacherClass, groupId };
       selectedGroupId.value = groupId;
+
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         await getListLessonByUnit(teacherClass, groupId);

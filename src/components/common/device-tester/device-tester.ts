@@ -24,7 +24,7 @@ export default defineComponent({
     Skeleton,
     Divider,
   },
-  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError"],
+  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError","infoStart"],
   emits: ["go-to-class", "on-join-session"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -50,6 +50,7 @@ export default defineComponent({
     const agoraError = ref(false);
     const agoraMicError = ref(false);
     const agoraCamError = ref(false);
+    const firstTimeDefault = ref(true);
     const currentUnit = ref();
     const currentLesson = ref();
     const listLessonByUnit = ref();
@@ -93,9 +94,15 @@ export default defineComponent({
     };
 
     const setupUnitAndLesson = () => {
-      const initUnit = props.unitInfo?.[0]?.unit;
-      if (initUnit) {
-        currentUnit.value = initUnit;
+      const unitDefault = props.infoStart.teacherClass.unit;
+      const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === unitDefault);
+      if (currentUnitIndex >= 0) {
+        currentUnit.value = props.unitInfo[currentUnitIndex].unit;
+      } else {
+        const initUnit = props.unitInfo?.[0]?.unit;
+        if (initUnit) {
+          currentUnit.value = initUnit;
+        }
       }
     };
 
@@ -208,6 +215,9 @@ export default defineComponent({
       isOpenMic.value = false;
       isOpenCam.value = false;
       volumeAnimation.value = undefined;
+      currentUnit.value = null;
+      currentLesson.value = null;
+      firstTimeDefault.value = true;
     };
 
     watch(visible, async currentValue => {
@@ -223,14 +233,23 @@ export default defineComponent({
     };
 
     const handleGoToClassSuccess = () => {
-      localTracks.value?.audioTrack.close();
-      localTracks.value?.videoTrack.close();
+      localTracks.value?.audioTrack?.close();
+      localTracks.value?.videoTrack?.close();
     };
 
     watch(currentUnit, currentUnitValue => {
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
-      currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[0];
+      const currentLessonIndex = props.unitInfo[currentUnitIndex]?.sequence?.findIndex(
+        (item: number) => item === props.infoStart.teacherClass.lessonNumber,
+      );
+
       listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
+      if (currentUnit.value === props.infoStart.teacherClass.unit && currentLessonIndex >= 0 && firstTimeDefault.value) {
+        firstTimeDefault.value = false;
+        currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[currentLessonIndex];
+      } else {
+        currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[0];
+      }
     });
 
     const handleUnitChange = (unit: any) => {
