@@ -105,7 +105,6 @@
   &--current {
     width: $current-item-size;
     #{$self}__video {
-      width: 100%;
       height: $current-item-size;
     }
   }
@@ -122,12 +121,23 @@
       font-size: 15px;
     }
   }
-
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    &--current {
+      width: $current-item-size;
+      #{$self}__video {
+        width: 100%;
+        height: $current-item-size;
+      }
+    }
+    &__title {
+      font-size: 13px;
+    }
+  }
   @media (min-width: $lg) {
     &:not(#{$self}--current) {
       width: 90px;
       #{$self}__video {
-        height: 80px;
+        height: 100%;
       }
     }
   }
@@ -173,7 +183,29 @@
     &:not(#{$self}--current) {
       width: 60px;
       #{$self}__video {
-        height: 60px;
+        width: 60px;
+      }
+    }
+  }
+}
+
+.sc-gallery {
+  .sc-gallery-item {
+    $self: &;
+    height: 60px;
+    width: 60px;
+
+    &__container {
+      height: 100%;
+    }
+    &__video {
+      height: 100%;
+    }
+
+    @media (min-width: $lg) {
+      &:not(#{$self}--current) {
+        height: 90px;
+        width: 90px;
       }
     }
   }

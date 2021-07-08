@@ -1,3 +1,4 @@
+import { TeacherClassLessonPlan } from "@/locales/localeid";
 import { computed, defineComponent, ref, watch, onUnmounted, onMounted } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
@@ -7,6 +8,7 @@ import IconNext from "@/assets/images/arrow.png";
 import IconNextDisable from "@/assets/images/arrow-disable.png";
 import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
+import { fmtMsg } from "@/commonui";
 
 export const exposureTypes = {
   VCP_BLOCK: "VPC_BLOCK",
@@ -19,6 +21,13 @@ export default defineComponent({
   emits: ["open-gallery-mode"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
+
+    const unitText = computed(() => fmtMsg(TeacherClassLessonPlan.Unit));
+    const lessonText = computed(() => fmtMsg(TeacherClassLessonPlan.Lesson));
+    const remainingText = computed(() => fmtMsg(TeacherClassLessonPlan.Remaining));
+    const itemText = computed(() => fmtMsg(TeacherClassLessonPlan.Item));
+    const pageText = computed(() => fmtMsg(TeacherClassLessonPlan.Page));
+
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(() => getters["lesson/activityStatistic"]);
     const currentExposure = computed(() => getters["lesson/currentExposure"]);
@@ -190,6 +199,11 @@ export default defineComponent({
       exposureTypes,
       currentLesson,
       currentUnit,
+      unitText,
+      lessonText,
+      remainingText,
+      itemText,
+      pageText,
     };
   },
 });

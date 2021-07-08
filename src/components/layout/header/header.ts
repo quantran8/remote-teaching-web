@@ -2,12 +2,14 @@ import { AuthService, GLGlobal, LoginInfo } from "@/commonui";
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import MenuItem from "./components/menu-item/menu-item.vue";
+import { DeviceTester } from "@/components/common";
 export default defineComponent({
   props: {
     title: String,
   },
   components: {
     MenuItem,
+	DeviceTester
   },
   setup() {
     const store = useStore();
@@ -17,6 +19,7 @@ export default defineComponent({
     const userAvatar = computed(() => store.getters["auth/userAvatar"]);
     const url = computed(() => process.env.VUE_APP_URL_AUTO_PORTAL);
     const showInfo = ref<boolean>(false);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const onClickShowInfo = () => {
       showInfo.value = true;
     };
@@ -30,7 +33,7 @@ export default defineComponent({
       AuthService.storePagethenSignoutRedirect();
     };
     const onClickTestDevice = () => {
-      console.log("click");
+      deviceTesterRef.value?.showModal();
     };
     return {
       isLoggedIn,
@@ -44,6 +47,7 @@ export default defineComponent({
       onClickOpenAccountPage,
       onClickTestDevice,
       url,
+      deviceTesterRef,
     };
   },
 });

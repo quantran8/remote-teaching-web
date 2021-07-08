@@ -12,7 +12,7 @@
       <h1 class="sc-header__title">{{ classInfo?.className }}</h1>
       <a class="sc-header__exit" @click="onClickEnd">
         <MatIcon type="close" class="red-close" />
-        <span>Exit</span>
+        <span>{{ exitText }}</span>
       </a>
     </div>
   </div>

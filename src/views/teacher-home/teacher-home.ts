@@ -1,3 +1,4 @@
+import { TeacherHome } from "./../../locales/localeid";
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
@@ -56,6 +57,10 @@ export default defineComponent({
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const accessDenied = computed(() => fmtMsg(CommonLocale.CommonAccessDenied));
+    const welcomeText = computed(() => fmtMsg(TeacherHome.Welcome));
+    const scheduleText = computed(() => fmtMsg(TeacherHome.Schedule));
+    const cancelText = computed(() => fmtMsg(TeacherHome.Cancel));
+    const submitText = computed(() => fmtMsg(TeacherHome.Submit));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
@@ -82,11 +87,12 @@ export default defineComponent({
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
+          deviceTesterRef.value?.handleGoToClassSuccess();
           await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {
         loadingStartClass.value = false;
-        const message = err.body.message;
+        const message = err?.body?.message;
         if (message) {
           messageStartClass.value = message;
         }
@@ -139,6 +145,7 @@ export default defineComponent({
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       infoStart.value = { teacherClass, groupId };
       selectedGroupId.value = groupId;
+
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         await getListLessonByUnit(teacherClass, groupId);
@@ -152,22 +159,28 @@ export default defineComponent({
         loadingInfo.value = true;
         const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
         const listUnit: UnitAndLesson[] = [];
-        for (let i = 14; i <= 40; i++) {
-          listUnit.push({ unit: i, lesson: [], sequence: [] });
-        }
 
         if (response && response.success) {
-          listUnit.map((singleUnit: UnitAndLesson, index) => {
-            let lessonNumber = 1;
-            response.data.map((res: any) => {
-              if (singleUnit.unit == res.unitId) {
+          response.data.map((res: any) => {
+            let isUnitExist = false;
+            listUnit.map((singleUnit: UnitAndLesson) => {
+              if (res.unitId == singleUnit.unit) {
+                isUnitExist = true;
+              }
+            });
+            if (!isUnitExist) {
+              listUnit.push({ unit: res.unitId, sequence: [] });
+            }
+          });
+          response.data.map((res: any) => {
+            listUnit.map((singleUnit: UnitAndLesson, index) => {
+              if (res.unitId == singleUnit.unit) {
                 listUnit[index].sequence.push(res.sequence);
-                listUnit[index].lesson.push(lessonNumber);
-                lessonNumber++;
               }
             });
           });
         }
+        listUnit.sort((a, b) => a.unit - b.unit);
         unitInfo.value = listUnit;
       } catch (err) {
         const message = err?.body?.message;
@@ -293,6 +306,10 @@ export default defineComponent({
       unitInfo,
       loadingInfo,
       deviceTesterRef,
+      welcomeText,
+      scheduleText,
+      cancelText,
+      submitText,
     };
   },
 });

@@ -1,3 +1,4 @@
+import { StudentClassHeaderLocale } from "./../../../../locales/localeid";
 import { ClassRoomModel, TeacherModel } from "@/models";
 import { Paths } from "@/utils/paths";
 import { Modal } from "ant-design-vue";
@@ -5,7 +6,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import gsap from "gsap";
-import { MatIcon } from "@/commonui";
+import { fmtMsg, MatIcon } from "@/commonui";
 
 export default defineComponent({
   props: {},
@@ -19,6 +20,7 @@ export default defineComponent({
     const classAction = computed(() => store.getters["studentRoom/classAction"]);
     const classInfo = computed<ClassRoomModel>(() => store.getters["studentRoom/classInfo"]);
     const classActionImageRef = ref<HTMLDivElement | null>(null);
+    const exitText = computed(() => fmtMsg(StudentClassHeaderLocale.Exit));
 
     watch(classAction, () => {
       if (classActionImageRef.value) {
@@ -48,6 +50,7 @@ export default defineComponent({
       classInfo,
       onClickEnd,
       classActionImageRef,
+      exitText,
     };
   },
 });

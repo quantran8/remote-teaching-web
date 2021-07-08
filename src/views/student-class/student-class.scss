@@ -11,6 +11,9 @@
   @media (min-width: $md) {
     grid-template-rows: auto 1fr auto;
   }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-rows: auto 1fr 30px;
+  }
 }
 
 .sc-message {
@@ -49,6 +52,14 @@
     grid-template-rows: 60% 40%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-rows: 60% 40%;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 1fr 105px;
+    padding: 0;
   }
   /* ----------- iPad 1, 2, Mini and Air ----------- */
   /* Portrait */
@@ -97,6 +108,12 @@
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-end: unset;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: unset;
+    grid-column-end: unset;
   }
   @media (min-width: $lg) {
     grid-column-end: 2;
@@ -197,18 +214,8 @@
   display: grid;
   grid-auto-flow: column;
   align-content: center;
-  padding: 10px;
-  padding-top: 0;
-  @media (min-width: $md) {
-    grid-auto-flow: row;
-    justify-content: center;
-
-    &__avatar {
-      justify-self: center;
-    }
-  }
+  padding: 0 10px 10px;
   @media (min-width: $xl) {
-    grid-auto-flow: column;
     column-gap: 40px;
   }
 }

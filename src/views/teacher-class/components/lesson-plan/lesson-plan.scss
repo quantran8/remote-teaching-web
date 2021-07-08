@@ -15,7 +15,6 @@
     background: #b62424;
     color: #fff;
     position: relative;
-
     .lesson-container__header-title {
       padding: 10px 15px;
       font-size: 24px;
@@ -25,11 +24,19 @@
       &--wrap {
         border-bottom: 3px solid white;
         display: inline-block;
+        &.shortcut {
+          margin-left: 230px;
+          border-bottom: 0px;
+        }
         &__lesson {
-          font-size: 18px;
+          font-size: 20px;
           display: inline-block;
         }
         &__unit {
+          &.shortcut {
+            font-size: 20px;
+            margin-right: 0px;
+          }
           display: inline-block;
           margin-right: 10px;
         }
@@ -41,7 +48,7 @@
       font-weight: bold;
       text-decoration: none;
       position: absolute;
-      top: -11px;
+      top: -8px;
       right: 15px;
       cursor: pointer;
     }

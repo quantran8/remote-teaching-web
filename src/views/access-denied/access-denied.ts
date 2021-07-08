@@ -1,4 +1,4 @@
-import { AccessDeniedLocale } from "./../../locales/localeid";
+import { AccessDeniedLocale } from "@/locales/localeid";
 import { fmtMsg } from "@/commonui";
 import { computed, defineComponent } from "vue";
 

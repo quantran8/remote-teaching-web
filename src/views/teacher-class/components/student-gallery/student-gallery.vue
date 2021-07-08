@@ -7,7 +7,7 @@
         <p class="tc-one__time">{{ timeCount }}</p>
         <div class="tc-one__action" @click="backToClass">
           <img class="tc-one__action__image" src="@/assets/images/exit-1-1.png" />
-          <span class="tc-one__action__text">Return</span>
+          <span class="tc-one__action__text">{{ returnText }}</span>
         </div>
       </div>
     </div>
