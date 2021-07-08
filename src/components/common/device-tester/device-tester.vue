@@ -7,6 +7,7 @@
       :title="SystemCheck"
       width="700px"
       :footer="null"
+      :maskClosable="!preventCloseModal"
     >
       <div>
         <div class="device-tester__micro block-gutter">
