@@ -55,6 +55,8 @@ export default defineComponent({
       if (props.setModeOne && !isNotJoinned.value && props.student?.id !== oneAndOne.value) {
         if (currentExposure.value?.id) {
           await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+        }
+        if (currentExposureItemMedia.value) {
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
