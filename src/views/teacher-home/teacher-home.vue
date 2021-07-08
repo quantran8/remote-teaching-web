@@ -54,6 +54,7 @@
       ref="deviceTesterRef"
       :loading="popUpLoading"
       :messageStartClass="messageStartClass"
+      :info-start="infoStart"
     />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
