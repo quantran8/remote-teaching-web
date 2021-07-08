@@ -83,13 +83,7 @@
 
 .student {
   $self: &;
-  //$card-figure-size: 80px;
-  //$card-figure-size-xl: 90px;
-  //$card-figure-size-xxl: 120px;
   $radius: 10px;
-  
-  // @include grid(2,2%);
-  
   &.expand {
     transition: all 0.1s ease-out;
     z-index: 25;
@@ -98,13 +92,13 @@
     &:not(.one-student-mode) {
       .student__info,
       .student-action {
-        transform: scale(0.5);
-        @media (min-width: $xl) {
-          transform: scale(0.6);
-        }
-        @media (min-width: $large-lap) {
-          transform: scale(0.5);
-        }
+        transform: scale(0.7);
+        //@media (min-width: $xl) {
+        //  transform: scale(0.6);
+        //}
+        //@media (min-width: $large-lap) {
+        //  transform: scale(0.5);
+        //}
       }
     }
   }

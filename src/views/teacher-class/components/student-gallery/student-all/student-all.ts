@@ -18,8 +18,9 @@ export default defineComponent({
 
     const studentLayout = ref<number>(3);
     const totalOnlineStudents = ref<number>(0);
+    const scaleVideoOption = ref<number>(1.6);
     const lessonPlanCss = ref<string>("");
-
+    
     watch(isGalleryView, value => {
       lessonPlanCss.value = value ? "" : "lesson-plan-mode";
     });
@@ -28,11 +29,14 @@ export default defineComponent({
       const onlineStudents = value.filter(s => s.status === InClassStatus.JOINED).length;
       totalOnlineStudents.value = onlineStudents;
       if (onlineStudents <= 3) {
+        scaleVideoOption.value = 1.6;
         studentLayout.value = 3;
       } else if (onlineStudents <= 6) {
         studentLayout.value = 6;
+        scaleVideoOption.value = 1.4;
       } else {
         studentLayout.value = 12;
+        scaleVideoOption.value = 2;
       }
     }, {
       deep: true
@@ -54,7 +58,8 @@ export default defineComponent({
       focusedStudent,
       studentLayout,
       lessonPlanCss,
-      totalOnlineStudents
+      totalOnlineStudents,
+      scaleVideoOption
     };
   },
 });

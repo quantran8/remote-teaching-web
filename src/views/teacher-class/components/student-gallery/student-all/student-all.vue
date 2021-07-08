@@ -3,7 +3,7 @@
     No student has joined the class yet
   </h2>
   <div :class="oneAndOneStatus ? 'oneToOne' : lessonPlanCss + ' student-list student-layout-' + studentLayout">
-    <StudentCard v-for="student in topStudents" :key="student.id" :student="student" :setModeOne="true" :focusStudentId="focusedStudent"/>
+    <StudentCard v-for="student in topStudents" :key="student.id" :scaleOption="scaleVideoOption" :student="student" :setModeOne="true" :focusStudentId="focusedStudent"/>
   </div>
 </template>
 <style lang="scss" scoped src="./student-all.scss"></style>

@@ -9,7 +9,7 @@
       left: focusedStudent && !isOneToOneStudent && currentPosition.right === 0 ? `${currentPosition?.x}px` : '',
       right: focusedStudent && !isOneToOneStudent && currentPosition.right > 0 ? `${currentPosition?.right}px` : '',
       position: focusedStudent && !isOneToOneStudent ? 'sticky' : '',
-      transform: focusedStudent && !isOneToOneStudent ? 'scale(2)' : '',
+      transform: focusedStudent && !isOneToOneStudent ? `scale(${scaleOption})` : '',
     }"
   >
     <div class="student__figure" @mouseover="onMouseChange(true)">
