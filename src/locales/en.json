@@ -137,10 +137,16 @@
 	"teacher_class_gallery.disable_all": "Disable all",
 	"teacher_class_gallery.show_all": "Show All",
 	"teacher_class_gallery.hide_all": "Hide All",
+	"teacher_class_gallery.no_student_join_class": "No student has joined the class yet",
 	"teacher_home.welcome": "Welcome",
 	"teacher_home.schedule": "Schedule",
 	"teacher_home.cancel": "Cancel",
 	"teacher_home.submit": "Submit",
 	"teacher_home.group": "Group",
-  	"teacher_home.next": "Next:"
+  	"teacher_home.next": "Next:",
+	"lost_network.message": "So Sorry! It seems you lost network connectivity.",
+	"layout.edit_profile": "Edit Profile",
+	"layout.test_connect": "Test Connection",
+	"layout.sign_out": "Sign Out",
+	"layout.privacy_policy": "Privacy Policy"
 }
