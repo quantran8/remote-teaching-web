@@ -95,6 +95,7 @@
     &__title {
       font-size: 36px;
       @include ellipse(1, 36px);
+      overflow: unset;
     }
   }
 }
