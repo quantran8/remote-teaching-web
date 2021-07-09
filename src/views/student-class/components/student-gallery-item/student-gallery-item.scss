@@ -20,6 +20,7 @@
   $star-size-xl: 30px;
 
   width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 1px solid #030303;
 
@@ -38,7 +39,7 @@
     -webkit-user-drag: none;
   }
   &__video {
-    height: 60px;
+    height: 100%;
     border-radius: 50%;
     // For safari
     &::v-deep video {
@@ -48,6 +49,7 @@
   }
 
   &__container {
+    height: 100%;
     position: relative;
     border-radius: 50%;
     // For safari
@@ -104,16 +106,14 @@
 
   &--current {
     width: $current-item-size;
-    #{$self}__video {
-      height: $current-item-size;
-    }
+    height: $current-item-size;
   }
 
   @media (min-width: $md) {
     &--current {
       width: $current-item-size-md;
+      height: $current-item-size-md;
       #{$self}__video {
-        height: $current-item-size-md;
         border-width: 5px;
       }
     }
@@ -124,6 +124,7 @@
   @media only screen and (max-width: 812px) and (orientation: landscape) {
     &--current {
       width: $current-item-size;
+      height: $current-item-size;
       #{$self}__video {
         width: 100%;
         height: $current-item-size;
@@ -155,9 +156,7 @@
   @media (min-width: $xxl) {
     &--current {
       width: $current-item-size-xxl;
-      #{$self}__video {
-        height: $current-item-size-xxl;
-      }
+      height: $current-item-size-xxl;
     }
     &__video {
       max-height: 500px;
