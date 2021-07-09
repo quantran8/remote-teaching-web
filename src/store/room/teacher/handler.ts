@@ -274,6 +274,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
           },
           { root: true },
         );
+        commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
+        commit("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
       }
     },
     onTeacherSetWhiteboard: async (payload: RoomModel) => {

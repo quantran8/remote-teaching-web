@@ -25,11 +25,11 @@
         </div>
         <template v-slot:popup>
           <div class="menu-item" @click.prevent="onClickOpenAccountPage">
-            <div class="item-title">Edit Profile</div>
+            <div class="item-title">{{ editProfileText }}</div>
             <BaseIcon class="item-action" name="reply" />
           </div>
-          <div class="menu-item" @click.prevent="onClickTestDevice">Test Connection</div>
-          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
+          <div class="menu-item" @click.prevent="onClickTestDevice">{{ testConnectText }}</div>
+          <div class="menu-item" @click.prevent="onClickSignOut">{{ signOutText }}</div>
         </template>
       </MenuItem>
     </slot>

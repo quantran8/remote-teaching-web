@@ -286,6 +286,7 @@ export default defineComponent({
       if (studentOneAndOneId.value) {
         oneOneIdNear.value = studentOneAndOneId.value;
         oneOneStatus.value = true;
+        processCanvasWhiteboard();
         if (studentOneAndOneId.value !== student.value.id) {
           // disable shapes of student not 1-1
           canvas.isDrawingMode = false;
@@ -306,6 +307,7 @@ export default defineComponent({
         if (student.value.id === oneOneIdNear.value) {
           canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
           // render shapes objects again
+          processCanvasWhiteboard();
           setTimeout(() => {
             teacherSharingShapes(teacherShapes.value, null);
             studentSharingShapes();
