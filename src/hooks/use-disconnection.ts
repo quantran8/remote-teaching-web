@@ -1,5 +1,6 @@
+import { LostNetwork } from "./../locales/localeid";
 import { useStore } from "vuex";
-import { LoginInfo, RoleName } from "@/commonui";
+import { fmtMsg, LoginInfo, RoleName } from "@/commonui";
 import { Modal } from "ant-design-vue";
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -17,10 +18,10 @@ const TEACHER_PATH_REGEX = /\/teacher/;
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
   const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
-  const myTeacherDisconnected = computed<boolean>(() => getters["studentRoom/teacherIsDisconnected"]);
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
   const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
   const route = useRoute();
+  const messageText = computed(() => fmtMsg(LostNetwork.Message));
 
   let timeoutId: any;
   const router = useRouter();
@@ -30,6 +31,7 @@ export const useDisconnection = () => {
   watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
     const pathname = window.location.pathname;
     const matchIndex = pathname.search(TEACHER_PATH_REGEX);
+
     if (matchIndex < 0) {
       if (prevIsDisconnected !== isDisconnected && isDisconnected) {
         await dispatch("teacherRoom/leaveRoom");
@@ -40,7 +42,7 @@ export const useDisconnection = () => {
         }, TEACHER_RECONNECT_TIMING);
         audioSource.teacherTryReconnectSound.play();
         modalRef = Modal.warning({
-          content: "So Sorry! It seems you lost network connectivity.",
+          content: messageText.value,
           onOk: () => {
             console.log("OK");
           },
@@ -82,7 +84,7 @@ export const useDisconnection = () => {
       timeoutId = setTimeout(async () => {
         audioSource.reconnectFailedSound.play();
         Modal.warning({
-          content: "So Sorry! It seems you lost network connectivity.",
+          content: messageText.value,
           onOk: () => {
             console.log("OK");
           },

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isShow"
+    v-if="isShow && !isNotJoinned"
     :class="['student', focusedStudent && 'expand', isOneToOneStudent && 'one-student-mode']"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
@@ -9,7 +9,7 @@
       left: focusedStudent && !isOneToOneStudent && currentPosition.right === 0 ? `${currentPosition?.x}px` : '',
       right: focusedStudent && !isOneToOneStudent && currentPosition.right > 0 ? `${currentPosition?.right}px` : '',
       position: focusedStudent && !isOneToOneStudent ? 'sticky' : '',
-      transform: focusedStudent && !isOneToOneStudent ? 'scale(2)' : '',
+      transform: focusedStudent && !isOneToOneStudent ? `scale(${scaleOption})` : '',
     }"
   >
     <div class="student__figure" @mouseover="onMouseChange(true)">
@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi" />
+    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi"  alt="Low bandwidth"/>
     <div class="student__info" @mouseover="onMouseChange(true)">
       <p
         class="student__info--name"

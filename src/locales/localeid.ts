@@ -101,9 +101,6 @@ export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";
   static SelectDevice = "device_tester.select_device";
-  static Mute = "device_tester.mute";
-  static UnMute = "device_tester.un_mute";
-  static MicTest = "device_tester.mic_test";
   static CheckCam = "device_tester.check_cam";
   static CamOff = "device_tester.cam_off";
   static ClassStatus = "device_tester.class_status";
@@ -183,6 +180,7 @@ export class TeacherClassGallery {
   static DisableAll = "teacher_class_gallery.disable_all";
   static ShowAll = "teacher_class_gallery.show_all";
   static HideAll = "teacher_class_gallery.hide_all";
+  static NoStudentJoinClass = "teacher_class_gallery.no_student_join_class";
 }
 
 export class TeacherHome {
@@ -192,4 +190,16 @@ export class TeacherHome {
   static Submit = "teacher_home.submit";
   static Group = "teacher_home.group";
   static Next = "teacher_home.next";
+}
+
+export class LostNetwork {
+  static Message = "lost_network.message";
+}
+
+export class Layout {
+  static EditProfile = "layout.edit_profile";
+  static TestConnect = "layout.test_connect";
+  static SignOut = "layout.sign_out";
+  static PrivacyPolicy = "layout.privacy_policy";
+  static CopyRight = "layout.copy_right";
 }

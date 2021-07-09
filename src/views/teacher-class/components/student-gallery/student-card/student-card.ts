@@ -25,6 +25,7 @@ export default defineComponent({
     student: { type: Object as () => StudentState, required: true },
     isLarge: Boolean,
     focusStudentId: String,
+    scaleOption: Number
   },
   setup(props) {
     const store = useStore();
@@ -51,9 +52,13 @@ export default defineComponent({
     });
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const onOneAndOne = async () => {
-      if (props.setModeOne && !isNotJoinned.value && props.student.id !== oneAndOne.value) {
-        await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
-        await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+      if (props.setModeOne && !isNotJoinned.value && props.student?.id !== oneAndOne.value) {
+        if (currentExposure.value?.id) {
+          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
+        }
+        if (currentExposureItemMedia.value) {
+          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
+        }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
