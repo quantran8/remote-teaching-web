@@ -1,5 +1,3 @@
-import { StudentState, TeacherState } from "@/store/room/interface";
-import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -11,9 +9,10 @@ import AgoraRTC, {
   IRemoteTrack,
   UID,
   VideoEncoderConfigurationPreset,
+  AgoraRTCStats,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
-import { AgoraError, AgoraConnectionState } from "./interfaces";
+import { AgoraError } from "./interfaces";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -231,6 +230,11 @@ export class AgoraClient implements AgoraClientSDK {
   private _getRemoteUser(userId: string): IAgoraRTCRemoteUser | undefined {
     if (!this.client) return undefined;
     return this.client.remoteUsers.find(e => isEqual(e.uid + "", userId));
+  }
+
+  async getBandwidth() {
+    const stats = this.client.getRTCStats();
+    return stats.OutgoingAvailableBandwidth / 1024;
   }
 
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {

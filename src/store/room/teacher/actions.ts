@@ -27,7 +27,6 @@ import { Paths } from "@/utils/paths";
 import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
-import { checkBandwidth } from "@/utils/checkBandwidth";
 import { MediaStatus } from "@/models";
 
 const networkQualityStats = {
@@ -128,7 +127,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
       classId: state.info.id,
       teacherId: state.user?.id,
     });
-    checkBandwidth();
+    setInterval(() => {
+      state.manager?.getBandwidth().then(speedMbps => {
+        RemoteTeachingService.putTeacherBandwidth(speedMbps.toFixed(2));
+      });
+    }, 300000); // 300000 = 5 minutes
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (_user, _mediaType) => {
         dispatch("updateAudioAndVideoFeed", {});
