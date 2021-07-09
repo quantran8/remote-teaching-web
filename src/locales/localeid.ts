@@ -101,9 +101,6 @@ export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";
   static SelectDevice = "device_tester.select_device";
-  static Mute = "device_tester.mute";
-  static UnMute = "device_tester.un_mute";
-  static MicTest = "device_tester.mic_test";
   static CheckCam = "device_tester.check_cam";
   static CamOff = "device_tester.cam_off";
   static ClassStatus = "device_tester.class_status";

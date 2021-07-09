@@ -7,11 +7,13 @@
       :title="SystemCheck"
       width="700px"
       :footer="null"
+      :maskClosable="!preventCloseModal"
     >
       <div>
         <div class="device-tester__micro block-gutter">
           <div class="device-tester__micro--header">
             <div class="device-tester__micro--header__title">{{ CheckMic }}</div>
+            <div class="device-tester__micro--header__switch"><Switch v-model:checked="isOpenMic" /></div>
             <div class="device-tester__micro--header__select">
               <Select
                 :placeholder="SelectDevice"
@@ -28,13 +30,7 @@
               </Select>
             </div>
           </div>
-          <div class="device-tester__micro--switch">
-            <span class="device-tester__micro--switch__text" v-if="isOpenMic">{{ Mute }}</span>
-            <span class="device-tester__micro--switch__text" v-else>{{ UnMute }}</span>
-            <Switch v-model:checked="isOpenMic" />
-          </div>
           <div class="device-tester__micro--progress">
-            <div class="device-tester__micro--progress__title">{{ MicTest }}</div>
             <div class="device-tester__micro--progress__wave">
               <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
             </div>
@@ -77,14 +73,21 @@
         <div v-if="hasJoinAction" class="device-tester__cl-status">
           <div v-if="isParent" class="device-tester__cl-status--student">
             <div class="device-tester__cl-status--student__title">{{ ClassStatus }}</div>
-            <div v-if="!classIsActive">
-              {{ getRoomInfoError ? getRoomInfoError : DefaultMessage1 }}
+            <div class="device-tester__cl-status--student__message">
+              <span v-if="!classIsActive">
+                {{ getRoomInfoError !== 0 ? getRoomInfoError : DefaultMessage1 }}
+              </span>
+              <span v-else>
+                {{ DefaultMessage2 }}
+              </span>
             </div>
-            <div v-else>
-              {{ DefaultMessage2 }}
-              <span class="device-tester__cl-status--student__join"
-                ><Button @click="goToClass" type="primary">{{ JoinNow }} </Button></span
-              >
+            <div class="device-tester__cl-status--student__button">
+              <div class="device-tester__cl-status--student__button--1">
+                <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
+              </div>
+              <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">{{
+                JoinNow
+              }}</Button>
             </div>
           </div>
           <div v-if="isTeacher" class="device-tester__cl-status--teacher">
@@ -107,7 +110,9 @@
               <div class="device-tester__cl-status--teacher__button--1">
                 <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
               </div>
-              <Button width="100px" @click="handleSubmit" type="primary" :loading="loading">{{ JoinSession }}</Button>
+              <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">{{
+                JoinSession
+              }}</Button>
             </div>
             <div class="device-tester__cl-status--teacher__msg">
               {{ messageStartClass }}
