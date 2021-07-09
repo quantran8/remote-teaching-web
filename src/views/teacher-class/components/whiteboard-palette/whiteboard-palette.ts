@@ -577,6 +577,7 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
         }, 800);
+        await processCanvasWhiteboard();
         listenSelfTeacher();
       }
     });

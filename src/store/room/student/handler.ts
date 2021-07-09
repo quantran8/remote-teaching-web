@@ -342,7 +342,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         },
       );
     },
-    onTeacherSetOneToOne: async (payload: { status: boolean; id: string, drawing: any }) => {
+    onTeacherSetOneToOne: async (payload: { status: boolean; id: string, drawing: any, student: any, focusTab: any }) => {
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -361,11 +361,16 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
       } else {
         await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        commit("updateIsPalette", {
+          id: payload.student.id,
+          isPalette: payload.student.isPalette,
+        });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
