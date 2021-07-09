@@ -129,6 +129,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     });
     setInterval(() => {
       state.manager?.getBandwidth().then(speedMbps => {
+        if (speedMbps == 0) return;
         RemoteTeachingService.putTeacherBandwidth(speedMbps.toFixed(2));
       });
     }, 300000); // 300000 = 5 minutes

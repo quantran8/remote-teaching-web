@@ -163,6 +163,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
     setInterval(() => {
       state.manager?.getBandwidth().then(speedMbps => {
+        if (speedMbps == 0) return;
         RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", speedMbps.toFixed(2));
       });
     }, 300000); // 300000 = 5 minutes
