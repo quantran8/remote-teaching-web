@@ -162,15 +162,20 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
     }
     let currentBandwidth = 0;
+    let time = 0;
     setInterval(() => {
       state.manager?.getBandwidth().then(speedMbps => {
-        RemoteTeachingService.putStudentBandwidth(
-          state.user ? state.user.id : "",
-          speedMbps == 0 ? currentBandwidth.toFixed(2) : speedMbps.toFixed(2),
-        );
-        speedMbps > 0 ? (currentBandwidth = speedMbps) : (currentBandwidth = 0);
+        if (speedMbps > 0) {
+          currentBandwidth = speedMbps;
+        }
+        time += 1;
+        if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) { //mean 5 minutes
+          console.info("LOG BANDWIDTH",currentBandwidth.toFixed(2));
+          RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2),);
+          currentBandwidth = 0;
+        }
       });
-    }, 300000); // 300000 = 5 minutes
+    }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
