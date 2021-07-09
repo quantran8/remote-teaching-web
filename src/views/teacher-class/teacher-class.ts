@@ -106,6 +106,7 @@ export default defineComponent({
         isSidebarCollapsed.value = true;
         await setClassView(ClassView.GALLERY);
       }
+      await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
