@@ -127,10 +127,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
       classId: state.info.id,
       teacherId: state.user?.id,
     });
+    let currentBandwidth = 0;
     setInterval(() => {
       state.manager?.getBandwidth().then(speedMbps => {
-        if (speedMbps == 0) return;
-        RemoteTeachingService.putTeacherBandwidth(speedMbps.toFixed(2));
+        RemoteTeachingService.putTeacherBandwidth(speedMbps == 0 ? currentBandwidth.toFixed(2) : speedMbps.toFixed(2));
+        speedMbps > 0 ? (currentBandwidth = speedMbps) : (currentBandwidth = 0);
       });
     }, 300000); // 300000 = 5 minutes
     const agoraEventHandler: AgoraEventHandler = {

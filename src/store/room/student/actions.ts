@@ -161,10 +161,14 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
+    let currentBandwidth = 0;
     setInterval(() => {
       state.manager?.getBandwidth().then(speedMbps => {
-        if (speedMbps == 0) return;
-        RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", speedMbps.toFixed(2));
+        RemoteTeachingService.putStudentBandwidth(
+          state.user ? state.user.id : "",
+          speedMbps == 0 ? currentBandwidth.toFixed(2) : speedMbps.toFixed(2),
+        );
+        speedMbps > 0 ? (currentBandwidth = speedMbps) : (currentBandwidth = 0);
       });
     }, 300000); // 300000 = 5 minutes
     state.manager?.agoraClient.registerEventHandler({
