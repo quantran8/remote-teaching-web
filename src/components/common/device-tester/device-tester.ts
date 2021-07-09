@@ -62,12 +62,14 @@ export default defineComponent({
       try {
         videoTrack = await AgoraRTC.createCameraVideoTrack();
       } catch (error) {
+        console.log("setupAgora error when create videoTrack =>", error);
         preventCloseModal.value = false;
         agoraCamError.value = true;
       }
       try {
         audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       } catch (error) {
+        console.log("setupAgora error when create audioTrack =>", error);
         preventCloseModal.value = false;
         agoraMicError.value = true;
       }
@@ -98,6 +100,7 @@ export default defineComponent({
         }
       } catch (error) {
         console.log("setupCam error => ", error);
+        agoraCamError.value = true;
       }
       try {
         const mics = await AgoraRTC.getMicrophones();
@@ -113,6 +116,7 @@ export default defineComponent({
         }
       } catch (error) {
         console.log("setupMic error => ", error);
+        agoraMicError.value = true;
       }
     };
 

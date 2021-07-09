@@ -50,8 +50,8 @@ export default defineComponent({
     const currentStudent = ref<ChildModel>();
     const getRoomInfoError = ref<string>("");
     const goToClass = () => {
-      deviceTesterRef.value?.handleGoToClassSuccess();
       router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
+      deviceTesterRef.value?.handleGoToClassSuccess();
     };
     const onClickChild = async (student: ChildModel) => {
       currentStudent.value = student;
