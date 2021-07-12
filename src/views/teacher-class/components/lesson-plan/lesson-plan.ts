@@ -114,7 +114,6 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
-      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       if (nextPrev === NEXT_EXPOSURE) {
         if (!canNext.value) return;
         if (nextExposureItemMedia.value !== undefined) {
@@ -140,6 +139,7 @@ export default defineComponent({
           onClickExposure(prevCurrentExposure.value);
         }
       }
+      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
     watch(page, () => {

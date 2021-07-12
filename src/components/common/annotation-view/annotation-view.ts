@@ -1,4 +1,4 @@
-import {computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
