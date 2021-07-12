@@ -53,6 +53,10 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
   }
 
+  getBandwidth() {
+    return this.agoraClient.getBandwidth();
+  }
+
   async close() {
     return this.agoraClient.reset();
   }

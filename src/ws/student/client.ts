@@ -19,7 +19,7 @@ export class StudentWSClient extends GLSocketClient {
     isMuteAudio = MediaStatus.noStatus,
     isHideVideo = MediaStatus.noStatus,
   ) {
-    const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+    const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
     const params: JoinRoomParams = {
       roomId: roomId,
       studentId: studentId,

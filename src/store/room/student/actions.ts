@@ -1,4 +1,3 @@
-import { checkBandwidth } from "@/utils/checkBandwidth";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -162,7 +161,21 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
       });
     }
-    checkBandwidth(state.user ? state.user.id : "");
+    let currentBandwidth = 0;
+    let time = 0;
+    setInterval(() => {
+      state.manager?.getBandwidth().then(speedMbps => {
+        if (speedMbps > 0) {
+          currentBandwidth = speedMbps;
+        }
+        time += 1;
+        if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) { //mean 5 minutes
+          console.info("LOG BANDWIDTH",currentBandwidth.toFixed(2));
+          RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2),);
+          currentBandwidth = 0;
+        }
+      });
+    }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
