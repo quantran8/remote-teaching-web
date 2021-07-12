@@ -20,6 +20,12 @@ const mutations: MutationTree<AppState> = {
   setHideVideo(state, payload: { status: number }) {
     state.isHideVideo = payload.status;
   },
+  setSignalRStatus(state, payload: { status: number }) {
+    state.signalRStatus = payload.status;
+  },
+  setClassRoomStatus(state, payload: { status: number }) {
+    state.classRoomStatus = payload.status;
+  },
 };
 
 export default mutations;
