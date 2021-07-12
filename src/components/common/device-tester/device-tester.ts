@@ -26,6 +26,11 @@ export default defineComponent({
   },
   props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError", "infoStart", "fromParentComponent"],
   emits: ["go-to-class", "on-join-session"],
+  async created() {
+    const { dispatch } = useStore();
+    dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
+    dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
+  },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const isTeacher = computed(() => getters["auth/isTeacher"]);
@@ -55,7 +60,6 @@ export default defineComponent({
     const currentLesson = ref();
     const listLessonByUnit = ref();
     const preventCloseModal = ref(true);
-
     const setupAgora = async () => {
       let audioTrack = null;
       let videoTrack = null;
