@@ -20,6 +20,12 @@ const getters: GetterTree<AppState, any> = {
   isHideVideo(state: AppState): number {
     return state.isHideVideo;
   },
+  classRoomStatus(state: AppState): number {
+    return state.classRoomStatus;
+  },
+  signalRStatus(state: AppState): number {
+    return state.signalRStatus;
+  },
 };
 
 export default getters;

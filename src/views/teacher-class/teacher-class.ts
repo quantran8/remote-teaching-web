@@ -18,6 +18,7 @@ import {
   TeacherPageHeader,
   WhiteboardPalette,
 } from "./components";
+import { ClassRoomStatus } from "@/models";
 export default defineComponent({
   components: {
     PreventEscFirefox,
@@ -40,6 +41,7 @@ export default defineComponent({
     const router = useRouter();
     const { classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const classRoomState = computed(() => getters["app/classRoomStatus"]);
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
@@ -51,6 +53,9 @@ export default defineComponent({
         role: RoleName.teacher,
         browserFingerPrinting: visitorId,
       });
+      if (classRoomState.value === ClassRoomStatus.InDashBoard) {
+        await dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      }
     } catch (err) {
       if (err.code === ErrorCode.ConcurrentUserException) {
         await router.push("/teacher");

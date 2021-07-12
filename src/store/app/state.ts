@@ -34,7 +34,7 @@ const state: AppState = {
   isMuteAudio: MediaStatus.noStatus,
   isHideVideo: MediaStatus.noStatus,
   signalRStatus: SignalRStatus.NoStatus,
-  classRoomStatus: ClassRoomStatus.InClass,
+  classRoomStatus: ClassRoomStatus.InDashBoard,
 };
 
 export default state;
