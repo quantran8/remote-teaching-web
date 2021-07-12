@@ -9,6 +9,7 @@ interface LessonMutationInterface<S> {
   setExposureStatus(s: S, p: { id: string; status: ExposureStatus }): void;
   setTotalTime(s: S, payload: { time: string }): void;
   setPlayedTime(s: S, payload: { time: string }): void;
+  endCurrentContent(s: S, payload: any): void;
 }
 
 interface LessonMutation<S> extends MutationTree<S>, LessonMutationInterface<S> {}
@@ -49,7 +50,9 @@ const mutations: LessonMutation<LessonState> = {
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {
     const exposure = s.exposures.find(e => e.id === p.id);
     if (exposure) {
-      exposure.status = p.status;
+      if (status) {
+        exposure.status = p.status;
+      }
       if (exposure === s.currentExposure) {
         s.currentExposure = undefined;
       }
@@ -75,6 +78,9 @@ const mutations: LessonMutation<LessonState> = {
         s.previousExposureItemMedia = firstItem.media[0];
       }
     }
+  },
+  endCurrentContent(s: LessonState, payload: any) {
+    s.currentExposure = undefined;
   },
   setPreviousExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.previousExposure) return;

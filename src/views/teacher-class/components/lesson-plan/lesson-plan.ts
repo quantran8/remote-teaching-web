@@ -76,16 +76,14 @@ export default defineComponent({
       const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems].filter(
         item => item.media[0]?.image?.url,
       )[0]?.id;
-      setTimeout(() => {
-        dispatch("teacherRoom/setCurrentExposureMediaItem", {
-          id: firstItemMediaNewExposureId,
-        });
-      }, 0);
 
       await dispatch("teacherRoom/setMode", {
         mode: 1,
       });
       await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+        id: firstItemMediaNewExposureId,
+      });
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
