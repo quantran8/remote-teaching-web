@@ -25,7 +25,7 @@ export default defineComponent({
     student: { type: Object as () => StudentState, required: true },
     isLarge: Boolean,
     focusStudentId: String,
-    scaleOption: Number
+    scaleOption: Number,
   },
   setup(props) {
     const store = useStore();
@@ -98,6 +98,11 @@ export default defineComponent({
         right: right,
       };
     }, 100);
+    watch(isNotJoinned, () => {
+      if (!isNotJoinned.value) {
+        handleResize();
+      }
+    });
     onMounted(() => {
       handleResize();
       window.addEventListener("resize", handleResize);
@@ -133,7 +138,7 @@ export default defineComponent({
       studentRef,
       currentPosition,
       isTurnOnCamera,
-	  isOneToOneStudent
+      isOneToOneStudent,
     };
   },
 });
