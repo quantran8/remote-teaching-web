@@ -36,6 +36,7 @@ export class GLSocketClient {
       .withUrl(this.options.url, options)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: retryContext => {
+          console.log("SIGNAL R DISCONNECTED");
           store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
           return DEFAULT_RECONNECT_TIMING;
         },
@@ -50,6 +51,7 @@ export class GLSocketClient {
     this._isConnected = false;
   }
   onClosed(payload: any) {
+    console.log("SIGNAL R CLOSED");
     const currentClassRoomStatus = store.getters["classRoomStatus"];
     if (currentClassRoomStatus === ClassRoomStatus.InClass) {
       store.dispatch("setSignalRStatus", { status: SignalRStatus.Closed });
