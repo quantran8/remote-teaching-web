@@ -68,7 +68,6 @@ export default defineComponent({
     const { getters, dispatch } = useStore();
     const router = useRouter();
     const hasConfirmed = ref(false);
-
     const isDesignatingTarget = computed(() => getters["interactive/isDesignatingTarget"]);
     const modalDesignateTarget = computed(() => getters["interactive/modalDesignateTarget"]);
     const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
@@ -147,6 +146,7 @@ export default defineComponent({
             await dispatch("teacherRoom/endClass");
             await dispatch("lesson/clearLessonData");
             await dispatch("teacherRoom/setClearBrush", {});
+            await dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
             await router.push("/teacher");
           } catch (err) {
             Modal.destroyAll();
