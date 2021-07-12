@@ -76,16 +76,14 @@ export default defineComponent({
       const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems].filter(
         item => item.media[0]?.image?.url,
       )[0]?.id;
-      setTimeout(() => {
-        dispatch("teacherRoom/setCurrentExposureMediaItem", {
-          id: firstItemMediaNewExposureId,
-        });
-      }, 0);
 
       await dispatch("teacherRoom/setMode", {
         mode: 1,
       });
       await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+        id: firstItemMediaNewExposureId,
+      });
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
@@ -114,7 +112,6 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
-      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       if (nextPrev === NEXT_EXPOSURE) {
         if (!canNext.value) return;
         if (nextExposureItemMedia.value !== undefined) {
@@ -140,6 +137,7 @@ export default defineComponent({
           onClickExposure(prevCurrentExposure.value);
         }
       }
+      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
     watch(page, () => {

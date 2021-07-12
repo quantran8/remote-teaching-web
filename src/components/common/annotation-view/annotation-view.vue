@@ -13,7 +13,7 @@
       borderBottomWidth: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '1px' : '0px',
     }"
   >
-    <div class="annotation-view-container__image" v-show="!isGalleryView">
+    <div class="annotation-view-container__image">
       <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
         <img src="@/assets/icon-select.png" alt="" />
       </div>
