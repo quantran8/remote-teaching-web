@@ -342,7 +342,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         },
       );
     },
-    onTeacherSetOneToOne: async (payload: { status: boolean; id: string, drawing: any, student: any, focusTab: any }) => {
+    onTeacherSetOneToOne: async (payload: { status: boolean; id: string, drawing: any, student: any, focusTab: any, isShowWhiteBoard: boolean }) => {
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -371,6 +371,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           id: payload.student.id,
           isPalette: payload.student.isPalette,
         });
+        commit("setWhiteboard", payload.isShowWhiteBoard);
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
