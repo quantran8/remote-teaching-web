@@ -1,4 +1,4 @@
-import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
@@ -182,7 +182,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onTeacherEndClass: async (_payload: any) => {
-      await dispatch("setIsJoined", { isJoined: false });
+      await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
       commit("setError", {
         errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
@@ -231,10 +231,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-
       commit("lesson/setExposureStatus", { id: payload.ContentId, status: ExposureStatus.COMPLETED }, { root: true });
-      if(payload.playedTime)
-      commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
+      if (payload.playedTime) commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
       commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
@@ -342,7 +340,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         },
       );
     },
-    onTeacherSetOneToOne: async (payload: { status: boolean; id: string, drawing: any, student: any, focusTab: any }) => {
+    onTeacherSetOneToOne: async (payload: { status: boolean; id: string; drawing: any; student: any; focusTab: any }) => {
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",

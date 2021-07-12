@@ -51,12 +51,15 @@ export default defineComponent({
     const router = useRouter();
     const { studentId, classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    const classRoomState = computed(() => getters["app/classRoomStatus"]);
+    const classRoomState = computed(() => getters["classRoomStatus"]);
 
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
     try {
+      if (classRoomState.value === ClassRoomStatus.InDashBoard) {
+        await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      }
       await dispatch("studentRoom/initClassRoom", {
         classId: classId,
         userId: loginInfo.profile.sub,
@@ -65,9 +68,6 @@ export default defineComponent({
         role: RoleName.parent,
         browserFingerPrinting: visitorId,
       });
-      if (classRoomState.value === ClassRoomStatus.InDashBoard) {
-        await dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InClass });
-      }
     } catch (err) {
       if (err.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Parent);

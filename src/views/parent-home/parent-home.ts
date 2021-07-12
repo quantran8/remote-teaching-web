@@ -52,7 +52,7 @@ export default defineComponent({
     const currentStudent = ref<ChildModel>();
     const getRoomInfoError = ref<string>("");
     const goToClass = async () => {
-      await store.dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
       router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
       deviceTesterRef.value?.handleGoToClassSuccess();
     };

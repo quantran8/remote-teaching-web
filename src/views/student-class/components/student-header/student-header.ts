@@ -38,9 +38,8 @@ export default defineComponent({
         cancelText: "No",
         okButtonProps: { type: "danger" },
         onOk: async () => {
-          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
+          await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
           await store.dispatch("studentRoom/studentLeaveClass");
-          await store.dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
           await router.push(Paths.Home);
         },
       });

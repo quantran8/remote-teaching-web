@@ -41,7 +41,7 @@ export default defineComponent({
     const router = useRouter();
     const { classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
-    const classRoomState = computed(() => getters["app/classRoomStatus"]);
+    const classRoomState = computed(() => getters["classRoomStatus"]);
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
@@ -54,7 +54,7 @@ export default defineComponent({
         browserFingerPrinting: visitorId,
       });
       if (classRoomState.value === ClassRoomStatus.InDashBoard) {
-        await dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InClass });
+        await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
       }
     } catch (err) {
       if (err.code === ErrorCode.ConcurrentUserException) {
@@ -143,10 +143,10 @@ export default defineComponent({
         okButtonProps: { type: "danger" },
         onOk: async () => {
           try {
+            await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
             await dispatch("teacherRoom/endClass");
             await dispatch("lesson/clearLessonData");
             await dispatch("teacherRoom/setClearBrush", {});
-            await dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
             await router.push("/teacher");
           } catch (err) {
             Modal.destroyAll();

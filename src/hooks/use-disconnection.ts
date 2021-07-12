@@ -6,6 +6,7 @@ import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import * as audioSource from "@/utils/audioGenerator";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { SignalRStatus } from "@/models";
 const fpPromise = FingerprintJS.load();
 
 //five minutes
@@ -19,19 +20,16 @@ export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
   const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
+  const signalRStatus = computed<number>(() => getters["signalRStatus"]);
   const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
   const route = useRoute();
-  const messageText = computed(() => fmtMsg(LostNetwork.Message));
-
   let timeoutId: any;
   const router = useRouter();
-
+  const messageText = computed(() => fmtMsg(LostNetwork.Message));
   //handle teacher disconnection in teacher's side
-  let modalRef: any;
   watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
     const pathname = window.location.pathname;
     const matchIndex = pathname.search(TEACHER_PATH_REGEX);
-
     if (matchIndex < 0) {
       if (prevIsDisconnected !== isDisconnected && isDisconnected) {
         await dispatch("teacherRoom/leaveRoom");
@@ -41,16 +39,9 @@ export const useDisconnection = () => {
           router.push("/teacher");
         }, TEACHER_RECONNECT_TIMING);
         audioSource.teacherTryReconnectSound.play();
-        modalRef = Modal.warning({
-          content: messageText.value,
-          onOk: () => {
-            console.log("OK");
-          },
-        });
         return;
       }
       if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
-        modalRef.destroy();
         const { classId } = route.params;
         if (!classId) {
           window.location.reload();
@@ -130,6 +121,40 @@ export const useDisconnection = () => {
     }
     if (isParent) {
       dispatch("studentRoom/setOffline");
+    }
+  });
+
+  watch(signalRStatus, currentSignalRStatus => {
+    const isTeacher: boolean = getters["auth/isTeacher"];
+    const isParent: boolean = getters["auth/isParent"];
+    switch (currentSignalRStatus) {
+      case SignalRStatus.Disconnected: {
+        if (isTeacher) {
+          dispatch("teacherRoom/setOffline");
+        }
+        if (isParent) {
+          dispatch("studentRoom/setOffline");
+        }
+        break;
+      }
+      case SignalRStatus.Closed: {
+        if (isTeacher) {
+          dispatch("teacherRoom/setOffline");
+        }
+        if (isParent) {
+          dispatch("studentRoom/setOffline");
+        }
+        break;
+      }
+      case SignalRStatus.NoStatus: {
+        if (isTeacher) {
+          dispatch("teacherRoom/setOnline");
+        }
+        if (isParent) {
+          dispatch("studentRoom/setOnline");
+        }
+        break;
+      }
     }
   });
 };

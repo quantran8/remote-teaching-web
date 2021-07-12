@@ -1,12 +1,16 @@
 import { GLGlobal } from "@/commonui";
 import { Logger } from "@/utils/logger";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
+import { store } from "@/store";
+import { ClassRoomStatus, SignalRStatus } from "@/models";
 export interface GLSocketOptions {
   url: string;
 }
+
+const DEFAULT_RECONNECT_TIMING = 5000;
+
 export class GLSocketClient {
   private _hubConnection?: HubConnection;
   private readonly _options?: GLSocketOptions;
@@ -32,8 +36,8 @@ export class GLSocketClient {
       .withUrl(this.options.url, options)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: retryContext => {
-          console.log("retryConnect");
-          return 10000;
+          store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
+          return DEFAULT_RECONNECT_TIMING;
         },
       })
       .configureLogging(LogLevel.Debug)
@@ -41,23 +45,22 @@ export class GLSocketClient {
     this._hubConnection.onclose(this.onClosed);
     // this._hubConnection
     this._hubConnection.onreconnected((id: any) => {
-      console.log("hello onreconnected", id);
+      store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
     });
     this._isConnected = false;
   }
   onClosed(payload: any) {
-    console.log("2", payload);
-
+    const currentClassRoomStatus = store.getters["classRoomStatus"];
+    if (currentClassRoomStatus === ClassRoomStatus.InClass) {
+      store.dispatch("setSignalRStatus", { status: SignalRStatus.Closed });
+    }
     this._isConnected = false;
   }
   get isConnected(): boolean {
     return this._isConnected;
   }
   async disconnect(): Promise<void> {
-    console.log("0");
     if (!this.isConnected) return;
-    console.log("1");
-
     return this._hubConnection?.stop();
   }
   async connect(): Promise<any> {
@@ -65,6 +68,11 @@ export class GLSocketClient {
     try {
       await this.init();
       await this.hubConnection.start();
+      const currentClassRoomStatus = store.getters["classRoomStatus"];
+      const currentSignalRStatus = store.getters["signalRStatus"];
+      if (currentClassRoomStatus === ClassRoomStatus.InClass && currentSignalRStatus === SignalRStatus.Closed) {
+        store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
+      }
       this._isConnected = true;
     } catch (error) {
       this._isConnected = false;

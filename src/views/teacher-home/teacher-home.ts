@@ -89,7 +89,7 @@ export default defineComponent({
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
           deviceTesterRef.value?.handleGoToClassSuccess();
-          await store.dispatch("app/setClassRoomStatus", { status: ClassRoomStatus.InClass });
+          await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
           await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {
