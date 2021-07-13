@@ -102,10 +102,10 @@
 	"device_tester.join_session": "Join session",
 	"teacher_class_gallery.no_student_join_class": "No student has joined the class yet",
 	"lost_network.message": "You have lost network connectivity. Please reconnect.",
-	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
 	"layout.edit_profile": "Edit Profile",
 	"layout.test_connect": "Test Connection",
 	"layout.sign_out": "Sign Out",
 	"layout.privacy_policy": "Privacy Policy",
-	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved"
+	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
+	"lost_network.student_message": "So Sorry! It seems you lost network connectivity."
 }
