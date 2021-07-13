@@ -11,7 +11,7 @@
       >
         <Tooltip placement="topRight">
           <template v-if="isTeaching" #title>
-            <span>{{ item?.teachingContent }}</span>
+            <span v-html="item?.teachingContent"></span>
           </template>
           <img :src="item.image.url" class="media-image" />
           <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
