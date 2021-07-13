@@ -12,7 +12,8 @@ export default defineComponent({
     const { getters } = useStore();
     const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
+    const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isDisconnectedMode = computed<any>(() => studentDisconnected.value || teacherDisconnected.value);
-    return { messageText, isDisconnectedMode };
+    return { messageText, isDisconnectedMode, isTeacher };
   },
 });
