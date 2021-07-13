@@ -370,6 +370,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
       } else {
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
         await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
@@ -379,8 +380,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
           isPalette: payload.student.isPalette,
         });
         commit("setWhiteboard", payload.isShowWhiteBoard);
-        commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
-        commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
