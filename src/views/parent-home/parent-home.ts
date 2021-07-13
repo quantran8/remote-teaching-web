@@ -51,6 +51,7 @@ export default defineComponent({
     const classIsActive = ref(false);
     const currentStudent = ref<ChildModel>();
     const getRoomInfoError = ref<string>("");
+	const getRoomInfoErrorByMsg = ref<string>("")
     const goToClass = async () => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
       router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
@@ -65,10 +66,12 @@ export default defineComponent({
       try {
         await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
         getRoomInfoError.value = "";
+		getRoomInfoErrorByMsg.value = "";
         await store.dispatch("studentRoom/setOnline");
         classIsActive.value = true;
       } catch (err) {
         getRoomInfoError.value = err?.code;
+		getRoomInfoErrorByMsg.value = err?.message
         if (classIsActive.value) {
           classIsActive.value = false;
         }
@@ -165,6 +168,7 @@ export default defineComponent({
       classIsActive,
       goToClass,
       getRoomInfoError,
+	  getRoomInfoErrorByMsg
     };
   },
 });

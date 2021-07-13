@@ -75,7 +75,7 @@
             <div class="device-tester__cl-status--student__title">{{ ClassStatus }}</div>
             <div class="device-tester__cl-status--student__message">
               <span v-if="!classIsActive">
-                {{ getRoomInfoError !== 0 ? getRoomInfoError : DefaultMessage1 }}
+                {{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}
               </span>
               <span v-else>
                 {{ DefaultMessage2 }}

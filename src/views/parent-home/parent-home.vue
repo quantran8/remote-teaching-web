@@ -16,6 +16,7 @@
     <DeviceTester
       :fromParentComponent="true"
       :getRoomInfoError="getRoomInfoError"
+      :getRoomInfoErrorByMsg="getRoomInfoErrorByMsg"
       @go-to-class="goToClass"
       :classIsActive="classIsActive"
       ref="deviceTesterRef"
