@@ -25,7 +25,7 @@ export const useDisconnection = () => {
   const route = useRoute();
   let timeoutId: any;
   const router = useRouter();
-  const messageText = computed(() => fmtMsg(LostNetwork.Message));
+  const messageText = computed(() => fmtMsg(LostNetwork.StudentMessage));
   //handle teacher disconnection in teacher's side
   watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
     const pathname = window.location.pathname;

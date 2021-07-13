@@ -194,6 +194,7 @@ export class TeacherHome {
 
 export class LostNetwork {
   static Message = "lost_network.message";
+  static StudentMessage = "lost_network.student_message";
 }
 
 export class Layout {
