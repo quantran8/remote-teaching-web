@@ -50,7 +50,7 @@ const mutations: LessonMutation<LessonState> = {
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {
     const exposure = s.exposures.find(e => e.id === p.id);
     if (exposure) {
-      if (status) {
+      if (p.status) {
         exposure.status = p.status;
       }
       if (exposure === s.currentExposure) {
