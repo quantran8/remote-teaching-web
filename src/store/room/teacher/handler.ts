@@ -71,6 +71,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
+      console.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       const student = state.students.find(student => student.id === payload.id);
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
@@ -160,7 +161,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       if (payload.playedTime) {
         commit("lesson/setExposureStatus", { id: payload.contentId, status: ExposureStatus.COMPLETED }, { root: true });
         commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
-      }else{
+      } else {
         commit("lesson/setExposureStatus", { id: payload.contentId }, { root: true });
       }
     },
