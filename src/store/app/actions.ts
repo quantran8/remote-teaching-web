@@ -24,6 +24,12 @@ const actions: ActionTree<AppState, any> = {
   setHideVideo(store, payload: { status: number }) {
     store.commit("setHideVideo", payload);
   },
+  setSignalRStatus(store, payload: { status: number }) {
+    store.commit("setSignalRStatus", payload);
+  },
+  setClassRoomStatus(store, payload: { status: number }) {
+    store.commit("setClassRoomStatus", payload);
+  },
 };
 
 export default actions;

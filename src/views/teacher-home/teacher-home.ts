@@ -14,6 +14,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { DeviceTester } from "@/components/common";
+import { ClassRoomStatus } from "@/models";
 
 const fpPromise = FingerprintJS.load();
 
@@ -88,6 +89,7 @@ export default defineComponent({
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
           deviceTesterRef.value?.handleGoToClassSuccess();
+          await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
           await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {

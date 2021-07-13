@@ -205,6 +205,8 @@ export class AgoraClient implements AgoraClientSDK {
     this._client = undefined;
     this.cameraError = null;
     this.microphoneError = null;
+    this.subscribedAudios = [];
+    this.subscribedVideos = [];
   }
 
   async setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {

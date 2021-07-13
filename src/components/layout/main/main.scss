@@ -5,4 +5,17 @@
   .content {
     flex: 1;
   }
+
+  .disconnected-popup {
+    position: fixed;
+    z-index: 99999;
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+  }
 }

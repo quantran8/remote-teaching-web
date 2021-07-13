@@ -23,6 +23,7 @@ import { UnitPlayer } from "./components/unit-player";
 import { RemoteTeachingService } from "@/services";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import * as sandClock from "@/assets/lotties/sand-clock.json";
+import { ClassRoomStatus } from "@/models";
 
 const fpPromise = FingerprintJS.load();
 
@@ -50,10 +51,15 @@ export default defineComponent({
     const router = useRouter();
     const { studentId, classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const classRoomState = computed(() => getters["classRoomStatus"]);
+
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
     try {
+      if (classRoomState.value === ClassRoomStatus.InDashBoard) {
+        await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      }
       await dispatch("studentRoom/initClassRoom", {
         classId: classId,
         userId: loginInfo.profile.sub,

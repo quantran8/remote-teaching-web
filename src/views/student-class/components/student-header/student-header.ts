@@ -7,6 +7,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import gsap from "gsap";
 import { fmtMsg, MatIcon } from "@/commonui";
+import { ClassRoomStatus } from "@/models";
 
 export default defineComponent({
   props: {},
@@ -37,7 +38,7 @@ export default defineComponent({
         cancelText: "No",
         okButtonProps: { type: "danger" },
         onOk: async () => {
-          await store.dispatch("studentRoom/setIsJoined", { isJoined: false });
+          await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
           await store.dispatch("studentRoom/studentLeaveClass");
           await router.push(Paths.Home);
         },

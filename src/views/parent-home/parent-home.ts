@@ -10,6 +10,8 @@ import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { DeviceTester } from "@/components/common";
+import { ClassRoomStatus } from "@/models";
+
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -49,7 +51,8 @@ export default defineComponent({
     const classIsActive = ref(false);
     const currentStudent = ref<ChildModel>();
     const getRoomInfoError = ref<string>("");
-    const goToClass = () => {
+    const goToClass = async () => {
+      await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
       router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
       deviceTesterRef.value?.handleGoToClassSuccess();
     };

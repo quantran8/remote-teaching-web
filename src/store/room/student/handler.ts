@@ -1,4 +1,4 @@
-import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
@@ -182,7 +182,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onTeacherEndClass: async (_payload: any) => {
-      await dispatch("setIsJoined", { isJoined: false });
+      await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
       commit("setError", {
         errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
