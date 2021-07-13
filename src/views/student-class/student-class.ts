@@ -149,10 +149,10 @@ export default defineComponent({
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-        if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
-          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
-        }
+        // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
+        //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
+        //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
+        // }
       } else {
         studentIsOneToOne.value = false;
       }

@@ -20,7 +20,7 @@
         <div v-show="!teacherIsDisconnected">
           <AnnotationView
             v-show="!isBlackOutContent && isLessonPlan"
-            :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
+            :image="isLessonPlan ? currentExposureItemMedia?.image : null"
           />
         </div>
         <!-- <div v-show="isGameView" class="sc-unity">
