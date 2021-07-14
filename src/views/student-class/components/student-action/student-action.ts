@@ -10,6 +10,8 @@ import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 
+const AUTO_TOGGLE_MICRO_TIMING = 10000; //10 seconds
+
 export default defineComponent({
   props: {},
   components: {
@@ -31,6 +33,13 @@ export default defineComponent({
         enable: !student.value.audioEnabled,
       });
     };
+
+    setTimeout(async () => {
+      if (student.value.audioEnabled) {
+        await toggleAudio();
+        await toggleAudio();
+      }
+    }, AUTO_TOGGLE_MICRO_TIMING);
 
     const toggleVideo = async () => {
       await store.dispatch("studentRoom/setStudentVideo", {
