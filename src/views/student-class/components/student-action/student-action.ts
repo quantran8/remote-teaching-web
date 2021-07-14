@@ -1,6 +1,6 @@
 import { MatIcon } from "@/commonui";
 import { StudentState } from "@/store/room/interface";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
@@ -22,7 +22,7 @@ export default defineComponent({
     const router = useRouter();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
-
+    const isToggleTime = ref(false);
     const onClickRaisingHand = async () => {
       await store.dispatch("studentRoom/studentRaisingHand", {});
     };
@@ -34,10 +34,20 @@ export default defineComponent({
       });
     };
 
+    const delay = () =>
+      new Promise((res: any, rej) => {
+        setTimeout(() => {
+          res();
+        }, 2000);
+      });
+
     setTimeout(async () => {
       if (student.value.audioEnabled) {
+        isToggleTime.value = true;
         await toggleAudio();
+        await delay();
         await toggleAudio();
+        isToggleTime.value = false;
       }
     }, AUTO_TOGGLE_MICRO_TIMING);
 
@@ -60,6 +70,7 @@ export default defineComponent({
       toggleVideo,
       IconVideoOn,
       IconVideoOff,
+      isToggleTime,
     };
   },
 });
