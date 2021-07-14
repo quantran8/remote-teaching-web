@@ -11,6 +11,13 @@
   @media (min-width: $md) {
     grid-template-rows: auto 1fr auto;
   }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-template-rows: auto 1fr 30px;
+  }
   @media only screen and (max-width: 812px) and (orientation: landscape) {
     grid-template-rows: auto 1fr 30px;
   }
@@ -53,13 +60,22 @@
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
   }
-  @media only screen and (max-width: 812px) and (orientation: landscape) {
-    grid-template-rows: 60% 40%;
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 1fr 105px;
+    padding: 10px 30px;
   }
+  //@media only screen and (max-width: 812px) and (orientation: landscape) {
+  //  grid-template-rows: 60% 40%;
+  //}
   @media only screen and (max-width: 812px) and (orientation: landscape) {
     grid-template-columns: 55% 45%;
     grid-template-rows: 1fr 105px;
-    padding: 0;
+    padding: 10px 30px;
   }
   /* ----------- iPad 1, 2, Mini and Air ----------- */
   /* Portrait */
@@ -108,6 +124,16 @@
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-end: unset;
+  }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: unset;
+    grid-column-end: unset;
   }
   @media only screen and (max-width: 812px) and (orientation: landscape) {
     grid-row-start: 1;
