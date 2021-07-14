@@ -269,7 +269,7 @@ export class AgoraClient implements AgoraClientSDK {
       remoteTrack.play();
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-      //   Logger.error("_subscribeAudio", err);
+      console.log("_subscribeAudio Error =>", err);
     }
   }
 
