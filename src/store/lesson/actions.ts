@@ -107,7 +107,7 @@ const actions: LessonActions<LessonState, any> = {
         name: e.title,
         duration: e.maxDuration,
         status: e.played ? ExposureStatus.COMPLETED : ExposureStatus.DEFAULT,
-        type: e.contentType.name,
+        type: ExposureTypeFromValue(e.contentType.id, e.contentType.name),
         items: items,
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,

@@ -14,20 +14,20 @@ export enum ExposureType {
   STORY_DICTIONARY = "Story Dictionary",
 }
 
-export const ExposureTypeFromValue = (val: number) => {
+export const ExposureTypeFromValue = (val: number, name: string) => {
   if (val === 0) return ExposureType.TRANSITION;
-  if (val === 12) return ExposureType.WRITING;
-  if (val === 13) return ExposureType.READING;
-  if (val === 14) return ExposureType.SONG;
-  if (val === 15) return ExposureType.ACTIVITY;
-  if (val === 16) return ExposureType.STORY;
-  if (val === 17) return ExposureType.POEM;
-  if (val === 18) return ExposureType.PHONOGRAM;
-  if (val === 20) return ExposureType.VPC;
-  if (val === 23) return ExposureType.CHANT;
-  if (val === 25) return ExposureType.BIG_BOOK;
-  if (val === 34) return ExposureType.STORY_DICTIONARY;
-  throw new Error("UnSupported Exposure Type " + val);
+  else if (val === 12) return ExposureType.WRITING;
+  else if (val === 13) return ExposureType.READING;
+  else if (val === 14) return ExposureType.SONG;
+  else if (val === 15) return ExposureType.ACTIVITY;
+  else if (val === 16) return ExposureType.STORY;
+  else if (val === 17) return ExposureType.POEM;
+  else if (val === 18) return ExposureType.PHONOGRAM;
+  else if (val === 20) return ExposureType.VPC;
+  else if (val === 23) return ExposureType.CHANT;
+  else if (val === 25) return ExposureType.BIG_BOOK;
+  else if (val === 34) return ExposureType.STORY_DICTIONARY;
+  else return name;
 };
 
 export enum ExposureStatus {
