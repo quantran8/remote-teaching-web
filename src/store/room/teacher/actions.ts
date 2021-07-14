@@ -135,8 +135,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
           currentBandwidth = speedMbps;
         }
         time += 1;
-        if (currentBandwidth && time % 10 === 0) { //mean 5 minutes
-          console.info("LOG BANDWIDTH",currentBandwidth.toFixed(2));
+        if (currentBandwidth && time % 10 === 0) {
+          //mean 5 minutes
+          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putTeacherBandwidth(currentBandwidth.toFixed(2));
           currentBandwidth = 0;
         }
@@ -206,7 +207,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       }
       commit("setRoomInfo", roomResponse.data);
     } catch (err) {
-      await router.push(Paths.Home);
+      console.log("initClassRoom error =>", err);
+      //   await router.push(Paths.Home);
     }
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {

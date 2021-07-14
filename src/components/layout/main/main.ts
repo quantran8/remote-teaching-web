@@ -10,10 +10,9 @@ export default defineComponent({
   setup(props) {
     const messageText = computed(() => fmtMsg(LostNetwork.Message));
     const { getters } = useStore();
-    const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
     const isTeacher = computed(() => getters["auth/isTeacher"]);
-    const isDisconnectedMode = computed<any>(() => studentDisconnected.value || teacherDisconnected.value);
+    const isDisconnectedMode = computed<any>(() => teacherDisconnected.value);
     return { messageText, isDisconnectedMode, isTeacher };
   },
 });

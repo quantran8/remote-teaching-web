@@ -73,6 +73,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
+      console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -190,6 +191,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherDisconnect: async (payload: any) => {
+      console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
       commit("setTeacherDisconnected", true);
       await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
       commit("setTeacherStatus", {

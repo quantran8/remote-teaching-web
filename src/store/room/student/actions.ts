@@ -169,9 +169,10 @@ const actions: ActionTree<StudentRoomState, any> = {
           currentBandwidth = speedMbps;
         }
         time += 1;
-        if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) { //mean 5 minutes
-          console.info("LOG BANDWIDTH",currentBandwidth.toFixed(2));
-          RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2),);
+        if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) {
+          //mean 5 minutes
+          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
+          RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2));
           currentBandwidth = 0;
         }
       });
