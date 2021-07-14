@@ -121,6 +121,23 @@
       font-size: 15px;
     }
   }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    &--current {
+      width: $current-item-size;
+      height: $current-item-size;
+      #{$self}__video {
+        width: 100%;
+        height: $current-item-size;
+      }
+    }
+    &__title {
+      font-size: 13px;
+    }
+  }
   @media only screen and (max-width: 812px) and (orientation: landscape) {
     &--current {
       width: $current-item-size;
