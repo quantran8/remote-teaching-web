@@ -4,7 +4,7 @@
       <img v-show="raisedHand" :src="IconHandRaised" class="sc-action__icon sc-action__icon--hand" />
       <img v-show="!raisedHand" :src="IconHand" class="sc-action__icon sc-action__icon--hand" />
     </a>
-    <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudio">
+    <a href="javascript:void(0)" class="sc-action__item" @click="toggleAudioAction">
       <img v-show="student?.audioEnabled || isToggleTime" :src="IconAudioOn" class="sc-action__icon" />
       <img v-show="!student?.audioEnabled && !isToggleTime" :src="IconAudioOff" class="sc-action__icon" />
     </a>
