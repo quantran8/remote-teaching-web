@@ -38,7 +38,7 @@ export enum ExposureStatus {
 export interface Exposure {
   id: string;
   name: string;
-  type: ExposureType;
+  type: string;
   status: ExposureStatus;
   duration: string;
   items: ExposureItem[];
