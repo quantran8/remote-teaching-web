@@ -1,6 +1,6 @@
 import { MatIcon } from "@/commonui";
 import { StudentState } from "@/store/room/interface";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
@@ -22,7 +22,7 @@ export default defineComponent({
     const router = useRouter();
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
-
+    const isToggleTime = ref(false);
     const onClickRaisingHand = async () => {
       await store.dispatch("studentRoom/studentRaisingHand", {});
     };
@@ -34,10 +34,13 @@ export default defineComponent({
       });
     };
 
+    //tip trick: after 10 seconds mute/unmute to avoid the bug cant hear anything
     setTimeout(async () => {
       if (student.value.audioEnabled) {
+        isToggleTime.value = true;
         await toggleAudio();
         await toggleAudio();
+        isToggleTime.value = false;
       }
     }, AUTO_TOGGLE_MICRO_TIMING);
 
@@ -47,6 +50,10 @@ export default defineComponent({
         enable: !student.value.videoEnabled,
       });
     };
+    const doNothing = () => {
+      console.log("doNothing");
+    };
+    const toggleAudioAction = computed(() => (isToggleTime.value ? doNothing : toggleAudio));
 
     return {
       student,
@@ -60,6 +67,8 @@ export default defineComponent({
       toggleVideo,
       IconVideoOn,
       IconVideoOff,
+      isToggleTime,
+      toggleAudioAction,
     };
   },
 });
