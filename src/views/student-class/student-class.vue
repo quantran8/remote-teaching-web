@@ -18,10 +18,7 @@
           </div>
         </div>
         <div v-show="!teacherIsDisconnected">
-          <AnnotationView
-            v-show="!isBlackOutContent && isLessonPlan"
-            :image="isLessonPlan ? currentExposureItemMedia?.image : null"
-          />
+          <AnnotationView v-show="!isBlackOutContent && isLessonPlan" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
         </div>
         <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
@@ -74,7 +71,7 @@
               />
               <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
             </div>
-            <p class="sc-independent__text-size">{{ student?.name }}</p>
+            <p class="sc-independent__text-size">{{ studentOneName }}</p>
           </div>
         </div>
       </div>

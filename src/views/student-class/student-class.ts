@@ -117,6 +117,7 @@ export default defineComponent({
     const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
     const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const showMessage = ref(false);
+    const studentOneName = ref("");
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
@@ -143,6 +144,7 @@ export default defineComponent({
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+        studentOneName.value = students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name;
         await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
         await store.dispatch("studentRoom/getAvatarStudent", { studentId: studentOneAndOneId.value });
       }
@@ -342,6 +344,7 @@ export default defineComponent({
       exitText,
       goToHomePageText,
       iconSand,
+      studentOneName,
     };
   },
 });
