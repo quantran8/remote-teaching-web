@@ -8,7 +8,6 @@ import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, LessonInfo, StudentState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
-import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted, onMounted } from "vue";
@@ -84,13 +83,11 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const route = useRoute();
     const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
     const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
@@ -113,15 +110,14 @@ export default defineComponent({
     });
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
-    const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
     const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const showMessage = ref(false);
+    const studentOneName = ref("");
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
     const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
-    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
     const defaultUrl =
@@ -143,6 +139,7 @@ export default defineComponent({
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+        studentOneName.value = students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name;
         await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
         await store.dispatch("studentRoom/getAvatarStudent", { studentId: studentOneAndOneId.value });
       }
@@ -342,6 +339,7 @@ export default defineComponent({
       exitText,
       goToHomePageText,
       iconSand,
+      studentOneName,
     };
   },
 });
