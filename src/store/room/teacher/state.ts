@@ -30,7 +30,7 @@ export interface TeacherRoomState {
   listStudentLowBandWidth: string[];
   currentLesson: number;
   currentUnit: number;
-  bandWidth: number;
+  isShowWhiteboard: boolean;
 }
 
 const state: TeacherRoomState = {
@@ -54,7 +54,7 @@ const state: TeacherRoomState = {
   listStudentLowBandWidth: [],
   currentLesson: DEFAULT_LESSON,
   currentUnit: DEFAULT_LESSON,
-  bandWidth: 0,
+  isShowWhiteboard: false,
 };
 
 export default state;

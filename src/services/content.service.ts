@@ -4,9 +4,9 @@ export class GLContentService extends GLServiceBase<any, any> {
   serviceRoute: ServiceRoute = { prefix: "content/v1" };
 
   getSASUrl(): Promise<{ pageContainer: string }> {
-    const versionId = "00000000-0000-0000-0000-000000000000";
-    const contentSignatureUrl = `versions/${versionId}/contents/contentsignature`;
-    return this.get(contentSignatureUrl);
+    const cacheTime = 60 * 5; //5 minutes
+    const contentSignatureUrl = `versions/remote/contentsignature`;
+    return this.get(contentSignatureUrl, { cacheTime });
   }
 }
 

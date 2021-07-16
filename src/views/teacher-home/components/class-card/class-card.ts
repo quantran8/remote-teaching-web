@@ -1,10 +1,9 @@
-import {
-  GroupModelSchedules,
-  SchoolClassTimeRecurringModel
-} from "@/models/group.model";
-import { defineComponent, onMounted, ref } from "vue";
+import { TeacherHome } from "@/locales/localeid";
+import { GroupModelSchedules } from "@/models/group.model";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { Spin } from "ant-design-vue";
 import moment from "moment";
+import { fmtMsg } from "@/commonui";
 
 export default defineComponent({
   props: {
@@ -44,13 +43,15 @@ export default defineComponent({
   setup: function(props, { emit }) {
     const groups = ref();
     const clickedGroup = ref<string>("");
+    const groupText = computed(() => fmtMsg(TeacherHome.Group));
+    const nextText = computed(() => fmtMsg(TeacherHome.Next));
 
     const validatedGroupHighlighted = () => {
       let min = 999999;
       let indexMin = -1;
       let hasGroupActive = false;
       const current = new Date();
-      const d = moment().month()*31 + moment().date();
+      const d = moment().month() * 31 + moment().date();
       const m = current.getMinutes();
       const h = current.getHours();
       const currentTime = d * 1440 + h * 60 + m;
@@ -60,24 +61,24 @@ export default defineComponent({
           nextDay.start = group.timeStart.split("T")[1];
           nextDay.end = group.timeEnd.split("T")[1];
           const dateYear = group.timeStart.split("-")[0];
-          nextDay.date = parseInt(dateYear[1])*31 + parseInt(dateYear[2]);
+          nextDay.date = parseInt(dateYear[1]) * 31 + parseInt(dateYear[2]);
         }
         if (nextDay.start != null && nextDay.end != null) {
           const timeStart = nextDay.start.split(":");
           const timeEnd = nextDay.end.split(":");
-          const timeStartValue = nextDay.date*1440 + parseInt(timeStart[0], 10)*60 + parseInt(timeStart[1], 10);
-          const timeEndValue = nextDay.date*1440 + parseInt(timeEnd[0], 10)*60 + parseInt(timeEnd[1], 10);
-          if (timeStartValue <= currentTime && currentTime <= timeEndValue){
+          const timeStartValue = nextDay.date * 1440 + parseInt(timeStart[0], 10) * 60 + parseInt(timeStart[1], 10);
+          const timeEndValue = nextDay.date * 1440 + parseInt(timeEnd[0], 10) * 60 + parseInt(timeEnd[1], 10);
+          if (timeStartValue <= currentTime && currentTime <= timeEndValue) {
             hasGroupActive = true;
             group.isHighLighted = true;
           }
           const timeValue = timeStartValue;
-          if(timeValue - currentTime > 0){
-            if(timeValue - currentTime < min){
+          if (timeValue - currentTime > 0) {
+            if (timeValue - currentTime < min) {
               min = timeValue - currentTime;
               indexMin = index;
             }
-          } else if(timeValue + 10080 - currentTime < min) {
+          } else if (timeValue + 10080 - currentTime < min) {
             min = timeValue - currentTime;
             indexMin = index;
           }
@@ -95,7 +96,7 @@ export default defineComponent({
         validatedGroupHighlighted();
         const newGroups = props.remoteClassGroups.map(group => {
           group.isCurrentDay = true;
-          if(props.isTeacher === true) {
+          if (props.isTeacher === true) {
             group.startClass = true;
           }
           const nextDay = { date: "", time: "" };
@@ -132,6 +133,6 @@ export default defineComponent({
       emit("click-to-access", groupId);
     };
 
-    return { groups, clickToAccess, clickedGroup };
+    return { groups, clickToAccess, clickedGroup, groupText, nextText };
   },
 });

@@ -30,6 +30,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+      commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
@@ -70,6 +71,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
+      console.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       const student = state.students.find(student => student.id === payload.id);
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
@@ -153,11 +155,15 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("lesson/setIsBlackOut", { IsBlackOut: payload.isBlackOut }, { root: true });
     },
     onTeacherStartLessonPlan: (payload: any) => {
-      commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
+      commit("lesson/setCurrentExposure", { id: payload }, { root: true });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      commit("lesson/setExposureStatus", { id: payload.content.id, status: ExposureStatus.COMPLETED }, { root: true });
-      commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
+      if (payload.playedTime) {
+        commit("lesson/setExposureStatus", { id: payload.contentId, status: ExposureStatus.COMPLETED }, { root: true });
+        commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
+      } else {
+        commit("lesson/setExposureStatus", { id: payload.contentId }, { root: true });
+      }
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
       commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
@@ -252,15 +258,36 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         );
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
-        await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
-        await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
-        // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
-        // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
       }
       await dispatch("updateAudioAndVideoFeed", {});
+      if (payload.id) {
+        // process in one one
+        await dispatch("annotation/setOneTeacherStrokes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+      } else {
+        await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch(
+          "teacherRoom/toggleAnnotation",
+          {
+            studentId: payload.student.id,
+            isEnable: payload.student.isPalette,
+          },
+          { root: true },
+        );
+        commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
+        commit("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await commit("lesson/endCurrentContent", {}, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+      }
     },
-    onTeacherSetWhiteboard: (payload: RoomModel) => {
-      //   console.log(payload);
+    onTeacherSetWhiteboard: async (payload: RoomModel) => {
+      commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
     onTeacherDrawLaser: (payload: any) => {
       //   console.log(payload);

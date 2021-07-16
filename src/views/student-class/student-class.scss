@@ -11,6 +11,16 @@
   @media (min-width: $md) {
     grid-template-rows: auto 1fr auto;
   }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-template-rows: auto 1fr 30px;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-rows: auto 1fr 30px;
+  }
 }
 
 .sc-message {
@@ -50,24 +60,33 @@
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
   }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 1fr 105px;
+    padding: 10px 30px;
+  }
+  //@media only screen and (max-width: 812px) and (orientation: landscape) {
+  //  grid-template-rows: 60% 40%;
+  //}
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 1fr 105px;
+    padding: 10px 30px;
+  }
   /* ----------- iPad 1, 2, Mini and Air ----------- */
   /* Portrait */
-  @media only screen
-  and (min-device-width: 768px)
-  and (max-device-width: 1024px)
-  and (orientation: portrait)
-  and (-webkit-min-device-pixel-ratio: 1) {
+  @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 1) {
     grid-template-rows: 60% 40%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
   }
   /* ----------- iPad 3, 4 and Pro 9.7" ----------- */
   /* Portrait */
-  @media only screen
-  and (min-device-width: 768px)
-  and (max-device-width: 1024px)
-  and (orientation: portrait)
-  and (-webkit-min-device-pixel-ratio: 2) {
+  @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
     grid-template-rows: 60% 40%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
@@ -106,6 +125,22 @@
     grid-column-end: 3;
     grid-row-end: unset;
   }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: unset;
+    grid-column-end: unset;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: unset;
+    grid-column-end: unset;
+  }
   @media (min-width: $lg) {
     grid-column-end: 2;
     grid-row-end: 3;
@@ -142,8 +177,8 @@
           z-index: 23;
           @media (min-width: $xl) {
             bottom: 10%;
-			width: 20%;
-			height: 20%;
+            width: 20%;
+            height: 20%;
           }
         }
       }
@@ -205,18 +240,8 @@
   display: grid;
   grid-auto-flow: column;
   align-content: center;
-  padding: 10px;
-  padding-top: 0;
-  @media (min-width: $md) {
-    grid-auto-flow: row;
-    justify-content: center;
-
-    &__avatar {
-      justify-self: center;
-    }
-  }
+  padding: 0 10px 10px;
   @media (min-width: $xl) {
-    grid-auto-flow: column;
     column-gap: 40px;
   }
 }
@@ -237,6 +262,23 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  &__info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  &__text-size {
+    margin-top: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 90px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
 
   &__avatar-container {
     width: 70px;

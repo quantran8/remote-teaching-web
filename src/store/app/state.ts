@@ -1,3 +1,5 @@
+import { ClassRoomStatus, MediaStatus, SignalRStatus } from "@/models";
+
 export type LayoutType = "" | "full" | "main";
 export enum AppView {
   Authorized = 1,
@@ -11,6 +13,10 @@ export interface AppState {
   appView: AppView;
   toast: ToastData;
   contentSignature: string;
+  isMuteAudio: number;
+  isHideVideo: number;
+  signalRStatus: number;
+  classRoomStatus: number;
 }
 
 export interface ToastData {
@@ -25,6 +31,10 @@ const state: AppState = {
   appView: AppView.Blank,
   toast: { message: "", isPlayingSound: false },
   contentSignature: "",
+  isMuteAudio: MediaStatus.noStatus,
+  isHideVideo: MediaStatus.noStatus,
+  signalRStatus: SignalRStatus.NoStatus,
+  classRoomStatus: ClassRoomStatus.InDashBoard,
 };
 
 export default state;

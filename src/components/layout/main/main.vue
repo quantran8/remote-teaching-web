@@ -9,6 +9,7 @@
     <div class="footer">
       <slot name="footer"></slot>
     </div>
+    <div class="disconnected-popup" v-if="isDisconnectedMode && isTeacher">{{ messageText }}</div>
   </div>
 </template>
 <script src="./main.ts" lang="ts" />

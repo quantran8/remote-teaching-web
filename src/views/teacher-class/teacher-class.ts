@@ -18,6 +18,7 @@ import {
   TeacherPageHeader,
   WhiteboardPalette,
 } from "./components";
+import { ClassRoomStatus } from "@/models";
 export default defineComponent({
   components: {
     PreventEscFirefox,
@@ -40,6 +41,7 @@ export default defineComponent({
     const router = useRouter();
     const { classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const classRoomState = computed(() => getters["classRoomStatus"]);
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
@@ -51,6 +53,9 @@ export default defineComponent({
         role: RoleName.teacher,
         browserFingerPrinting: visitorId,
       });
+      if (classRoomState.value === ClassRoomStatus.InDashBoard) {
+        await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      }
     } catch (err) {
       if (err.code === ErrorCode.ConcurrentUserException) {
         await router.push("/teacher");
@@ -63,7 +68,6 @@ export default defineComponent({
     const { getters, dispatch } = useStore();
     const router = useRouter();
     const hasConfirmed = ref(false);
-
     const isDesignatingTarget = computed(() => getters["interactive/isDesignatingTarget"]);
     const modalDesignateTarget = computed(() => getters["interactive/modalDesignateTarget"]);
     const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
@@ -106,6 +110,7 @@ export default defineComponent({
         isSidebarCollapsed.value = true;
         await setClassView(ClassView.GALLERY);
       }
+      await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
@@ -138,8 +143,10 @@ export default defineComponent({
         okButtonProps: { type: "danger" },
         onOk: async () => {
           try {
+            await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
             await dispatch("teacherRoom/endClass");
             await dispatch("lesson/clearLessonData");
+            await dispatch("teacherRoom/setClearBrush", {});
             await router.push("/teacher");
           } catch (err) {
             Modal.destroyAll();

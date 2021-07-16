@@ -1,6 +1,7 @@
-import { ExposureType } from "@/store/lesson/state";
-import { StudentState, TeacherState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref, watch } from "vue";
+import { fmtMsg } from "@/commonui";
+import { TeacherClassGallery } from "@/locales/localeid";
+import { StudentState } from "@/store/room/interface";
+import { computed, ComputedRef, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { InteractiveStatus } from "../student-card/student-card";
 import StudentCard from "../student-card/student-card.vue";
@@ -19,6 +20,7 @@ export default defineComponent({
     const store = useStore();
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     const studentOneAndOneId = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
+    const returnText = computed(() => fmtMsg(TeacherClassGallery.Return));
     const studentOne = students.value.filter(student => {
       return student.id === studentOneAndOneId.value;
     })[0];
@@ -78,6 +80,7 @@ export default defineComponent({
       backToClass,
       studentOne,
       timeCount,
+      returnText,
     };
   },
 });

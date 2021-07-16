@@ -1,12 +1,16 @@
 import { GLGlobal } from "@/commonui";
 import { Logger } from "@/utils/logger";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
+import { store } from "@/store";
+import { ClassRoomStatus, SignalRStatus } from "@/models";
 export interface GLSocketOptions {
   url: string;
 }
+
+const DEFAULT_RECONNECT_TIMING = 5000;
+
 export class GLSocketClient {
   private _hubConnection?: HubConnection;
   private readonly _options?: GLSocketOptions;
@@ -30,13 +34,33 @@ export class GLSocketClient {
     };
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: retryContext => {
+          console.log("SIGNAL R DISCONNECTED");
+          store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
+          return DEFAULT_RECONNECT_TIMING;
+        },
+      })
       .configureLogging(LogLevel.Debug)
       .build();
     this._hubConnection.onclose(this.onClosed);
+    // this._hubConnection
+    this._hubConnection.onreconnected((id: any) => {
+      store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
+    });
+    const currentClassRoomStatus = store.getters["classRoomStatus"];
+    const currentSignalRStatus = store.getters["signalRStatus"];
+    if (currentClassRoomStatus === ClassRoomStatus.InClass && currentSignalRStatus === SignalRStatus.Closed) {
+      store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
+    }
     this._isConnected = false;
   }
-  onClosed() {
+  onClosed(payload: any) {
+    console.log("SIGNAL R CLOSED");
+    const currentClassRoomStatus = store.getters["classRoomStatus"];
+    if (currentClassRoomStatus === ClassRoomStatus.InClass) {
+      store.dispatch("setSignalRStatus", { status: SignalRStatus.Closed });
+    }
     this._isConnected = false;
   }
   get isConnected(): boolean {
@@ -51,14 +75,25 @@ export class GLSocketClient {
     try {
       await this.init();
       await this.hubConnection.start();
+      const currentClassRoomStatus = store.getters["classRoomStatus"];
+      const currentSignalRStatus = store.getters["signalRStatus"];
+      if (currentClassRoomStatus === ClassRoomStatus.InClass && currentSignalRStatus === SignalRStatus.Closed) {
+        store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
+      }
       this._isConnected = true;
     } catch (error) {
       this._isConnected = false;
     }
   }
   async send(command: string, payload: any): Promise<any> {
-    // Logger.log("SEND", command, payload);
-    if (!this.isConnected || this.hubConnection.state === HubConnectionState.Disconnected) {
+    if (!this.hubConnection) {
+      console.error("this.hubConnection: ", this.hubConnection);
+    }
+    if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Connected) {
+      console.error("CONNECTION STATE: " + this.hubConnection.state);
+    }
+    if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
+      console.error("SEND/TRY-TO-RECONNECT-MANUALLY");
       this._isConnected = false;
       await this.connect();
     }
@@ -66,8 +101,14 @@ export class GLSocketClient {
   }
 
   async invoke(command: string, payload: any): Promise<any> {
-    // Logger.log("INVOKE", command, payload);
-    if (!this.isConnected || this.hubConnection.state === HubConnectionState.Disconnected) {
+    if (!this.hubConnection) {
+      console.error("this.hubConnection: ", this.hubConnection);
+    }
+    if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Connected) {
+      console.error("CONNECTION STATE: " + this.hubConnection.state);
+    }
+    if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
+      console.error("INVOKE/TRY-TO-RECONNECT-MANUALLY");
       this._isConnected = false;
       await this.connect();
     }

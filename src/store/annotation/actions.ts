@@ -7,6 +7,8 @@ export interface AnnotationActionInterface<S, R> {
   setPointer(s: ActionContext<S, R>, p: Pointer): void;
   setMode(s: ActionContext<S, R>, p: { mode: number }): void;
   addShape(s: ActionContext<S, R>, p: string): void;
+  setTeacherBrushes(s: ActionContext<S, R>, p: Array<string>): void;
+  setOneTeacherStrokes(s: ActionContext<S, R>, p: Array<string>): void;
   setClearBrush(s: ActionContext<S, R>, p: {}): void;
   setDeleteBrush(s: ActionContext<S, R>, p: {}): void;
   setStickers(s: ActionContext<S, R>, p: { stickers: Array<Sticker> }): void;
@@ -14,6 +16,8 @@ export interface AnnotationActionInterface<S, R> {
   setStudentAddShape(s: ActionContext<S, R>, p: { studentShapes: Array<UserShape> }): void;
   setTeacherAddShape(s: ActionContext<S, R>, p: { teacherShapes: Array<UserShape> }): void;
   setStudentDrawsLine(s: ActionContext<S, R>, p: string): void;
+  setStudentStrokes(s: ActionContext<S, R>, p: Array<string>): void;
+  setOneStudentStrokes(s: ActionContext<S, R>, p: Array<string>): void;
   setClearOneTeacherDrawsStrokes(s: ActionContext<S, R>, p: {}): void;
   setClearOneStudentDrawsLine(s: ActionContext<S, R>, p: {}): void;
 }
@@ -39,11 +43,23 @@ const actions: ActionTree<AnnotationState, any> = {
       commit("addShape", p);
     }
   },
+  setTeacherBrushes({ commit }, p: Array<string>) {
+    commit("setTeacherBrushes", p);
+  },
+  setOneTeacherStrokes({ commit }, p: Array<string>) {
+    commit("setOneTeacherStrokes", p);
+  },
   setClearBrush({ commit }, p: {}) {
     commit("setClearBrush", p);
   },
-  setDeleteBrush({ commit }, p: {}) {
-    commit("setDeleteBrush", p);
+  setDeleteBrush({ commit, rootGetters }, p: {}) {
+    if (rootGetters["studentRoom/getStudentModeOneId"]) {
+      commit("setDeleteBrushOneOne", p);
+    } else if (rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setDeleteBrushOneOne", p);
+    } else {
+      commit("setDeleteBrush", p);
+    }
   },
   setStickers({ commit }, p: { stickers: Array<Sticker> }) {
     commit("setStickers", p);
@@ -77,6 +93,12 @@ const actions: ActionTree<AnnotationState, any> = {
     } else {
       commit("setStudentDrawsLine", p);
     }
+  },
+  setStudentStrokes({ commit }, p: Array<string>) {
+    commit("setStudentStrokes", p);
+  },
+  setOneStudentStrokes({ commit }, p: Array<string>) {
+    commit("setOneStudentStrokes", p);
   },
   setClearOneTeacherDrawsStrokes({ commit }, p: {}) {
     commit("setClearOneTeacherDrawsStrokes", p);

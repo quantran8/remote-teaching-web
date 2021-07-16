@@ -1,3 +1,5 @@
+import { fmtMsg } from "@/commonui";
+import { HomeLocale } from "@/locales/localeid";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -16,8 +18,16 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const username = computed(() => store.getters["auth/username"]);
+    const welcomeText = computed(() => fmtMsg(HomeLocale.Welcome));
+    const chooseRoleText = computed(() => fmtMsg(HomeLocale.ChooseRole));
+    const teacherText = computed(() => fmtMsg(HomeLocale.Teacher));
+    const studentText = computed(() => fmtMsg(HomeLocale.Student));
     return {
       username,
+      welcomeText,
+      chooseRoleText,
+      teacherText,
+      studentText,
     };
   },
 });

@@ -3,12 +3,8 @@
     <div class="designate-target-container" v-if="currentExposureItemMedia">
       <div class="backdrop" @click="onClickCloseDesignate"></div>
       <div class="designate-wrap">
-        <div class="designate-box" id="designate-box" :class="{'active': isTabActive('designate-target-action')}">
-          <img
-            :src="currentExposureItemMedia.image.url"
-            id="mediaImage"
-            @load="onLoaded"
-          />
+        <div class="designate-box" id="designate-box" :class="{ active: isTabActive('designate-target-action') }">
+          <img :src="currentExposureItemMedia.image.url" id="mediaImage" @load="onLoaded" />
           <DesignateRectangle
             v-for="shape of rectangles"
             :key="shape.id"
@@ -46,33 +42,31 @@
             :zIndex="addingCircle.zIndex"
           />
         </div>
-        <div
-          id="canvas-container"
-          @mousemove="cursorPosition"
-          :class="{ active: isTabActive('annotation-action') }"
-        >
+        <div id="canvas-container" @mousemove="cursorPosition" :class="{ active: isTabActive('annotation-action') }">
           <img :src="currentExposureItemMedia.image.url" id="annotation-img" />
           <div class="wrap-canvas">
-            <canvas class="canvas-designate" id="canvasDesignate"/>
+            <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
         </div>
         <div class="designate-box-right">
           <div class="designate-box-right--tab">
-            <BaseButton class="btn-primary" @click.prevent="setTabActive('designate-target-action')" :class="{'active': isTabActive('designate-target-action')}">Designate Target</BaseButton>
-            <BaseButton class="btn-primary" @click.prevent="setTabActive('annotation-action')" :class="{'active': isTabActive('annotation-action')}">Annotation</BaseButton>
+            <BaseButton
+              class="btn-primary"
+              @click.prevent="setTabActive('designate-target-action')"
+              :class="{ active: isTabActive('designate-target-action') }"
+              >{{ designateBtnText }}</BaseButton
+            >
+            <BaseButton
+              class="btn-primary"
+              @click.prevent="setTabActive('annotation-action')"
+              :class="{ active: isTabActive('annotation-action') }"
+              >{{ annotationBtnText }}</BaseButton
+            >
           </div>
           <div class="designate-box-right--tab-content">
-            <div
-              class="designate-box-right--tab-pane"
-              id="designate-target-action"
-              :class="{'active': isTabActive('designate-target-action')}"
-            >
-              <h3>Students</h3>
-              <BaseButton
-                mode="clear"
-                class="btn-primary designate-box-right__button--assign-all"
-                @click="onClickToggleAssignAllStudents"
-              >
+            <div class="designate-box-right--tab-pane" id="designate-target-action" :class="{ active: isTabActive('designate-target-action') }">
+              <h3>{{ studentTitleText }}</h3>
+              <BaseButton mode="clear" class="btn-primary designate-box-right__button--assign-all" @click="onClickToggleAssignAllStudents">
                 {{ textAssignAll }}
               </BaseButton>
               <div class="designate-box-right--student-list">
@@ -88,16 +82,14 @@
                 />
               </div>
               <div class="designate-box-right--button">
-                <BaseButton class="btn-primary green" @click="onClickAssignDesignate">Assign All Targets</BaseButton>
+                <BaseButton class="btn-primary green" @click="onClickAssignDesignate">{{ assignAllText }}</BaseButton>
               </div>
               <div class="designate-box-right--button">
-                <BaseButton class="btn-primary" @click="onClickClearAllTargets">Clear All Targets</BaseButton
-                >
-                <BaseButton class="btn-primary" @click="onClickRevealAllTargets">Reveal All Targets</BaseButton
-                >
+                <BaseButton class="btn-primary" @click="onClickClearAllTargets">{{ clearAllText }}</BaseButton>
+                <BaseButton class="btn-primary" @click="onClickRevealAllTargets">{{ revealAllText }}</BaseButton>
               </div>
             </div>
-            <div class="designate-box-right--tab-pane" id="annotation-action" :class="{'active': isTabActive('annotation-action')}">
+            <div class="designate-box-right--tab-pane" id="annotation-action" :class="{ active: isTabActive('annotation-action') }">
               <ToolsCanvas
                 :selector-open="selectorOpen"
                 :tool-selected="toolSelected"
@@ -111,8 +103,10 @@
             </div>
           </div>
           <div class="designate-box-right__navigation">
-            <BaseButton class="btn-primary" v-if="prevExposureItemMedia !== undefined" @click="onClickNextPrevMedia(0)">Previous Content</BaseButton>
-            <BaseButton class="btn-primary" v-if="nextExposureItemMedia !== undefined" @click="onClickNextPrevMedia(1)">Next Content</BaseButton>
+            <BaseButton class="btn-primary" v-if="prevExposureItemMedia !== undefined" @click="onClickNextPrevMedia(0)">{{
+              previousText
+            }}</BaseButton>
+            <BaseButton class="btn-primary" v-if="nextExposureItemMedia !== undefined" @click="onClickNextPrevMedia(1)">{{ nextText }}</BaseButton>
           </div>
         </div>
       </div>

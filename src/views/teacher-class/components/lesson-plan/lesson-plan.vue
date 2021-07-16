@@ -2,8 +2,15 @@
   <div class="lesson-container">
     <div class="lesson-container__header">
       <div class="lesson-container__header-title" :class="[isGalleryView && 'lesson-container__header-title--text-right']">
-        <span class="lesson-container__header-title--wrap">
-          <span class="lesson-container__header-title--wrap__unit"> Unit: {{ currentUnit }} </span><span class="lesson-container__header-title--wrap__lesson"> (Lesson {{ currentLesson }})</span>
+        <span :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']">
+          <span>
+            <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut']">
+              {{ isGalleryView ? `${currentUnit}:` : `${unitText} ${currentUnit}` }}
+            </span>
+            <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut']">
+              {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
+            </span>
+          </span>
         </span>
       </div>
       <span @click="backToGalleryMode" class="lesson-container__header-back">
@@ -12,16 +19,18 @@
       </span>
     </div>
     <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
-      <div id="lesson-container__remaining-time">
-        <p>Remaining: {{ remainingTime }}</p>
-        <p>
-          Item: {{ activityStatistic }} <br />
-          Page: {{ page }}
-        </p>
-        <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" />
-      </div>
-      <div class="progress">
-        <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
+      <div class="lesson-container__body--info">
+        <div id="lesson-container__remaining-time">
+          <p>{{ remainingText }} {{ remainingTime }}</p>
+          <p>
+            {{ itemText }} {{ activityStatistic }} <br />
+            {{ pageText }} {{ page }}
+          </p>
+          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" />
+        </div>
+        <div class="progress">
+          <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
+        </div>
       </div>
       <div class="activities">
         <div v-if="isShowExposureDetail">

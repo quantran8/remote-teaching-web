@@ -1,11 +1,11 @@
+import { TeacherHome } from "./../../locales/localeid";
 import { LoginInfo } from "@/commonui";
 import { TeacherClassModel, UnitAndLesson } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted, watch, onUnmounted } from "vue";
+import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
-import MicTest from "../mic-test/mic-test.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row, Empty } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
@@ -13,14 +13,14 @@ import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
-import DeviceDetector from "device-detector-js";
+import { DeviceTester } from "@/components/common";
+import { ClassRoomStatus } from "@/models";
 
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
   components: {
     ClassCard,
-    MicTest,
     Select,
     Spin,
     Option: Select.Option,
@@ -29,12 +29,11 @@ export default defineComponent({
     Button,
     Row,
     Empty,
+    DeviceTester,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
-    const deviceDetector = new DeviceDetector();
-    const device = deviceDetector.parse(navigator.userAgent);
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
@@ -59,6 +58,10 @@ export default defineComponent({
     const readPolicy = computed(() => fmtMsg(PrivacyPolicy.ReadPolicy));
     const policyTitleModal = computed(() => fmtMsg(PrivacyPolicy.PrivacyPolicy));
     const accessDenied = computed(() => fmtMsg(CommonLocale.CommonAccessDenied));
+    const welcomeText = computed(() => fmtMsg(TeacherHome.Welcome));
+    const scheduleText = computed(() => fmtMsg(TeacherHome.Schedule));
+    const cancelText = computed(() => fmtMsg(TeacherHome.Cancel));
+    const submitText = computed(() => fmtMsg(TeacherHome.Submit));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
@@ -66,30 +69,32 @@ export default defineComponent({
     const loadingStartClass = ref<boolean>(true);
     const unitInfo = ref<UnitAndLesson[]>();
     const loadingInfo = ref(false);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
+    const selectedGroupId = ref();
 
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
-      const resolution = window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
+      messageStartClass.value = "";
       try {
         const fp = await fpPromise;
         const result = await fp.get();
+        const resolution = screen.width * window.devicePixelRatio + "x" + screen.height * window.devicePixelRatio;
         const model: JoinSessionModel = {
           classId: teacherClass.classId,
           groupId: groupId,
-          browser: device.client ? device.client.name : "",
-          device: device.device ? device.device.type : "",
-          bandwidth: "",
-          resolution: resolution,
+          resolution,
           unit: unit,
           lesson: lesson,
           browserFingerprint: result.visitorId,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
+          deviceTesterRef.value?.handleGoToClassSuccess();
+          await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
           await router.push("/class/" + teacherClass.classId);
         }
       } catch (err) {
         loadingStartClass.value = false;
-        const message = err.body.message;
+        const message = err?.body?.message;
         if (message) {
           messageStartClass.value = message;
         }
@@ -131,8 +136,8 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const joinTheCurrentSession = async () => {
-      if (classOnline.value) {
+    const joinTheCurrentSession = async (currentGroupId: string) => {
+      if (classOnline.value && currentGroupId == classOnline.value.groupId) {
         await router.push("/class/" + infoStart.value?.teacherClass.classId);
         return true;
       }
@@ -141,11 +146,13 @@ export default defineComponent({
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
       infoStart.value = { teacherClass, groupId };
+      selectedGroupId.value = groupId;
 
-      if (!(await joinTheCurrentSession())) {
+      messageStartClass.value = "";
+      if (!(await joinTheCurrentSession(groupId))) {
         await getListLessonByUnit(teacherClass, groupId);
-        messageStartClass.value = "";
-        startPopupVisible.value = true;
+        // startPopupVisible.value = true;
+        deviceTesterRef.value?.showModal();
       }
     };
 
@@ -154,19 +161,28 @@ export default defineComponent({
         loadingInfo.value = true;
         const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
         const listUnit: UnitAndLesson[] = [];
-        for (let i = 14; i <= 40; i++) {
-          listUnit.push({ unit: i, lesson: [] });
-        }
 
         if (response && response.success) {
           response.data.map((res: any) => {
+            let isUnitExist = false;
+            listUnit.map((singleUnit: UnitAndLesson) => {
+              if (res.unitId == singleUnit.unit) {
+                isUnitExist = true;
+              }
+            });
+            if (!isUnitExist) {
+              listUnit.push({ unit: res.unitId, sequence: [] });
+            }
+          });
+          response.data.map((res: any) => {
             listUnit.map((singleUnit: UnitAndLesson, index) => {
-              if (singleUnit.unit == res.unitId) {
-                listUnit[index].lesson.push(res.sequence);
+              if (res.unitId == singleUnit.unit) {
+                listUnit[index].sequence.push(res.sequence);
               }
             });
           });
         }
+        listUnit.sort((a, b) => a.unit - b.unit);
         unitInfo.value = listUnit;
       } catch (err) {
         const message = err?.body?.message;
@@ -179,9 +195,9 @@ export default defineComponent({
 
     const onStartClass = async (data: { unit: number; lesson: number }) => {
       popUpLoading.value = true;
-      if (!(await joinTheCurrentSession())) {
+      if (!(await joinTheCurrentSession(selectedGroupId.value))) {
         if (infoStart.value) {
-          await startClass(infoStart.value.teacherClass, infoStart.value.groupId, data.unit, data.lesson);
+          await startClass(infoStart.value.teacherClass, selectedGroupId.value, data.unit, data.lesson);
         }
       }
       popUpLoading.value = false;
@@ -291,6 +307,11 @@ export default defineComponent({
       classOnline,
       unitInfo,
       loadingInfo,
+      deviceTesterRef,
+      welcomeText,
+      scheduleText,
+      cancelText,
+      submitText,
     };
   },
 });

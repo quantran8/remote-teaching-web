@@ -9,6 +9,9 @@ import { ErrorCode, fmtMsg } from "commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
+import { DeviceTester } from "@/components/common";
+import { ClassRoomStatus } from "@/models";
+
 const fpPromise = FingerprintJS.load();
 
 export default defineComponent({
@@ -44,20 +47,33 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const listSessionInfo = ref([]);
+    const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
+    const classIsActive = ref(false);
+    const currentStudent = ref<ChildModel>();
+    const getRoomInfoError = ref<string>("");
+	const getRoomInfoErrorByMsg = ref<string>("")
+    const goToClass = async () => {
+      await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
+      deviceTesterRef.value?.handleGoToClassSuccess();
+    };
     const onClickChild = async (student: ChildModel) => {
+      currentStudent.value = student;
+      deviceTesterRef.value?.showModal();
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
       try {
         await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+        getRoomInfoError.value = "";
+		getRoomInfoErrorByMsg.value = "";
         await store.dispatch("studentRoom/setOnline");
-        await router.push(`/student/${student.id}/class/${student.schoolClassId}`);
+        classIsActive.value = true;
       } catch (err) {
-        if (err.code === ErrorCode.ConcurrentUserException) {
-          await store.dispatch("setToast", { message: err.message });
-        } else {
-          const message = computed(() => fmtMsg(PrivacyPolicy.StudentMessageJoin, { studentName: student.englishName }));
-          await store.dispatch("setToast", { message: message });
+        getRoomInfoError.value = err?.code;
+		getRoomInfoErrorByMsg.value = err?.message
+        if (classIsActive.value) {
+          classIsActive.value = false;
         }
       }
     };
@@ -148,6 +164,11 @@ export default defineComponent({
       concurrentMess,
       accessDenied,
       studentNextSessionInfo,
+      deviceTesterRef,
+      classIsActive,
+      goToClass,
+      getRoomInfoError,
+	  getRoomInfoErrorByMsg
     };
   },
 });

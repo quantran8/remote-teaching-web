@@ -1,9 +1,10 @@
 <template>
   <div class="header">
+    <DeviceTester :notJoin="true" ref="deviceTesterRef" />
     <slot name="leading">
-      <router-link to="/">
+      <a :href="url">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
-      </router-link>
+      </a>
     </slot>
     <div class="h-spacer"></div>
     <div class="content">
@@ -24,10 +25,11 @@
         </div>
         <template v-slot:popup>
           <div class="menu-item" @click.prevent="onClickOpenAccountPage">
-            <div class="item-title">Edit Profile</div>
+            <div class="item-title">{{ editProfileText }}</div>
             <BaseIcon class="item-action" name="reply" />
           </div>
-          <div class="menu-item" @click.prevent="onClickSignOut">Sign Out</div>
+          <div class="menu-item" @click.prevent="onClickTestDevice">{{ testConnectText }}</div>
+          <div class="menu-item" @click.prevent="onClickSignOut">{{ signOutText }}</div>
         </template>
       </MenuItem>
     </slot>

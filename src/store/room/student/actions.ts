@@ -12,6 +12,7 @@ import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
+import { MediaStatus } from "@/models";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -117,25 +118,65 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
-    await store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, store.state.user.id, _payload.browserFingerPrinting);
+    const isMuteAudio = store.rootGetters["isMuteAudio"];
+    const isHideVideo = store.rootGetters["isHideVideo"];
+    await store.state.manager?.WSClient.sendRequestJoinRoom(
+      store.state.info.id,
+      store.state.user.id,
+      _payload.browserFingerPrinting,
+      isMuteAudio,
+      isHideVideo,
+    );
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
-    const { state, dispatch } = store;
+    const { state, dispatch, rootState } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
+      let cameraStatus = state.student?.videoEnabled;
+      let microphoneStatus = state.student?.audioEnabled;
+      const isMuteAudio = store.rootGetters["isMuteAudio"];
+      if (isMuteAudio !== MediaStatus.noStatus) {
+        if (isMuteAudio === MediaStatus.mediaNotLocked) {
+          microphoneStatus = true;
+        }
+        if (isMuteAudio === MediaStatus.mediaLocked) {
+          microphoneStatus = false;
+        }
+      }
+      const isHideVideo = store.rootGetters["isHideVideo"];
+      if (isHideVideo !== MediaStatus.noStatus) {
+        if (isHideVideo === MediaStatus.mediaNotLocked) {
+          cameraStatus = true;
+        }
+        if (isHideVideo === MediaStatus.mediaLocked) {
+          cameraStatus = false;
+        }
+      }
       await state.manager?.join({
-        camera: state.student?.videoEnabled,
-        microphone: state.student?.audioEnabled,
+        camera: cameraStatus,
+        microphone: microphoneStatus,
         classId: state.info?.id,
         studentId: state.user?.id,
       });
     }
-    // 120000 means 2 minutes
+    let currentBandwidth = 0;
+    let time = 0;
     setInterval(() => {
-      RemoteTeachingService.putStudentBandwidth(state.user ? state.user.id : "", `${state.bandWidth}`);
-    }, 120000);
+      state.manager?.getBandwidth().then(speedMbps => {
+        if (speedMbps > 0) {
+          currentBandwidth = speedMbps;
+        }
+        time += 1;
+        if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) {
+          //mean 5 minutes
+          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
+          RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2));
+          currentBandwidth = 0;
+        }
+      });
+    }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: _payload => {
         dispatch("updateAudioAndVideoFeed", {});
@@ -150,7 +191,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        store.commit("setStudentBandwidth", payload.uplinkNetworkQuality);
+        //   console.log(payload);
       },
     });
   },

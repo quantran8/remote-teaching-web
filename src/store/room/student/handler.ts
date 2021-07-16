@@ -1,4 +1,4 @@
-import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
@@ -73,6 +73,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
+      console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -179,11 +180,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("disableAnnotationStatus", payload, { root: false });
     },
     onTeacherToggleStudentPallete: async (payload: any) => {
-      console.log("Toggle");
       await commit("studentRoom/setAnnotationStatus", payload, { root: true });
     },
     onTeacherEndClass: async (_payload: any) => {
-      await dispatch("setIsJoined", { isJoined: false });
+      await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
       commit("setError", {
         errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
@@ -191,6 +191,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherDisconnect: async (payload: any) => {
+      console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
       commit("setTeacherDisconnected", true);
       await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
       commit("setTeacherStatus", {
@@ -203,6 +204,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("setClassView", {
         classView: ClassViewFromValue(payload),
       });
+      commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onTeacherUpdateGlobalAudio: async (payload: Array<string>) => {
       commit("setGlobalAudios", payload);
@@ -227,14 +229,16 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("lesson/setIsBlackOut", { IsBlackOut: payload.isBlackOut }, { root: true });
     },
     onTeacherStartLessonPlan: (payload: any) => {
-      commit("lesson/setCurrentExposure", { id: payload.id }, { root: true });
+      commit("lesson/setCurrentExposure", { id: payload }, { root: true });
+      commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onTeacherEndLessonPlan: (payload: any) => {
-      commit("lesson/setExposureStatus", { id: payload.content.id, status: ExposureStatus.COMPLETED }, { root: true });
-      commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
+      commit("lesson/setExposureStatus", { id: payload.ContentId, status: ExposureStatus.COMPLETED }, { root: true });
+      if (payload.playedTime) commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
     onTeacherSetLessonPlanItemContent: (payload: any) => {
       commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
+      commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onStudentRaisingHand: (payload: any) => {
       //   console.log(payload);
@@ -338,7 +342,16 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         },
       );
     },
-    onTeacherSetOneToOne: async (payload: { status: boolean; id: string }) => {
+    onTeacherSetOneToOne: async (payload: {
+      status: boolean;
+      id: string;
+      drawing: any;
+      student: any;
+      focusTab: any;
+      isShowWhiteBoard: boolean;
+      exposureSelected: string;
+      itemContentSelected: string;
+    }) => {
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -349,12 +362,29 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         );
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
-        await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
-        await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
-        // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
-        // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
       }
       await dispatch("updateAudioAndVideoFeed", {});
+      if (payload.id) {
+        // process in one one
+        await dispatch("annotation/setOneTeacherStrokes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+      } else {
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        commit("updateIsPalette", {
+          id: payload.student.id,
+          isPalette: payload.student.isPalette,
+        });
+        commit("setWhiteboard", payload.isShowWhiteBoard);
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+      }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
       await commit("setWhiteboard", payload);

@@ -12,6 +12,12 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "@typescript-eslint/naming-convention": [1],
     "@typescript-eslint/no-use-before-define": ["off"],
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      {
+        allowSingleExtends: false,
+      },
+    ],
   },
   overrides: [
     {

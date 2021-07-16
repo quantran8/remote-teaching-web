@@ -37,8 +37,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id,
             image: {
               url: payload.contentStorageUrl + p.url + signalture,
-              width: parseInt(p.resolution.split("X")[0]),
-              height: parseInt(p.resolution.split("X")[1]),
+              width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+              height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
           };
         });
@@ -57,8 +57,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id,
             image: {
               url: payload.contentStorageUrl + p.url + signalture,
-              width: parseInt(p.resolution.split("X")[0]),
-              height: parseInt(p.resolution.split("X")[1]),
+              width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+              height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
           };
         });
@@ -90,8 +90,8 @@ const actions: LessonActions<LessonState, any> = {
             id: p.id, // need to confirm is contentExposureId or teachingActivity.id
             image: {
               url,
-              width: parseInt(p.resolution.split("X")[0]),
-              height: parseInt(p.resolution.split("X")[1]),
+              width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+              height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
           };
         });
@@ -107,14 +107,14 @@ const actions: LessonActions<LessonState, any> = {
         name: e.title,
         duration: e.maxDuration,
         status: e.played ? ExposureStatus.COMPLETED : ExposureStatus.DEFAULT,
-        type: ExposureTypeFromValue(e.contentType.id),
+        type: ExposureTypeFromValue(e.contentType.id, e.contentType.name),
         items: items,
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
       };
     });
-	
+
     const listUrl = exposures
       .map(expo => {
         const url = expo.items.map(item => {

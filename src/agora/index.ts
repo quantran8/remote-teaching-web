@@ -1,5 +1,3 @@
-import { StudentState, TeacherState } from "@/store/room/interface";
-import { Logger } from "@/utils/logger";
 import AgoraRTC, {
   ClientConfig,
   IAgoraRTC,
@@ -11,9 +9,12 @@ import AgoraRTC, {
   IRemoteTrack,
   UID,
   VideoEncoderConfigurationPreset,
+  AgoraRTCStats,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
-import { AgoraError, AgoraConnectionState } from "./interfaces";
+import { AgoraError } from "./interfaces";
+
+const DEFAULT_TIMEOUT = 1000;
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -84,7 +85,7 @@ export class AgoraClient implements AgoraClientSDK {
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-    this.agoraRTC.setLogLevel(3);
+    this.agoraRTC.setLogLevel(4);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
@@ -206,26 +207,48 @@ export class AgoraClient implements AgoraClientSDK {
     this._client = undefined;
     this.cameraError = null;
     this.microphoneError = null;
+    this.subscribedAudios = [];
+    this.subscribedVideos = [];
   }
 
+  timeOutCam: any;
+  camSetup: boolean = false;
+  isCamEnable: boolean = false;
   async setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
-    if (options.enable) {
-      await this.openCamera(options.videoEncoderConfigurationPreset);
-      await this._publish();
-    } else {
-      await this.client?.unpublish(this.cameraTrack);
-      this._closeMediaTrack(this.cameraTrack);
+    this.isCamEnable = options.enable;
+    if (this.timeOutCam) {
+      clearTimeout(this.timeOutCam);
     }
+    this.timeoutId = setTimeout(async () => {
+      if (this.isCamEnable) {
+        await this.openCamera(options.videoEncoderConfigurationPreset);
+        await this._publish();
+      } else {
+        await this.client?.unpublish(this.cameraTrack);
+        this._closeMediaTrack(this.cameraTrack);
+      }
+    }, DEFAULT_TIMEOUT);
   }
 
+  timeOutMic: any;
+  micSetup: boolean = false;
+  isMicEnable: boolean = false;
   async setMicrophone(options: { enable: boolean }) {
-    if (options.enable) {
-      await this.openMicrophone();
-      await this._publish();
-    } else {
-      await this.client?.unpublish(this.microphoneTrack);
-      this._closeMediaTrack(this.microphoneTrack);
+    this.isMicEnable = options.enable;
+    if (this.timeOutMic) {
+      clearTimeout(this.timeOutMic);
     }
+    this.timeoutId = setTimeout(async () => {
+      this.micSetup = true;
+      if (this.isMicEnable) {
+        await this.openMicrophone();
+        await this._publish();
+      } else {
+        await this.client?.unpublish(this.microphoneTrack);
+        this._closeMediaTrack(this.microphoneTrack);
+      }
+      this.micSetup = false;
+    }, DEFAULT_TIMEOUT);
   }
 
   private _getRemoteUser(userId: string): IAgoraRTCRemoteUser | undefined {
@@ -233,24 +256,35 @@ export class AgoraClient implements AgoraClientSDK {
     return this.client.remoteUsers.find(e => isEqual(e.uid + "", userId));
   }
 
+  async getBandwidth() {
+    const stats = this.client.getRTCStats();
+    return stats.OutgoingAvailableBandwidth / 1024;
+  }
+
+  timeoutId: any;
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
-    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
-    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
-    for (let studentId of unSubscribeVideos) {
-      await this._unSubscribe(studentId, "video");
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
     }
+    this.timeoutId = setTimeout(async () => {
+      const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
+      const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
+      for (let studentId of unSubscribeVideos) {
+        await this._unSubscribe(studentId, "video");
+      }
 
-    for (let studentId of unSubscribeAudios) {
-      await this._unSubscribe(studentId, "audio");
-    }
+      for (let studentId of unSubscribeAudios) {
+        await this._unSubscribe(studentId, "audio");
+      }
 
-    for (let studentId of videos) {
-      await this._subscribeVideo(studentId);
-    }
+      for (let studentId of videos) {
+        await this._subscribeVideo(studentId);
+      }
 
-    for (let studentId of audios) {
-      await this._subscribeAudio(studentId);
-    }
+      for (let studentId of audios) {
+        await this._subscribeAudio(studentId);
+      }
+    }, DEFAULT_TIMEOUT);
   }
 
   async _subscribeAudio(userId: string) {
@@ -288,7 +322,7 @@ export class AgoraClient implements AgoraClientSDK {
           }
         }
       }
-    }, 1000);
+    }, DEFAULT_TIMEOUT);
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {

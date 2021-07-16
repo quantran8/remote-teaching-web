@@ -22,6 +22,8 @@ import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
 import { RemoteTeachingService } from "@/services";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+import * as sandClock from "@/assets/lotties/sand-clock.json";
+import { ClassRoomStatus } from "@/models";
 
 const fpPromise = FingerprintJS.load();
 
@@ -49,10 +51,15 @@ export default defineComponent({
     const router = useRouter();
     const { studentId, classId } = route.params;
     const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const classRoomState = computed(() => getters["classRoomStatus"]);
+
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
     try {
+      if (classRoomState.value === ClassRoomStatus.InDashBoard) {
+        await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
+      }
       await dispatch("studentRoom/initClassRoom", {
         classId: classId,
         userId: loginInfo.profile.sub,
@@ -110,6 +117,7 @@ export default defineComponent({
     const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
     const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const showMessage = ref(false);
+    const studentOneName = ref("");
 
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
@@ -118,7 +126,8 @@ export default defineComponent({
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const previousExposureItemMedia = computed(() => store.getters["lesson/previousExposureItemMedia"]);
     const defaultUrl =
-      "https://devmediaservice-jpea.streaming.media.azure.net/8b604fd3-7a56-4a32-acc8-ad2227a47430/GSv4-U10-REP-Jonny Bear Paints w.ism/manifest";
+      "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
+    const iconSand = reactive({ animationData: sandClock.default });
 
     watch(lessonInfo, async () => {
       try {
@@ -135,16 +144,17 @@ export default defineComponent({
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+        studentOneName.value = students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name;
         await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
         await store.dispatch("studentRoom/getAvatarStudent", { studentId: studentOneAndOneId.value });
       }
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {
         studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-        if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-          await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
-          await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
-        }
+        // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
+        //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
+        //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
+        // }
       } else {
         studentIsOneToOne.value = false;
       }
@@ -333,6 +343,8 @@ export default defineComponent({
       errors,
       exitText,
       goToHomePageText,
+      iconSand,
+      studentOneName,
     };
   },
 });

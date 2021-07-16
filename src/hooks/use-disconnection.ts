@@ -1,54 +1,79 @@
+import { LostNetwork } from "./../locales/localeid";
 import { useStore } from "vuex";
-import { LoginInfo, RoleName } from "@/commonui";
+import { fmtMsg, LoginInfo, RoleName } from "@/commonui";
 import { Modal } from "ant-design-vue";
-import { computed, watch } from "vue";
+import { computed, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import * as audioSource from "@/utils/audioGenerator";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { ClassRoomStatus, SignalRStatus } from "@/models";
 const fpPromise = FingerprintJS.load();
 
 //five minutes
-const POPUP_TIMING = 6000 * 10 * 5;
+const STUDENT_LEAVE_ROOM_TIMING = 6000 * 10 * 5;
 
 //three minutes
-const TEACHER_RECONNECT_TIMING = 6000 * 10 * 3;
+const TEACHER_LEAVE_ROOM_TIMING = 6000 * 10 * 3;
+
+const RECONNECT_TIMING = 15000; //15 seconds
+
 const TEACHER_PATH_REGEX = /\/teacher/;
 
 export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
   const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
-  const myTeacherDisconnected = computed<boolean>(() => getters["studentRoom/teacherIsDisconnected"]);
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
+  const signalRStatus = computed<number>(() => getters["signalRStatus"]);
+  const currentClassRoomStatus = computed<number>(() => getters["classRoomStatus"]);
   const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
   const route = useRoute();
-
   let timeoutId: any;
   const router = useRouter();
-
+  const messageText = computed(() => fmtMsg(LostNetwork.StudentMessage));
+  const reconnectIntervalId = ref<any>();
   //handle teacher disconnection in teacher's side
-  let modalRef: any;
   watch(teacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
     const pathname = window.location.pathname;
     const matchIndex = pathname.search(TEACHER_PATH_REGEX);
     if (matchIndex < 0) {
       if (prevIsDisconnected !== isDisconnected && isDisconnected) {
+        //handle case lost internet
         await dispatch("teacherRoom/leaveRoom");
         timeoutId = setTimeout(() => {
           audioSource.teacherTryReconnectSound.stop();
           audioSource.reconnectFailedSound.play();
           router.push("/teacher");
-        }, TEACHER_RECONNECT_TIMING);
+        }, TEACHER_LEAVE_ROOM_TIMING);
         audioSource.teacherTryReconnectSound.play();
-        modalRef = Modal.warning({
-          content: "So Sorry! It seems you lost network connectivity.",
-          onOk: () => {
-            console.log("OK");
-          },
-        });
+        //TEACHER::handle case just signalR destroyed by any reason
+        if (currentClassRoomStatus.value === ClassRoomStatus.InClass && signalRStatus.value === SignalRStatus.Closed) {
+          const { classId } = route.params;
+          const loginInfo: LoginInfo = getters["auth/loginInfo"];
+          const fp = await fpPromise;
+          const result = await fp.get();
+          const visitorId = result.visitorId;
+          //TEACHER::try re-init class after each 15 seconds
+          reconnectIntervalId.value = setInterval(async () => {
+            await dispatch("teacherRoom/initClassRoom", {
+              classId: classId,
+              userId: loginInfo.profile.sub,
+              userName: loginInfo.profile.name,
+              role: RoleName.teacher,
+              browserFingerPrinting: visitorId,
+            });
+          }, RECONNECT_TIMING);
+          //TEACHER::try re-init class the first time when signalR destroyed
+          await dispatch("teacherRoom/initClassRoom", {
+            classId: classId,
+            userId: loginInfo.profile.sub,
+            userName: loginInfo.profile.name,
+            role: RoleName.teacher,
+            browserFingerPrinting: visitorId,
+          });
+        }
         return;
       }
       if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
-        modalRef.destroy();
         const { classId } = route.params;
         if (!classId) {
           window.location.reload();
@@ -62,32 +87,64 @@ export const useDisconnection = () => {
         const fp = await fpPromise;
         const result = await fp.get();
         const visitorId = result.visitorId;
-        await dispatch("teacherRoom/initClassRoom", {
-          classId: classId,
-          userId: loginInfo.profile.sub,
-          userName: loginInfo.profile.name,
-          role: RoleName.teacher,
-          browserFingerPrinting: visitorId,
-        });
+        //TEACHER::prevent call initClassRoom second time in the case just signalR destroyed
+        if (!reconnectIntervalId.value) {
+          await dispatch("teacherRoom/initClassRoom", {
+            classId: classId,
+            userId: loginInfo.profile.sub,
+            userName: loginInfo.profile.name,
+            role: RoleName.teacher,
+            browserFingerPrinting: visitorId,
+          });
+          clearInterval(reconnectIntervalId.value);
+          reconnectIntervalId.value = undefined;
+        }
         await dispatch("teacherRoom/joinRoom");
       }
     }
   });
 
   //handle student disconnection
-
   watch(studentDisconnected, async (isDisconnected, prevIssDisconnected) => {
     if (isDisconnected !== prevIssDisconnected && isDisconnected) {
       await dispatch("studentRoom/leaveRoom");
       timeoutId = setTimeout(async () => {
         audioSource.reconnectFailedSound.play();
         Modal.warning({
-          content: "So Sorry! It seems you lost network connectivity.",
+          content: messageText.value,
           onOk: () => {
             console.log("OK");
           },
         });
-      }, POPUP_TIMING);
+      }, STUDENT_LEAVE_ROOM_TIMING);
+      //STUDENT::handle case just signalR destroyed by any reason
+      //   if (currentClassRoomStatus.value === ClassRoomStatus.InClass && signalRStatus.value === SignalRStatus.Closed) {
+      //     const { studentId, classId } = route.params;
+      //     if (!studentId || !classId) return;
+      //     const fp = await fpPromise;
+      //     const result = await fp.get();
+      //     const visitorId = result.visitorId;
+      //     //STUDENT::try re-init class after each 15 seconds
+      //     reconnectIntervalId.value = setInterval(async () => {
+      //       await dispatch("studentRoom/initClassRoom", {
+      //         classId: classId,
+      //         userId: loginInfo.value.profile.sub,
+      //         userName: loginInfo.value.profile.name,
+      //         studentId: studentId,
+      //         role: RoleName.parent,
+      //         browserFingerPrinting: visitorId,
+      //       });
+      //     }, RECONNECT_TIMING);
+      //     //STUDENT::try re-init class the first time when signalR destroyed
+      //     await dispatch("studentRoom/initClassRoom", {
+      //       classId: classId,
+      //       userId: loginInfo.value.profile.sub,
+      //       userName: loginInfo.value.profile.name,
+      //       studentId: studentId,
+      //       role: RoleName.parent,
+      //       browserFingerPrinting: visitorId,
+      //     });
+      //   }
       return;
     }
     if (isDisconnected !== prevIssDisconnected && !isDisconnected) {
@@ -98,14 +155,19 @@ export const useDisconnection = () => {
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
-      await dispatch("studentRoom/initClassRoom", {
-        classId: classId,
-        userId: loginInfo.value.profile.sub,
-        userName: loginInfo.value.profile.name,
-        studentId: studentId,
-        role: RoleName.parent,
-        browserFingerPrinting: visitorId,
-      });
+      //STUDENT::prevent call initClassRoom second time in the case just signalR destroyed
+      if (!reconnectIntervalId.value) {
+        await dispatch("studentRoom/initClassRoom", {
+          classId: classId,
+          userId: loginInfo.value.profile.sub,
+          userName: loginInfo.value.profile.name,
+          studentId: studentId,
+          role: RoleName.parent,
+          browserFingerPrinting: visitorId,
+        });
+        clearInterval(reconnectIntervalId.value);
+        reconnectIntervalId.value = undefined;
+      }
       await dispatch("studentRoom/joinRoom");
     }
   });
@@ -128,6 +190,55 @@ export const useDisconnection = () => {
     }
     if (isParent) {
       dispatch("studentRoom/setOffline");
+    }
+  });
+
+  watch(signalRStatus, currentSignalRStatus => {
+    const isTeacher: boolean = getters["auth/isTeacher"];
+    const isParent: boolean = getters["auth/isParent"];
+    switch (currentSignalRStatus) {
+      case SignalRStatus.Disconnected: {
+        if (isTeacher) {
+          dispatch("teacherRoom/setOffline");
+        }
+        if (isParent) {
+          dispatch("studentRoom/setOffline");
+        }
+        break;
+      }
+      case SignalRStatus.Closed: {
+        if (isTeacher) {
+          dispatch("teacherRoom/setOffline");
+        }
+        if (isParent) {
+          dispatch("studentRoom/setOffline");
+        }
+        break;
+      }
+      case SignalRStatus.NoStatus: {
+        if (isTeacher) {
+          dispatch("teacherRoom/setOnline");
+        }
+        if (isParent) {
+          dispatch("studentRoom/setOnline");
+        }
+        break;
+      }
+    }
+  });
+
+  watch(route, currentRoute => {
+    const classRoomStatus: number = getters["classRoomStatus"];
+    if (!currentRoute.params.classId && classRoomStatus === ClassRoomStatus.InClass) {
+      dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = undefined;
+      }
+      if (reconnectIntervalId.value) {
+        clearInterval(reconnectIntervalId.value);
+        reconnectIntervalId.value = undefined;
+      }
     }
   });
 };

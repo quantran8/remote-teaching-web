@@ -18,10 +18,7 @@
           </div>
         </div>
         <div v-show="!teacherIsDisconnected">
-          <AnnotationView
-            v-show="!isBlackOutContent && isLessonPlan"
-            :image="isLessonPlan ? (isOneToOne && !studentIsOneToOne ? previousExposureItemMedia?.image : currentExposureItemMedia?.image) : null"
-          />
+          <AnnotationView v-show="!isBlackOutContent && isLessonPlan" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
         </div>
         <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
@@ -54,21 +51,27 @@
         </div>
         <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
         <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
-          <div class="sc-independent__avatar-container">
-            <img class="sc-independent__avatar-container__avatar" v-if="avatarTeacher && avatarTeacher.length > 0" :src="avatarTeacher" />
-            <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+          <div class="sc-independent__info-container">
+            <div class="sc-independent__avatar-container">
+              <img class="sc-independent__avatar-container__avatar" v-if="avatarTeacher && avatarTeacher.length > 0" :src="avatarTeacher" />
+              <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+            </div>
+            <p class="sc-independent__text-size">{{ teacher?.name }}</p>
           </div>
           <div class="sc-independent__icon-container">
             <img class="sc-independent__icon-container__size-talk" src="@/assets/images/talk.jpeg" />
-            <img class="sc-independent__icon-container__size-clock" src="@/assets/images/sand-clock.png" />
+            <Lottie :options="iconSand" class="sc-independent__size-clock" />
           </div>
-          <div class="sc-independent__avatar-container">
-            <img
-              class="sc-independent__avatar-container__avatar"
-              v-if="avatarStudentOneToOne && avatarStudentOneToOne.length > 0"
-              :src="`data:image/png;base64,${avatarStudentOneToOne}`"
-            />
-            <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+          <div class="sc-independent__info-container">
+            <div class="sc-independent__avatar-container">
+              <img
+                class="sc-independent__avatar-container__avatar"
+                v-if="avatarStudentOneToOne && avatarStudentOneToOne.length > 0"
+                :src="`data:image/png;base64,${avatarStudentOneToOne}`"
+              />
+              <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+            </div>
+            <p class="sc-independent__text-size">{{ studentOneName }}</p>
           </div>
         </div>
       </div>

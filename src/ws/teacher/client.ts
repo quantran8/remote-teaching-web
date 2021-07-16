@@ -2,10 +2,33 @@ import { Target } from "@/store/interactive/state";
 import { Sticker } from "@/store/annotation/state";
 import { GLSocketClient } from "../base";
 import { TeacherWSCommand as WSCmd } from "./command";
+import { MediaStatus } from "@/models";
+
+interface JoinRoomParams {
+  roomId: string;
+  browserFingerPrinting: string;
+  isMuteAudio?: boolean;
+  isMuteVideo?: boolean;
+}
 
 export class TeacherWSClient extends GLSocketClient {
-  sendRequestJoinRoom(roomId: string, browserFingerPrinting: string) {
-    return this.send(WSCmd.JOIN_CLASS, { roomId: roomId, browserFingerPrinting: browserFingerPrinting });
+  sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.noStatus, isHideVideo = MediaStatus.noStatus) {
+    const params: JoinRoomParams = { roomId: roomId, browserFingerPrinting: browserFingerPrinting };
+    if (isMuteAudio !== MediaStatus.noStatus) {
+      let status = false;
+      if (isMuteAudio === MediaStatus.mediaLocked) {
+        status = true;
+      }
+      params.isMuteAudio = status;
+    }
+    if (isHideVideo !== MediaStatus.noStatus) {
+      let status = false;
+      if (isHideVideo === MediaStatus.mediaLocked) {
+        status = true;
+      }
+      params.isMuteVideo = status;
+    }
+    return this.send(WSCmd.JOIN_CLASS, params);
   }
   sendRequestMuteVideo(IsMute: boolean) {
     return this.send(WSCmd.MUTE_VIDEO, { IsMute: IsMute });

@@ -1,7 +1,7 @@
 <template>
   <div class="teacher-page" v-if="policy">
     <div class="teacher-title mt-40">
-      <h2>Welcome {{ username }}</h2>
+      <h2>{{ welcomeText }} {{ username }}</h2>
       <span class="teacher-title__indicator-out" v-if="classOnline" @click="onClickClass(classOnline, classOnline.groupId)">
         <span class="teacher-title__indicator-in"></span>
       </span>
@@ -22,7 +22,7 @@
     </div>
     <hr class="mr-10 ml-10" />
     <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-      <span>Schedule</span>
+      <span>{{ scheduleText }}</span>
       <img class="calendar" src="@/assets/images/calendar.png" />
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
@@ -48,16 +48,13 @@
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
-    <MicTest
-      :is-teacher="true"
-      :visible="startPopupVisible"
-      :teacherClass="infoStart?.teacherClass"
-      :groupId="infoStart?.groupId"
+    <DeviceTester
       :unitInfo="unitInfo"
-      :messageStartClass="messageStartClass"
-      :loading="popUpLoading"
       @on-join-session="onStartClass"
-      @on-cancel="onCancelStartClass"
+      ref="deviceTesterRef"
+      :loading="popUpLoading"
+      :messageStartClass="messageStartClass"
+      :info-start="infoStart"
     />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
@@ -76,8 +73,8 @@
     </div>
     <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">
-      <Button class="btn-cancel-policy" @click="cancelPolicy">Cancel</Button>
-      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">Submit</Button>
+      <Button class="btn-cancel-policy" @click="cancelPolicy">{{ cancelText }}</Button>
+      <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">{{ submitText }}</Button>
     </Row>
   </Modal>
 </template>
