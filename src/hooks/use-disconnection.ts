@@ -15,7 +15,7 @@ const STUDENT_LEAVE_ROOM_TIMING = 6000 * 10 * 5;
 //three minutes
 const TEACHER_LEAVE_ROOM_TIMING = 6000 * 10 * 3;
 
-const RECONNECT_TIMING = 15000; //15 seconds
+const RECONNECT_TIMING = 8000; //8 seconds
 
 const TEACHER_PATH_REGEX = /\/teacher/;
 
@@ -88,17 +88,8 @@ export const useDisconnection = () => {
         const result = await fp.get();
         const visitorId = result.visitorId;
         //TEACHER::prevent call initClassRoom second time in the case just signalR destroyed
-        if (!reconnectIntervalId.value) {
-          await dispatch("teacherRoom/initClassRoom", {
-            classId: classId,
-            userId: loginInfo.profile.sub,
-            userName: loginInfo.profile.name,
-            role: RoleName.teacher,
-            browserFingerPrinting: visitorId,
-          });
-          clearInterval(reconnectIntervalId.value);
-          reconnectIntervalId.value = undefined;
-        }
+        clearInterval(reconnectIntervalId.value);
+        reconnectIntervalId.value = undefined;
         await dispatch("teacherRoom/joinRoom");
       }
     }
@@ -156,18 +147,8 @@ export const useDisconnection = () => {
       const result = await fp.get();
       const visitorId = result.visitorId;
       //STUDENT::prevent call initClassRoom second time in the case just signalR destroyed
-      if (!reconnectIntervalId.value) {
-        await dispatch("studentRoom/initClassRoom", {
-          classId: classId,
-          userId: loginInfo.value.profile.sub,
-          userName: loginInfo.value.profile.name,
-          studentId: studentId,
-          role: RoleName.parent,
-          browserFingerPrinting: visitorId,
-        });
-        clearInterval(reconnectIntervalId.value);
-        reconnectIntervalId.value = undefined;
-      }
+      clearInterval(reconnectIntervalId.value);
+      reconnectIntervalId.value = undefined;
       await dispatch("studentRoom/joinRoom");
     }
   });
