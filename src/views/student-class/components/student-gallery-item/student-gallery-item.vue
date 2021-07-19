@@ -21,7 +21,7 @@
           class="sc-gallery-item__img"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="!student.videoEnabled || isNotJoinned"
-          src="@/assets/student-class/no-avatar.png"
+          :src="avatarStudent"
           :alt="student.englishName"
           :title="student.englishName"
         />
