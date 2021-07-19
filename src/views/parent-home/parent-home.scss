@@ -1,0 +1,28 @@
+.student-page {
+  text-align: center;
+  max-width: 1024px;
+  margin: auto;
+  .list-student {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+.policy-content {
+  max-height: 300px;
+  overflow-y: scroll;
+  margin-bottom: 25px;
+  p {
+    &:first-child {
+      text-align: center;
+    }
+  }
+}
+.access-denied,
+.concurrent-connection {
+  margin-top: 30px;
+  text-align: center;
+}
+.btn-cancel-policy {
+  margin-right: 20px;
+}

@@ -1,0 +1,113 @@
+@import "../../style/abstracts/variables";
+
+.tc {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr 300px;
+  height: 100vh;
+  &__header {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+  &__sidebar {
+    width: 320px;
+    transition: 0.2s;
+    overflow: hidden;
+    border-bottom: 1px solid #7b7b7b;
+    &--collapsed {
+      margin-left: -240px;
+    }
+  }
+  &__content {
+    padding: 5px;
+    margin: 0 auto;
+    &__teacher {
+      &--gallery {
+      }
+      img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+    &__activity-content {
+      flex: auto;
+      min-height: 70%;
+    }
+    &__whiteboard-content {
+      display: grid;
+      grid-template-columns: 550px 1fr;
+      grid-template-rows: 330px 490px;
+      grid-gap: 5px;
+      width: 717px;
+      height: 100%;
+    }
+  }
+  &__gallery {
+	position: relative;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    @media (max-width: $large-lap) {
+      //max-width: 470px;
+    }
+    @media screen and (min-width: $xl) and (max-width: $xxl) {
+      padding-right: 20px;
+    }
+    &.no-sidebar {
+      max-width: 100%;
+    }
+  }
+
+  @media (min-width: $lg) {
+    &__content {
+      flex-direction: row-reverse;
+
+      &__activity-content {
+        min-width: 70%;
+      }
+    }
+  }
+  @media (min-width: $xl) {
+    grid-template-rows: auto 1fr;
+
+    &__header {
+      grid-column-start: 1;
+      grid-column-end: 4;
+    }
+    &__gallery {
+      grid-column-start: unset;
+      grid-column-end: unset;
+      height: 100%;
+    }
+    &__content {
+      flex-direction: column;
+    }
+  }
+  @media screen and (min-width: $xl) and (max-width: $large-lap) {
+    grid-template-columns: auto 1fr auto;
+    &.no-sidebar {
+      grid-template-columns: auto 1fr 1fr;
+    }
+  }
+  &.has-sidebar {
+    &.mode-one-one {
+      @media screen and (min-width: $xl) and (max-width: $xxl) {
+        grid-template-columns: auto 1fr 300px;
+      }
+      @media screen and (min-width: $xxl) and (max-width: $large-lap) {
+        grid-template-columns: auto 1fr 400px;
+      }
+    }
+  }
+  @media (min-width: 1600px) {
+    grid-template-columns: auto auto 1fr;
+    grid-column-gap: 5px;
+    &__content {
+      &__activity-content {
+        min-height: 60%;
+      }
+    }
+    &.no-sidebar {
+      grid-template-columns: auto 1fr 1fr;
+    }
+  }
+}

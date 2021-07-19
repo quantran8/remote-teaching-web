@@ -1,0 +1,151 @@
+@import "../../../../style/abstracts/variables";
+
+@mixin whiteboard-button-base {
+  border-bottom: 1px solid $border-color-main;
+  background-color: white;
+  position: absolute;
+  font-weight: 500;
+  z-index: 12;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 54px;
+}
+
+.whiteboard {
+  position: relative;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  &__wrap {
+    #canvas-container {
+      width: 717px;
+      height: 435px;
+      position: relative;
+      border-radius: 10px;
+
+      #annotation-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+      }
+      .wrap-canvas {
+        position: relative;
+        z-index: 11;
+        .canvas-container {
+          border-top-right-radius: 10px;
+          border-top-left-radius: 10px;
+        }
+      }
+    }
+    &--content {
+      position: relative;
+      width: 719px;
+      border: 1px solid $border-color-main;
+      border-radius: 10px;
+    }
+  }
+  &__space-top {
+    height: 54px;
+  }
+  &__space-bottom {
+    height: 44px;
+  }
+  &__button-show {
+    @include whiteboard-button-base;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+
+    animation: expandUp 0.1s ease-out;
+    &--icon {
+      animation: invertedUp 0.1s ease-out;
+      width: 30px;
+      height: 30px;
+      margin-left: 5px;
+    }
+  }
+  &__button-hide {
+    @include whiteboard-button-base;
+    border-top-width: 0;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    animation: expandDown 0.1s ease-out;
+    padding: 10px;
+    top: 425px;
+    &--icon {
+      animation: invertedUp 0.1s ease-out;
+      width: 30px;
+      height: 30px;
+      transform: rotate(180deg);
+      margin-left: 5px;
+    }
+  }
+  .canvas-designate {
+    border-top-right-radius: 10px;
+  }
+}
+
+.gallery-whiteboard-hidden {
+  border: none;
+  .whiteboard__button-show {
+    border: 1px solid $border-color-main;
+    border-radius: 10px;
+  }
+  #canvas-container {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.gallery-whiteboard-show {
+  border: 1px solid $border-color-main;
+  overflow: hidden;
+  #canvas-container {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+//animations
+
+@keyframes expandDown {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 425px;
+  }
+}
+
+@keyframes invertedDown {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes expandUp {
+  0% {
+    top: 300px;
+  }
+  100% {
+    top: 0;
+  }
+}
+
+@keyframes invertedUp {
+  0% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

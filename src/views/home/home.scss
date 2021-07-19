@@ -3,6 +3,41 @@
   max-width: 800px;
   margin: auto;
 }
-.card-margin{
-    margin: 20px
+.content-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  a {
+    text-decoration: none;
+  }
+  .item-container {
+    border-radius: 10px;
+    color: white;
+    padding: 24px;
+    margin: 20px;
+    .item-icon::before {
+      font-size: 40px;
+    }
+    .item-icon {
+      margin: 16px;
+    }
+
+    .item-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  }
+
+  .item-container:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
+  .teacher-container {
+    background-color: #d34c02;
+  }
+  .student-container {
+    background-color: #5c2d91;
+  }
 }

@@ -1,0 +1,343 @@
+@import "../../style/abstracts/mixins";
+@import "../../style/abstracts/variables";
+
+.sc {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: auto 1fr 30px;
+  overflow: hidden;
+  position: relative;
+  height: calc(var(--vh, 1vh) * 100);
+  @media (min-width: $md) {
+    grid-template-rows: auto 1fr auto;
+  }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-template-rows: auto 1fr 30px;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-rows: auto 1fr 30px;
+  }
+}
+
+.sc-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.message {
+  font-size: 30px;
+}
+
+.btn-homepage {
+  padding: 1rem 2rem;
+  color: white;
+  background-color: #00a1ed;
+  border-radius: 10rem;
+  display: inline-block;
+  text-decoration: none;
+
+  -moz-box-shadow: 1px 2px 4px 4px #00591b23;
+  -webkit-box-shadow: 1px 2px 4px 4px #00591b23;
+  box-shadow: 1px 2px 4px 4px #00591b23;
+}
+.btn-homepage:hover {
+  cursor: pointer;
+}
+
+.sc-body {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  grid-template-rows: 1fr 105px;
+  overflow: hidden;
+  @media (min-width: $md) {
+    grid-template-rows: 60% 40%;
+    grid-template-columns: 50% 50%;
+    padding: 5px 30px;
+  }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 1fr 105px;
+    padding: 10px 30px;
+  }
+  //@media only screen and (max-width: 812px) and (orientation: landscape) {
+  //  grid-template-rows: 60% 40%;
+  //}
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 1fr 105px;
+    padding: 10px 30px;
+  }
+  /* ----------- iPad 1, 2, Mini and Air ----------- */
+  /* Portrait */
+  @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 1) {
+    grid-template-rows: 60% 40%;
+    grid-template-columns: 50% 50%;
+    padding: 5px 30px;
+  }
+  /* ----------- iPad 3, 4 and Pro 9.7" ----------- */
+  /* Portrait */
+  @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
+    grid-template-rows: 60% 40%;
+    grid-template-columns: 50% 50%;
+    padding: 5px 30px;
+  }
+  @media (min-width: $lg) {
+    grid-template-columns: 60% 40%;
+    grid-template-rows: 1fr auto;
+    padding: 30px;
+    grid-row-gap: 30px;
+  }
+  @media (min-width: $xl) {
+    grid-column-gap: 50px;
+    grid-template-columns: 55% 1fr;
+  }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    grid-column-gap: 50px;
+    grid-template-columns: 50% 1fr;
+  }
+  @media (min-width: $xxl) {
+    padding: 50px 100px;
+    grid-column-gap: 100px;
+    grid-template-columns: 50% 1fr;
+  }
+}
+
+.sc-content {
+  grid-row-start: 1;
+  grid-row-end: 3;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  @media (min-width: $md) {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-end: unset;
+  }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: unset;
+    grid-column-end: unset;
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: unset;
+    grid-column-end: unset;
+  }
+  @media (min-width: $lg) {
+    grid-column-end: 2;
+    grid-row-end: 3;
+    grid-column-end: unset;
+    grid-column-start: unset;
+  }
+  &__top {
+    &--confused {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+      }
+      &__clock {
+        width: 30%;
+        height: 30%;
+        position: absolute;
+        bottom: 5%;
+        right: -5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        &--text {
+          font-weight: 600;
+          color: #39a9cb;
+        }
+        &.sticky {
+          position: fixed;
+          bottom: 0;
+          z-index: 23;
+          @media (min-width: $xl) {
+            bottom: 10%;
+            width: 20%;
+            height: 20%;
+          }
+        }
+      }
+    }
+  }
+}
+
+.sc-teacher {
+  height: 100%;
+  padding: 10px;
+  overflow: hidden;
+  display: flex;
+  &__video {
+    background: #eaeaea;
+    width: 100%;
+    height: 70%;
+    max-height: 420px;
+    max-width: 600px;
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: 0.3s;
+    @media (min-width: $lg) {
+      height: 100%;
+      top: 50%;
+    }
+    @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+      max-width: 400px;
+    }
+  }
+  &__one-to-one {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    opacity: 0.7;
+  }
+  &__content {
+    height: 100%;
+    position: relative;
+  }
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  &__time {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 32px;
+    line-height: normal;
+  }
+}
+
+.sc-student {
+  display: grid;
+  grid-auto-flow: column;
+  align-content: center;
+  padding: 0 10px 10px;
+  @media (min-width: $xl) {
+    column-gap: 40px;
+  }
+}
+
+.try-button {
+  padding: 10px 10px;
+  border-radius: 10px;
+  background-color: aquamarine;
+  color: white;
+  position: fixed;
+  top: 100px;
+  cursor: pointer;
+}
+
+.sc-independent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  &__info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  &__text-size {
+    margin-top: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 90px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  &__avatar-container {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid;
+    overflow: hidden;
+    &__avatar {
+      width: 100%;
+      object-fit: cover;
+    }
+    @media screen and (min-width: $md) {
+      width: 100px;
+      height: 100px;
+    }
+    @media screen and (min-width: $xl) {
+      width: 150px;
+      height: 150px;
+    }
+    @media screen and (min-width: 1500px) {
+      width: 200px;
+      height: 200px;
+    }
+  }
+
+  &__icon-container {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 30px;
+    margin-right: 30px;
+    @media screen and (max-width: $xl) {
+      margin: 0 20px;
+    }
+    @media screen and (max-width: $md) {
+      margin: 0 5px;
+      width: 50px;
+    }
+    &__size-talk {
+      width: 50px;
+      height: 50px;
+      align-self: center;
+      object-fit: cover;
+      @media (min-width: $xl) {
+        width: 70px;
+        height: 70px;
+      }
+    }
+    &__size-clock {
+      width: 40px;
+      height: 40px;
+      align-self: center;
+      object-fit: cover;
+      @media (min-width: $xl) {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  }
+}

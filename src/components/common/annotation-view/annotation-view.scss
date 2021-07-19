@@ -1,0 +1,172 @@
+@import "../../../style/abstracts/variables";
+
+.annotation-view-container {
+  border: 1px solid black;
+  width: 100%;
+  position: relative;
+  border-radius: 10px;
+  @media screen and (min-width: $md) and (max-width: $lg) {
+    max-width: 550px;
+    margin: auto;
+  }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    max-width: 500px;
+    margin: auto;
+  }
+  &__image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  &__canvas {
+    border-radius: 10px;
+  }
+  &.gallery-view {
+    background: #f1f1f1;
+    border-bottom-width: 1px !important;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+    canvas {
+      opacity: 0;
+      visibility: hidden;
+    }
+    &.whiteboard {
+      background: none;
+      canvas {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+    &.whiteboard-palette {
+      border-bottom-width: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+}
+
+.sticker-control {
+  position: absolute;
+  right: -45px;
+  top: 0;
+  width: 45px;
+  padding-left: 5px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  &--list {
+    display: flex;
+    flex-direction: column;
+    &--item {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+  }
+  &--check {
+    width: 40px;
+    height: 40px;
+    border: 2px solid;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      max-width: 25px;
+    }
+    &-correct {
+      background-color: lightgreen;
+    }
+  }
+}
+
+.palette-tool {
+  display: flex;
+  width: 100%;
+  background: #d8dddf;
+  align-items: center;
+  justify-content: center;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border: 1px solid black;
+  padding: 5px 10px;
+  @media screen and (min-width: $md) and (max-width: $lg) {
+    max-width: 550px;
+    margin: auto;
+  }
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    max-width: 500px;
+    margin: auto;
+  }
+  &__item {
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 5px;
+    &:hover {
+      background: #fff;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    &.active {
+      background: #fff;
+    }
+  }
+  &__colors {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 5px;
+    margin-left: 10px;
+    &--item {
+      width: 18px;
+      height: 18px;
+      border-radius: 12.5px;
+      cursor: pointer;
+      box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
+      border-width: 2px;
+      border-color: white;
+    }
+  }
+
+  @media (min-width: $lg) {
+    height: 100px;
+    &__item {
+      width: 45px;
+      height: 45px;
+      margin-right: 25px;
+    }
+    &__colors {
+      grid-gap: 10px;
+      &--item {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+}
+
+.cursor {
+  width: 10%;
+  height: 10%;
+  position: absolute;
+  img {
+    left: -45%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+  }
+  z-index: 9999;
+}

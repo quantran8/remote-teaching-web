@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
-    <a @click="openPrivacyPolicy()">Privacy Policy</a>
-    <span> V6.5 | Copyright © {{ new Date().getFullYear() }} GrapeSEED Media Ltd. All rights reserved</span>
+    <span class="footer-link" @click="openPrivacyPolicy">{{ privacyText }}</span>
+    <span>{{ copyRightText }}</span>
   </div>
 </template>
 <script src="./footer.ts" lang="ts" />

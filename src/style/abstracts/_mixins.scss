@@ -1,0 +1,108 @@
+@mixin draw-items-on-circle($item-count, $container-sizes, $item-sizes, $item-selector: (#{"> *"}, #{""}), $item-start-position: 0) {
+  $container-size-xs: nth(nth($container-sizes, 1), 2);
+  $item-size-xs: nth(nth($item-sizes, 1), 2);
+
+  position: relative;
+  min-width: $container-size-xs;
+  height: $container-size-xs;
+  border-radius: 50%;
+  margin: $item-size-xs / 2;
+
+  $angle: (360 / $item-count);
+  $rot: $angle * $item-start-position;
+
+  $level-1: nth($item-selector, 1);
+  $level-2: nth($item-selector, 2);
+  #{$level-1} {
+    #{$level-2} {
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -($item-size-xs / 2);
+      width: $item-size-xs;
+      height: $item-size-xs;
+    }
+    @for $i from 1 to $item-count + 1 {
+      &:nth-of-type(#{$i}) #{$level-2} {
+        transform: rotate($rot * 1deg) translate($container-size-xs / 2) rotate($rot * -1deg);
+      }
+      $rot: $rot + $angle;
+    }
+  }
+
+  $index: 1;
+  @each $breakpoint, $container-size in $container-sizes {
+    @if $index > 1 and $container-size {
+      $item-size: nth(nth($item-sizes, $index), 2);
+      @media (min-width: $breakpoint) {
+        min-width: $container-size;
+        height: $container-size;
+        margin: $item-size / 2;
+
+        $rot: $angle * $item-start-position;
+
+        #{$level-1} {
+          #{$level-2} {
+            margin: -($item-size / 2);
+            width: $item-size;
+            height: $item-size;
+          }
+          @for $i from 1 to $item-count + 1 {
+            &:nth-of-type(#{$i}) #{$level-2} {
+              transform: rotate($rot * 1deg) translate($container-size / 2) rotate($rot * -1deg);
+            }
+            $rot: $rot + $angle;
+          }
+        }
+      }
+    }
+
+    $index: $index + 1;
+  }
+}
+
+@mixin ellipse($line, $line-height) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+  line-height: $line-height;
+  max-height: $line-height * $line;
+  min-height: $line-height * $line;
+  overflow: hidden;
+}
+
+@mixin round-square($color, $animation: none){
+  @include cycle($color,$animation);
+  border-radius: $border-radius-main;
+}
+
+@mixin cycle($color, $animation: none) {
+  border: 4px solid $color;
+  @if $animation {
+    -webkit-animation: $animation 1s infinite;
+    -moz-animation: $animation 1s infinite;
+    -o-animation: $animation 1s infinite;
+    animation: $animation 1s infinite;
+  }
+}
+
+@mixin cycle2($color, $animation: none) {
+	border: 5px solid $color;
+	@if $animation {
+	  -webkit-animation: $animation 1s infinite;
+	  -moz-animation: $animation 1s infinite;
+	  -o-animation: $animation 1s infinite;
+	  animation: $animation 1s infinite;
+	}
+  }
+
+@mixin grid($cols,$margin){
+  float:left;
+  margin-right:$margin;
+  margin-bottom:$margin;
+  width:(100% - (($cols - 1) * $margin))/$cols;
+  &:nth-child(#{$cols}n){
+    margin-right:0;
+  }
+}

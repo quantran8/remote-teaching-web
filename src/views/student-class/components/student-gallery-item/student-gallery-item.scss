@@ -1,0 +1,228 @@
+@import "../../../../style/abstracts/mixins";
+@import "../../../../style/abstracts/animation";
+@import "../../../../style/abstracts/variables";
+
+.item-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sc-gallery-item {
+  $self: &;
+
+  $current-item-size: 90px;
+  $current-item-size-md: 130px;
+  $current-item-size-xxl: 160px;
+
+  $star-size: 22px;
+  $star-size-xl: 30px;
+
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #030303;
+
+  &__video::before {
+    border-radius: 50%;
+  }
+  &--highlight::before {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    -webkit-user-drag: none;
+  }
+  &__video {
+    height: 100%;
+    border-radius: 50%;
+    // For safari
+    &::v-deep video {
+      border-radius: 50%;
+      border-radius: 5rgb (190, 172, 172);
+    }
+  }
+
+  &__container {
+    height: 100%;
+    position: relative;
+    border-radius: 50%;
+    // For safari
+    &::v-deep video {
+      border-radius: 50%;
+      border-radius: 5rgb (190, 172, 172);
+    }
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: black;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 90px;
+  }
+
+  &__star {
+    background: #f2a11f 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    width: $star-size;
+    height: $star-size;
+    transform: rotate(20deg);
+    display: inline-block;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    right: 15px;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: inherit;
+      transform: rotate(135deg);
+      z-index: -1;
+    }
+    &__content {
+      font-size: 14px;
+      color: #fff;
+      z-index: 1;
+      transform: rotate(-20deg);
+      display: block;
+      line-height: $star-size;
+      font-weight: 600;
+    }
+  }
+
+  &--current {
+    width: $current-item-size;
+    height: $current-item-size;
+  }
+
+  @media (min-width: $md) {
+    &--current {
+      width: $current-item-size-md;
+      height: $current-item-size-md;
+      #{$self}__video {
+        border-width: 5px;
+      }
+    }
+    &__title {
+      font-size: 15px;
+    }
+  }
+  @media screen
+  and (device-width: 360px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 4)
+  and (orientation: landscape) {
+    &--current {
+      width: $current-item-size;
+      height: $current-item-size;
+      #{$self}__video {
+        width: 100%;
+        height: $current-item-size;
+      }
+    }
+    &__title {
+      font-size: 13px;
+    }
+  }
+  @media only screen and (max-width: 812px) and (orientation: landscape) {
+    &--current {
+      width: $current-item-size;
+      height: $current-item-size;
+      #{$self}__video {
+        width: 100%;
+        height: $current-item-size;
+      }
+    }
+    &__title {
+      font-size: 13px;
+    }
+  }
+  @media (min-width: $lg) {
+    &:not(#{$self}--current) {
+      width: 90px;
+      #{$self}__video {
+        height: 100%;
+      }
+    }
+  }
+
+  @media (min-width: $xl) {
+    &__star {
+      width: $star-size-xl;
+      height: $star-size-xl;
+      &__content {
+        font-size: 18px;
+        line-height: $star-size-xl;
+      }
+    }
+  }
+  @media (min-width: $xxl) {
+    &--current {
+      width: $current-item-size-xxl;
+      height: $current-item-size-xxl;
+    }
+    &__video {
+      max-height: 500px;
+    }
+  }
+  &--disabled {
+    border: 1px solid #c2bebe;
+  }
+  &--disabled-tittle {
+    color: #c2bebe;
+  }
+  &--help {
+    @include cycle(#dd0d0d, flickerAnimation);
+  }
+  &--speaking {
+    @include cycle(#00a1ed, flickerAnimationVoice);
+  }
+  &--palette {
+    @include cycle(#030303, flickerAnimationPalette);
+  }
+
+  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
+    &:not(#{$self}--current) {
+      width: 60px;
+      #{$self}__video {
+        width: 60px;
+      }
+    }
+  }
+}
+
+.sc-gallery {
+  .sc-gallery-item {
+    $self: &;
+    height: 60px;
+    width: 60px;
+
+    &__container {
+      height: 100%;
+    }
+    &__video {
+      height: 100%;
+    }
+
+    @media (min-width: $lg) {
+      &:not(#{$self}--current) {
+        height: 90px;
+        width: 90px;
+      }
+    }
+  }
+}

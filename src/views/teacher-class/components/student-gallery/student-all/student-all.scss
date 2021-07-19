@@ -1,0 +1,43 @@
+@import "../../../../../style/abstracts/variables";
+
+.oneToOne {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-students-message {
+  text-align: center;
+  font-size: 16px;
+  padding-top: 50px;
+  color: #7b7b7b;
+}
+
+.student-list {
+  &:after {
+    content: '';
+    display: block;
+    clear: both;;
+  }
+
+  margin: 0 auto;
+  @media (min-width: $large-lap) {
+    width: 90%;
+  }
+
+  @media (min-width: 1921px) {
+    width: 850px;
+  }
+
+  &.student-layout-6,
+  &.student-layout-3 {
+    @media (max-width: 1799px) {
+      width: 90%;
+    }
+    @media (min-width: 1800px) {
+      width: 700px;
+    }
+  }
+}

@@ -1,0 +1,83 @@
+.activity-content-container {
+  background-color: white;
+  flex: 1;
+  height: 100%;
+  position: relative;
+  border: solid 1px gray;
+  .content-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    .image-content {
+      width: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  }
+  .skeleton {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: lightgray;
+  }
+  .mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: black;
+  }
+  .icon-designate{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 10px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border: 0;
+    padding: 0;
+    img{
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .flip-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    width: 32px;
+    height: 32px;
+    background-color: black;
+    border: solid 3px white;
+    border-radius: 3px;
+    transition: all 300ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 11;
+    .icon-change {
+      font-size: 20px;
+    }
+    .icon-change::before {
+      color: white;
+    }
+  }
+  .flip-button:hover {
+    cursor: pointer;
+  }
+  .flipped {
+    background-color: white;
+    border-color: black;
+    .icon-change::before {
+      color: black;
+    }
+  }
+}

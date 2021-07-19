@@ -1,0 +1,10 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 60" width="42" height="60">
+	<title>sticker-svg</title>
+	<defs>
+		<image width="70" height="42" id="img1" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNC43ODIiIGhlaWdodD0iMjAuMjkiIHZpZXdCb3g9IjAgMCAzNC43ODIgMjAuMjkiPjxwYXRoIGQ9Ik0xNy40MTMsNy45YzYuODg1LDAsMTEuNjg1LDQuMzY1LDEzLjc3NCw2LjcxOS0yLjAzLDIuNjYyLTYuODMsNy43NzQtMTMuNzc0LDcuNzc0LTYuNDA2LDAtMTEuNDkzLTUuMTI1LTEzLjczNi03LjgzNkM1Ljg0MSwxMi4xNjgsMTAuNjU4LDcuOSwxNy40MTMsNy45Wm0wLTIuOUM2LjQ0Myw1LDAsMTQuNDk0LDAsMTQuNDk0czcuMDA3LDEwLjgsMTcuNDEzLDEwLjhjMTEuMjA3LDAsMTcuMzY5LTEwLjgsMTcuMzY5LTEwLjhTMjguNTYzLDUsMTcuNDEzLDVabS0uMDIyLDQuMzQ4YTUuOCw1LjgsMCwxLDAsNS44LDUuOEE1LjgsNS44LDAsMCwwLDE3LjM5MSw5LjM0OFoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTUpIi8+PC9zdmc+"/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<use id="show-all" href="#img1" transform="matrix(0.6,0,0,0.6,0,9)"/>
+</svg>

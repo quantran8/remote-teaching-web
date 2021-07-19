@@ -1,0 +1,10 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 60" width="42" height="60">
+	<title>sticker-svg</title>
+	<defs>
+		<image width="70" height="64" id="img1" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNC4zNTYiIGhlaWdodD0iMzEuMzk0IiB2aWV3Qm94PSIwIDAgMzQuMzU2IDMxLjM5NCI+PGRlZnM+PHN0eWxlPi5he2ZpbGw6IzAwYTFlZDt9PC9zdHlsZT48L2RlZnM+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1MzQgLTE5NykiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExNjIuMjAyIDE2Mi4xNjMpIj48cmVjdCBjbGFzcz0iYSIgd2lkdGg9IjUuOTYxIiBoZWlnaHQ9IjEyLjgyNyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzcxLjc5OCA0NC4xMikiLz48cGF0aCBjbGFzcz0iYSIgZD0iTTM5MS43NjksNjYuMjMxbC0xMS4wNTYtOS4yNzRWNDQuMTA2bDExLjA1Ni05LjI2OVoiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTUzOC45MTYgMTk0LjA0NikiPjxyZWN0IGNsYXNzPSJhIiB3aWR0aD0iOS41OTgiIGhlaWdodD0iMy44MzkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE5Ljg0MiAxNi43MzEpIi8+PHJlY3QgY2xhc3M9ImEiIHdpZHRoPSI5LjYwMSIgaGVpZ2h0PSIzLjgzOSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTguMDg0IDkuNTY3KSByb3RhdGUoLTI5Ljk4OSkiLz48cmVjdCBjbGFzcz0iYSIgd2lkdGg9IjMuODM5IiBoZWlnaHQ9IjkuNjAxIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxOC4wODQgMjcuNzM0KSByb3RhdGUoLTYwLjAxMSkiLz48L2c+PC9nPjwvc3ZnPg=="/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<use id="unmuted" href="#img1" transform="matrix(0.6,0,0,0.6,2,2)"/>
+</svg>

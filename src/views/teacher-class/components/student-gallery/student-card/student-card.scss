@@ -1,0 +1,282 @@
+@import "../../../../../style/abstracts/mixins";
+@import "../../../../../style/abstracts/animation";
+@import "../../../../../style/abstracts/variables";
+
+@mixin hyperlinkName {
+  color: #00a1ed;
+  // text-decoration: underline;
+  -webkit-text-underline-position: under;
+  -ms-text-underline-position: below;
+  text-underline-position: under;
+  cursor: pointer;
+}
+
+@mixin style-layout-3{
+  @include grid(2, 2%);
+  &:nth-child(3) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.student-layout-3 {
+  .student {
+    @media (max-width: 1399px) {
+      margin: 10px auto;
+      max-width: 300px;
+    } 
+  }
+
+  &:not(.lesson-plan-mode){
+    .student{
+      @media (min-width: 1400px){
+        @include style-layout-3;
+      } 
+    }
+  }
+
+  &.lesson-plan-mode{
+    .student{
+      @media (max-width: 1599px) {
+        margin-bottom: 20px;
+      }
+      @media (min-width: 1600px) {
+        @include style-layout-3;
+      }
+    }
+  } 
+}
+
+.student-layout-6 {
+  .student {
+    @include grid(2, 2%);
+  }
+  &.lesson-plan-mode{
+    @media (max-width: 1500px) {
+      .student {
+        @include grid(1, 3%);
+        width: 90%;
+      }
+    }
+  }
+}
+.student-layout-12 {
+  @media (max-width: $lap) {
+    .student {
+      @include grid(2, 2%);
+    }
+  }
+  @media (min-width: $lap + 1) {
+    .student {
+      @include grid(3, 2%);
+    }
+  }
+  &.lesson-plan-mode{
+    @media (max-width: 1599px) {
+      .student {
+        @include grid(2, 3%);
+      }
+    }
+  }
+}
+
+.student {
+  $self: &;
+  $radius: 10px;
+  &.expand {
+    transition: all 0.1s ease-out;
+    z-index: 25;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    &:not(.one-student-mode) {
+      .student__info,
+      .student-action {
+        transform: scale(0.7);
+      }
+    }
+  }
+  position: relative;
+  &.one-student-mode {
+    width: 90% !important;
+    height: 50% !important;
+    @media screen and (min-width: $xl) and (max-width: $xxl) {
+      max-height: 300px;
+    }
+  }
+  border-radius: 5px;
+  &__content {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+  }
+
+  &__figure {
+    margin: 0;
+    padding-top: 66.66%; /* 3:2 Aspect Ratio (divide 2 by 3 = 0.6666)  */
+  }
+
+  &__img {
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+    border-radius: $radius;
+    padding: 15%;
+    img {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  &__video--sub {
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    &.student__video--disabled {
+      background-color: #333;
+    }
+  }
+  &__img {
+    object-fit: cover;
+  }
+  &__video {
+    z-index: 1;
+    position: absolute;
+    border: 1px solid $border-color-main;
+    border-radius: 5px;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  &__info {
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+    border-radius: 2px;
+    text-align: start;
+    padding: 5px;
+    &--name {
+      @media (min-width: $large-lap) {
+        width: 100px;
+      }
+      width: 50px;
+      font-weight: 500;
+      margin: 0;
+      font-size: 14px;
+      line-height: normal;
+      position: relative;
+      color: gray;
+      &.ellipText {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      &.enable {
+        color: #fff;
+        background: rgba(0, 0, 0, 0.2);
+        text-align: center;
+        word-wrap: break-word;
+        border-radius: 5px;
+        padding: 3px;
+      }
+      &.active {
+        @include hyperlinkName;
+      }
+      &--text {
+        display: inline-block;
+      }
+    }
+  }
+
+  &__figure::before,
+  &__figure::after {
+    position: absolute;
+    //content: "";
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: $radius;
+    transition: 0.1s;
+    transform: scale(0.95);
+    border: none;
+  }
+  &__figure::after {
+    background-color: #000;
+    z-index: -2;
+  }
+  &__hand {
+    width: 60px;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulsate 0.5s;
+    animation-iteration-count: 4;
+    animation-direction: alternate;
+    cursor: pointer;
+  }
+
+  &__is-speaking {
+    @include round-square(#00a1ed, flickerAnimationVoice);
+    border-radius: 5px;
+  }
+
+  &__is-palette {
+    @include round-square(#030303, flickerAnimationPalette);
+    border-radius: 5px;
+  }
+
+  &__is-question {
+    position: absolute;
+    border-radius: $radius;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    @include round-square(#dd0d0d, flickerAnimation);
+    .student__video {
+      border: none;
+    }
+  }
+
+  &--hover {
+    #{$self}__content {
+      border: 2px solid #000;
+      box-shadow: 13px 9px 15px rgba(0, 0, 0, 0.19);
+      z-index: 1;
+      background-color: #f5f5f5;
+      border-radius: 20px;
+    }
+  }
+
+  &--expended {
+    z-index: 9;
+  }
+
+  &--speaking &__figure::before {
+    transform: scale(1.1);
+  }
+  &--hand-raised &__figure::after {
+    transform: scale(1.2);
+  }
+  &--low-wifi{
+    width: 20px;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 1;
+  }
+  @media (min-width: $xl) {
+    &__name {
+      font-size: 16px;
+    }
+  }
+}

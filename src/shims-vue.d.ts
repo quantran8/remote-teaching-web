@@ -3,3 +3,14 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+declare module 'fabric';
+declare module 'vue-dragscroll';
+// declare const UnityLoader;
+
+declare module 'vue-lottie'
+
+declare module "*.json" {
+	const value: any;
+	export default value;
+  }

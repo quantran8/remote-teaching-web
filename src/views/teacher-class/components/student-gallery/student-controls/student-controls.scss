@@ -1,0 +1,105 @@
+@import "../../../../../style/abstracts/variables";
+
+.student-controls {
+  display: flex;
+  justify-content: center;
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    @media (min-width: $xl) and (max-width: 1265px) {
+      flex-direction: column;
+    }
+    @media (min-width: 1265px) {
+      flex-direction: row;
+    }
+  }
+  .student-controls__button {
+    text-align: center;
+    margin: 5px 15px;
+    @media screen and (min-width: $xl) and (max-width: $large-lap) {
+      margin: 5px 8px;
+    }
+    .student-controls__button--clickable {
+      cursor: pointer;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 15px;
+      font-family: $font-family;
+      font-weight: 600;
+      @media screen and (min-width: $xxl) and (max-width: 1499px) {
+        text-align: center;
+      }
+      @media screen and (min-width: $xl) and (max-width: $large-lap) {
+        font-size: 13px;
+      }
+      img {
+        margin-right: 6px;
+      }
+
+      .sticker-icon {
+        @media (min-width: $large-lap) {
+          height: 35px;
+        }
+        height: 33px;
+        position: relative;
+        top: 3px;
+      }
+
+      .disable-icon {
+        @media (min-width: $large-lap) {
+          height: 35px;
+        }
+        height: 33px;
+        position: relative;
+      }
+
+      .audio-icon {
+        @media (min-width: $large-lap) {
+          height: 35px;
+        }
+        height: 33px;
+        position: relative;
+        top: 3px;
+        margin-right: 5px;
+      }
+      .video-icon {
+        @media (min-width: $large-lap) {
+          height: 35px;
+        }
+        height: 33px;
+        position: relative;
+        top: 3px;
+      }
+    }
+  }
+}
+
+.has-sidebar {
+  .student-controls {
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      @media (min-width: $xl) {
+        display: inline-block;
+      }
+      @media (min-width: $xxl) {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+    .student-controls__button {
+      .student-controls__button--clickable {
+        img {
+          @media screen and (min-width: $xxl) and (max-width: 1499px) {
+            margin: 0 auto;
+          }
+        }
+        span {
+          @media screen and (min-width: $xxl) and (max-width: 1499px) {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,18 +1,39 @@
 <template>
   <div class="header">
+    <DeviceTester :notJoin="true" ref="deviceTesterRef" />
     <slot name="leading">
-      <a href="/">
+      <a :href="url">
         <img src="@/assets/logo-white.svg" alt="" class="logo" />
       </a>
     </slot>
+    <div class="h-spacer"></div>
     <div class="content">
       <slot name="title">
         <div class="title">{{ title }}</div>
       </slot>
       <slot />
     </div>
-    <slot name="actions"></slot>
+    <LanguagePicker />
+    <slot name="actions">
+      <MenuItem class="user-container" v-if="isLoggedIn">
+        <div class="user-container">
+          <img class="user-avatar" :src="userAvatar" alt="User Avatar" />
+          <div class="user-info">
+            <div class="user-name">{{ userName }}</div>
+            <div class="user-role">{{ userRole }}</div>
+          </div>
+        </div>
+        <template v-slot:popup>
+          <div class="menu-item" @click.prevent="onClickOpenAccountPage">
+            <div class="item-title">{{ editProfileText }}</div>
+            <BaseIcon class="item-action" name="reply" />
+          </div>
+          <div class="menu-item" @click.prevent="onClickTestDevice">{{ testConnectText }}</div>
+          <div class="menu-item" @click.prevent="onClickSignOut">{{ signOutText }}</div>
+        </template>
+      </MenuItem>
+    </slot>
   </div>
 </template>
-<style src="./header.scss" lang="scss" scoped ></style>
+<style src="./header.scss" lang="scss" scoped></style>
 <script src="./header.ts" lang="ts"></script>

@@ -1,0 +1,10 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 60" width="42" height="60">
+	<title>sticker-svg</title>
+	<defs>
+		<image width="70" height="64" id="img1" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNC4wMTUiIGhlaWdodD0iMzEuMzk0IiB2aWV3Qm94PSIwIDAgMzQuMDE1IDMxLjM5NCI+PGRlZnM+PHN0eWxlPi5he2ZpbGw6IzAwYTFlZDt9PC9zdHlsZT48L2RlZnM+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTM3MS43OTggLTM0LjgzNykiPjxyZWN0IGNsYXNzPSJhIiB3aWR0aD0iNS45NjEiIGhlaWdodD0iMTIuODI3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzNzEuNzk4IDQ0LjEyKSIvPjxwYXRoIGNsYXNzPSJhIiBkPSJNMzkxLjc2OSw2Ni4yMzFsLTExLjA1Ni05LjI3NFY0NC4xMDZsMTEuMDU2LTkuMjY5WiIvPjxwYXRoIGNsYXNzPSJhIiBkPSJNNDA1LjgxMiw0Ni45bC0yLjE0Ni0yLjE0Ni0zLjc1NSwzLjc1NS0zLjc1Ny0zLjc1NUwzOTQuMDExLDQ2LjlsMy43NTUsMy43NTUtMy43NTUsMy43NTUsMi4xNDUsMi4xNDYsMy43NTctMy43NTUsMy43NTUsMy43NTUsMi4xNDYtMi4xNDYtMy43NTUtMy43NTVaIi8+PC9nPjwvc3ZnPg=="/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<use id="mute" href="#img1" transform="matrix(0.586,0,0,0.586,1,2)"/>
+</svg>

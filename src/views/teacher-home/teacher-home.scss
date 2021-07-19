@@ -1,0 +1,138 @@
+.mt-40 {
+  margin-top: 40px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+.access-denied,
+.concurrent-connection {
+  margin-top: 30px;
+  text-align: center;
+}
+.align-right {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.calendar-container {
+  display: flex;
+  width: 100px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.calendar {
+  width: 30px;
+  height: 30px;
+}
+
+.teacher-title {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+
+  &__indicator-out {
+    cursor: pointer;
+    margin-top: 25px;
+    margin-left: 30px;
+    width: 36px;
+    height: 36px;
+    border: 2px solid #bb261a;
+    border-radius: 50%;
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  &__indicator-in {
+    margin: 6.5px;
+    height: 18px;
+    width: 18px;
+    background-color: #bb261a;
+    border-radius: 50%;
+    display: inline-block;
+  }
+}
+.teacher-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 890px;
+  margin: auto;
+
+  &__school-select {
+    margin-bottom: 20px;
+    align-self: center;
+
+    .ant-select {
+      width: 350px;
+    }
+  }
+
+  &__classgroup {
+    text-align: left;
+  }
+}
+.card-margin {
+  margin: 20px;
+}
+
+.group-class-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+
+  &__animation {
+    animation: loadingAnimation 2s ease-out;
+    animation-iteration-count: infinite;
+  }
+}
+
+.policy-content {
+  max-height: 300px;
+  overflow-y: scroll;
+  margin-bottom: 25px;
+  p {
+    &:first-child {
+      text-align: center;
+    }
+  }
+}
+.btn-cancel-policy {
+  margin-right: 20px;
+}
+
+@keyframes pulsate {
+  0% {
+    -webkit-transform: translate(-50%, -50%) scale(0.4, 0.4);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translate(-50%, -50%) scale(1.2, 1.2);
+    opacity: 0.8;
+  }
+}
+
+@keyframes loadingAnimation {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}

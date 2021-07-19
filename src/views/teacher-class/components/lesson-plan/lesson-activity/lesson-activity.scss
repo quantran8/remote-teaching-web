@@ -1,0 +1,65 @@
+.item-container {
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  border-bottom: solid 1px #ccc;
+  align-items: center;
+
+  .item-left {
+    padding: 0 16px;
+    .icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .activity-icon::before {
+        font-size: 1.6rem;
+      }
+    }
+  }
+  .item-content {
+    flex: 1;
+    padding: 10px 0;
+    .name {
+      font-size: 16px;
+      padding-bottom: 4px;
+      color: rgb(24, 22, 22);
+    }
+    .description {
+      color: gray;
+      align-items: center;
+      .dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 2px;
+        background-color: gray;
+        display: inline-block;
+        align-self: center;
+        margin: 2px 4px;
+      }
+    }
+  }
+  .item-right {
+    .icon-done::before {
+      color: green;
+      padding: 0.8rem;
+      font-size: 2rem;
+    }
+  }
+}
+
+.item-active {
+  background-color: #fff9c4;
+  .name {
+    color: black;
+  }
+}
+
+.item-container:hover {
+  cursor: pointer;
+}
+
+.item-done {
+  background-color: rgb(240, 240, 240);
+}
