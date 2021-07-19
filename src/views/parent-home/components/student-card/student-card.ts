@@ -19,7 +19,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const userAvatar = props.avatar ? props.avatar : "/assets/images/user-default.png";
+    const userAvatar = props.avatar ? `data:image/png;base64,${props.avatar}` : "/assets/images/user-default.png";
     const classGroupText = computed(() => fmtMsg(ParentStudentCardLocale.ClassGroup));
     const startTimeText = computed(() => fmtMsg(ParentStudentCardLocale.StartTime));
     const getInfo = () => {
