@@ -267,10 +267,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
       } else {
-        await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
-        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
-        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
-        await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await commit("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await commit("lesson/endCurrentContent", {}, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await dispatch(
           "teacherRoom/toggleAnnotation",
           {
@@ -279,11 +279,11 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
           },
           { root: true },
         );
-        commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
-        commit("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
-        await commit("lesson/endCurrentContent", {}, { root: true });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+        await commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
+        await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
