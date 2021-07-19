@@ -5,6 +5,7 @@ import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
+import noAvatar from "@/assets/images/user-default-gray.png";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -66,6 +67,8 @@ export default defineComponent({
         });
       }
     };
+
+    const avatarStudent = props.student.avatar ? `data:image/png;base64,${props.student.avatar}` : noAvatar;
 
     const onDragStart = (event: any) => {
       event.dataTransfer.setData("studentId", props.student.id);
@@ -139,6 +142,7 @@ export default defineComponent({
       currentPosition,
       isTurnOnCamera,
       isOneToOneStudent,
+      avatarStudent,
     };
   },
 });

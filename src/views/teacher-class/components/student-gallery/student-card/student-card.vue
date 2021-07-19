@@ -20,14 +20,16 @@
             :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
             v-show="!isNotJoinned"
             :id="student.id"
-          ></div>
+          >
+            <img class="student-avatar" alt="boys-avatar" :src="avatarStudent" v-show="!isTurnOnCamera" />
+          </div>
           <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
-            <img alt="boys-avatar" src="@/assets/images/user-default-gray.png" />
+            <img class="student-avatar" alt="boys-avatar" :src="avatarStudent" />
           </div>
         </div>
       </div>
     </div>
-    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi"  alt="Low bandwidth"/>
+    <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi" alt="Low bandwidth" />
     <div class="student__info" @mouseover="onMouseChange(true)">
       <p
         class="student__info--name"
