@@ -67,7 +67,7 @@
               <img
                 class="sc-independent__avatar-container__avatar"
                 v-if="avatarStudentOneToOne && avatarStudentOneToOne.length > 0"
-                :src="`data:image/png;base64,${avatarStudentOneToOne}`"
+                :src="avatarStudentOneToOne"
               />
               <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
             </div>

@@ -3,6 +3,7 @@ import { computed, defineComponent } from "vue";
 import moment from "moment";
 import { fmtMsg } from "@/commonui";
 import { ParentStudentCardLocale } from "@/locales/localeid";
+import noAvatar from "@/assets/images/user-default.png";
 
 export default defineComponent({
   props: {
@@ -19,7 +20,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const userAvatar = props.avatar ? `data:image/png;base64,${props.avatar}` : "/assets/images/user-default.png";
+    const userAvatar = props.avatar ? props.avatar : noAvatar;
     const classGroupText = computed(() => fmtMsg(ParentStudentCardLocale.ClassGroup));
     const startTimeText = computed(() => fmtMsg(ParentStudentCardLocale.StartTime));
     const getInfo = () => {

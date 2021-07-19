@@ -68,7 +68,7 @@ export default defineComponent({
       }
     };
 
-    const avatarStudent = props.student.avatar ? `data:image/png;base64,${props.student.avatar}` : noAvatar;
+    const avatarStudent = props.student.avatar ? props.student.avatar : noAvatar;
 
     const onDragStart = (event: any) => {
       event.dataTransfer.setData("studentId", props.student.id);

@@ -16,7 +16,7 @@ export default defineComponent({
     const isNotJoinned = computed(() => student.value.status !== InClassStatus.JOINED);
     const isRaisingHand = ref(false);
     const store = useStore();
-    const avatarStudent = computed(() => (student.value.avatar ? `data:image/png;base64,${student.value.avatar}` : noAvatar));
+    const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
 
     watch(props, () => {
       if (props.raisedHand) {
