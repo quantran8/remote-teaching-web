@@ -147,10 +147,8 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._cameraTrack) return;
     try {
       this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
-
       const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
       await this._cameraTrack.setEncoderConfiguration(preset);
-
       this.cameraTrack.on("track-ended", () => {
         this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
       });
@@ -211,15 +209,14 @@ export class AgoraClient implements AgoraClientSDK {
     this.subscribedVideos = [];
   }
 
-  timeOutCam: any;
-  camSetup: boolean = false;
+  cameraTimeout: any;
   isCamEnable: boolean = false;
   async setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
-    this.isCamEnable = options.enable;
-    if (this.timeOutCam) {
-      clearTimeout(this.timeOutCam);
+    if (this.timeoutId) {
+      clearTimeout(this.cameraTimeout);
     }
-    this.timeoutId = setTimeout(async () => {
+    this.isCamEnable = options.enable;
+    this.cameraTimeout = setTimeout(async () => {
       if (this.isCamEnable) {
         await this.openCamera(options.videoEncoderConfigurationPreset);
         await this._publish();
@@ -230,16 +227,14 @@ export class AgoraClient implements AgoraClientSDK {
     }, DEFAULT_TIMEOUT);
   }
 
-  timeOutMic: any;
-  micSetup: boolean = false;
+  microTimeout: any;
   isMicEnable: boolean = false;
   async setMicrophone(options: { enable: boolean }) {
-    this.isMicEnable = options.enable;
-    if (this.timeOutMic) {
-      clearTimeout(this.timeOutMic);
+    if (this.timeoutId) {
+      clearTimeout(this.microTimeout);
     }
-    this.timeoutId = setTimeout(async () => {
-      this.micSetup = true;
+    this.isMicEnable = options.enable;
+    this.microTimeout = setTimeout(async () => {
       if (this.isMicEnable) {
         await this.openMicrophone();
         await this._publish();
@@ -247,7 +242,6 @@ export class AgoraClient implements AgoraClientSDK {
         await this.client?.unpublish(this.microphoneTrack);
         this._closeMediaTrack(this.microphoneTrack);
       }
-      this.micSetup = false;
     }, DEFAULT_TIMEOUT);
   }
 
@@ -272,15 +266,12 @@ export class AgoraClient implements AgoraClientSDK {
       for (let studentId of unSubscribeVideos) {
         await this._unSubscribe(studentId, "video");
       }
-
       for (let studentId of unSubscribeAudios) {
         await this._unSubscribe(studentId, "audio");
       }
-
       for (let studentId of videos) {
         await this._subscribeVideo(studentId);
       }
-
       for (let studentId of audios) {
         await this._subscribeAudio(studentId);
       }
