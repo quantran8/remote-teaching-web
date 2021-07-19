@@ -373,17 +373,17 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+        await commit("updateIsPalette", {
+          id: payload.student.id,
+          isPalette: payload.student.isPalette,
+        });
+        await commit("setWhiteboard", payload.isShowWhiteBoard);
         await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
-        commit("updateIsPalette", {
-          id: payload.student.id,
-          isPalette: payload.student.isPalette,
-        });
-        commit("setWhiteboard", payload.isShowWhiteBoard);
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
