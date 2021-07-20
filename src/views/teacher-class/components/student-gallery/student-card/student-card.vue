@@ -18,12 +18,10 @@
           <div
             class="student__video--sub"
             :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
-            v-show="!isNotJoinned"
+            v-show="!isNotJoinned && isTurnOnCamera"
             :id="student.id"
-          >
-            <img class="student-avatar" alt="boys-avatar" :src="avatarStudent" v-show="!isTurnOnCamera" />
-          </div>
-          <div :class="[isSpeaking && 'student__is-speaking']" v-show="isNotJoinned" class="student__img">
+          ></div>
+          <div :class="[isSpeaking && 'student__is-speaking']" v-show="!isNotJoinned && !isTurnOnCamera" class="student__img">
             <img class="student-avatar" alt="boys-avatar" :src="avatarStudent" />
           </div>
         </div>
