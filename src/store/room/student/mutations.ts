@@ -225,6 +225,18 @@ const mutations: MutationTree<StudentRoomState> = {
   setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
     state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
   },
+  setAvatarCurrentStudent(state: StudentRoomState, p: { id: string; avatar: string }[]) {
+    if (state.student) state.student.avatar = p[0] ? p[0].avatar : "";
+  },
+  setAvatarAllStudent(state: StudentRoomState, p: { id: string; avatar: string }[]) {
+    if (state.student) {
+      state.student.avatar = p.find((studentAvatar: any) => studentAvatar.id == state.student?.id)?.avatar;
+    }
+    state.students.forEach(student => {
+      const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
+      student.avatar = avatar ? avatar : "";
+    });
+  },
 };
 
 export default mutations;

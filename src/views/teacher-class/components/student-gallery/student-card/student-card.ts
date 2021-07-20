@@ -6,6 +6,7 @@ import { StudentCardActions } from "../student-card-actions";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
 import noAvatar from "@/assets/images/user-default-gray.png";
+import { changeDataImage } from "@/utils/utils";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -68,7 +69,7 @@ export default defineComponent({
       }
     };
 
-    const avatarStudent = props.student.avatar ? props.student.avatar : noAvatar;
+    const avatarStudent = computed(() => (props.student.avatar ? changeDataImage(props.student.avatar) : noAvatar));
 
     const onDragStart = (event: any) => {
       event.dataTransfer.setData("studentId", props.student.id);
