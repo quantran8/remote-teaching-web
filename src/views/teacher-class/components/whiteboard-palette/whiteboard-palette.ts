@@ -52,6 +52,20 @@ export default defineComponent({
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
+    const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
+    const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    watch(teacherDisconnected, currentValue => {
+      if (currentValue) {
+        firstTimeLoadStrokes.value = false;
+        return;
+      }
+    });
+    watch(studentDisconnected, currentValue => {
+      if (currentValue) {
+        firstTimeLoadStrokes.value = false;
+        return;
+      }
+    });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
