@@ -170,3 +170,7 @@
   }
   z-index: 9999;
 }
+
+.disabled-pointer {
+  pointer-events: none;
+}
