@@ -46,6 +46,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
+      if (!error.code) {
+        return console.log("Lost Internet");
+      }
       if (error.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Home);
       } else {
