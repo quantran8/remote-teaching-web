@@ -5,7 +5,7 @@
       'gallery-view': isGalleryView,
       whiteboard: isGalleryView && isShowWhiteBoard,
       'whiteboard-palette': isGalleryView && isShowWhiteBoard && isPaletteVisible,
-	  'disabled-pointer': toolActive === ''
+      'disabled-pointer': toolActive === '',
     }"
     ref="containerRef"
     :style="{

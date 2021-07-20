@@ -519,9 +519,9 @@ export default defineComponent({
     const animationDone = computed(() => animationCheck.value);
     const actionEnter = (element: HTMLElement) => {
       animationCheck.value = false;
-	  // set mode move by default when active palette
-	  cursorHand();
-	  
+      // set mode move by default when active palette
+      cursorHand();
+
       gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
       gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
@@ -532,8 +532,8 @@ export default defineComponent({
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
 
-	  canvas.isDrawingMode = false;
-	  toolActive.value = "";
+      canvas.isDrawingMode = false;
+      toolActive.value = "";
     };
     const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
     return {
