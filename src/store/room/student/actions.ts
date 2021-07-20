@@ -60,7 +60,10 @@ const actions: ActionTree<StudentRoomState, any> = {
       }
     }
   },
-
+  async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
+    const response = await StudentService.getAllAvatarStudent(payload.studentIds);
+    if (response) commit("setAvatarAllStudent", response);
+  },
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
@@ -319,9 +322,15 @@ const actions: ActionTree<StudentRoomState, any> = {
     const response = await InfoService.getAvatarTeacher(payload.teacherId);
     if (response) commit("setAvatarTeacher", response);
   },
-  async getAvatarStudent({ commit }, payload: { studentId: string }) {
+  async setAvatarStudent({ commit }, payload: { studentId: string; oneToOne: boolean }) {
     const response = await StudentService.getAvatarStudent(payload.studentId);
-    if (response) commit("setAvatarStudentOneToOne", response);
+    if (response) {
+      if (payload.oneToOne) {
+        commit("setAvatarStudentOneToOne", response);
+      } else {
+        commit("setAvatarCurrentStudent", response);
+      }
+    }
   },
   async studentDrawsLine({ state }, payload: Array<string>) {
     await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
