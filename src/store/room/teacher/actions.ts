@@ -28,7 +28,6 @@ import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
-import student from "../student";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
