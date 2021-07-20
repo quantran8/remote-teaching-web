@@ -5,9 +5,5 @@ export const randomUUID = (prefix?: string): string => {
 };
 
 export const changeDataImage = (dataImage: string): string => {
-  if (dataImage.includes("http")) {
-    return dataImage;
-  } else {
-    return `data:image/png;base64,${dataImage}`;
-  }
+  return dataImage.includes("http") ? dataImage : `data:image/png;base64,${dataImage}`;
 };
