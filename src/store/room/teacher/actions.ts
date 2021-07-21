@@ -1,7 +1,7 @@
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import { RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
 import {
   ClassViewPayload,
@@ -210,6 +210,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
       console.log("initClassRoom error =>", err);
       //   await router.push(Paths.Home);
     }
+  },
+  async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
+    const response = await StudentService.getAllAvatarStudent(payload.studentIds);
+    if (response) commit("setAvatarAllStudent", response);
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];

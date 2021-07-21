@@ -64,12 +64,7 @@
           </div>
           <div class="sc-independent__info-container">
             <div class="sc-independent__avatar-container">
-              <img
-                class="sc-independent__avatar-container__avatar"
-                v-if="avatarStudentOneToOne && avatarStudentOneToOne.length > 0"
-                :src="`data:image/png;base64,${avatarStudentOneToOne}`"
-              />
-              <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+              <img class="sc-independent__avatar-container__avatar" :src="avatarStudentOneToOne" />
             </div>
             <p class="sc-independent__text-size">{{ studentOneName }}</p>
           </div>

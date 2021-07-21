@@ -75,6 +75,7 @@ export default defineComponent({
     const error = computed(() => getters["teacherRoom/error"]);
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
+    const students = computed(() => getters["teacherRoom/students"]);
     const roomInfo = computed(() => {
       return getters["teacherRoom/info"];
     });
@@ -195,6 +196,14 @@ export default defineComponent({
           await dispatch("setToast", { message: err.message });
         }
       }
+    });
+
+    watch(students, async () => {
+      if (!students.value) return;
+      const studentIds = students.value.map((student: any) => {
+        return student.id;
+      });
+      await dispatch("teacherRoom/setAvatarAllStudent", { studentIds });
     });
 
     provide("isSidebarCollapsed", isSidebarCollapsed);

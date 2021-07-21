@@ -24,6 +24,8 @@ import { RemoteTeachingService } from "@/services";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import * as sandClock from "@/assets/lotties/sand-clock.json";
 import { ClassRoomStatus } from "@/models";
+import noAvatar from "@/assets/student-class/no-avatar.png";
+import { formatImageUrl } from "@/utils/utils";
 
 const fpPromise = FingerprintJS.load();
 
@@ -115,7 +117,8 @@ export default defineComponent({
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
-    const avatarStudentOneToOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
+    const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
+    const avatarStudentOneToOne = ref();
     const showMessage = ref(false);
     const studentOneName = ref("");
 
@@ -142,11 +145,32 @@ export default defineComponent({
       }
     });
 
+    watch(student, () => {
+      if (!student.value) return;
+      store.dispatch("studentRoom/setAvatarStudent", { studentId: student.value.id, oneToOne: false });
+    });
+
+    watch(students, async () => {
+      if (!students.value) return;
+      const studentIds = students.value.map((student: any) => {
+        return student.id;
+      });
+      await store.dispatch("studentRoom/setAvatarAllStudent", { studentIds });
+    });
+
+    watch(getAvatarStudentOne, () => {
+      if (getAvatarStudentOne.value && getAvatarStudentOne.value.length > 0) {
+        avatarStudentOneToOne.value = formatImageUrl(getAvatarStudentOne.value);
+      } else {
+        avatarStudentOneToOne.value = noAvatar;
+      }
+    });
+
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
         studentOneName.value = students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name;
         await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
-        await store.dispatch("studentRoom/getAvatarStudent", { studentId: studentOneAndOneId.value });
+        await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
       }
       isOneToOne.value = !!studentOneAndOneId.value;
       if (student.value) {

@@ -11,7 +11,7 @@
   cursor: pointer;
 }
 
-@mixin style-layout-3{
+@mixin style-layout-3 {
   @include grid(2, 2%);
   &:nth-child(3) {
     left: 50%;
@@ -24,19 +24,19 @@
     @media (max-width: 1399px) {
       margin: 10px auto;
       max-width: 300px;
-    } 
-  }
-
-  &:not(.lesson-plan-mode){
-    .student{
-      @media (min-width: 1400px){
-        @include style-layout-3;
-      } 
     }
   }
 
-  &.lesson-plan-mode{
-    .student{
+  &:not(.lesson-plan-mode) {
+    .student {
+      @media (min-width: 1400px) {
+        @include style-layout-3;
+      }
+    }
+  }
+
+  &.lesson-plan-mode {
+    .student {
       @media (max-width: 1599px) {
         margin-bottom: 20px;
       }
@@ -44,14 +44,14 @@
         @include style-layout-3;
       }
     }
-  } 
+  }
 }
 
 .student-layout-6 {
   .student {
     @include grid(2, 2%);
   }
-  &.lesson-plan-mode{
+  &.lesson-plan-mode {
     @media (max-width: 1500px) {
       .student {
         @include grid(1, 3%);
@@ -71,13 +71,22 @@
       @include grid(3, 2%);
     }
   }
-  &.lesson-plan-mode{
+  &.lesson-plan-mode {
     @media (max-width: 1599px) {
       .student {
         @include grid(2, 3%);
       }
     }
   }
+}
+
+.student-avatar {
+  height: 200px;
+  width: 200px;
+  align-self: center;
+  border-radius: 50%;
+  transform: scale(0.8);
+  object-fit: cover;
 }
 
 .student {
@@ -121,20 +130,20 @@
     width: 100%;
     height: 100%;
     border-radius: $radius;
-    padding: 15%;
-    img {
-      object-fit: contain;
-      width: 100%;
-      height: 100%;
-    }
+    padding: 5%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
   }
   &__video--sub {
     background-color: #fff;
     width: 100%;
     height: 100%;
     overflow: hidden;
+    justify-content: center;
+    display: flex;
     &.student__video--disabled {
-      background-color: #333;
+      background-color: #fff;
     }
   }
   &__img {
@@ -267,7 +276,7 @@
   &--hand-raised &__figure::after {
     transform: scale(1.2);
   }
-  &--low-wifi{
+  &--low-wifi {
     width: 20px;
     position: absolute;
     right: 10px;

@@ -92,7 +92,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.idOne = p.studentOneToOne ? p.studentOneToOne : "";
     s.currentLesson = p.classInfo?.lesson;
     s.currentUnit = p.classInfo?.unit;
-    s.teacher = { 
+    s.teacher = {
       id: p.teacher.id,
       name: p.teacher.name,
       avatar: "",
@@ -280,6 +280,12 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setWhiteboard(state: TeacherRoomState, p) {
     state.isShowWhiteboard = p;
+  },
+  setAvatarAllStudent(state: TeacherRoomState, p: { id: string; avatar: string }[]) {
+    state.students.forEach(student => {
+      const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
+      student.avatar = avatar ? avatar : "";
+    });
   },
 };
 

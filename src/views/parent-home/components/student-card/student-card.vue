@@ -6,12 +6,14 @@
       </span>
     </span>
     <img class="user-avatar" :src="userAvatar" />
-    <div class="user-name">{{ name }}</div>
-    <div class="next-session-info" v-if="nextSessionInfo">
-      <p class="next-session-info__class">
-        {{ getInfo() }}
-      </p>
-      <p class="next-session-info__time">{{ nextSessionInfo && convertDate(nextSessionInfo.nextTime) }}</p>
+    <div class="user-info">
+      <div class="user-name">{{ name }}</div>
+      <div class="next-session-info" v-if="nextSessionInfo">
+        <p class="next-session-info__class">
+          {{ getInfo() }}
+        </p>
+        <p class="next-session-info__time">{{ nextSessionInfo && convertDate(nextSessionInfo.nextTime) }}</p>
+      </div>
     </div>
   </BaseCard>
 </template>
