@@ -138,7 +138,7 @@ export default defineComponent({
     const teacherAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === isTeacher.value.id) {
+        if (obj.id === isTeacher.value.id && obj.type !== "path") {
           obj = obj.toJSON();
           obj.id = isTeacher.value.id;
           shapes.push(JSON.stringify(obj));
