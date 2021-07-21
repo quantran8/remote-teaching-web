@@ -1,5 +1,5 @@
 import { defineComponent, computed, ref, onMounted, watch } from "vue";
-import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTC, { DeviceInfo } from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
@@ -24,7 +24,17 @@ export default defineComponent({
     Skeleton,
     Divider,
   },
-  props: ["classIsActive", "unitInfo", "loading", "messageStartClass", "notJoin", "getRoomInfoError", "infoStart", "fromParentComponent", "getRoomInfoErrorByMsg"],
+  props: [
+    "classIsActive",
+    "unitInfo",
+    "loading",
+    "messageStartClass",
+    "notJoin",
+    "getRoomInfoError",
+    "infoStart",
+    "fromParentComponent",
+    "getRoomInfoErrorByMsg",
+  ],
   emits: ["go-to-class", "on-join-session"],
   async created() {
     const { dispatch } = useStore();
@@ -137,6 +147,78 @@ export default defineComponent({
       }
     };
 
+    const handleHotPluggingMicro = async (newMicroId?: string) => {
+      try {
+        const mics = await AgoraRTC.getMicrophones();
+        if (mics.length) {
+          currentMic.value = mics[0];
+          currentMicLabel.value = mics[0]?.label;
+          listMics.value = mics;
+          listMicsId.value = mics.map(mic => mic.deviceId);
+          if (newMicroId) {
+            await localTracks.value.audioTrack.setDevice(newMicroId);
+          } else {
+            await localTracks.value.audioTrack.setDevice(mics[0]?.deviceId);
+          }
+          if (!volumeAnimation.value) {
+            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+          }
+        }
+      } catch (error) {
+        console.log("setupMic error => ", error);
+        agoraMicError.value = true;
+      }
+    };
+
+    const handleHotPluggingCamera = async (newCameraId?: string) => {
+      try {
+        const cams = await AgoraRTC.getCameras();
+        if (cams.length) {
+          currentCam.value = cams[0];
+          currentCamLabel.value = cams[0]?.label;
+          listCams.value = cams;
+          listCamsId.value = cams.map(cam => cam.deviceId);
+          if (newCameraId) {
+            await localTracks.value.videoTrack.setDevice(newCameraId);
+          } else {
+            await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
+          }
+          try {
+            await localTracks.value?.videoTrack.play(videoElementId);
+            preventCloseModal.value = false;
+          } catch (error) {
+            preventCloseModal.value = false;
+            console.log("Error when play video => ", error);
+          }
+        } else {
+          preventCloseModal.value = false;
+        }
+      } catch (error) {
+        console.log("setupCam error => ", error);
+        agoraCamError.value = true;
+      }
+    };
+
+    const onHotMicroPluggingDevice = async (changedDevice: DeviceInfo) => {
+      if (changedDevice.state === "ACTIVE") {
+        await handleHotPluggingMicro(changedDevice.device.deviceId);
+      } else if (changedDevice.device.label === localTracks.value.audioTrack.getTrackLabel()) {
+        await handleHotPluggingMicro();
+      }
+    };
+    const onHotCameraPluggingDevice = async (changedDevice: DeviceInfo) => {
+      if (changedDevice.state === "ACTIVE") {
+        await handleHotPluggingCamera(changedDevice.device.deviceId);
+      } else if (changedDevice.device.label === localTracks.value.cameraTrack.getTrackLabel()) {
+        await handleHotPluggingCamera();
+      }
+    };
+
+    const setupEvent = () => {
+      AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
+      AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
+    };
+
     const cancelVolumeAnimation = () => {
       cancelAnimationFrame(volumeAnimation.value);
       volumeAnimation.value = null;
@@ -149,6 +231,7 @@ export default defineComponent({
       }
       await setupAgora();
       await setupDevice();
+      setupEvent();
     };
 
     //handle for microphone
