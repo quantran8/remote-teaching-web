@@ -121,11 +121,7 @@
       font-size: 15px;
     }
   }
-  @media screen
-  and (device-width: 360px)
-  and (device-height: 640px)
-  and (-webkit-device-pixel-ratio: 4)
-  and (orientation: landscape) {
+  @media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) and (orientation: landscape) {
     &--current {
       width: $current-item-size;
       height: $current-item-size;
@@ -184,6 +180,9 @@
   }
   &--disabled-tittle {
     color: #c2bebe;
+  }
+  &--disabled-avatar {
+    opacity: 0.5;
   }
   &--help {
     @include cycle(#dd0d0d, flickerAnimation);

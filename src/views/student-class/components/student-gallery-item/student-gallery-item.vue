@@ -19,7 +19,7 @@
         ></div>
         <img
           class="sc-gallery-item__img"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          :class="[isSpeaking && 'sc-gallery-item--speaking', isNotJoinned && 'sc-gallery-item--disabled-avatar']"
           v-show="!student.videoEnabled || isNotJoinned"
           :src="avatarStudent"
           :alt="student.englishName"
