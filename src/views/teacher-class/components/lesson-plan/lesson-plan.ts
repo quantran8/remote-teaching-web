@@ -163,6 +163,7 @@ export default defineComponent({
     });
 
     const handleKeyDown = (e: any) => {
+      e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
         onClickPrevNextMedia(NEXT_EXPOSURE);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
