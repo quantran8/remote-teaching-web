@@ -86,7 +86,6 @@ const mutations: MutationTree<StudentRoomState> = {
         state.students.push(student);
       }
     }
-    state.globalAudios = room.globalStudentsAudio;
     state.info = room;
     const role = "audience";
     if (!state.manager)
