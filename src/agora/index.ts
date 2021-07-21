@@ -10,6 +10,7 @@ import AgoraRTC, {
   UID,
   VideoEncoderConfigurationPreset,
   AgoraRTCStats,
+  DeviceInfo,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraError } from "./interfaces";
@@ -105,6 +106,8 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("connection-state-change", () => {
       console.log("connection state changed!");
     });
+    AgoraRTC.onMicrophoneChanged = this.onHotMicroPluggingDevice;
+    AgoraRTC.onCameraChanged = this.onHotCameraPluggingDevice;
   }
 
   subscribedVideos: Array<{
@@ -124,9 +127,6 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._microphoneTrack) return;
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
-      this.microphoneTrack.on("track-ended", () => {
-        this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
-      });
       this.microphoneError = null;
     } catch (err) {
       this.microphoneError = err;
@@ -149,9 +149,6 @@ export class AgoraClient implements AgoraClientSDK {
       this._cameraTrack = await this.agoraRTC.createCameraVideoTrack();
       const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
       await this._cameraTrack.setEncoderConfiguration(preset);
-      this.cameraTrack.on("track-ended", () => {
-        this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
-      });
       this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
     } catch (err) {
@@ -335,4 +332,25 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.splice(trackIndex, 1);
     }
   }
+
+  onHotMicroPluggingDevice = async (changedDevice: DeviceInfo) => {
+    if (this.microphoneTrack) {
+      if (changedDevice.state === "ACTIVE") {
+        this.microphoneTrack.setDevice(changedDevice.device.deviceId);
+      } else if (changedDevice.device.label === this.microphoneTrack.getTrackLabel()) {
+        const oldMicrophones = await AgoraRTC.getMicrophones();
+        oldMicrophones[0] && this.microphoneTrack.setDevice(oldMicrophones[0].deviceId);
+      }
+    }
+  };
+  onHotCameraPluggingDevice = async (changedDevice: DeviceInfo) => {
+    if (this.cameraTrack) {
+      if (changedDevice.state === "ACTIVE") {
+        this.cameraTrack.setDevice(changedDevice.device.deviceId);
+      } else if (changedDevice.device.label === this.cameraTrack.getTrackLabel()) {
+        const oldCamera = await AgoraRTC.getCameras();
+        oldCamera[0] && this.cameraTrack.setDevice(oldCamera[0].deviceId);
+      }
+    }
+  };
 }
