@@ -4,10 +4,6 @@ export const randomUUID = (prefix?: string): string => {
   return `${prefix ? prefix : ""}${uuidv4()}`;
 };
 
-export const changeDataImage = (dataImage: string): string => {
-  if (dataImage.includes("http")) {
-    return dataImage;
-  } else {
-    return `data:image/png;base64,${dataImage}`;
-  }
+export const formatImageUrl = (dataImage: string): string => {
+  return dataImage.includes("http") ? dataImage : `data:image/png;base64,${dataImage}`;
 };

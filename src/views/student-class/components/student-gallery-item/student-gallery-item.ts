@@ -3,7 +3,7 @@ import { defineComponent } from "@vue/runtime-core";
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import noAvatar from "@/assets/student-class/no-avatar.png";
-import { changeDataImage } from "@/utils/utils";
+import { formatImageUrl } from "@/utils/utils";
 
 export default defineComponent({
   components: {},
@@ -17,7 +17,7 @@ export default defineComponent({
     const isNotJoinned = computed(() => student.value.status !== InClassStatus.JOINED);
     const isRaisingHand = ref(false);
     const store = useStore();
-    const avatarStudent = computed(() => (student.value.avatar ? changeDataImage(student.value.avatar) : noAvatar));
+    const avatarStudent = computed(() => (student.value.avatar ? formatImageUrl(student.value.avatar) : noAvatar));
 
     watch(props, () => {
       if (props.raisedHand) {
