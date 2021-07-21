@@ -122,7 +122,6 @@ export interface RoomModel {
   contents: Array<any>;
   focusTab: number;
   studentsAudio: Array<string>;
-  globalStudentsAudio: Array<string>;
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
 }
