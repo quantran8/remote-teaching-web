@@ -25,7 +25,7 @@ import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import * as sandClock from "@/assets/lotties/sand-clock.json";
 import { ClassRoomStatus } from "@/models";
 import noAvatar from "@/assets/student-class/no-avatar.png";
-import { changeDataImage } from "@/utils/utils";
+import { formatImageUrl } from "@/utils/utils";
 
 const fpPromise = FingerprintJS.load();
 
@@ -160,7 +160,7 @@ export default defineComponent({
 
     watch(getAvatarStudentOne, () => {
       if (getAvatarStudentOne.value && getAvatarStudentOne.value.length > 0) {
-        avatarStudentOneToOne.value = changeDataImage(getAvatarStudentOne.value);
+        avatarStudentOneToOne.value = formatImageUrl(getAvatarStudentOne.value);
       } else {
         avatarStudentOneToOne.value = noAvatar;
       }
