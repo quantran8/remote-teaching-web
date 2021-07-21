@@ -1,5 +1,5 @@
 import { defineComponent, computed, ref, onMounted, watch } from "vue";
-import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTC, { DeviceInfo } from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
@@ -199,14 +199,14 @@ export default defineComponent({
       }
     };
 
-    const onHotMicroPluggingDevice = async (changedDevice: any) => {
+    const onHotMicroPluggingDevice = async (changedDevice: DeviceInfo) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingMicro(changedDevice.device.deviceId);
       } else if (changedDevice.device.label === localTracks.value.audioTrack.getTrackLabel()) {
         await handleHotPluggingMicro();
       }
     };
-    const onHotCameraPluggingDevice = async (changedDevice: any) => {
+    const onHotCameraPluggingDevice = async (changedDevice: DeviceInfo) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingCamera(changedDevice.device.deviceId);
       } else if (changedDevice.device.label === localTracks.value.cameraTrack.getTrackLabel()) {
