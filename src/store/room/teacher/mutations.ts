@@ -116,8 +116,6 @@ const mutations: TeacherRoomMutation<State> = {
         isPalette: st.isPalette,
       };
     });
-    s.globalAudios = s.students.filter(ele => p.globalStudentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
-    s.localAudios = s.students.filter(ele => p.studentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
     const role = p.streamInfo?.userId === p.teacher.id ? "host" : "audience";
     if (!s.manager) {
       s.manager = new TeacherRoomManager({
