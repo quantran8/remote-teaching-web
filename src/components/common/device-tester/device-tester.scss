@@ -88,6 +88,7 @@
       width: 55%;
       height: 180px;
       margin-top: 20px;
+      overflow: hidden;
       @media (min-width: $large-lap) {
         width: 380px;
         height: 250px;
