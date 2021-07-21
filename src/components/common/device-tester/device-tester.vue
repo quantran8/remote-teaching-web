@@ -8,6 +8,7 @@
       width="700px"
       :footer="null"
       :maskClosable="!preventCloseModal"
+      :closable="!preventCloseModal"
     >
       <div>
         <div class="device-tester__micro block-gutter">
