@@ -1,4 +1,4 @@
-import { computed, defineComponent } from "vue";
+import {computed, defineComponent, ref} from "vue";
 import { useStore } from "vuex";
 import { Tooltip, Empty } from "ant-design-vue";
 
@@ -11,11 +11,17 @@ export default defineComponent({
   },
   components: {
     Tooltip,
-	Empty
+    Empty,
   },
   setup(props, { emit }) {
     const store = useStore();
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const cropImg = ref("");
+    const setCropBoxData = () => {
+      // if not metadata, return
+      // this.$refs.cropper.setCropBoxData(JSON.parse(""));
+      // cropImg.value = this.$refs.cropper.getCroppedCanvas().toDataURL();
+    };
     const onClickItem = (item: {
       id: string;
       image: {
@@ -33,7 +39,7 @@ export default defineComponent({
       currentExposureItemMedia,
       isContent,
       isTeaching,
-	  hasZeroImage
+      hasZeroImage,
     };
   },
 });
