@@ -16,6 +16,7 @@ import {
   AnnotationView,
   LanguagePicker,
   DeviceTester,
+  CropImage,
 } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
@@ -50,6 +51,7 @@ app.component("LanguagePicker", LanguagePicker);
 app.component("DeviceTester", DeviceTester);
 app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
+app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
 //app.component("UnityView", UnityView);
 app.use(router);

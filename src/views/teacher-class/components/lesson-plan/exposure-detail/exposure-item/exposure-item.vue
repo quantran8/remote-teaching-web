@@ -13,6 +13,7 @@
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
+          <CropImage :imageUrl="item.image.url" :metadata="{x: 15, y: 30, width: 500, height: 300, rotate: 0, scaleX: 0, scaleY: 0, aspectRatio: 1}"/>
           <img :src="item.image.url" class="media-image" />
           <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
         </Tooltip>
