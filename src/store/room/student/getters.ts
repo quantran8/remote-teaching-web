@@ -88,9 +88,6 @@ const getters: GetterTree<StudentRoomState, any> = {
   teacherIsDisconnected(state: StudentRoomState): boolean {
     return state.teacherIsDisconnected;
   },
-  getAvatarTeacher(state: StudentRoomState): string {
-    return state.avatarTeacher;
-  },
   getAvatarStudentOneToOne(state: StudentRoomState): string {
     return state.avatarStudentOneToOne;
   },

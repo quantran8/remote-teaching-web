@@ -75,7 +75,6 @@ export interface StudentRoomState {
   isDisconnected: boolean;
   isJoined: boolean;
   teacherIsDisconnected: boolean;
-  avatarTeacher: string;
   avatarStudentOneToOne: string;
 }
 
@@ -99,7 +98,6 @@ const state: StudentRoomState = {
   isDisconnected: !navigator.onLine,
   teacherIsDisconnected: false,
   isJoined: false,
-  avatarTeacher: "",
   avatarStudentOneToOne: "",
 };
 
