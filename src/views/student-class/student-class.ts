@@ -150,9 +150,9 @@ export default defineComponent({
       if (!teacher.value) return;
       await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
     });
-    watch(student, () => {
+    watch(student, async () => {
       if (!student.value) return;
-      store.dispatch("studentRoom/setAvatarStudent", { studentId: student.value.id, oneToOne: false });
+      await store.dispatch("studentRoom/setAvatarStudent", { studentId: student.value.id, oneToOne: false });
     });
 
     watch(students, async () => {
