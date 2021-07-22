@@ -11,6 +11,8 @@ import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "@/commonui";
 
 export const exposureTypes = {
+  TRANSITION_BLOCK: "TRANSITION_BLOCK",
+  LP_COMPLETE_BLOCK: "LP_COMPLETE_BLOCK",
   VCP_BLOCK: "VPC_BLOCK",
   CONTENT_BLOCK: "CONTENT_BLOCK",
   TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
@@ -159,7 +161,17 @@ export default defineComponent({
 
     const isShowExposureDetail = computed(() => {
       const exposure = getters["lesson/currentExposure"];
-      return exposure && exposure.type !== ExposureType.TRANSITION;
+      return exposure !== undefined;
+    });
+
+    const isTransitionType = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      return exposure.type === ExposureType.TRANSITION;
+    });
+
+    const isCompleteType = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      return exposure.type === ExposureType.COMPLETE;
     });
 
     const handleKeyDown = (e: any) => {
@@ -186,6 +198,8 @@ export default defineComponent({
       progress,
       remainingTime,
       isShowExposureDetail,
+      isTransitionType,
+      isCompleteType,
       activityStatistic,
       onClickExposure,
       onClickCloseExposure,

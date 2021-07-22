@@ -1,5 +1,7 @@
 import { MutationTree } from "vuex";
-import { Exposure, ExposureStatus, ExposureType, LessonState } from "./state";
+import { Exposure, ExposureStatus, ExposureType, LessonState, ExposureItemMedia } from "./state";
+import MediaItemTransition from "@/assets/images/transition.png";
+import MediaItemLpComplete from "@/assets/images/lp-complete.png";
 
 interface LessonMutationInterface<S> {
   setIsBlackOut(s: S, p: { IsBlackOut: boolean }): void;
@@ -19,7 +21,40 @@ const mutations: LessonMutation<LessonState> = {
     s.isBlackout = p.IsBlackOut;
   },
   setExposures(s: LessonState, p: { exposures: Exposure[] }) {
-    s.exposures = p.exposures;
+    s.exposures = p.exposures.map(exposure => {
+      if (exposure.type === ExposureType.TRANSITION) {
+        const mediaItem: ExposureItemMedia = {
+          id: exposure.id,
+          image: {
+            url: MediaItemTransition,
+            width: 1920,
+            height: 1080,
+          },
+        };
+        exposure.items.push({
+          id: exposure.id,
+          name: exposure.name,
+          media: [mediaItem],
+        });
+      }
+
+      if (exposure.type === ExposureType.COMPLETE) {
+        const mediaItem: ExposureItemMedia = {
+          id: exposure.id,
+          image: {
+            url: MediaItemLpComplete,
+            width: 1920,
+            height: 1080,
+          },
+        };
+        exposure.items.push({
+          id: exposure.id,
+          name: exposure.name,
+          media: [mediaItem],
+        });
+      }
+      return exposure;
+    });
   },
   setCurrentExposure(s: LessonState, p: { id: string }) {
     const exposure = s.exposures.find(e => e.id === p.id);
