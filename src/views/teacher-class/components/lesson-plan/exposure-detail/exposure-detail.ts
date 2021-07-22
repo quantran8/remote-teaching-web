@@ -4,6 +4,7 @@ import ExposureItem from "./exposure-item/exposure-item.vue";
 import { exposureTypes } from "../lesson-plan";
 import { Empty } from "ant-design-vue";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
+import { ExposureType } from "@/store/lesson/state";
 
 export default defineComponent({
   emits: ["click-back", "click-media"],
@@ -25,6 +26,10 @@ export default defineComponent({
         hasZeroTeachingContent.value = false;
       }
       switch (props.type) {
+        case exposureTypes.TRANSITION_BLOCK:
+          // hardcode title for ExposureType.TRANSITION
+          exposureTitle.value = "Transition";
+          break;
         case exposureTypes.VCP_BLOCK:
           exposureTitle.value = `${props.exposure.name} (${secondsToTimeStr(getSeconds(props.exposure.duration))})`;
           break;
@@ -72,8 +77,11 @@ export default defineComponent({
     };
     const isContentBlock = computed(() => props.type === exposureTypes.CONTENT_BLOCK);
     const isVCPBlock = computed(() => props.type === exposureTypes.VCP_BLOCK);
+    const isTransitionBlock = computed(() => props.type === exposureTypes.TRANSITION_BLOCK);
     const isTeachingActivityBlock = computed(() => props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
     const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
+    const isShowInfoIcon = computed(() => props.type === exposureTypes.CONTENT_BLOCK || props.exposure.type === ExposureType.TRANSITION);
+    const isShowBackButton = computed(() => props.type === exposureTypes.VCP_BLOCK || props.type === exposureTypes.TRANSITION_BLOCK);
 
     return {
       onClickItem,
@@ -89,6 +97,9 @@ export default defineComponent({
       thumbnailContentURL,
       thumbnailURLDefault,
       hasZeroTeachingContent,
+      isShowBackButton,
+      isTransitionBlock,
+      isShowInfoIcon,
     };
   },
 });

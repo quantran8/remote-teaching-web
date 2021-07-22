@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="item-content">
-      <div class="name">{{ title }}</div>
+      <div class="name">{{ exposureTitle }}</div>
       <div class="description">
         <span v-if="type">{{ type }}</span>
         <span v-if="type" class="dot"></span>

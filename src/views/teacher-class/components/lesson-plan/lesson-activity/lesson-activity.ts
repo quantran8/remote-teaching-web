@@ -45,10 +45,12 @@ export default defineComponent({
     const activityIcon = exposureIcon(props.type);
     const isCompleted = props.status === ExposureStatus.COMPLETED;
     const formattedDuration = computed(() => secondsToTimeStr(getSeconds(props.duration)));
+	const exposureTitle = computed(() => props.type === ExposureType.TRANSITION ? "Transition" : props.title);
     return {
       activityIcon,
       isCompleted,
-	  formattedDuration
+	  formattedDuration,
+	  exposureTitle,
     };
   },
 });
