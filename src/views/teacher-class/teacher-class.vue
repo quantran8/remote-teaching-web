@@ -20,10 +20,7 @@
           <TeacherCard
             v-if="teacher"
             class="teacher-card"
-            :id="teacher.id"
-            :name="teacher.name"
-            :audioEnabled="teacher.audioEnabled"
-            :videoEnabled="teacher.videoEnabled"
+            :teacher="teacher"
             :isGalleryView="isGalleryView"
             @hide-all="onClickHideAll"
             @mute-all="onClickMuteAll"

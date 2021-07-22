@@ -4,9 +4,8 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
-import { TeacherModel } from "@/models";
 import { GLError, GLErrorCode } from "@/models/error.model";
-import { ClassView, LessonInfo, StudentState } from "@/store/room/interface";
+import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
 import { Paths } from "@/utils/paths";
@@ -93,7 +92,7 @@ export default defineComponent({
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
     const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
-    const teacher = computed<TeacherModel>(() => store.getters["studentRoom/teacher"]);
+    const teacher = computed<TeacherState>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
     const localTargets = computed(() => store.getters["interactive/localTargets"]);
@@ -116,9 +115,11 @@ export default defineComponent({
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
-    const avatarTeacher = computed(() => store.getters["studentRoom/getAvatarTeacher"]);
+    const avatarTeacher = computed(() => (teacher.value ? formatImageUrl(teacher.value.avatar ? teacher.value.avatar : "") : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
-    const avatarStudentOneToOne = ref();
+    const avatarStudentOneToOne = computed(() => {
+      getAvatarStudentOne.value && getAvatarStudentOne.value.length > 0 ? formatImageUrl(getAvatarStudentOne.value) : noAvatar;
+    });
     const showMessage = ref(false);
     const studentOneName = ref("");
 
@@ -145,6 +146,10 @@ export default defineComponent({
       }
     });
 
+    watch(teacher, async () => {
+      if (!teacher.value) return;
+      await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
+    });
     watch(student, () => {
       if (!student.value) return;
       store.dispatch("studentRoom/setAvatarStudent", { studentId: student.value.id, oneToOne: false });
@@ -158,18 +163,9 @@ export default defineComponent({
       await store.dispatch("studentRoom/setAvatarAllStudent", { studentIds });
     });
 
-    watch(getAvatarStudentOne, () => {
-      if (getAvatarStudentOne.value && getAvatarStudentOne.value.length > 0) {
-        avatarStudentOneToOne.value = formatImageUrl(getAvatarStudentOne.value);
-      } else {
-        avatarStudentOneToOne.value = noAvatar;
-      }
-    });
-
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
         studentOneName.value = students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name;
-        await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
         await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
       }
       isOneToOne.value = !!studentOneAndOneId.value;
