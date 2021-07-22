@@ -40,16 +40,27 @@
             :exposure="currentExposure"
             @click-back="onClickCloseExposure"
           />
-          <ExposureDetail :type="exposureTypes.VCP_BLOCK" v-if="!isTransitionType" :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <ExposureDetail
+            :type="exposureTypes.LP_COMPLETE_BLOCK"
+            v-if="isCompleteType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
+          <ExposureDetail
+            :type="exposureTypes.VCP_BLOCK"
+            v-if="!isTransitionType && !isCompleteType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
           <ExposureDetail
             :type="exposureTypes.CONTENT_BLOCK"
-            v-if="!isTransitionType"
+            v-if="!isTransitionType && !isCompleteType"
             :exposure="currentExposure"
             @click-back="onClickCloseExposure"
           />
           <ExposureDetail
             :type="exposureTypes.TEACHING_ACTIVITY_BLOCK"
-            v-if="!isTransitionType"
+            v-if="!isTransitionType && !isCompleteType"
             :exposure="currentExposure"
             @click-back="onClickCloseExposure"
           />

@@ -12,6 +12,7 @@ import { fmtMsg } from "@/commonui";
 
 export const exposureTypes = {
   TRANSITION_BLOCK: "TRANSITION_BLOCK",
+  LP_COMPLETE_BLOCK: "LP_COMPLETE_BLOCK",
   VCP_BLOCK: "VPC_BLOCK",
   CONTENT_BLOCK: "CONTENT_BLOCK",
   TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
@@ -168,6 +169,11 @@ export default defineComponent({
       return exposure.type === ExposureType.TRANSITION;
     });
 
+    const isCompleteType = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      return exposure.type === ExposureType.COMPLETE;
+    });
+
     const handleKeyDown = (e: any) => {
       e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
@@ -193,6 +199,7 @@ export default defineComponent({
       remainingTime,
       isShowExposureDetail,
       isTransitionType,
+      isCompleteType,
       activityStatistic,
       onClickExposure,
       onClickCloseExposure,

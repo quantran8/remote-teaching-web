@@ -1,6 +1,13 @@
 <template>
   <div
-    :class="['exposure-detail-container', isContentBlock && 'content-block', isTeachingActivityBlock && 'teaching-block', isVCPBlock && 'vcp-block', isTransitionBlock && 'transition-block']"
+    :class="[
+      'exposure-detail-container',
+      isContentBlock && 'content-block',
+      isTeachingActivityBlock && 'teaching-block',
+      isVCPBlock && 'vcp-block',
+      isTransitionBlock && 'transition-block',
+      isLpCompleteBlock && 'lp-complete-block',
+    ]"
   >
     <div class="header-container">
       <!-- <BaseButton @click="onClickBack">Back</BaseButton> -->
@@ -19,9 +26,9 @@
           <div v-if="!hasZeroTeachingContent">
             <div v-for="{ id, textContent } in exposure.teachingActivityBlockItems" :key="id" v-html="textContent" />
           </div>
-		  <div v-if="isTransitionBlock">
-			  <div v-html="exposure.name"/>
-		  </div>
+          <div v-if="isTransitionBlock">
+            <div v-html="exposure.name" />
+          </div>
           <div v-if="!isTransitionBlock && hasZeroTeachingContent">
             <Empty />
           </div>

@@ -7,7 +7,7 @@
     </div>
     <div class="item-content">
       <div class="name">{{ exposureTitle }}</div>
-      <div class="description">
+      <div class="description" v-if="!isExposureLpComplete">
         <span v-if="type">{{ type }}</span>
         <span v-if="type" class="dot"></span>
         <span>{{ formattedDuration }}</span>

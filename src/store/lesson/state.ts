@@ -12,10 +12,12 @@ export enum ExposureType {
   STORY = "story",
   ACTIVITY = "activity",
   STORY_DICTIONARY = "Story Dictionary",
+  COMPLETE = "complete",
 }
 
 export const ExposureTypeFromValue = (val: number, name: string) => {
-  if (val === 0) return ExposureType.TRANSITION;
+  if (val === -1) return ExposureType.COMPLETE;
+  else if (val === 0) return ExposureType.TRANSITION;
   else if (val === 12) return ExposureType.WRITING;
   else if (val === 13) return ExposureType.READING;
   else if (val === 14) return ExposureType.SONG;
