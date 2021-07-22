@@ -1,23 +1,19 @@
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconAudioOff from "@/assets/student-class/audio-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { TeacherState } from "@/store/room/interface";
+import { formatImageUrl } from "@/utils/utils";
+import noAvatar from "@/assets/images/user-default-gray.png";
 
 export default defineComponent({
   props: {
-    id: String,
-    name: String,
     isGalleryView: Boolean,
-    audioEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    videoEnabled: {
-      type: Boolean,
-      default: true,
+    teacher: {
+      type: Object as () => TeacherState,
     },
   },
   emits: ["show-all", "hide-all", "mute-all", "unmute-all", "end"],
@@ -30,19 +26,19 @@ export default defineComponent({
     const hideContextMenu = () => {
       contextMenuVisibility.value = false;
     };
-    const audioIcon = computed(() => (props.audioEnabled ? IconAudioOn : IconAudioOff));
-    const videoIcon = computed(() => (props.videoEnabled ? IconVideoOn : IconVideoOff));
+    const audioIcon = computed(() => (props.teacher?.audioEnabled ? IconAudioOn : IconAudioOff));
+    const videoIcon = computed(() => (props.teacher?.videoEnabled ? IconVideoOn : IconVideoOff));
     const toggleAudio = () => {
       dispatch("teacherRoom/setTeacherAudio", {
-        id: props.id,
-        enable: !props.audioEnabled,
+        id: props.teacher?.id,
+        enable: !props.teacher?.audioEnabled,
       });
     };
 
     const toggleVideo = () => {
       dispatch("teacherRoom/setTeacherVideo", {
-        id: props.id,
-        enable: !props.videoEnabled,
+        id: props.teacher?.id,
+        enable: !props.teacher?.videoEnabled,
       });
     };
 
@@ -62,7 +58,8 @@ export default defineComponent({
       dispatch("teacherRoom/clearStudentAudio");
     };
 
-	const isLowBandWidth = computed(() => getters["teacherRoom/isLowBandWidth"]);
+    const isLowBandWidth = computed(() => getters["teacherRoom/isLowBandWidth"]);
+    const avatarTeacher = computed(() => (props.teacher?.avatar ? formatImageUrl(props.teacher?.avatar) : noAvatar));
 
     return {
       audioIcon,
@@ -76,8 +73,9 @@ export default defineComponent({
       onDrop,
       onDragOver,
       onClickClearAll,
-	  isLowBandWidth,
-	  IconLowWifi
+      isLowBandWidth,
+      IconLowWifi,
+      avatarTeacher,
     };
   },
 });

@@ -45,16 +45,22 @@
         <!--            ></ContentView>-->
         <!-- <div v-show="isDrawMode" class="sc-whiteboard"></div> -->
       </div>
-      <div class="sc-teacher" ref="videoContainerRef">
+      <div :class="['sc-teacher', !teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne) && 'border-avatar']" ref="videoContainerRef">
         <div v-show="studentIsDisconnected" class="sc-teacher__content">
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
         </div>
-        <div class="sc-teacher__video" :id="teacher?.id" v-show="!showBearConfused && (!isOneToOne || studentIsOneToOne)"></div>
+        <div
+          class="sc-teacher__video"
+          :id="teacher?.id"
+          v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
+        ></div>
+        <div class="sc-teacher__avatar-container" v-if="!teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)">
+          <img class="sc-teacher__avatar" :src="avatarTeacher" />
+        </div>
         <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
           <div class="sc-independent__info-container">
             <div class="sc-independent__avatar-container">
-              <img class="sc-independent__avatar-container__avatar" v-if="avatarTeacher && avatarTeacher.length > 0" :src="avatarTeacher" />
-              <img class="sc-independent__avatar-container__avatar" v-else src="@/assets/student-class/no-avatar.png" />
+              <img class="sc-independent__avatar-container__avatar" :src="avatarTeacher" />
             </div>
             <p class="sc-independent__text-size">{{ teacher?.name }}</p>
           </div>

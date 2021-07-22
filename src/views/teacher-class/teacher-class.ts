@@ -198,6 +198,10 @@ export default defineComponent({
       }
     });
 
+    watch(teacher, async () => {
+      if (!teacher.value) return;
+      await dispatch("teacherRoom/getAvatarTeacher", { teacherId: teacher.value.id });
+    });
     watch(students, async () => {
       if (!students.value) return;
       const studentIds = students.value.map((student: any) => {
