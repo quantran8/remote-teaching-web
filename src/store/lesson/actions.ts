@@ -1,7 +1,7 @@
 import { preloadImage } from "@/utils/preloadImage";
 import { LessonPlanModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
-import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState } from "./state";
+import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState, ContentRootTypeFromValue } from "./state";
 
 interface LessonActionsInterface<S, R> {
   setInfo(store: ActionContext<S, R>, payload: any): any;
@@ -112,6 +112,7 @@ const actions: LessonActions<LessonState, any> = {
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
+        contentRootType: ContentRootTypeFromValue(e.contentRootType),
       };
     });
 

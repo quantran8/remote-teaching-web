@@ -15,6 +15,28 @@ export enum ExposureType {
   COMPLETE = "complete",
 }
 
+export enum ContentRootType {
+  Unknown,
+  Exposure,
+  Transition,
+  Optional,
+  Complete,
+}
+
+export const ContentRootTypeFromValue = (val: number) => {
+  switch (val) {
+    case 1:
+      return ContentRootType.Exposure;
+    case 2:
+      return ContentRootType.Transition;
+    case 3:
+      return ContentRootType.Optional;
+    case 4:
+      return ContentRootType.Complete;
+  }
+  return ContentRootType.Unknown;
+};
+
 export const ExposureTypeFromValue = (val: number, name: string) => {
   if (val === -1) return ExposureType.COMPLETE;
   else if (val === 0) return ExposureType.TRANSITION;
@@ -47,6 +69,7 @@ export interface Exposure {
   teachingActivityBlockItems: ExposureItem[];
   contentBlockItems: ExposureItem[];
   thumbnailURL?: string;
+  contentRootType: ContentRootType;
 }
 
 export interface ExposureItem {
