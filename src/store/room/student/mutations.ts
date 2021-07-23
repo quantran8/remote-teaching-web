@@ -1,6 +1,6 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
-import { GLError } from "@/models/error.model";
+import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
 import { ClassView, InClassStatus } from "../interface";
@@ -43,7 +43,9 @@ const mutations: MutationTree<StudentRoomState> = {
   setError(state: StudentRoomState, payload: GLError | null) {
     state.error = payload;
   },
-
+  setApiStatus(state: StudentRoomState, payload: GLApiStatus | null) {
+    state.apiStatus = payload;
+  },
   setClassView(state: StudentRoomState, payload: { classView: ClassView }) {
     state.classView = payload.classView;
   },
