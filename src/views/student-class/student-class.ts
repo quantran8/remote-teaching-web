@@ -4,7 +4,7 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
-import { GLError, GLErrorCode } from "@/models/error.model";
+import { GLApiStatus, GLError, GLErrorCode } from "@/models/error.model";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
@@ -20,6 +20,7 @@ import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
 import { RemoteTeachingService } from "@/services";
+import JoinClassLoading from "../join-class-loading/join-class-loading.vue";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import * as sandClock from "@/assets/lotties/sand-clock.json";
 import { ClassRoomStatus } from "@/models";
@@ -36,6 +37,7 @@ const sourceVideo = {
 
 export default defineComponent({
   components: {
+    JoinClassLoading,
     PreventEscFirefox,
     UnityView,
     MatIcon,
@@ -86,6 +88,7 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
+    const joinLoading = ref(true);
     const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
@@ -98,7 +101,7 @@ export default defineComponent({
     const localTargets = computed(() => store.getters["interactive/localTargets"]);
     const isAssigned = computed(() => store.getters["interactive/isAssigned"]);
     const isLessonPlan = computed(() => store.getters["studentRoom/classView"] === ClassView.LESSON_PLAN);
-    const errors: ComputedRef<GLError> = computed(() => store.getters["studentRoom/error"]);
+    const apiStatus: ComputedRef<GLApiStatus> = computed(() => store.getters["studentRoom/apiStatus"]);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isDrawMode = computed(() => store.getters["annotation/isDrawMode"]);
     const isStickerMode = computed(() => store.getters["annotation/isStickerMode"]);
@@ -206,12 +209,19 @@ export default defineComponent({
       }
     });
 
-    watch(errors, async () => {
-      if (errors.value) {
-        if (errors.value.errorCode === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
+    watch(apiStatus, async () => {
+      if (apiStatus.value) {
+        if (apiStatus.value.code === GLErrorCode.CLASS_IS_NOT_ACTIVE) {
           showMessage.value = true;
-        } else if (errors.value.errorCode === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
+          joinLoading.value = false;
+        } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           showMessage.value = true;
+          joinLoading.value = false;
+        } else if (apiStatus.value.code === GLErrorCode.STUDENT_NOT_IN_CLASS) {
+          showMessage.value = true;
+          joinLoading.value = false;
+        } else if (apiStatus.value.code === GLErrorCode.SUCCESS || apiStatus.value.code === GLErrorCode.DISCONNECT) {
+          joinLoading.value = false;
         }
       }
     });
@@ -360,11 +370,12 @@ export default defineComponent({
       avatarTeacher,
       avatarStudentOneToOne,
       showMessage,
-      errors,
+      apiStatus,
       exitText,
       goToHomePageText,
       iconSand,
       studentOneName,
+      joinLoading,
     };
   },
 });

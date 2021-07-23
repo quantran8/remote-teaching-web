@@ -46,6 +46,7 @@ export class ErrorLocale {
   static UnauthorizedMessage = "error.unauthorized";
   static NotFoundMessage = "error.notfound";
   static ClassNotStarted = "error.class.not.started";
+  static StudentNotInClass = "error.student_not_in_class";
 }
 
 export class PrivacyPolicy {
@@ -169,6 +170,9 @@ export class TeacherClassLessonPlan {
   static Remaining = "teacher_class_lesson_plan.remaining";
   static Item = "teacher_class_lesson_plan.item";
   static Page = "teacher_class_lesson_plan.page";
+  static LessonComplete = "teacher_class_lesson_plan.lesson_complete";
+  static TeachingActivity = "teacher_class_lesson_plan.teaching_activity";
+  static Transition = "teacher_class_lesson_plan.transition";
 }
 
 export class TeacherClassGallery {
@@ -203,4 +207,8 @@ export class Layout {
   static SignOut = "layout.sign_out";
   static PrivacyPolicy = "layout.privacy_policy";
   static CopyRight = "layout.copy_right";
+}
+
+export class JoinLoading {
+  static Message = "join_class_loading.message";
 }
