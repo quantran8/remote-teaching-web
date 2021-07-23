@@ -220,7 +220,7 @@ export default defineComponent({
         } else if (apiStatus.value.code === GLErrorCode.STUDENT_NOT_IN_CLASS) {
           showMessage.value = true;
           joinLoading.value = false;
-        } else if (apiStatus.value.code === GLErrorCode.SUCCESS) {
+        } else if (apiStatus.value.code === GLErrorCode.SUCCESS || apiStatus.value.code === GLErrorCode.DISCONNECT) {
           joinLoading.value = false;
         }
       }
