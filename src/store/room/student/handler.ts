@@ -185,8 +185,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherEndClass: async (_payload: any) => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
-      commit("setError", {
-        errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
+      commit("setApiStatus", {
+        code: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",
       });
     },
