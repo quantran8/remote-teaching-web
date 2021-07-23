@@ -59,11 +59,7 @@
       display: none;
     }
   }
-  @media screen
-  and (device-width: 360px)
-  and (device-height: 640px)
-  and (-webkit-device-pixel-ratio: 4)
-  and (orientation: landscape) {
+  @media (max-width: $xxl){
     height: 90px;
     position: absolute;
     overflow: unset;
@@ -74,7 +70,7 @@
       display: flex;
     }
   }
-  @media only screen and (max-width: 812px) and (orientation: landscape) {
+  @media (max-height: 850px) {
     height: 90px;
     position: absolute;
     overflow: unset;
@@ -85,32 +81,7 @@
       display: flex;
     }
   }
-  @media only screen and (max-width: 1024px) and (orientation: landscape) {
-    height: 90px;
-    position: absolute;
-    overflow: unset;
-    &--hide {
-      transform: translateY(100%);
-    }
-    &__toggle {
-      display: flex;
-    }
-  }
-  @media
-  (max-device-width: 1280px)
-  and (orientation: landscape)
-  and (-webkit-min-device-pixel-ratio: 2) {
-    height: 90px;
-    position: absolute;
-    overflow: unset;
-    &--hide {
-      transform: translateY(100%);
-    }
-    &__toggle {
-      display: flex;
-    }
-  }
-  @media (min-width: $lg) {
+  @media (min-width: $xxl) {
     height: 135px;
     &__container {
       grid-column-gap: 30px;
