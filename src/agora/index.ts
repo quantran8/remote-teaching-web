@@ -86,7 +86,7 @@ export class AgoraClient implements AgoraClientSDK {
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-    this.agoraRTC.setLogLevel(4);
+    this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
@@ -209,7 +209,7 @@ export class AgoraClient implements AgoraClientSDK {
   cameraTimeout: any;
   isCamEnable: boolean = false;
   async setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
-    if (this.timeoutId) {
+    if (this.cameraTimeout) {
       clearTimeout(this.cameraTimeout);
     }
     this.isCamEnable = options.enable;
@@ -227,7 +227,7 @@ export class AgoraClient implements AgoraClientSDK {
   microTimeout: any;
   isMicEnable: boolean = false;
   async setMicrophone(options: { enable: boolean }) {
-    if (this.timeoutId) {
+    if (this.microTimeout) {
       clearTimeout(this.microTimeout);
     }
     this.isMicEnable = options.enable;
@@ -254,6 +254,7 @@ export class AgoraClient implements AgoraClientSDK {
 
   timeoutId: any;
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
+    console.trace("hello no bug");
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

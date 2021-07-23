@@ -144,11 +144,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
       });
     }, 30000); // 30000 = 30 seconds
     const agoraEventHandler: AgoraEventHandler = {
-      onUserPublished: (_user, _mediaType) => {
-        dispatch("updateAudioAndVideoFeed", {});
+      onUserPublished: (user, mediaType) => {
+        console.log("onUserPublished", user.uid, mediaType);
+        // dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: _payload => {
-        dispatch("updateAudioAndVideoFeed", {});
+      onUserUnPublished: (user, mediaType) => {
+        console.log("onUserUNPublished", user.uid, mediaType);
+
+        // dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
         // Logger.error("Exception", payload);
