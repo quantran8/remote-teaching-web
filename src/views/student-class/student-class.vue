@@ -1,7 +1,8 @@
 <template>
-  <div class="sc">
+  <join-class-loading v-if="joinLoading" />
+  <div class="sc" v-else>
     <prevent-esc-firefox />
-    <StudentHeader />
+    <StudentHeader v-if="!showMessage" />
     <div class="sc-body" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">
         <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
@@ -90,7 +91,7 @@
     </div>
     <StudentGallery v-if="!showMessage" :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
     <div class="sc-message" v-else>
-      <p class="message">{{ errors.message }}</p>
+      <p class="message">{{ apiStatus.message }}</p>
       <router-link to="/">
         <div class="btn-homepage">{{ goToHomePageText }}</div>
       </router-link>
