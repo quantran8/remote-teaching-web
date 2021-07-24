@@ -200,9 +200,11 @@ const actions: ActionTree<StudentRoomState, any> = {
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: (user, mediaType) => {
         console.log("user-published", user.uid, mediaType);
+        dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: (user, mediaType) => {
         console.log("user-unpublished", user.uid, mediaType);
+        dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
         // Logger.error("Exception", payload);
