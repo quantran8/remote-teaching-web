@@ -199,13 +199,10 @@ const actions: ActionTree<StudentRoomState, any> = {
     }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: (user, mediaType) => {
-        console.log("onUserPublished", user.uid, mediaType);
-        // dispatch("updateAudioAndVideoFeed", {});
+        console.log("user-published", user.uid, mediaType);
       },
       onUserUnPublished: (user, mediaType) => {
-        console.log("onUserUNPublished", user.uid, mediaType);
-
-        // dispatch("updateAudioAndVideoFeed", {});
+        console.log("user-unpublished", user.uid, mediaType);
       },
       onException: (payload: any) => {
         // Logger.error("Exception", payload);
