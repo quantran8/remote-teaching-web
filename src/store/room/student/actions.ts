@@ -11,7 +11,7 @@ import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
-import { ErrorLocale } from "@/locales/localeid";
+import { ErrorLocale, LostNetwork } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 
 const actions: ActionTree<StudentRoomState, any> = {
@@ -34,11 +34,16 @@ const actions: ActionTree<StudentRoomState, any> = {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
       if (!roomInfo || roomInfo.classId !== payload.classId) {
-        commit("setError", {
-          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+        commit("setApiStatus", {
+          code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
         });
         return;
+      } else {
+        commit("setApiStatus", {
+          code: GLErrorCode.SUCCESS,
+          message: "",
+        });
       }
       commit("setRoomInfo", roomResponse.data);
       commit("setClassView", {
@@ -47,13 +52,22 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
       if (!error.code) {
+        commit("setApiStatus", {
+          code: GLErrorCode.DISCONNECT,
+          message: "",
+        });
         return console.log("Lost Internet");
       }
       if (error.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Home);
+      } else if (error.code === ErrorCode.StudentNotInClass) {
+        commit("setApiStatus", {
+          code: GLErrorCode.STUDENT_NOT_IN_CLASS,
+          message: fmtMsg(ErrorLocale.StudentNotInClass),
+        });
       } else {
-        commit("setError", {
-          errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+        commit("setApiStatus", {
+          code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
         });
         return;

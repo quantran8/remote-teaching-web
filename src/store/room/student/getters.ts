@@ -1,6 +1,6 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, ClassRoomModel, RoomModel } from "@/models";
-import { GLError } from "@/models/error.model";
+import { GLApiStatus, GLError } from "@/models/error.model";
 import { GetterTree } from "vuex";
 import { ClassView, StudentState, TeacherState } from "../interface";
 import { ClassAction, StudentRoomState } from "./state";
@@ -15,6 +15,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   },
   error(state: StudentRoomState): GLError | null {
     return state.error;
+  },
+  apiStatus(state: StudentRoomState): GLApiStatus | null {
+    return state.apiStatus;
   },
   info(state: StudentRoomState): RoomModel {
     return state.info as RoomModel;
