@@ -162,7 +162,7 @@ export const useDisconnection = () => {
     }
   });
 
-  watch(signalRStatus, currentSignalRStatus => {
+  watch(signalRStatus, async currentSignalRStatus => {
     const isTeacher: boolean = getters["auth/isTeacher"];
     const isParent: boolean = getters["auth/isParent"];
     switch (currentSignalRStatus) {
@@ -187,6 +187,8 @@ export const useDisconnection = () => {
       case SignalRStatus.NoStatus: {
         if (isTeacher) {
           dispatch("teacherRoom/setOnline");
+          await teacherInitClass();
+          await dispatch("teacherRoom/joinRoom");
         }
         if (isParent) {
           dispatch("studentRoom/setOnline");
