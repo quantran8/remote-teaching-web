@@ -85,14 +85,16 @@ export class AgoraClient implements AgoraClientSDK {
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
-    this.client.on("user-published", () => {
+    this.client.on("user-published", (user, mediaType) => {
+      console.log("user-published", user, mediaType);
       if (this.options.user?.role === "host") {
         store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
       } else {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
     });
-    this.client.on("user-unpublished", () => {
+    this.client.on("user-unpublished", (user, mediaType) => {
+      console.log("user-unpublished", user, mediaType);
       if (this.options.user?.role === "host") {
         store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
       } else {
