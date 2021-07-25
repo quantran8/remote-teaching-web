@@ -13,7 +13,7 @@ import AgoraRTC, {
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraError } from "./interfaces";
-
+import { store } from "@/store";
 const DEFAULT_TIMEOUT = 1000;
 
 export interface AgoraClientSDK {
@@ -85,6 +85,20 @@ export class AgoraClient implements AgoraClientSDK {
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
+    this.client.on("user-published", () => {
+      if (this.options.user?.role === "host") {
+        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+      } else {
+        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+      }
+    });
+    this.client.on("user-unpublished", () => {
+      if (this.options.user?.role === "host") {
+        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+      } else {
+        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+      }
+    });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
@@ -97,13 +111,13 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
-    this.client.on("user-published", handler.onUserPublished);
-    this.client.on("user-unpublished", handler.onUserUnPublished);
+    // this.client.on("user-published", handler.onUserPublished);
+    // this.client.on("user-unpublished", handler.onUserUnPublished);
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
-    this.client.on("connection-state-change", () => {
-      console.log("connection state changed!");
+    this.client.on("connection-state-change", payload => {
+      console.log("connection state changed!", payload);
     });
   }
 
@@ -230,7 +244,6 @@ export class AgoraClient implements AgoraClientSDK {
       await this._publish();
     } else {
       if (!this.cameraTrack) return;
-      // await this.client?.unpublish(this.cameraTrack);
       await this.unpublishTrack(this.cameraTrack);
       this._closeMediaTrack(this.cameraTrack);
     }
@@ -246,7 +259,6 @@ export class AgoraClient implements AgoraClientSDK {
     } else {
       if (!this.microphoneTrack) return;
       await this.unpublishTrack(this.microphoneTrack);
-      // await this.client?.unpublish(this.microphoneTrack);
       this._closeMediaTrack(this.microphoneTrack);
     }
   }
@@ -289,32 +301,22 @@ export class AgoraClient implements AgoraClientSDK {
       remoteTrack.play();
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-      //   Logger.error("_subscribeAudio", err);
+      console.error("_subscribeAudio", err);
     }
   }
 
   async _subscribeVideo(userId: string) {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
-    let user = null;
-    const intervalId = setInterval(async () => {
-      user = this._getRemoteUser(userId);
-      if (user) {
-        clearInterval(intervalId);
-        if (!user.hasVideo) {
-          clearInterval(intervalId);
-        }
-        try {
-          const remoteTrack = await this.client.subscribe(user, "video");
-          remoteTrack.play(userId);
-          this.subscribedVideos.push({ userId: userId, track: remoteTrack });
-        } catch (err) {
-          if (err.code !== AgoraError.REMOTE_USER_IS_NOT_PUBLISHED) {
-            this._subscribeVideo(userId);
-          }
-        }
-      }
-    }, DEFAULT_TIMEOUT);
+    const user = this._getRemoteUser(userId);
+    if (!user || !user.hasVideo) return;
+    try {
+      const remoteTrack = await this.client.subscribe(user, "video");
+      remoteTrack.play(userId);
+      this.subscribedVideos.push({ userId: userId, track: remoteTrack });
+    } catch (err) {
+      console.error("_subscribeVideo", err);
+    }
   }
 
   async _unSubscribe(studentId: string, mediaType: "audio" | "video") {
