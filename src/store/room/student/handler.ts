@@ -92,6 +92,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         enable: !payload.isMuteAudio,
       });
+      if (state.student?.id === payload.id) return;
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentMuteVideo: (payload: StudentModel) => {
@@ -99,6 +100,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         enable: !payload.isMuteVideo,
       });
+      if (state.student?.id === payload.id) return;
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherJoinClass: (payload: TeacherModel) => {
@@ -152,6 +154,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("setStudentVideo", {
           id: student.id,
           enable: !student.isMuteVideo,
+          preventSendMsg: true,
         });
         if (student.id === state.student?.id) {
           status = student.isMuteVideo;
@@ -167,6 +170,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("setStudentAudio", {
           id: student.id,
           enable: !student.isMuteAudio,
+          preventSendMsg: true,
         });
         if (student.id === state.student?.id) {
           status = student.isMuteAudio;

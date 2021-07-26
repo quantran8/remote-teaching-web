@@ -198,10 +198,12 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
     }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
-      onUserPublished: _payload => {
+      onUserPublished: (user, mediaType) => {
+        console.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: () => {
+      onUserUnPublished: (user, mediaType) => {
+        console.log("user-unpublished", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
@@ -237,24 +239,28 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
   },
-  async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean }) {
+  async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
       commit("setMicrophoneLock", { enable: true });
       await state.manager?.setMicrophone({ enable: payload.enable });
-      await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+      if (!payload.preventSendMsg) {
+        await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+      }
       commit("setStudentAudio", payload);
       commit("setMicrophoneLock", { enable: false });
     } else {
       commit("setStudentAudio", payload);
     }
   },
-  async setStudentVideo({ state, commit }, payload: { id: string; enable: boolean }) {
+  async setStudentVideo({ state, commit }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.cameraLock) return;
       commit("setCameraLock", { enable: true });
       await state.manager?.setCamera({ enable: payload.enable });
-      await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+      if (!payload.preventSendMsg) {
+        await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+      }
       commit("setStudentVideo", payload);
       commit("setCameraLock", { enable: false });
     } else {
