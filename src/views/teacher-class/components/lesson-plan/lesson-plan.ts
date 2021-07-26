@@ -45,6 +45,9 @@ export default defineComponent({
     const iconNext = ref(IconNextDisable);
     const canNext = ref(true);
     const canPrev = ref(false);
+    const lessonContainer = ref();
+    const scrollPosition = ref(0);
+    const scrollLimitPosition = 1000;
 
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
@@ -174,12 +177,16 @@ export default defineComponent({
       return exposure.type === ExposureType.COMPLETE;
     });
 
-    const handleKeyDown = (e: any) => {
+    const handleKeyDown = async (e: any) => {
       e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
         onClickPrevNextMedia(NEXT_EXPOSURE);
+        scrollPosition.value = scrollPosition.value < scrollLimitPosition ? scrollPosition.value + 50 : scrollLimitPosition;
+        lessonContainer.value.scrollTo(0, scrollPosition.value);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
         onClickPrevNextMedia(PREV_EXPOSURE);
+        scrollPosition.value = scrollPosition.value <= 0 ? 0 : scrollPosition.value - 50;
+        lessonContainer.value.scrollTo(0, scrollPosition.value);
       }
     };
     onMounted(() => {
@@ -217,6 +224,7 @@ export default defineComponent({
       remainingText,
       itemText,
       pageText,
+      lessonContainer,
     };
   },
 });
