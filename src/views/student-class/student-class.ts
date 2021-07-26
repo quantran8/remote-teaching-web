@@ -217,7 +217,7 @@ export default defineComponent({
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           showMessage.value = true;
           joinLoading.value = false;
-        } else if (apiStatus.value.code === GLErrorCode.STUDENT_NOT_IN_CLASS) {
+        } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
           showMessage.value = true;
           joinLoading.value = false;
         } else if (apiStatus.value.code === GLErrorCode.SUCCESS || apiStatus.value.code === GLErrorCode.DISCONNECT) {

@@ -62,8 +62,8 @@ const actions: ActionTree<StudentRoomState, any> = {
         await router.push(Paths.Home);
       } else if (error.code === ErrorCode.StudentNotInClass) {
         commit("setApiStatus", {
-          code: GLErrorCode.STUDENT_NOT_IN_CLASS,
-          message: fmtMsg(ErrorLocale.StudentNotInClass),
+          code: GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT,
+          message: fmtMsg(ErrorLocale.ParentAccountNotHaveThisStudent),
         });
       } else {
         commit("setApiStatus", {

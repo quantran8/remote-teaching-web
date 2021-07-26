@@ -46,7 +46,7 @@ export class ErrorLocale {
   static UnauthorizedMessage = "error.unauthorized";
   static NotFoundMessage = "error.notfound";
   static ClassNotStarted = "error.class.not.started";
-  static StudentNotInClass = "error.student_not_in_class";
+  static ParentAccountNotHaveThisStudent = "error.parent_not_have_this_student";
 }
 
 export class PrivacyPolicy {
