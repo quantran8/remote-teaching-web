@@ -76,7 +76,7 @@ export default defineComponent({
         }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-        toolActive.value = "move";
+        toolActive.value = "";
         canvas.isDrawingMode = false;
       }
     };
