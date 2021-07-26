@@ -83,6 +83,7 @@ export interface AnnotationModel {
   pointer: { x: number; y: number };
   drawing: DrawingModel;
   oneToOne: DrawingModel;
+  oneOneDrawing: DrawingModel;
   stickers: Array<Sticker>;
 }
 
@@ -125,4 +126,5 @@ export interface RoomModel {
   studentsAudio: Array<string>;
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
+  oneAndOneDto: any;
 }
