@@ -176,29 +176,63 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   private _closeMediaTrack(track: ILocalTrack) {
+    console.log("3");
     if (track) {
-      track.stop();
-      track.close();
-      if (track.trackMediaType === "video") {
-        this._cameraTrack = undefined;
-      }
-      if (track.trackMediaType === "audio") {
-        this._microphoneTrack = undefined;
+      try {
+        console.log("4");
+
+        track.stop();
+        track.close();
+        if (track.trackMediaType === "video") {
+          this._cameraTrack = undefined;
+        }
+        if (track.trackMediaType === "audio") {
+          this._microphoneTrack = undefined;
+        }
+      } catch (error) {
+        if (track) {
+          track.stop();
+          track.close();
+          if (track.trackMediaType === "video") {
+            this._cameraTrack = undefined;
+          }
+          if (track.trackMediaType === "audio") {
+            this._microphoneTrack = undefined;
+          }
+        }
+        throw `_closeMediaTrack ERROR::${error}`;
       }
     }
   }
 
   private async unpublishTrack(track: ILocalTrack) {
+    console.log("1");
     if (!track) return;
-    const trackId = track.getTrackId();
-    const idx = this._publishedTrackIds.indexOf(trackId);
-    if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
-      await this.client.unpublish([this.cameraTrack]);
+    try {
+      console.log("2");
+
+      const trackId = track.getTrackId();
+      const idx = this._publishedTrackIds.indexOf(trackId);
+      if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.cameraTrack]);
+      }
+      if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.microphoneTrack]);
+      }
+      this._publishedTrackIds.splice(idx, 1);
+    } catch (error) {
+      if (!track) return;
+      const trackId = track.getTrackId();
+      const idx = this._publishedTrackIds.indexOf(trackId);
+      if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.cameraTrack]);
+      }
+      if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.microphoneTrack]);
+      }
+      this._publishedTrackIds.splice(idx, 1);
+      throw `unpublishTrack ERROR::${error}`;
     }
-    if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
-      await this.client.unpublish([this.microphoneTrack]);
-    }
-    this._publishedTrackIds.splice(idx, 1);
   }
 
   _publishedTrackIds: string[] = [];
@@ -291,6 +325,7 @@ export class AgoraClient implements AgoraClientSDK {
     for (let studentId of audios) {
       await this._subscribeAudio(studentId);
     }
+    console.log("this._publishedTrackIds", this._publishedTrackIds);
   }
 
   async _subscribeAudio(userId: string) {
@@ -299,6 +334,9 @@ export class AgoraClient implements AgoraClientSDK {
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasAudio) return;
     try {
+      //   user.uid = "123";
+      //   const newUser = { ...user };
+      //   newUser.uid = "123";
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
