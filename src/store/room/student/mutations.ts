@@ -224,7 +224,7 @@ const mutations: MutationTree<StudentRoomState> = {
     if (state.teacher) state.teacher.avatar = p;
   },
   setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
-    state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
+    state.avatarStudentOneToOne = p[0]?.avatar;
   },
   setAvatarCurrentStudent(state: StudentRoomState, p: { id: string; avatar: string }[]) {
     if (state.student) state.student.avatar = p[0] ? p[0].avatar : "";

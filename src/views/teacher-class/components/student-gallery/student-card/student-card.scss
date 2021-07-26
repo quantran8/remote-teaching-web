@@ -98,6 +98,19 @@
   }
 }
 
+.size-one-one {
+  height: 100px;
+  width: 100px;
+  @media (min-width: $xl) {
+    height: 200px;
+    width: 200px;
+  }
+  @media (min-width: $xxl) {
+    height: 300px;
+    width: 300px;
+  }
+}
+
 .student {
   $self: &;
   $radius: 10px;

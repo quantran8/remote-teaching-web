@@ -22,7 +22,7 @@
             :id="student.id"
           ></div>
           <div :class="[isSpeaking && 'student__is-speaking']" v-show="!isNotJoinned && !isTurnOnCamera" class="student__img">
-            <img class="student-avatar" alt="boys-avatar" :src="avatarStudent" />
+            <img :class="['student-avatar', isOneToOneStudent && 'size-one-one']" alt="boys-avatar" :src="avatarStudent" />
           </div>
         </div>
       </div>
