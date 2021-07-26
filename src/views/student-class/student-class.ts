@@ -120,9 +120,7 @@ export default defineComponent({
     const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => (teacher.value ? formatImageUrl(teacher.value.avatar ? teacher.value.avatar : "") : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
-    const avatarStudentOneToOne = computed(() => {
-      getAvatarStudentOne.value && getAvatarStudentOne.value.length > 0 ? formatImageUrl(getAvatarStudentOne.value) : noAvatar;
-    });
+    const avatarStudentOneToOne = ref("");
     const showMessage = ref(false);
     const studentOneName = ref("");
 
@@ -149,6 +147,9 @@ export default defineComponent({
       }
     });
 
+    watch(getAvatarStudentOne, () => {
+      avatarStudentOneToOne.value = getAvatarStudentOne.value ? formatImageUrl(getAvatarStudentOne.value) : noAvatar;
+    });
     watch(teacher, async () => {
       if (!teacher.value) return;
       await store.dispatch("studentRoom/getAvatarTeacher", { teacherId: teacher.value.id });
