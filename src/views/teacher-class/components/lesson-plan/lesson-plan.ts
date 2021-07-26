@@ -180,11 +180,11 @@ export default defineComponent({
     const handleKeyDown = async (e: any) => {
       e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-        onClickPrevNextMedia(NEXT_EXPOSURE);
+        await onClickPrevNextMedia(NEXT_EXPOSURE);
         scrollPosition.value = scrollPosition.value < scrollLimitPosition ? scrollPosition.value + 50 : scrollLimitPosition;
         lessonContainer.value.scrollTo(0, scrollPosition.value);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-        onClickPrevNextMedia(PREV_EXPOSURE);
+        await onClickPrevNextMedia(PREV_EXPOSURE);
         scrollPosition.value = scrollPosition.value <= 0 ? 0 : scrollPosition.value - 50;
         lessonContainer.value.scrollTo(0, scrollPosition.value);
       }
