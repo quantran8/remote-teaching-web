@@ -4,7 +4,7 @@ import "cropperjs/dist/cropper.css";
 
 export default defineComponent({
   props: ["imageUrl", "metadata"],
-  emits: ["imgLoad"],
+  emits: ["img-load"],
   setup(props, { emit }) {
     const imageRef = ref<HTMLImageElement>();
     const croppedImageUrlRef = ref<string | undefined>();
@@ -19,7 +19,7 @@ export default defineComponent({
     });
 
     const onImageLoad = () => {
-      emit("imgLoad");
+      emit("img-load");
     };
 
     const processImg = () => {
