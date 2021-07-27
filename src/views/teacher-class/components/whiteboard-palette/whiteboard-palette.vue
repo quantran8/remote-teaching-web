@@ -29,7 +29,7 @@
             :imageUrl="image.url"
             :metadata="image.metaData"
             id="annotation-img"
-            @imgLoad="imgLoad"
+            @img-load="imgLoad"
           />
           <img v-else-if="typeof imageUrl === 'string'" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />
           <div class="wrap-canvas">
