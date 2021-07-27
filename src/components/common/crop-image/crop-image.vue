@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="crop-image-container">
+    <div v-if="isProcessing" class="loader"></div>
     <img :class="[isProcessing && 'hidden-image']" :src="imgUrl" class="media-image-crop" id="imgCrop" ref="imageRef" @load="onImageLoad" />
   </div>
 </template>
