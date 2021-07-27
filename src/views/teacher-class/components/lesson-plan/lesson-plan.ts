@@ -47,7 +47,14 @@ export default defineComponent({
     const canPrev = ref(false);
     const lessonContainer = ref();
     const scrollPosition = ref(0);
-    const scrollLimitPosition = 1000;
+    const scrollLimitPosition = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.body.clientHeight,
+      document.documentElement.clientHeight,
+    );
 
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
