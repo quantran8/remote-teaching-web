@@ -51,7 +51,8 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
-      if (!error.code) {
+		console.log('error', error);
+      if (error.code == null) {
         commit("setApiStatus", {
           code: GLErrorCode.DISCONNECT,
           message: "",
