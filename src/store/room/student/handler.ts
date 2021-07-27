@@ -154,7 +154,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("setStudentVideo", {
           id: student.id,
           enable: !student.isMuteVideo,
-          preventSendMsg: true,
         });
         if (student.id === state.student?.id) {
           status = student.isMuteVideo;
@@ -170,7 +169,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("setStudentAudio", {
           id: student.id,
           enable: !student.isMuteAudio,
-          preventSendMsg: true,
         });
         if (student.id === state.student?.id) {
           status = student.isMuteAudio;
