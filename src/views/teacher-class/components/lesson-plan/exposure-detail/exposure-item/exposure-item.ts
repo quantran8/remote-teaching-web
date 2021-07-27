@@ -1,4 +1,4 @@
-import { computed, defineComponent } from "vue";
+import {computed, defineComponent, ref} from "vue";
 import { useStore } from "vuex";
 import { Tooltip, Empty } from "ant-design-vue";
 
@@ -11,7 +11,7 @@ export default defineComponent({
   },
   components: {
     Tooltip,
-	Empty
+    Empty,
   },
   setup(props, { emit }) {
     const store = useStore();
@@ -33,7 +33,7 @@ export default defineComponent({
       currentExposureItemMedia,
       isContent,
       isTeaching,
-	  hasZeroImage
+      hasZeroImage,
     };
   },
 });

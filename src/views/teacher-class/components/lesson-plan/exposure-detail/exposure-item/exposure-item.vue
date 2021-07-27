@@ -13,7 +13,8 @@
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
-          <img :src="item.image.url" class="media-image" />
+          <CropImage v-if="item.image.metaData" :imageUrl="item.image.url" :metadata="item.image.metaData" />
+          <img v-else :src="item.image.url" class="media-image" />
           <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
         </Tooltip>
         <!-- <Tooltip v-else placement="topRight">

@@ -46,6 +46,7 @@
     "superagent": "^6.1.0",
     "uuid": "^8.3.1",
     "vue": "^3.0.0",
+    "vue-cropperjs": "^5.0.0",
     "vue-dragscroll": "^3.0.0",
     "vue-i18n": "^9.0.0-beta.17",
     "vue-lottie": "^0.2.1",

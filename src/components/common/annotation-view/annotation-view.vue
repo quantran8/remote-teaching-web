@@ -18,7 +18,8 @@
       <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
         <img src="@/assets/icon-select.png" alt="" />
       </div>
-      <img :src="imageUrl" id="annotation-img" v-show="!isGalleryView && imageUrl" />
+      <CropImage id="annotation-img" v-if="!isGalleryView && image && image.metaData" :imageUrl="image.url" :metadata="image.metaData" />
+      <img v-else :src="imageUrl" id="annotation-img" v-show="!isGalleryView && imageUrl" />
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
