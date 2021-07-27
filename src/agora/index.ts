@@ -9,12 +9,10 @@ import AgoraRTC, {
   IRemoteTrack,
   UID,
   VideoEncoderConfigurationPreset,
-  AgoraRTCStats,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
-import { AgoraError } from "./interfaces";
+import { AgoraRTCErrorCode } from "./interfaces";
 import { store } from "@/store";
-const DEFAULT_TIMEOUT = 1000;
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -45,6 +43,9 @@ export interface AgoraEventHandler {
   ): void;
   onLocalNetworkUpdate(payload: any): void;
 }
+
+const LIMIT_COUNT = 10;
+const INIT_COUNT = 1;
 export class AgoraClient implements AgoraClientSDK {
   _client?: IAgoraRTCClient;
   _options: AgoraClientOptions;
@@ -86,7 +87,7 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.client.on("user-published", (user, mediaType) => {
-      console.log("user-published", user, mediaType);
+      console.log("user-published", user.uid, mediaType);
       if (this.options.user?.role === "host") {
         store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
       } else {
@@ -94,7 +95,7 @@ export class AgoraClient implements AgoraClientSDK {
       }
     });
     this.client.on("user-unpublished", (user, mediaType) => {
-      console.log("user-unpublished", user, mediaType);
+      console.log("user-unpublished", user.uid, mediaType);
       if (this.options.user?.role === "host") {
         store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
       } else {
@@ -141,6 +142,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
       this.microphoneTrack.on("track-ended", () => {
+        console.log("track-end");
         this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
       });
       this.microphoneError = null;
@@ -177,28 +179,56 @@ export class AgoraClient implements AgoraClientSDK {
 
   private _closeMediaTrack(track: ILocalTrack) {
     if (track) {
-      track.stop();
-      track.close();
-      if (track.trackMediaType === "video") {
-        this._cameraTrack = undefined;
-      }
-      if (track.trackMediaType === "audio") {
-        this._microphoneTrack = undefined;
+      try {
+        track.stop();
+        track.close();
+        if (track.trackMediaType === "video") {
+          this._cameraTrack = undefined;
+        }
+        if (track.trackMediaType === "audio") {
+          this._microphoneTrack = undefined;
+        }
+      } catch (error) {
+        if (track) {
+          track.stop();
+          track.close();
+          if (track.trackMediaType === "video") {
+            this._cameraTrack = undefined;
+          }
+          if (track.trackMediaType === "audio") {
+            this._microphoneTrack = undefined;
+          }
+        }
+        throw `_closeMediaTrack ERROR::${error}`;
       }
     }
   }
 
   private async unpublishTrack(track: ILocalTrack) {
     if (!track) return;
-    const trackId = track.getTrackId();
-    const idx = this._publishedTrackIds.indexOf(trackId);
-    if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
-      await this.client.unpublish([this.cameraTrack]);
+    try {
+      const trackId = track.getTrackId();
+      const idx = this._publishedTrackIds.indexOf(trackId);
+      if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.cameraTrack]);
+      }
+      if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.microphoneTrack]);
+      }
+      this._publishedTrackIds.splice(idx, 1);
+    } catch (error) {
+      if (!track) return;
+      const trackId = track.getTrackId();
+      const idx = this._publishedTrackIds.indexOf(trackId);
+      if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.cameraTrack]);
+      }
+      if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
+        await this.client.unpublish([this.microphoneTrack]);
+      }
+      this._publishedTrackIds.splice(idx, 1);
+      throw `unpublishTrack ERROR::${error}`;
     }
-    if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
-      await this.client.unpublish([this.microphoneTrack]);
-    }
-    this._publishedTrackIds.splice(idx, 1);
   }
 
   _publishedTrackIds: string[] = [];
@@ -276,7 +306,11 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   timeoutId: any;
+  videos: string[] = [];
+  audios: string[] = [];
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
+    this.videos = videos;
+    this.audios = audios;
     const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
     const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
     for (let studentId of unSubscribeVideos) {
@@ -293,7 +327,18 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
-  async _subscribeAudio(userId: string) {
+  reSubscribeAudiosCount: any = {};
+  reSubscribeAudiosTimeout: any = {};
+  async _subscribeAudio(userId: string, isAutoResubscribe = false) {
+    if (!isAutoResubscribe) {
+      clearTimeout(this.reSubscribeAudiosTimeout[userId]);
+      if (this.reSubscribeAudiosTimeout[userId]) {
+        delete this.reSubscribeAudiosTimeout[userId];
+      }
+      if (this.reSubscribeAudiosCount[userId]) {
+        delete this.reSubscribeAudiosCount[userId];
+      }
+    }
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
@@ -304,10 +349,38 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeAudio", err);
+
+      const inAudios = this.audios.find(i => i === userId);
+      if (inAudios) {
+        if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
+          throw `Can't subscribe audio user with id ${userId}`;
+        }
+        if (!this.reSubscribeAudiosCount[userId]) {
+          this.reSubscribeAudiosCount[userId] = INIT_COUNT;
+          await this._subscribeAudio(userId, true);
+        } else {
+          this.reSubscribeAudiosCount[userId] = this.reSubscribeAudiosCount[userId] + 1;
+          const timeoutId = setTimeout(async () => {
+            await this._subscribeAudio(userId, true);
+          }, 1000);
+          this.reSubscribeAudiosTimeout[userId] = timeoutId;
+        }
+      }
     }
   }
 
-  async _subscribeVideo(userId: string) {
+  reSubscribeVideosCount: any = {};
+  reSubscribeVideosTimeout: any = {};
+  async _subscribeVideo(userId: string, isAutoResubscribe = false) {
+    if (!isAutoResubscribe) {
+      clearTimeout(this.reSubscribeVideosTimeout[userId]);
+      if (this.reSubscribeVideosTimeout[userId]) {
+        delete this.reSubscribeVideosTimeout[userId];
+      }
+      if (this.reSubscribeVideosCount[userId]) {
+        delete this.reSubscribeVideosCount[userId];
+      }
+    }
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
@@ -318,6 +391,22 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeVideo", err);
+      const inVideos = this.videos.find(i => i === userId);
+      if (inVideos) {
+        if (this.reSubscribeVideosCount[userId] === LIMIT_COUNT) {
+          throw `Can't subscribe video user with id ${userId}`;
+        }
+        if (!this.reSubscribeVideosCount[userId]) {
+          this.reSubscribeVideosCount[userId] = INIT_COUNT;
+          await this._subscribeVideo(userId, true);
+        } else {
+          this.reSubscribeVideosCount[userId] = this.reSubscribeVideosCount[userId] + 1;
+          const timeoutId = setTimeout(async () => {
+            await this._subscribeVideo(userId, true);
+          }, 1000);
+          this.reSubscribeVideosTimeout[userId] = timeoutId;
+        }
+      }
     }
   }
 
