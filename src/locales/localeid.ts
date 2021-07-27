@@ -212,3 +212,8 @@ export class Layout {
 export class JoinLoading {
   static Message = "join_class_loading.message";
 }
+
+export class StoreLocale {
+  static WaitYourTeacher = "store.wait_your_teacher";
+  static ClickBoardToAnswer = "store.click_board_to_answer";
+}
