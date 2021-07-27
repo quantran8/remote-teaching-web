@@ -1,4 +1,4 @@
-import { computed, defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { computed, defineComponent, onBeforeMount, onMounted, onUpdated, ref, watch } from "vue";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
@@ -10,6 +10,13 @@ export default defineComponent({
     const croppedImageUrlRef = ref<string | undefined>();
 
     const isProcessing = ref<boolean>(false);
+
+    const cropData = computed(() => {
+      return {
+        imageUrl: props.imageUrl ? props.imageUrl : {},
+        metadata: props.metadata,
+      };
+    });
 
     const imgUrl = computed(() => {
       if (croppedImageUrlRef.value) {
@@ -46,13 +53,32 @@ export default defineComponent({
       });
     };
 
-    onBeforeMount(() => {
+    const prepareCrop = () => {
       // hide the uncropped image
       isProcessing.value = true;
+      // reset cropped image
+      croppedImageUrlRef.value = undefined;
+    };
+
+    onBeforeMount(() => {
+      prepareCrop();
     });
 
     onMounted(() => {
+      // first time cropping image
       processImg();
+    });
+
+    watch(cropData, () => {
+      // perform cropping again when crop data changed
+      prepareCrop();
+    });
+
+    onUpdated(() => {
+      // already crop image onMount, then skip. this block will work for next update cropData
+      if (isProcessing.value) {
+        processImg();
+      }
     });
 
     return { imgUrl, imageRef, isProcessing, onImageLoad };
