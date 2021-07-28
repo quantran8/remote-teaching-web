@@ -92,7 +92,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.idOne = p.studentOneToOne ? p.studentOneToOne : "";
     s.currentLesson = p.classInfo?.lesson;
     s.currentUnit = p.classInfo?.unit;
-    s.teacher = { 
+    s.teacher = {
       id: p.teacher.id,
       name: p.teacher.name,
       avatar: "",
@@ -116,7 +116,6 @@ const mutations: TeacherRoomMutation<State> = {
         isPalette: st.isPalette,
       };
     });
-    s.globalAudios = s.students.filter(ele => p.globalStudentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
     s.localAudios = s.students.filter(ele => p.studentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
     const role = p.streamInfo?.userId === p.teacher.id ? "host" : "audience";
     if (!s.manager) {
@@ -280,6 +279,15 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setWhiteboard(state: TeacherRoomState, p) {
     state.isShowWhiteboard = p;
+  },
+  setAvatarAllStudent(state: TeacherRoomState, p: { id: string; avatar: string }[]) {
+    state.students.forEach(student => {
+      const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
+      student.avatar = avatar ? avatar : "";
+    });
+  },
+  setAvatarTeacher(state: TeacherRoomState, p: string) {
+    if (state.teacher) state.teacher.avatar = p;
   },
 };
 

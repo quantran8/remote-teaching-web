@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import Lottie from "vue-lottie";
+import VueCropper from "vue-cropperjs";
 import App from "./app/app.vue";
 import "./registerServiceWorker";
 import router from "./router";
@@ -15,6 +16,7 @@ import {
   AnnotationView,
   LanguagePicker,
   DeviceTester,
+  CropImage,
 } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
@@ -26,6 +28,7 @@ import { store } from "./store";
 import { ClickOutsideDirective } from "./directives";
 import { Paths } from "./utils/paths";
 import "./style/main.less";
+import "cropperjs/dist/cropper.css";
 
 const app = createApp(App);
 app.directive("click-outside", ClickOutsideDirective);
@@ -48,6 +51,8 @@ app.component("LanguagePicker", LanguagePicker);
 app.component("DeviceTester", DeviceTester);
 app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
+app.component("CropImage", CropImage);
+app.component("VueCropper", VueCropper);
 //app.component("UnityView", UnityView);
 app.use(router);
 app.use(store);

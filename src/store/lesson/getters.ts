@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { Exposure, ExposureItemMedia, LessonState, ExposureItem } from "./state";
+import { Exposure, ExposureItemMedia, LessonState, ExposureItem, ContentRootType, CropMetadata } from "./state";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 interface LessonGetterInterface<S> {
   currentExposure(s: S): Exposure | undefined;
@@ -73,9 +73,19 @@ const getters: LessonGetters<LessonState, any> = {
     return s.isBlackout;
   },
   activityStatistic(s: LessonState): string {
+    // count only required exposure as total exposure
     const listExpo: (string | undefined)[] = [];
-    s.exposures.filter(expo => listExpo.push(expo.id));
-    return s.exposures.length ? `${listExpo.indexOf(s.currentExposure?.id) + 1}/${s.exposures.length}` : "0";
+    const requiredExposures = s.exposures.filter(expo => {
+      const isRequiredExposure = expo.contentRootType !== ContentRootType.Optional && expo.contentRootType !== ContentRootType.Complete;
+
+      if (isRequiredExposure) {
+        listExpo.push(expo.id);
+      }
+
+      return isRequiredExposure;
+    });
+
+	return requiredExposures.length ? `${listExpo.indexOf(s.currentExposure?.id) + 1}/${requiredExposures.length}` : "0";
   },
   getPage(s: LessonState): string {
     const listMedia: string[] = [];
@@ -113,6 +123,20 @@ const getters: LessonGetters<LessonState, any> = {
   },
   previousExposureItemMedia(s: LessonState): ExposureItemMedia | undefined {
     return s.previousExposureItemMedia;
+  },
+  findCachedImage(s: LessonState) {
+    return function(imgData: { url: string; metadata: CropMetadata }): string | undefined {
+      const cacheData = s.cropCache?.cacheValues.find(
+        cacheValue => cacheValue.url === imgData.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(imgData.metadata),
+      );
+      if (cacheData) {
+        // founded, then return the base64 string
+        return cacheData.base64String;
+      }
+
+      // not found
+      return undefined;
+    };
   },
 };
 

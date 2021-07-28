@@ -10,8 +10,6 @@ import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 
-const AUTO_TOGGLE_MICRO_TIMING = 10000; //10 seconds
-
 export default defineComponent({
   props: {},
   components: {
@@ -34,26 +32,12 @@ export default defineComponent({
       });
     };
 
-    //tip trick: after 10 seconds mute/unmute to avoid the bug cant hear anything
-    setTimeout(async () => {
-      if (student.value.audioEnabled) {
-        isToggleTime.value = true;
-        await toggleAudio();
-        await toggleAudio();
-        isToggleTime.value = false;
-      }
-    }, AUTO_TOGGLE_MICRO_TIMING);
-
     const toggleVideo = async () => {
       await store.dispatch("studentRoom/setStudentVideo", {
         id: student.value.id,
         enable: !student.value.videoEnabled,
       });
     };
-    const doNothing = () => {
-      console.log("doNothing");
-    };
-    const toggleAudioAction = computed(() => (isToggleTime.value ? doNothing : toggleAudio));
 
     return {
       student,
@@ -68,7 +52,6 @@ export default defineComponent({
       IconVideoOn,
       IconVideoOff,
       isToggleTime,
-      toggleAudioAction,
     };
   },
 });

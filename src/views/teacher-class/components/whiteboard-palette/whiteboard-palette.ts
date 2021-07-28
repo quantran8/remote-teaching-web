@@ -52,6 +52,20 @@ export default defineComponent({
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
+    const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
+    const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    watch(teacherDisconnected, currentValue => {
+      if (currentValue) {
+        firstTimeLoadStrokes.value = false;
+        return;
+      }
+    });
+    watch(studentDisconnected, currentValue => {
+      if (currentValue) {
+        firstTimeLoadStrokes.value = false;
+        return;
+      }
+    });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -138,7 +152,7 @@ export default defineComponent({
     const teacherAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === isTeacher.value.id) {
+        if (obj.id === isTeacher.value.id && obj.type !== "path") {
           obj = obj.toJSON();
           obj.id = isTeacher.value.id;
           shapes.push(JSON.stringify(obj));

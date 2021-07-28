@@ -1,7 +1,7 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel } from "@/models";
 import { RoomModel } from "@/models";
-import { GLError } from "@/models/error.model";
+import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { ClassView, StudentState, TeacherState } from "../interface";
 
@@ -75,8 +75,8 @@ export interface StudentRoomState {
   isDisconnected: boolean;
   isJoined: boolean;
   teacherIsDisconnected: boolean;
-  avatarTeacher: string;
   avatarStudentOneToOne: string;
+  apiStatus: GLApiStatus | null;
 }
 
 const state: StudentRoomState = {
@@ -99,8 +99,8 @@ const state: StudentRoomState = {
   isDisconnected: !navigator.onLine,
   teacherIsDisconnected: false,
   isJoined: false,
-  avatarTeacher: "",
   avatarStudentOneToOne: "",
+  apiStatus: null,
 };
 
 export default state;

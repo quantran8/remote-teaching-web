@@ -1,4 +1,5 @@
 .user-container {
+  flex-direction: column;
   margin: 2rem;
   padding: 1rem;
   .user-name {
@@ -55,6 +56,23 @@
       transform: translate(-50%, -50%);
     }
   }
+}
+
+.user-avatar {
+  flex: 2;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  align-self: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.user-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 @keyframes pulsate {

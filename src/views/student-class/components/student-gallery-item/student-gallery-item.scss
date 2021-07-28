@@ -121,11 +121,7 @@
       font-size: 15px;
     }
   }
-  @media screen
-  and (device-width: 360px)
-  and (device-height: 640px)
-  and (-webkit-device-pixel-ratio: 4)
-  and (orientation: landscape) {
+  @media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) and (orientation: landscape) {
     &--current {
       width: $current-item-size;
       height: $current-item-size;
@@ -185,6 +181,9 @@
   &--disabled-tittle {
     color: #c2bebe;
   }
+  &--disabled-avatar {
+    opacity: 0.5;
+  }
   &--help {
     @include cycle(#dd0d0d, flickerAnimation);
   }
@@ -193,15 +192,6 @@
   }
   &--palette {
     @include cycle(#030303, flickerAnimationPalette);
-  }
-
-  @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
-    &:not(#{$self}--current) {
-      width: 60px;
-      #{$self}__video {
-        width: 60px;
-      }
-    }
   }
 }
 
@@ -218,7 +208,7 @@
       height: 100%;
     }
 
-    @media (min-width: $lg) {
+    @media (min-width: $xxl) {
       &:not(#{$self}--current) {
         height: 90px;
         width: 90px;

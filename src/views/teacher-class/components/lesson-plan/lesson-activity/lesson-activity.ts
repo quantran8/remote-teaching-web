@@ -1,6 +1,8 @@
 import { ExposureStatus, ExposureType } from "@/store/lesson/state";
 import { defineComponent, computed } from "vue";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
+import { fmtMsg } from "@/commonui";
+import { TeacherClassLessonPlan } from "@/locales/localeid";
 
 const exposureIcon = (type: ExposureType) => {
   let icon = "icon-bigbook";
@@ -45,10 +47,20 @@ export default defineComponent({
     const activityIcon = exposureIcon(props.type);
     const isCompleted = props.status === ExposureStatus.COMPLETED;
     const formattedDuration = computed(() => secondsToTimeStr(getSeconds(props.duration)));
+    const exposureTitle = computed(() =>
+      props.type === ExposureType.TRANSITION
+        ? fmtMsg(TeacherClassLessonPlan.Transition)
+        : props.type === ExposureType.COMPLETE
+        ? fmtMsg(TeacherClassLessonPlan.LessonComplete)
+        : props.title,
+    );
+    const isExposureLpComplete = computed(() => props.type === ExposureType.COMPLETE);
     return {
       activityIcon,
       isCompleted,
-	  formattedDuration
+      formattedDuration,
+      exposureTitle,
+      isExposureLpComplete,
     };
   },
 });
