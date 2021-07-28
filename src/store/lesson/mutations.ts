@@ -57,9 +57,30 @@ const mutations: LessonMutation<LessonState> = {
     });
   },
   setCurrentExposure(s: LessonState, p: { id: string }) {
-    const exposure = s.exposures.find(e => e.id === p.id);
-    s.currentExposure = exposure;
+    const totalExposures = s.exposures.length;
 
+    s.exposures.forEach((e, i) => {
+      // find the matched exposure and set as current exposure
+      if (e.id === p.id) {
+        s.currentExposure = e;
+
+        // re-assign nextExposure and previousExposure
+        s.nextExposure =
+          i < totalExposures - 1 // not the last exposure
+            ? s.exposures[i + 1]
+            : undefined;
+        s.previousExposure =
+          i > 0 // not the first exposure
+            ? s.exposures[i - 1]
+            : undefined;
+
+        // found the matched exposure, then break the loop.
+        return false;
+      }
+      return true;
+    });
+
+    // set the first media item to currentExposureItemMedia
     if (s.currentExposure && s.currentExposure.items.length > 0) {
       s.currentExposureItemMedia = undefined;
       const firstItem = s.currentExposure.items[0];

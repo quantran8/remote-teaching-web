@@ -42,9 +42,14 @@ export default defineComponent({
     const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
     const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
-    const iconNext = ref(IconNextDisable);
-    const canNext = ref(true);
-    const canPrev = ref(false);
+
+    const nextCurrentExposure = computed(() => getters["lesson/nextExposure"]);
+    const prevCurrentExposure = computed(() => getters["lesson/previousExposure"]);
+
+    const canNext = computed(() => (nextExposureItemMedia.value || nextCurrentExposure.value ? true : false));
+    const canPrev = computed(() => (prevExposureItemMedia.value || prevCurrentExposure ? true : false));
+    const iconNext = computed(() => (canNext.value ? IconNext : IconNextDisable));
+
     const lessonContainer = ref();
     const scrollPosition = ref(0);
     const scrollLimitPosition = Math.max(
@@ -59,19 +64,6 @@ export default defineComponent({
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
     };
-
-    const nextCurrentExposure = ref(null);
-    const prevCurrentExposure = ref(null);
-
-    watch(currentExposure, () => {
-      const currentExposureIndex = exposures.value.findIndex((item: any) => {
-        return item.id === currentExposure.value?.id;
-      });
-      const nextCurrentExposureIndex = currentExposureIndex + 1;
-      const prevCurrentExposureIndex = currentExposureIndex - 1;
-      nextCurrentExposure.value = exposures.value[nextCurrentExposureIndex];
-      prevCurrentExposure.value = exposures.value[prevCurrentExposureIndex];
-    });
 
     const onClickExposure = async (exposure: Exposure | null) => {
       if (!exposure) return;
@@ -151,23 +143,6 @@ export default defineComponent({
       }
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
-
-    watch(page, () => {
-      const itemArr = activityStatistic.value.split("/");
-      const pageArr = page.value.split("/");
-      if (+itemArr[0] == 0 || (+itemArr[0] == 1 && +pageArr[0] == 1)) {
-        canPrev.value = false;
-      } else {
-        canPrev.value = true;
-      }
-      if (+itemArr[0] == 0 || (+itemArr[0] == +itemArr[1] && +pageArr[0] == +pageArr[1])) {
-        iconNext.value = IconNextDisable;
-        canNext.value = false;
-      } else {
-        iconNext.value = IconNext;
-        canNext.value = true;
-      }
-    });
 
     const isShowExposureDetail = computed(() => {
       const exposure = getters["lesson/currentExposure"];
