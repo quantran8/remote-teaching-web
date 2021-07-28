@@ -191,6 +191,9 @@ export default defineComponent({
             console.log("Error when play video => ", error);
           }
         } else {
+          currentCamLabel.value = cams[0]?.label;
+          listCams.value = cams;
+          listCamsId.value = cams.map(cam => cam.deviceId);
           preventCloseModal.value = false;
         }
       } catch (error) {
@@ -209,7 +212,7 @@ export default defineComponent({
     const onHotCameraPluggingDevice = async (changedDevice: any) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingCamera(changedDevice.device.deviceId);
-      } else if (changedDevice.device.label === localTracks.value.cameraTrack.getTrackLabel()) {
+      } else if (changedDevice.device.label === localTracks.value.videoTrack?.getTrackLabel()) {
         await handleHotPluggingCamera();
       }
     };
@@ -282,8 +285,8 @@ export default defineComponent({
 
     watch(currentCam, async currentCamValue => {
       if (currentCamValue) {
-        await localTracks.value?.videoTrack.play(videoElementId);
-        await localTracks.value?.videoTrack.setEnabled(true);
+        await localTracks.value?.videoTrack?.play(videoElementId);
+        await localTracks.value?.videoTrack?.setEnabled(true);
       }
     });
 
