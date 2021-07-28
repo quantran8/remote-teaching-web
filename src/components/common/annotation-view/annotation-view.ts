@@ -53,6 +53,12 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
+    watch(isPaletteVisible, () => {
+      if (!isPaletteVisible.value) {
+        canvas.isDrawingMode = false;
+        toolActive.value = "";
+      }
+    });
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
@@ -70,6 +76,7 @@ export default defineComponent({
         }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        toolActive.value = "";
         canvas.isDrawingMode = false;
       }
     };

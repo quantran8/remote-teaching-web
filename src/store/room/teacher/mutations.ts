@@ -286,6 +286,9 @@ const mutations: TeacherRoomMutation<State> = {
       student.avatar = avatar ? avatar : "";
     });
   },
+  setAvatarTeacher(state: TeacherRoomState, p: string) {
+    if (state.teacher) state.teacher.avatar = p;
+  },
 };
 
 export default mutations;

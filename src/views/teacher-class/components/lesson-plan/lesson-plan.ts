@@ -11,6 +11,8 @@ import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "@/commonui";
 
 export const exposureTypes = {
+  TRANSITION_BLOCK: "TRANSITION_BLOCK",
+  LP_COMPLETE_BLOCK: "LP_COMPLETE_BLOCK",
   VCP_BLOCK: "VPC_BLOCK",
   CONTENT_BLOCK: "CONTENT_BLOCK",
   TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
@@ -43,6 +45,16 @@ export default defineComponent({
     const iconNext = ref(IconNextDisable);
     const canNext = ref(true);
     const canPrev = ref(false);
+    const lessonContainer = ref();
+    const scrollPosition = ref(0);
+    const scrollLimitPosition = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.body.clientHeight,
+      document.documentElement.clientHeight,
+    );
 
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
@@ -159,15 +171,29 @@ export default defineComponent({
 
     const isShowExposureDetail = computed(() => {
       const exposure = getters["lesson/currentExposure"];
-      return exposure && exposure.type !== ExposureType.TRANSITION;
+      return exposure !== undefined;
     });
 
-    const handleKeyDown = (e: any) => {
+    const isTransitionType = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      return exposure.type === ExposureType.TRANSITION;
+    });
+
+    const isCompleteType = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      return exposure.type === ExposureType.COMPLETE;
+    });
+
+    const handleKeyDown = async (e: any) => {
       e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
-        onClickPrevNextMedia(NEXT_EXPOSURE);
+        await onClickPrevNextMedia(NEXT_EXPOSURE);
+        scrollPosition.value = scrollPosition.value < scrollLimitPosition ? scrollPosition.value + 50 : scrollLimitPosition;
+        lessonContainer.value.scrollTo(0, scrollPosition.value);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
-        onClickPrevNextMedia(PREV_EXPOSURE);
+        await onClickPrevNextMedia(PREV_EXPOSURE);
+        scrollPosition.value = scrollPosition.value <= 0 ? 0 : scrollPosition.value - 50;
+        lessonContainer.value.scrollTo(0, scrollPosition.value);
       }
     };
     onMounted(() => {
@@ -186,6 +212,8 @@ export default defineComponent({
       progress,
       remainingTime,
       isShowExposureDetail,
+      isTransitionType,
+      isCompleteType,
       activityStatistic,
       onClickExposure,
       onClickCloseExposure,
@@ -203,6 +231,7 @@ export default defineComponent({
       remainingText,
       itemText,
       pageText,
+      lessonContainer,
     };
   },
 });

@@ -103,12 +103,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
     },
     onTeacherMuteStudentVideo: async (payload: any) => {
-      //   console.log(payload);
-      await dispatch("updateAudioAndVideoFeed", {});
+      //   await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteStudentAudio: async (payload: any) => {
-      //   console.log(payload);
-      await dispatch("updateAudioAndVideoFeed", {});
+      //   await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentVideo: async (payload: any) => {
       //   console.log(payload);

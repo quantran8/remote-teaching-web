@@ -18,7 +18,7 @@
         <span v-else>&#8249;</span>
       </span>
     </div>
-    <div class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
+    <div ref="lessonContainer" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
         <div id="lesson-container__remaining-time">
           <p>{{ remainingText }} {{ remainingTime }}</p>
@@ -34,9 +34,36 @@
       </div>
       <div class="activities">
         <div v-if="isShowExposureDetail">
-          <ExposureDetail :type="exposureTypes.VCP_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
-          <ExposureDetail :type="exposureTypes.CONTENT_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
-          <ExposureDetail :type="exposureTypes.TEACHING_ACTIVITY_BLOCK" :exposure="currentExposure" @click-back="onClickCloseExposure" />
+          <ExposureDetail
+            :type="exposureTypes.TRANSITION_BLOCK"
+            v-if="isTransitionType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
+          <ExposureDetail
+            :type="exposureTypes.LP_COMPLETE_BLOCK"
+            v-if="isCompleteType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
+          <ExposureDetail
+            :type="exposureTypes.VCP_BLOCK"
+            v-if="!isTransitionType && !isCompleteType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
+          <ExposureDetail
+            :type="exposureTypes.CONTENT_BLOCK"
+            v-if="!isTransitionType && !isCompleteType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
+          <ExposureDetail
+            :type="exposureTypes.TEACHING_ACTIVITY_BLOCK"
+            v-if="!isTransitionType && !isCompleteType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
         </div>
         <div v-else>
           <LessonActivity

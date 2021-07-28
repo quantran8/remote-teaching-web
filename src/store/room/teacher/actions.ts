@@ -1,7 +1,7 @@
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
+import { InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
 import { ActionTree } from "vuex";
 import {
   ClassViewPayload,
@@ -144,10 +144,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
       });
     }, 30000); // 30000 = 30 seconds
     const agoraEventHandler: AgoraEventHandler = {
-      onUserPublished: (_user, _mediaType) => {
+      onUserPublished: (user, mediaType) => {
+        console.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
-      onUserUnPublished: _payload => {
+      onUserUnPublished: (user, mediaType) => {
+        console.log("user-unpublished", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
@@ -392,6 +394,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async setShapesForStudent({ state }, payload: Array<string>) {
     await state.manager?.WSClient.sendRequestShapesForStudent(payload);
+  },
+  async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
+    const response = await InfoService.getAvatarTeacher(payload.teacherId);
+    if (response) commit("setAvatarTeacher", response);
   },
 };
 

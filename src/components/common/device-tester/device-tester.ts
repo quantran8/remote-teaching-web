@@ -1,5 +1,5 @@
 import { defineComponent, computed, ref, onMounted, watch } from "vue";
-import AgoraRTC, { DeviceInfo } from "agora-rtc-sdk-ng";
+import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
@@ -191,6 +191,9 @@ export default defineComponent({
             console.log("Error when play video => ", error);
           }
         } else {
+          currentCamLabel.value = cams[0]?.label;
+          listCams.value = cams;
+          listCamsId.value = cams.map(cam => cam.deviceId);
           preventCloseModal.value = false;
         }
       } catch (error) {
@@ -199,17 +202,17 @@ export default defineComponent({
       }
     };
 
-    const onHotMicroPluggingDevice = async (changedDevice: DeviceInfo) => {
+    const onHotMicroPluggingDevice = async (changedDevice: any) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingMicro(changedDevice.device.deviceId);
       } else if (changedDevice.device.label === localTracks.value.audioTrack.getTrackLabel()) {
         await handleHotPluggingMicro();
       }
     };
-    const onHotCameraPluggingDevice = async (changedDevice: DeviceInfo) => {
+    const onHotCameraPluggingDevice = async (changedDevice: any) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingCamera(changedDevice.device.deviceId);
-      } else if (changedDevice.device.label === localTracks.value.cameraTrack.getTrackLabel()) {
+      } else if (changedDevice.device.label === localTracks.value.videoTrack?.getTrackLabel()) {
         await handleHotPluggingCamera();
       }
     };
@@ -282,8 +285,8 @@ export default defineComponent({
 
     watch(currentCam, async currentCamValue => {
       if (currentCamValue) {
-        await localTracks.value?.videoTrack.play(videoElementId);
-        await localTracks.value?.videoTrack.setEnabled(true);
+        await localTracks.value?.videoTrack?.play(videoElementId);
+        await localTracks.value?.videoTrack?.setEnabled(true);
       }
     });
 

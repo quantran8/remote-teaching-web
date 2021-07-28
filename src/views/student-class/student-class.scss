@@ -11,11 +11,7 @@
   @media (min-width: $md) {
     grid-template-rows: auto 1fr auto;
   }
-  @media screen
-  and (device-width: 360px)
-  and (device-height: 640px)
-  and (-webkit-device-pixel-ratio: 4)
-  and (orientation: landscape) {
+  @media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) and (orientation: landscape) {
     grid-template-rows: auto 1fr 30px;
   }
   @media only screen and (max-width: 812px) and (orientation: landscape) {
@@ -24,6 +20,11 @@
 }
 
 .sc-message {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -56,44 +57,40 @@
   grid-template-rows: 1fr 105px;
   overflow: hidden;
   @media (min-width: $md) {
-    grid-template-rows: 60% 40%;
+    grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
   }
-  @media screen
-  and (device-width: 360px)
-  and (device-height: 640px)
-  and (-webkit-device-pixel-ratio: 4)
-  and (orientation: landscape) {
-    grid-template-columns: 55% 45%;
+  @media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) and (orientation: landscape) {
+    grid-template-columns: 50% 50%;
     grid-template-rows: 1fr 105px;
-    padding: 10px 30px;
+    padding: 10px;
   }
   //@media only screen and (max-width: 812px) and (orientation: landscape) {
   //  grid-template-rows: 60% 40%;
   //}
   @media only screen and (max-width: 812px) and (orientation: landscape) {
-    grid-template-columns: 55% 45%;
-    grid-template-rows: 1fr 105px;
-    padding: 10px 30px;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 70% 30%;
+    padding: 10px;
   }
   /* ----------- iPad 1, 2, Mini and Air ----------- */
   /* Portrait */
   @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 1) {
-    grid-template-rows: 60% 40%;
+    grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
   }
   /* ----------- iPad 3, 4 and Pro 9.7" ----------- */
   /* Portrait */
   @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
-    grid-template-rows: 60% 40%;
+    grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
   }
   @media (min-width: $lg) {
-    grid-template-columns: 60% 40%;
-    grid-template-rows: 1fr auto;
+    grid-template-columns: 55% 45%;
+    grid-template-rows: 65% 35%;
     padding: 30px;
     grid-row-gap: 30px;
   }
@@ -109,6 +106,7 @@
     padding: 50px 100px;
     grid-column-gap: 100px;
     grid-template-columns: 50% 1fr;
+    grid-template-rows: 1fr auto;
   }
 }
 
@@ -125,11 +123,7 @@
     grid-column-end: 3;
     grid-row-end: unset;
   }
-  @media screen
-  and (device-width: 360px)
-  and (device-height: 640px)
-  and (-webkit-device-pixel-ratio: 4)
-  and (orientation: landscape) {
+  @media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) and (orientation: landscape) {
     grid-row-start: 1;
     grid-row-end: 3;
     grid-column-start: unset;
@@ -186,11 +180,33 @@
   }
 }
 
+.border-avatar {
+  border: 1px solid #ddd;
+}
+
 .sc-teacher {
   height: 100%;
   padding: 10px;
   overflow: hidden;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  @media (max-width: $lg) {
+    align-items: flex-start;
+  }
+  &__avatar-container {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 1px solid rgb(143, 142, 142);
+  }
+  &__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   &__video {
     background: #eaeaea;
     width: 100%;
@@ -204,12 +220,19 @@
     left: 50%;
     transform: translate(-50%, -50%);
     transition: 0.3s;
+    @media only screen and (max-width: 812px) and (orientation: landscape) {
+      top: 0;
+      transform: translate(-50%, 0);
+      height: 90%;
+    }
     @media (min-width: $lg) {
       height: 100%;
       top: 50%;
     }
     @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
       max-width: 400px;
+      left: 0;
+      transform: translate(0, -50%);
     }
   }
   &__one-to-one {
@@ -281,8 +304,8 @@
   }
 
   &__avatar-container {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     display: flex;
     justify-content: center;
     border-radius: 50%;
@@ -291,10 +314,6 @@
     &__avatar {
       width: 100%;
       object-fit: cover;
-    }
-    @media screen and (min-width: $md) {
-      width: 100px;
-      height: 100px;
     }
     @media screen and (min-width: $xl) {
       width: 150px;
