@@ -124,6 +124,7 @@ export default defineComponent({
         document.body.clientHeight,
         lessonContainer.value.clientHeight,
       );
+      scrollPosition.value = lessonContainer.value.scrollTop;
       if (nextPrev === NEXT_EXPOSURE) {
         if (!canNext.value) return;
         if (nextExposureItemMedia.value !== undefined) {
