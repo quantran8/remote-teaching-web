@@ -9,6 +9,7 @@ import AgoraRTC, {
   IRemoteTrack,
   UID,
   VideoEncoderConfigurationPreset,
+  ConnectionState,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraRTCErrorCode } from "./interfaces";
@@ -77,6 +78,7 @@ export class AgoraClient implements AgoraClientSDK {
     return AgoraRTC;
   }
   constructor(options: AgoraClientOptions) {
+    console.log("options", options);
     this._options = options;
   }
   joined: boolean = false;
@@ -101,6 +103,14 @@ export class AgoraClient implements AgoraClientSDK {
       } else {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
+    });
+    this.client.on("user-joined", payload => {
+      console.log("user-joined: ", payload);
+      store.dispatch("agora/addUser", payload.uid);
+    });
+    this.client.on("user-left", payload => {
+      console.log("user-left: ", payload);
+      store.dispatch("agora/removeUser", payload.uid);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
