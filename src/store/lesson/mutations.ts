@@ -99,10 +99,6 @@ const mutations: LessonMutation<LessonState> = {
   setPreviousExposure(s: LessonState, p: { id: string }) {
     const exposure = s.exposures.find(e => e.id === p.id);
     s.previousExposure = exposure;
-    if (exposure?.type === ExposureType.TRANSITION) {
-      s.previousExposureItemMedia = undefined;
-      return;
-    }
     if (s.previousExposure && s.previousExposure.items.length > 0) {
       s.previousExposureItemMedia = undefined;
       const firstItem = s.previousExposure.items[0];
