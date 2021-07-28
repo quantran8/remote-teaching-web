@@ -51,13 +51,12 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
-      console.log("error", error);
       if (error.code == null) {
         commit("setApiStatus", {
           code: GLErrorCode.DISCONNECT,
           message: "",
         });
-        return console.log("Lost Internet");
+        return console.log(error);
       }
       if (error.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Home);
