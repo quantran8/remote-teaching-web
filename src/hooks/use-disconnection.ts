@@ -17,6 +17,8 @@ const TEACHER_LEAVE_ROOM_TIMING = 6000 * 10 * 3;
 
 const RECONNECT_TIMING = 8000; //8 seconds
 
+const RECONNECT_DELAY = 2000; //2 seconds
+
 const TEACHER_PATH_REGEX = /\/teacher/;
 
 export const useDisconnection = () => {
@@ -126,7 +128,9 @@ export const useDisconnection = () => {
           await studentInitClass();
         }, RECONNECT_TIMING);
         //STUDENT::try re-init class the first time when signalR destroyed
-        await studentInitClass();
+        setTimeout(async () => {
+          await studentInitClass();
+        }, RECONNECT_DELAY);
       }
       return;
     }
@@ -192,6 +196,8 @@ export const useDisconnection = () => {
         }
         if (isParent) {
           dispatch("studentRoom/setOnline");
+          await studentInitClass();
+          await dispatch("studentRoom/joinRoom");
         }
         break;
       }

@@ -11,7 +11,7 @@ import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 import { ErrorCode, fmtMsg } from "commonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
-import { ErrorLocale, LostNetwork } from "@/locales/localeid";
+import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 
 const actions: ActionTree<StudentRoomState, any> = {
@@ -51,12 +51,12 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
-      if (!error.code) {
+      if (error.code == null) {
         commit("setApiStatus", {
           code: GLErrorCode.DISCONNECT,
           message: "",
         });
-        return console.log("Lost Internet");
+        return console.log(error);
       }
       if (error.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Home);
