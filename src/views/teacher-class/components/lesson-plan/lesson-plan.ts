@@ -47,14 +47,6 @@ export default defineComponent({
     const canPrev = ref(false);
     const lessonContainer = ref();
     const scrollPosition = ref(0);
-    const scrollLimitPosition = Math.max(
-      document.body.scrollHeight,
-      document.documentElement.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.offsetHeight,
-      document.body.clientHeight,
-      document.documentElement.clientHeight,
-    );
 
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
@@ -124,30 +116,44 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setClearStickers", {});
+      const scrollLimitPosition = Math.max(
+        document.body.scrollHeight,
+        lessonContainer.value.scrollHeight,
+        document.body.offsetHeight,
+        lessonContainer.value.offsetHeight,
+        document.body.clientHeight,
+        lessonContainer.value.clientHeight,
+      );
       if (nextPrev === NEXT_EXPOSURE) {
         if (!canNext.value) return;
         if (nextExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: nextExposureItemMedia.value.id,
           });
+          scrollPosition.value = scrollPosition.value < scrollLimitPosition ? scrollPosition.value + 50 : scrollLimitPosition;
         } else {
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
           onClickExposure(nextCurrentExposure.value);
+          scrollPosition.value = 0;
         }
+        lessonContainer.value.scrollTo(0, scrollPosition.value);
       } else {
         if (!canPrev.value) return;
         if (prevExposureItemMedia.value !== undefined) {
           await dispatch("teacherRoom/setCurrentExposureMediaItem", {
             id: prevExposureItemMedia?.value?.id,
           });
+          scrollPosition.value = scrollPosition.value <= 0 ? 0 : scrollPosition.value - 50;
         } else {
           await dispatch("teacherRoom/endExposure", {
             id: currentExposure?.value?.id,
           });
           onClickExposure(prevCurrentExposure.value);
+          scrollPosition.value = 0;
         }
+        lessonContainer.value.scrollTo(0, scrollPosition.value);
       }
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
@@ -188,12 +194,8 @@ export default defineComponent({
       e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
         await onClickPrevNextMedia(NEXT_EXPOSURE);
-        scrollPosition.value = scrollPosition.value < scrollLimitPosition ? scrollPosition.value + 50 : scrollLimitPosition;
-        lessonContainer.value.scrollTo(0, scrollPosition.value);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
         await onClickPrevNextMedia(PREV_EXPOSURE);
-        scrollPosition.value = scrollPosition.value <= 0 ? 0 : scrollPosition.value - 50;
-        lessonContainer.value.scrollTo(0, scrollPosition.value);
       }
     };
     onMounted(() => {
