@@ -18,7 +18,7 @@
         <span v-else>&#8249;</span>
       </span>
     </div>
-    <div ref="lessonContainer" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
+    <div ref="lessonContainer" id="lesson-container" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
         <div id="lesson-container__remaining-time">
           <p>{{ remainingText }} {{ remainingTime }}</p>
