@@ -1,7 +1,7 @@
 import { preloadImage } from "@/utils/preloadImage";
 import { LessonPlanModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
-import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState, ContentRootTypeFromValue } from "./state";
+import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState, ContentRootTypeFromValue, CropMetadata } from "./state";
 
 interface LessonActionsInterface<S, R> {
   setInfo(store: ActionContext<S, R>, payload: any): any;
@@ -171,6 +171,12 @@ const actions: LessonActions<LessonState, any> = {
   clearLessonData(store: ActionContext<LessonState, any>) {
     store.commit("clearLessonData");
   },
+  storeCacheImage(store: ActionContext<LessonState, any>, payload: { url: string, metadata: CropMetadata, base64String: string }) {
+	store.commit("storeCacheImage", payload);
+  },
+  clearCacheImage(store: ActionContext<LessonState, any>) {
+	store.commit("clearCacheImage");
+  }
 };
 
 export default actions;

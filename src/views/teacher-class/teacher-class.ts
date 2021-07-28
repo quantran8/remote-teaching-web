@@ -147,6 +147,7 @@ export default defineComponent({
             await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
             await dispatch("teacherRoom/endClass");
             await dispatch("lesson/clearLessonData");
+			await dispatch("lesson/clearCacheImage");
             await dispatch("teacherRoom/setClearBrush", {});
             await router.push("/teacher");
           } catch (err) {

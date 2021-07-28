@@ -1,11 +1,16 @@
 import { computed, defineComponent, onBeforeMount, onMounted, onUpdated, ref, watch } from "vue";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: ["imageUrl", "metadata"],
   emits: ["img-load"],
   setup(props, { emit }) {
+    const { getters, dispatch } = useStore();
+
+    const findCachedImage = getters["lesson/findCachedImage"];
+
     const imageRef = ref<HTMLImageElement>();
     const croppedImageUrlRef = ref<string | undefined>();
 
@@ -31,15 +36,24 @@ export default defineComponent({
 
     const processImg = () => {
       const metadata = props.metadata;
+
+      // checking if exist in cache
+      const cacheImage = findCachedImage({ url: props.imageUrl, metadata: metadata });
+      if (cacheImage) {
+        complete(cacheImage);
+        return;
+      }
+
       const cropper = new Cropper(imageRef.value!, {
         autoCrop: false,
         crop(event) {
           if (event.detail.width === metadata.width || event.detail.height === metadata.height) {
-            croppedImageUrlRef.value = cropper.getCroppedCanvas().toDataURL("image/png");
+            const base64String = cropper.getCroppedCanvas().toDataURL("image/png");
             cropper.destroy();
 
-            // complete cropping, then show the cropped image
-            isProcessing.value = false;
+            // save to cache
+            dispatch("lesson/storeCacheImage", { url: props.imageUrl, metadata: metadata, base64String: base64String });
+            complete(base64String);
           }
         },
         ready() {
@@ -53,15 +67,22 @@ export default defineComponent({
       });
     };
 
-    const prepareCrop = () => {
+    const prepare = () => {
       // hide the uncropped image
       isProcessing.value = true;
       // reset cropped image
       croppedImageUrlRef.value = undefined;
     };
 
+    const complete = (base64String: string) => {
+      // assign cropped base64 string as image
+      croppedImageUrlRef.value = base64String;
+      // complete cropping, then show the cropped image
+      isProcessing.value = false;
+    };
+
     onBeforeMount(() => {
-      prepareCrop();
+      prepare();
     });
 
     onMounted(() => {
@@ -71,7 +92,7 @@ export default defineComponent({
 
     watch(cropData, () => {
       // perform cropping again when crop data changed
-      prepareCrop();
+      prepare();
     });
 
     onUpdated(() => {

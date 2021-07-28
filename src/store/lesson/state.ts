@@ -88,6 +88,26 @@ export interface ExposureItemMedia {
   };
 }
 
+export interface CropMetadata {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotate: number;
+  scaleX: number;
+  scaleY: number;
+}
+
+export interface CacheData {
+  url: string;
+  metadata: CropMetadata;
+  base64String: string;
+}
+
+export interface CropCache {
+  cacheValues: CacheData[];
+}
+
 export interface LessonState {
   exposures: Exposure[];
   currentExposure?: Exposure;
@@ -100,6 +120,7 @@ export interface LessonState {
   playedTime: string;
   previousExposure?: Exposure;
   previousExposureItemMedia?: ExposureItemMedia;
+  cropCache?: CropCache;
 }
 
 const state: LessonState = {
@@ -114,6 +135,7 @@ const state: LessonState = {
   playedTime: "",
   previousExposure: undefined,
   previousExposureItemMedia: undefined,
+  cropCache: { cacheValues: [] },
 };
 
 export default state;
