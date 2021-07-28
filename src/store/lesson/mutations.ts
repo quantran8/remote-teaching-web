@@ -1,5 +1,5 @@
 import { MutationTree } from "vuex";
-import { Exposure, ExposureStatus, ExposureType, LessonState } from "./state";
+import { CropMetadata, Exposure, ExposureStatus, ExposureType, LessonState } from "./state";
 
 interface LessonMutationInterface<S> {
   setIsBlackOut(s: S, p: { IsBlackOut: boolean }): void;
@@ -101,6 +101,23 @@ const mutations: LessonMutation<LessonState> = {
     s.playedTime = "";
     s.previousExposure = undefined;
     s.previousExposureItemMedia = undefined;
+  },
+  storeCacheImage(s: LessonState, payload: { url: string; metadata: CropMetadata; base64String: string }) {
+    // checking if existing, should not exist in every case
+    const existingCache = s.cropCache?.cacheValues.find(
+      cacheValue => cacheValue.url === payload.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(payload.metadata),
+    );
+    if (existingCache) {
+      console.warn(`Cache image already exist!. This should not be happened for any reason!`);
+      return;
+    }
+
+    // store cache value
+    s.cropCache?.cacheValues.push(payload);
+  },
+  clearCacheImage(s: LessonState) {
+    // clear all cropped image cache
+    s.cropCache?.cacheValues.splice(0, s.cropCache?.cacheValues.length);
   },
 };
 

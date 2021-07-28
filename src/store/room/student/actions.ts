@@ -216,6 +216,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   async leaveRoom({ state, commit }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
+	commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
