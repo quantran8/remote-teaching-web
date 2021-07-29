@@ -27,7 +27,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   }
 
   async close() {	  
-	await this.agoraClient.reset();
     await this.WSClient.disconnect();
+    await this.agoraClient.reset();
   }
 }

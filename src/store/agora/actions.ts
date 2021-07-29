@@ -9,9 +9,6 @@ const actions: ActionTree<AgoraState, any> = {
   removeUser(store, payload: string) {
     store.commit("removeUser", payload);
   },
-  toggleRejoinClass(store) {
-    store.commit("toggleRejoinClass");
-  },
 };
 
 export default actions;
