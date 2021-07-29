@@ -20,7 +20,7 @@ export default defineComponent({
   },
   setup() {
     const { getters, dispatch } = useStore();
-    // useDisconnection();
+    useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
     const isTeacher = computed(() => getters["auth/isTeacher"]);
