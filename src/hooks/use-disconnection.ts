@@ -25,6 +25,7 @@ export const useDisconnection = () => {
   const { getters, dispatch } = useStore();
   const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
+  const rejoinClass = computed<boolean>(() => getters["agora/rejoinClass"]);
   const signalRStatus = computed<number>(() => getters["signalRStatus"]);
   const currentClassRoomStatus = computed<number>(() => getters["classRoomStatus"]);
   const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
@@ -216,6 +217,21 @@ export const useDisconnection = () => {
         clearInterval(reconnectIntervalId.value);
         reconnectIntervalId.value = undefined;
       }
+    }
+  });
+
+  watch(rejoinClass, async () => {
+    const isTeacher: boolean = getters["auth/isTeacher"];
+    const isParent: boolean = getters["auth/isParent"];
+    if (isTeacher) {
+      console.log("join again");
+      await teacherInitClass();
+      await dispatch("teacherRoom/joinRoom");
+    }
+    if (isParent) {
+      console.log("join again");
+      await studentInitClass();
+      await dispatch("studentRoom/joinRoom");
     }
   });
 };

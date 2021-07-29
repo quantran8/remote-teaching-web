@@ -78,7 +78,6 @@ export class AgoraClient implements AgoraClientSDK {
     return AgoraRTC;
   }
   constructor(options: AgoraClientOptions) {
-    console.log("options", options);
     this._options = options;
   }
   joined: boolean = false;
@@ -105,11 +104,11 @@ export class AgoraClient implements AgoraClientSDK {
       }
     });
     this.client.on("user-joined", payload => {
-      console.log("user-joined: ", payload);
+      console.log("user-joined: ", payload.uid);
       store.dispatch("agora/addUser", payload.uid);
     });
     this.client.on("user-left", payload => {
-      console.log("user-left: ", payload);
+      console.log("user-left: ", payload.uid);
       store.dispatch("agora/removeUser", payload.uid);
     });
     this.agoraRTC.setLogLevel(3);
@@ -359,7 +358,6 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeAudio", err);
-
       const inAudios = this.audios.find(i => i === userId);
       if (inAudios) {
         if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
@@ -394,6 +392,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
+    console.log("_subscribeVideo user", user);
     if (!user || !user.hasVideo) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
