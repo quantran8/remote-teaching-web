@@ -7,7 +7,7 @@ import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 import { UserShape } from "@/store/annotation/state";
 
-export const useTeacherRoomWSHandler = ({ commit, dispatch, state, rootGetters }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
+export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
       commit("setRoomInfo", payload);
@@ -72,11 +72,6 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, rootGetters }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
       console.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
-      const usersJoined: string[] = rootGetters["agora/usersJoined"];
-      const idx = usersJoined.findIndex(id => id === payload.id);
-      if (idx > -1) {
-        return;
-      }
       const student = state.students.find(student => student.id === payload.id);
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
@@ -130,11 +125,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, rootGetters }
     onTeacherEndClass: (payload: any) => {
       //   console.log(payload);
     },
-    onTeacherDisconnect: async (payload: any) => {
-      console.log("TEACHER_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
-      if (payload.id === state.teacher?.id) {
-        await dispatch("agora/toggleRejoinClass", null, { root: true });
-      }
+    onTeacherDisconnect: (payload: any) => {
+      //   console.log(payload);
     },
     onTeacherSetFocusTab: (payload: number) => {
       commit("setClassView", {

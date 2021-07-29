@@ -9,7 +9,6 @@ import AgoraRTC, {
   IRemoteTrack,
   UID,
   VideoEncoderConfigurationPreset,
-  ConnectionState,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
 import { AgoraRTCErrorCode } from "./interfaces";
@@ -102,14 +101,6 @@ export class AgoraClient implements AgoraClientSDK {
       } else {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
-    });
-    this.client.on("user-joined", payload => {
-      console.log("user-joined: ", payload.uid);
-      store.dispatch("agora/addUser", payload.uid);
-    });
-    this.client.on("user-left", payload => {
-      console.log("user-left: ", payload.uid);
-      store.dispatch("agora/removeUser", payload.uid);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
@@ -358,6 +349,7 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeAudio", err);
+
       const inAudios = this.audios.find(i => i === userId);
       if (inAudios) {
         if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
@@ -392,7 +384,6 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    console.log("_subscribeVideo user", user);
     if (!user || !user.hasVideo) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
