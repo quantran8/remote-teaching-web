@@ -139,8 +139,8 @@ const mutations: LessonMutation<LessonState> = {
     const existingCache = s.cropCache?.cacheValues.find(
       cacheValue => cacheValue.url === payload.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(payload.metadata),
     );
-	
-	// exist!, skip
+
+    // exist!, skip
     if (existingCache) {
       return;
     }

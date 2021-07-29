@@ -34,8 +34,8 @@ export default defineComponent({
       emit("img-load");
     };
 
-    const processImg = (withCropData: {url: any, metadata: any}) => {
-      const {url, metadata } = withCropData;
+    const processImg = (withCropData: { url: any; metadata: any }) => {
+      const { url, metadata } = withCropData;
 
       // checking if exist in cache
       const cacheImage = findCachedImage({ url, metadata });
@@ -53,10 +53,10 @@ export default defineComponent({
 
             dispatch("lesson/storeCacheImage", { url, metadata, base64String });
 
-			// update the image only when matched between processing cropdata and current cropdata
-			if (JSON.stringify(withCropData) === JSON.stringify(currentCropData.value)) {
-				complete(base64String);
-			}
+            // update the image only when matched between processing cropdata and current cropdata
+            if (JSON.stringify(withCropData) === JSON.stringify(currentCropData.value)) {
+              complete(base64String);
+            }
           }
         },
         ready() {
@@ -90,7 +90,7 @@ export default defineComponent({
 
     onMounted(() => {
       // first time cropping image
-      processImg({...currentCropData.value});
+      processImg({ ...currentCropData.value });
     });
 
     watch(currentCropData, () => {
@@ -101,7 +101,7 @@ export default defineComponent({
     onUpdated(() => {
       // already crop image onMount, then skip. this block will work for next update cropData
       if (isProcessing.value) {
-        processImg({...currentCropData.value});
+        processImg({ ...currentCropData.value });
       }
     });
 
