@@ -135,12 +135,13 @@ const mutations: LessonMutation<LessonState> = {
     s.previousExposureItemMedia = undefined;
   },
   storeCacheImage(s: LessonState, payload: { url: string; metadata: CropMetadata; base64String: string }) {
-    // checking if existing, should not exist in every case
+    // checking if existing
     const existingCache = s.cropCache?.cacheValues.find(
       cacheValue => cacheValue.url === payload.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(payload.metadata),
     );
+	
+	// exist!, skip
     if (existingCache) {
-      console.warn(`Cache image already exist!. This should not be happened for any reason!`);
       return;
     }
 
