@@ -205,7 +205,7 @@ export default defineComponent({
     const onHotMicroPluggingDevice = async (changedDevice: any) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingMicro(changedDevice.device.deviceId);
-      } else if (changedDevice.device.label === localTracks.value.audioTrack.getTrackLabel()) {
+      } else if (changedDevice.device.label === localTracks.value.audioTrack?.getTrackLabel()) {
         await handleHotPluggingMicro();
       }
     };
@@ -323,12 +323,12 @@ export default defineComponent({
         cancelVolumeAnimation();
       }
       if (currentMic.value) {
-        localTracks.value?.audioTrack.stop();
-        localTracks.value?.audioTrack.close();
+        localTracks.value?.audioTrack?.stop();
+        localTracks.value?.audioTrack?.close();
       }
       if (currentCam.value) {
-        localTracks.value?.videoTrack.stop();
-        localTracks.value?.videoTrack.close();
+        localTracks.value?.videoTrack?.stop();
+        localTracks.value?.videoTrack?.close();
       }
       currentMic.value = undefined;
       currentCam.value = undefined;
