@@ -78,8 +78,17 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("clearCircleStatus", { id: payload.id });
       dispatch("updateAudioAndVideoFeed", {});
     },
-    onStudentDisconnected: (payload: StudentModel) => {
+    onStudentDisconnected: async (payload: StudentModel) => {
       console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+      if (payload.id === state.student?.id) {
+        await dispatch("agora/toggleRejoinClass", null, { root: true });
+        return;
+      }
+      const usersJoined: string[] = store.rootGetters["agora/usersJoined"];
+      const idx = usersJoined.findIndex(id => id === payload.id);
+      if (idx > -1) {
+        return;
+      }
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -200,6 +209,11 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherDisconnect: async (payload: any) => {
       console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
+      const usersJoined: string[] = store.rootGetters["agora/usersJoined"];
+      const idx = usersJoined.findIndex(id => id === payload.id);
+      if (idx > -1) {
+        return;
+      }
       commit("setTeacherDisconnected", true);
       await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
       commit("setTeacherStatus", {
