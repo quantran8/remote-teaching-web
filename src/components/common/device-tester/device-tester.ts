@@ -205,14 +205,14 @@ export default defineComponent({
     const onHotMicroPluggingDevice = async (changedDevice: any) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingMicro(changedDevice.device.deviceId);
-      } else if (changedDevice.device.label === localTracks.value.audioTrack?.getTrackLabel()) {
+      } else {
         await handleHotPluggingMicro();
       }
     };
     const onHotCameraPluggingDevice = async (changedDevice: any) => {
       if (changedDevice.state === "ACTIVE") {
         await handleHotPluggingCamera(changedDevice.device.deviceId);
-      } else if (changedDevice.device.label === localTracks.value.videoTrack?.getTrackLabel()) {
+      } else {
         await handleHotPluggingCamera();
       }
     };
