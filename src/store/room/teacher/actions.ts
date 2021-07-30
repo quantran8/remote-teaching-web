@@ -204,8 +204,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
       },
       onUserJoined: async payload => {
         console.log("onUserJoined");
-        commit("studentJoinned", { id: payload.uid });
-        await dispatch("updateAudioAndVideoFeed", {});
       },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
