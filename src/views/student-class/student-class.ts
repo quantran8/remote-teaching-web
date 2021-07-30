@@ -329,7 +329,12 @@ export default defineComponent({
       }
     };
     const goToHomePage = async () => {
-      window.location.href = Paths.Parent;
+      const currentNow = new Date().getTime() / 1000;
+      if (currentNow > loginInfo.expires_at) {
+        window.location.href = Paths.Parent;
+      } else {
+        await router.push(Paths.Parent);
+      }
     };
     onMounted(() => {
       deviceMobile();
