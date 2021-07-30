@@ -33,8 +33,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
     },
     onStudentJoinClass: async (payload: StudentModel) => {
-      console.log("TEACHERSIDE: teacher join class", payload);
-
+      console.log("TEACHERSIDE: student join class", payload);
       commit("studentJoinned", { id: payload.id });
       commit("updateRaisingHand", {
         id: payload.id,

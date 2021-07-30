@@ -227,7 +227,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         } else {
           commit("setStudentStatus", {
             id: payload.uid,
-            status: payload.connectionStatus,
+            status: InClassStatus.DEFAULT,
           });
           commit("clearCircleStatus", { id: payload.uid });
           dispatch("updateAudioAndVideoFeed", {});
@@ -235,6 +235,20 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onUserJoined: async payload => {
         console.log("onUserJoined");
+        if (payload.uid === state.teacher?.id) {
+          commit("setTeacherDisconnected", false);
+          commit("setTeacherStatus", {
+            id: payload.uid,
+            status: InClassStatus.JOINED,
+          });
+          dispatch("updateAudioAndVideoFeed", {});
+        } else {
+          commit("setStudentStatus", {
+            id: payload.id,
+            status: InClassStatus.JOINED,
+          });
+          dispatch("updateAudioAndVideoFeed", {});
+        }
       },
     });
   },
