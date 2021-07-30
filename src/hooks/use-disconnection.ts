@@ -22,7 +22,6 @@ const RECONNECT_DELAY = 2000; //2 seconds
 const TEACHER_PATH_REGEX = /\/teacher/;
 
 export const useDisconnection = () => {
-  console.log("hello no bug");
   const { getters, dispatch } = useStore();
   const studentDisconnected = computed<boolean>(() => getters["studentRoom/isDisconnected"]);
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
@@ -195,13 +194,11 @@ export const useDisconnection = () => {
           dispatch("teacherRoom/setOnline");
           clearInterval(reconnectIntervalId.value);
           reconnectIntervalId.value = undefined;
-          await dispatch("teacherRoom/joinRoom");
         }
         if (isParent) {
           dispatch("studentRoom/setOnline");
           clearInterval(reconnectIntervalId.value);
           reconnectIntervalId.value = undefined;
-          await dispatch("studentRoom/joinRoom");
         }
         break;
       }
