@@ -95,7 +95,7 @@ export class AgoraClient implements AgoraClientSDK {
       }
     });
     this.client.on("user-unpublished", (user, mediaType) => {
-      console.log("user-unpublished clearrrrrrrrrrrrrrrrrrrrrrrrrrrr", user.uid, mediaType);
+      console.log("123", user.uid, mediaType);
       if (mediaType === "video") {
         const trackIndex = this.subscribedVideos.findIndex(ele => ele.userId === user.uid);
         if (trackIndex === -1) return;
@@ -106,11 +106,6 @@ export class AgoraClient implements AgoraClientSDK {
         if (trackIndex === -1) return;
         this.subscribedAudios[trackIndex].track.stop();
         this.subscribedAudios.splice(trackIndex, 1);
-      }
-      if (this.options.user?.role === "host") {
-        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-      } else {
-        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
     });
     this.client.on("user-left", user => {
@@ -356,11 +351,14 @@ export class AgoraClient implements AgoraClientSDK {
         delete this.reSubscribeAudiosCount[userId];
       }
     }
+	console.log('this.subscribedAudios', this.subscribedAudios);
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-	console.log('_subscribeAudio user', user);
+    console.log("_subscribeAudio user", user);
+    console.log("_subscribeAudio user 2", user?.hasAudio);
     if (!user || !user.hasAudio) return;
+	console.log('run vao 1 hasAudio');
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
@@ -398,17 +396,20 @@ export class AgoraClient implements AgoraClientSDK {
         delete this.reSubscribeVideosCount[userId];
       }
     }
+	console.log('this.subscribedVideos', this.subscribedVideos);
+
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-	console.log('_subscribeVideo user', user);
+    console.log("_subscribeVideo user", user);
+    console.log("_subscribeVideo user 2", user?.hasVideo);
     if (!user || !user.hasVideo) return;
-    console.log("run vao 1");
+	console.log('run vao 1 hasVideo');
+
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
-      console.log(" this.subscribedVideos", this.subscribedVideos);
     } catch (err) {
       console.error("_subscribeVideo", err);
       const inVideos = this.videos.find(i => i === userId);
