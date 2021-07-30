@@ -328,6 +328,9 @@ export default defineComponent({
         document.body.classList.remove("mobile-device");
       }
     };
+    const goToHomePage = async () => {
+      window.location.href = Paths.Parent;
+    };
     onMounted(() => {
       deviceMobile();
       window.addEventListener("resize", deviceMobile);
@@ -380,6 +383,7 @@ export default defineComponent({
       iconSand,
       studentOneName,
       joinLoading,
+      goToHomePage,
     };
   },
 });
