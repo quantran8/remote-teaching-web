@@ -97,11 +97,22 @@ export class AgoraClient implements AgoraClientSDK {
       }
     });
     this.client.on("user-unpublished", (user, mediaType) => {
-      console.log("user-unpublished", user.uid, mediaType);
-      if (this.options.user?.role === "host") {
-        store.dispatch("teacherRoom/updateAudioAndVideoFeed", { unpublishedId: { userId: user.uid, mediaType } });
+      console.log("user-unpublished clearrrrrrrrrrrrrrrrrrrrrrrrrrrr", user.uid, mediaType);
+      if (mediaType === "video") {
+        const trackIndex = this.subscribedVideos.findIndex(ele => ele.userId === user.uid);
+        if (trackIndex === -1) return;
+        this.subscribedVideos[trackIndex].track.stop();
+        this.subscribedVideos.splice(trackIndex, 1);
       } else {
-        store.dispatch("studentRoom/updateAudioAndVideoFeed", { unpublishedId: { userId: user.uid, mediaType } });
+        const trackIndex = this.subscribedAudios.findIndex(ele => ele.userId === user.uid);
+        if (trackIndex === -1) return;
+        this.subscribedAudios[trackIndex].track.stop();
+        this.subscribedAudios.splice(trackIndex, 1);
+      }
+      if (this.options.user?.role === "host") {
+        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+      } else {
+        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
     });
 
@@ -391,10 +402,12 @@ export class AgoraClient implements AgoraClientSDK {
     const user = this._getRemoteUser(userId);
     console.log("_subscribeVideo user", user);
     if (!user || !user.hasVideo) return;
+    console.log("run vao 1");
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
+      console.log(" this.subscribedVideos", this.subscribedVideos);
     } catch (err) {
       console.error("_subscribeVideo", err);
       const inVideos = this.videos.find(i => i === userId);

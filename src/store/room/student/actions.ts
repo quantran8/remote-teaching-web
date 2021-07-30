@@ -228,7 +228,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         } else {
           commit("setStudentStatus", {
             id: payload.uid,
-            status: InClassStatus.DEFAULT,
+            status: InClassStatus.DISCONNECTED,
           });
           commit("clearCircleStatus", { id: payload.uid });
           await dispatch("updateAudioAndVideoFeed", {});
