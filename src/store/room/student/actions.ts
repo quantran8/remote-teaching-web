@@ -217,6 +217,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       },
       onUserLeft: async payload => {
         if (payload.uid === state.teacher?.id) {
+          console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.uid);
           commit("setTeacherDisconnected", true);
           await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
           commit("setTeacherStatus", {
@@ -225,6 +226,7 @@ const actions: ActionTree<StudentRoomState, any> = {
           });
           await dispatch("updateAudioAndVideoFeed", {});
         } else {
+          console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.uid);
           commit("setStudentStatus", {
             id: payload.uid,
             status: payload.connectionStatus,
@@ -232,9 +234,6 @@ const actions: ActionTree<StudentRoomState, any> = {
           commit("clearCircleStatus", { id: payload.uid });
           dispatch("updateAudioAndVideoFeed", {});
         }
-      },
-      onUserJoined: async payload => {
-        console.log("onUserJoined");
       },
     });
   },

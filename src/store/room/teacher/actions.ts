@@ -202,9 +202,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
           await dispatch("setToast", { message: message }, { root: true });
         }
       },
-      onUserJoined: async payload => {
-        console.log("onUserJoined");
-      },
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
