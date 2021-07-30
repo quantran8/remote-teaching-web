@@ -25,6 +25,10 @@ export default defineComponent({
     const transitionText = computed(() => fmtMsg(TeacherClassLessonPlan.Transition));
     const lessonCompleteText = computed(() => fmtMsg(TeacherClassLessonPlan.LessonComplete));
     const teachingActivityText = computed(() => fmtMsg(TeacherClassLessonPlan.TeachingActivity));
+
+    const timeoutClickItem = 300; // 300ms
+    const postClickTimer = ref<ReturnType<typeof setTimeout> | undefined>(undefined);
+
     onMounted(() => {
       let resultList = props.exposure.items;
       if (props.exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
@@ -72,14 +76,21 @@ export default defineComponent({
       emit("click-media", { id: id });
     };
     const onClickItem = async (item: any) => {
-      await dispatch("teacherRoom/setCurrentExposureMediaItem", {
-        id: item.id,
-      });
-      await dispatch("teacherRoom/setMode", {
-        mode: 1,
-      });
-      await dispatch("teacherRoom/setClearBrush", {});
-      await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
+      // add debounce mechanism for prevent click rapidly
+      if (postClickTimer.value !== undefined) {
+        clearTimeout(postClickTimer.value);
+      }
+
+      postClickTimer.value = setTimeout(async () => {
+        await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+          id: item.id,
+        });
+        await dispatch("teacherRoom/setMode", {
+          mode: 1,
+        });
+        await dispatch("teacherRoom/setClearBrush", {});
+        await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
+      }, timeoutClickItem);
     };
     const toggleInformationBox = () => {
       showInfo.value = !showInfo.value;
