@@ -56,8 +56,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       }
     },
     onStudentJoinClass: (payload: StudentModel) => {
-		console.log("STUDENTSIDE: teacher join class", payload);
-
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -106,7 +104,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherJoinClass: (payload: TeacherModel) => {
-		console.log("STUDENTSIDE: teacher join class", payload);
       commit("setTeacherDisconnected", false);
       commit("setTeacherStatus", {
         id: payload.id,
