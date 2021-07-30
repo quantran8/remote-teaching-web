@@ -43,6 +43,7 @@ export interface AgoraEventHandler {
   ): void;
   onLocalNetworkUpdate(payload: any): void;
   onUserLeft(user: any): void;
+  onUserJoined(user: any): void;
 }
 
 const LIMIT_COUNT = 10;
@@ -125,9 +126,7 @@ export class AgoraClient implements AgoraClientSDK {
       console.log("connection state changed!", payload);
     });
     this.client.on("user-left", handler.onUserLeft);
-    this.client.on("user-joined", user => {
-      console.log("user-joined", user.uid);
-    });
+    this.client.on("user-joined", handler.onUserJoined);
   }
 
   subscribedVideos: Array<{
