@@ -99,7 +99,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
-    const { state, dispatch, rootState } = store;
+    const { state, dispatch, rootState, commit } = store;
     if (!state.info || !state.teacher || !state.manager) return;
     let cameraStatus = state.teacher?.videoEnabled;
     let microphoneStatus = state.teacher?.audioEnabled;
@@ -190,6 +190,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
         if (hasChange) {
           dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
+        }
+      },
+      onUserLeft: async payload => {
+        const student = state.students.find(student => student.id === payload.uid);
+        if (student?.status === InClassStatus.LEFT) return;
+        commit("studentDisconnectClass", { id: payload.uid });
+        await dispatch("updateAudioAndVideoFeed", {});
+        if (student && student.englishName) {
+          const message = `${student.englishName} has lost connection.`;
+          await dispatch("setToast", { message: message }, { root: true });
         }
       },
     };
