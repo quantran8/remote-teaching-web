@@ -81,30 +81,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
   },
-  async updateAudioAndVideoFeed(
-    { state },
-    payload?: { unpublishedId?: { userId: string; mediaType: "audio" | "video" }; publishedId?: { userId: string; mediaType: "audio" | "video" } },
-  ) {
+  async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, manager, students, teacher, idOne, student } = state;
     if (!manager) return;
-    const cameras = students
-      .filter(s => {
-        let condition = s.videoEnabled && s.status === InClassStatus.JOINED;
-        if (payload?.unpublishedId && payload?.unpublishedId?.mediaType === "video") {
-          condition = s.videoEnabled && s.status === InClassStatus.JOINED && s.id !== payload.unpublishedId.userId;
-        }
-        return condition;
-      })
-      .map(s => s.id);
-    let audios = students
-      .filter(s => {
-        let condition = s.audioEnabled && s.status === InClassStatus.JOINED;
-        if (payload?.unpublishedId && payload?.unpublishedId?.mediaType === "audio") {
-          condition = s.videoEnabled && s.status === InClassStatus.JOINED && s.id !== payload.unpublishedId.userId;
-        }
-        return condition;
-      })
-      .map(s => s.id);
+    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -251,7 +232,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   async leaveRoom({ state, commit }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
-    commit({ type: "lesson/clearCacheImage" }, { root: true });
+	commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;

@@ -59,30 +59,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setError(store, payload: GLError | null) {
     store.commit("setError", payload);
   },
-  async updateAudioAndVideoFeed(
-    { state },
-    payload?: { unpublishedId?: { userId: string; mediaType: "audio" | "video" }; publishedId?: { userId: string; mediaType: "audio" | "video" } },
-  ) {
+  async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager, students, idOne, teacher } = state;
     if (!manager) return;
-    const cameras = students
-      .filter(s => {
-        let condition = s.videoEnabled && s.status === InClassStatus.JOINED;
-        if (payload?.unpublishedId && payload.unpublishedId.mediaType === "video") {
-          condition = s.videoEnabled && s.status === InClassStatus.JOINED && s.id !== payload.unpublishedId.userId;
-        }
-        return condition;
-      })
-      .map(s => s.id);
-    let audios = students
-      .filter(s => {
-        let condition = s.audioEnabled && s.status === InClassStatus.JOINED;
-        if (payload?.unpublishedId && payload.unpublishedId.mediaType === "audio") {
-          condition = s.videoEnabled && s.status === InClassStatus.JOINED && s.id !== payload.unpublishedId.userId;
-        }
-        return condition;
-      })
-      .map(s => s.id);
+    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (localAudios.length > 0) {
       audios = [...localAudios];
     } else if (globalAudios.length > 0) {
