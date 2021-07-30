@@ -48,6 +48,7 @@ export interface ExposureContentModel {
   contentExposureTeachingActivity: Array<TeachingActivityItemModel>;
   page: Array<ExposureItemMediaModel>;
   thumbnailUrl: any;
+  contentRootType: number;
 }
 export interface InteractiveModel {
   answerMode: number;
@@ -82,6 +83,7 @@ export interface AnnotationModel {
   pointer: { x: number; y: number };
   drawing: DrawingModel;
   oneToOne: DrawingModel;
+  oneOneDrawing: DrawingModel;
   stickers: Array<Sticker>;
 }
 
@@ -122,7 +124,7 @@ export interface RoomModel {
   contents: Array<any>;
   focusTab: number;
   studentsAudio: Array<string>;
-  globalStudentsAudio: Array<string>;
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
+  oneAndOneDto: any;
 }

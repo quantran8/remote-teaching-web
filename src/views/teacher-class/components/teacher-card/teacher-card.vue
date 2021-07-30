@@ -1,7 +1,10 @@
 <template>
   <div :class="['tc-video', !isGalleryView && 'tc-video--small']">
     <figure class="tc-video__figure">
-      <div class="tc-video__video" :id="id"></div>
+      <div class="tc-video__video" :id="teacher?.id" v-show="teacher?.videoEnabled"></div>
+      <div class="teacher-avatar-container" v-if="!teacher?.videoEnabled">
+        <img class="teacher-avatar" alt="teacher-avatar" :src="avatarTeacher" />
+      </div>
     </figure>
     <div class="tc-action">
       <a href="javascript:void(0)" class="tc-action__item" @click="toggleAudio">
@@ -10,7 +13,7 @@
       <a href="javascript:void(0)" class="tc-action__item" @click="toggleVideo">
         <img :src="videoIcon" class="tc-action__icon" />
       </a>
-	  <span v-if="isLowBandWidth" class="tc-action__item">
+      <span v-if="isLowBandWidth" class="tc-action__item">
         <img :src="IconLowWifi" class="tc-action__item--wifi" />
       </span>
     </div>

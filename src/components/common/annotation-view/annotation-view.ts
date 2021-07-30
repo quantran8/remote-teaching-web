@@ -53,6 +53,12 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
+    watch(isPaletteVisible, () => {
+      if (!isPaletteVisible.value) {
+        canvas.isDrawingMode = false;
+        toolActive.value = "";
+      }
+    });
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
@@ -70,6 +76,7 @@ export default defineComponent({
         }
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        toolActive.value = "";
         canvas.isDrawingMode = false;
       }
     };
@@ -519,6 +526,9 @@ export default defineComponent({
     const animationDone = computed(() => animationCheck.value);
     const actionEnter = (element: HTMLElement) => {
       animationCheck.value = false;
+      // set mode move by default when active palette
+      cursorHand();
+
       gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
       gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
@@ -528,6 +538,9 @@ export default defineComponent({
       await gsap.to(element.querySelector(".palette-tool__colors"), { duration: 0.1, scale: 0 });
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
+
+      canvas.isDrawingMode = false;
+      toolActive.value = "";
     };
     const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
     return {

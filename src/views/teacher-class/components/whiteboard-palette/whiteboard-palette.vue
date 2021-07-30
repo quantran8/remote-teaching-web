@@ -24,7 +24,14 @@
         </div>
         <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
         <div id="canvas-container" @mousemove="cursorPosition">
-          <img v-if="typeof imageUrl === 'string'" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />
+          <CropImage
+            v-if="!isGalleryView && image && image.metaData"
+            :imageUrl="image.url"
+            :metadata="image.metaData"
+            id="annotation-img"
+            @img-load="imgLoad"
+          />
+          <img v-else-if="typeof imageUrl === 'string'" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />
           <div class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>

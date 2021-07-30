@@ -9,6 +9,7 @@
         :key="child.id"
         :nextSessionInfo="studentNextSessionInfo(child.id)"
         :name="child.englishName"
+        :avatar="child.avatar"
         @click="() => onClickChild(child)"
       >
       </StudentCard>

@@ -33,18 +33,24 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setInfo", payload.annotation, {
         root: true,
       });
+      await commit("setWhiteboard", payload.isShowWhiteBoard);
       if (payload.studentOneToOne) {
-        await dispatch(
-          "studentRoom/setStudentOneId",
-          { id: payload.studentOneToOne },
-          {
-            root: true,
-          },
-        );
+        await dispatch("studentRoom/setStudentOneId", { id: payload.studentOneToOne }, { root: true });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.oneAndOneDto.focusTab) });
+        await commit("lesson/setCurrentExposure", { id: payload.oneAndOneDto.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: payload.oneAndOneDto.itemContentSelected }, { root: true });
+        await commit("updateIsPalette", {
+          id: payload.oneAndOneDto.id,
+          isPalette: payload.oneAndOneDto.isEnablePalette,
+        });
+        await commit("setWhiteboard", payload.oneAndOneDto.isShowWhiteBoard);
+        await dispatch("annotation/setOneTeacherStrokes", payload.annotation.oneOneDrawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.annotation.oneOneDrawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.annotation.oneOneDrawing.shapes }, { root: true });
+        await dispatch("annotation/setOneStudentStrokes", payload.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
       } else {
         await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
-      commit("setWhiteboard", payload.isShowWhiteBoard);
       if (payload.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
       }
@@ -92,6 +98,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         enable: !payload.isMuteAudio,
       });
+      if (state.student?.id === payload.id) return;
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentMuteVideo: (payload: StudentModel) => {
@@ -99,6 +106,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         enable: !payload.isMuteVideo,
       });
+      if (state.student?.id === payload.id) return;
       dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherJoinClass: (payload: TeacherModel) => {
@@ -185,8 +193,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherEndClass: async (_payload: any) => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
-      commit("setError", {
-        errorCode: GLErrorCode.CLASS_HAS_BEEN_ENDED,
+      commit("setApiStatus", {
+        code: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",
       });
     },

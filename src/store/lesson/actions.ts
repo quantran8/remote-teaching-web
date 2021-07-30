@@ -1,7 +1,7 @@
 import { preloadImage } from "@/utils/preloadImage";
 import { LessonPlanModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
-import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState } from "./state";
+import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState, ContentRootTypeFromValue, CropMetadata } from "./state";
 
 interface LessonActionsInterface<S, R> {
   setInfo(store: ActionContext<S, R>, payload: any): any;
@@ -79,6 +79,7 @@ const actions: LessonActions<LessonState, any> = {
                 resolution: DEFAULT_RESOLUTION,
                 sequence: c.sequence,
                 url: c.imageUrl,
+				metaData: JSON.parse(c.metaData),
               },
             ],
           }))
@@ -92,6 +93,7 @@ const actions: LessonActions<LessonState, any> = {
               url,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
+			  metaData: p.metaData,
             },
           };
         });
@@ -112,6 +114,7 @@ const actions: LessonActions<LessonState, any> = {
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
         thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
+        contentRootType: ContentRootTypeFromValue(e.contentRootType),
       };
     });
 
@@ -168,6 +171,12 @@ const actions: LessonActions<LessonState, any> = {
   clearLessonData(store: ActionContext<LessonState, any>) {
     store.commit("clearLessonData");
   },
+  storeCacheImage(store: ActionContext<LessonState, any>, payload: { url: string, metadata: CropMetadata, base64String: string }) {
+	store.commit("storeCacheImage", payload);
+  },
+  clearCacheImage(store: ActionContext<LessonState, any>) {
+	store.commit("clearCacheImage");
+  }
 };
 
 export default actions;

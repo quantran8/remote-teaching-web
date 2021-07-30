@@ -102,6 +102,7 @@
 
     .activities {
       flex: 1;
+	  overscroll-behavior: contain;
       margin-top: 10px;
       background-color: #f8f8f8;
       border: solid 1px #ccc;

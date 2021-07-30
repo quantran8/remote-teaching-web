@@ -1,6 +1,6 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel } from "@/models";
-import { GLError } from "@/models/error.model";
+import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
 import { ClassView, InClassStatus } from "../interface";
@@ -43,7 +43,9 @@ const mutations: MutationTree<StudentRoomState> = {
   setError(state: StudentRoomState, payload: GLError | null) {
     state.error = payload;
   },
-
+  setApiStatus(state: StudentRoomState, payload: GLApiStatus | null) {
+    state.apiStatus = payload;
+  },
   setClassView(state: StudentRoomState, payload: { classView: ClassView }) {
     state.classView = payload.classView;
   },
@@ -86,7 +88,6 @@ const mutations: MutationTree<StudentRoomState> = {
         state.students.push(student);
       }
     }
-    state.globalAudios = room.globalStudentsAudio;
     state.info = room;
     const role = "audience";
     if (!state.manager)
@@ -220,10 +221,19 @@ const mutations: MutationTree<StudentRoomState> = {
     }
   },
   setAvatarTeacher(state: StudentRoomState, p: string) {
-    state.avatarTeacher = p;
+    if (state.teacher) state.teacher.avatar = p;
   },
   setAvatarStudentOneToOne(state: StudentRoomState, p: { id: string; avatar: string }[]) {
-    state.avatarStudentOneToOne = p[0] ? p[0].avatar : "";
+    state.avatarStudentOneToOne = p[0]?.avatar;
+  },
+  setAvatarCurrentStudent(state: StudentRoomState, p: { id: string; avatar: string }[]) {
+    if (state.student) state.student.avatar = p[0] ? p[0].avatar : "";
+  },
+  setAvatarAllStudent(state: StudentRoomState, p: { id: string; avatar: string }[]) {
+    state.students.forEach(student => {
+      const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
+      student.avatar = avatar ? avatar : "";
+    });
   },
 };
 
