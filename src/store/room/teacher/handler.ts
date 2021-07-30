@@ -72,6 +72,14 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     },
     onStudentDisconnected: async (payload: StudentModel) => {
       console.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+      const student = state.students.find(student => student.id === payload.id);
+      if (student?.status === InClassStatus.LEFT) return;
+      commit("studentDisconnectClass", { id: payload.id });
+      await dispatch("updateAudioAndVideoFeed", {});
+      if (student && student.englishName) {
+        const message = `${student.englishName} has lost connection.`;
+        await dispatch("setToast", { message: message }, { root: true });
+      }
     },
     onStudentSendUnity: async (payload: any) => {
       await dispatch(
@@ -118,7 +126,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   console.log(payload);
     },
     onTeacherDisconnect: (payload: any) => {
-      console.log("SIGNAL R::TEACHER_DISCONNECT");
+      //   console.log(payload);
     },
     onTeacherSetFocusTab: (payload: number) => {
       commit("setClassView", {

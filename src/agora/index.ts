@@ -13,7 +13,7 @@ import AgoraRTC, {
 import { isEqual } from "lodash";
 import { AgoraRTCErrorCode } from "./interfaces";
 import { store } from "@/store";
-import { useStudentRoomHandler } from "@/store/room/student/handler";
+
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
   joinRTCRoom(payload: { camera: boolean; videoEncoderConfigurationPreset?: string; microphone: boolean }): void;
@@ -42,7 +42,6 @@ export interface AgoraEventHandler {
     }[],
   ): void;
   onLocalNetworkUpdate(payload: any): void;
-  onUserLeft(user: any): void;
 }
 
 const LIMIT_COUNT = 10;
@@ -114,7 +113,12 @@ export class AgoraClient implements AgoraClientSDK {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
     });
-
+    this.client.on("user-left", user => {
+      console.log("user-left", user.uid);
+    });
+    this.client.on("user-joined", user => {
+      console.log("user-joined", user.uid);
+    });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
@@ -134,10 +138,6 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
     this.client.on("connection-state-change", payload => {
       console.log("connection state changed!", payload);
-    });
-    this.client.on("user-left", handler.onUserLeft);
-    this.client.on("user-joined", user => {
-      console.log("user-joined", user.uid);
     });
   }
 
@@ -359,7 +359,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    console.log("_subscribeAudio user", user);
+	console.log('_subscribeAudio user', user);
     if (!user || !user.hasAudio) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
@@ -401,7 +401,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    console.log("_subscribeVideo user", user);
+	console.log('_subscribeVideo user', user);
     if (!user || !user.hasVideo) return;
     console.log("run vao 1");
     try {

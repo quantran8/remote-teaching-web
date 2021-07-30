@@ -79,7 +79,13 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
-      console.log("SIGNAL R::STUDENT_DISCONNECT => ", payload.id);
+      console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+      commit("setStudentStatus", {
+        id: payload.id,
+        status: payload.connectionStatus,
+      });
+      commit("clearCircleStatus", { id: payload.id });
+      dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (_payload: any) => {
       //   console.log(_payload);
@@ -193,7 +199,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherDisconnect: async (payload: any) => {
-      console.log("SIGNAL R::TEACHER_DISCONNECT => ", payload.id);
+      console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
+      commit("setTeacherDisconnected", true);
+      await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
+      commit("setTeacherStatus", {
+        id: payload.id,
+        status: InClassStatus.DEFAULT,
+      });
+      await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherSetFocusTab: (payload: number) => {
       dispatch("setClassView", {

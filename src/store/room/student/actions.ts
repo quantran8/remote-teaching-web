@@ -151,7 +151,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     store.state.manager?.registerEventHandler(eventHandler);
   },
   async joinRoom(store, _payload: any) {
-    const { state, dispatch, rootState, commit } = store;
+    const { state, dispatch, rootState } = store;
     if (!state.info || !state.user) return;
     if (!state.manager?.isJoinedRoom()) {
       let cameraStatus = state.student?.videoEnabled;
@@ -215,26 +215,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       onLocalNetworkUpdate(payload: any) {
         //   console.log(payload);
       },
-      onUserLeft: async payload => {
-        if (payload.uid === state.teacher?.id) {
-          console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.uid);
-          commit("setTeacherDisconnected", true);
-          await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
-          commit("setTeacherStatus", {
-            id: payload.uid,
-            status: InClassStatus.DEFAULT,
-          });
-          await dispatch("updateAudioAndVideoFeed", {});
-        } else {
-          console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.uid);
-          commit("setStudentStatus", {
-            id: payload.uid,
-            status: payload.connectionStatus,
-          });
-          commit("clearCircleStatus", { id: payload.uid });
-          dispatch("updateAudioAndVideoFeed", {});
-        }
-      },
     });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
@@ -252,7 +232,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   async leaveRoom({ state, commit }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
-    commit({ type: "lesson/clearCacheImage" }, { root: true });
+	commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
