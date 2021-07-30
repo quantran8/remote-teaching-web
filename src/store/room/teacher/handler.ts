@@ -10,29 +10,6 @@ import { notification } from "ant-design-vue";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
-    onRoomInfo: async (payload: RoomModel) => {
-      commit("setRoomInfo", payload);
-      await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
-      await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
-        root: true,
-      });
-      await dispatch("annotation/setInfo", payload.annotation, {
-        root: true,
-      });
-      if (payload.studentOneToOne) {
-        await dispatch(
-          "teacherRoom/setStudentOneId",
-          { id: payload.studentOneToOne },
-          {
-            root: true,
-          },
-        );
-      } else {
-        await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
-      }
-      commit("teacherRoom/setWhiteboard", payload.isShowWhiteBoard, { root: true });
-    },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
       commit("updateRaisingHand", {

@@ -208,6 +208,26 @@ const actions: ActionTree<TeacherRoomState, any> = {
         return;
       }
       commit("setRoomInfo", roomResponse.data);
+      await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+      await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch("annotation/setInfo", roomInfo.annotation, {
+        root: true,
+      });
+      if (roomInfo.studentOneToOne) {
+        await dispatch(
+          "teacherRoom/setStudentOneId",
+          { id: roomInfo.studentOneToOne },
+          {
+            root: true,
+          },
+        );
+      } else {
+        await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
+      }
+      commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
       console.log("initClassRoom error =>", err);
       //   await router.push(Paths.Home);
