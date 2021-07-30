@@ -193,6 +193,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       },
       onUserLeft: async payload => {
+		  console.log('teacherside => user lefttttt', payload);
         const student = state.students.find(student => student.id === payload.uid);
         if (student?.status === InClassStatus.LEFT) return;
         commit("studentDisconnectClass", { id: payload.uid });
