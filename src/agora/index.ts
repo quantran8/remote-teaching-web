@@ -97,10 +97,16 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("user-unpublished", (user, mediaType) => {
       console.log("user-unpublished", user.uid, mediaType);
       if (this.options.user?.role === "host") {
-        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+        store.dispatch("teacherRoom/updateAudioAndVideoFeed", { unpublishedId: { userId: user.uid, mediaType } });
       } else {
-        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+        store.dispatch("studentRoom/updateAudioAndVideoFeed", { unpublishedId: { userId: user.uid, mediaType } });
       }
+    });
+    this.client.on("user-left", user => {
+      console.log("user-left", user.uid);
+    });
+    this.client.on("user-joined", user => {
+      console.log("user-joined", user.uid);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
@@ -342,6 +348,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
+	console.log('_subscribeAudio user', user);
     if (!user || !user.hasAudio) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
@@ -349,7 +356,6 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeAudio", err);
-
       const inAudios = this.audios.find(i => i === userId);
       if (inAudios) {
         if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
@@ -384,6 +390,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
+	console.log('_subscribeVideo user', user);
     if (!user || !user.hasVideo) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
