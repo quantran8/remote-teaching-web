@@ -83,16 +83,41 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
+  publishedTimeout: any;
+
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.client.on("user-published", (user, mediaType) => {
       console.log("user-published", user.uid, mediaType);
-      if (this.options.user?.role === "host") {
-        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-      } else {
-        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+      if (this.publishedTimeout) {
+        clearTimeout(this.publishedTimeout);
       }
+      this.publishedTimeout = setTimeout(() => {
+        if (mediaType === "video") {
+          for (const [index, { userId }] of this.subscribedVideos.entries()) {
+            if (userId === user.uid) {
+              this.subscribedVideos[index].track.stop();
+              this.subscribedVideos.splice(index, 1);
+            }
+          }
+        }
+        if (mediaType === "audio") {
+          for (const [index, { userId }] of this.subscribedAudios.entries()) {
+            if (userId === user.uid) {
+              this.subscribedAudios[index].track.stop();
+              this.subscribedAudios.splice(index, 1);
+            }
+          }
+        }
+        console.log("VIDEOs REMAINING", this.subscribedVideos);
+        console.log("AUDIOs REMAINING", this.subscribedAudios);
+        if (this.options.user?.role === "host") {
+          store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+        } else {
+          store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+        }
+      }, 500);
     });
     this.client.on("user-unpublished", (user, mediaType) => {
       console.log("user-unpublished", user.uid, mediaType);
@@ -107,20 +132,6 @@ export class AgoraClient implements AgoraClientSDK {
     });
     this.client.on("user-joined", user => {
       console.log("user-joined", user.uid);
-      for (const [index, { userId }] of this.subscribedVideos.entries()) {
-        if (userId === user.uid) {
-          this.subscribedVideos[index].track.stop();
-          this.subscribedVideos.splice(index, 1);
-        }
-      }
-      for (const [index, { userId }] of this.subscribedAudios.entries()) {
-        if (userId === user.uid) {
-          this.subscribedAudios[index].track.stop();
-          this.subscribedAudios.splice(index, 1);
-        }
-      }
-      console.log("remain videossssssssssssssss", this.subscribedVideos);
-      console.log("remain audiossssssssssssssss", this.subscribedAudios);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
