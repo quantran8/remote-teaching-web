@@ -94,8 +94,6 @@ export class AgoraClient implements AgoraClientSDK {
         clearTimeout(this.publishedTimeout);
       }
       this.publishedTimeout = setTimeout(() => {
-        console.log("VIDEOs REMAINING 0", this.subscribedVideos);
-        console.log("AUDIOs REMAINING 0", this.subscribedAudios);
         if (mediaType === "video") {
           for (const [index, { userId }] of this.subscribedVideos.entries()) {
             if (userId === user.uid) {
@@ -112,8 +110,6 @@ export class AgoraClient implements AgoraClientSDK {
             }
           }
         }
-        console.log("VIDEOs REMAINING 1", this.subscribedVideos);
-        console.log("AUDIOs REMAINING 1", this.subscribedAudios);
         if (this.options.user?.role === "host") {
           store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
         } else {
@@ -363,7 +359,6 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeAudiosCount: any = {};
   reSubscribeAudiosTimeout: any = {};
   async _subscribeAudio(userId: string, isAutoResubscribe = false) {
-    console.log("_subscribeAudio running");
     if (!isAutoResubscribe) {
       clearTimeout(this.reSubscribeAudiosTimeout[userId]);
       if (this.reSubscribeAudiosTimeout[userId]) {
@@ -375,10 +370,8 @@ export class AgoraClient implements AgoraClientSDK {
     }
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
-    console.log("has audio subscribe ?", !!subscribed);
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasAudio) return;
-    console.log("starting subscribe audio with user", user);
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
@@ -412,7 +405,6 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeVideosCount: any = {};
   reSubscribeVideosTimeout: any = {};
   async _subscribeVideo(userId: string, isAutoResubscribe = false) {
-    console.log("_subscribeVideo running");
     if (!isAutoResubscribe) {
       clearTimeout(this.reSubscribeVideosTimeout[userId]);
       if (this.reSubscribeVideosTimeout[userId]) {
@@ -424,10 +416,8 @@ export class AgoraClient implements AgoraClientSDK {
     }
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
-    console.log("has video subscribe ?", subscribed);
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasVideo) return;
-    console.log("starting subscribe video with user", user);
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
