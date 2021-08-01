@@ -101,27 +101,24 @@ export class AgoraClient implements AgoraClientSDK {
       } else {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
-      if (mediaType === "video") {
-        for (const [index, { userId }] of this.subscribedVideos.entries()) {
-          if (userId === user.uid) {
-            this.subscribedVideos[index].track.stop();
-            this.subscribedVideos.splice(index, 1);
-          }
-        }
-      } else {
-        for (const [index, { userId }] of this.subscribedAudios.entries()) {
-          if (userId === user.uid) {
-            this.subscribedAudios[index].track.stop();
-            this.subscribedAudios.splice(index, 1);
-          }
-        }
-      }
-	  console.log('remain videos', this.subscribedVideos);
-	  console.log('remain audios', this.subscribedAudios);
 
+      console.log("remain videos", this.subscribedVideos);
+      console.log("remain audios", this.subscribedAudios);
     });
     this.client.on("user-left", user => {
       console.log("user-left", user.uid);
+      for (const [index, { userId }] of this.subscribedVideos.entries()) {
+        if (userId === user.uid) {
+          this.subscribedVideos[index].track.stop();
+          this.subscribedVideos.splice(index, 1);
+        }
+      }
+      for (const [index, { userId }] of this.subscribedAudios.entries()) {
+        if (userId === user.uid) {
+          this.subscribedAudios[index].track.stop();
+          this.subscribedAudios.splice(index, 1);
+        }
+      }
     });
     this.client.on("user-joined", user => {
       console.log("user-joined", user.uid);
@@ -354,6 +351,7 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeAudiosCount: any = {};
   reSubscribeAudiosTimeout: any = {};
   async _subscribeAudio(userId: string, isAutoResubscribe = false) {
+    console.log("_subscribeAudio running");
     if (!isAutoResubscribe) {
       clearTimeout(this.reSubscribeAudiosTimeout[userId]);
       if (this.reSubscribeAudiosTimeout[userId]) {
@@ -365,6 +363,7 @@ export class AgoraClient implements AgoraClientSDK {
     }
     const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
     if (subscribed) return;
+    console.log("has audio subscribe ?", !!subscribed);
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasAudio) return;
     console.log("starting subscribe audio with user", user);
@@ -396,6 +395,7 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeVideosCount: any = {};
   reSubscribeVideosTimeout: any = {};
   async _subscribeVideo(userId: string, isAutoResubscribe = false) {
+    console.log("_subscribeVideo running");
     if (!isAutoResubscribe) {
       clearTimeout(this.reSubscribeVideosTimeout[userId]);
       if (this.reSubscribeVideosTimeout[userId]) {
@@ -407,6 +407,7 @@ export class AgoraClient implements AgoraClientSDK {
     }
     const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
     if (subscribed) return;
+    console.log("has video subscribe ?", subscribed);
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasVideo) return;
     console.log("starting subscribe video with user", user);
