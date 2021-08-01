@@ -101,12 +101,12 @@ export class AgoraClient implements AgoraClientSDK {
       } else {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
-
-      console.log("remain videos", this.subscribedVideos);
-      console.log("remain audios", this.subscribedAudios);
     });
     this.client.on("user-left", user => {
       console.log("user-left", user.uid);
+    });
+    this.client.on("user-joined", user => {
+      console.log("user-joined", user.uid);
       for (const [index, { userId }] of this.subscribedVideos.entries()) {
         if (userId === user.uid) {
           this.subscribedVideos[index].track.stop();
@@ -119,9 +119,8 @@ export class AgoraClient implements AgoraClientSDK {
           this.subscribedAudios.splice(index, 1);
         }
       }
-    });
-    this.client.on("user-joined", user => {
-      console.log("user-joined", user.uid);
+      console.log("remain videossssssssssssssss", this.subscribedVideos);
+      console.log("remain audiossssssssssssssss", this.subscribedAudios);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
