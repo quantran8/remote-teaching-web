@@ -94,10 +94,12 @@ export class AgoraClient implements AgoraClientSDK {
         clearTimeout(this.publishedTimeout);
       }
       this.publishedTimeout = setTimeout(() => {
+        console.log("VIDEOs REMAINING 0", this.subscribedVideos);
+        console.log("AUDIOs REMAINING 0", this.subscribedAudios);
         if (mediaType === "video") {
           for (const [index, { userId }] of this.subscribedVideos.entries()) {
             if (userId === user.uid) {
-              this.subscribedVideos[index].track.stop();
+              //   this.subscribedVideos[index].track.stop();
               this.subscribedVideos.splice(index, 1);
             }
           }
@@ -105,13 +107,13 @@ export class AgoraClient implements AgoraClientSDK {
         if (mediaType === "audio") {
           for (const [index, { userId }] of this.subscribedAudios.entries()) {
             if (userId === user.uid) {
-              this.subscribedAudios[index].track.stop();
+              //   this.subscribedAudios[index].track.stop();
               this.subscribedAudios.splice(index, 1);
             }
           }
         }
-        console.log("VIDEOs REMAINING", this.subscribedVideos);
-        console.log("AUDIOs REMAINING", this.subscribedAudios);
+        console.log("VIDEOs REMAINING 1", this.subscribedVideos);
+        console.log("AUDIOs REMAINING 1", this.subscribedAudios);
         if (this.options.user?.role === "host") {
           store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
         } else {
@@ -380,6 +382,11 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
+      for (const [index, subscribedAudio] of this.subscribedAudios.entries()) {
+        if (subscribedAudio.userId === userId) {
+          this.subscribedAudios.splice(index, 1);
+        }
+      }
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeAudio", err);
@@ -424,6 +431,11 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
+      for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
+        if (subscribedVideo.userId === userId) {
+          this.subscribedVideos.splice(index, 1);
+        }
+      }
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeVideo", err);
