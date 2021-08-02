@@ -204,7 +204,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherDisconnect: async (payload: any) => {
       console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
       commit("setTeacherDisconnected", true);
-      notification.open({
+      notification.warn({
         message: fmtMsg(StoreLocale.WaitYourTeacher),
       });
       commit("setTeacherStatus", {
