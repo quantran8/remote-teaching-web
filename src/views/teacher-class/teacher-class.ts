@@ -1,6 +1,6 @@
 import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
-import { Modal } from "ant-design-vue";
+import { Modal, notification } from "ant-design-vue";
 import { computed, ComputedRef, defineComponent, ref, watch, provide } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -153,7 +153,9 @@ export default defineComponent({
           } catch (err) {
             Modal.destroyAll();
             const message = err.body.message;
-            await dispatch("setToast", { message: message });
+            notification.error({
+              message: message,
+            });
           }
         },
       });
@@ -194,7 +196,9 @@ export default defineComponent({
         await dispatch("teacherRoom/joinWSRoom", { browserFingerPrinting: visitorId });
       } catch (err) {
         if (err.code === ErrorCode.ConcurrentUserException) {
-          await dispatch("setToast", { message: err.message });
+          notification.error({
+            message: err.message,
+          });
         }
       }
     });

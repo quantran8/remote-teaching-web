@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
-import { Select, Spin, Modal, Checkbox, Button, Row, Empty } from "ant-design-vue";
+import { Select, Spin, Modal, Checkbox, Button, Row, Empty, notification } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
@@ -130,7 +130,9 @@ export default defineComponent({
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
         if (err.body.message) {
-          await store.dispatch("setToast", { message: err.body.message });
+          notification.error({
+            message: err.body.message,
+          });
         }
       }
       loading.value = false;
@@ -187,7 +189,9 @@ export default defineComponent({
       } catch (err) {
         const message = err?.body?.message;
         if (message) {
-          await store.dispatch("setToast", { message: message });
+          notification.error({
+            message: message,
+          });
         }
       }
       loadingInfo.value = false;

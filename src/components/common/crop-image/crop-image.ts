@@ -1,4 +1,4 @@
-import { computed, defineComponent, onBeforeMount, onMounted, onUpdated, ref, watch } from "vue";
+import { computed, defineComponent, onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch } from "vue";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 import { useStore } from "vuex";
@@ -93,16 +93,17 @@ export default defineComponent({
       processImg({ ...currentCropData.value });
     });
 
+    onUnmounted(() => {
+      croppedImageUrlRef.value = undefined;
+    });
+
     watch(currentCropData, () => {
       // perform cropping again when crop data changed
       prepare();
     });
 
     onUpdated(() => {
-      // already crop image onMount, then skip. this block will work for next update cropData
-      if (isProcessing.value) {
-        processImg({ ...currentCropData.value });
-      }
+      processImg({ ...currentCropData.value });
     });
 
     return { imgUrl, imageRef, isProcessing, onImageLoad };
