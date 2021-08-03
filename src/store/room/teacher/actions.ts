@@ -97,6 +97,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, _payload.browserFingerPrinting, isMuteAudio, isHideVideo);
     const eventHandler = useTeacherRoomWSHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
+    store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
+    store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
