@@ -112,5 +112,7 @@
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
   	"teacher_class_lesson_plan.teaching_activity": "Teaching Activity",
-  	"teacher_class_lesson_plan.transition": "Transition"
+  	"teacher_class_lesson_plan.transition": "Transition",
+	"store.wait_your_teacher": "Please wait for your teacher",
+	"store.click_board_to_answer": "Please click on the board to answer."
 }

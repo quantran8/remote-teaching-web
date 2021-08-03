@@ -32,7 +32,7 @@ const routeAuth = (loginInfo: LoginInfo, to: RouteLocationNormalized, from: Rout
     AuthService.storePagethenSigninRedirect();
   } else {
     if (to.meta) {
-	  if (store.getters.appView !== AppView.Authorized) {
+      if (store.getters.appView !== AppView.Authorized) {
         store.dispatch("setAppView", { appView: AppView.Authorized });
       }
 
@@ -40,18 +40,15 @@ const routeAuth = (loginInfo: LoginInfo, to: RouteLocationNormalized, from: Rout
         store.dispatch("spin/setSplash", false);
       }
 
-	  const isTeacherGuardPassed = TeacherGuard(to, from, next);
+      const isTeacherGuardPassed = TeacherGuard(to, from, next);
       const isParentGuardPassed = ParentGuard(to, from, next);
-      
-      if (isTeacherGuardPassed && isParentGuardPassed) {
-		LayoutGuard(to, from, next);
-		next();
-      }
-	  else
-	  {
-		store.dispatch("setAppView", { appView: AppView.UnAuthorized });
-	  }
 
+      if (isTeacherGuardPassed && isParentGuardPassed) {
+        LayoutGuard(to, from, next);
+        next();
+      } else {
+        store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+      }
     } else {
       store.dispatch("setAppView", { appView: AppView.UnAuthorized });
     }
@@ -60,7 +57,6 @@ const routeAuth = (loginInfo: LoginInfo, to: RouteLocationNormalized, from: Rout
 
 export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const requiresAuth: boolean = to.matched.some(record => record.meta.requiresAuth);
-
   const hasIdTokenInUrl = window.location.href.indexOf("id_token") !== -1;
   if (requiresAuth) {
     const isSigningOut = window.location.href.indexOf("oidc/signout") !== -1;

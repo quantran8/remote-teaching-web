@@ -13,6 +13,9 @@ import * as cameraOn from "@/assets/icons/camera_on.png";
 import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
 import { reactive } from "vue";
+import { notification } from "ant-design-vue";
+import { fmtMsg } from "@/commonui";
+import { StoreLocale } from "@/locales/localeid";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
   const { commit, dispatch, state, getters } = store;
@@ -60,6 +63,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+	  commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
@@ -201,7 +205,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherDisconnect: async (payload: any) => {
       console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
       commit("setTeacherDisconnected", true);
-      await store.dispatch("setToast", { message: "Please wait for your teacher" }, { root: true });
+      notification.warn({
+        message: fmtMsg(StoreLocale.WaitYourTeacher),
+      });
       commit("setTeacherStatus", {
         id: payload.id,
         status: InClassStatus.DEFAULT,
@@ -273,8 +279,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("interactive/setInfo", payload, { root: true });
       const isAssigned = store.rootGetters["interactive/isAssigned"];
       if (isAssigned) {
-        const message = `Please click on the board to answer.`;
-        await store.dispatch("setToast", { message: message }, { root: true });
+        notification.open({
+          message: fmtMsg(StoreLocale.ClickBoardToAnswer),
+        });
       }
     },
     onTeacherUpdateDesignateTarget: async (payload: any) => {

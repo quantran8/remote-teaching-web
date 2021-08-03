@@ -83,24 +83,70 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
+  publishedVideosTimeout: any = {};
+  publishedAudiosTimeout: any = {};
+
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.client.on("user-published", (user, mediaType) => {
       console.log("user-published", user.uid, mediaType);
+      if (mediaType === "video") {
+        if (this.publishedVideosTimeout[user.uid]) {
+          clearTimeout(this.publishedVideosTimeout[user.uid]);
+        }
+        this.publishedVideosTimeout[user.uid] = setTimeout(() => {
+          for (const [index, { userId }] of this.subscribedVideos.entries()) {
+            if (userId === user.uid) {
+              this.subscribedVideos.splice(index, 1);
+            }
+          }
+          console.log("video starting update ...");
+          if (this.options.user?.role === "host") {
+            store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+          } else {
+            store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+          }
+        }, 500);
+      }
+      if (mediaType === "audio") {
+        if (this.publishedAudiosTimeout[user.uid]) {
+          clearTimeout(this.publishedAudiosTimeout[user.uid]);
+        }
+        this.publishedAudiosTimeout[user.uid] = setTimeout(() => {
+          for (const [index, { userId }] of this.subscribedAudios.entries()) {
+            if (userId === user.uid) {
+              this.subscribedAudios.splice(index, 1);
+            }
+          }
+          console.log("audio starting update ...");
+          if (this.options.user?.role === "host") {
+            store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+          } else {
+            store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+          }
+        }, 500);
+      }
+    });
+    this.client.on("user-unpublished", (user, mediaType) => {
+      console.log("user-unpublished", user.uid, mediaType);
+      if (this.publishedVideosTimeout[user.uid]) {
+        clearTimeout(this.publishedVideosTimeout[user.uid]);
+      }
+      if (this.publishedAudiosTimeout[user.uid]) {
+        clearTimeout(this.publishedAudiosTimeout[user.uid]);
+      }
       if (this.options.user?.role === "host") {
         store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
       } else {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
     });
-    this.client.on("user-unpublished", (user, mediaType) => {
-      console.log("user-unpublished", user.uid, mediaType);
-      if (this.options.user?.role === "host") {
-        store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-      } else {
-        store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
-      }
+    this.client.on("user-left", user => {
+      console.log("user-left", user.uid);
+    });
+    this.client.on("user-joined", user => {
+      console.log("user-joined", user.uid);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
@@ -114,13 +160,13 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
-    // this.client.on("user-published", handler.onUserPublished);
-    // this.client.on("user-unpublished", handler.onUserUnPublished);
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
-    this.client.on("connection-state-change", payload => {
-      console.log("connection state changed!", payload);
+    this.client.on("connection-state-change", (currentState, prevState, reason) => {
+      console.log("connection state changed! => currentState", currentState);
+      console.log("connection state changed! => prevState", prevState);
+      console.log("connection state changed! => reason", reason);
     });
   }
 
@@ -346,10 +392,14 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
+      for (const [index, subscribedAudio] of this.subscribedAudios.entries()) {
+        if (subscribedAudio.userId === userId) {
+          this.subscribedAudios.splice(index, 1);
+        }
+      }
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeAudio", err);
-
       const inAudios = this.audios.find(i => i === userId);
       if (inAudios) {
         if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
@@ -388,6 +438,11 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
+      for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
+        if (subscribedVideo.userId === userId) {
+          this.subscribedVideos.splice(index, 1);
+        }
+      }
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       console.error("_subscribeVideo", err);
