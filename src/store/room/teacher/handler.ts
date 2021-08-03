@@ -44,7 +44,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);
       if (student && student.englishName) {
-        notification.open({
+        notification.warn({
           message: `${student.englishName} left the class.`,
         });
       }
@@ -56,7 +56,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("studentDisconnectClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       if (student && student.englishName) {
-        notification.open({
+        notification.warn({
           message: `${student.englishName} has lost connection.`,
         });
       }

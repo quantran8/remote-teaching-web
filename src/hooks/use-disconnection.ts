@@ -84,9 +84,11 @@ export const useDisconnection = () => {
           //TEACHER::try re-init class after each 15 seconds
           reconnectIntervalId.value = setInterval(async () => {
             await teacherInitClass();
+            await dispatch("teacherRoom/joinRoom");
           }, RECONNECT_TIMING);
           //TEACHER::try re-init class the first time when signalR destroyed
-          teacherInitClass();
+          await teacherInitClass();
+          await dispatch("teacherRoom/joinRoom");
         }
         return;
       }
@@ -100,8 +102,6 @@ export const useDisconnection = () => {
         }
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectSuccessSound.play();
-        clearInterval(reconnectIntervalId.value);
-        reconnectIntervalId.value = undefined;
         await teacherInitClass();
         await dispatch("teacherRoom/joinRoom");
       }
@@ -126,10 +126,12 @@ export const useDisconnection = () => {
         //STUDENT::try re-init class after each 15 seconds
         reconnectIntervalId.value = setInterval(async () => {
           await studentInitClass();
+          await dispatch("studentRoom/joinRoom");
         }, RECONNECT_TIMING);
         //STUDENT::try re-init class the first time when signalR destroyed
         setTimeout(async () => {
           await studentInitClass();
+          await dispatch("studentRoom/joinRoom");
         }, RECONNECT_DELAY);
       }
       return;
@@ -138,8 +140,7 @@ export const useDisconnection = () => {
       clearTimeout(timeoutId);
       audioSource.reconnectSuccessSound.play();
       //STUDENT::prevent call initClassRoom second time in the case just signalR destroyed
-      clearInterval(reconnectIntervalId.value);
-      reconnectIntervalId.value = undefined;
+
       await studentInitClass();
       await dispatch("studentRoom/joinRoom");
     }
@@ -166,10 +167,10 @@ export const useDisconnection = () => {
     }
   });
 
-  watch(signalRStatus, async currentSignalRStatus => {
+  watch(signalRStatus, async (currentSignalRStatus, prevSignalRStatus) => {
     const isTeacher: boolean = getters["auth/isTeacher"];
     const isParent: boolean = getters["auth/isParent"];
-    switch (currentSignalRStatus) {
+    switch (prevSignalRStatus !== currentSignalRStatus && currentSignalRStatus) {
       case SignalRStatus.Disconnected: {
         if (isTeacher) {
           dispatch("teacherRoom/setOffline");
@@ -191,13 +192,13 @@ export const useDisconnection = () => {
       case SignalRStatus.NoStatus: {
         if (isTeacher) {
           dispatch("teacherRoom/setOnline");
-          await teacherInitClass();
-          await dispatch("teacherRoom/joinRoom");
+          clearInterval(reconnectIntervalId.value);
+          reconnectIntervalId.value = undefined;
         }
         if (isParent) {
           dispatch("studentRoom/setOnline");
-          await studentInitClass();
-          await dispatch("studentRoom/joinRoom");
+          clearInterval(reconnectIntervalId.value);
+          reconnectIntervalId.value = undefined;
         }
         break;
       }

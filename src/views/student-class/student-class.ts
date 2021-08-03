@@ -328,6 +328,14 @@ export default defineComponent({
         document.body.classList.remove("mobile-device");
       }
     };
+    const goToHomePage = async () => {
+      const currentNow = new Date().getTime() / 1000;
+      if (currentNow > loginInfo.expires_at) {
+        window.location.href = Paths.Parent;
+      } else {
+        await router.push(Paths.Parent);
+      }
+    };
     onMounted(() => {
       deviceMobile();
       window.addEventListener("resize", deviceMobile);
@@ -380,6 +388,7 @@ export default defineComponent({
       iconSand,
       studentOneName,
       joinLoading,
+      goToHomePage,
     };
   },
 });
