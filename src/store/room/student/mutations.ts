@@ -1,5 +1,5 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
-import { ClassModel, RoomModel } from "@/models";
+import { ClassModel, RoomModel, StudentModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -113,6 +113,13 @@ const mutations: MutationTree<StudentRoomState> = {
   setStudentStatus(state: StudentRoomState, payload: { id: string; status: InClassStatus }) {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
     if (student) student.status = payload.status;
+  },
+  updateMediaStatus(s: StudentRoomState, p: StudentModel): void {
+    const student = s.students.find(student => student.id === p.id);
+    if (student) {
+      student.videoEnabled = !p.isMuteVideo;
+      student.audioEnabled = !p.isMuteVideo;
+    }
   },
   updateRaisingHand(state: StudentRoomState, payload: { id: string; isRaisingHand: boolean }) {
     const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);

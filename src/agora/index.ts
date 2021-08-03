@@ -83,42 +83,59 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
-  publishedTimeout: any;
+  publishedVideosTimeout: any = {};
+  publishedAudiosTimeout: any = {};
 
   async joinRTCRoom(options: { camera?: boolean; videoEncoderConfigurationPreset?: string; microphone?: boolean }) {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.client.on("user-published", (user, mediaType) => {
       console.log("user-published", user.uid, mediaType);
-      if (this.publishedTimeout) {
-        clearTimeout(this.publishedTimeout);
-      }
-      this.publishedTimeout = setTimeout(() => {
-        if (mediaType === "video") {
+      if (mediaType === "video") {
+        if (this.publishedVideosTimeout[user.uid]) {
+          clearTimeout(this.publishedVideosTimeout[user.uid]);
+        }
+        this.publishedVideosTimeout[user.uid] = setTimeout(() => {
           for (const [index, { userId }] of this.subscribedVideos.entries()) {
             if (userId === user.uid) {
-              //   this.subscribedVideos[index].track.stop();
               this.subscribedVideos.splice(index, 1);
             }
           }
+          console.log("video starting update ...");
+          if (this.options.user?.role === "host") {
+            store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+          } else {
+            store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+          }
+        }, 500);
+      }
+      if (mediaType === "audio") {
+        if (this.publishedAudiosTimeout[user.uid]) {
+          clearTimeout(this.publishedAudiosTimeout[user.uid]);
         }
-        if (mediaType === "audio") {
+        this.publishedAudiosTimeout[user.uid] = setTimeout(() => {
           for (const [index, { userId }] of this.subscribedAudios.entries()) {
             if (userId === user.uid) {
-              //   this.subscribedAudios[index].track.stop();
               this.subscribedAudios.splice(index, 1);
             }
           }
-        }
-        if (this.options.user?.role === "host") {
-          store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-        } else {
-          store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
-        }
-      }, 500);
+          console.log("audio starting update ...");
+          if (this.options.user?.role === "host") {
+            store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+          } else {
+            store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+          }
+        }, 500);
+      }
     });
     this.client.on("user-unpublished", (user, mediaType) => {
       console.log("user-unpublished", user.uid, mediaType);
+      if (this.publishedVideosTimeout[user.uid]) {
+        clearTimeout(this.publishedVideosTimeout[user.uid]);
+      }
+      if (this.publishedAudiosTimeout[user.uid]) {
+        clearTimeout(this.publishedAudiosTimeout[user.uid]);
+      }
       if (this.options.user?.role === "host") {
         store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
       } else {
@@ -143,13 +160,13 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
-    // this.client.on("user-published", handler.onUserPublished);
-    // this.client.on("user-unpublished", handler.onUserUnPublished);
     this.client.on("exception", handler.onException);
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
-    this.client.on("connection-state-change", payload => {
-      console.log("connection state changed!", payload);
+    this.client.on("connection-state-change", (currentState, prevState, reason) => {
+      console.log("connection state changed! => currentState", currentState);
+      console.log("connection state changed! => prevState", prevState);
+      console.log("connection state changed! => reason", reason);
     });
   }
 

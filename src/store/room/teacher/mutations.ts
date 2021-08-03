@@ -1,5 +1,5 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassModel, RoomModel } from "@/models";
+import { ClassModel, RoomModel, StudentModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -177,6 +177,13 @@ const mutations: TeacherRoomMutation<State> = {
   studentJoinned(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);
     if (student) student.status = InClassStatus.JOINED;
+  },
+  updateMediaStatus(s: State, p: StudentModel): void {
+    const student = s.students.find(student => student.id === p.id);
+    if (student) {
+      student.videoEnabled = !p.isMuteVideo;
+      student.audioEnabled = !p.isMuteVideo;
+    }
   },
   updateRaisingHand(state: State, payload: { id: string; isRaisingHand: boolean }): void {
     const student = state.students.find(student => student.id === payload.id);
