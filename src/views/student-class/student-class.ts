@@ -217,6 +217,7 @@ export default defineComponent({
           showMessage.value = true;
           joinLoading.value = false;
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
+          await router.push(Paths.Parent);
           showMessage.value = true;
           joinLoading.value = false;
         } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
