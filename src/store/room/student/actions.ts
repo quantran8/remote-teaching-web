@@ -149,6 +149,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     );
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
+	store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
+    store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
@@ -232,7 +234,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   async leaveRoom({ state, commit }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
-	commit({ type: "lesson/clearCacheImage" }, { root: true });
+    commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
