@@ -1,4 +1,4 @@
-import { defineComponent, computed, ref, onMounted, watch } from "vue";
+import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
@@ -95,6 +95,7 @@ export default defineComponent({
 
     const setupDevice = async () => {
       try {
+        console.log("SETUP DEVICEEEEEE");
         const cams = await AgoraRTC.getCameras();
         if (cams.length) {
           currentCam.value = cams[0];
@@ -408,6 +409,10 @@ export default defineComponent({
     const Unit = computed(() => fmtMsg(DeviceTesterLocale.Unit));
     const Cancel = computed(() => fmtMsg(DeviceTesterLocale.Cancel));
     const JoinSession = computed(() => fmtMsg(DeviceTesterLocale.JoinSession));
+    onUnmounted(() => {
+      AgoraRTC.onMicrophoneChanged = undefined;
+      AgoraRTC.onCameraChanged = undefined;
+    });
 
     return {
       SystemCheck,

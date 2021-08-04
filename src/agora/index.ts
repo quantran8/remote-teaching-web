@@ -148,7 +148,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("user-joined", user => {
       console.log("user-joined", user.uid);
     });
-    this.agoraRTC.setLogLevel(3);
+    this.agoraRTC.setLogLevel(1);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
@@ -187,12 +187,17 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._microphoneTrack) return;
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
+      console.log("1");
       this.microphoneTrack.on("track-ended", () => {
-        console.log("track-end");
+        console.log("run vao track-end");
         this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
       });
+      console.log("2");
       this.microphoneError = null;
+      //   this.setupHotPlugging();
     } catch (err) {
+      console.log("3");
+
       this.microphoneError = err;
     }
   }
@@ -377,9 +382,8 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeAudiosTimeout: any = {};
   async _subscribeAudio(userId: string, isAutoResubscribe = false) {
     if (!isAutoResubscribe) {
-      clearTimeout(this.reSubscribeAudiosTimeout[userId]);
       if (this.reSubscribeAudiosTimeout[userId]) {
-        delete this.reSubscribeAudiosTimeout[userId];
+        clearTimeout(this.reSubscribeAudiosTimeout[userId]);
       }
       if (this.reSubscribeAudiosCount[userId]) {
         delete this.reSubscribeAudiosCount[userId];
@@ -392,6 +396,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
+      console.log(`audio of ${userId} played`);
       for (const [index, subscribedAudio] of this.subscribedAudios.entries()) {
         if (subscribedAudio.userId === userId) {
           this.subscribedAudios.splice(index, 1);
@@ -423,9 +428,8 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeVideosTimeout: any = {};
   async _subscribeVideo(userId: string, isAutoResubscribe = false) {
     if (!isAutoResubscribe) {
-      clearTimeout(this.reSubscribeVideosTimeout[userId]);
       if (this.reSubscribeVideosTimeout[userId]) {
-        delete this.reSubscribeVideosTimeout[userId];
+        clearTimeout(this.reSubscribeVideosTimeout[userId]);
       }
       if (this.reSubscribeVideosCount[userId]) {
         delete this.reSubscribeVideosCount[userId];
@@ -438,6 +442,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
+      console.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {
           this.subscribedVideos.splice(index, 1);
@@ -484,4 +489,18 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.splice(trackIndex, 1);
     }
   }
+
+  setupHotPlugging = () => {
+    AgoraRTC.onMicrophoneChanged = async changedDevice => {
+      // When plugging in a device, switch to a device that is newly plugged in.
+      if (changedDevice.state === "ACTIVE") {
+        this.microphoneTrack.setDevice(changedDevice.device.deviceId);
+        // Switch to an existing device when the current device is unplugged.
+      } else if (changedDevice.device.label === this.microphoneTrack.getTrackLabel()) {
+        // const oldMicrophones = await AgoraRTC.getMicrophones();
+        // oldMicrophones[0] && microphoneTrack.setDevice(oldMicrophones[0].deviceId);
+        console.log("run vao hot plugging");
+      }
+    };
+  };
 }
