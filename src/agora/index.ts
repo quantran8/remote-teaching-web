@@ -187,17 +187,14 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._microphoneTrack) return;
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
-      console.log("1");
       this.microphoneTrack.on("track-ended", () => {
-        console.log("run vao track-end");
-        this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
+        // this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
+        console.log("track-ended micro");
       });
-      console.log("2");
       this.microphoneError = null;
-      //   this.setupHotPlugging();
+      this.setupHotPluggingDevice("microphone");
     } catch (err) {
-      console.log("3");
-
+      console.log("openMicrophone error", err);
       this.microphoneError = err;
     }
   }
@@ -219,10 +216,12 @@ export class AgoraClient implements AgoraClientSDK {
       const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
       await this._cameraTrack.setEncoderConfiguration(preset);
       this.cameraTrack.on("track-ended", () => {
-        this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
+        // this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
+        console.log("track-ended camera");
       });
       this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
+      this.setupHotPluggingDevice("camera");
     } catch (err) {
       this.cameraError = err;
     }
@@ -490,17 +489,26 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
-  setupHotPlugging = () => {
-    AgoraRTC.onMicrophoneChanged = async changedDevice => {
-      // When plugging in a device, switch to a device that is newly plugged in.
-      if (changedDevice.state === "ACTIVE") {
-        this.microphoneTrack.setDevice(changedDevice.device.deviceId);
-        // Switch to an existing device when the current device is unplugged.
-      } else if (changedDevice.device.label === this.microphoneTrack.getTrackLabel()) {
-        // const oldMicrophones = await AgoraRTC.getMicrophones();
-        // oldMicrophones[0] && microphoneTrack.setDevice(oldMicrophones[0].deviceId);
-        console.log("run vao hot plugging");
-      }
-    };
+  setupHotPluggingDevice = (type: "camera" | "microphone") => {
+    if (type === "microphone") {
+      AgoraRTC.onMicrophoneChanged = async changedDevice => {
+        if (changedDevice.state === "ACTIVE") {
+          this.microphoneTrack.setDevice(changedDevice.device.deviceId);
+        } else if (changedDevice.device.label === this.microphoneTrack.getTrackLabel()) {
+          const oldMicrophones = await AgoraRTC.getMicrophones();
+          oldMicrophones[0] && this.microphoneTrack.setDevice(oldMicrophones[0].deviceId);
+        }
+      };
+    }
+    if (type === "camera") {
+      AgoraRTC.onCameraChanged = async changedDevice => {
+        if (changedDevice.state === "ACTIVE") {
+          this.cameraTrack.setDevice(changedDevice.device.deviceId);
+        } else if (changedDevice.device.label === this.cameraTrack.getTrackLabel()) {
+          const oldCameras = await AgoraRTC.getCameras();
+          oldCameras[0] && this.cameraTrack.setDevice(oldCameras[0].deviceId);
+        }
+      };
+    }
   };
 }

@@ -11,7 +11,6 @@ import { notification } from "ant-design-vue";
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onRoomInfo: async (payload: RoomModel) => {
-      console.log("payload", payload);
       commit("setRoomInfo", payload);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
