@@ -148,7 +148,7 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("user-joined", user => {
       console.log("user-joined", user.uid);
     });
-    this.agoraRTC.setLogLevel(1);
+    this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
     this.joined = true;
     if (options.camera) {
