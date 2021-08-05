@@ -188,7 +188,6 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
       this.microphoneTrack.on("track-ended", () => {
-        // this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
         console.log("track-ended micro");
       });
       this.microphoneError = null;
@@ -216,7 +215,6 @@ export class AgoraClient implements AgoraClientSDK {
       const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
       await this._cameraTrack.setEncoderConfiguration(preset);
       this.cameraTrack.on("track-ended", () => {
-        // this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
         console.log("track-ended camera");
       });
       this.cameraTrack.play(this.user.username, { mirror: true });

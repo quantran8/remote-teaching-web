@@ -95,7 +95,6 @@ export default defineComponent({
 
     const setupDevice = async () => {
       try {
-        console.log("SETUP DEVICEEEEEE");
         const cams = await AgoraRTC.getCameras();
         if (cams.length) {
           currentCam.value = cams[0];
