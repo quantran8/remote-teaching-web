@@ -209,6 +209,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
+		  console.log('Agora Exception', payload);
         // Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {

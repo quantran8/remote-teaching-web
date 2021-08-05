@@ -130,8 +130,6 @@ export class AgoraClient implements AgoraClientSDK {
     });
     this.client.on("user-unpublished", (user, mediaType) => {
       console.log("user-unpublished", user.uid, mediaType);
-	  const playerContainer = document.getElementById(`${user.uid}`);
-	  console.log('playerContainer', playerContainer);
       if (this.publishedVideosTimeout[user.uid]) {
         clearTimeout(this.publishedVideosTimeout[user.uid]);
       }

@@ -155,6 +155,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
+		console.log('Agora Exception', payload);
         // Logger.error("Exception", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
