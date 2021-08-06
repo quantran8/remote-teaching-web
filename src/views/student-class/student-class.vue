@@ -50,33 +50,40 @@
         <div v-show="studentIsDisconnected" class="sc-teacher__content">
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
         </div>
-        <div
-          class="sc-teacher__video"
-          :id="teacher?.id"
-          v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
-        ></div>
-        <div class="sc-teacher__avatar-container" v-if="!teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)">
-          <img class="sc-teacher__avatar" :src="avatarTeacher" />
-        </div>
-        <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
-          <div class="sc-independent__info-container">
-            <div class="sc-independent__avatar-container">
-              <img class="sc-independent__avatar-container__avatar" :src="avatarTeacher" />
+        <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__zoomOut" mode="out-in">
+          <div
+            class="sc-teacher__video"
+            :id="teacher?.id"
+            v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
+          ></div>
+        </transition>
+        <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__zoomOut" mode="out-in">
+          <div class="sc-teacher__avatar-container" v-if="!teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)">
+            <img class="sc-teacher__avatar" :src="avatarTeacher" />
+          </div>
+        </transition>
+        <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__zoomOut" mode="out-in">
+          <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
+            <div class="sc-independent__info-container">
+              <div class="sc-independent__avatar-container">
+                <img class="sc-independent__avatar-container__avatar" :src="avatarTeacher" />
+              </div>
+              <p class="sc-independent__text-size">{{ teacher?.name }}</p>
             </div>
-            <p class="sc-independent__text-size">{{ teacher?.name }}</p>
-          </div>
-          <div class="sc-independent__icon-container">
-            <img class="sc-independent__icon-container__size-talk" src="@/assets/images/talk.jpeg" />
-            <Lottie :options="iconSand" class="sc-independent__size-clock" />
-          </div>
-          <div class="sc-independent__info-container">
-            <div class="sc-independent__avatar-container">
-              <img class="sc-independent__avatar-container__avatar" :src="avatarStudentOneToOne" />
+            <div class="sc-independent__icon-container">
+              <img class="sc-independent__icon-container__size-talk" src="@/assets/images/talk.jpeg" />
+              <Lottie :options="iconSand" class="sc-independent__size-clock" />
             </div>
-            <p class="sc-independent__text-size">{{ studentOneName }}</p>
+            <div class="sc-independent__info-container">
+              <div class="sc-independent__avatar-container">
+                <img class="sc-independent__avatar-container__avatar" :src="avatarStudentOneToOne" />
+              </div>
+              <p class="sc-independent__text-size">{{ studentOneName }}</p>
+            </div>
           </div>
-        </div>
+        </transition>
       </div>
+
       <div class="sc-student">
         <StudentGalleryItem
           v-if="student"
