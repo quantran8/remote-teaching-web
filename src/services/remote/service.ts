@@ -63,6 +63,33 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     });
     return this.get(`student/next-session?${studentId}&`);
   }
+
+  teacherDrawLine(brushStrokes: string, roomId: string): Promise<any> {
+    return this.create(`draw/teacher/line`, {
+      brushesStroke: brushStrokes,
+      sessionId: roomId,
+    });
+  }
+  teacherAddShape(shapes: string[], roomId: string): Promise<any> {
+    return this.create(`draw/teacher/shape`, {
+      shapes: shapes,
+      sessionId: roomId,
+    });
+  }
+  studentDrawLine(brushStrokes: string[], studentId: string, roomId: string): Promise<any> {
+    return this.create(`draw/student/line`, {
+      brushesStroke: brushStrokes,
+      studentId: studentId,
+      sessionId: roomId,
+    });
+  }
+  studentAddShapes(shapes: string[], studentId: string, roomId: string): Promise<any> {
+    return this.create(`draw/student/line`, {
+      shapes: shapes,
+      studentId: studentId,
+      sessionId: roomId,
+    });
+  }
 }
 
 export const RemoteTeachingService = new GLRemoteTeachingService();
