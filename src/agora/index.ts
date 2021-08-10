@@ -188,11 +188,12 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
       this.microphoneTrack.on("track-ended", () => {
-        console.log("track-end");
-        this.microphoneTrack && this._closeMediaTrack(this.microphoneTrack);
+        console.log("track-ended micro");
       });
       this.microphoneError = null;
+      this.setupHotPluggingDevice("microphone");
     } catch (err) {
+      console.log("openMicrophone error", err);
       this.microphoneError = err;
     }
   }
@@ -214,10 +215,11 @@ export class AgoraClient implements AgoraClientSDK {
       const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
       await this._cameraTrack.setEncoderConfiguration(preset);
       this.cameraTrack.on("track-ended", () => {
-        this.cameraTrack && this._closeMediaTrack(this.cameraTrack);
+        console.log("track-ended camera");
       });
       this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
+      this.setupHotPluggingDevice("camera");
     } catch (err) {
       this.cameraError = err;
     }
@@ -311,6 +313,8 @@ export class AgoraClient implements AgoraClientSDK {
     this.microphoneError = null;
     this.subscribedAudios = [];
     this.subscribedVideos = [];
+    AgoraRTC.onMicrophoneChanged = undefined;
+    AgoraRTC.onCameraChanged = undefined;
   }
 
   cameraTimeout: any;
@@ -377,9 +381,8 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeAudiosTimeout: any = {};
   async _subscribeAudio(userId: string, isAutoResubscribe = false) {
     if (!isAutoResubscribe) {
-      clearTimeout(this.reSubscribeAudiosTimeout[userId]);
       if (this.reSubscribeAudiosTimeout[userId]) {
-        delete this.reSubscribeAudiosTimeout[userId];
+        clearTimeout(this.reSubscribeAudiosTimeout[userId]);
       }
       if (this.reSubscribeAudiosCount[userId]) {
         delete this.reSubscribeAudiosCount[userId];
@@ -392,6 +395,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
+      console.log(`audio of ${userId} played`);
       for (const [index, subscribedAudio] of this.subscribedAudios.entries()) {
         if (subscribedAudio.userId === userId) {
           this.subscribedAudios.splice(index, 1);
@@ -423,9 +427,8 @@ export class AgoraClient implements AgoraClientSDK {
   reSubscribeVideosTimeout: any = {};
   async _subscribeVideo(userId: string, isAutoResubscribe = false) {
     if (!isAutoResubscribe) {
-      clearTimeout(this.reSubscribeVideosTimeout[userId]);
       if (this.reSubscribeVideosTimeout[userId]) {
-        delete this.reSubscribeVideosTimeout[userId];
+        clearTimeout(this.reSubscribeVideosTimeout[userId]);
       }
       if (this.reSubscribeVideosCount[userId]) {
         delete this.reSubscribeVideosCount[userId];
@@ -438,6 +441,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
+      console.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {
           this.subscribedVideos.splice(index, 1);
@@ -484,4 +488,27 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.splice(trackIndex, 1);
     }
   }
+
+  setupHotPluggingDevice = (type: "camera" | "microphone") => {
+    if (type === "microphone") {
+      AgoraRTC.onMicrophoneChanged = async changedDevice => {
+        if (changedDevice.state === "ACTIVE") {
+          this.microphoneTrack.setDevice(changedDevice.device.deviceId);
+        } else if (changedDevice.device.label === this.microphoneTrack.getTrackLabel()) {
+          const oldMicrophones = await AgoraRTC.getMicrophones();
+          oldMicrophones[0] && this.microphoneTrack.setDevice(oldMicrophones[0].deviceId);
+        }
+      };
+    }
+    if (type === "camera") {
+      AgoraRTC.onCameraChanged = async changedDevice => {
+        if (changedDevice.state === "ACTIVE") {
+          this.cameraTrack.setDevice(changedDevice.device.deviceId);
+        } else if (changedDevice.device.label === this.cameraTrack.getTrackLabel()) {
+          const oldCameras = await AgoraRTC.getCameras();
+          oldCameras[0] && this.cameraTrack.setDevice(oldCameras[0].deviceId);
+        }
+      };
+    }
+  };
 }
