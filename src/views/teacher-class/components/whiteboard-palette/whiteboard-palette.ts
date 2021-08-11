@@ -162,15 +162,32 @@ export default defineComponent({
         await store.dispatch("teacherRoom/setShapesForStudent", shapes);
       }
     };
+    const isMouseDown = ref(false);
+    const listenToMouseDown = () => {
+      canvas.on("mouse:down", async () => {
+        isMouseDown.value = true;
+      });
+    };
+    const listenToMouseMove = () => {
+      canvas.on("mouse:move", async () => {
+        if (!isMouseDown.value) return;
+        if (toolSelected.value === Tools.Laser) {
+          const points = canvas.freeDrawingBrush._points;
+          const pathData = canvas.freeDrawingBrush.convertPointsToSVGPath(points);
+          const path = canvas.freeDrawingBrush.createPath(pathData.toString());
+          await store.dispatch("teacherRoom/setLaserPath", path);
+        }
+      });
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
-        if (toolSelected.value === "pen") {
+        isMouseDown.value = false;
+        if (toolSelected.value === Tools.Pen) {
           canvas.renderAll();
           await objectsCanvas();
         }
         if (toolSelected.value === Tools.Laser) {
           canvas.renderAll();
-          await objectsCanvas();
           laserDraw();
         }
         if (
@@ -200,6 +217,8 @@ export default defineComponent({
     };
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
+      listenToMouseDown();
+      listenToMouseMove();
       listenToMouseUp();
       listenCreatedPath();
       listenSelfTeacher();
