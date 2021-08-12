@@ -97,6 +97,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, _payload.browserFingerPrinting, isMuteAudio, isHideVideo);
     const eventHandler = useTeacherRoomWSHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
+    store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
+    store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
@@ -153,7 +155,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-        // Logger.error("Exception", payload);
+		console.log('agora-exception-event', payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
@@ -368,7 +370,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
     await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
   },
   async setBrush({ state }, payload: { drawing: string }) {
-    await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
+    // await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
+    if (!state.info) return;
+    try {
+      await RemoteTeachingService.teacherDrawLine(JSON.stringify(payload.drawing), state.info.id);
+    } catch (e) {
+      console.log(e);
+    }
   },
   async setClearBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
@@ -413,7 +421,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setListStudentLowBandWidth", p);
   },
   async setShapesForStudent({ state }, payload: Array<string>) {
-    await state.manager?.WSClient.sendRequestShapesForStudent(payload);
+    // await state.manager?.WSClient.sendRequestShapesForStudent(payload);
+    if (!state.info) return;
+    try {
+      await RemoteTeachingService.teacherAddShape(payload, state.info.id);
+    } catch (e) {
+      console.log(e);
+    }
   },
   async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
     const response = await InfoService.getAvatarTeacher(payload.teacherId);

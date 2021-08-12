@@ -12,6 +12,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
   const handler = {
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
+      commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,

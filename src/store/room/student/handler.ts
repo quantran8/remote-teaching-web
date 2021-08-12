@@ -25,6 +25,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
+	  commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
