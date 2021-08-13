@@ -76,12 +76,6 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       sessionId: sessionId,
     });
   }
-  teacherAddLaserPen(path: string, sessionId: string): Promise<any> {
-    return this.create(`draw/teacher/laser-pen`, {
-      path: path,
-      sessionId: sessionId,
-    });
-  }
   studentDrawLine(brushStrokes: string[], studentId: string, sessionId: string): Promise<any> {
     return this.create(`draw/student/line`, {
       brushesStroke: brushStrokes,
