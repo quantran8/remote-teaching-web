@@ -155,7 +155,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-		console.log('agora-exception-event', payload);
+        console.log("agora-exception-event", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
@@ -252,19 +252,27 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setTeacherAudio({ state, commit }, payload: DeviceMediaPayload) {
     if (state.microphoneLock) return;
     commit("setMicrophoneLock", { enable: true });
-    await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
-    await state.manager?.setMicrophone({ enable: payload.enable });
-    commit("setTeacherAudio", payload);
-    commit("setMicrophoneLock", { enable: false });
+    try {
+      await state.manager?.setMicrophone({ enable: payload.enable });
+      await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+      commit("setTeacherAudio", payload);
+      commit("setMicrophoneLock", { enable: false });
+    } catch (error) {
+      commit("setMicrophoneLock", { enable: false });
+    }
   },
 
   async setTeacherVideo({ state, commit }, payload: DeviceMediaPayload) {
     if (state.cameraLock) return;
     commit("setCameraLock", { enable: true });
-    await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
-    await state.manager?.setCamera({ enable: payload.enable, videoEncoderConfigurationPreset: "480p" });
-    commit("setTeacherVideo", payload);
-    commit("setCameraLock", { enable: false });
+    try {
+      await state.manager?.setCamera({ enable: payload.enable, videoEncoderConfigurationPreset: "480p" });
+      await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+      commit("setTeacherVideo", payload);
+      commit("setCameraLock", { enable: false });
+    } catch (error) {
+      commit("setCameraLock", { enable: false });
+    }
   },
   hideAllStudents({ commit, state }) {
     commit("hideAllStudents", {});
