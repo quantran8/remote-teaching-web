@@ -385,8 +385,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setWhiteboard({ state }, payload: WhiteboardPayload) {
     state.manager?.WSClient.sendRequestSetWhiteboard(payload.isShowWhiteBoard);
   },
-  setLaserPath({ state }, payload: string) {
-    state.manager?.WSClient.sendRequestDrawLaser(payload);
+  async setLaserPath({ state }, payload: string) {
+    // state.manager?.WSClient.sendRequestDrawLaser(payload);
+    if (!state.info) return;
+    try {
+      await RemoteTeachingService.teacherAddLaserPen(JSON.stringify(payload), state.info.id);
+    } catch (e) {
+      console.log(e);
+    }
   },
   setOnline({ commit }) {
     commit("setOnline");
