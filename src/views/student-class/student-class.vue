@@ -92,9 +92,7 @@
     <StudentGallery v-if="!showMessage" :currentStudent="student" :students="students" :isOneToOne="isOneToOne" />
     <div class="sc-message" v-else>
       <p class="message">{{ apiStatus.message }}</p>
-      <router-link to="/">
-        <div class="btn-homepage">{{ goToHomePageText }}</div>
-      </router-link>
+      <div @click="goToHomePage" class="btn-homepage">{{ goToHomePageText }}</div>
     </div>
   </div>
 </template>

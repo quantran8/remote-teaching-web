@@ -149,6 +149,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     );
     const eventHandler = useStudentRoomHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
+    store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
+    store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
@@ -207,7 +209,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-        // Logger.error("Exception", payload);
+        console.log("agora-exception-event", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
@@ -232,7 +234,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   async leaveRoom({ state, commit }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
-	commit({ type: "lesson/clearCacheImage" }, { root: true });
+    commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
   async loadRooms({ commit, state }, _payload: any) {
     if (!state.user) return;
@@ -244,12 +246,16 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
       commit("setMicrophoneLock", { enable: true });
-      await state.manager?.setMicrophone({ enable: payload.enable });
-      if (!payload.preventSendMsg) {
-        await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+      try {
+        await state.manager?.setMicrophone({ enable: payload.enable });
+        if (!payload.preventSendMsg) {
+          await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
+        }
+        commit("setStudentAudio", payload);
+        commit("setMicrophoneLock", { enable: false });
+      } catch (error) {
+        commit("setMicrophoneLock", { enable: false });
       }
-      commit("setStudentAudio", payload);
-      commit("setMicrophoneLock", { enable: false });
     } else {
       commit("setStudentAudio", payload);
     }
@@ -257,13 +263,17 @@ const actions: ActionTree<StudentRoomState, any> = {
   async setStudentVideo({ state, commit }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.cameraLock) return;
-      commit("setCameraLock", { enable: true });
-      await state.manager?.setCamera({ enable: payload.enable });
-      if (!payload.preventSendMsg) {
-        await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+      try {
+        commit("setCameraLock", { enable: true });
+        await state.manager?.setCamera({ enable: payload.enable });
+        if (!payload.preventSendMsg) {
+          await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
+        }
+        commit("setStudentVideo", payload);
+        commit("setCameraLock", { enable: false });
+      } catch (error) {
+        commit("setCameraLock", { enable: false });
       }
-      commit("setStudentVideo", payload);
-      commit("setCameraLock", { enable: false });
     } else {
       commit("setStudentVideo", payload);
     }
@@ -312,7 +322,13 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("clearLaserPen", p);
   },
   async studentAddShape({ state }, payload: Array<string>) {
-    await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload);
+    // await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload);
+    if (!state.info || !state.user) return;
+    try {
+      await RemoteTeachingService.studentAddShapes(payload, state.user.id, state.info.id);
+    } catch (e) {
+      console.log(e);
+    }
   },
   // async sendUnity({ state }, payload: {message : string}) {
   //   await state.manager?.WSClient.sendRequestUnity(payload.message);
@@ -354,7 +370,13 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
   },
   async studentDrawsLine({ state }, payload: Array<string>) {
-    await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
+    // await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
+    if (!state.info || !state.user) return;
+    try {
+      await RemoteTeachingService.studentDrawLine(payload, state.user.id, state.info.id);
+    } catch (e) {
+      console.log(e);
+    }
   },
 };
 

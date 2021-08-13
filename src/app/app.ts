@@ -60,12 +60,6 @@ export default defineComponent({
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
       const { pathname } = window.location;
-      if ((!isParent && !isTeacher) || (isParent && isTeacher)) {
-        if (pathname !== "/") {
-          location.pathname = "/";
-        }
-        return;
-      }
       if (isTeacher) {
         const matchIndex = pathname.search(PARENT_PATH_REGEX);
         if (matchIndex > -1) {

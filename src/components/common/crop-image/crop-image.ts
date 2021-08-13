@@ -1,4 +1,4 @@
-import { computed, defineComponent, onBeforeMount, onMounted, onUpdated, ref, watch } from "vue";
+import { computed, defineComponent, onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch } from "vue";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 import { useStore } from "vuex";
@@ -16,9 +16,9 @@ export default defineComponent({
 
     const isProcessing = ref<boolean>(false);
 
-    const cropData = computed(() => {
+    const currentCropData = computed(() => {
       return {
-        imageUrl: props.imageUrl ? props.imageUrl : {},
+        url: props.imageUrl ? props.imageUrl : {},
         metadata: props.metadata,
       };
     });
@@ -34,11 +34,11 @@ export default defineComponent({
       emit("img-load");
     };
 
-    const processImg = () => {
-      const metadata = props.metadata;
+    const processImg = (withCropData: { url: any; metadata: any }) => {
+      const { url, metadata } = withCropData;
 
       // checking if exist in cache
-      const cacheImage = findCachedImage({ url: props.imageUrl, metadata: metadata });
+      const cacheImage = findCachedImage({ url, metadata });
       if (cacheImage) {
         complete(cacheImage);
         return;
@@ -51,9 +51,12 @@ export default defineComponent({
             const base64String = cropper.getCroppedCanvas().toDataURL("image/png");
             cropper.destroy();
 
-            // save to cache
-            dispatch("lesson/storeCacheImage", { url: props.imageUrl, metadata: metadata, base64String: base64String });
-            complete(base64String);
+            dispatch("lesson/storeCacheImage", { url, metadata, base64String });
+
+            // update the image only when matched between processing cropdata and current cropdata
+            if (JSON.stringify(withCropData) === JSON.stringify(currentCropData.value)) {
+              complete(base64String);
+            }
           }
         },
         ready() {
@@ -87,19 +90,20 @@ export default defineComponent({
 
     onMounted(() => {
       // first time cropping image
-      processImg();
+      processImg({ ...currentCropData.value });
     });
 
-    watch(cropData, () => {
+    onUnmounted(() => {
+      croppedImageUrlRef.value = undefined;
+    });
+
+    watch(currentCropData, () => {
       // perform cropping again when crop data changed
       prepare();
     });
 
     onUpdated(() => {
-      // already crop image onMount, then skip. this block will work for next update cropData
-      if (isProcessing.value) {
-        processImg();
-      }
+      processImg({ ...currentCropData.value });
     });
 
     return { imgUrl, imageRef, isProcessing, onImageLoad };

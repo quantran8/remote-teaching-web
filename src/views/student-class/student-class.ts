@@ -26,6 +26,7 @@ import * as sandClock from "@/assets/lotties/sand-clock.json";
 import { ClassRoomStatus } from "@/models";
 import noAvatar from "@/assets/student-class/no-avatar.png";
 import { formatImageUrl } from "@/utils/utils";
+import { notification } from "ant-design-vue";
 
 const fpPromise = FingerprintJS.load();
 
@@ -216,8 +217,11 @@ export default defineComponent({
           showMessage.value = true;
           joinLoading.value = false;
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
-          showMessage.value = true;
-          joinLoading.value = false;
+          const message = apiStatus.value.message;
+          notification.info({
+            message: message,
+          });
+          await router.push(Paths.Parent);
         } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
           showMessage.value = true;
           joinLoading.value = false;
@@ -240,7 +244,9 @@ export default defineComponent({
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
       } catch (err) {
         if (err.code === ErrorCode.ConcurrentUserException) {
-          await store.dispatch("setToast", { message: err.message });
+          notification.error({
+            message: err.message,
+          });
         }
       }
     });
@@ -325,6 +331,14 @@ export default defineComponent({
         document.body.classList.remove("mobile-device");
       }
     };
+    const goToHomePage = async () => {
+      const currentNow = new Date().getTime() / 1000;
+      if (currentNow > loginInfo.expires_at) {
+        window.location.href = Paths.Parent;
+      } else {
+        await router.push(Paths.Parent);
+      }
+    };
     onMounted(() => {
       deviceMobile();
       window.addEventListener("resize", deviceMobile);
@@ -377,6 +391,7 @@ export default defineComponent({
       iconSand,
       studentOneName,
       joinLoading,
+      goToHomePage,
     };
   },
 });

@@ -99,22 +99,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	AuthGuard(to, from, next);
-//   try {
-//     AuthGuard(to, from, next);
-//     // TeacherGuard(to, from, next);
-//     // ParentGuard(to, from, next);
-//     // LayoutGuard(to, from, next);
-//     next();
-//   } catch (error) {
-//     if (error as RequireTeacherError) {
-//       next();
-//       store.dispatch("setAppView", { appView: AppView.UnAuthorized });
-//     } else if (error as RequireParentError) {
-//       next();
-//       store.dispatch("setAppView", { appView: AppView.UnAuthorized });
-//     }
-//   }
+  AuthGuard(to, from, next);
 });
 
 export default router;

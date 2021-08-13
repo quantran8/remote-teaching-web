@@ -6,6 +6,7 @@ import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 import { UserShape } from "@/store/annotation/state";
+import { notification } from "ant-design-vue";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -34,6 +35,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     },
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
+      commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
@@ -66,8 +68,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
       const student = state.students.find(student => student.id === payload.id);
       if (student && student.englishName) {
-        const message = `${student.englishName} left the class.`;
-        await dispatch("setToast", { message: message }, { root: true });
+        notification.warn({
+          message: `${student.englishName} left the class.`,
+        });
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
@@ -77,8 +80,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("studentDisconnectClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       if (student && student.englishName) {
-        const message = `${student.englishName} has lost connection.`;
-        await dispatch("setToast", { message: message }, { root: true });
+        notification.warn({
+          message: `${student.englishName} has lost connection.`,
+        });
       }
     },
     onStudentSendUnity: async (payload: any) => {
