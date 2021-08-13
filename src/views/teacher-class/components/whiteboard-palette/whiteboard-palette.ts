@@ -134,9 +134,6 @@ export default defineComponent({
           drawing: lastObject,
         });
       }
-      if (toolSelected.value === Tools.Laser) {
-        await store.dispatch("teacherRoom/setLaserPath", lastObject);
-      }
     };
     const laserDraw = () => {
       const laserPath = canvas.getObjects("path").pop();
