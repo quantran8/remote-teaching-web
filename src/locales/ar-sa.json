@@ -108,11 +108,11 @@
 	"layout.privacy_policy": "Privacy Policy",
 	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
 	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
-	"error.parent_not_have_this_student": "The parent account doesn't have this student",
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
-  	"teacher_class_lesson_plan.teaching_activity": "Teaching Activity",
-  	"teacher_class_lesson_plan.transition": "Transition",
+	"teacher_class_lesson_plan.teaching_activity": "Teaching Activity",
+	"teacher_class_lesson_plan.transition": "Transition",
+	"error.parent_not_have_this_student": "The parent account doesn't have this student",
 	"store.wait_your_teacher": "Please wait for your teacher",
-	"store.click_board_to_answer": "PPlease click on the board to answer."
+	"store.click_board_to_answer": "Please click on the board to answer."
 }
