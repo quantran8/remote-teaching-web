@@ -7,6 +7,9 @@ body {
   &.mobile-device {
     overflow: hidden;
   }
+  video {
+    display: none;
+  }
 }
 
 .nice-scroll {
@@ -42,4 +45,10 @@ body {
 }
 .d-none {
   display: none;
+}
+
+#app {
+  video {
+    display: inline-block !important;
+  }
 }
