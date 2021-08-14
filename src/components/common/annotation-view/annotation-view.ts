@@ -162,24 +162,19 @@ export default defineComponent({
     });
     const laserPathByTeacher = () => {
       if (laserPath.value) {
-        canvas.remove(
-          ...canvas
-            .getObjects()
-            .filter((obj: any) => obj.id === teacherForST.value.id)
-            .filter((obj: any) => obj.tag === "teacher-laser"),
-        );
         const laserPathLine = new fabric.Path.fromObject(JSON.parse(laserPath.value), (item: any) => {
-          item.tag = "teacher-laser";
-          if (oneOneStatus.value) {
-            if (studentOneAndOneId.value === student.value.id) {
-              canvas.add(item);
-            }
-          } else {
-            canvas.add(item);
-          }
           item.animate("opacity", "0", {
             duration: 1000,
             easing: fabric.util.ease.easeInOutExpo,
+            onChange: () => {
+              if (oneOneStatus.value) {
+                if (studentOneAndOneId.value === student.value.id) {
+                  canvas.add(item);
+                }
+              } else {
+                canvas.add(item);
+              }
+            },
             onComplete: async () => {
               canvas.remove(item);
               await store.dispatch("studentRoom/clearLaserPen", "");
@@ -334,7 +329,7 @@ export default defineComponent({
     const studentAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === student.value.id && obj.type !== "path") {
+        if (obj.id === student.value.id) {
           obj = obj.toJSON();
           obj.id = student.value.id;
           shapes.push(JSON.stringify(obj));
