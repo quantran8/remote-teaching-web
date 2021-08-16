@@ -145,6 +145,7 @@ export default defineComponent({
       isTurnOnCamera,
       isOneToOneStudent,
       avatarStudent,
+      oneAndOne,
     };
   },
 });
