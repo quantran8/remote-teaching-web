@@ -118,7 +118,7 @@ const mutations: MutationTree<StudentRoomState> = {
     const student = s.students.find(student => student.id === p.id);
     if (student) {
       student.videoEnabled = !p.isMuteVideo;
-      student.audioEnabled = !p.isMuteVideo;
+      student.audioEnabled = !p.isMuteAudio;
     }
   },
   updateRaisingHand(state: StudentRoomState, payload: { id: string; isRaisingHand: boolean }) {

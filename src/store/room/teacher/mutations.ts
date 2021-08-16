@@ -182,7 +182,7 @@ const mutations: TeacherRoomMutation<State> = {
     const student = s.students.find(student => student.id === p.id);
     if (student) {
       student.videoEnabled = !p.isMuteVideo;
-      student.audioEnabled = !p.isMuteVideo;
+      student.audioEnabled = !p.isMuteAudio;
     }
   },
   updateRaisingHand(state: State, payload: { id: string; isRaisingHand: boolean }): void {
