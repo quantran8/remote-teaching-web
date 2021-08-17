@@ -14,7 +14,7 @@ import { ClassRoomStatus } from "@/models";
 
 const fpPromise = FingerprintJS.load();
 
-const refreshTiming = 1000 * 10;
+const refreshTiming = 3000 * 10;
 
 export default defineComponent({
   components: {
@@ -153,7 +153,7 @@ export default defineComponent({
       window.removeEventListener("keyup", escapeEvent);
     });
 
-    const onTesterCloseModal = () => {
+    const onDevicesModalClose = () => {
       if (getRoomInfoTimeout.value) {
         clearTimeout(getRoomInfoTimeout.value);
         getRoomInfoTimeout.value = null;
@@ -192,7 +192,7 @@ export default defineComponent({
       goToClass,
       getRoomInfoError,
       getRoomInfoErrorByMsg,
-      onTesterCloseModal,
+      onDevicesModalClose,
     };
   },
 });
