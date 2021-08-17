@@ -75,12 +75,15 @@
           <div v-if="isParent" class="device-tester__cl-status--student">
             <div class="device-tester__cl-status--student__title">{{ ClassStatus }}</div>
             <div class="device-tester__cl-status--student__message">
-              <span v-if="!classIsActive">
-                {{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}
-              </span>
-              <span v-else>
+              <div v-if="!classIsActive">
+                {{ notDisplaySpinner ? getRoomInfoErrorByMsg : DefaultMessage1 }}
+                <div class="device-tester__cl-status--student__message--spin" v-if="!notDisplaySpinner">
+                  <Spin></Spin>
+                </div>
+              </div>
+              <div v-else>
                 {{ DefaultMessage2 }}
-              </span>
+              </div>
             </div>
             <div class="device-tester__cl-status--student__button">
               <div class="device-tester__cl-status--student__button--1">

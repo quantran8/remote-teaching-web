@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
-import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
+import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Spin } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
@@ -23,6 +23,7 @@ export default defineComponent({
     Button,
     Skeleton,
     Divider,
+    Spin,
   },
   props: [
     "classIsActive",
@@ -35,7 +36,7 @@ export default defineComponent({
     "fromParentComponent",
     "getRoomInfoErrorByMsg",
   ],
-  emits: ["go-to-class", "on-join-session"],
+  emits: ["go-to-class", "on-join-session", "on-close-modal"],
   async created() {
     const { dispatch } = useStore();
     dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
@@ -412,6 +413,13 @@ export default defineComponent({
       AgoraRTC.onMicrophoneChanged = undefined;
       AgoraRTC.onCameraChanged = undefined;
     });
+    const notDisplaySpinner = computed(() => props.getRoomInfoError !== 0);
+
+    watch(visible, currentVisibleValue => {
+      if (!currentVisibleValue) {
+        emit("on-close-modal");
+      }
+    });
 
     return {
       SystemCheck,
@@ -461,6 +469,7 @@ export default defineComponent({
       agoraMicError,
       handleGoToClassSuccess,
       preventCloseModal,
+      notDisplaySpinner,
     };
   },
 });
