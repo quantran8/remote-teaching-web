@@ -1,11 +1,15 @@
 @import "../../../../../style/abstracts/variables";
-
+.student-gallery {
+  height: 100%;
+}
 .oneToOne {
   position: absolute;
-  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  top: 0;
+  height: 100%;
+  width: 100%;
 }
 
 .no-students-message {
