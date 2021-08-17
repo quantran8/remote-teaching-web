@@ -21,6 +21,7 @@
       @go-to-class="goToClass"
       :classIsActive="classIsActive"
       ref="deviceTesterRef"
+      @on-close-modal="onTesterCloseModal"
     />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">
