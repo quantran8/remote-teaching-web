@@ -358,7 +358,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
     await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
   },
   async setBrush({ state }, payload: { drawing: string }) {
-    // await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
     if (!state.info) return;
     try {
       await RemoteTeachingService.teacherDrawLine(JSON.stringify(payload.drawing), state.info.id);
@@ -409,7 +408,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setListStudentLowBandWidth", p);
   },
   async setShapesForStudent({ state }, payload: Array<string>) {
-    // await state.manager?.WSClient.sendRequestShapesForStudent(payload);
     if (!state.info) return;
     try {
       await RemoteTeachingService.teacherAddShape(payload, state.info.id);

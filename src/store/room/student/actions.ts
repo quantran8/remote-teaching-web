@@ -322,7 +322,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("clearLaserPen", p);
   },
   async studentAddShape({ state }, payload: Array<string>) {
-    // await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload);
     if (!state.info || !state.user) return;
     try {
       await RemoteTeachingService.studentAddShapes(payload, state.user.id, state.info.id);
@@ -370,7 +369,6 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
   },
   async studentDrawsLine({ state }, payload: Array<string>) {
-    // await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
     if (!state.info || !state.user) return;
     try {
       await RemoteTeachingService.studentDrawLine(payload, state.user.id, state.info.id);
