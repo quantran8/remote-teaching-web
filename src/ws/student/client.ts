@@ -61,14 +61,7 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestUnity(message: string) {
     return this.send(WSCmd.STUDENT_ACTION_GAME, message);
   }
-  sendRequestStudentSetBrushstrokes(payload: any) {
-    return this.send(WSCmd.STUDENT_SET_BRUSH_STROKES, payload);
-  }
-
   sendRequestStudentLeaveClass(roomId?: string, studentId?: string) {
     return this.send(WSCmd.STUDENT_LEAVE_CLASS, { roomId, studentId });
-  }
-  sendRequestStudentDrawsLine(payload: any) {
-    return this.send(WSCmd.STUDENT_DRAWS_LINE, payload);
   }
 }

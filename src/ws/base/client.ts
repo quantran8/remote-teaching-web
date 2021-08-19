@@ -1,7 +1,6 @@
 import { GLGlobal } from "@/commonui";
-import { Logger } from "@/utils/logger";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
+import { StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
 import { store } from "@/store";
 import { ClassRoomStatus, SignalRStatus } from "@/models";
@@ -117,7 +116,6 @@ export class GLSocketClient {
 
   registerEventHandler(handler: WSEventHandler) {
     const handlers: Map<WSEvent, Function> = new Map<WSEvent, Function>();
-    handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
     handlers.set(StudentWSEvent.JOIN_CLASS, handler.onStudentJoinClass);
     handlers.set(StudentWSEvent.STREAM_CONNECT, handler.onStudentStreamConnect);
     handlers.set(StudentWSEvent.MUTE_AUDIO, handler.onStudentMuteAudio);

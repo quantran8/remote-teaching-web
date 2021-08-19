@@ -1,4 +1,4 @@
-import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
@@ -18,46 +18,8 @@ import { fmtMsg } from "@/commonui";
 import { StoreLocale } from "@/locales/localeid";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
-  const { commit, dispatch, state, getters } = store;
+  const { commit, dispatch, state } = store;
   const handler = {
-    onRoomInfo: async (payload: RoomModel) => {
-      commit("setRoomInfo", payload);
-      await dispatch("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
-      });
-      await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
-      await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
-        root: true,
-      });
-      await dispatch("interactive/setCurrentUserId", state.user?.id, {
-        root: true,
-      });
-      await dispatch("annotation/setInfo", payload.annotation, {
-        root: true,
-      });
-      await commit("setWhiteboard", payload.isShowWhiteBoard);
-      if (payload.studentOneToOne) {
-        await dispatch("studentRoom/setStudentOneId", { id: payload.studentOneToOne }, { root: true });
-        await dispatch("setClassView", { classView: ClassViewFromValue(payload.oneAndOneDto.focusTab) });
-        await commit("lesson/setCurrentExposure", { id: payload.oneAndOneDto.exposureSelected }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: payload.oneAndOneDto.itemContentSelected }, { root: true });
-        await commit("updateIsPalette", {
-          id: payload.oneAndOneDto.id,
-          isPalette: payload.oneAndOneDto.isEnablePalette,
-        });
-        await commit("setWhiteboard", payload.oneAndOneDto.isShowWhiteBoard);
-        await dispatch("annotation/setOneTeacherStrokes", payload.annotation.oneOneDrawing.brushstrokes, { root: true });
-        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.annotation.oneOneDrawing.shapes }, { root: true });
-        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.annotation.oneOneDrawing.shapes }, { root: true });
-        await dispatch("annotation/setOneStudentStrokes", payload.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
-      } else {
-        await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
-      }
-      if (payload.teacher.disconnectTime) {
-        commit("setTeacherDisconnected", true);
-      }
-    },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
         id: payload.id,
