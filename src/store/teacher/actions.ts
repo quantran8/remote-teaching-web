@@ -1,5 +1,6 @@
 import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
+import { Logger } from "@/utils/logger";
 import { ActionContext, ActionTree } from "vuex";
 import { TeacherState } from "./state";
 
@@ -74,7 +75,7 @@ const actions: ActionTree<TeacherState, any> = {
       const response = await TeacherService.getAccessibleSchools(payload);
       commit("setSchools", response);
     } catch (error) {
-      console.log("loadAccessibleSchools => error", error);
+      Logger.log("loadAccessibleSchools => error", error);
     }
   },
   async setAcceptPolicy({ commit }) {

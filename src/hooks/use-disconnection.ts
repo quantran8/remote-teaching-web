@@ -7,6 +7,7 @@ import { useRoute, useRouter } from "vue-router";
 import * as audioSource from "@/utils/audioGenerator";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { ClassRoomStatus, SignalRStatus } from "@/models";
+import { Logger } from "@/utils/logger";
 const fpPromise = FingerprintJS.load();
 
 //five minutes
@@ -117,7 +118,7 @@ export const useDisconnection = () => {
         Modal.warning({
           content: messageText.value,
           onOk: () => {
-            console.log("OK");
+            Logger.log("OK");
           },
         });
       }, STUDENT_LEAVE_ROOM_TIMING);

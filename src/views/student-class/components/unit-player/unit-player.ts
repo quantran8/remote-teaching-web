@@ -1,3 +1,4 @@
+import { Logger } from "@/utils/logger";
 import { ref, defineComponent, onUnmounted } from "vue";
 import { technologyType } from "./interfaces";
 
@@ -28,10 +29,10 @@ export default defineComponent({
         ],
       });
       video.addEventListener(amp.eventName.error, (payload: any) => {
-        console.log("Error details =>", payload);
+        Logger.log("Error details =>", payload);
       });
       video.addEventListener(amp.eventName.ended, (payload: any) => {
-        console.log("Ended details =>", payload);
+        Logger.log("Ended details =>", payload);
       });
       return video;
     };
@@ -63,7 +64,7 @@ export default defineComponent({
         videoPlayer.src([props.sourceVideo]);
         videoPlayer.autoplay();
       })
-      .catch(e => console.error("Could not found Azure Media Player plugin", e));
+      .catch(e => Logger.error("Could not found Azure Media Player plugin", e));
 
     onUnmounted(() => {
       videoPlayer.dispose();
