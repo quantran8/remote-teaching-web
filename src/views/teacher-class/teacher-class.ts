@@ -97,7 +97,7 @@ export default defineComponent({
     // const isGameView = computed(() => {
     //   return getters["teacherRoom/isGameView"];
     // });
-    // console.log(isGameView.value, 'game view');
+    // Logger.log(isGameView.value, 'game view');
 
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
@@ -178,13 +178,13 @@ export default defineComponent({
     };
 
     // const onUnityLoaderLoaded = () => {
-    //   console.info("onUnityLoaderLoaded");
+    //   Logger.info("onUnityLoaderLoaded");
     // };
     // const onUnityViewLoading = (progress: number) => {
-    //   console.info("onUnityViewLoading", progress);
+    //   Logger.info("onUnityViewLoading", progress);
     // };
     // const onUnityViewLoaded = () => {
-    //   console.info("onUnityViewLoaded");
+    //   Logger.info("onUnityViewLoaded");
     // };
     const isConnected = computed(() => getters["teacherRoom/isConnected"]);
     watch(isConnected, async () => {

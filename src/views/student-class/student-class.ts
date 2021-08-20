@@ -28,6 +28,7 @@ import noAvatar from "@/assets/student-class/no-avatar.png";
 import { formatImageUrl } from "@/utils/utils";
 import { notification } from "ant-design-vue";
 import "animate.css";
+import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
 
@@ -145,7 +146,7 @@ export default defineComponent({
           sourceVideo.src = defaultUrl;
         }
       } catch (error) {
-        console.log(error);
+        Logger.log(error);
       }
     });
 

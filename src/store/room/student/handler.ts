@@ -16,6 +16,7 @@ import { reactive } from "vue";
 import { notification } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
 import { StoreLocale } from "@/locales/localeid";
+import { Logger } from "@/utils/logger";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
   const { commit, dispatch, state } = store;
@@ -25,7 +26,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         id: payload.id,
         status: payload.connectionStatus,
       });
-	  commit("updateMediaStatus", payload);
+      commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
@@ -45,7 +46,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
-      console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+      Logger.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -54,10 +55,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (_payload: any) => {
-      //   console.log(_payload);
+      //   Logger.log(_payload);
     },
     onStudentSendUnity: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentMuteAudio: (payload: StudentModel) => {
       commit("setStudentAudio", {
@@ -165,7 +166,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherDisconnect: async (payload: any) => {
-      console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
+      Logger.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
       commit("setTeacherDisconnected", true);
       notification.warn({
         message: fmtMsg(StoreLocale.WaitYourTeacher),
@@ -217,10 +218,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onStudentRaisingHand: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentLike: async (payload: StudentModel) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherClearRaisingHand: (payload: any) => {
       commit("setStudentRaisingHand", {
@@ -262,7 +263,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onStudentUpdateAnswers: async (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherSetPointer: async (payload: Pointer) => {
       await dispatch("annotation/setPointer", payload, {
