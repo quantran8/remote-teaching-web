@@ -5,6 +5,7 @@ import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-
 import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
+import { Logger } from "@/utils/logger";
 
 interface DeviceType {
   deviceId: string;
@@ -76,14 +77,14 @@ export default defineComponent({
       try {
         videoTrack = await AgoraRTC.createCameraVideoTrack();
       } catch (error) {
-        console.log("setupAgora error when create videoTrack =>", error);
+        Logger.log("setupAgora error when create videoTrack =>", error);
         preventCloseModal.value = false;
         agoraCamError.value = true;
       }
       try {
         audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       } catch (error) {
-        console.log("setupAgora error when create audioTrack =>", error);
+        Logger.log("setupAgora error when create audioTrack =>", error);
         preventCloseModal.value = false;
         agoraMicError.value = true;
       }
@@ -107,13 +108,13 @@ export default defineComponent({
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
-            console.log("Error when play video => ", error);
+            Logger.log("Error when play video => ", error);
           }
         } else {
           preventCloseModal.value = false;
         }
       } catch (error) {
-        console.log("setupCam error => ", error);
+        Logger.log("setupCam error => ", error);
         agoraCamError.value = true;
       }
       try {
@@ -129,7 +130,7 @@ export default defineComponent({
           }
         }
       } catch (error) {
-        console.log("setupMic error => ", error);
+        Logger.log("setupMic error => ", error);
         agoraMicError.value = true;
       }
     };
@@ -165,7 +166,7 @@ export default defineComponent({
           }
         }
       } catch (error) {
-        console.log("setupMic error => ", error);
+        Logger.log("setupMic error => ", error);
         agoraMicError.value = true;
       }
     };
@@ -188,7 +189,7 @@ export default defineComponent({
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
-            console.log("Error when play video => ", error);
+            Logger.log("Error when play video => ", error);
           }
         } else {
           currentCamLabel.value = cams[0]?.label;
@@ -197,7 +198,7 @@ export default defineComponent({
           preventCloseModal.value = false;
         }
       } catch (error) {
-        console.log("setupCam error => ", error);
+        Logger.log("setupCam error => ", error);
         agoraCamError.value = true;
       }
     };
@@ -305,7 +306,7 @@ export default defineComponent({
         await localTracks.value.audioTrack.setDevice(micId);
         currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
       } catch (error) {
-        console.log("Error => ", error);
+        Logger.log("Error => ", error);
       }
     };
 
@@ -314,7 +315,7 @@ export default defineComponent({
         await localTracks.value.videoTrack.setDevice(camId);
         currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
       } catch (error) {
-        console.log("Error => ", error);
+        Logger.log("Error => ", error);
       }
     };
 

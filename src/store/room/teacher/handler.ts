@@ -7,6 +7,7 @@ import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 import { UserShape } from "@/store/annotation/state";
 import { notification } from "ant-design-vue";
+import { Logger } from "@/utils/logger";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -24,7 +25,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentMuteAudio: async (payload: StudentModel) => {
       commit("setStudentAudio", {
@@ -51,7 +52,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
-      console.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+      Logger.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       const student = state.students.find(student => student.id === payload.id);
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
@@ -72,16 +73,16 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       );
     },
     onTeacherJoinClass: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherStreamConnect: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherMuteAudio: (payload: TeacherModel) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherMuteVideo: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherMuteStudentVideo: async (payload: any) => {
       //   await dispatch("updateAudioAndVideoFeed", {});
@@ -90,11 +91,11 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //   await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentVideo: async (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherMuteAllStudentAudio: async (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherDisableAllStudentPallete: async (payload: any) => {
@@ -104,10 +105,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await commit("teacherRoom/setAnnotationStatus", payload, { root: true });
     },
     onTeacherEndClass: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherDisconnect: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherSetFocusTab: (payload: number) => {
       commit("setClassView", {
@@ -181,7 +182,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("interactive/setInfo", payload, { root: true });
     },
     onStudentAnswerSelf: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentAnswerAll: async (payload: any) => {
       await dispatch("interactive/setRevealedTarget", payload.id, {
@@ -194,10 +195,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       });
     },
     onTeacherSetPointer: async (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherUpdateAnnotationMode: async (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherAddBrush: async (payload: any) => {
       await dispatch("annotation/addShape", payload, {
@@ -215,16 +216,16 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
     },
     onTeacherDeleteBrush(payload: any) {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherSetStickers(payload: any) {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherClearStickers(payload: any) {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherSendUnity(payload: any) {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherSetOneToOne: async (payload: any) => {
       if (payload) {
@@ -269,7 +270,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
     onTeacherDrawLaser: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentSetBrushstrokes: async (payload: any) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
