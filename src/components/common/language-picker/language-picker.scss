@@ -1,3 +1,5 @@
+@import "./src/style/abstracts/variables";
+
 .language-picker {
   display: flex;
   flex-direction: column;
@@ -8,9 +10,7 @@
     display: flex;
     align-items: center;
     color: white;
-    display: flex;
     justify-content: space-between;
-    align-items: center;
     span {
       display: inline-block;
     }
@@ -38,5 +38,13 @@
         height: 30px;
       }
     }
+  }
+  &.desktop {
+    @media (max-width: $lg) {
+      display: none;
+    }
+  }
+  &.mobile {
+    margin-bottom: 15px;
   }
 }
