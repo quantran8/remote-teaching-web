@@ -60,7 +60,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
-        await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.focusTab) });
+        await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
         await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
         await commit("updateIsPalette", {
@@ -79,7 +79,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setTeacherDisconnected", true);
       }
       commit("setClassView", {
-        classView: ClassViewFromValue(roomResponse.data.focusTab),
+        classView: ClassViewFromValue(roomResponse.data.teachingMode),
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {

@@ -100,7 +100,7 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
-    s.classView = ClassViewFromValue(p.focusTab);
+    s.classView = ClassViewFromValue(p.teachingMode);
     s.students = p.students.map((st, index) => {
       return {
         id: st.id,
