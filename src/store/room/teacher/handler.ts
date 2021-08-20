@@ -110,7 +110,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherDisconnect: (payload: any) => {
       //   Logger.log(payload);
     },
-    onTeacherSetFocusTab: (payload: number) => {
+    onTeacherSetTeachingMode: (payload: number) => {
       commit("setClassView", {
         classView: ClassViewFromValue(payload),
       });

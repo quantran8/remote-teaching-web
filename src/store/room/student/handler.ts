@@ -177,7 +177,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherSetFocusTab: (payload: number) => {
+    onTeacherSetTeachingMode: (payload: number) => {
       dispatch("setClassView", {
         classView: ClassViewFromValue(payload),
       });
