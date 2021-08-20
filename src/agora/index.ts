@@ -13,6 +13,7 @@ import AgoraRTC, {
 import { isEqual } from "lodash";
 import { AgoraRTCErrorCode } from "./interfaces";
 import { store } from "@/store";
+import { Logger } from "@/utils/logger";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -90,7 +91,7 @@ export class AgoraClient implements AgoraClientSDK {
     if (this._client || this.joined) return;
     this._client = this.agoraRTC.createClient(this.clientConfig);
     this.client.on("user-published", (user, mediaType) => {
-      console.log("user-published", user.uid, mediaType);
+      Logger.log("user-published", user.uid, mediaType);
       if (mediaType === "video") {
         if (this.publishedVideosTimeout[user.uid]) {
           clearTimeout(this.publishedVideosTimeout[user.uid]);
@@ -101,7 +102,7 @@ export class AgoraClient implements AgoraClientSDK {
               this.subscribedVideos.splice(index, 1);
             }
           }
-          console.log("video starting update ...");
+          Logger.log("video starting update ...");
           if (this.options.user?.role === "host") {
             store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
           } else {
@@ -119,7 +120,7 @@ export class AgoraClient implements AgoraClientSDK {
               this.subscribedAudios.splice(index, 1);
             }
           }
-          console.log("audio starting update ...");
+          Logger.log("audio starting update ...");
           if (this.options.user?.role === "host") {
             store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
           } else {
@@ -129,7 +130,7 @@ export class AgoraClient implements AgoraClientSDK {
       }
     });
     this.client.on("user-unpublished", (user, mediaType) => {
-      console.log("user-unpublished", user.uid, mediaType);
+      Logger.log("user-unpublished", user.uid, mediaType);
       if (this.publishedVideosTimeout[user.uid]) {
         clearTimeout(this.publishedVideosTimeout[user.uid]);
       }
@@ -143,10 +144,10 @@ export class AgoraClient implements AgoraClientSDK {
       }
     });
     this.client.on("user-left", user => {
-      console.log("user-left", user.uid);
+      Logger.log("user-left", user.uid);
     });
     this.client.on("user-joined", user => {
-      console.log("user-joined", user.uid);
+      Logger.log("user-joined", user.uid);
     });
     this.agoraRTC.setLogLevel(3);
     await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
@@ -164,9 +165,9 @@ export class AgoraClient implements AgoraClientSDK {
     this.client.on("volume-indicator", handler.onVolumeIndicator);
     this.client.on("network-quality", handler.onLocalNetworkUpdate);
     this.client.on("connection-state-change", (currentState, prevState, reason) => {
-      console.log("connection state changed! => currentState", currentState);
-      console.log("connection state changed! => prevState", prevState);
-      console.log("connection state changed! => reason", reason);
+      Logger.log("connection state changed! => currentState", currentState);
+      Logger.log("connection state changed! => prevState", prevState);
+      Logger.log("connection state changed! => reason", reason);
     });
   }
 
@@ -188,12 +189,12 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       this._microphoneTrack = await this.agoraRTC.createMicrophoneAudioTrack();
       this.microphoneTrack.on("track-ended", () => {
-        console.log("track-ended micro");
+        Logger.log("track-ended micro");
       });
       this.microphoneError = null;
       this.setupHotPluggingDevice("microphone");
     } catch (err) {
-      console.log("openMicrophone error", err);
+      Logger.log("openMicrophone error", err);
       this.microphoneError = err;
     }
   }
@@ -215,7 +216,7 @@ export class AgoraClient implements AgoraClientSDK {
       const preset = <VideoEncoderConfigurationPreset>videoEncoderConfigurationPreset;
       await this._cameraTrack.setEncoderConfiguration(preset);
       this.cameraTrack.on("track-ended", () => {
-        console.log("track-ended camera");
+        Logger.log("track-ended camera");
       });
       this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
@@ -395,7 +396,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
-      console.log(`audio of ${userId} played`);
+      Logger.log(`audio of ${userId} played`);
       for (const [index, subscribedAudio] of this.subscribedAudios.entries()) {
         if (subscribedAudio.userId === userId) {
           this.subscribedAudios.splice(index, 1);
@@ -403,7 +404,7 @@ export class AgoraClient implements AgoraClientSDK {
       }
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-      console.error("_subscribeAudio", err);
+      Logger.error("_subscribeAudio", err);
       const inAudios = this.audios.find(i => i === userId);
       if (inAudios) {
         if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
@@ -441,7 +442,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId);
-      console.log(`video of ${userId} played`);
+      Logger.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {
           this.subscribedVideos.splice(index, 1);
@@ -449,7 +450,7 @@ export class AgoraClient implements AgoraClientSDK {
       }
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
     } catch (err) {
-      console.error("_subscribeVideo", err);
+      Logger.error("_subscribeVideo", err);
       const inVideos = this.videos.find(i => i === userId);
       if (inVideos) {
         if (this.reSubscribeVideosCount[userId] === LIMIT_COUNT) {

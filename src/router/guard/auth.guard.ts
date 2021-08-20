@@ -4,6 +4,7 @@ import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 import { store } from "@/store";
 import { AppView } from "@/store/app/state";
 import { LayoutGuard, ParentGuard, TeacherGuard } from ".";
+import { Logger } from "@/utils/logger";
 
 const isTokenExpired = () => {
   const { getTokenParam } = AuthService.getTokenUrlParams();
@@ -13,7 +14,7 @@ const isTokenExpired = () => {
 
 const verifySession = () => {
   if (isTokenExpired()) {
-    console.log("token expired");
+    Logger.log("token expired");
     const abortSignin = () => {
       locationReplace("/");
       return Promise.reject();
@@ -69,7 +70,7 @@ export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next
       AuthService.signoutRedirectCallback()
         .then(onSignedOut)
         .catch(e => {
-          console.error(e);
+          Logger.error(e);
         });
     } else if (hasIdTokenInUrl) {
       verifySession().then(() => {

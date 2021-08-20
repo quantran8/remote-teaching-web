@@ -11,6 +11,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
+import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
 
@@ -94,6 +95,7 @@ export default defineComponent({
       };
       await getRoomInfo();
     };
+
     const getNextSessionInfo = async () => {
       try {
         const listIds = children.value.map((child: any) => {
@@ -104,7 +106,7 @@ export default defineComponent({
           listSessionInfo.value = response;
         }
       } catch (err) {
-        console.log(err);
+        Logger.log(err);
       }
     };
     const studentNextSessionInfo = (childrenId: string) => {

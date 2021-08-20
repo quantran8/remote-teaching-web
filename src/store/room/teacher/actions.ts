@@ -28,6 +28,7 @@ import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
+import { Logger } from "@/utils/logger";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -139,7 +140,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         time += 1;
         if (currentBandwidth && time % 10 === 0) {
           //mean 5 minutes
-          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
+          Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putTeacherBandwidth(currentBandwidth.toFixed(2));
           currentBandwidth = 0;
         }
@@ -147,15 +148,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }, 30000); // 30000 = 30 seconds
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (user, mediaType) => {
-        console.log("user-published", user.uid, mediaType);
+        Logger.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: (user, mediaType) => {
-        console.log("user-unpublished", user.uid, mediaType);
+        Logger.log("user-unpublished", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-        console.log("agora-exception-event", payload);
+        Logger.log("agora-exception-event", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
@@ -231,7 +232,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       }
       commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
-      console.log("initClassRoom error =>", err);
+      Logger.log("initClassRoom error =>", err);
       //   await router.push(Paths.Home);
     }
   },
@@ -382,7 +383,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     try {
       await RemoteTeachingService.teacherDrawLine(JSON.stringify(payload.drawing), state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
   async setClearBrush({ state }, payload: {}) {
@@ -432,7 +433,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     try {
       await RemoteTeachingService.teacherAddShape(payload, state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
   async getAvatarTeacher({ commit }, payload: { teacherId: string }) {

@@ -13,6 +13,7 @@ import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
+import { Logger } from "@/utils/logger";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -87,7 +88,7 @@ const actions: ActionTree<StudentRoomState, any> = {
           code: GLErrorCode.DISCONNECT,
           message: "",
         });
-        return console.log(error);
+        return Logger.log(error);
       }
       if (error.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Home);
@@ -224,7 +225,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         time += 1;
         if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) {
           //mean 5 minutes
-          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
+          Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2));
           currentBandwidth = 0;
         }
@@ -232,21 +233,21 @@ const actions: ActionTree<StudentRoomState, any> = {
     }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: (user, mediaType) => {
-        console.log("user-published", user.uid, mediaType);
+        Logger.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: (user, mediaType) => {
-        console.log("user-unpublished", user.uid, mediaType);
+        Logger.log("user-unpublished", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-        console.log("agora-exception-event", payload);
+        Logger.log("agora-exception-event", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        //   console.log(payload);
+        //   Logger.log(payload);
       },
     });
   },
@@ -357,7 +358,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     try {
       await RemoteTeachingService.studentAddShapes(payload, state.user.id, state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
   // async sendUnity({ state }, payload: {message : string}) {
@@ -404,7 +405,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     try {
       await RemoteTeachingService.studentDrawLine(payload, state.user.id, state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
 };

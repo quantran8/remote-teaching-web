@@ -1,21 +1,10 @@
-import {
-  UserManager,
-  WebStorageStateStore,
-  UserManagerSettings,
-  User,
-} from "oidc-client";
-import {
-  OidcStorageKeys,
-  OidcCallbackPath,
-  clearAppLocalStorageData,
-  LoginInfo,
-  GLUtil,
-  GLGlobal,
-} from "../utils";
+import { UserManager, WebStorageStateStore, UserManagerSettings, User } from "oidc-client";
+import { OidcStorageKeys, OidcCallbackPath, clearAppLocalStorageData, LoginInfo, GLUtil, GLGlobal } from "../utils";
 import { LocationDescriptor } from "history";
 import AccountService from "./account.service";
 import ResourceService from "./resource.service";
 import { store } from "@/store";
+import { Logger } from "@/utils/logger";
 
 class RedirectNavigator {
   prepare() {
@@ -24,7 +13,7 @@ class RedirectNavigator {
 
   navigate(params: any) {
     if (!params || !params.url) {
-      console.error("RedirectNavigator.navigate: No url provided");
+      Logger.error("RedirectNavigator.navigate: No url provided");
       return Promise.reject(new Error("No url provided"));
     }
     // window.location = params.url;
@@ -144,13 +133,8 @@ class ClientStorage {
   removeOidc() {
     try {
       this.keys()
-        .filter(
-          (key) =>
-            key.startsWith("oidc.") ||
-            key.startsWith("gl.cdio.") ||
-            key.startsWith("signinstateid")
-        )
-        .forEach((key) => {
+        .filter(key => key.startsWith("oidc.") || key.startsWith("gl.cdio.") || key.startsWith("signinstateid"))
+        .forEach(key => {
           this.removeItem(key);
         });
     } catch (error) {
@@ -189,7 +173,7 @@ class AuthServiceClass {
     this.userManager = new UserManager(this.settings);
 
     this.userManager.events.addAccessTokenExpired(function() {
-      console.log("addAccessTokenExpired");
+      Logger.log("addAccessTokenExpired");
     });
 
     this.userManager.events.addUserSignedOut(() => {
@@ -200,24 +184,18 @@ class AuthServiceClass {
   }
 
   public getUser(): Promise<LoginInfo> {
-    return this.userManager
-      .getUser()
-      .then((user) => Promise.resolve(this.processUser(user)) as any);
+    return this.userManager.getUser().then(user => Promise.resolve(this.processUser(user)) as any);
   }
 
   public processUser(user: any) {
     if (user && !GLUtil.isExpired(user)) {
       if (!user.profile.roles || user.profile.roles.length === 0) {
         const role = user.profile.role;
-        user.profile.roles = role
-          ? role instanceof Array
-            ? role
-            : [role]
-          : [];
-        user.profile.roleInfos = (user.profile.roleinfos
-          ? JSON.parse(user.profile.roleinfos)
-          : []
-        ).map((info: any) => ({ id: info.Id, name: info.Name }));
+        user.profile.roles = role ? (role instanceof Array ? role : [role]) : [];
+        user.profile.roleInfos = (user.profile.roleinfos ? JSON.parse(user.profile.roleinfos) : []).map((info: any) => ({
+          id: info.Id,
+          name: info.Name,
+        }));
       }
       return { loggedin: true, ...user };
     }
@@ -240,9 +218,7 @@ class AuthServiceClass {
   }
 
   public signinRedirectCallback(url?: string): Promise<User> {
-    return this.userManager
-      .signinRedirectCallback(url)
-      .then((user) => Promise.resolve(this.processUser(user)) as any);
+    return this.userManager.signinRedirectCallback(url).then(user => Promise.resolve(this.processUser(user)) as any);
   }
 
   public getAccessToken(): Promise<string> {
@@ -269,7 +245,7 @@ class AuthServiceClass {
       JSON.stringify({
         afterSignin: pageAfterSignin,
         shouldSignin: this.getRedirectPath(GLUtil.parsePath()),
-      })
+      }),
     );
   }
 
@@ -300,48 +276,30 @@ class AuthServiceClass {
       JSON.stringify({
         afterSignout: pageAfterSignout,
         currentSignout: this.getRedirectPath(GLUtil.parsePath()),
-      })
+      }),
     );
   }
 
   private getRedirectPath(path: { pathname: string; hash: string }) {
-    const oidcPaths = [
-      OidcCallbackPath.signin,
-      OidcCallbackPath.signinSilent,
-      OidcCallbackPath.signout,
-      OidcCallbackPath.ssoSignout,
-    ];
-    return oidcPaths.some(
-      (oidcPath) =>
-        path.pathname.indexOf(oidcPath) > -1 || path.hash.indexOf(oidcPath) > -1
-    )
-      ? "/"
-      : path;
+    const oidcPaths = [OidcCallbackPath.signin, OidcCallbackPath.signinSilent, OidcCallbackPath.signout, OidcCallbackPath.ssoSignout];
+    return oidcPaths.some(oidcPath => path.pathname.indexOf(oidcPath) > -1 || path.hash.indexOf(oidcPath) > -1) ? "/" : path;
   }
 
   private signinRedirect(args?: any): Promise<any> {
-    return (this.userManager as any)._signinStart(
-      args,
-      new RedirectNavigator()
-    );
+    return (this.userManager as any)._signinStart(args, new RedirectNavigator());
   }
 
-  static signinStart(
-    mgr: UserManager,
-    args: any,
-    navigator: RedirectNavigator,
-    navigatorParams: any = {}
-  ) {
-    return navigator.prepare().then((handle) => {
+  static signinStart(mgr: UserManager, args: any, navigator: RedirectNavigator, navigatorParams: any = {}) {
+    return navigator.prepare().then(handle => {
       return mgr
         .createSigninRequest({ state: window.location.href })
-        .then((signinRequest) => {
+        .then(signinRequest => {
           navigatorParams.url = signinRequest.url;
           navigatorParams.id = signinRequest.state.id;
 
           return handle.navigate(navigatorParams);
         })
-        .catch((err) => {
+        .catch(err => {
           // if (handle.close) {
           // 	handle.close();
           // }
@@ -356,19 +314,19 @@ class AuthServiceClass {
 
   public useLocalStoreToLogin() {
     return this.getUser()
-      .then((user) => this.mergeLoginInfo(user))
-      .catch((e) => Promise.reject(e));
+      .then(user => this.mergeLoginInfo(user))
+      .catch(e => Promise.reject(e));
   }
 
   private mergeLoginInfo(user: any) {
     return Promise.resolve(this.processUser(user))
       .then(this.accessTokenScope(this.appendUserAvatarInfo.bind(this)) as any)
-	  .then(this.appendRemoteTsiSettings.bind(this))
+      .then(this.appendRemoteTsiSettings.bind(this))
       .then((loginInfo: any) => {
         this.setLoginInfo(true, loginInfo);
         return Promise.resolve(loginInfo);
       })
-      .catch((e) => Promise.reject(e));
+      .catch(e => Promise.reject(e));
   }
 
   private appendUserAvatarInfo(loginInfo: LoginInfo) {
@@ -377,7 +335,7 @@ class AuthServiceClass {
         resolve(loginInfo);
       } else if (!loginInfo.profile.avatarUrl) {
         this.setUserAvatar(loginInfo)
-          .then((avatarResult) => {
+          .then(avatarResult => {
             resolve(avatarResult);
           })
           .catch(() => resolve(loginInfo));
@@ -393,7 +351,7 @@ class AuthServiceClass {
         resolve(loginInfo);
       } else if (!loginInfo.profile.remoteTsiSettings) {
         this.setRemoteTsiSettings(loginInfo)
-          .then((settings) => {
+          .then(settings => {
             resolve(settings);
           })
           .catch(() => resolve(loginInfo));
@@ -406,7 +364,7 @@ class AuthServiceClass {
   private accessTokenScope(func: (loginInfo: LoginInfo) => Promise<LoginInfo>) {
     return (loginInfo: LoginInfo) => {
       this.accessToken = loginInfo.access_token;
-      return func(loginInfo).then((formatted) => {
+      return func(loginInfo).then(formatted => {
         this.accessToken = null;
         return Promise.resolve(formatted);
       });
@@ -416,9 +374,7 @@ class AuthServiceClass {
   public getTokenUrlParams() {
     const vals = window.location.hash.replace(/^#?(.*)$/, "$1").split("&");
     const getParam: any = (key: any) => {
-      const params = vals
-        .filter((p) => p.startsWith(`${key}=`))
-        .map((p) => p.split("=")[1]);
+      const params = vals.filter(p => p.startsWith(`${key}=`)).map(p => p.split("=")[1]);
       return params.length > 0 ? params[0] : null;
     };
     const getTokenParam = (key: any) => {
@@ -450,12 +406,12 @@ class AuthServiceClass {
             id: id,
             nonce: tokens.nonce,
             redirect_uri: this.settings.redirect_uri,
-          })
+          }),
         );
       }
     } catch (e) {
       // diagnosticLogError({ error: e })
-      console.error(e);
+      Logger.error(e);
     }
   }
 
@@ -463,19 +419,17 @@ class AuthServiceClass {
     this.storePageAfterSignin(pageAfterSignin);
 
     this.signinRedirect()
-      .then((nv) => {
+      .then(nv => {
         nv.navigate();
       })
-      .catch((e) => {
+      .catch(e => {
         // diagnosticLogError({ error: e })
-        console.error(e);
+        Logger.error(e);
       });
   }
 
   public getPageAfterSignout() {
-    return JSON.parse(
-      sessionStorage.getItem(OidcStorageKeys.pageaftersignout)!
-    );
+    return JSON.parse(sessionStorage.getItem(OidcStorageKeys.pageaftersignout)!);
   }
 
   public clearSignStorage() {
@@ -488,17 +442,10 @@ class AuthServiceClass {
   }
 
   public clearState() {
-    return Promise.all([
-      this.userManager.removeUser(),
-      this.userManager.clearStaleState(),
-    ]);
+    return Promise.all([this.userManager.removeUser(), this.userManager.clearStaleState()]);
   }
 
-  public setLoginInfo(
-    isSignIn: boolean,
-    loginInfo: LoginInfo | null,
-    callback?: (d: any) => void
-  ) {
+  public setLoginInfo(isSignIn: boolean, loginInfo: LoginInfo | null, callback?: (d: any) => void) {
     const payload = this.processUser(loginInfo);
 
     if (callback) {
@@ -514,7 +461,7 @@ class AuthServiceClass {
 
   public localSilentLogin() {
     if (!window.location.href.includes("oidc")) {
-      this.getUser().then((loginInfo) => {
+      this.getUser().then(loginInfo => {
         if (loginInfo.loggedin) {
           this.setLoginInfo(true, loginInfo);
         } else {
@@ -534,10 +481,7 @@ class AuthServiceClass {
 
   private setUserAvatar(loginInfo: LoginInfo): Promise<LoginInfo> {
     return new Promise((resolve, reject) => {
-      this.getUserAvatarUrl(
-        loginInfo.profile.sub,
-        this.getExpiringInMinutes(loginInfo)
-      )
+      this.getUserAvatarUrl(loginInfo.profile.sub, this.getExpiringInMinutes(loginInfo))
         .then((userAvatarUrl: string) => {
           loginInfo.profile.avatarUrl = userAvatarUrl;
           resolve(loginInfo);
@@ -561,9 +505,9 @@ class AuthServiceClass {
     });
   }
 
-private getRemoteTsiSettings(){
-	return ResourceService.getRemoteTsiSettings();
-}
+  private getRemoteTsiSettings() {
+    return ResourceService.getRemoteTsiSettings();
+  }
 
   private getUserAvatarUrl(userId: string, expirationInMinutes: any): any {
     return AccountService.getUserAvatarUrl(userId, expirationInMinutes);
