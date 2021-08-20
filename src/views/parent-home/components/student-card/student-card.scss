@@ -1,7 +1,17 @@
+@import "./src/style/abstracts/variables";
+
 .user-container {
-  flex-direction: column;
   margin: 2rem;
   padding: 1rem;
+  width: 200px;
+  @media (max-width: $md) {
+    margin: 10px;
+    padding: 10px;
+    flex-grow: 1;
+  }
+  @media (max-width: $sm) {
+    width: 150px;
+  }
   .user-name {
     font-size: 16px;
     font-weight: 500;

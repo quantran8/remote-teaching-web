@@ -1,3 +1,5 @@
+@import "./src/style/abstracts/variables";
+
 .header {
   background-color: #00591b;
   color: white;
@@ -6,8 +8,10 @@
   align-items: center;
   height: 60px;
   .logo {
-    height: 48px;
-    margin: 0 16px;
+    margin: 0 15px;
+    @media (max-width: $md) {
+      max-width: 150px;
+    }
   }
   .h-spacer {
     height: 24px;
@@ -18,62 +22,26 @@
     flex: 1;
     .title {
       font-size: 20px;
-      padding: 16px;
-    }
-  }
-
-  .user-container {
-    display: flex;
-    align-items: center;
-    position: relative;
-    height: 100%;
-    padding-right: 1rem;
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      margin: 0 16px;
-      border-radius: 18px;
-      object-fit: cover;
-      object-position: center;
-    }
-    .user-info {
-      .user-name {
-        color: white;
+      padding: 0 0 0 15px;
+      @media (max-width: $md) {
         font-size: 16px;
-        font-weight: bold;
       }
-      .user-role {
-        color: lightgray;
+      @media (max-width: $sm) {
         font-size: 14px;
-        margin-top: 4px;
       }
     }
-
-    .menu-item {
-      padding: 1rem 2rem;
-      color: rgb(50, 50, 50);
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-
-      .item-action {
-        -webkit-transform: scaleX(-1);
-        transform: scaleX(-1);
-        margin-left: 0.5rem;
-      }
-    }
-    .menu-item:hover {
-      cursor: pointer;
-      background-color: #00591b23;
-    }
-  }
-  .user-container:hover {
-    cursor: pointer;
   }
   .locale-switcher {
     select {
       color: #000;
+    }
+  }
+  .drawer-button-mobile {
+    cursor: pointer;
+    padding: 0 10px;
+    font-size: 30px;
+    @media (min-width: $lg) {
+      display: none;
     }
   }
 }
