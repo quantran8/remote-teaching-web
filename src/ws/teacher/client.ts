@@ -61,7 +61,7 @@ export class TeacherWSClient extends GLSocketClient {
       IsMute: IsMute,
     });
   }
-  sendRequestSetFocusTab(teachingMode: number) {
+  sendRequestSetTeachingMode(teachingMode: number) {
     return this.send(WSCmd.SET_TEACHING_MODE, teachingMode );
   }
   sendRequestEndRoom(roomId: string) {
