@@ -110,7 +110,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherDisconnect: (payload: any) => {
       //   Logger.log(payload);
     },
-    onTeacherSetFocusTab: (payload: number) => {
+    onTeacherSetTeachingMode: (payload: number) => {
       commit("setClassView", {
         classView: ClassViewFromValue(payload),
       });
@@ -247,7 +247,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
       } else {
-        await commit("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await commit("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await commit("lesson/endCurrentContent", {}, { root: true });
         await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });

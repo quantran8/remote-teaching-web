@@ -122,7 +122,7 @@ export interface RoomModel {
   lessonPlan: LessonPlanModel;
   students: Array<StudentModel>;
   contents: Array<any>;
-  focusTab: number;
+  teachingMode: number;
   studentsAudio: Array<string>;
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;

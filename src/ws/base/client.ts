@@ -145,7 +145,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.MUTE_AUDIO_ALL_STUDENT, handler.onTeacherMuteAllStudentAudio);
     handlers.set(TeacherWSEvent.END_CLASS, handler.onTeacherEndClass);
     handlers.set(TeacherWSEvent.DISCONNECT, handler.onTeacherDisconnect);
-    handlers.set(TeacherWSEvent.SET_FOCUS_TAB, handler.onTeacherSetFocusTab);
+    handlers.set(TeacherWSEvent.SET_TEACHING_MODE, handler.onTeacherSetTeachingMode);
     handlers.set(TeacherWSEvent.UPDATE_GLOBAL_AUDIO, handler.onTeacherUpdateGlobalAudio);
     handlers.set(TeacherWSEvent.UPDATE_LOCAL_AUDIO, handler.onTeacherUpdateLocalAudio);
     handlers.set(TeacherWSEvent.UPDATE_STUDENT_BADGE, handler.onTeacherUpdateStudentBadge);
