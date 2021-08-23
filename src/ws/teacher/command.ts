@@ -10,7 +10,7 @@ export enum TeacherWSCommand {
   MUTE_ALL_STUDENT_VIDEO = "TeacherMuteAllStudentVideo",
   TOGGLE_STUDENTS_PALETTES = "ToggleStudentsPalettes",
   SET_STUDENT_PALETTE = "SetStudentPalette",
-  SET_FOCUS_TAB = "TeacherSetFocusTab",
+  SET_TEACHING_MODE = "TeacherSetTeachingMode",
   END_CLASS = "TeacherEndClass",
   SET_STUDENT_BADGE = "TeacherSetStudentBadge",
   ADD_STUDENT_AUDIO = "TeacherAddStudentAudio",

@@ -177,7 +177,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherSetFocusTab: (payload: number) => {
+    onTeacherSetTeachingMode: (payload: number) => {
       dispatch("setClassView", {
         classView: ClassViewFromValue(payload),
       });
@@ -325,7 +325,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       id: string;
       drawing: any;
       student: any;
-      focusTab: any;
+      teachingMode: any;
       isShowWhiteBoard: boolean;
       exposureSelected: string;
       itemContentSelected: string;
@@ -348,9 +348,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
-        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
       } else {
-        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await commit("updateIsPalette", {

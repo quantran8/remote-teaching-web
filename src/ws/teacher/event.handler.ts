@@ -9,7 +9,7 @@ export interface TeacherWSEventHandler {
   onTeacherMuteAllStudentAudio(payload: any): void;
   onTeacherEndClass(payload: any): void;
   onTeacherDisconnect(payload: any): void;
-  onTeacherSetFocusTab(payload: any): void;
+  onTeacherSetTeachingMode(payload: any): void;
   onTeacherUpdateGlobalAudio(payload: any): void;
   onTeacherUpdateLocalAudio(payload: any): void;
   onTeacherUpdateStudentBadge(payload: any): void;

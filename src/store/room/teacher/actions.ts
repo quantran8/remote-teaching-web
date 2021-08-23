@@ -51,8 +51,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("endClass", payload);
   },
   setClassView({ state }, payload: ClassViewPayload) {
-    const focusTab = ValueOfClassView(payload.classView);
-    state.manager?.WSClient.sendRequestSetFocusTab(focusTab);
+    const teachingMode = ValueOfClassView(payload.classView);
+    state.manager?.WSClient.sendRequestSetTeachingMode(teachingMode);
   },
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
