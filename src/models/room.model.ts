@@ -108,7 +108,6 @@ export interface LessonPlanModel {
 }
 export interface RoomModel {
   id: string;
-  classId: string;
   status: number;
   teacher: TeacherModel;
   streamInfo: {
