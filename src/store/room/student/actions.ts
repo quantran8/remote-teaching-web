@@ -34,7 +34,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     try {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
-      if (!roomInfo || roomInfo.classId !== payload.classId) {
+      if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
         commit("setApiStatus", {
           code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
