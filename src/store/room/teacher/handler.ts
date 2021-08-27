@@ -73,7 +73,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       );
     },
     onTeacherJoinClass: (payload: any) => {
-      //   Logger.log(payload);
+      const userId = state.user?.id;
+      commit("setTeacherVideo", { id: userId, enable: !payload.isMuteVideo });
+      commit("setTeacherAudio", { id: userId, enable: !payload.isMuteAudio });
     },
     onTeacherStreamConnect: (payload: any) => {
       //   Logger.log(payload);
