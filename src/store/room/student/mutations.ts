@@ -115,6 +115,10 @@ const mutations: MutationTree<StudentRoomState> = {
     if (student) student.status = payload.status;
   },
   updateMediaStatus(s: StudentRoomState, p: StudentModel): void {
+    if (s.student?.id === p.id) {
+      s.student.videoEnabled = !p.isMuteVideo;
+      s.student.audioEnabled = !p.isMuteAudio;
+    }
     const student = s.students.find(student => student.id === p.id);
     if (student) {
       student.videoEnabled = !p.isMuteVideo;
