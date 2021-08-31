@@ -196,6 +196,12 @@ export class TeacherHome {
   static Next = "teacher_home.next";
 }
 
+export class TeacherClass {
+	static LeavePage = "teacher_class.leave_page";
+	static LeaveNotice = "teacher_class.leave_notice";
+	static MarkAsComplete = "teacher_class.mark_as_complete";
+}
+
 export class LostNetwork {
   static Message = "lost_network.message";
   static StudentMessage = "lost_network.student_message";
