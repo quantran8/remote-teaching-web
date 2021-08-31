@@ -66,6 +66,58 @@ export default defineComponent({
         return;
       }
     });
+    const addAnnotationLesson = (item: any) => {
+      // 0: rect, 1: circle, 2: star
+      let rect, circle, star, points;
+      switch (item.type) {
+        case (item.type = 0):
+          rect = new fabric.Rect({
+            left: item.x,
+            top: item.y,
+            width: item.width,
+            height: item.height,
+            fill: "",
+            stroke: item.color,
+            strokeWidth: 3,
+            id: "annotation-lesson",
+          });
+          canvas.add(rect);
+          break;
+        case (item.type = 1):
+          circle = new fabric.Circle({
+            left: item.x,
+            top: item.y,
+            radius: 30,
+            fill: "",
+            stroke: item.color,
+            strokeWidth: 3,
+            id: "annotation-lesson",
+          });
+          canvas.add(circle);
+          break;
+        case (item.type = 2):
+          points = starPolygonPoints(5, 35, 15);
+          star = new fabric.Polygon(points, {
+            stroke: item.color,
+            left: item.x,
+            top: item.y,
+            strokeWidth: 3,
+            strokeLineJoin: "round",
+            fill: "",
+            id: "annotation-lesson",
+          });
+          canvas.add(star);
+          break;
+      }
+    };
+    const processAnnotationLesson = () => {
+      const annotations = props.image?.metaData.annotations;
+      if (annotations.length) {
+        annotations.forEach((item: any) => {
+          addAnnotationLesson(item);
+        });
+      }
+    };
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -109,6 +161,9 @@ export default defineComponent({
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard();
+      if (!isShowWhiteBoard.value) {
+        processAnnotationLesson();
+      }
     });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
@@ -392,6 +447,7 @@ export default defineComponent({
       } else {
         // canvas.remove(...canvas.getObjects());
       }
+      processAnnotationLesson();
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
