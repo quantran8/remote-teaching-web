@@ -1,7 +1,8 @@
 <template>
   <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', oneAndOneStatus !== '' ? 'mode-one-one' : '']">
     <Modal v-model:visible="modalVisible" :title="leavePageText" @ok="handleOk" @cancel="handleCancel">
-      <Checkbox :checked="cbMarkAsCompleteValue" @change="markAsCompleteChanged">
+      {{ leaveNoticeText }}
+      <Checkbox :checked="cbMarkAsCompleteValue" @change="markAsCompleteChanged" class="tc__modal__notice">
         {{ markAsCompleteText }}
       </Checkbox>
     </Modal>

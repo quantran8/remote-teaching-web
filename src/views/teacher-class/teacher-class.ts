@@ -102,6 +102,7 @@ export default defineComponent({
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
 
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
+	const leaveNoticeText = computed(() => fmtMsg(TeacherClass.LeaveNotice))
     const markAsCompleteText = computed(() => fmtMsg(TeacherClass.MarkAsComplete));
 
 	const cbMarkAsCompleteValue = computed(() => cbMarkAsCompleteValueRef.value);
@@ -275,6 +276,7 @@ export default defineComponent({
       handleOk,
       handleCancel,
       leavePageText,
+	  leaveNoticeText,
       markAsCompleteText,
       cbMarkAsCompleteValue,
       markAsCompleteChanged,

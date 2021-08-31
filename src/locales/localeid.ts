@@ -198,6 +198,7 @@ export class TeacherHome {
 
 export class TeacherClass {
 	static LeavePage = "teacher_class.leave_page";
+	static LeaveNotice = "teacher_class.leave_notice";
 	static MarkAsComplete = "teacher_class.mark_as_complete";
 }
 

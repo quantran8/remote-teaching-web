@@ -87,6 +87,7 @@
 	"teacher_home.group": "Nhóm",
 	"teacher_home.next": "Tiếp tục:",
 	"teacher_class.leave_page": "Leave page?",
+	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
 	"teacher_class.mark_as_complete": "Do you want to mark this lesson as complete ?",
 	"device_tester.system_check": "Kiểm tra hệ thống",
 	"device_tester.check_mic": "Kiểm tra Microphone",
