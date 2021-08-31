@@ -237,6 +237,7 @@ export default defineComponent({
         isOneToOne: oneAndOne.value || null,
       });
       canvas.add(star);
+      canvas.setActiveObject(star);
       await teacherAddShapes();
     };
     const addCircle = async () => {
@@ -251,6 +252,7 @@ export default defineComponent({
         isOneToOne: oneAndOne.value || null,
       });
       canvas.add(circle);
+      canvas.setActiveObject(circle);
       await teacherAddShapes();
     };
     const addSquare = async () => {
@@ -266,6 +268,7 @@ export default defineComponent({
         isOneToOne: oneAndOne.value || null,
       });
       canvas.add(square);
+      canvas.setActiveObject(square);
       await teacherAddShapes();
     };
     const clickedTool = async (tool: string) => {
