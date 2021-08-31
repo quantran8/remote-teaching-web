@@ -86,6 +86,8 @@
 	"teacher_home.submit": "Submit",
 	"teacher_home.group": "Group",
 	"teacher_home.next": "Next:",
+	"teacher_class.leave_page": "Leave page?",
+	"teacher_class.mark_as_complete": "Do you want to mark this lesson as complete ?",
 	"device_tester.system_check": "System check",
 	"device_tester.check_mic": "Check Microphone",
 	"device_tester.select_device": "No Device",
