@@ -1,5 +1,10 @@
 <template>
   <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', oneAndOneStatus !== '' ? 'mode-one-one' : '']">
+    <Modal v-model:visible="modalVisible" :title="leavePageText" @ok="handleOk" @cancel="handleCancel">
+      <Checkbox :checked="cbMarkAsCompleteValue" @change="markAsCompleteChanged">
+        {{ markAsCompleteText }}
+      </Checkbox>
+    </Modal>
     <prevent-esc-firefox />
     <teacher-page-header
       class="tc__header"

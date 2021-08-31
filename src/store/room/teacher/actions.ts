@@ -46,7 +46,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
-      await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
+      await RemoteTeachingService.teacherEndClassRoom(state.info?.id, payload);
     }
     commit("endClass", payload);
   },
