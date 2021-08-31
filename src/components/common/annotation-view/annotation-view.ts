@@ -329,7 +329,7 @@ export default defineComponent({
     const studentAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === student.value.id) {
+        if (obj.id === student.value.id && obj.type !== "path") {
           obj = obj.toJSON();
           obj.id = student.value.id;
           shapes.push(JSON.stringify(obj));
@@ -441,6 +441,7 @@ export default defineComponent({
       });
       canvas.isDrawingMode = false;
       canvas.add(star);
+      canvas.setActiveObject(star);
       await studentAddShapes();
     };
     const addCircle = async () => {
@@ -457,6 +458,7 @@ export default defineComponent({
       });
       canvas.isDrawingMode = false;
       canvas.add(circle);
+      canvas.setActiveObject(circle);
       await studentAddShapes();
     };
     const addSquare = async () => {
@@ -474,6 +476,7 @@ export default defineComponent({
       });
       canvas.isDrawingMode = false;
       canvas.add(square);
+      canvas.setActiveObject(square);
       await studentAddShapes();
     };
     const clearStar = () => {
