@@ -13,9 +13,9 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.create("teacher/join-session", startModel);
   }
 
-  teacherEndClassRoom(roomId?: string, payload?: { markAsComplete: boolean }): Promise<any> {
+  teacherEndClassRoom(roomId?: string, markAsComplete?: boolean): Promise<any> {
     if (!roomId) return Promise.resolve(null);
-    return this.update("teacher/end-class/" + roomId, payload);
+    return this.update("teacher/end-class/" + roomId + `?MarkAsComplete=${markAsComplete?.toString()}`);
   }
 
   studentGetRoomInfo(childId: string, bfp: string): Promise<StudentGetRoomResponse> {
