@@ -102,10 +102,20 @@ export default defineComponent({
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
 
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
-	const leaveNoticeText = computed(() => fmtMsg(TeacherClass.LeaveNotice))
-    const markAsCompleteText = computed(() => fmtMsg(TeacherClass.MarkAsComplete));
+    const leaveNoticeText = computed(() => fmtMsg(TeacherClass.LeaveNotice));
+    const markAsCompleteText = computed(() => {
+      if (roomInfo.value === undefined) return null;
+      const {
+        classInfo: { className: classname, unit, lesson },
+      } = roomInfo.value;
+      return fmtMsg(TeacherClass.MarkAsComplete, {
+        lesson,
+        unit,
+        classname,
+      });
+    });
 
-	const cbMarkAsCompleteValue = computed(() => cbMarkAsCompleteValueRef.value);
+    const cbMarkAsCompleteValue = computed(() => cbMarkAsCompleteValueRef.value);
     // const isGameView = computed(() => {
     //   return getters["teacherRoom/isGameView"];
     // });
@@ -177,7 +187,7 @@ export default defineComponent({
         });
       }
 
-	  resetModal();
+      resetModal();
     };
 
     const handleCancel = () => {
@@ -276,7 +286,7 @@ export default defineComponent({
       handleOk,
       handleCancel,
       leavePageText,
-	  leaveNoticeText,
+      leaveNoticeText,
       markAsCompleteText,
       cbMarkAsCompleteValue,
       markAsCompleteChanged,
