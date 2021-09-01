@@ -67,55 +67,67 @@ export default defineComponent({
       }
     });
     const addAnnotationLesson = (item: any) => {
+      const xMetadata = props.image?.metaData.x;
+      const yMetadata = props.image?.metaData.y;
+      const widthMetadata = props.image?.metaData.width;
+      const heightMetadata = props.image?.metaData.height;
+      const wRatio = 717 / widthMetadata;
+      const hRatio = 435 / heightMetadata;
+      const ratio = Math.min(wRatio, hRatio);
+      console.log(ratio, "rrrrrrrrrrr");
       // 0: rect, 1: circle, 2: star
       let rect, circle, star, points;
       switch (item.type) {
         case (item.type = 0):
           rect = new fabric.Rect({
-            left: item.x,
-            top: item.y,
-            width: item.width,
-            height: item.height,
+            left: (item.x - xMetadata) * ratio,
+            top: (item.y - yMetadata) * ratio,
+            width: item.width * ratio,
+            height: item.height * ratio,
             fill: "",
             stroke: item.color,
-            strokeWidth: 3,
+            strokeWidth: 5,
             id: "annotation-lesson",
           });
+          rect.rotate(item.rotate);
           canvas.add(rect);
           break;
         case (item.type = 1):
           circle = new fabric.Circle({
-            left: item.x,
-            top: item.y,
-            radius: 30,
+            left: (item.x - xMetadata) * ratio,
+            top: (item.y - yMetadata) * ratio,
+            radius: (item.width / 2) * ratio,
             fill: "",
             stroke: item.color,
-            strokeWidth: 3,
+            strokeWidth: 5,
             id: "annotation-lesson",
           });
           canvas.add(circle);
           break;
         case (item.type = 2):
-          points = starPolygonPoints(5, 35, 15);
+          points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
           star = new fabric.Polygon(points, {
             stroke: item.color,
-            left: item.x,
-            top: item.y,
-            strokeWidth: 3,
+            left: (item.x - xMetadata) * ratio,
+            top: (item.y - yMetadata) * ratio,
+            strokeWidth: 5,
             strokeLineJoin: "round",
             fill: "",
             id: "annotation-lesson",
           });
+          star.rotate(item.rotate);
           canvas.add(star);
           break;
       }
     };
     const processAnnotationLesson = () => {
-      const annotations = props.image?.metaData.annotations;
-      if (annotations.length) {
+      const annotations = props.image?.metaData?.annotations;
+      if (annotations && annotations.length) {
         annotations.forEach((item: any) => {
           addAnnotationLesson(item);
         });
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
       }
     };
     const setCursorMode = async () => {
@@ -385,7 +397,7 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects());
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson"));
           await store.dispatch("teacherRoom/setClearBrush", {});
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
