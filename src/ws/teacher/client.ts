@@ -64,8 +64,8 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestSetTeachingMode(teachingMode: number) {
     return this.send(WSCmd.SET_TEACHING_MODE, teachingMode );
   }
-  sendRequestEndRoom(roomId: string) {
-    return this.send(WSCmd.END_CLASS, { roomId: roomId });
+  sendRequestEndRoom(roomId: string, markAsComplete: boolean) {
+    return this.send(WSCmd.END_CLASS, { roomId: roomId, markAsComplete });
   }
   sendRequestDisableAllAnnotation(showPalette: boolean) {
     return this.send(WSCmd.TOGGLE_STUDENTS_PALETTES, showPalette);
