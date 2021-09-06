@@ -13,13 +13,13 @@
       flex-direction: row;
     }
   }
-  .student-controls__button {
+  &__button {
     text-align: center;
     margin: 5px 15px;
     @media screen and (min-width: $xl) and (max-width: $large-lap) {
       margin: 5px 8px;
     }
-    .student-controls__button--clickable {
+    &--clickable {
       cursor: pointer;
       display: inline-block;
       vertical-align: middle;
@@ -70,6 +70,10 @@
         position: relative;
         top: 3px;
       }
+    }
+    &--disable {
+      opacity: 0.5;
+      cursor: default;
     }
   }
 }
