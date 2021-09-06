@@ -370,11 +370,13 @@ export default defineComponent({
       const currentLessonIndex = props.unitInfo[currentUnitIndex]?.sequence?.findIndex(
         (item: number) => item === props.infoStart.teacherClass.lessonNumber,
       );
+      const availableLessons = props.unitInfo[currentUnitIndex]?.sequence;
+      const nextLessonIndex = currentLessonIndex >= availableLessons?.length - 1 ? currentLessonIndex : currentLessonIndex + 1;
 
       listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
-      if (currentUnit.value === props.infoStart.teacherClass.unit && currentLessonIndex >= 0 && firstTimeDefault.value) {
+      if (currentUnit.value === props.infoStart.teacherClass.unit && nextLessonIndex >= 0 && firstTimeDefault.value) {
         firstTimeDefault.value = false;
-        currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[currentLessonIndex];
+        currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[nextLessonIndex];
       } else {
         currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[0];
       }
