@@ -1,8 +1,10 @@
+import { DeviceType, deviceType } from "@/utils/utils";
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel } from "@/models";
 import { RoomModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
+import { upperFirst } from "lodash";
 import { ClassView, StudentState, TeacherState } from "../interface";
 
 export enum ClassAction {
@@ -77,7 +79,10 @@ export interface StudentRoomState {
   teacherIsDisconnected: boolean;
   avatarStudentOneToOne: string;
   apiStatus: GLApiStatus | null;
+  videosFeedVisible: boolean;
 }
+
+const initialVideosFeedVisible = deviceType() === DeviceType.Desktop ? true : false;
 
 const state: StudentRoomState = {
   info: undefined,
@@ -101,6 +106,7 @@ const state: StudentRoomState = {
   isJoined: false,
   avatarStudentOneToOne: "",
   apiStatus: null,
+  videosFeedVisible: initialVideosFeedVisible,
 };
 
 export default state;

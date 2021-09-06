@@ -378,6 +378,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       console.log(e);
     }
   },
+  toggleVideosFeed({ commit }) {
+    commit("toggleVideosFeed");
+  },
 };
 
 export default actions;

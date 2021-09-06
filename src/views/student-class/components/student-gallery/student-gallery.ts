@@ -1,10 +1,11 @@
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent } from "@vue/runtime-core";
+import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { StudentGalleryItem } from "../student-gallery-item";
 import { dragscrollNext } from "vue-dragscroll";
 import { MatIcon } from "@/commonui";
-import { ref } from "vue";
+import { deviceType, DeviceType } from "@/utils/utils";
 
 export default defineComponent({
   directives: {
@@ -22,8 +23,9 @@ export default defineComponent({
     isOneToOne: Boolean,
   },
   setup(props) {
+    const store = useStore();
+    const isVisible = computed(() => store.getters["studentRoom/videosFeedVisible"]);
     const topStudents = computed(() => props.students.slice(0, 11));
-    const isVisible = ref<boolean>(false);
 
     const onEnter = (el: HTMLDivElement) => {
       gsap.from(el.querySelector(".sc-gallery-item"), { translateX: 0, clearProps: "all", translateY: 0, duration: 1, ease: "Power2.easeInOut" });
@@ -33,9 +35,14 @@ export default defineComponent({
     };
 
     const toggle = () => {
-      isVisible.value = !isVisible.value;
+      store.dispatch("studentRoom/toggleVideosFeed");
     };
 
-    return { topStudents, onEnter, onLeave, isVisible, toggle };
+    const isDisplay = computed(() => {
+      const device = deviceType();
+      return device !== DeviceType.Mobile && !props.isOneToOne;
+    });
+
+    return { topStudents, onEnter, onLeave, isVisible, toggle, isDisplay };
   },
 });
