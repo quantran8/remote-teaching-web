@@ -4,7 +4,6 @@ import { ClassModel } from "@/models";
 import { RoomModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { upperFirst } from "lodash";
 import { ClassView, StudentState, TeacherState } from "../interface";
 
 export enum ClassAction {
