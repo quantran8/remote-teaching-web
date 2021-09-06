@@ -94,6 +94,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   getAvatarStudentOneToOne(state: StudentRoomState): string {
     return state.avatarStudentOneToOne;
   },
+  videosFeedVisible(state: StudentRoomState): boolean {
+    return state.videosFeedVisible;
+  },
 };
 
 export default getters;
