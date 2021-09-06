@@ -1,5 +1,5 @@
 <template>
-  <div :class="['sc-gallery', !isVisible && 'sc-gallery--hide']" v-show="!isOneToOne">
+  <div :class="['sc-gallery', !isVisible && 'sc-gallery--hide']" v-show="isDisplay">
     <div class="sc-gallery__container" v-dragscroll.x>
       <StudentGalleryItem v-for="student in topStudents" :key="student.id" :student="student" :raisedHand="student.raisingHand ?? false" />
     </div>

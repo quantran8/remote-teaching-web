@@ -1,3 +1,4 @@
+import { isDesktopBrowser } from "@/utils/utils";
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel } from "@/models";
 import { RoomModel } from "@/models";
@@ -77,7 +78,10 @@ export interface StudentRoomState {
   teacherIsDisconnected: boolean;
   avatarStudentOneToOne: string;
   apiStatus: GLApiStatus | null;
+  videosFeedVisible: boolean;
 }
+
+const initialVideosFeedVisible = isDesktopBrowser ? true : false;
 
 const state: StudentRoomState = {
   info: undefined,
@@ -101,6 +105,7 @@ const state: StudentRoomState = {
   isJoined: false,
   avatarStudentOneToOne: "",
   apiStatus: null,
+  videosFeedVisible: initialVideosFeedVisible,
 };
 
 export default state;

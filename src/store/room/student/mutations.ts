@@ -242,6 +242,9 @@ const mutations: MutationTree<StudentRoomState> = {
       student.avatar = avatar ? avatar : "";
     });
   },
+  toggleVideosFeed(state: StudentRoomState) {
+    state.videosFeedVisible = !state.videosFeedVisible;
+  },
 };
 
 export default mutations;
