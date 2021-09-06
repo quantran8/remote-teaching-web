@@ -18,12 +18,16 @@
     </div>
     <div class="button-group">
       <div class="student-controls__button">
-        <span @click="onClickDisableAll" class="student-controls__button--clickable">
+        <span
+          @click="onClickDisableAll"
+          class="student-controls__button--clickable"
+          :class="{ 'student-controls__button--disable': isAllPaletteHidden }"
+        >
           <img
             class="disable-icon"
             :src="isAllPaletteHidden ? require(`@/assets/teacher-class/touch-on-small.svg`) : require(`@/assets/teacher-class/touch-off-small.svg`)"
           />
-          <span>{{ isAllPaletteHidden ? enableAllText : disableAllText }}</span>
+          <span>{{ disableAllText }}</span>
         </span>
       </div>
       <div class="student-controls__button">
