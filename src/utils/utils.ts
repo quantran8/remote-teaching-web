@@ -8,13 +8,13 @@ export const formatImageUrl = (dataImage: string): string => {
   return dataImage.includes("http") ? dataImage : `data:image/png;base64,${dataImage}`;
 };
 
-export enum DeviceType {
+enum DeviceType {
   Tablet = "tablet",
   Mobile = "mobile",
   Desktop = "desktop",
 }
 
-export const deviceType = (): DeviceType => {
+const deviceType = (): DeviceType => {
   const ua = navigator.userAgent;
   if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
     return DeviceType.Tablet;
@@ -25,5 +25,4 @@ export const deviceType = (): DeviceType => {
 };
 
 export const isMobileBrowser = deviceType() === DeviceType.Mobile;
-export const isTabletBrowser = deviceType() === DeviceType.Tablet;
 export const isDesktopBrowser = deviceType() === DeviceType.Desktop;
