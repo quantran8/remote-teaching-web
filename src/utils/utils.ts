@@ -23,3 +23,7 @@ export const deviceType = (): DeviceType => {
   }
   return DeviceType.Desktop;
 };
+
+export const isMobileBrowser = deviceType() === DeviceType.Mobile;
+export const isTabletBrowser = deviceType() === DeviceType.Tablet;
+export const isDesktopBrowser = deviceType() === DeviceType.Desktop;

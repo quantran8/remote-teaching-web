@@ -1,4 +1,4 @@
-import { DeviceType, deviceType } from "@/utils/utils";
+import { isDesktopBrowser } from "@/utils/utils";
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel } from "@/models";
 import { RoomModel } from "@/models";
@@ -82,7 +82,7 @@ export interface StudentRoomState {
   videosFeedVisible: boolean;
 }
 
-const initialVideosFeedVisible = deviceType() === DeviceType.Desktop ? true : false;
+const initialVideosFeedVisible = isDesktopBrowser ? true : false;
 
 const state: StudentRoomState = {
   info: undefined,

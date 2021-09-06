@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { StudentGalleryItem } from "../student-gallery-item";
 import { dragscrollNext } from "vue-dragscroll";
 import { MatIcon } from "@/commonui";
-import { deviceType, DeviceType } from "@/utils/utils";
+import { isMobileBrowser } from "@/utils/utils";
 
 export default defineComponent({
   directives: {
@@ -34,13 +34,13 @@ export default defineComponent({
       gsap.to(el.querySelector(".sc-gallery-item"), { translateX: 0, translateY: 0, onComplete: done });
     };
 
-    const toggle = () => {
-      store.dispatch("studentRoom/toggleVideosFeed");
+    const toggle = async () => {
+      await store.dispatch("studentRoom/toggleVideosFeed");
+      store.dispatch("studentRoom/updateAudioAndVideoFeed");
     };
 
     const isDisplay = computed(() => {
-      const device = deviceType();
-      return device !== DeviceType.Mobile && !props.isOneToOne;
+      return !isMobileBrowser && !props.isOneToOne;
     });
 
     return { topStudents, onEnter, onLeave, isVisible, toggle, isDisplay };
