@@ -36,7 +36,7 @@ export default defineComponent({
 
     const toggle = async () => {
       await store.dispatch("studentRoom/toggleVideosFeed");
-      store.dispatch("studentRoom/updateAudioAndVideoFeed");
+      await store.dispatch("studentRoom/updateAudioAndVideoFeed");
     };
 
     const isDisplay = computed(() => {
