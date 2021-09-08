@@ -56,10 +56,14 @@
   grid-template-columns: 60% 40%;
   grid-template-rows: 1fr 105px;
   overflow: hidden;
+  transition: padding 0.5s;
   @media (min-width: $md) {
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
     padding: 5px 30px;
+    &.has-feed {
+      padding-bottom: 55px;
+    }
   }
   @media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) and (orientation: landscape) {
     grid-template-columns: 50% 50%;
@@ -93,10 +97,17 @@
     grid-template-rows: 65% 35%;
     padding: 30px;
     grid-row-gap: 30px;
+    &.has-feed {
+      padding-bottom: 100px;
+    }
   }
   @media (min-width: $xl) {
     grid-column-gap: 50px;
     grid-template-columns: 55% 1fr;
+    &.has-feed {
+      padding-top: 15px;
+      padding-bottom: 130px;
+    }
   }
   @media screen and (max-width: $lap) and (min-width: $xl) and (max-height: $lapMaxHeight) and (min-height: $lapMinHeight) {
     grid-column-gap: 50px;
@@ -107,6 +118,9 @@
     grid-column-gap: 100px;
     grid-template-columns: 50% 1fr;
     grid-template-rows: 1fr auto;
+    &.has-feed {
+      padding-bottom: 150px;
+    }
   }
 }
 

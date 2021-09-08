@@ -92,6 +92,7 @@ export default defineComponent({
     const joinLoading = ref(true);
     const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
+    const videosFeedVisible = computed(() => store.getters["studentRoom/videosFeedVisible"]);
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
@@ -392,6 +393,7 @@ export default defineComponent({
       studentOneName,
       joinLoading,
       goToHomePage,
+	  videosFeedVisible
     };
   },
 });
