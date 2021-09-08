@@ -26,6 +26,9 @@ const getters: GetterTree<AppState, any> = {
   signalRStatus(state: AppState): number {
     return state.signalRStatus;
   },
+  cameraDeviceId(state: AppState): string {
+    return state.cameraDeviceId;
+  },
 };
 
 export default getters;
