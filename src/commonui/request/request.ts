@@ -139,7 +139,6 @@ export class GLRequestProxy<TRequest, TResponse extends GLResponse> implements I
 			Headers: [
 				{
 					Authorization: "Bearer " + (GLGlobal.loginInfo().access_token || AuthService.accessToken),
-					"Device-Memory": localStorage.getItem("Ram"),
 					"x-gl-sub":
 						(GLGlobal.loginInfo().loggedin &&
 							GLGlobal.loginInfo().profile &&
