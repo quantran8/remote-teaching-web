@@ -120,7 +120,7 @@ export default defineComponent({
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
-    const avatarTeacher = computed(() => (teacher.value ? formatImageUrl(teacher.value.avatar ? teacher.value.avatar : "") : noAvatar));
+    const avatarTeacher = computed(() => ((teacher.value && teacher.value.avatar) ? formatImageUrl(teacher.value.avatar) : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const avatarStudentOneToOne = ref("");
     const showMessage = ref(false);
