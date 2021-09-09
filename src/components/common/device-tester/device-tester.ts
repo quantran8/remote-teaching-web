@@ -358,6 +358,7 @@ export default defineComponent({
     };
 
     const handleGoToClassSuccess = () => {
+      dispatch("setCameraDeviceId", currentCam.value?.deviceId);
       localTracks.value?.audioTrack?.close();
       localTracks.value?.videoTrack?.close();
     };
