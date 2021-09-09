@@ -14,6 +14,7 @@ import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { isMobileBrowser } from "@/utils/utils";
+import { Logger } from "@/utils/logger";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -260,6 +261,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentAudio", payload);
         commit("setMicrophoneLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_AUDIO_ERROR", error);
         commit("setMicrophoneLock", { enable: false });
       }
     } else {
@@ -278,6 +280,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentVideo", payload);
         commit("setCameraLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_VIDEO_ERROR", error);
         commit("setCameraLock", { enable: false });
       }
     } else {
