@@ -200,21 +200,28 @@
 
 .sc-teacher {
   height: 100%;
-  padding: 10px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
   @media (max-width: $lg) {
-    align-items: flex-start;
+    height: 85%;
   }
   &__avatar-container {
-    width: 200px;
-    height: 200px;
+    width: 120px;
+    height: 120px;
     overflow: hidden;
     border-radius: 50%;
     border: 1px solid rgb(143, 142, 142);
+    @media (min-width: $xl) {
+      width: 150px;
+      height: 150px;
+    }
+    @media (min-width: 1500px) {
+      width: 200px;
+      height: 200px;
+    }
   }
   &__avatar {
     width: 100%;
@@ -237,7 +244,7 @@
     @media only screen and (max-width: 812px) and (orientation: landscape) {
       top: 0;
       transform: translate(-50%, 0);
-      height: 90%;
+      height: 100%;
     }
     @media (min-width: $lg) {
       height: 100%;
