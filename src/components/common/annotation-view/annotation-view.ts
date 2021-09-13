@@ -71,6 +71,7 @@ export default defineComponent({
     });
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
         if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
           canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
         }
@@ -78,6 +79,7 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
         canvas.isDrawingMode = false;
+        processAnnotationLesson();
       }
     };
     watch(isShowWhiteBoard, () => {
@@ -402,14 +404,7 @@ export default defineComponent({
       resizeCanvas();
     };
     const imgLoad = () => {
-      if (!canvas) return;
-      const outerCanvasContainer = containerRef.value;
-      if (!outerCanvasContainer) return;
-      const ratio = canvas.getWidth() / canvas.getHeight();
-      const containerWidth = outerCanvasContainer.clientWidth;
-      const scale = containerWidth / canvas.getWidth();
-      const zoom = canvas.getZoom() * scale;
-      processAnnotationLesson(containerWidth, containerWidth / ratio, zoom);
+      processAnnotationLesson();
     };
     const addAnnotationLesson = (item: any, widthCanvas: number, heightCanvas: number, zoom: number) => {
       const xMetadata = props.image?.metaData?.x;
@@ -464,11 +459,18 @@ export default defineComponent({
           break;
       }
     };
-    const processAnnotationLesson = (widthCanvas: number, heightCanvas: number, zoom: number) => {
+    const processAnnotationLesson = () => {
+      if (!canvas) return;
+      const outerCanvasContainer = containerRef.value;
+      if (!outerCanvasContainer) return;
+      const ratio = canvas.getWidth() / canvas.getHeight();
+      const containerWidth = outerCanvasContainer.clientWidth;
+      const scale = containerWidth / canvas.getWidth();
+      const zoom = canvas.getZoom() * scale;
       const annotations = props.image?.metaData?.annotations;
-      if (annotations && annotations.length) {
+      if (annotations && annotations.length && !isShowWhiteBoard.value) {
         annotations.forEach((item: any) => {
-          addAnnotationLesson(item, widthCanvas, heightCanvas, zoom);
+          addAnnotationLesson(item, containerWidth, containerWidth / ratio, zoom);
         });
       } else {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -488,7 +490,7 @@ export default defineComponent({
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
       canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-      processAnnotationLesson(containerWidth, containerWidth / ratio, zoom);
+      processAnnotationLesson();
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
