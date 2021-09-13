@@ -74,7 +74,6 @@ export default defineComponent({
       const wRatio = 717 / widthMetadata;
       const hRatio = 435 / heightMetadata;
       const ratio = Math.min(wRatio, hRatio);
-      console.log(ratio, "rrrrrrrrrrr");
       // 0: rect, 1: circle, 2: star
       let rect, circle, star, points;
       switch (item.type) {

@@ -187,12 +187,13 @@ export default defineComponent({
       laserPathByTeacher();
     });
     const studentSharingShapes = () => {
-      if (studentShapes.value) {
+      if (studentShapes.value && studentShapes.value.length) {
         canvas.remove(
           ...canvas
             .getObjects()
             .filter((obj: any) => obj.id !== student.value.id)
             .filter((obj: any) => obj.id !== teacherForST.value.id)
+            .filter((obj: any) => obj.id !== "annotation-lesson")
             .filter((obj: any) => obj.type !== "path"),
         );
         studentShapes.value.forEach((item: any) => {
@@ -204,7 +205,9 @@ export default defineComponent({
         });
         listenSelfStudent();
       } else {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id));
+        canvas.remove(
+          ...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson"),
+        );
       }
     };
     watch(studentShapes, () => {
@@ -213,7 +216,9 @@ export default defineComponent({
         selfStudentShapes();
         firstTimeVisit.value = true;
       } else if (studentShapes.value && studentShapes.value.length === 0) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id));
+        canvas.remove(
+          ...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson"),
+        );
       }
     });
     const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
@@ -395,7 +400,79 @@ export default defineComponent({
       });
       listenToCanvasEvents();
       resizeCanvas();
-      processCanvasWhiteboard();
+    };
+    const imgLoad = () => {
+      if (!canvas) return;
+      const outerCanvasContainer = containerRef.value;
+      if (!outerCanvasContainer) return;
+      const ratio = canvas.getWidth() / canvas.getHeight();
+      const containerWidth = outerCanvasContainer.clientWidth;
+      const scale = containerWidth / canvas.getWidth();
+      const zoom = canvas.getZoom() * scale;
+      processAnnotationLesson(containerWidth, containerWidth / ratio, zoom);
+    };
+    const addAnnotationLesson = (item: any, widthCanvas: number, heightCanvas: number, zoom: number) => {
+      const xMetadata = props.image?.metaData?.x;
+      const yMetadata = props.image?.metaData?.y;
+      const widthMetadata = props.image?.metaData?.width;
+      const heightMetadata = props.image?.metaData?.height;
+      const wRatio = widthCanvas / widthMetadata;
+      const hRatio = heightCanvas / heightMetadata;
+      const ratio = Math.min(wRatio, hRatio);
+      // 0: rect, 1: circle, 2: star
+      let rect, circle, star, points;
+      switch (item.type) {
+        case (item.type = 0):
+          rect = new fabric.Rect({
+            left: ((item.x - xMetadata) * ratio) / zoom,
+            top: ((item.y - yMetadata) * ratio) / zoom,
+            width: (item.width / zoom) * ratio,
+            height: (item.height / zoom) * ratio,
+            fill: "",
+            stroke: item.color,
+            strokeWidth: 5,
+            id: "annotation-lesson",
+          });
+          rect.rotate(item.rotate);
+          canvas.add(rect);
+          break;
+        case (item.type = 1):
+          circle = new fabric.Circle({
+            left: ((item.x - xMetadata) * ratio) / zoom,
+            top: ((item.y - yMetadata) * ratio) / zoom,
+            radius: (item.width / 2 / zoom) * ratio,
+            fill: "",
+            stroke: item.color,
+            strokeWidth: 5,
+            id: "annotation-lesson",
+          });
+          canvas.add(circle);
+          break;
+        case (item.type = 2):
+          points = starPolygonPoints(5, (item.width / 2 / zoom) * ratio, (item.width / 4 / zoom) * ratio);
+          star = new fabric.Polygon(points, {
+            stroke: item.color,
+            left: ((item.x - xMetadata) * ratio) / zoom,
+            top: ((item.y - yMetadata) * ratio) / zoom,
+            strokeWidth: 5,
+            strokeLineJoin: "round",
+            fill: "",
+            id: "annotation-lesson",
+          });
+          star.rotate(item.rotate);
+          canvas.add(star);
+          break;
+      }
+    };
+    const processAnnotationLesson = (widthCanvas: number, heightCanvas: number, zoom: number) => {
+      const annotations = props.image?.metaData?.annotations;
+      if (annotations && annotations.length) {
+        annotations.forEach((item: any) => {
+          addAnnotationLesson(item, widthCanvas, heightCanvas, zoom);
+        });
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      }
     };
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
@@ -410,6 +487,8 @@ export default defineComponent({
       scaleRatio.value = zoom;
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      processAnnotationLesson(containerWidth, containerWidth / ratio, zoom);
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
@@ -569,6 +648,7 @@ export default defineComponent({
       isGalleryView,
       toolActive,
       isLessonPlan,
+      imgLoad,
     };
   },
 });
