@@ -6,6 +6,10 @@ import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 
 const DEFAULT_COLOR = "red";
+const defaultCanvasDimension = {
+  width: 717,
+  height: 435,
+};
 
 export default defineComponent({
   props: {
@@ -71,8 +75,8 @@ export default defineComponent({
       const yMetadata = props.image?.metaData.y;
       const widthMetadata = props.image?.metaData.width;
       const heightMetadata = props.image?.metaData.height;
-      const wRatio = 717 / widthMetadata;
-      const hRatio = 435 / heightMetadata;
+      const wRatio = defaultCanvasDimension.width / widthMetadata;
+      const hRatio = defaultCanvasDimension.height / heightMetadata;
       const ratio = Math.min(wRatio, hRatio);
       // 0: rect, 1: circle, 2: star
       let rect, circle, star, points;
@@ -275,8 +279,8 @@ export default defineComponent({
       const canvasEl = document.getElementById("canvasDesignate");
       if (!canvasEl) return;
       canvas = new fabric.Canvas("canvasDesignate");
-      canvas.setWidth(717);
-      canvas.setHeight(435);
+      canvas.setWidth(defaultCanvasDimension.width);
+      canvas.setHeight(defaultCanvasDimension.height);
       canvas.selectionFullyContained = false;
       await processCanvasWhiteboard();
       listenToCanvasEvents();
