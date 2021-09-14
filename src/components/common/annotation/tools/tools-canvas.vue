@@ -8,6 +8,7 @@
         }"
         @click="clickedTool(toolName)"
       >
+        <div v-if="toolName === tools.TextBox">TextBox</div>
         <div class="tools__item__icon" :class="[toolName, { selected: toolSelected === toolName }]">
           <div v-if="toolName === tools.Stroke" class="tools__item__icon__stroke-line" :style="`height: ${strokeWidth * 1.2}px;`"></div>
         </div>

@@ -38,6 +38,7 @@ export default defineComponent({
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
       [Tools.StrokeColor]: "Color",
+      [Tools.TextBox]: "TextBox",
     };
     const showColorsPopover = ref<boolean>(false);
     const showFontWeightPopover = ref<boolean>(false);

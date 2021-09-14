@@ -4,6 +4,7 @@ import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
+import { useTextBox } from "@/hooks/use-textbox";
 
 const DEFAULT_COLOR = "red";
 
@@ -54,6 +55,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    const { createTextBox, editTextBox, addObjectIdentifier } = useTextBox();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -203,6 +205,8 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfTeacher();
+      addObjectIdentifier(canvas);
+      editTextBox(canvas);
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -283,6 +287,10 @@ export default defineComponent({
       }
 
       switch (tool) {
+        case Tools.TextBox: {
+          createTextBox(canvas);
+          return;
+        }
         case Tools.Cursor:
           toolSelected.value = Tools.Cursor;
           canvas.isDrawingMode = false;
