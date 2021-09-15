@@ -1,15 +1,11 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import { Tools, Mode, starPolygonPoints } from "@/commonui";
+import { Tools, Mode, starPolygonPoints, DefaultCanvasDimension } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 
 const DEFAULT_COLOR = "red";
-const defaultCanvasDimension = {
-  width: 717,
-  height: 435,
-};
 
 export default defineComponent({
   props: {
@@ -75,8 +71,8 @@ export default defineComponent({
       const yMetadata = props.image?.metaData.y;
       const widthMetadata = props.image?.metaData.width;
       const heightMetadata = props.image?.metaData.height;
-      const wRatio = defaultCanvasDimension.width / widthMetadata;
-      const hRatio = defaultCanvasDimension.height / heightMetadata;
+      const wRatio = DefaultCanvasDimension.width / widthMetadata;
+      const hRatio = DefaultCanvasDimension.height / heightMetadata;
       const ratio = Math.min(wRatio, hRatio);
       // 0: rect, 1: circle, 2: star
       let rect, circle, star, points;
@@ -279,8 +275,8 @@ export default defineComponent({
       const canvasEl = document.getElementById("canvasDesignate");
       if (!canvasEl) return;
       canvas = new fabric.Canvas("canvasDesignate");
-      canvas.setWidth(defaultCanvasDimension.width);
-      canvas.setHeight(defaultCanvasDimension.height);
+      canvas.setWidth(DefaultCanvasDimension.width);
+      canvas.setHeight(DefaultCanvasDimension.height);
       canvas.selectionFullyContained = false;
       await processCanvasWhiteboard();
       listenToCanvasEvents();

@@ -3,15 +3,10 @@ import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { toolType } from "./types";
-import { starPolygonPoints } from "commonui";
+import { DefaultCanvasDimension, starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
 
 const randomPosition = () => Math.random() * 100;
-
-const defaultCanvasDimension = {
-  width: 717,
-  height: 435,
-};
 
 export default defineComponent({
   props: ["image"],
@@ -391,7 +386,7 @@ export default defineComponent({
     const canvasRef = ref(null);
     const boardSetup = () => {
       if (!canvasRef.value) return;
-      const { width, height } = defaultCanvasDimension;
+      const { width, height } = DefaultCanvasDimension;
       canvas = new fabric.Canvas(canvasRef.value, {
         width,
         height,
