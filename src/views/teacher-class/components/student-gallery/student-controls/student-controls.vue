@@ -18,6 +18,14 @@
     </div>
     <div class="button-group">
       <div class="student-controls__button">
+        <span @click="onClickToggleVideo" class="student-controls__button--clickable">
+          <span>
+            <img class="video-icon" :src="isAllVideoHidden ? require(`@/assets/show-all.svg`) : require(`@/assets/hide-all.svg`)" />
+            <span>{{ isAllVideoHidden ? showAllText : hideAllText }}</span>
+          </span>
+        </span>
+      </div>
+      <div class="student-controls__button">
         <span
           @click="onClickDisableAll"
           class="student-controls__button--clickable"
@@ -28,14 +36,6 @@
             :src="isAllPaletteHidden ? require(`@/assets/teacher-class/touch-on-small.svg`) : require(`@/assets/teacher-class/touch-off-small.svg`)"
           />
           <span>{{ disableAllText }}</span>
-        </span>
-      </div>
-      <div class="student-controls__button">
-        <span @click="onClickToggleVideo" class="student-controls__button--clickable">
-          <span>
-            <img class="video-icon" :src="isAllVideoHidden ? require(`@/assets/show-all.svg`) : require(`@/assets/hide-all.svg`)" />
-            <span>{{ isAllVideoHidden ? showAllText : hideAllText }}</span>
-          </span>
         </span>
       </div>
     </div>
