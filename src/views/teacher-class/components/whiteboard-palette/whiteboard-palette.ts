@@ -1,7 +1,7 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
 import { fabric } from "fabric";
-import { Tools, Mode, starPolygonPoints } from "@/commonui";
+import { Tools, Mode, starPolygonPoints, DefaultCanvasDimension } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 
@@ -66,6 +66,69 @@ export default defineComponent({
         return;
       }
     });
+    const addAnnotationLesson = (item: any) => {
+      const xMetadata = props.image?.metaData.x;
+      const yMetadata = props.image?.metaData.y;
+      const widthMetadata = props.image?.metaData.width;
+      const heightMetadata = props.image?.metaData.height;
+      const wRatio = DefaultCanvasDimension.width / widthMetadata;
+      const hRatio = DefaultCanvasDimension.height / heightMetadata;
+      const ratio = Math.min(wRatio, hRatio);
+      // 0: rect, 1: circle, 2: star
+      let rect, circle, star, points;
+      switch (item.type) {
+        case (item.type = 0):
+          rect = new fabric.Rect({
+            left: (item.x - xMetadata) * ratio,
+            top: (item.y - yMetadata) * ratio,
+            width: item.width * ratio,
+            height: item.height * ratio,
+            fill: "",
+            stroke: item.color,
+            strokeWidth: 5,
+            id: "annotation-lesson",
+          });
+          rect.rotate(item.rotate);
+          canvas.add(rect);
+          break;
+        case (item.type = 1):
+          circle = new fabric.Circle({
+            left: (item.x - xMetadata) * ratio,
+            top: (item.y - yMetadata) * ratio,
+            radius: (item.width / 2) * ratio,
+            fill: "",
+            stroke: item.color,
+            strokeWidth: 5,
+            id: "annotation-lesson",
+          });
+          canvas.add(circle);
+          break;
+        case (item.type = 2):
+          points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
+          star = new fabric.Polygon(points, {
+            stroke: item.color,
+            left: (item.x - xMetadata) * ratio,
+            top: (item.y - yMetadata) * ratio,
+            strokeWidth: 5,
+            strokeLineJoin: "round",
+            fill: "",
+            id: "annotation-lesson",
+          });
+          star.rotate(item.rotate);
+          canvas.add(star);
+          break;
+      }
+    };
+    const processAnnotationLesson = () => {
+      const annotations = props.image?.metaData?.annotations;
+      if (annotations && annotations.length) {
+        annotations.forEach((item: any) => {
+          addAnnotationLesson(item);
+        });
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      }
+    };
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -99,6 +162,7 @@ export default defineComponent({
       if (!canvas) return;
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
         await clickedTool(Tools.Pen);
       } else {
@@ -109,6 +173,9 @@ export default defineComponent({
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard();
+      if (!isShowWhiteBoard.value) {
+        processAnnotationLesson();
+      }
     });
     const imageUrl = computed(() => {
       return props.image ? props.image.url : {};
@@ -208,8 +275,8 @@ export default defineComponent({
       const canvasEl = document.getElementById("canvasDesignate");
       if (!canvasEl) return;
       canvas = new fabric.Canvas("canvasDesignate");
-      canvas.setWidth(717);
-      canvas.setHeight(435);
+      canvas.setWidth(DefaultCanvasDimension.width);
+      canvas.setHeight(DefaultCanvasDimension.height);
       canvas.selectionFullyContained = false;
       await processCanvasWhiteboard();
       listenToCanvasEvents();
@@ -330,7 +397,7 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects());
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson"));
           await store.dispatch("teacherRoom/setClearBrush", {});
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
@@ -378,6 +445,7 @@ export default defineComponent({
       await clickedTool(Tools.Clear);
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
       canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
     };
     const hideWhiteboard = async () => {
@@ -387,6 +455,7 @@ export default defineComponent({
       canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+      processAnnotationLesson();
     };
     const imgLoad = async () => {
       if (!canvas) return;
@@ -395,8 +464,10 @@ export default defineComponent({
       } else {
         // canvas.remove(...canvas.getObjects());
       }
+      processAnnotationLesson();
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {
         await clickedTool(Tools.Cursor);
