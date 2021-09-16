@@ -2,13 +2,20 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 
 export const useTextBox = () => {
-  const addObjectIdentifier = (canvas: any) => {
+  const handleCreateObject = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       const canvasObject = options.target;
       if (canvasObject.type === "textbox") {
         const randomId = randomUUID();
-        canvasObject.id = randomId;
+        canvasObject.objectId = randomId;
+        canvasObject.set("fill", "red");
       }
+    });
+  };
+
+  const handleModifyObject = (canvas: any) => {
+    canvas.on("object:modified", (options: any) => {
+      console.log("handleModifyObject", options?.target);
     });
   };
 
@@ -27,9 +34,9 @@ export const useTextBox = () => {
 
   const editTextBox = (canvas: any) => {
     canvas.on("text:changed", (textBox: any) => {
-      console.log("textBoxId", textBox.target.id);
+      console.log("textBoxId", textBox.target.objectId);
     });
   };
 
-  return { addObjectIdentifier, createTextBox, editTextBox };
+  return { handleCreateObject, createTextBox, editTextBox, handleModifyObject };
 };

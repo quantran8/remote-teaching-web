@@ -55,7 +55,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, editTextBox, addObjectIdentifier } = useTextBox();
+    const { createTextBox, editTextBox, handleCreateObject, handleModifyObject } = useTextBox();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -205,7 +205,8 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfTeacher();
-      addObjectIdentifier(canvas);
+      handleCreateObject(canvas);
+      handleModifyObject(canvas);
       editTextBox(canvas);
     };
     const boardSetup = async () => {
