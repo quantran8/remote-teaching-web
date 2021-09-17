@@ -140,7 +140,7 @@
       height: $current-item-size;
       #{$self}__video {
         width: 100%;
-        height: $current-item-size;
+        height: 100%;
       }
     }
     &__title {
