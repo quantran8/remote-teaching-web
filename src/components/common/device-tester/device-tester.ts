@@ -367,12 +367,21 @@ export default defineComponent({
     watch(currentUnit, currentUnitValue => {
       if (props.notJoin || props.fromParentComponent) return;
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
-      const currentLessonIndex = props.unitInfo[currentUnitIndex]?.sequence?.findIndex(
-        (item: number) => item === props.infoStart.teacherClass.lessonNumber,
-      );
-      const availableLessons = props.unitInfo[currentUnitIndex]?.sequence;
-      const nextLessonIndex = currentLessonIndex >= availableLessons?.length - 1 ? currentLessonIndex : currentLessonIndex + 1;
+	  const availableLessons = props.unitInfo[currentUnitIndex]?.sequence;
 
+	  const currentLessonValue = props.infoStart.teacherClass.lessonNumber;
+      const currentLessonIndex = availableLessons?.findIndex(
+        (item: number) => item === currentLessonValue,
+      );
+      
+	  // find next lesson by next number bigger than current lesson\
+	  let nextLessonIndex = availableLessons?.findIndex(
+        (item: number) => item > currentLessonValue,
+      );
+		
+	  // find any lesson bigger then current lesson, leave it as max lesson
+	  nextLessonIndex = nextLessonIndex < 0 ? Math.max(currentLessonIndex, 0) : nextLessonIndex
+	
       listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
       if (currentUnit.value === props.infoStart.teacherClass.unit && nextLessonIndex >= 0 && firstTimeDefault.value) {
         firstTimeDefault.value = false;
