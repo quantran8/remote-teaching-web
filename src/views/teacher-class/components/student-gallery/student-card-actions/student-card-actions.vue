@@ -15,7 +15,7 @@
         <img :src="audioIcon" />
       </div>
     </span>
-    <span v-if="show" @click="toggleAnnotation" class="student-action__item">
+    <span v-if="show" @click="toggleAnnotation" class="student-action__item" :class="{ 'student-action__item--disable': !isOnePalette }">
       <div class="student-action__btn">
         <img :src="paletteIcon" />
       </div>
