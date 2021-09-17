@@ -6,7 +6,6 @@ import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { TeacherState } from "@/store/room/interface";
-import { formatImageUrl } from "@/utils/utils";
 import noAvatar from "@/assets/images/user-default-gray.png";
 
 export default defineComponent({
@@ -59,7 +58,7 @@ export default defineComponent({
     };
 
     const isLowBandWidth = computed(() => getters["teacherRoom/isLowBandWidth"]);
-    const avatarTeacher = computed(() => (props.teacher?.avatar ? formatImageUrl(props.teacher?.avatar) : noAvatar));
+    const avatarTeacher = computed(() => (props.teacher?.avatar ? props.teacher?.avatar : noAvatar));
 
     return {
       audioIcon,
