@@ -380,7 +380,7 @@ export default defineComponent({
       );
 		
 	  // find any lesson bigger then current lesson, leave it as max lesson
-	  nextLessonIndex = nextLessonIndex < 0 ? Math.max(currentLessonIndex, 0) : nextLessonIndex
+	  nextLessonIndex = nextLessonIndex < 0 ? Math.max(currentLessonIndex, availableLessons.length - 1) : nextLessonIndex
 	
       listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
       if (currentUnit.value === props.infoStart.teacherClass.unit && nextLessonIndex >= 0 && firstTimeDefault.value) {
