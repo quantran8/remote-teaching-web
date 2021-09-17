@@ -4,95 +4,13 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  &__micro {
-    &--header {
-      display: flex;
-      justify-content: center;
-      position: relative;
-      margin-bottom: 20px;
-      padding-left: 125px;
-      @media (max-width: $sm) {
-        padding-left: 0px;
-        padding-top: 35px;
-      }
-      &__title {
-        @media (max-width: $sm) {
-          display: none;
-        }
-        position: absolute;
-        left: 0;
-        font-weight: 600;
-        top: 5px;
-      }
-      &__switch {
-        position: absolute;
-        left: 130px;
-        font-weight: 600;
-        top: 5px;
-        @media (max-width: $sm) {
-          left: 0;
-        }
-      }
-    }
-    &--progress {
-      margin-bottom: 10px;
-      &__title {
-        margin-bottom: 10px;
-      }
-      &__wave {
-        display: flex;
-        justify-content: center;
-        padding: 0 15%;
-      }
-    }
-  }
   &__camera {
-    &--header {
-      display: flex;
-      justify-content: center;
-      position: relative;
-      margin-bottom: 10px;
-      padding-left: 125px;
-      @media (max-width: $sm) {
-        padding-left: 0px;
-        padding-top: 35px;
-      }
-      &__title {
-        @media (max-width: $sm) {
-          display: none;
-        }
-        position: absolute;
-        left: 0;
-        font-weight: 600;
-        top: 5px;
-      }
-      &__switch {
-        position: absolute;
-        left: 130px;
-        font-weight: 600;
-        top: 5px;
-        @media (max-width: $sm) {
-          left: 0;
-        }
-      }
-    }
-    &--switch {
-      margin-bottom: 10px;
-      &__text {
-        display: inline-block;
-        width: 60px;
-      }
-    }
     &--player {
       margin: 0 auto;
-      width: 55%;
-      height: 180px;
-      margin-top: 20px;
+      height: 200px;
       overflow: hidden;
       @media (min-width: $large-lap) {
-        width: 380px;
         height: 250px;
-        margin-top: 20px;
       }
       &__icon {
         width: 30px;
@@ -115,93 +33,38 @@
         align-items: center;
       }
     }
-    &--select {
-      padding: 20px 0;
-    }
   }
-  &__cl-status {
-    &--student {
-      position: relative;
-      &__title {
-        @media (max-width: $sm) {
-          display: none;
-        }
-        position: absolute;
-        left: 0;
-        font-weight: 600;
+
+  &__check-mic-cam {
+    @media (max-width: $xs) {
+      flex-direction: column;
+      align-items: start;
+      .ant-switch {
+        margin: 10px 0;
       }
-      &__join {
-        text-decoration: underline;
-        color: #00a1ed;
-        cursor: pointer;
-      }
-      &__message {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      &__button {
-        padding-top: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        &--1 {
-          margin-right: 10px;
-        }
-      }
-    }
-    &--teacher {
-      &__content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 70%;
-        margin: 0 auto;
-        &--item {
-          width: 45%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          &__label {
-            padding-right: 10px;
-          }
-        }
-      }
-      &__button {
-        padding-top: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        &--1 {
-          margin-right: 10px;
-        }
-      }
-      &__msg {
-        color: red;
-        text-align: center;
+      .ant-select {
+        width: 100% !important;
       }
     }
   }
-
-  &__divider {
-    display: flex;
-    align-items: center;
+  &__mess-teacher-error {
+    color: red;
   }
-}
-
-.title {
-  font-weight: 600;
-  padding-bottom: 10px;
-  margin-right: 10px;
-}
-.label {
-  margin-right: 10px;
-  padding-bottom: 10px;
-}
-
-.block-gutter {
-  margin-bottom: 20px;
-  @media (min-width: $large-lap) {
-    margin-bottom: 30px;
+  &__unit-lesson {
+    min-width: 100px;
+    @media (max-width: $xs) {
+      min-width: 75px;
+    }
+  }
+  &__mb {
+    &--default {
+      margin-bottom: 30px;
+      @media (max-width: $xs) {
+        margin-bottom: 20px;
+      }
+    }
+    &--small {
+      margin-bottom: 10px;
+    }
   }
 }

@@ -34,7 +34,9 @@ export default defineComponent({
     };
 
     const onClickDisableAll = () => {
-      emit(isAllPaletteHidden.value ? "enable-all" : "disable-all");
+      if (!isAllPaletteHidden.value) {
+        emit("disable-all");
+      }
     };
 
     const isSidebarCollapsed: any = inject("isSidebarCollapsed");

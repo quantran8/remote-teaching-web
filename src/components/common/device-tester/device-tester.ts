@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
-import { Modal, Switch, Progress, Select, Button, Skeleton, Divider } from "ant-design-vue";
+import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
@@ -24,6 +24,8 @@ export default defineComponent({
     Button,
     Skeleton,
     Divider,
+    Row,
+    Space,
   },
   props: [
     "classIsActive",
@@ -359,6 +361,7 @@ export default defineComponent({
     };
 
     const handleGoToClassSuccess = () => {
+      dispatch("setCameraDeviceId", currentCam.value?.deviceId);
       localTracks.value?.audioTrack?.close();
       localTracks.value?.videoTrack?.close();
     };
