@@ -1,3 +1,4 @@
+import { FabricObject } from "@/ws";
 import { GetterTree } from "vuex";
 import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
 
@@ -49,6 +50,12 @@ const getters: GetterTree<AnnotationState, any> = {
   },
   oneOneStudentStrokes(state: AnnotationState): Array<string> {
     return state.oneToOne?.studentStrokes;
+  },
+  fabricItems(state: AnnotationState): FabricObject[] {
+    return state.drawing.fabrics;
+  },
+  fabricItemsOneToOne(state: AnnotationState): FabricObject[] {
+    return state.oneToOne.fabrics;
   },
 };
 

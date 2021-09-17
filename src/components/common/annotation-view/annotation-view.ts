@@ -5,6 +5,7 @@ import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
+import { useTextBox } from "@/hooks/use-textbox";
 
 const randomPosition = () => Math.random() * 100;
 

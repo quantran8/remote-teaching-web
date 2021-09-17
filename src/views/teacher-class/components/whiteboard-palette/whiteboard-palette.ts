@@ -55,7 +55,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, editTextBox, handleCreateObject, handleModifyObject } = useTextBox();
+    const { createTextBox, editTextBox, handleCreateObject, handleModifyObject, displayFabricItems } = useTextBox();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -221,7 +221,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || obj.id !== isTeacher.value.id) {
+        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId)) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -616,6 +616,23 @@ export default defineComponent({
     onUnmounted(() => {
       canvas.dispose();
     });
+
+    //get fabric items from vuex and display to whiteboard
+    const fabricItems = computed(() => {
+      const oneToOneUserId = store.getters["teacherRoom/getStudentModeOneId"];
+      if (oneToOneUserId) {
+        return store.getters["annotation/fabricItemsOneToOne"];
+      }
+      return store.getters["annotation/fabricItems"];
+    });
+
+    watch(
+      fabricItems,
+      value => {
+        displayFabricItems(canvas, value);
+      },
+      { deep: true },
+    );
 
     return {
       currentExposureItemMedia,

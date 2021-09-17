@@ -36,11 +36,13 @@ const mutations: AnnotationMutation<AnnotationState> = {
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;
+    console.log("hello no p", p);
     if (p.drawing) {
       s.drawing = p.drawing;
       s.drawing.studentStrokes = p.drawing.studentBrushstrokes;
       s.drawing.teacherShapes = p.drawing.shapes;
       s.drawing.studentShapes = p.drawing.shapes;
+      s.drawing.fabrics = p.drawing.fabrics;
     } else {
       s.drawing = {
         pencil: null,
@@ -48,6 +50,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
         studentShapes: [],
         teacherShapes: [],
         studentStrokes: [],
+        fabrics: [],
       };
     }
     if (p.oneToOne) {
@@ -62,6 +65,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
         studentShapes: [],
         teacherShapes: [],
         studentStrokes: [],
+        fabrics: [],
       };
     }
     s.stickers = p.stickers;
@@ -102,6 +106,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
       studentShapes: [],
       teacherShapes: [],
       studentStrokes: [],
+      fabrics: [],
     };
     s.oneToOne = {
       pencil: null,
@@ -109,6 +114,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
       studentShapes: [],
       teacherShapes: [],
       studentStrokes: [],
+      fabrics: [],
     };
   },
   setDeleteBrush(s: AnnotationState, p: {}) {

@@ -1,21 +1,35 @@
+import { computed, watch } from "vue";
 import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
+import { useStore } from "vuex";
+import { FabricObject } from "@/ws";
 
 export const useTextBox = () => {
+  const { dispatch, getters } = useStore();
+
   const handleCreateObject = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
-      const canvasObject = options.target;
-      if (canvasObject.type === "textbox") {
-        const randomId = randomUUID();
-        canvasObject.objectId = randomId;
-        canvasObject.set("fill", "red");
-      }
+      console.log("object: added");
+      //   const canvasObject = options.target;
+      //   if (canvasObject.type === "textbox") {
+      //     const randomId = randomUUID();
+      //     canvasObject.objectId = randomId;
+      //     dispatch("teacherRoom/teacherCreateFabricObject", canvasObject);
+      //   }
     });
   };
 
   const handleModifyObject = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
       console.log("handleModifyObject", options?.target);
+      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+    });
+  };
+
+  const editTextBox = (canvas: any) => {
+    canvas.on("text:changed", (options: any) => {
+      console.log("textBoxId", options.target.objectId);
+      dispatch("teacherRoom/teacherModifyFabricObject", options.target);
     });
   };
 
@@ -28,15 +42,27 @@ export const useTextBox = () => {
       fontFamily: "arial black",
     });
     canvas.centerObject(textBox);
+    const randomId = randomUUID();
+    textBox.objectId = randomId;
     canvas.add(textBox).setActiveObject(textBox);
-    canvas.renderAll();
+    dispatch("teacherRoom/teacherCreateFabricObject", textBox);
   };
 
-  const editTextBox = (canvas: any) => {
-    canvas.on("text:changed", (textBox: any) => {
-      console.log("textBoxId", textBox.target.objectId);
-    });
+  const displayFabricItems = (canvas: any, items: FabricObject[]) => {
+    for (const item of items) {
+      const { fabricData, fabricId } = item;
+      const fabricObject = JSON.parse(fabricData);
+      fabricObject.objectId = fabricId;
+      const { type } = fabricObject;
+      switch (type) {
+        case "textbox":
+          canvas.add(new fabric.Textbox("", fabricObject));
+          break;
+        default:
+          break;
+      }
+    }
   };
 
-  return { handleCreateObject, createTextBox, editTextBox, handleModifyObject };
+  return { handleCreateObject, createTextBox, editTextBox, handleModifyObject, displayFabricItems };
 };

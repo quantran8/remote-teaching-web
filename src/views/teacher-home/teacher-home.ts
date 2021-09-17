@@ -45,7 +45,7 @@ export default defineComponent({
     const disabled = ref<boolean>(false);
     const visible = ref<boolean>(true);
     const startPopupVisible = ref<boolean>(false);
-    const messageStartClass = ref("hello no bug");
+    const messageStartClass = ref("");
     const infoStart = ref<{ teacherClass: TeacherClassModel; groupId: string }>();
     const agreePolicy = ref<boolean>(false);
     const policyTitle = computed(() => fmtMsg(PrivacyPolicy.TeacherPolicyTitle));

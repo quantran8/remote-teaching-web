@@ -26,6 +26,7 @@ export interface AnnotationAction<S, R> extends ActionTree<S, R>, AnnotationActi
 
 const actions: ActionTree<AnnotationState, any> = {
   setInfo({ commit }, p: AnnotationModel) {
+    console.log("hola", p);
     commit("setInfo", p);
   },
   setPointer({ commit }, p: Pointer) {
