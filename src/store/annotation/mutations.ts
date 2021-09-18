@@ -1,6 +1,7 @@
 import { AnnotationModel } from "@/models";
+import { FabricObject } from "@/ws";
 import { MutationTree } from "vuex";
-import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
+import { AnnotationState, LastFabricUpdated, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationMutationInterface<S> {
   setInfo(s: S, p: AnnotationModel): void;
@@ -36,7 +37,6 @@ const mutations: AnnotationMutation<AnnotationState> = {
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;
-    console.log("hello no p", p);
     if (p.drawing) {
       s.drawing = p.drawing;
       s.drawing.studentStrokes = p.drawing.studentBrushstrokes;
@@ -171,6 +171,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setClearOneStudentDrawsLine(s: AnnotationState, p: {}) {
     s.oneToOne.studentStrokes = [];
+  },
+  setLastFabricUpdated(s: AnnotationState, p: LastFabricUpdated) {
+    s.lastFabricUpdated = p;
   },
 };
 

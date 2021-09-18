@@ -285,6 +285,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         root: true,
       });
     },
+    onTeacherCreateFabricObject: (payload: any) => {
+      console.log("create");
+    },
+    onTeacherModifyFabricObject: (payload: any) => {
+      console.log("modify");
+    },
   };
   return handler;
 };

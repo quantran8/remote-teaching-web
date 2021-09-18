@@ -176,6 +176,8 @@ export class GLSocketClient {
     //   handler.onTeacherSendUnity
     // );
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_ONE_TO_ONE, handler.onTeacherSetOneToOne);
+    handlers.set(TeacherWSEvent.TEACHER_CREATE_FABRIC_OBJECT, handler.onTeacherCreateFabricObject);
+    handlers.set(TeacherWSEvent.TEACHER_MODIFY_FABRIC_OBJECT, handler.onTeacherModifyFabricObject);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         // Logger.info("RECEIVE", key, payload);

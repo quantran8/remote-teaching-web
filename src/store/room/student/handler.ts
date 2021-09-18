@@ -2,7 +2,7 @@ import { ClassRoomStatus, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
-import { WSEventHandler } from "@/ws";
+import { FabricObject, WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
@@ -330,6 +330,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       exposureSelected: string;
       itemContentSelected: string;
     }) => {
+		console.log('hello payload', payload);
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -378,6 +379,28 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onStudentDrawsLine: async (payload: string) => {
       await dispatch("annotation/setStudentDrawsLine", payload, { root: true });
+    },
+    onTeacherCreateFabricObject: (payload: FabricObject) => {
+      console.log("create", payload);
+      dispatch(
+        "annotation/setLastFabricUpdated",
+        {
+          type: "create",
+          data: payload,
+        },
+        { root: true },
+      );
+    },
+    onTeacherModifyFabricObject: (payload: FabricObject) => {
+      console.log("modify", payload);
+      dispatch(
+        "annotation/setLastFabricUpdated",
+        {
+          type: "modify",
+          data: payload,
+        },
+        { root: true },
+      );
     },
   };
   return handler;

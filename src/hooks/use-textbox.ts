@@ -3,6 +3,7 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
+import { LastFabricUpdated } from "@/store/annotation/state";
 
 export const useTextBox = () => {
   const { dispatch, getters } = useStore();
@@ -10,26 +11,22 @@ export const useTextBox = () => {
   const handleCreateObject = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       console.log("object: added");
-      //   const canvasObject = options.target;
-      //   if (canvasObject.type === "textbox") {
-      //     const randomId = randomUUID();
-      //     canvasObject.objectId = randomId;
-      //     dispatch("teacherRoom/teacherCreateFabricObject", canvasObject);
-      //   }
     });
   };
 
   const handleModifyObject = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
-      console.log("handleModifyObject", options?.target);
-      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      if (options?.target.type === "textbox") {
+        dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      }
     });
   };
 
   const editTextBox = (canvas: any) => {
     canvas.on("text:changed", (options: any) => {
-      console.log("textBoxId", options.target.objectId);
-      dispatch("teacherRoom/teacherModifyFabricObject", options.target);
+      if (options?.target.type === "textbox") {
+        dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      }
     });
   };
 
@@ -48,11 +45,17 @@ export const useTextBox = () => {
     dispatch("teacherRoom/teacherCreateFabricObject", textBox);
   };
 
+  const deserializeFabricObject = (item: FabricObject) => {
+    const { fabricData, fabricId } = item;
+    const fabricObject = JSON.parse(fabricData);
+    fabricObject.objectId = fabricId;
+    return fabricObject;
+  };
+
+  //display the fabric items get from getRoomInfo API which save in vuex store
   const displayFabricItems = (canvas: any, items: FabricObject[]) => {
     for (const item of items) {
-      const { fabricData, fabricId } = item;
-      const fabricObject = JSON.parse(fabricData);
-      fabricObject.objectId = fabricId;
+      const fabricObject = deserializeFabricObject(item);
       const { type } = fabricObject;
       switch (type) {
         case "textbox":
@@ -64,5 +67,31 @@ export const useTextBox = () => {
     }
   };
 
-  return { handleCreateObject, createTextBox, editTextBox, handleModifyObject, displayFabricItems };
+  //display the fabric item get from signalR TeacherCreateFabricObject/TeacherModifyFabricObject
+  //which save in vuex store as lastFabricUpdated
+  const displayCreatedItem = (canvas: any, item: FabricObject) => {
+    const fabricObject = deserializeFabricObject(item);
+    const { type } = fabricObject;
+    switch (type) {
+      case "textbox":
+        canvas.add(new fabric.Textbox("", fabricObject));
+        break;
+      default:
+        break;
+    }
+  };
+
+  const displayModifiedItem = (canvas: any, item: FabricObject, existingItem: any) => {
+    const fabricObject = deserializeFabricObject(item);
+    const { type } = fabricObject;
+    switch (type) {
+      case "textbox":
+        existingItem.set(fabricObject);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return { handleCreateObject, createTextBox, editTextBox, handleModifyObject, displayFabricItems, displayCreatedItem, displayModifiedItem };
 };

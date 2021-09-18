@@ -6,6 +6,9 @@ import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
 import { useTextBox } from "@/hooks/use-textbox";
+import { LastFabricUpdated } from "@/store/annotation/state";
+import { indexOf } from "lodash";
+import { Logger } from "@/utils/logger";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -63,6 +66,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem } = useTextBox();
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -547,6 +551,50 @@ export default defineComponent({
       toolActive.value = "";
     };
     const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
+
+    //get fabric items from vuex and display to whiteboard
+    const fabricItems = computed(() => {
+      const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+      if (oneToOneUserId) {
+        return store.getters["annotation/fabricItemsOneToOne"];
+      }
+      return store.getters["annotation/fabricItems"];
+    });
+
+    watch(
+      fabricItems,
+      value => {
+        displayFabricItems(canvas, value);
+      },
+      { deep: true },
+    );
+
+    //receive lastFabricUpdated and update the whiteboard
+    const lastFabricUpdated = computed(() => store.getters["annotation/lastFabricUpdated"]);
+    const getObjectFromId = (id: string) => {
+      const currentObjects = canvas.getObjects();
+      return currentObjects.find((obj: any) => obj.objectId === id);
+    };
+    watch(lastFabricUpdated, (value: LastFabricUpdated) => {
+      const { type, data } = value;
+      switch (type) {
+        case "create": {
+          displayCreatedItem(canvas, data);
+          break;
+        }
+        case "modify": {
+          const existingObject = getObjectFromId(data.fabricId);
+          if (!existingObject) {
+            return Logger.error("Modify fabric item error: have not existingObject ");
+          }
+          displayModifiedItem(canvas, data, existingObject);
+          break;
+        }
+        default:
+          break;
+      }
+    });
+
     return {
       containerRef,
       pointerStyle,

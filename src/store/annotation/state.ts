@@ -32,6 +32,12 @@ export interface AnnotationState {
   drawing: Drawing;
   oneToOne: Drawing;
   stickers: Array<Sticker>;
+  lastFabricUpdated: null | LastFabricUpdated;
+}
+
+export interface LastFabricUpdated {
+  type: "modify" | "create";
+  data: FabricObject;
 }
 
 const state: AnnotationState = {
@@ -54,6 +60,7 @@ const state: AnnotationState = {
     fabrics: [],
   },
   stickers: [],
+  lastFabricUpdated: null,
 };
 
 export default state;
