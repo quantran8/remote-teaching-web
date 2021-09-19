@@ -349,6 +349,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
+        await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
@@ -381,7 +382,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setStudentDrawsLine", payload, { root: true });
     },
     onTeacherCreateFabricObject: (payload: FabricObject) => {
-      console.log("create", payload);
       dispatch(
         "annotation/setLastFabricUpdated",
         {
@@ -392,7 +392,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       );
     },
     onTeacherModifyFabricObject: (payload: FabricObject) => {
-      console.log("modify", payload);
       dispatch(
         "annotation/setLastFabricUpdated",
         {

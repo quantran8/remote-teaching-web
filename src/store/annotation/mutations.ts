@@ -164,6 +164,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setFabricsInDrawing(s: AnnotationState, p: FabricObject[]) {
     s.drawing.fabrics = p;
   },
+  setFabricsInOneMode(s: AnnotationState, p: FabricObject[]) {
+    s.oneToOne.fabrics = p;
+  },
 };
 
 export default mutations;

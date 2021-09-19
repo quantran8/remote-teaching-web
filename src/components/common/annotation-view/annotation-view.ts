@@ -7,7 +7,6 @@ import { starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
 import { useTextBox } from "@/hooks/use-textbox";
 import { LastFabricUpdated } from "@/store/annotation/state";
-import { indexOf } from "lodash";
 import { Logger } from "@/utils/logger";
 
 const randomPosition = () => Math.random() * 100;
@@ -66,7 +65,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
-    const { displayFabricItems, displayCreatedItem, displayModifiedItem } = useTextBox();
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem, handleCreateObject } = useTextBox();
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -198,7 +197,8 @@ export default defineComponent({
             .getObjects()
             .filter((obj: any) => obj.id !== student.value.id)
             .filter((obj: any) => obj.id !== teacherForST.value.id)
-            .filter((obj: any) => obj.type !== "path"),
+            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => !obj.objectId),
         );
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== teacherForST.value.id) {
@@ -385,6 +385,7 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfStudent();
+      handleCreateObject(canvas);
     };
     const canvasRef = ref(null);
     const boardSetup = () => {
@@ -556,9 +557,7 @@ export default defineComponent({
     const fabricItems = computed(() => {
       const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
       if (oneToOneUserId) {
-        console.log("1", store.getters["annotation/fabricItemsOneToOne"]);
-        console.log("2", store.getters["annotation/fabricItems"]);
-        return [...store.getters["annotation/fabricItemsOneToOne"], ...store.getters["annotation/fabricItems"]];
+        return store.getters["annotation/fabricItemsOneToOne"];
       }
       console.log("3", store.getters["annotation/fabricItems"]);
       return store.getters["annotation/fabricItems"];
@@ -566,7 +565,11 @@ export default defineComponent({
 
     watch(
       fabricItems,
-      value => {
+      async value => {
+        const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+        if (!oneToOneUserId) {
+          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
+        }
         displayFabricItems(canvas, value);
       },
       { deep: true },

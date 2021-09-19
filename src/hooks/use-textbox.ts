@@ -9,7 +9,11 @@ export const useTextBox = () => {
   const { dispatch, getters } = useStore();
 
   const handleCreateObject = (canvas: any) => {
-    console.log("object: added");
+    canvas.on("object:added", (options: any) => {
+      if (options?.target.type === "textbox") {
+        options.target.selectable = false;
+      }
+    });
   };
 
   const handleModifyObject = (canvas: any) => {

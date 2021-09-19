@@ -113,5 +113,8 @@ const actions: ActionTree<AnnotationState, any> = {
   setFabricsInDrawing({ commit }, p: FabricObject[]) {
     commit("setFabricsInDrawing", p);
   },
+  setFabricsInOneMode({ commit }, p: FabricObject[]) {
+    commit("setFabricsInOneMode", p);
+  },
 };
 export default actions;
