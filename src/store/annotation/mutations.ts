@@ -34,6 +34,7 @@ export interface AnnotationMutation<S> extends MutationTree<S>, AnnotationMutati
 
 const mutations: AnnotationMutation<AnnotationState> = {
   setInfo(s: AnnotationState, p: AnnotationModel) {
+    console.log("hola ", p);
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;
@@ -43,30 +44,15 @@ const mutations: AnnotationMutation<AnnotationState> = {
       s.drawing.teacherShapes = p.drawing.shapes;
       s.drawing.studentShapes = p.drawing.shapes;
       s.drawing.fabrics = p.drawing.fabrics;
-    } else {
-      s.drawing = {
-        pencil: null,
-        brushstrokes: [],
-        studentShapes: [],
-        teacherShapes: [],
-        studentStrokes: [],
-        fabrics: [],
-      };
     }
     if (p.oneToOne) {
       s.oneToOne = p.oneToOne;
       s.oneToOne.studentStrokes = p.oneToOne.studentBrushstrokes;
       s.oneToOne.teacherShapes = p.oneToOne.shapes;
       s.oneToOne.studentShapes = p.oneToOne.shapes;
-    } else {
-      s.oneToOne = {
-        pencil: null,
-        brushstrokes: [],
-        studentShapes: [],
-        teacherShapes: [],
-        studentStrokes: [],
-        fabrics: [],
-      };
+    }
+    if (p.oneOneDrawing) {
+      s.oneToOne.fabrics = p.oneOneDrawing.fabrics;
     }
     s.stickers = p.stickers;
   },
@@ -174,6 +160,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setLastFabricUpdated(s: AnnotationState, p: LastFabricUpdated) {
     s.lastFabricUpdated = p;
+  },
+  setFabricsInDrawing(s: AnnotationState, p: FabricObject[]) {
+    s.drawing.fabrics = p;
   },
 };
 

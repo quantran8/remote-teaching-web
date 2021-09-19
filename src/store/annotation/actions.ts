@@ -110,5 +110,8 @@ const actions: ActionTree<AnnotationState, any> = {
   setLastFabricUpdated({ commit }, p: LastFabricUpdated) {
     commit("setLastFabricUpdated", p);
   },
+  setFabricsInDrawing({ commit }, p: FabricObject[]) {
+    commit("setFabricsInDrawing", p);
+  },
 };
 export default actions;

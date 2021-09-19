@@ -9,9 +9,7 @@ export const useTextBox = () => {
   const { dispatch, getters } = useStore();
 
   const handleCreateObject = (canvas: any) => {
-    canvas.on("object:added", (options: any) => {
-      console.log("object: added");
-    });
+    console.log("object: added");
   };
 
   const handleModifyObject = (canvas: any) => {
@@ -55,6 +53,9 @@ export const useTextBox = () => {
   //display the fabric items get from getRoomInfo API which save in vuex store
   const displayFabricItems = (canvas: any, items: FabricObject[]) => {
     for (const item of items) {
+      const currentObjects = canvas.getObjects();
+      const existing = currentObjects.find((obj: any) => obj.objectId === item.fabricId);
+      if (existing) return;
       const fabricObject = deserializeFabricObject(item);
       const { type } = fabricObject;
       switch (type) {
@@ -87,6 +88,7 @@ export const useTextBox = () => {
     switch (type) {
       case "textbox":
         existingItem.set(fabricObject);
+        canvas.renderAll();
         break;
       default:
         break;

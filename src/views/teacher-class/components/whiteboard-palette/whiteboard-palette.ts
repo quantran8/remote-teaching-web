@@ -5,6 +5,7 @@ import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useTextBox } from "@/hooks/use-textbox";
+import { FabricObject } from "@/ws";
 
 const DEFAULT_COLOR = "red";
 
@@ -621,14 +622,26 @@ export default defineComponent({
     const fabricItems = computed(() => {
       const oneToOneUserId = store.getters["teacherRoom/getStudentModeOneId"];
       if (oneToOneUserId) {
-        return store.getters["annotation/fabricItemsOneToOne"];
+        const fabricsOfClass: FabricObject[] = store.getters["annotation/fabricItems"];
+        const fabricsOfOneMode: FabricObject[] = store.getters["annotation/fabricItemsOneToOne"];
+        for (const fabricItem of fabricsOfClass) {
+          const index = fabricsOfOneMode.findIndex((item: FabricObject) => item.fabricId !== fabricItem.fabricId);
+          if (index > -1) {
+            fabricsOfOneMode.push(fabricItem);
+          }
+        }
+        return fabricsOfOneMode;
       }
       return store.getters["annotation/fabricItems"];
     });
 
     watch(
       fabricItems,
-      value => {
+      async value => {
+        const oneToOneUserId = store.getters["teacherRoom/getStudentModeOneId"];
+        if (!oneToOneUserId) {
+          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
+        }
         displayFabricItems(canvas, value);
       },
       { deep: true },

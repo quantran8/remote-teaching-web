@@ -330,7 +330,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       exposureSelected: string;
       itemContentSelected: string;
     }) => {
-		console.log('hello payload', payload);
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -363,6 +362,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch("annotation/setFabricsInDrawing", payload.drawing.fabrics, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {

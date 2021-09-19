@@ -556,8 +556,11 @@ export default defineComponent({
     const fabricItems = computed(() => {
       const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
       if (oneToOneUserId) {
-        return store.getters["annotation/fabricItemsOneToOne"];
+        console.log("1", store.getters["annotation/fabricItemsOneToOne"]);
+        console.log("2", store.getters["annotation/fabricItems"]);
+        return [...store.getters["annotation/fabricItemsOneToOne"], ...store.getters["annotation/fabricItems"]];
       }
+      console.log("3", store.getters["annotation/fabricItems"]);
       return store.getters["annotation/fabricItems"];
     });
 
@@ -569,7 +572,7 @@ export default defineComponent({
       { deep: true },
     );
 
-    //receive lastFabricUpdated and update the whiteboard
+    //receive the object lastFabricUpdated and update the whiteboard
     const lastFabricUpdated = computed(() => store.getters["annotation/lastFabricUpdated"]);
     const getObjectFromId = (id: string) => {
       const currentObjects = canvas.getObjects();
