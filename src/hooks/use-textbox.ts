@@ -1,12 +1,10 @@
-import { computed, watch } from "vue";
 import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { LastFabricUpdated } from "@/store/annotation/state";
 
 export const useTextBox = () => {
-  const { dispatch, getters } = useStore();
+  const { dispatch } = useStore();
 
   const handleCreateObject = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
@@ -25,7 +23,7 @@ export const useTextBox = () => {
   };
 
   const editTextBox = (canvas: any) => {
-    canvas.on("text:changed", (options: any) => {
+    canvas.on("text:editing:exited", (options: any) => {
       if (options?.target.type === "textbox") {
         dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }

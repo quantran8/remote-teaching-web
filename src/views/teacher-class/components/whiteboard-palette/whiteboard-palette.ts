@@ -369,6 +369,11 @@ export default defineComponent({
     };
     const updateColorValue = (value: any) => {
       if (toolSelected.value === Tools.StrokeColor) {
+        const selectedFabricObject = canvas.getActiveObject();
+        if (selectedFabricObject.type === "textbox") {
+          selectedFabricObject.setSelectionStyles({ fill: value });
+          canvas.renderAll();
+        }
         strokeColor.value = value;
         clickedTool(Tools.Pen).then();
       }

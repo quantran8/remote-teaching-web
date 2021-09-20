@@ -559,7 +559,6 @@ export default defineComponent({
       if (oneToOneUserId) {
         return store.getters["annotation/fabricItemsOneToOne"];
       }
-      console.log("3", store.getters["annotation/fabricItems"]);
       return store.getters["annotation/fabricItems"];
     });
 
