@@ -10,9 +10,10 @@
   align-items: center;
   border-bottom: solid 1px #ccc;
   padding-left: 0.5rem;
+  background-color: lightgray;
   .exposure-title {
     flex: 1;
-    padding: 1rem;
+    padding: 0.5rem;
   }
   &__left {
     &.thumbnail {
@@ -27,6 +28,9 @@
         height: 100%;
         object-fit: contain;
       }
+    }
+    .icon {
+      color: black;
     }
   }
 }

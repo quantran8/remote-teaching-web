@@ -1,13 +1,14 @@
 <template>
   <div class="header">
     <div class="header__left">
-	  <div class="header__left--below"></div>
+      <div class="header__left--below"></div>
       {{ teacherName }}
       <div class="box">
         <label class="label-reactions">
           <img v-if="classAction.icon" :src="require(`@/assets/icons/icon-action-${classAction.icon}.png`)" />
           <img v-else src="@/assets/student-class/class-icon.svg" />
         </label>
+        <span v-if="classAction.id === 'default'" class="class-actions-title">{{ classActionsTitle }}</span>
         <div class="toolbox"></div>
         <label class="overlay"></label>
         <div class="actions">

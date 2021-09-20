@@ -10,52 +10,58 @@
       :maskClosable="!preventCloseModal"
       :closable="!preventCloseModal"
     >
-      <div>
-        <div class="device-tester__micro block-gutter">
-          <div class="device-tester__micro--header">
-            <div class="device-tester__micro--header__title">{{ CheckMic }}</div>
-            <div class="device-tester__micro--header__switch"><Switch v-model:checked="isOpenMic" /></div>
-            <div class="device-tester__micro--header__select">
-              <Select
-                :placeholder="SelectDevice"
-                class=""
-                style="width: 330px"
-                :disabled="!isOpenMic"
-                v-model:value="currentMicLabel"
-                ref="select"
-                @change="handleMicroChange"
-              >
-                <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">{{
-                  listMics.find(mic => mic.deviceId === deviceId)?.label
-                }}</SelectOption>
-              </Select>
-            </div>
-          </div>
-          <div class="device-tester__micro--progress">
-            <div class="device-tester__micro--progress__wave">
-              <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
-            </div>
-          </div>
+      <Row align="middle" class="device-tester__mb--small">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b>{{ CheckMic }}</b>
         </div>
-        <div class="device-tester__camera block-gutter">
-          <div class="device-tester__camera--header">
-            <div class="device-tester__camera--header__title">{{ CheckCam }}</div>
-            <div class="device-tester__camera--header__switch"><Switch v-model:checked="isOpenCam" /></div>
-            <div class="device-tester__camera--header__select">
-              <Select
-                :placeholder="SelectDevice"
-                style="width: 330px"
-                :disabled="!isOpenCam"
-                v-model:value="currentCamLabel"
-                ref="select"
-                @change="handleCameraChange"
-              >
-                <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">{{
-                  listCams.find(cam => cam.deviceId === deviceId)?.label
-                }}</SelectOption>
-              </Select>
-            </div>
-          </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center" class="device-tester__check-mic-cam">
+            <Switch v-model:checked="isOpenMic" />
+            <Select
+              :placeholder="SelectDevice"
+              class=""
+              style="width: 330px"
+              :disabled="!isOpenMic"
+              v-model:value="currentMicLabel"
+              ref="select"
+              @change="handleMicroChange"
+            >
+              <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">
+                {{ listMics.find(mic => mic.deviceId === deviceId)?.label }}
+              </SelectOption>
+            </Select>
+          </Space>
+        </div>
+      </Row>
+      <Row align="middle" class="device-tester__mb--default">
+        <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
+          <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
+        </div>
+      </Row>
+      <Row align="middle" class="device-tester__mb--small">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b>{{ CheckCam }}</b>
+        </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center" class="device-tester__check-mic-cam">
+            <Switch v-model:checked="isOpenCam" />
+            <Select
+              :placeholder="SelectDevice"
+              style="width: 330px"
+              :disabled="!isOpenCam"
+              v-model:value="currentCamLabel"
+              ref="select"
+              @change="handleCameraChange"
+            >
+              <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">
+                {{ listCams.find(cam => cam.deviceId === deviceId)?.label }}
+              </SelectOption>
+            </Select>
+          </Space>
+        </div>
+      </Row>
+      <Row align="middle" class="device-tester__mb--default">
+        <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
           <div
             ref="playerRef"
             :id="videoElementId"
@@ -71,56 +77,56 @@
             </div>
           </div>
         </div>
-        <div v-if="hasJoinAction" class="device-tester__cl-status">
-          <div v-if="isParent" class="device-tester__cl-status--student">
-            <div class="device-tester__cl-status--student__title">{{ ClassStatus }}</div>
-            <div class="device-tester__cl-status--student__message">
-              <span v-if="!classIsActive">
-                {{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}
-              </span>
-              <span v-else>
-                {{ DefaultMessage2 }}
-              </span>
-            </div>
-            <div class="device-tester__cl-status--student__button">
-              <div class="device-tester__cl-status--student__button--1">
-                <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-              </div>
-              <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">{{
-                JoinNow
-              }}</Button>
-            </div>
-          </div>
-          <div v-if="isTeacher" class="device-tester__cl-status--teacher">
-            <div class="title">{{ LessonUnit }}</div>
-            <div v-if="unitInfo" class="device-tester__cl-status--teacher__content">
-              <div class="device-tester__cl-status--teacher__content--item">
-                <div class="device-tester__cl-status--teacher__content--item__label">{{ Unit }}</div>
-                <Select v-model:value="currentUnit" style="width: 100%" ref="select" @change="handleUnitChange">
-                  <SelectOption v-for="item in unitInfo" :key="item.unit" :value="item.unit">{{ item.unit }}</SelectOption>
-                </Select>
-              </div>
-              <div class="device-tester__cl-status--teacher__content--item">
-                <div class="device-tester__cl-status--teacher__content--item__label">{{ Lesson }}</div>
-                <Select v-model:value="currentLesson" style="width: 100%" ref="select" @change="handleLessonChange">
-                  <SelectOption v-for="lesson in listLessonByUnit" :key="lesson" :value="lesson">{{ lesson }}</SelectOption>
-                </Select>
-              </div>
-            </div>
-            <div class="device-tester__cl-status--teacher__button">
-              <div class="device-tester__cl-status--teacher__button--1">
-                <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-              </div>
-              <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">{{
-                JoinSession
-              }}</Button>
-            </div>
-            <div class="device-tester__cl-status--teacher__msg">
-              {{ messageStartClass }}
-            </div>
-          </div>
+      </Row>
+      <Row v-if="hasJoinAction && isTeacher" align="middle" class="device-tester__mb--default">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b>{{ LessonUnit }}</b>
         </div>
-      </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center">
+            <Space size="small" align="center">
+              <label>{{ Unit }}</label>
+              <Select v-model:value="currentUnit" class="device-tester__unit-lesson" ref="select" @change="handleUnitChange">
+                <SelectOption v-for="item in unitInfo" :key="item.unit" :value="item.unit">{{ item.unit }}</SelectOption>
+              </Select>
+            </Space>
+            <Space size="small" align="center">
+              <label>{{ Lesson }}</label>
+              <Select v-model:value="currentLesson" class="device-tester__unit-lesson" ref="select" @change="handleLessonChange">
+                <SelectOption v-for="lesson in listLessonByUnit" :key="lesson" :value="lesson">{{ lesson }}</SelectOption>
+              </Select>
+            </Space>
+          </Space>
+        </div>
+      </Row>
+      <Row v-if="hasJoinAction && isTeacher" type="flex" justify="end" class="device-tester__mb--small">
+        <Space size="large" align="center">
+          <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
+          <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">
+            {{ JoinSession }}
+          </Button>
+        </Space>
+      </Row>
+      <Row v-if="hasJoinAction && isTeacher" type="flex" justify="center">
+        <span class="device-tester__mess-teacher-error">{{ messageStartClass }}</span>
+      </Row>
+      <Row v-if="hasJoinAction && isParent" align="middle" class="device-tester__mb--default">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b>{{ ClassStatus }}</b>
+        </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <span v-if="!classIsActive">{{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}</span>
+          <span v-else>{{ DefaultMessage2 }}</span>
+        </div>
+      </Row>
+      <Row v-if="hasJoinAction && isParent" type="flex" justify="end">
+        <Space size="large" align="center">
+          <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
+          <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">
+            {{ JoinNow }}
+          </Button>
+        </Space>
+      </Row>
     </Modal>
   </div>
 </template>

@@ -140,7 +140,7 @@
       height: $current-item-size;
       #{$self}__video {
         width: 100%;
-        height: $current-item-size;
+        height: 100%;
       }
     }
     &__title {
@@ -188,7 +188,7 @@
     @include cycle(#dd0d0d, flickerAnimation);
   }
   &--speaking {
-    @include cycle(#00a1ed, flickerAnimationVoice);
+    @include cycle(#00a1ed, none);
   }
   &--palette {
     @include cycle(#030303, flickerAnimationPalette);

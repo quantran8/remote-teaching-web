@@ -40,6 +40,7 @@ export class CommonLocale {
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
   static OverlapWarningSession = "common.warning.overlap";
+  static CommonClassActions = "common.class.actions";
 }
 
 export class ErrorLocale {
