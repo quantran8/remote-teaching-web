@@ -5,7 +5,7 @@ import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
-import { useTextBox } from "@/hooks/use-textbox";
+import { useFabricObject } from "@/hooks/use-fabric-object";
 import { LastFabricUpdated } from "@/store/annotation/state";
 import { Logger } from "@/utils/logger";
 
@@ -65,7 +65,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
-    const { displayFabricItems, displayCreatedItem, displayModifiedItem, handleCreateObject } = useTextBox();
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem, handleCreateObject } = useFabricObject();
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {

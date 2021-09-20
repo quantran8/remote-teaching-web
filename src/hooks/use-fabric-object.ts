@@ -3,7 +3,15 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 
-export const useTextBox = () => {
+const defaultTextBoxProps = {
+  left: 50,
+  top: 50,
+  width: 150,
+  fontSize: 36,
+  fontFamily: "arial black",
+};
+
+export const useFabricObject = () => {
   const { dispatch } = useStore();
 
   const handleCreateObject = (canvas: any) => {
@@ -31,13 +39,7 @@ export const useTextBox = () => {
   };
 
   const createTextBox = (canvas: any) => {
-    const textBox = new fabric.Textbox("Type here...", {
-      left: 50,
-      top: 50,
-      width: 150,
-      fontSize: 36,
-      fontFamily: "arial black",
-    });
+    const textBox = new fabric.Textbox("Write here...", defaultTextBoxProps);
     canvas.centerObject(textBox);
     const randomId = randomUUID();
     textBox.objectId = randomId;

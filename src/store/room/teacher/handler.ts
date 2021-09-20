@@ -287,10 +287,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       });
     },
     onTeacherCreateFabricObject: (payload: any) => {
-      console.log("create");
+      Logger.info("Fabric:create object");
     },
     onTeacherModifyFabricObject: (payload: any) => {
-      console.log("modify");
+      Logger.info("Fabric:modify object");
     },
   };
   return handler;

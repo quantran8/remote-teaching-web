@@ -34,7 +34,6 @@ export interface AnnotationMutation<S> extends MutationTree<S>, AnnotationMutati
 
 const mutations: AnnotationMutation<AnnotationState> = {
   setInfo(s: AnnotationState, p: AnnotationModel) {
-    console.log("hola ", p);
     if (!p) return;
     s.pointer = p.pointer;
     s.mode = p.mode;

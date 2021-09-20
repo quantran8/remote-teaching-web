@@ -4,7 +4,7 @@ import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
-import { useTextBox } from "@/hooks/use-textbox";
+import { useFabricObject } from "@/hooks/use-fabric-object";
 import { FabricObject } from "@/ws";
 
 const DEFAULT_COLOR = "red";
@@ -56,7 +56,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, editTextBox, handleModifyObject, displayFabricItems } = useTextBox();
+    const { createTextBox, editTextBox, handleModifyObject, displayFabricItems } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
