@@ -15,7 +15,6 @@ import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
-import { Logger } from "@/utils/logger";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(

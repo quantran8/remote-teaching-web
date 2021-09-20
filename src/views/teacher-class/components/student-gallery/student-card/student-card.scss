@@ -258,7 +258,7 @@
   }
 
   &__is-speaking {
-    @include round-square(#00a1ed, flickerAnimationVoice);
+    @include round-square(#00a1ed, none);
     border-radius: 5px;
   }
 

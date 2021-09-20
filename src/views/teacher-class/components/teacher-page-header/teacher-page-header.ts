@@ -1,7 +1,8 @@
-import { MatIcon } from "@/commonui";
+import { fmtMsg, MatIcon } from "@/commonui";
 import { computed, defineComponent, ref } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";
+import { CommonLocale } from "@/locales/localeid";
 export default defineComponent({
   props: {
     teacherName: String,
@@ -14,6 +15,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const actions = [
+      { id: ClassAction.DEFAULT, icon: "default" },
       { id: ClassAction.INTERACTIVE, icon: "interactive" },
       { id: ClassAction.LISTEN, icon: "listen" },
       { id: ClassAction.QUESTION, icon: "question" },
@@ -25,6 +27,7 @@ export default defineComponent({
       const id: ClassAction = getters["teacherRoom/classAction"];
       return actions.find(e => e.id === id) || actions[2];
     });
+    const classActionsTitle = computed(() => fmtMsg(CommonLocale.CommonClassActions));
 
     const onClickSelectAction = async (action: { id: ClassAction; icon: string }) => {
       await dispatch("teacherRoom/setClassAction", {
@@ -42,6 +45,7 @@ export default defineComponent({
       onClickEnd,
       onClickSelectAction,
       ClassAction,
+      classActionsTitle,
     };
   },
 });
