@@ -36,4 +36,6 @@ export interface TeacherWSEventHandler {
   onTeacherDisableAllStudentPallete(payload: any): void;
   onTeacherToggleStudentPallete(payload: any): void;
   onTeacherAddShape(payload: any): void;
+  onTeacherCreateFabricObject(payload: any): void;
+  onTeacherModifyFabricObject(payload: any): void;
 }

@@ -266,6 +266,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch("annotation/setFabricsInDrawing", payload.drawing.fabrics, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
@@ -284,6 +285,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("annotation/setStudentDrawsLine", payload, {
         root: true,
       });
+    },
+    onTeacherCreateFabricObject: (payload: any) => {
+      Logger.info("Fabric:create object");
+    },
+    onTeacherModifyFabricObject: (payload: any) => {
+      Logger.info("Fabric:modify object");
     },
   };
   return handler;

@@ -12,4 +12,6 @@ export interface StudentWSEventHandler {
   onStudentSendUnity(payload: any): void;
   onStudentSetBrushstrokes(payload: any): void;
   onStudentDrawsLine(payload: any): void;
+  onTeacherCreateFabricObject(payload: any): void;
+  onTeacherModifyFabricObject(payload: any): void;
 }

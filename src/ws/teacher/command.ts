@@ -36,4 +36,6 @@ export enum TeacherWSCommand {
   TEACHER_SET_ONE_TO_ONE = "TeacherSetOneToOne",
   TEACHER_SET_WHITEBOARD = "TeacherSetWhiteBoard",
   TEACHER_DRAW_LASER_PEN = "TeacherDrawLaserPen",
+  TEACHER_CREATE_FABRIC_OBJECT = "TeacherCreateFabricObject",
+  TEACHER_MODIFY_FABRIC_OBJECT = "TeacherModifyFabricObject",
 }

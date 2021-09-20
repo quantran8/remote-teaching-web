@@ -4,6 +4,8 @@ import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { FabricObject } from "@/ws";
 
 const DEFAULT_COLOR = "red";
 
@@ -54,6 +56,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    const { createTextBox, editTextBox, handleModifyObject, displayFabricItems } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -203,6 +206,8 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfTeacher();
+      handleModifyObject(canvas);
+      editTextBox(canvas);
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -216,7 +221,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || obj.id !== isTeacher.value.id) {
+        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId)) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -283,6 +288,10 @@ export default defineComponent({
       }
 
       switch (tool) {
+        case Tools.TextBox: {
+          createTextBox(canvas);
+          return;
+        }
         case Tools.Cursor:
           toolSelected.value = Tools.Cursor;
           canvas.isDrawingMode = false;
@@ -360,6 +369,11 @@ export default defineComponent({
     };
     const updateColorValue = (value: any) => {
       if (toolSelected.value === Tools.StrokeColor) {
+        const selectedFabricObject = canvas.getActiveObject();
+        if (selectedFabricObject.type === "textbox") {
+          selectedFabricObject.setSelectionStyles({ fill: value });
+          canvas.renderAll();
+        }
         strokeColor.value = value;
         clickedTool(Tools.Pen).then();
       }
@@ -607,6 +621,35 @@ export default defineComponent({
     onUnmounted(() => {
       canvas.dispose();
     });
+
+    //get fabric items from vuex and display to whiteboard
+    const fabricItems = computed(() => {
+      const oneToOneUserId = store.getters["teacherRoom/getStudentModeOneId"];
+      if (oneToOneUserId) {
+        const fabricsOfClass: FabricObject[] = store.getters["annotation/fabricItems"];
+        const fabricsOfOneMode: FabricObject[] = store.getters["annotation/fabricItemsOneToOne"];
+        for (const fabricItem of fabricsOfClass) {
+          const index = fabricsOfOneMode.findIndex((item: FabricObject) => item.fabricId !== fabricItem.fabricId);
+          if (index > -1) {
+            fabricsOfOneMode.push(fabricItem);
+          }
+        }
+        return fabricsOfOneMode;
+      }
+      return store.getters["annotation/fabricItems"];
+    });
+
+    watch(
+      fabricItems,
+      async value => {
+        const oneToOneUserId = store.getters["teacherRoom/getStudentModeOneId"];
+        if (!oneToOneUserId) {
+          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
+        }
+        displayFabricItems(canvas, value);
+      },
+      { deep: true },
+    );
 
     return {
       currentExposureItemMedia,

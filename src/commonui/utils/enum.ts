@@ -596,6 +596,7 @@ export enum Tools {
   Star = "star",
   Circle = "circle",
   Square = "square",
+  TextBox = 'TextBox'
 }
 
 export enum Mode {

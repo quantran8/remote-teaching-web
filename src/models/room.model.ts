@@ -2,6 +2,7 @@ import { Target } from "@/store/interactive/state";
 import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
 import { Sticker } from "@/store/annotation/state";
+import { FabricObject } from "@/ws";
 
 export interface ExposureItemMediaModel {
   id: string;
@@ -76,6 +77,7 @@ export interface DrawingModel {
   studentStrokes: Array<string>;
   studentBrushstrokes: Array<string>;
   shapes: UserShapeModel[];
+  fabrics: FabricObject[];
 }
 
 export interface AnnotationModel {

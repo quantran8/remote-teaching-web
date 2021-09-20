@@ -1,3 +1,5 @@
+import { FabricObject } from "@/ws";
+
 export interface Pointer {
   x: number;
   y: number;
@@ -22,6 +24,7 @@ export interface Drawing {
   teacherShapes: UserShape[];
   pencil: Pencil | null;
   studentStrokes: Array<string>;
+  fabrics: FabricObject[];
 }
 export interface AnnotationState {
   mode: number;
@@ -29,6 +32,12 @@ export interface AnnotationState {
   drawing: Drawing;
   oneToOne: Drawing;
   stickers: Array<Sticker>;
+  lastFabricUpdated: null | LastFabricUpdated;
+}
+
+export interface LastFabricUpdated {
+  type: "modify" | "create";
+  data: FabricObject;
 }
 
 const state: AnnotationState = {
@@ -40,6 +49,7 @@ const state: AnnotationState = {
     studentShapes: [],
     teacherShapes: [],
     studentStrokes: [],
+    fabrics: [],
   },
   oneToOne: {
     pencil: null,
@@ -47,8 +57,10 @@ const state: AnnotationState = {
     studentShapes: [],
     teacherShapes: [],
     studentStrokes: [],
+    fabrics: [],
   },
   stickers: [],
+  lastFabricUpdated: null,
 };
 
 export default state;

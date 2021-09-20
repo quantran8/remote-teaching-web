@@ -5,6 +5,9 @@ import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { LastFabricUpdated } from "@/store/annotation/state";
+import { Logger } from "@/utils/logger";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -62,6 +65,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem, handleCreateObject } = useFabricObject();
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -193,7 +197,8 @@ export default defineComponent({
             .getObjects()
             .filter((obj: any) => obj.id !== student.value.id)
             .filter((obj: any) => obj.id !== teacherForST.value.id)
-            .filter((obj: any) => obj.type !== "path"),
+            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => !obj.objectId),
         );
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== teacherForST.value.id) {
@@ -380,6 +385,7 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfStudent();
+      handleCreateObject(canvas);
     };
     const canvasRef = ref(null);
     const boardSetup = () => {
@@ -546,6 +552,54 @@ export default defineComponent({
       toolActive.value = "";
     };
     const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
+
+    //get fabric items from vuex and display to whiteboard
+    const fabricItems = computed(() => {
+      const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+      if (oneToOneUserId) {
+        return store.getters["annotation/fabricItemsOneToOne"];
+      }
+      return store.getters["annotation/fabricItems"];
+    });
+
+    watch(
+      fabricItems,
+      async value => {
+        const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+        if (!oneToOneUserId) {
+          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
+        }
+        displayFabricItems(canvas, value);
+      },
+      { deep: true },
+    );
+
+    //receive the object lastFabricUpdated and update the whiteboard
+    const lastFabricUpdated = computed(() => store.getters["annotation/lastFabricUpdated"]);
+    const getObjectFromId = (id: string) => {
+      const currentObjects = canvas.getObjects();
+      return currentObjects.find((obj: any) => obj.objectId === id);
+    };
+    watch(lastFabricUpdated, (value: LastFabricUpdated) => {
+      const { type, data } = value;
+      switch (type) {
+        case "create": {
+          displayCreatedItem(canvas, data);
+          break;
+        }
+        case "modify": {
+          const existingObject = getObjectFromId(data.fabricId);
+          if (!existingObject) {
+            return Logger.error("Modify fabric item error: have not existingObject ");
+          }
+          displayModifiedItem(canvas, data, existingObject);
+          break;
+        }
+        default:
+          break;
+      }
+    });
+
     return {
       containerRef,
       pointerStyle,

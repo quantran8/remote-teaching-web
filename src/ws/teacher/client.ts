@@ -11,6 +11,10 @@ interface JoinRoomParams {
   isMuteVideo?: boolean;
 }
 
+export interface FabricObject {
+  fabricId: string;
+  fabricData: string;
+}
 export class TeacherWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.noStatus, isHideVideo = MediaStatus.noStatus) {
     const params: JoinRoomParams = { roomId: roomId, browserFingerPrinting: browserFingerPrinting };
@@ -62,7 +66,7 @@ export class TeacherWSClient extends GLSocketClient {
     });
   }
   sendRequestSetTeachingMode(teachingMode: number) {
-    return this.send(WSCmd.SET_TEACHING_MODE, teachingMode );
+    return this.send(WSCmd.SET_TEACHING_MODE, teachingMode);
   }
   sendRequestEndRoom(roomId: string) {
     return this.send(WSCmd.END_CLASS, { roomId: roomId });
@@ -160,5 +164,11 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestDrawLaser(payload: any) {
     const data = JSON.stringify(payload);
     return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);
+  }
+  sendRequestCreateFabricObject(payload: FabricObject) {
+    return this.send(WSCmd.TEACHER_CREATE_FABRIC_OBJECT, payload);
+  }
+  sendRequestModifyFabricObject(payload: FabricObject) {
+    return this.send(WSCmd.TEACHER_MODIFY_FABRIC_OBJECT, payload);
   }
 }
