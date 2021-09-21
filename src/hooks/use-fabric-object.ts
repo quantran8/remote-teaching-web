@@ -8,7 +8,6 @@ const defaultTextBoxProps = {
   top: 50,
   width: 150,
   fontSize: 36,
-  fontFamily: "arial black",
 };
 
 const deserializeFabricObject = (item: FabricObject) => {
