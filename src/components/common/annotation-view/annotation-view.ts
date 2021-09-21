@@ -65,7 +65,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
-    const { displayFabricItems, displayCreatedItem, displayModifiedItem, handleCreateObject } = useFabricObject();
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -385,7 +385,7 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfStudent();
-      handleCreateObject(canvas);
+      onObjectCreated(canvas);
     };
     const canvasRef = ref(null);
     const boardSetup = () => {
