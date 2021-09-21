@@ -11,26 +11,32 @@ const defaultTextBoxProps = {
   fontFamily: "arial black",
 };
 
+const deserializeFabricObject = (item: FabricObject) => {
+  const { fabricData, fabricId } = item;
+  const fabricObject = JSON.parse(fabricData);
+  fabricObject.objectId = fabricId;
+  return fabricObject;
+};
+
 export const useFabricObject = () => {
   const { dispatch } = useStore();
 
-  const handleCreateObject = (canvas: any) => {
+  //listen event fire on canvas
+  const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       if (options?.target.type === "textbox") {
         options.target.selectable = false;
       }
     });
   };
-
-  const handleModifyObject = (canvas: any) => {
+  const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
       if (options?.target.type === "textbox") {
         dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
     });
   };
-
-  const editTextBox = (canvas: any) => {
+  const onTextBoxEdited = (canvas: any) => {
     canvas.on("text:editing:exited", (options: any) => {
       if (options?.target.type === "textbox") {
         dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
@@ -39,19 +45,12 @@ export const useFabricObject = () => {
   };
 
   const createTextBox = (canvas: any) => {
-    const textBox = new fabric.Textbox("Write here...", defaultTextBoxProps);
+    const textBox = new fabric.Textbox("", defaultTextBoxProps);
     canvas.centerObject(textBox);
     const randomId = randomUUID();
     textBox.objectId = randomId;
     canvas.add(textBox).setActiveObject(textBox);
     dispatch("teacherRoom/teacherCreateFabricObject", textBox);
-  };
-
-  const deserializeFabricObject = (item: FabricObject) => {
-    const { fabricData, fabricId } = item;
-    const fabricObject = JSON.parse(fabricData);
-    fabricObject.objectId = fabricId;
-    return fabricObject;
   };
 
   //display the fabric items get from getRoomInfo API which save in vuex store
@@ -91,6 +90,7 @@ export const useFabricObject = () => {
     const { type } = fabricObject;
     switch (type) {
       case "textbox":
+        fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
         canvas.renderAll();
         break;
@@ -99,5 +99,5 @@ export const useFabricObject = () => {
     }
   };
 
-  return { handleCreateObject, createTextBox, editTextBox, handleModifyObject, displayFabricItems, displayCreatedItem, displayModifiedItem };
+  return { onObjectCreated, createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, displayCreatedItem, displayModifiedItem };
 };
