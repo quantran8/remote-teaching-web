@@ -50,6 +50,7 @@ export const useFabricObject = () => {
     const randomId = randomUUID();
     textBox.objectId = randomId;
     canvas.add(textBox).setActiveObject(textBox);
+    textBox.enterEditing();
     dispatch("teacherRoom/teacherCreateFabricObject", textBox);
   };
 
