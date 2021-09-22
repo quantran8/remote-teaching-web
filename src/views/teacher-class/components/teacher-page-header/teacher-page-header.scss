@@ -7,7 +7,7 @@ $font-size: 2.2em;
   grid-template-columns: 1fr 1fr;
   color: #fff;
   font-size: 32px;
-
+  background-color: black;
   &__left {
     background: #00a1ed;
     padding: 0 30px;
@@ -28,7 +28,10 @@ $font-size: 2.2em;
     padding: 0 30px;
     text-align: center;
     line-height: $header-height;
-	background-color: black;
+	max-width: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__exit {
