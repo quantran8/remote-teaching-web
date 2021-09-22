@@ -185,13 +185,13 @@
     opacity: 0.5;
   }
   &--help {
-    @include cycle(#dd0d0d, flickerAnimation);
+    @include cycle(#dd0d0d, none);
   }
   &--speaking {
     @include cycle(#00a1ed, none);
   }
   &--palette {
-    @include cycle(#030303, flickerAnimationPalette);
+    @include cycle(#030303, none);
   }
 }
 
