@@ -8,6 +8,10 @@ import { useFabricObject } from "@/hooks/use-fabric-object";
 import { FabricObject } from "@/ws";
 
 const DEFAULT_COLOR = "red";
+enum Cursor {
+  Default = "default",
+  Text = "text",
+}
 
 export default defineComponent({
   props: {
@@ -56,7 +60,8 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems } = useFabricObject();
+    const currentCursor = ref<Cursor | null>(null);
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -201,6 +206,53 @@ export default defineComponent({
           item.selectable = true;
         });
     };
+
+    const listenMouseEvent = () => {
+      //handle mouse:move
+      canvas.on("mouse:move", (event: any) => {
+        switch (toolSelected.value) {
+          //handle for TextBox
+          case Tools.TextBox: {
+            if (!event.target) {
+              canvas.setCursor(currentCursor.value);
+              canvas.renderAll();
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      });
+      //handle mouse:down
+      canvas.on("mouse:down", (event: any) => {
+        event.e.stopPropagation();
+        event.e.preventDefault();
+        switch (toolSelected.value) {
+          //handle for TextBox
+          case Tools.TextBox: {
+            if (isEditing.value && !event.target) {
+              isEditing.value = false;
+              return;
+            }
+            if (!isEditing.value && !event.target) {
+              createTextBox(canvas, { top: event.e.offsetY, left: event.e.offsetX, fill: strokeColor.value });
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      });
+    };
+
+    watch(toolSelected, (tool, prevTool) => {
+      if (prevTool !== tool) {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        isEditing.value = false;
+      }
+    });
+
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
@@ -208,6 +260,7 @@ export default defineComponent({
       listenSelfTeacher();
       onObjectModified(canvas);
       onTextBoxEdited(canvas);
+      listenMouseEvent();
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -277,6 +330,9 @@ export default defineComponent({
       await teacherAddShapes();
     };
     const clickedTool = async (tool: string) => {
+      if (tool === Tools.StrokeColor) {
+        return;
+      }
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
 
@@ -289,7 +345,9 @@ export default defineComponent({
 
       switch (tool) {
         case Tools.TextBox: {
-          createTextBox(canvas);
+          toolSelected.value = Tools.TextBox;
+          currentCursor.value = Cursor.Text;
+          //   createTextBox(canvas);
           return;
         }
         case Tools.Cursor:
@@ -316,10 +374,10 @@ export default defineComponent({
           toolSelected.value = Tools.Stroke;
           objectCanvasProcess();
           return;
-        case Tools.StrokeColor:
-          toolSelected.value = Tools.StrokeColor;
-          objectCanvasProcess();
-          return;
+        // case Tools.StrokeColor:
+        //   toolSelected.value = Tools.StrokeColor;
+        //   objectCanvasProcess();
+        //   return;
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
           if (canvas.getObjects("path").length) {
@@ -368,15 +426,16 @@ export default defineComponent({
       }
     };
     const updateColorValue = (value: any) => {
-      if (toolSelected.value === Tools.StrokeColor) {
-        const selectedFabricObject = canvas.getActiveObject();
-        if (selectedFabricObject?.type === "textbox") {
-          selectedFabricObject.setSelectionStyles({ fill: value });
-          canvas.renderAll();
-        }
-        strokeColor.value = value;
-        clickedTool(Tools.Pen).then();
+      //   if (toolSelected.value === Tools.StrokeColor) {
+      const selectedFabricObject = canvas.getActiveObject();
+      if (selectedFabricObject?.type === "textbox") {
+        selectedFabricObject.setSelectionStyles({ fill: value });
+        console.log("selectedFabricObject", selectedFabricObject);
+        canvas.renderAll();
       }
+      strokeColor.value = value;
+      // clickedTool(Tools.Pen).then();
+      //   }
       if (canvas.isDrawingMode) {
         canvas.freeDrawingBrush.color = strokeColor.value;
       }
