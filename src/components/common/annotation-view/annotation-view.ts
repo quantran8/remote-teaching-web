@@ -516,10 +516,10 @@ export default defineComponent({
 
     const paletteTools: Array<toolType> = [
       { name: "move", action: cursorHand },
+      { name: "pen", action: addDraw },
       { name: "star", action: addStar },
       { name: "circle", action: addCircle },
       { name: "square", action: addSquare },
-      { name: "pen", action: addDraw },
     ];
 
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
