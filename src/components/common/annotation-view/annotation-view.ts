@@ -8,6 +8,7 @@ import { TeacherModel } from "@/models";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { LastFabricUpdated } from "@/store/annotation/state";
 import { Logger } from "@/utils/logger";
+import { Popover } from "ant-design-vue";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -18,6 +19,9 @@ const defaultCanvasDimension = {
 
 export default defineComponent({
   props: ["image"],
+  components: {
+    Popover,
+  },
   setup(props) {
     const store = useStore();
     let canvas: any;
@@ -495,6 +499,13 @@ export default defineComponent({
       canvas.freeDrawingBrush.color = activeColor.value;
       canvas.freeDrawingBrush.width = 4;
     };
+    const showListColors = ref<boolean>(false);
+    const showListColorsPopover = () => {
+      toolActive.value = "colors";
+    };
+    const hideListColors = () => {
+      showListColors.value = false;
+    };
     onMounted(() => {
       boardSetup();
       window.addEventListener("resize", resizeCanvas);
@@ -504,22 +515,10 @@ export default defineComponent({
     });
 
     const paletteTools: Array<toolType> = [
-      {
-        name: "move",
-        action: cursorHand,
-      },
-      {
-        name: "star",
-        action: addStar,
-      },
-      {
-        name: "circle",
-        action: addCircle,
-      },
-      {
-        name: "square",
-        action: addSquare,
-      },
+      { name: "move", action: cursorHand },
+      { name: "star", action: addStar },
+      { name: "circle", action: addCircle },
+      { name: "square", action: addSquare },
       { name: "pen", action: addDraw },
     ];
 
@@ -540,11 +539,9 @@ export default defineComponent({
 
       gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
-      gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
     };
     const actionLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element.querySelectorAll(".palette-tool__item"), { duration: 0.1, scale: 0, stagger: 0.1 });
-      await gsap.to(element.querySelector(".palette-tool__colors"), { duration: 0.1, scale: 0 });
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
 
@@ -623,6 +620,9 @@ export default defineComponent({
       isGalleryView,
       toolActive,
       isLessonPlan,
+      showListColors,
+      showListColorsPopover,
+      hideListColors,
     };
   },
 });
