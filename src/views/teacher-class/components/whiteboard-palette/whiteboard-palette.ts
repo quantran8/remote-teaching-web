@@ -1,5 +1,6 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
+import { Popover } from "ant-design-vue";
 import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
@@ -30,6 +31,7 @@ export default defineComponent({
   },
   components: {
     ToolsCanvas,
+    Popover,
   },
   setup(props) {
     const store = useStore();
@@ -61,7 +63,7 @@ export default defineComponent({
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const currentCursor = ref<Cursor | null>(null);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing } = useFabricObject();
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, textBoxInvalidMsg } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -728,6 +730,7 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
+      textBoxInvalidMsg,
     };
   },
 });

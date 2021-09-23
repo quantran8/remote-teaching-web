@@ -4,6 +4,9 @@ import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref } from "vue";
 
+/* eslint-disable */
+const format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
@@ -23,6 +26,7 @@ export const useFabricObject = () => {
   const { dispatch } = useStore();
 
   const isEditing = ref(false);
+  const textBoxInvalidMsg = ref("");
 
   //listen event fire on canvas
   const onObjectCreated = (canvas: any) => {
@@ -58,6 +62,14 @@ export const useFabricObject = () => {
       if (options?.target.type === "textbox") {
         isEditing.value = true;
         // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      }
+    });
+    canvas.on("text:changed", (options: any) => {
+      const hasInvalidText = format.test(options?.target.text);
+      if (hasInvalidText) {
+        textBoxInvalidMsg.value = `${options?.target.text} is invalid`;
+      } else {
+        textBoxInvalidMsg.value = "";
       }
     });
   };
@@ -128,5 +140,6 @@ export const useFabricObject = () => {
     displayCreatedItem,
     displayModifiedItem,
     isEditing,
+    textBoxInvalidMsg,
   };
 };
