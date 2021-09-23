@@ -1,5 +1,6 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
+import { gsap } from "gsap";
 import { Popover } from "ant-design-vue";
 import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
@@ -7,6 +8,8 @@ import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { FabricObject } from "@/ws";
+import { fmtMsg } from "@/commonui";
+import { WhiteBoard } from "@/locales/localeid";
 
 const DEFAULT_COLOR = "red";
 enum Cursor {
@@ -63,7 +66,7 @@ export default defineComponent({
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const currentCursor = ref<Cursor | null>(null);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, textBoxInvalidMsg } = useFabricObject();
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, textBoxInvalidMsg, showWarningMsg } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -432,7 +435,6 @@ export default defineComponent({
       const selectedFabricObject = canvas.getActiveObject();
       if (selectedFabricObject?.type === "textbox") {
         selectedFabricObject.setSelectionStyles({ fill: value });
-        console.log("selectedFabricObject", selectedFabricObject);
         canvas.renderAll();
       }
       strokeColor.value = value;
@@ -712,6 +714,12 @@ export default defineComponent({
       { deep: true },
     );
 
+    const warningMsg = computed(() => fmtMsg(WhiteBoard.TextBoxWarning));
+
+    const warningMsgLeave = async (element: HTMLElement, done: any) => {
+      await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
+    };
+
     return {
       currentExposureItemMedia,
       clickedTool,
@@ -731,6 +739,9 @@ export default defineComponent({
       imageUrl,
       imgLoad,
       textBoxInvalidMsg,
+      showWarningMsg,
+      warningMsg,
+      warningMsgLeave,
     };
   },
 });

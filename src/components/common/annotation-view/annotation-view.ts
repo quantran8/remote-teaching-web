@@ -542,7 +542,7 @@ export default defineComponent({
     };
     const actionLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element.querySelectorAll(".palette-tool__item"), { duration: 0.1, scale: 0, stagger: 0.1 });
-      await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
+      await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
 
       canvas.isDrawingMode = false;

@@ -2,15 +2,15 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 /* eslint-disable */
-const format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
-  width: 150,
+  width: 100,
   fontSize: 36,
   fill: "black",
 };
@@ -25,6 +25,16 @@ const deserializeFabricObject = (item: FabricObject) => {
 export const useFabricObject = () => {
   const { dispatch } = useStore();
 
+  const showWarningMsg = ref(false);
+
+  watch(showWarningMsg, (currentValue: any) => {
+    if (currentValue) {
+      setTimeout(() => {
+        showWarningMsg.value = false;
+      }, 1000);
+    }
+  });
+
   const isEditing = ref(false);
   const textBoxInvalidMsg = ref("");
 
@@ -38,7 +48,6 @@ export const useFabricObject = () => {
   };
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
-      console.log("onObjectModified", options);
       if (options?.target?.type === "textbox") {
         dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
         if (options?.target.text === "") {
@@ -65,9 +74,22 @@ export const useFabricObject = () => {
       }
     });
     canvas.on("text:changed", (options: any) => {
-      const hasInvalidText = format.test(options?.target.text);
+      options.target._forceClearCache = true;
+      options.target.dirty = true;
+
+      const hasInvalidText = specialCharactersRegex.test(options?.target.text);
       if (hasInvalidText) {
+        showWarningMsg.value = true;
         textBoxInvalidMsg.value = `${options?.target.text} is invalid`;
+        options.target.set("text", options.target.text.replace(/[^\w\s]/gi, ""));
+        options.target.hiddenTextarea.value = options.target.text.replace(/[^\w\s]/gi, "");
+        //set the current cursor to the last character
+        options.target.setSelectionStart(options.target.text.length);
+        options.target.setSelectionEnd(options.target.text.length);
+        //prevent scale the width
+        options.target.set({ width: 100 });
+        // canvas.renderAll();
+        // fabric.Object.prototype.objectCaching = false;
       } else {
         textBoxInvalidMsg.value = "";
       }
@@ -141,5 +163,6 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     textBoxInvalidMsg,
+    showWarningMsg,
   };
 };
