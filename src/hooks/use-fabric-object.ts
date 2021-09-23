@@ -3,9 +3,12 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, watch } from "vue";
+import { isGuid } from "@/commonui";
 
 /* eslint-disable */
 const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+
+const WarningTiming = 1500;
 
 const defaultTextBoxProps = {
   left: 50,
@@ -31,12 +34,11 @@ export const useFabricObject = () => {
     if (currentValue) {
       setTimeout(() => {
         showWarningMsg.value = false;
-      }, 1000);
+      }, WarningTiming);
     }
   });
 
   const isEditing = ref(false);
-  const textBoxInvalidMsg = ref("");
 
   //listen event fire on canvas
   const onObjectCreated = (canvas: any) => {
@@ -59,8 +61,10 @@ export const useFabricObject = () => {
   const onTextBoxEdited = (canvas: any) => {
     canvas.on("text:editing:exited", (options: any) => {
       if (options?.target.type === "textbox") {
-        dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
-        if (options?.target.text === "") {
+        if (options?.target.textIsChanged) {
+          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+        }
+        if (options?.target.text === "" || !options?.target.textIsChanged) {
           setTimeout(() => {
             canvas.remove(options.target);
           }, 0);
@@ -74,35 +78,34 @@ export const useFabricObject = () => {
       }
     });
     canvas.on("text:changed", (options: any) => {
-      options.target._forceClearCache = true;
-      options.target.dirty = true;
-
+      if (!options.target.textIsChanged) {
+        options.target.textIsChanged = true;
+      }
       const hasInvalidText = specialCharactersRegex.test(options?.target.text);
       if (hasInvalidText) {
         showWarningMsg.value = true;
-        textBoxInvalidMsg.value = `${options?.target.text} is invalid`;
-        options.target.set("text", options.target.text.replace(/[^\w\s]/gi, ""));
-        options.target.hiddenTextarea.value = options.target.text.replace(/[^\w\s]/gi, "");
+        const filteredText = options.target.text.replace(/[^\w\s]/gi, "");
+        options.target.text.replace(/[^\w\s]/gi, "");
+        options.target.set("text", filteredText);
+        options.target.hiddenTextarea.value = filteredText;
         //set the current cursor to the last character
         options.target.setSelectionStart(options.target.text.length);
         options.target.setSelectionEnd(options.target.text.length);
         //prevent scale the width
         options.target.set({ width: 100 });
-        // canvas.renderAll();
-        // fabric.Object.prototype.objectCaching = false;
-      } else {
-        textBoxInvalidMsg.value = "";
       }
     });
   };
 
   const createTextBox = (canvas: any, coords: { top: number; left: number; fill: string }) => {
     const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords });
-    // canvas.centerObject(textBox);
     const randomId = randomUUID();
     textBox.objectId = randomId;
     canvas.add(textBox).setActiveObject(textBox);
+    textBox.textIsChanged = false;
     textBox.enterEditing();
+    textBox.setSelectionStart(0);
+    textBox.setSelectionEnd(textBox.text.length);
     dispatch("teacherRoom/teacherCreateFabricObject", textBox);
     return textBox;
   };
@@ -162,7 +165,6 @@ export const useFabricObject = () => {
     displayCreatedItem,
     displayModifiedItem,
     isEditing,
-    textBoxInvalidMsg,
     showWarningMsg,
   };
 };

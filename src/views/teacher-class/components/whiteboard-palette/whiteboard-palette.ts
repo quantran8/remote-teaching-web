@@ -66,7 +66,7 @@ export default defineComponent({
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const currentCursor = ref<Cursor | null>(null);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, textBoxInvalidMsg, showWarningMsg } = useFabricObject();
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, showWarningMsg } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -738,7 +738,6 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
-      textBoxInvalidMsg,
       showWarningMsg,
       warningMsg,
       warningMsgLeave,
