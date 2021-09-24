@@ -235,6 +235,10 @@ export default defineComponent({
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
+            if (!isEditing.value && event.target) {
+              isEditing.value = true;
+              return;
+            }
             if (isEditing.value && !event.target) {
               isEditing.value = false;
               return;
