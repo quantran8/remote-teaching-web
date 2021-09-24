@@ -2,7 +2,7 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 /* eslint-disable */
 const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
@@ -25,8 +25,8 @@ const deserializeFabricObject = (item: FabricObject) => {
 };
 
 export const useFabricObject = () => {
-  const { dispatch } = useStore();
-
+  const { dispatch, getters } = useStore();
+  const isTeacher = computed(() => getters["auth/isTeacher"]);
   const showWarningMsg = ref(false);
 
   watch(showWarningMsg, (currentValue: any) => {
@@ -38,12 +38,16 @@ export const useFabricObject = () => {
   });
 
   const isEditing = ref(false);
-
   //listen event fire on canvas
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
-      if (options?.target.type === "textbox") {
+      if (options?.target.type === "textbox" && !isTeacher) {
         options.target.selectable = false;
+      }
+      if (options?.target.type === "path") {
+        options.target.selectable = false;
+        options.target.hoverCursor = "default";
+        canvas.renderAll();
       }
     });
   };

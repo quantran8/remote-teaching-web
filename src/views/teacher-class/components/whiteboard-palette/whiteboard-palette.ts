@@ -12,7 +12,7 @@ import { fmtMsg } from "@/commonui";
 import { WhiteBoard } from "@/locales/localeid";
 
 const DEFAULT_COLOR = "red";
-enum Cursor {
+export enum Cursor {
   Default = "default",
   Text = "text",
 }
@@ -65,7 +65,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, showWarningMsg } = useFabricObject();
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, showWarningMsg, onObjectCreated } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -229,8 +229,6 @@ export default defineComponent({
       });
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
-        event.e.stopPropagation();
-        event.e.preventDefault();
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
@@ -243,7 +241,7 @@ export default defineComponent({
               return;
             }
             if (!isEditing.value && !event.target) {
-              createTextBox(canvas, { top: event.e.offsetY, left: event.e.offsetX, fill: strokeColor.value });
+              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2, fill: strokeColor.value });
             }
             break;
           }
@@ -269,6 +267,7 @@ export default defineComponent({
       onObjectModified(canvas);
       onTextBoxEdited(canvas);
       listenMouseEvent();
+      onObjectCreated(canvas);
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
