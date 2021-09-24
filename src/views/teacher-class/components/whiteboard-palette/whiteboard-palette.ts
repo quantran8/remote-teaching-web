@@ -241,6 +241,7 @@ export default defineComponent({
               return;
             }
             if (!isEditing.value && !event.target) {
+              //create a textbox which 2px distance to mouse
               createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2, fill: strokeColor.value });
             }
             break;
@@ -436,8 +437,6 @@ export default defineComponent({
     const updateColorValue = (value: any) => {
       const selectedFabricObject = canvas.getActiveObject();
       if (selectedFabricObject?.type === "textbox") {
-        console.log("selectedFabricObject", selectedFabricObject);
-        // selectedFabricObject.set({ cursorColor: value });
         selectedFabricObject.setSelectionStyles({ fill: value });
         canvas.renderAll();
       }
