@@ -1,13 +1,21 @@
 import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted, nextTick } from "vue";
 import { useStore } from "vuex";
+import { gsap } from "gsap";
+import { Popover } from "ant-design-vue";
 import { fabric } from "fabric";
 import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { FabricObject } from "@/ws";
+import { fmtMsg } from "@/commonui";
+import { WhiteBoard } from "@/locales/localeid";
 
 const DEFAULT_COLOR = "red";
+enum Cursor {
+  Default = "default",
+  Text = "text",
+}
 
 export default defineComponent({
   props: {
@@ -26,6 +34,7 @@ export default defineComponent({
   },
   components: {
     ToolsCanvas,
+    Popover,
   },
   setup(props) {
     const store = useStore();
@@ -56,7 +65,7 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems } = useFabricObject();
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, showWarningMsg } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -201,6 +210,57 @@ export default defineComponent({
           item.selectable = true;
         });
     };
+
+    const listenMouseEvent = () => {
+      //handle mouse:move
+      canvas.on("mouse:move", (event: any) => {
+        switch (toolSelected.value) {
+          //handle for TextBox
+          case Tools.TextBox: {
+            if (!event.target) {
+              canvas.setCursor(Cursor.Text);
+              canvas.renderAll();
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      });
+      //handle mouse:down
+      canvas.on("mouse:down", (event: any) => {
+        event.e.stopPropagation();
+        event.e.preventDefault();
+        switch (toolSelected.value) {
+          //handle for TextBox
+          case Tools.TextBox: {
+            if (!isEditing.value && event.target) {
+              isEditing.value = true;
+              return;
+            }
+            if (isEditing.value && !event.target) {
+              isEditing.value = false;
+              return;
+            }
+            if (!isEditing.value && !event.target) {
+              createTextBox(canvas, { top: event.e.offsetY, left: event.e.offsetX, fill: strokeColor.value });
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      });
+    };
+
+    watch(toolSelected, (tool, prevTool) => {
+      if (prevTool !== tool) {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        isEditing.value = false;
+      }
+    });
+
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
@@ -208,6 +268,7 @@ export default defineComponent({
       listenSelfTeacher();
       onObjectModified(canvas);
       onTextBoxEdited(canvas);
+      listenMouseEvent();
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -277,6 +338,9 @@ export default defineComponent({
       await teacherAddShapes();
     };
     const clickedTool = async (tool: string) => {
+      if (tool === Tools.StrokeColor) {
+        return;
+      }
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
 
@@ -289,7 +353,7 @@ export default defineComponent({
 
       switch (tool) {
         case Tools.TextBox: {
-          createTextBox(canvas);
+          toolSelected.value = Tools.TextBox;
           return;
         }
         case Tools.Cursor:
@@ -368,15 +432,12 @@ export default defineComponent({
       }
     };
     const updateColorValue = (value: any) => {
-      if (toolSelected.value === Tools.StrokeColor) {
-        const selectedFabricObject = canvas.getActiveObject();
-        if (selectedFabricObject?.type === "textbox") {
-          selectedFabricObject.setSelectionStyles({ fill: value });
-          canvas.renderAll();
-        }
-        strokeColor.value = value;
-        clickedTool(Tools.Pen).then();
+      const selectedFabricObject = canvas.getActiveObject();
+      if (selectedFabricObject?.type === "textbox") {
+        selectedFabricObject.setSelectionStyles({ fill: value });
+        canvas.renderAll();
       }
+      strokeColor.value = value;
       if (canvas.isDrawingMode) {
         canvas.freeDrawingBrush.color = strokeColor.value;
       }
@@ -651,6 +712,12 @@ export default defineComponent({
       { deep: true },
     );
 
+    const warningMsg = computed(() => fmtMsg(WhiteBoard.TextBoxWarning));
+
+    const warningMsgLeave = async (element: HTMLElement, done: any) => {
+      await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
+    };
+
     return {
       currentExposureItemMedia,
       clickedTool,
@@ -669,6 +736,9 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
+      showWarningMsg,
+      warningMsg,
+      warningMsgLeave,
     };
   },
 });

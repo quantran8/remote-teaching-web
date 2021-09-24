@@ -115,5 +115,6 @@
 	"error.parent_not_have_this_student": "The parent account doesn't have this student",
 	"store.wait_your_teacher": "Please wait for your teacher",
 	"store.click_board_to_answer": "Please click on the board to answer.",
-	"common.class.actions": "Class Actions"
+	"common.class.actions": "Class Actions",
+	"whiteboard.textbox_warning": "Please select an alphabet or a letter"
 }

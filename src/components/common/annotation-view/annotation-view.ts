@@ -587,7 +587,8 @@ export default defineComponent({
         case "modify": {
           const existingObject = getObjectFromId(data.fabricId);
           if (!existingObject) {
-            return Logger.error("Modify fabric item error: have not existingObject ");
+            displayCreatedItem(canvas, data);
+            break;
           }
           displayModifiedItem(canvas, data, existingObject);
           break;

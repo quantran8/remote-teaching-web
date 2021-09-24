@@ -218,3 +218,7 @@ export class StoreLocale {
   static WaitYourTeacher = "store.wait_your_teacher";
   static ClickBoardToAnswer = "store.click_board_to_answer";
 }
+
+export class WhiteBoard {
+  static TextBoxWarning = "whiteboard.textbox_warning";
+}
