@@ -7,7 +7,7 @@ $font-size: 2.2em;
   grid-template-columns: 1fr 1fr;
   color: #fff;
   font-size: 32px;
-
+  background-color: black;
   &__left {
     background: #00a1ed;
     padding: 0 30px;
@@ -28,7 +28,10 @@ $font-size: 2.2em;
     padding: 0 30px;
     text-align: center;
     line-height: $header-height;
-	background-color: black;
+	max-width: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__exit {
@@ -123,7 +126,7 @@ $action-icon-container-size: 70px;
   background: #fff;
   height: 52px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgba(0, 0, 0, 0.15);
-  width: 365px;
+  width: 420px;
   border-radius: 40px;
   bottom: -133px;
   margin-left: -15px;
@@ -199,5 +202,15 @@ $action-icon-container-size: 70px;
         }
       }
     }
+  }
+  .class-actions-title {
+    font-size: 15px;
+    position: absolute;
+    line-height: 1.2;
+    top: 25px;
+    text-align: center;
+    right: 20px;
+    max-width: 70px;
+    display: block;
   }
 }

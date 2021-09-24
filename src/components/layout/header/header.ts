@@ -4,6 +4,8 @@ import { useStore } from "vuex";
 import MenuItem from "./components/menu-item/menu-item.vue";
 import { DeviceTester } from "@/components/common";
 import { Layout } from "@/locales/localeid";
+import { Drawer } from "ant-design-vue";
+import { DownOutlined, MoreOutlined } from "@ant-design/icons-vue";
 export default defineComponent({
   props: {
     title: String,
@@ -11,6 +13,9 @@ export default defineComponent({
   components: {
     MenuItem,
     DeviceTester,
+    Drawer,
+    DownOutlined,
+    MoreOutlined,
   },
   setup() {
     const store = useStore();
@@ -24,6 +29,7 @@ export default defineComponent({
     const editProfileText = computed(() => fmtMsg(Layout.EditProfile));
     const testConnectText = computed(() => fmtMsg(Layout.TestConnect));
     const signOutText = computed(() => fmtMsg(Layout.SignOut));
+    const showDrawer = ref(false);
     const onClickShowInfo = () => {
       showInfo.value = true;
     };
@@ -38,6 +44,12 @@ export default defineComponent({
     };
     const onClickTestDevice = () => {
       deviceTesterRef.value?.showModal();
+    };
+    const onClickOpenDrawer = () => {
+      showDrawer.value = true;
+    };
+    const onClickCloseDrawer = () => {
+      showDrawer.value = false;
     };
     return {
       isLoggedIn,
@@ -55,6 +67,9 @@ export default defineComponent({
       editProfileText,
       testConnectText,
       signOutText,
+      showDrawer,
+      onClickOpenDrawer,
+      onClickCloseDrawer,
     };
   },
 });

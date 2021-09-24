@@ -28,6 +28,8 @@ import router from "@/router";
 import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
+import { Logger } from "@/utils/logger";
+import { FabricObject } from "@/ws";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -50,8 +52,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("endClass", payload);
   },
   setClassView({ state }, payload: ClassViewPayload) {
-    const focusTab = ValueOfClassView(payload.classView);
-    state.manager?.WSClient.sendRequestSetFocusTab(focusTab);
+    const teachingMode = ValueOfClassView(payload.classView);
+    state.manager?.WSClient.sendRequestSetTeachingMode(teachingMode);
   },
   setUser({ commit }, payload: UserModel) {
     commit("setUser", payload);
@@ -139,7 +141,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         time += 1;
         if (currentBandwidth && time % 10 === 0) {
           //mean 5 minutes
-          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
+          Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putTeacherBandwidth(currentBandwidth.toFixed(2));
           currentBandwidth = 0;
         }
@@ -147,15 +149,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }, 30000); // 30000 = 30 seconds
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (user, mediaType) => {
-        console.log("user-published", user.uid, mediaType);
+        Logger.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: (user, mediaType) => {
-        console.log("user-unpublished", user.uid, mediaType);
+        Logger.log("user-unpublished", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-        console.log("agora-exception-event", payload);
+        Logger.log("agora-exception-event", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
@@ -202,7 +204,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     try {
       const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
-      if (!roomInfo || roomInfo.classId !== payload.classId) {
+      if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
@@ -210,8 +212,28 @@ const actions: ActionTree<TeacherRoomState, any> = {
         return;
       }
       commit("setRoomInfo", roomResponse.data);
+      await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+      await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch("annotation/setInfo", roomInfo.annotation, {
+        root: true,
+      });
+      if (roomInfo.studentOneToOne) {
+        await dispatch(
+          "teacherRoom/setStudentOneId",
+          { id: roomInfo.studentOneToOne },
+          {
+            root: true,
+          },
+        );
+      } else {
+        await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
+      }
+      commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
-      console.log("initClassRoom error =>", err);
+      Logger.log("initClassRoom error =>", err);
       //   await router.push(Paths.Home);
     }
   },
@@ -358,12 +380,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     await state.manager?.WSClient.sendRequestUpdateAnnotationMode(payload.mode);
   },
   async setBrush({ state }, payload: { drawing: string }) {
-    // await state.manager?.WSClient.sendRequestAddBrush(payload.drawing);
     if (!state.info) return;
     try {
       await RemoteTeachingService.teacherDrawLine(JSON.stringify(payload.drawing), state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
   async setClearBrush({ state }, payload: {}) {
@@ -409,17 +430,32 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setListStudentLowBandWidth", p);
   },
   async setShapesForStudent({ state }, payload: Array<string>) {
-    // await state.manager?.WSClient.sendRequestShapesForStudent(payload);
     if (!state.info) return;
     try {
       await RemoteTeachingService.teacherAddShape(payload, state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
   async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
     const response = await InfoService.getAvatarTeacher(payload.teacherId);
     if (response) commit("setAvatarTeacher", response);
+  },
+  teacherCreateFabricObject({ state }, payload: any) {
+    const { objectId } = payload;
+    const fabricObject: FabricObject = {
+      fabricId: objectId,
+      fabricData: JSON.stringify(payload.toJSON()),
+    };
+    state.manager?.WSClient.sendRequestCreateFabricObject(fabricObject);
+  },
+  teacherModifyFabricObject({ state }, payload: any) {
+    const { objectId } = payload;
+    const fabricObject: FabricObject = {
+      fabricId: objectId,
+      fabricData: JSON.stringify(payload.toJSON()),
+    };
+    state.manager?.WSClient.sendRequestModifyFabricObject(fabricObject);
   },
 };
 

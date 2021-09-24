@@ -11,6 +11,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
+import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
 
@@ -51,11 +52,11 @@ export default defineComponent({
     const classIsActive = ref(false);
     const currentStudent = ref<ChildModel>();
     const getRoomInfoError = ref<string>("");
-	const getRoomInfoErrorByMsg = ref<string>("")
+    const getRoomInfoErrorByMsg = ref<string>("");
     const goToClass = async () => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
-      router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
       deviceTesterRef.value?.handleGoToClassSuccess();
+      router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
     };
     const onClickChild = async (student: ChildModel) => {
       currentStudent.value = student;
@@ -66,12 +67,12 @@ export default defineComponent({
       try {
         await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
         getRoomInfoError.value = "";
-		getRoomInfoErrorByMsg.value = "";
+        getRoomInfoErrorByMsg.value = "";
         await store.dispatch("studentRoom/setOnline");
         classIsActive.value = true;
       } catch (err) {
         getRoomInfoError.value = err?.code;
-		getRoomInfoErrorByMsg.value = err?.message
+        getRoomInfoErrorByMsg.value = err?.message;
         if (classIsActive.value) {
           classIsActive.value = false;
         }
@@ -87,7 +88,7 @@ export default defineComponent({
           listSessionInfo.value = response;
         }
       } catch (err) {
-        console.log(err);
+        Logger.log(err);
       }
     };
     const studentNextSessionInfo = (childrenId: string) => {
@@ -168,7 +169,7 @@ export default defineComponent({
       classIsActive,
       goToClass,
       getRoomInfoError,
-	  getRoomInfoErrorByMsg
+      getRoomInfoErrorByMsg,
     };
   },
 });

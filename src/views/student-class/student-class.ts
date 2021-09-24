@@ -27,6 +27,7 @@ import { ClassRoomStatus } from "@/models";
 import noAvatar from "@/assets/student-class/no-avatar.png";
 import { formatImageUrl } from "@/utils/utils";
 import { notification } from "ant-design-vue";
+import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
 
@@ -92,6 +93,7 @@ export default defineComponent({
     const joinLoading = ref(true);
     const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
+    const videosFeedVisible = computed(() => store.getters["studentRoom/videosFeedVisible"]);
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
@@ -119,7 +121,7 @@ export default defineComponent({
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
-    const avatarTeacher = computed(() => (teacher.value ? formatImageUrl(teacher.value.avatar ? teacher.value.avatar : "") : noAvatar));
+    const avatarTeacher = computed(() => ((teacher.value && teacher.value.avatar) ? formatImageUrl(teacher.value.avatar) : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const avatarStudentOneToOne = ref("");
     const showMessage = ref(false);
@@ -144,7 +146,7 @@ export default defineComponent({
           sourceVideo.src = defaultUrl;
         }
       } catch (error) {
-        console.log(error);
+        Logger.log(error);
       }
     });
 
@@ -392,6 +394,7 @@ export default defineComponent({
       studentOneName,
       joinLoading,
       goToHomePage,
+	  videosFeedVisible
     };
   },
 });

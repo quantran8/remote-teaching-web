@@ -13,10 +13,12 @@ import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
+import { Logger } from "@/utils/logger";
+import { isMobileBrowser } from "@/utils/utils";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
-    { commit, dispatch },
+    { commit, dispatch, state },
     payload: {
       classId: string;
       userId: string;
@@ -33,7 +35,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     try {
       const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
-      if (!roomInfo || roomInfo.classId !== payload.classId) {
+      if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
         commit("setApiStatus", {
           code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
@@ -46,8 +48,39 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
+      await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
+      await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch("interactive/setCurrentUserId", state.user?.id, {
+        root: true,
+      });
+      await dispatch("annotation/setInfo", roomResponse.data.annotation, {
+        root: true,
+      });
+      if (roomResponse.data.studentOneToOne) {
+        await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
+        await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
+        await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
+        await commit("updateIsPalette", {
+          id: roomResponse.data.oneAndOneDto.id,
+          isPalette: roomResponse.data.oneAndOneDto.isEnablePalette,
+        });
+        await commit("setWhiteboard", roomResponse.data.oneAndOneDto.isShowWhiteBoard);
+        await dispatch("annotation/setOneTeacherStrokes", roomResponse.data.annotation.oneOneDrawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
+        await dispatch("annotation/setOneStudentStrokes", roomResponse.data.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
+      } else {
+        await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
+      }
+      if (roomResponse.data.teacher.disconnectTime) {
+        commit("setTeacherDisconnected", true);
+      }
       commit("setClassView", {
-        classView: ClassViewFromValue(roomResponse.data.focusTab),
+        classView: ClassViewFromValue(roomResponse.data.teachingMode),
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
@@ -56,7 +89,7 @@ const actions: ActionTree<StudentRoomState, any> = {
           code: GLErrorCode.DISCONNECT,
           message: "",
         });
-        return console.log(error);
+        return Logger.log(error);
       }
       if (error.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Home);
@@ -82,9 +115,14 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setUser", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, manager, students, teacher, idOne, student } = state;
+    const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible } = state;
     if (!manager) return;
-    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = students
+      .filter(s => {
+        if (!videosFeedVisible || isMobileBrowser) return false;
+        return s.videoEnabled && s.status === InClassStatus.JOINED;
+      })
+      .map(s => s.id);
     let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
@@ -193,7 +231,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         time += 1;
         if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) {
           //mean 5 minutes
-          console.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
+          Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2));
           currentBandwidth = 0;
         }
@@ -201,21 +239,21 @@ const actions: ActionTree<StudentRoomState, any> = {
     }, 30000); // 30000 = 30 seconds
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: (user, mediaType) => {
-        console.log("user-published", user.uid, mediaType);
+        Logger.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onUserUnPublished: (user, mediaType) => {
-        console.log("user-unpublished", user.uid, mediaType);
+        Logger.log("user-unpublished", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
       },
       onException: (payload: any) => {
-        console.log("agora-exception-event", payload);
+        Logger.log("agora-exception-event", payload);
       },
       onVolumeIndicator(result: { level: number; uid: UID }[]) {
         dispatch("setSpeakingUsers", result);
       },
       onLocalNetworkUpdate(payload: any) {
-        //   console.log(payload);
+        //   Logger.log(payload);
       },
     });
   },
@@ -254,6 +292,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentAudio", payload);
         commit("setMicrophoneLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_AUDIO_ERROR", error);
         commit("setMicrophoneLock", { enable: false });
       }
     } else {
@@ -272,6 +311,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentVideo", payload);
         commit("setCameraLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_VIDEO_ERROR", error);
         commit("setCameraLock", { enable: false });
       }
     } else {
@@ -322,12 +362,11 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("clearLaserPen", p);
   },
   async studentAddShape({ state }, payload: Array<string>) {
-    // await state.manager?.WSClient.sendRequestStudentSetBrushstrokes(payload);
     if (!state.info || !state.user) return;
     try {
       await RemoteTeachingService.studentAddShapes(payload, state.user.id, state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
   },
   // async sendUnity({ state }, payload: {message : string}) {
@@ -370,13 +409,15 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
   },
   async studentDrawsLine({ state }, payload: Array<string>) {
-    // await state.manager?.WSClient.sendRequestStudentDrawsLine(payload);
     if (!state.info || !state.user) return;
     try {
       await RemoteTeachingService.studentDrawLine(payload, state.user.id, state.info.id);
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
     }
+  },
+  toggleVideosFeed({ commit }) {
+    commit("toggleVideosFeed");
   },
 };
 

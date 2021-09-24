@@ -100,7 +100,7 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
-    s.classView = ClassViewFromValue(p.focusTab);
+    s.classView = ClassViewFromValue(p.teachingMode);
     s.students = p.students.map((st, index) => {
       return {
         id: st.id,
@@ -172,7 +172,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
   },
   enableAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = true));
+    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = true));
   },
   studentJoinned(s: State, p: UserIdPayload): void {
     const student = s.students.find(student => student.id === p.id);

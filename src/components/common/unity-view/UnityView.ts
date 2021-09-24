@@ -46,7 +46,7 @@
 //
 //     const sendMessageToUnity = (command: string, message: string) => {
 //       if (unityInstance.value === null) return;
-//       console.log("sendMessageToUnity", command, message);
+//       Logger.log("sendMessageToUnity", command, message);
 //       unityInstance.value.SendMessage("[Bridge]", command, message);
 //     };
 //     watch(receivedMessageTeacher, () => {
@@ -56,7 +56,7 @@
 //       sendMessageToUnity("ReceiveMessageFromPage", receivedMessageStudent.value);
 //     })
 //     const receiveMessageFromUnity = async (message: string) => {
-//       console.log("receiveMessageFromUnity", message);
+//       Logger.log("receiveMessageFromUnity", message);
 //       if (props.messageText === "Teacher"){
 //         await store.dispatch("teacherRoom/sendUnity", {
 //           message: message

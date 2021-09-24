@@ -167,10 +167,11 @@ export default defineComponent({
     });
 
     const handleKeyDown = async (e: any) => {
-      e.preventDefault();
       if (e.key == "ArrowRight" || e.key == "ArrowDown") {
+        e.preventDefault();
         await onClickPrevNextMedia(NEXT_EXPOSURE);
       } else if (e.key == "ArrowLeft" || e.key == "ArrowUp") {
+        e.preventDefault();
         await onClickPrevNextMedia(PREV_EXPOSURE);
       }
     };

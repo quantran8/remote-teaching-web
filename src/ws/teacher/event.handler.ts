@@ -9,7 +9,7 @@ export interface TeacherWSEventHandler {
   onTeacherMuteAllStudentAudio(payload: any): void;
   onTeacherEndClass(payload: any): void;
   onTeacherDisconnect(payload: any): void;
-  onTeacherSetFocusTab(payload: any): void;
+  onTeacherSetTeachingMode(payload: any): void;
   onTeacherUpdateGlobalAudio(payload: any): void;
   onTeacherUpdateLocalAudio(payload: any): void;
   onTeacherUpdateStudentBadge(payload: any): void;
@@ -36,4 +36,6 @@ export interface TeacherWSEventHandler {
   onTeacherDisableAllStudentPallete(payload: any): void;
   onTeacherToggleStudentPallete(payload: any): void;
   onTeacherAddShape(payload: any): void;
+  onTeacherCreateFabricObject(payload: any): void;
+  onTeacherModifyFabricObject(payload: any): void;
 }

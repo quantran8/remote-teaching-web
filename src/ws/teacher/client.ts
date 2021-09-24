@@ -11,6 +11,10 @@ interface JoinRoomParams {
   isMuteVideo?: boolean;
 }
 
+export interface FabricObject {
+  fabricId: string;
+  fabricData: string;
+}
 export class TeacherWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.noStatus, isHideVideo = MediaStatus.noStatus) {
     const params: JoinRoomParams = { roomId: roomId, browserFingerPrinting: browserFingerPrinting };
@@ -61,8 +65,8 @@ export class TeacherWSClient extends GLSocketClient {
       IsMute: IsMute,
     });
   }
-  sendRequestSetFocusTab(ForcusTab: number) {
-    return this.send(WSCmd.SET_FOCUS_TAB, { ForcusTab: ForcusTab });
+  sendRequestSetTeachingMode(teachingMode: number) {
+    return this.send(WSCmd.SET_TEACHING_MODE, teachingMode);
   }
   sendRequestEndRoom(roomId: string) {
     return this.send(WSCmd.END_CLASS, { roomId: roomId });
@@ -139,10 +143,6 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestUpdateAnnotationMode(mode: number) {
     return this.send(WSCmd.TEACHER_UPDATE_ANNOTATION_MODE, mode);
   }
-  sendRequestAddBrush(payload: any) {
-    const data = JSON.stringify(payload);
-    return this.send(WSCmd.TEACHER_ADD_BRUSH_STROKES, data);
-  }
   sendRequestClearAllBrush(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_ALL_BRUSH_STROKES, {});
   }
@@ -165,7 +165,10 @@ export class TeacherWSClient extends GLSocketClient {
     const data = JSON.stringify(payload);
     return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);
   }
-  sendRequestShapesForStudent(payload: any) {
-    return this.send(WSCmd.TEACHER_DRAWS_SHAPE, payload);
+  sendRequestCreateFabricObject(payload: FabricObject) {
+    return this.send(WSCmd.TEACHER_CREATE_FABRIC_OBJECT, payload);
+  }
+  sendRequestModifyFabricObject(payload: FabricObject) {
+    return this.send(WSCmd.TEACHER_MODIFY_FABRIC_OBJECT, payload);
   }
 }

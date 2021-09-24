@@ -38,7 +38,7 @@ const mutations: MutationTree<TeacherState> = {
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
     state.classesSchedules.forEach(cl => {
-      cl.isActive = state.room?.classId === cl.classId;
+      cl.isActive = state.room?.classInfo.classId === cl.classId;
     });
   },
   setClassOnline(state: TeacherState, payload: ClassRoomModel) {

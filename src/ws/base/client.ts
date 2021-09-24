@@ -1,10 +1,10 @@
 import { GLGlobal } from "@/commonui";
-import { Logger } from "@/utils/logger";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
+import { StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
 import { store } from "@/store";
 import { ClassRoomStatus, SignalRStatus } from "@/models";
+import { Logger } from "@/utils/logger";
 export interface GLSocketOptions {
   url: string;
 }
@@ -36,7 +36,7 @@ export class GLSocketClient {
       .withUrl(this.options.url, options)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: retryContext => {
-          console.log("SIGNAL R DISCONNECTED");
+          Logger.log("SIGNAL R DISCONNECTED");
           store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
           return DEFAULT_RECONNECT_TIMING;
         },
@@ -56,7 +56,7 @@ export class GLSocketClient {
     this._isConnected = false;
   }
   onClosed(payload: any) {
-    console.log("SIGNAL R CLOSED");
+    Logger.log("SIGNAL R CLOSED");
     const currentClassRoomStatus = store.getters["classRoomStatus"];
     if (currentClassRoomStatus === ClassRoomStatus.InClass) {
       store.dispatch("setSignalRStatus", { status: SignalRStatus.Closed });
@@ -87,13 +87,13 @@ export class GLSocketClient {
   }
   async send(command: string, payload: any): Promise<any> {
     if (!this.hubConnection) {
-      console.error("this.hubConnection: ", this.hubConnection);
+      Logger.error("this.hubConnection: ", this.hubConnection);
     }
     if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Connected) {
-      console.error("CONNECTION STATE: " + this.hubConnection.state);
+      Logger.error("CONNECTION STATE: " + this.hubConnection.state);
     }
     if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
-      console.error("SEND/TRY-TO-RECONNECT-MANUALLY");
+      Logger.error("SEND/TRY-TO-RECONNECT-MANUALLY");
       this._isConnected = false;
       await this.connect();
     }
@@ -102,13 +102,13 @@ export class GLSocketClient {
 
   async invoke(command: string, payload: any): Promise<any> {
     if (!this.hubConnection) {
-      console.error("this.hubConnection: ", this.hubConnection);
+      Logger.error("this.hubConnection: ", this.hubConnection);
     }
     if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Connected) {
-      console.error("CONNECTION STATE: " + this.hubConnection.state);
+      Logger.error("CONNECTION STATE: " + this.hubConnection.state);
     }
     if (!this.isConnected || !this.hubConnection || !this.hubConnection.state || this.hubConnection.state === HubConnectionState.Disconnected) {
-      console.error("INVOKE/TRY-TO-RECONNECT-MANUALLY");
+      Logger.error("INVOKE/TRY-TO-RECONNECT-MANUALLY");
       this._isConnected = false;
       await this.connect();
     }
@@ -117,7 +117,6 @@ export class GLSocketClient {
 
   registerEventHandler(handler: WSEventHandler) {
     const handlers: Map<WSEvent, Function> = new Map<WSEvent, Function>();
-    handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
     handlers.set(StudentWSEvent.JOIN_CLASS, handler.onStudentJoinClass);
     handlers.set(StudentWSEvent.STREAM_CONNECT, handler.onStudentStreamConnect);
     handlers.set(StudentWSEvent.MUTE_AUDIO, handler.onStudentMuteAudio);
@@ -146,7 +145,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.MUTE_AUDIO_ALL_STUDENT, handler.onTeacherMuteAllStudentAudio);
     handlers.set(TeacherWSEvent.END_CLASS, handler.onTeacherEndClass);
     handlers.set(TeacherWSEvent.DISCONNECT, handler.onTeacherDisconnect);
-    handlers.set(TeacherWSEvent.SET_FOCUS_TAB, handler.onTeacherSetFocusTab);
+    handlers.set(TeacherWSEvent.SET_TEACHING_MODE, handler.onTeacherSetTeachingMode);
     handlers.set(TeacherWSEvent.UPDATE_GLOBAL_AUDIO, handler.onTeacherUpdateGlobalAudio);
     handlers.set(TeacherWSEvent.UPDATE_LOCAL_AUDIO, handler.onTeacherUpdateLocalAudio);
     handlers.set(TeacherWSEvent.UPDATE_STUDENT_BADGE, handler.onTeacherUpdateStudentBadge);
@@ -177,6 +176,8 @@ export class GLSocketClient {
     //   handler.onTeacherSendUnity
     // );
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_ONE_TO_ONE, handler.onTeacherSetOneToOne);
+    handlers.set(TeacherWSEvent.TEACHER_CREATE_FABRIC_OBJECT, handler.onTeacherCreateFabricObject);
+    handlers.set(TeacherWSEvent.TEACHER_MODIFY_FABRIC_OBJECT, handler.onTeacherModifyFabricObject);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         // Logger.info("RECEIVE", key, payload);
