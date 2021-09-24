@@ -65,7 +65,6 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const currentCursor = ref<Cursor | null>(null);
     const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, showWarningMsg } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
@@ -219,7 +218,7 @@ export default defineComponent({
           //handle for TextBox
           case Tools.TextBox: {
             if (!event.target) {
-              canvas.setCursor(currentCursor.value);
+              canvas.setCursor(Cursor.Text);
               canvas.renderAll();
             }
             break;
@@ -355,7 +354,6 @@ export default defineComponent({
       switch (tool) {
         case Tools.TextBox: {
           toolSelected.value = Tools.TextBox;
-          currentCursor.value = Cursor.Text;
           return;
         }
         case Tools.Cursor:
