@@ -348,14 +348,17 @@ export default defineComponent({
         toolSelected.value = tool;
         selectorOpen.value = true;
       } else {
+        if (toolSelected.value === Tools.TextBox) {
+          clickedTool(Tools.Cursor);
+          return;
+        }
         selectorOpen.value = !selectorOpen.value;
       }
 
       switch (tool) {
-        case Tools.TextBox: {
-          toolSelected.value = Tools.TextBox;
+        case Tools.TextBox:
+          await setDrawMode();
           return;
-        }
         case Tools.Cursor:
           toolSelected.value = Tools.Cursor;
           canvas.isDrawingMode = false;
@@ -434,6 +437,8 @@ export default defineComponent({
     const updateColorValue = (value: any) => {
       const selectedFabricObject = canvas.getActiveObject();
       if (selectedFabricObject?.type === "textbox") {
+        console.log("selectedFabricObject", selectedFabricObject);
+        // selectedFabricObject.set({ cursorColor: value });
         selectedFabricObject.setSelectionStyles({ fill: value });
         canvas.renderAll();
       }
