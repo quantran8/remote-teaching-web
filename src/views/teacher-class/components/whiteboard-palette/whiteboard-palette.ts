@@ -380,10 +380,10 @@ export default defineComponent({
           toolSelected.value = Tools.Stroke;
           objectCanvasProcess();
           return;
-        // case Tools.StrokeColor:
-        //   toolSelected.value = Tools.StrokeColor;
-        //   objectCanvasProcess();
-        //   return;
+        case Tools.StrokeColor:
+          toolSelected.value = Tools.StrokeColor;
+          objectCanvasProcess();
+          return;
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
           if (canvas.getObjects("path").length) {
@@ -432,15 +432,12 @@ export default defineComponent({
       }
     };
     const updateColorValue = (value: any) => {
-      //   if (toolSelected.value === Tools.StrokeColor) {
       const selectedFabricObject = canvas.getActiveObject();
       if (selectedFabricObject?.type === "textbox") {
         selectedFabricObject.setSelectionStyles({ fill: value });
         canvas.renderAll();
       }
       strokeColor.value = value;
-      // clickedTool(Tools.Pen).then();
-      //   }
       if (canvas.isDrawingMode) {
         canvas.freeDrawingBrush.color = strokeColor.value;
       }
