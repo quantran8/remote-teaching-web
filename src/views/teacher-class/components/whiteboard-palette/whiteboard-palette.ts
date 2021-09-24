@@ -356,7 +356,6 @@ export default defineComponent({
         case Tools.TextBox: {
           toolSelected.value = Tools.TextBox;
           currentCursor.value = Cursor.Text;
-          //   createTextBox(canvas);
           return;
         }
         case Tools.Cursor:
