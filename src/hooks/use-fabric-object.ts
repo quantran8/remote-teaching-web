@@ -73,6 +73,8 @@ export const useFabricObject = () => {
     canvas.on("text:editing:entered", (options: any) => {
       if (options?.target.type === "textbox") {
         isEditing.value = true;
+        options.target.setSelectionStart(0);
+        options.target.setSelectionEnd(options.target.text.length);
         // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
     });
