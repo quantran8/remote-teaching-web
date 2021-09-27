@@ -11,7 +11,7 @@ import { FabricObject } from "@/ws";
 import { fmtMsg } from "@/commonui";
 import { WhiteBoard } from "@/locales/localeid";
 
-const DEFAULT_COLOR = "red";
+const DEFAULT_COLOR = "black";
 export enum Cursor {
   Default = "default",
   Text = "text",
@@ -53,7 +53,7 @@ export default defineComponent({
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
     const toolSelected: Ref<string> = ref("cursor");
-    const strokeColor: Ref<string> = ref("black");
+    const strokeColor: Ref<string> = ref(DEFAULT_COLOR);
     const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
@@ -679,7 +679,6 @@ export default defineComponent({
     onMounted(async () => {
       await boardSetup();
       await defaultWhiteboard();
-      strokeColor.value = DEFAULT_COLOR;
       canvas.freeDrawingBrush.color = DEFAULT_COLOR;
     });
     onUnmounted(() => {
