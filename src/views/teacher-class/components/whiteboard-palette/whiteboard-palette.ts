@@ -11,7 +11,7 @@ import { FabricObject } from "@/ws";
 import { fmtMsg } from "@/commonui";
 import { WhiteBoard } from "@/locales/localeid";
 
-const DEFAULT_COLOR = "red";
+const DEFAULT_COLOR = "black";
 export enum Cursor {
   Default = "default",
   Text = "text",
@@ -53,7 +53,7 @@ export default defineComponent({
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
     const toolSelected: Ref<string> = ref("cursor");
-    const strokeColor: Ref<string> = ref("black");
+    const strokeColor: Ref<string> = ref(DEFAULT_COLOR);
     const strokeWidth: Ref<number> = ref(2);
     const selectorOpen: Ref<boolean> = ref(false);
     const modeAnnotation: Ref<number> = ref(-1);
@@ -217,7 +217,7 @@ export default defineComponent({
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (!event.target) {
+            if (!event.target || event.target.type === "path") {
               canvas.setCursor(Cursor.Text);
               canvas.renderAll();
             }
@@ -232,17 +232,14 @@ export default defineComponent({
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (!isEditing.value && event.target) {
+            if (event.target && event.target.type !== "path") {
               isEditing.value = true;
-              return;
+              break;
             }
-            if (isEditing.value && !event.target) {
-              isEditing.value = false;
-              return;
-            }
-            if (!isEditing.value && !event.target) {
-              //create a textbox which 2px distance to mouse
+            if (!isEditing.value) {
               createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2, fill: strokeColor.value });
+            } else {
+              isEditing.value = false;
             }
             break;
           }
@@ -339,11 +336,15 @@ export default defineComponent({
     };
     const clickedTool = async (tool: string) => {
       if (tool === Tools.StrokeColor) {
+        objectCanvasProcess();
+        return;
+      }
+      if (tool === Tools.Stroke) {
+        objectCanvasProcess();
         return;
       }
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
-
       if (toolSelected.value !== tool) {
         toolSelected.value = tool;
         selectorOpen.value = true;
@@ -441,14 +442,12 @@ export default defineComponent({
         canvas.renderAll();
       }
       strokeColor.value = value;
-      if (canvas.isDrawingMode) {
-        canvas.freeDrawingBrush.color = strokeColor.value;
-      }
+      canvas.freeDrawingBrush.color = value;
     };
     const updateStrokeWidth = (value: number) => {
       strokeWidth.value = value;
+      canvas.freeDrawingBrush.width = value;
       selectorOpen.value = false;
-      clickedTool(Tools.Pen).then();
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
@@ -679,7 +678,6 @@ export default defineComponent({
     onMounted(async () => {
       await boardSetup();
       await defaultWhiteboard();
-      strokeColor.value = DEFAULT_COLOR;
       canvas.freeDrawingBrush.color = DEFAULT_COLOR;
     });
     onUnmounted(() => {
