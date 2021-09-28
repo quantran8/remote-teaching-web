@@ -51,15 +51,7 @@ export const useFabricObject = () => {
           options.target.hoverCursor = "default";
         }
       };
-      const handleZIndex = () => {
-        if (options?.target.type === "path" && !options.target.type) {
-          options.target.moveTo(20);
-        } else {
-          options.target.moveTo(30);
-        }
-      };
       handleSelect();
-      handleZIndex();
     });
   };
   const onObjectModified = (canvas: any) => {
