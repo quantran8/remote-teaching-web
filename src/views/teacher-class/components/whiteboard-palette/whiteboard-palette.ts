@@ -446,7 +446,7 @@ export default defineComponent({
     };
     const updateStrokeWidth = (value: number) => {
       strokeWidth.value = value;
-      canvas.freeDrawingBrush.width = strokeWidth.value;
+      canvas.freeDrawingBrush.width = value;
       selectorOpen.value = false;
     };
     const showWhiteboard = async () => {
