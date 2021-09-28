@@ -293,7 +293,7 @@ export default defineComponent({
         stroke: strokeColor.value,
         left: 0,
         top: 0,
-        strokeWidth: 3,
+        strokeWidth: strokeWidth.value,
         strokeLineJoin: "round",
         fill: "",
         id: isTeacher.value.id,
@@ -310,7 +310,7 @@ export default defineComponent({
         radius: 30,
         fill: "",
         stroke: strokeColor.value,
-        strokeWidth: 3,
+        strokeWidth: strokeWidth.value,
         id: isTeacher.value.id,
         isOneToOne: oneAndOne.value || null,
       });
@@ -326,7 +326,7 @@ export default defineComponent({
         height: 50,
         fill: "",
         stroke: strokeColor.value,
-        strokeWidth: 3,
+        strokeWidth: strokeWidth.value,
         id: isTeacher.value.id,
         isOneToOne: oneAndOne.value || null,
       });
