@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { Popover } from "ant-design-vue";
 import { fabric } from "fabric";
-import { Tools, Mode, starPolygonPoints } from "@/commonui";
+import { Tools, Mode, starPolygonPoints, isGuid } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
@@ -217,7 +217,7 @@ export default defineComponent({
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (!event.target) {
+            if (!event.target || event.target.type === "path") {
               canvas.setCursor(Cursor.Text);
               canvas.renderAll();
             }
@@ -232,17 +232,14 @@ export default defineComponent({
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (!isEditing.value && event.target) {
+            if (event.target && event.target.type !== "path") {
               isEditing.value = true;
-              return;
+              break;
             }
-            if (isEditing.value && !event.target) {
-              isEditing.value = false;
-              return;
-            }
-            if (!isEditing.value && !event.target) {
-              //create a textbox which 2px distance to mouse
+            if (!isEditing.value) {
               createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2, fill: strokeColor.value });
+            } else {
+              isEditing.value = false;
             }
             break;
           }
