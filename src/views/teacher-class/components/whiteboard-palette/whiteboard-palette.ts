@@ -336,11 +336,11 @@ export default defineComponent({
     };
     const clickedTool = async (tool: string) => {
       if (tool === Tools.StrokeColor) {
+        objectCanvasProcess();
         return;
       }
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
-
       if (toolSelected.value !== tool) {
         toolSelected.value = tool;
         selectorOpen.value = true;
