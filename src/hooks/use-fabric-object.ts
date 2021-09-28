@@ -13,8 +13,9 @@ const defaultTextBoxProps = {
   left: 50,
   top: 50,
   width: 100,
-  fontSize: 36,
+  fontSize: 40,
   fill: "black",
+  padding: 5,
 };
 
 const deserializeFabricObject = (item: FabricObject) => {
@@ -41,14 +42,24 @@ export const useFabricObject = () => {
   //listen event fire on canvas
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
-      if (options?.target.type === "textbox" && !isTeacher) {
-        options.target.selectable = false;
-      }
-      if (options?.target.type === "path") {
-        options.target.selectable = false;
-        options.target.hoverCursor = "default";
-        canvas.renderAll();
-      }
+      const handleSelect = () => {
+        if (options?.target.type === "textbox" && !isTeacher) {
+          options.target.selectable = false;
+        }
+        if (options?.target.type === "path") {
+          options.target.selectable = false;
+          options.target.hoverCursor = "default";
+        }
+      };
+      const handleZIndex = () => {
+        if (options?.target.type === "path" && !options.target.type) {
+          options.target.moveTo(20);
+        } else {
+          options.target.moveTo(30);
+        }
+      };
+      handleSelect();
+      handleZIndex();
     });
   };
   const onObjectModified = (canvas: any) => {
