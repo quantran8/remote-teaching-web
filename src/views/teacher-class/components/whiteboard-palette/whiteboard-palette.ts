@@ -442,7 +442,7 @@ export default defineComponent({
         canvas.renderAll();
       }
       strokeColor.value = value;
-      canvas.freeDrawingBrush.color = strokeColor.value;
+      canvas.freeDrawingBrush.color = value;
     };
     const updateStrokeWidth = (value: number) => {
       strokeWidth.value = value;
