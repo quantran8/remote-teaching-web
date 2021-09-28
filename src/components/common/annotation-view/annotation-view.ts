@@ -362,7 +362,7 @@ export default defineComponent({
         canvas.renderAll();
         if (canvas.isDrawingMode) {
           const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
-          const lastStroke = studentStrokes[studentStrokes.length - 1];
+          const lastStroke = studentStrokes[0];
           await store.dispatch("studentRoom/studentDrawsLine", JSON.stringify(lastStroke));
         } else {
           await processPushShapes();

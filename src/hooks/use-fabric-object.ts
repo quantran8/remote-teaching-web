@@ -43,12 +43,14 @@ export const useFabricObject = () => {
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       const handleSelect = () => {
-        if (options?.target.type === "textbox" && !isTeacher) {
+        if (options?.target.type === "textbox" && !isTeacher.value) {
           options.target.selectable = false;
         }
         if (options?.target.type === "path") {
           options.target.selectable = false;
           options.target.hoverCursor = "default";
+          //set path to lowest index
+          canvas.sendToBack(options?.target);
         }
       };
       handleSelect();
