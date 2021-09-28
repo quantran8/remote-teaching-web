@@ -13,7 +13,7 @@ const defaultTextBoxProps = {
   left: 50,
   top: 50,
   width: 100,
-  fontSize: 40,
+  fontSize: 36,
   fill: "black",
   padding: 5,
 };
@@ -80,12 +80,16 @@ export const useFabricObject = () => {
       }
     });
     canvas.on("text:editing:entered", (options: any) => {
+      console.log("1");
       if (options?.target.type === "textbox") {
         isEditing.value = true;
         options.target.setSelectionStart(0);
         options.target.setSelectionEnd(options.target.text.length);
         // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
+    });
+    canvas.on("text:selection:changed", (options: any) => {
+      console.log("2");
     });
     canvas.on("text:changed", (options: any) => {
       if (!options.target.textIsChanged) {
