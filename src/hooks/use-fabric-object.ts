@@ -3,6 +3,7 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, watch, computed } from "vue";
+import { Logger } from "@/utils/logger";
 
 /* eslint-disable */
 const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
@@ -80,7 +81,6 @@ export const useFabricObject = () => {
       }
     });
     canvas.on("text:editing:entered", (options: any) => {
-      console.log("1");
       if (options?.target.type === "textbox") {
         isEditing.value = true;
         options.target.setSelectionStart(0);
@@ -89,7 +89,7 @@ export const useFabricObject = () => {
       }
     });
     canvas.on("text:selection:changed", (options: any) => {
-      console.log("2");
+      Logger.debug("text:selection:changed");
     });
     canvas.on("text:changed", (options: any) => {
       if (!options.target.textIsChanged) {
