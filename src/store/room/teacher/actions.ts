@@ -45,8 +45,9 @@ const lowBandWidthPoint = networkQualityStats["3"];
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
+      const { markAsComplete } = payload;
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
-      await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
+      await RemoteTeachingService.teacherEndClassRoom(state.info?.id, markAsComplete);
     }
     commit("endClass", payload);
   },

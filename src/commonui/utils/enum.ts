@@ -607,3 +607,8 @@ export enum ErrorCode {
   ConcurrentUserException = 1,
   StudentNotInClass = 5,
 }
+
+export enum DefaultCanvasDimension {
+  width = 717,
+  height = 435,
+}

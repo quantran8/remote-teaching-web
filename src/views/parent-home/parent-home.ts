@@ -15,6 +15,8 @@ import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
 
+const refreshTiming = 3000 * 10;
+
 export default defineComponent({
   components: {
     StudentCard,
@@ -58,26 +60,42 @@ export default defineComponent({
       router.push(`/student/${currentStudent.value?.id}/class/${currentStudent.value?.schoolClassId}`);
       deviceTesterRef.value?.handleGoToClassSuccess();
     };
+
+    const getRoomInfoTimeout = ref<null | ReturnType<typeof setTimeout>>(null);
+
     const onClickChild = async (student: ChildModel) => {
       currentStudent.value = student;
       deviceTesterRef.value?.showModal();
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
-      try {
-        await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
-        getRoomInfoError.value = "";
-        getRoomInfoErrorByMsg.value = "";
-        await store.dispatch("studentRoom/setOnline");
-        classIsActive.value = true;
-      } catch (err) {
-        getRoomInfoError.value = err?.code;
-        getRoomInfoErrorByMsg.value = err?.message;
-        if (classIsActive.value) {
-          classIsActive.value = false;
+      const getRoomInfo = async () => {
+        try {
+          await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+          getRoomInfoError.value = "";
+          getRoomInfoErrorByMsg.value = "";
+          await store.dispatch("studentRoom/setOnline");
+          if (getRoomInfoTimeout.value) {
+            clearTimeout(getRoomInfoTimeout.value);
+            getRoomInfoTimeout.value = null;
+          }
+          classIsActive.value = true;
+        } catch (err) {
+          getRoomInfoError.value = err?.code;
+          getRoomInfoErrorByMsg.value = err?.message;
+          if (classIsActive.value) {
+            classIsActive.value = false;
+          }
+          if (err?.code === 0) {
+            getRoomInfoTimeout.value = setTimeout(() => {
+              getRoomInfo();
+            }, refreshTiming);
+          }
         }
-      }
+      };
+      await getRoomInfo();
     };
+
     const getNextSessionInfo = async () => {
       try {
         const listIds = children.value.map((child: any) => {
@@ -126,7 +144,6 @@ export default defineComponent({
         await cancelPolicy();
       }
     };
-
     onMounted(async () => {
       if (children.value) {
         await getNextSessionInfo();
@@ -137,6 +154,13 @@ export default defineComponent({
     onUnmounted(async () => {
       window.removeEventListener("keyup", escapeEvent);
     });
+
+    const onDevicesModalClose = () => {
+      if (getRoomInfoTimeout.value) {
+        clearTimeout(getRoomInfoTimeout.value);
+        getRoomInfoTimeout.value = null;
+      }
+    };
 
     return {
       welcomeText,
@@ -170,6 +194,7 @@ export default defineComponent({
       goToClass,
       getRoomInfoError,
       getRoomInfoErrorByMsg,
+      onDevicesModalClose,
     };
   },
 });

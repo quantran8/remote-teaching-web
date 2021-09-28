@@ -26,6 +26,7 @@ import * as sandClock from "@/assets/lotties/sand-clock.json";
 import { ClassRoomStatus } from "@/models";
 import noAvatar from "@/assets/student-class/no-avatar.png";
 import { notification } from "ant-design-vue";
+import "animate.css";
 import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
