@@ -140,7 +140,7 @@ export default defineComponent({
     };
     const objectsCanvas = async () => {
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
-      const lastObject = teacherStrokes[teacherStrokes.length - 1];
+      const lastObject = teacherStrokes[0];
       if (toolSelected.value === Tools.Pen) {
         await store.dispatch("teacherRoom/setBrush", {
           drawing: lastObject,
@@ -150,17 +150,7 @@ export default defineComponent({
         await store.dispatch("teacherRoom/setLaserPath", lastObject);
       }
     };
-    const laserDraw = () => {
-      const laserPath = canvas.getObjects("path").pop();
-      laserPath.animate("opacity", "0", {
-        duration: 1000,
-        easing: fabric.util.ease.easeInOutExpo,
-        onChange: canvas.renderAll.bind(canvas),
-        onComplete: () => {
-          canvas.remove(laserPath);
-        },
-      });
-    };
+
     const teacherAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
@@ -183,7 +173,6 @@ export default defineComponent({
         if (toolSelected.value === Tools.Laser) {
           canvas.renderAll();
           await objectsCanvas();
-          laserDraw();
         }
         if (
           toolSelected.value === Tools.Star ||
@@ -199,6 +188,16 @@ export default defineComponent({
       canvas.on("path:created", (obj: any) => {
         obj.path.id = isTeacher.value.id;
         obj.path.isOneToOne = oneAndOne.value || null;
+        if (toolSelected.value === Tools.Laser) {
+          obj.path.animate("opacity", "0", {
+            duration: 1000,
+            easing: fabric.util.ease.easeInOutExpo,
+            onChange: canvas.renderAll.bind(canvas),
+            onComplete: () => {
+              canvas.remove(obj.path);
+            },
+          });
+        }
       });
     };
     const listenSelfTeacher = () => {
