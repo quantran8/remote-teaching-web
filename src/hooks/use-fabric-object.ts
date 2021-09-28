@@ -3,6 +3,7 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, watch, computed } from "vue";
+import { Logger } from "@/utils/logger";
 
 /* eslint-disable */
 const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
@@ -13,7 +14,7 @@ const defaultTextBoxProps = {
   left: 50,
   top: 50,
   width: 100,
-  fontSize: 40,
+  fontSize: 36,
   fill: "black",
   padding: 5,
 };
@@ -43,12 +44,14 @@ export const useFabricObject = () => {
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       const handleSelect = () => {
-        if (options?.target.type === "textbox" && !isTeacher) {
+        if (options?.target.type === "textbox" && !isTeacher.value) {
           options.target.selectable = false;
         }
         if (options?.target.type === "path") {
           options.target.selectable = false;
           options.target.hoverCursor = "default";
+          //set path to lowest index
+          canvas.sendToBack(options?.target);
         }
       };
       handleSelect();
@@ -84,6 +87,9 @@ export const useFabricObject = () => {
         options.target.setSelectionEnd(options.target.text.length);
         // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
+    });
+    canvas.on("text:selection:changed", (options: any) => {
+      Logger.debug("text:selection:changed");
     });
     canvas.on("text:changed", (options: any) => {
       if (!options.target.textIsChanged) {
