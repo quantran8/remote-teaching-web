@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { Popover } from "ant-design-vue";
 import { fabric } from "fabric";
-import { Tools, Mode, starPolygonPoints, isGuid } from "@/commonui";
+import { Tools, Mode, starPolygonPoints } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
@@ -339,6 +339,10 @@ export default defineComponent({
         objectCanvasProcess();
         return;
       }
+      if (tool === Tools.Stroke) {
+        objectCanvasProcess();
+        return;
+      }
       canvas.selection = false;
       canvas.isDrawingMode = tool === Tools.Pen;
       if (toolSelected.value !== tool) {
@@ -438,14 +442,12 @@ export default defineComponent({
         canvas.renderAll();
       }
       strokeColor.value = value;
-      if (canvas.isDrawingMode) {
-        canvas.freeDrawingBrush.color = strokeColor.value;
-      }
+      canvas.freeDrawingBrush.color = value;
     };
     const updateStrokeWidth = (value: number) => {
       strokeWidth.value = value;
+      canvas.freeDrawingBrush.width = value;
       selectorOpen.value = false;
-      clickedTool(Tools.Pen).then();
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
