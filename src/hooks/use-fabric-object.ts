@@ -31,7 +31,6 @@ export const useFabricObject = () => {
   const showWarningMsg = ref(false);
   const activeObjectId = ref("");
   const nextColor = ref("");
-  const forceSelectAll = ref(false);
 
   watch(showWarningMsg, (currentValue: any) => {
     if (currentValue) {
