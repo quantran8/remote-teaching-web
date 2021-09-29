@@ -65,7 +65,17 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, showWarningMsg, onObjectCreated } = useFabricObject();
+    const {
+      createTextBox,
+      onTextBoxEdited,
+      onObjectModified,
+      displayFabricItems,
+      isEditing,
+      showWarningMsg,
+      onObjectCreated,
+      activeObjectId,
+      nextColor,
+    } = useFabricObject();
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -438,6 +448,9 @@ export default defineComponent({
       const selectedFabricObject = canvas.getActiveObject();
       if (selectedFabricObject?.type === "textbox") {
         selectedFabricObject.setSelectionStyles({ fill: value });
+        activeObjectId.value = selectedFabricObject.objectId;
+        nextColor.value = value;
+        selectedFabricObject.set("cursorColor", value);
         canvas.renderAll();
       }
       strokeColor.value = value;
