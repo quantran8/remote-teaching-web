@@ -3,7 +3,6 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, watch, computed } from "vue";
-import { Logger } from "@/utils/logger";
 
 /* eslint-disable */
 const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
@@ -30,6 +29,9 @@ export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
   const showWarningMsg = ref(false);
+  const activeObjectId = ref("");
+  const nextColor = ref("");
+  const forceSelectAll = ref(false);
 
   watch(showWarningMsg, (currentValue: any) => {
     if (currentValue) {
@@ -88,9 +90,7 @@ export const useFabricObject = () => {
         // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
     });
-    canvas.on("text:selection:changed", (options: any) => {
-      Logger.debug("text:selection:changed");
-    });
+
     canvas.on("text:changed", (options: any) => {
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
@@ -107,6 +107,13 @@ export const useFabricObject = () => {
         options.target.setSelectionEnd(options.target.text.length);
         //prevent scale the width
         options.target.set({ width: 100 });
+      }
+      if (options.target.objectId === activeObjectId.value && nextColor.value) {
+        options.target.setSelectionStart(options.target.selectionEnd - 1);
+        options.target.setSelectionEnd(options.target.selectionEnd);
+        options.target.setSelectionStyles({ fill: nextColor.value });
+        options.target.setSelectionStart(options.target.selectionEnd);
+        options.target.setSelectionEnd(options.target.selectionEnd);
       }
     });
   };
@@ -180,5 +187,7 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     showWarningMsg,
+    activeObjectId,
+    nextColor,
   };
 };
