@@ -1,5 +1,5 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassModel, RoomModel, StudentModel } from "@/models";
+import { ClassModel, RoomModel, StudentModel, RoomUsersModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -295,6 +295,31 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setAvatarTeacher(state: TeacherRoomState, p: string) {
     if (state.teacher) state.teacher.avatar = p;
+  },
+  setRoomUsersInfo(s: State, p: RoomUsersModel) {
+    s.teacher = {
+      id: p.teacher.id,
+      name: p.teacher.name,
+      avatar: "",
+      audioEnabled: !p.teacher.isMuteAudio,
+      videoEnabled: !p.teacher.isMuteVideo,
+      status: p.teacher.connectionStatus,
+    };
+    s.students = p.students.map((st, index) => {
+      return {
+        id: st.id,
+        name: st.name,
+        englishName: st.englishName,
+        avatar: "",
+        audioEnabled: !st.isMuteAudio,
+        videoEnabled: !st.isMuteVideo,
+        badge: st.badge,
+        status: st.connectionStatus,
+        index: index,
+        raisingHand: st.isRaisingHand,
+        isPalette: st.isPalette,
+      };
+    });
   },
 };
 

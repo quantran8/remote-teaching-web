@@ -1,4 +1,4 @@
-import { ClassRoomStatus, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, StudentModel, TeacherModel, RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
@@ -400,6 +400,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         },
         { root: true },
       );
+    },
+    onRoomInfo: (payload: RoomModel) => {
+      const { teacher, students } = payload;
+      const users = {
+        teacher: teacher,
+        students: students,
+      };
+      commit("setRoomUsersInfo", users);
     },
   };
   return handler;

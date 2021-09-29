@@ -129,3 +129,8 @@ export interface RoomModel {
   annotation: AnnotationModel;
   oneAndOneDto: any;
 }
+
+export interface RoomUsersModel {
+  teacher: TeacherModel;
+  students: Array<StudentModel>;
+}
