@@ -84,8 +84,6 @@ const mutations: MutationTree<StudentRoomState> = {
       if (st.id === state.user?.id) {
         student.index = 999;
         state.student = student;
-      } else {
-        state.students.push(student);
       }
     }
     state.info = room;
