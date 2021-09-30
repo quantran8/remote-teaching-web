@@ -66,28 +66,28 @@ const mutations: MutationTree<StudentRoomState> = {
       status: room.teacher.connectionStatus,
       disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
-    state.students = [];
-    for (const st of room.students) {
-      const student = {
-        id: st.id,
-        name: st.name,
-        englishName: st.englishName,
-        avatar: "",
-        audioEnabled: !st.isMuteAudio,
-        videoEnabled: !st.isMuteVideo,
-        badge: st.badge,
-        status: st.connectionStatus,
-        index: state.students.length,
-        raisingHand: st.isRaisingHand,
-        isPalette: st.isPalette,
-      };
-      if (st.id === state.user?.id) {
-        student.index = 999;
-        state.student = student;
-      } else {
-        state.students.push(student);
-      }
-    }
+    // state.students = [];
+    // for (const st of room.students) {
+    //   const student = {
+    //     id: st.id,
+    //     name: st.name,
+    //     englishName: st.englishName,
+    //     avatar: "",
+    //     audioEnabled: !st.isMuteAudio,
+    //     videoEnabled: !st.isMuteVideo,
+    //     badge: st.badge,
+    //     status: st.connectionStatus,
+    //     index: state.students.length,
+    //     raisingHand: st.isRaisingHand,
+    //     isPalette: st.isPalette,
+    //   };
+    //   if (st.id === state.user?.id) {
+    //     student.index = 999;
+    //     state.student = student;
+    //   } else {
+    //     state.students.push(student);
+    //   }
+    // }
     state.info = room;
     const role = "audience";
     if (!state.manager)
