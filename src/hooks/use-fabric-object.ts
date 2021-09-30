@@ -12,7 +12,7 @@ const WarningTiming = 1500;
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
-  width: 100,
+  width: 500,
   fontSize: 36,
   fill: "black",
   padding: 5,
@@ -83,6 +83,7 @@ export const useFabricObject = () => {
     });
     canvas.on("text:editing:entered", (options: any) => {
       if (options?.target.type === "textbox") {
+        options.target.set("cursorColor", nextColor.value);
         isEditing.value = true;
         options.target.setSelectionStart(0);
         options.target.setSelectionEnd(options.target.text.length);
@@ -107,18 +108,29 @@ export const useFabricObject = () => {
         //prevent scale the width
         options.target.set({ width: 100 });
       }
-      if (options.target.objectId === activeObjectId.value && nextColor.value) {
-        options.target.setSelectionStart(options.target.selectionEnd - 1);
-        options.target.setSelectionEnd(options.target.selectionEnd);
-        options.target.setSelectionStyles({ fill: nextColor.value });
-        options.target.setSelectionStart(options.target.selectionEnd);
-        options.target.setSelectionEnd(options.target.selectionEnd);
+      //   if (options.target.objectId === activeObjectId.value && nextColor.value) {
+      //     options.target.setSelectionStart(options.target.selectionEnd - 1);
+      //     options.target.setSelectionEnd(options.target.selectionEnd);
+      //     options.target.setSelectionStyles({ fill: nextColor.value });
+      //     options.target.setSelectionStart(options.target.selectionEnd);
+      //     options.target.setSelectionEnd(options.target.selectionEnd);
+      //   }
+      if (nextColor.value) {
+        const selectedTextStyles = options.target.getSelectionStyles(options.target.selectionEnd - 1, options.target.selectionEnd, true);
+        const [style] = selectedTextStyles;
+        if (style.fill !== nextColor.value) {
+          options.target.setSelectionStart(options.target.selectionEnd - 1);
+          options.target.setSelectionEnd(options.target.selectionEnd);
+          options.target.setSelectionStyles({ fill: nextColor.value });
+          options.target.setSelectionStart(options.target.selectionEnd);
+          options.target.setSelectionEnd(options.target.selectionEnd);
+        }
       }
     });
   };
 
-  const createTextBox = (canvas: any, coords: { top: number; left: number; fill: string }) => {
-    const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords });
+  const createTextBox = (canvas: any, coords: { top: number; left: number }) => {
+    const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
     const randomId = randomUUID();
     textBox.objectId = randomId;
     canvas.add(textBox).setActiveObject(textBox);

@@ -76,6 +76,7 @@ export default defineComponent({
       activeObjectId,
       nextColor,
     } = useFabricObject();
+    nextColor.value = strokeColor.value;
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -246,7 +247,7 @@ export default defineComponent({
               break;
             }
             if (!isEditing.value) {
-              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2, fill: strokeColor.value });
+              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
             } else {
               isEditing.value = false;
             }
@@ -446,10 +447,9 @@ export default defineComponent({
     };
     const updateColorValue = (value: any) => {
       const selectedFabricObject = canvas.getActiveObject();
+      nextColor.value = value;
       if (selectedFabricObject?.type === "textbox") {
         selectedFabricObject.setSelectionStyles({ fill: value });
-        activeObjectId.value = selectedFabricObject.objectId;
-        nextColor.value = value;
         selectedFabricObject.set("cursorColor", value);
         canvas.renderAll();
       }
