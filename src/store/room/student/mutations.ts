@@ -57,7 +57,6 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   setRoomInfo(state: StudentRoomState, room: RoomModel) {
     state.idOne = room.studentOneToOne ? room.studentOneToOne : "";
-    console.log("update from API");
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,
@@ -249,7 +248,6 @@ const mutations: MutationTree<StudentRoomState> = {
     state.videosFeedVisible = !state.videosFeedVisible;
   },
   setRoomUsersInfo(state: StudentRoomState, room: RoomUsersModel) {
-    console.log("update from Signal R 3001");
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,
