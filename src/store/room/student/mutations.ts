@@ -57,6 +57,7 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   setRoomInfo(state: StudentRoomState, room: RoomModel) {
     state.idOne = room.studentOneToOne ? room.studentOneToOne : "";
+    console.log("update from API");
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,
@@ -66,28 +67,26 @@ const mutations: MutationTree<StudentRoomState> = {
       status: room.teacher.connectionStatus,
       disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
-    // state.students = [];
-    // for (const st of room.students) {
-    //   const student = {
-    //     id: st.id,
-    //     name: st.name,
-    //     englishName: st.englishName,
-    //     avatar: "",
-    //     audioEnabled: !st.isMuteAudio,
-    //     videoEnabled: !st.isMuteVideo,
-    //     badge: st.badge,
-    //     status: st.connectionStatus,
-    //     index: state.students.length,
-    //     raisingHand: st.isRaisingHand,
-    //     isPalette: st.isPalette,
-    //   };
-    //   if (st.id === state.user?.id) {
-    //     student.index = 999;
-    //     state.student = student;
-    //   } else {
-    //     state.students.push(student);
-    //   }
-    // }
+    state.students = [];
+    for (const st of room.students) {
+      const student = {
+        id: st.id,
+        name: st.name,
+        englishName: st.englishName,
+        avatar: "",
+        audioEnabled: !st.isMuteAudio,
+        videoEnabled: !st.isMuteVideo,
+        badge: st.badge,
+        status: st.connectionStatus,
+        index: state.students.length,
+        raisingHand: st.isRaisingHand,
+        isPalette: st.isPalette,
+      };
+      if (st.id === state.user?.id) {
+        student.index = 999;
+        state.student = student;
+      }
+    }
     state.info = room;
     const role = "audience";
     if (!state.manager)
@@ -250,6 +249,7 @@ const mutations: MutationTree<StudentRoomState> = {
     state.videosFeedVisible = !state.videosFeedVisible;
   },
   setRoomUsersInfo(state: StudentRoomState, room: RoomUsersModel) {
+    console.log("update from Signal R 3001");
     state.teacher = {
       id: room.teacher.id,
       name: room.teacher.name,

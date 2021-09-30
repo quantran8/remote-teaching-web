@@ -401,13 +401,14 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         { root: true },
       );
     },
-    onRoomInfo: (payload: RoomModel) => {
+    onRoomInfo: async (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {
         teacher: teacher,
         students: students,
       };
       commit("setRoomUsersInfo", users);
+      dispatch("updateAudioAndVideoFeed", {});
     },
   };
   return handler;

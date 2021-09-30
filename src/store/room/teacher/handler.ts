@@ -299,6 +299,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         students: students,
       };
       commit("setRoomUsersInfo", users);
+      dispatch("updateAudioAndVideoFeed", {});
     },
   };
   return handler;
