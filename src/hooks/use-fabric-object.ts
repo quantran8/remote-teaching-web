@@ -87,7 +87,6 @@ export const useFabricObject = () => {
         isEditing.value = true;
         options.target.setSelectionStart(0);
         options.target.setSelectionEnd(options.target.text.length);
-        // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
     });
 
@@ -108,13 +107,6 @@ export const useFabricObject = () => {
         //prevent scale the width
         options.target.set({ width: 100 });
       }
-      //   if (options.target.objectId === activeObjectId.value && nextColor.value) {
-      //     options.target.setSelectionStart(options.target.selectionEnd - 1);
-      //     options.target.setSelectionEnd(options.target.selectionEnd);
-      //     options.target.setSelectionStyles({ fill: nextColor.value });
-      //     options.target.setSelectionStart(options.target.selectionEnd);
-      //     options.target.setSelectionEnd(options.target.selectionEnd);
-      //   }
       if (nextColor.value) {
         const selectedTextStyles = options.target.getSelectionStyles(options.target.selectionEnd - 1, options.target.selectionEnd, true);
         const [style] = selectedTextStyles;
