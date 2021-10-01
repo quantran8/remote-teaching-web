@@ -118,6 +118,6 @@
 	"teacher_class.leave_page": "Leave page?",
 	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
 	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
-	"common.class.actions": "Class Actions",
-	"whiteboard.textbox_warning": "Please select an alphabet or a letter"
+	"common.class.actions": "None",
+	"whiteboard.textbox_warning": "Please type letters or basic punctuation only."
 }
