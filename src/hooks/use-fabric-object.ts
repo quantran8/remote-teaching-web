@@ -3,7 +3,6 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, computed } from "vue";
-
 import FontFaceObserver from "fontfaceobserver";
 const FontDidactGothic = "Didact Gothic";
 const FontLoader = new FontFaceObserver(FontDidactGothic);
@@ -94,6 +93,7 @@ export const useFabricObject = () => {
           options.target.setSelectionEnd(options.target.selectionEnd);
         }
       }
+      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
     });
   };
 
@@ -136,9 +136,14 @@ export const useFabricObject = () => {
     const fabricObject = deserializeFabricObject(item);
     const { type } = fabricObject;
     switch (type) {
-      case "textbox":
+      case "textbox": {
+        const emptyTextBox = canvas.getObjects().find((obj: any) => !obj.text);
+        if (emptyTextBox) {
+          canvas.remove(emptyTextBox);
+        }
         canvas.add(new fabric.Textbox("", fabricObject));
         break;
+      }
       default:
         break;
     }
@@ -149,12 +154,28 @@ export const useFabricObject = () => {
     const { type } = fabricObject;
     switch (type) {
       case "textbox":
+        //two lines below fix the bug the text not display when texts's width not equal the Box's width (it can be fabric issue)
+        if (fabricObject.text.length === 1) fabricObject.width = 0;
         fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
         canvas.renderAll();
         break;
       default:
         break;
+    }
+  };
+
+  const handleUpdateColor = (canvas: any, colorValue: string) => {
+    const selectedFabricObject = canvas.getActiveObject();
+    nextColor.value = colorValue;
+    if (selectedFabricObject?.type === "textbox") {
+      const hasSelected = selectedFabricObject.selectionEnd - selectedFabricObject.selectionStart > 0;
+      if (hasSelected) {
+        selectedFabricObject.setSelectionStyles({ fill: colorValue });
+        dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+      }
+      selectedFabricObject.set("cursorColor", colorValue);
+      canvas.renderAll();
     }
   };
 
@@ -168,5 +189,6 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     nextColor,
+    handleUpdateColor,
   };
 };
