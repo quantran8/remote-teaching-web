@@ -399,9 +399,11 @@ export default defineComponent({
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
           if (canvas.getObjects("path").length) {
+            // path objects saved as reversed order
             const itemDelete = canvas
               .getObjects("path")
               .filter((item: any) => item.id === isTeacher.value.id)
+              .reverse()
               .pop();
             canvas.remove(itemDelete);
             await store.dispatch("teacherRoom/setDeleteBrush", {});
