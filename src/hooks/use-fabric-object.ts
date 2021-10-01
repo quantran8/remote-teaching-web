@@ -131,9 +131,14 @@ export const useFabricObject = () => {
     const fabricObject = deserializeFabricObject(item);
     const { type } = fabricObject;
     switch (type) {
-      case "textbox":
+      case "textbox": {
+        const emptyTextBox = canvas.getObjects().find((obj: any) => !obj.text);
+        if (emptyTextBox) {
+          canvas.remove(emptyTextBox);
+        }
         canvas.add(new fabric.Textbox("", fabricObject));
         break;
+      }
       default:
         break;
     }
@@ -155,6 +160,20 @@ export const useFabricObject = () => {
     }
   };
 
+  const handleUpdateColor = (canvas: any, colorValue: string) => {
+    const selectedFabricObject = canvas.getActiveObject();
+    nextColor.value = colorValue;
+    if (selectedFabricObject?.type === "textbox") {
+      const hasSelected = selectedFabricObject.selectionEnd - selectedFabricObject.selectionStart > 0;
+      if (hasSelected) {
+        selectedFabricObject.setSelectionStyles({ fill: colorValue });
+        dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+      }
+      selectedFabricObject.set("cursorColor", colorValue);
+      canvas.renderAll();
+    }
+  };
+
   return {
     onObjectCreated,
     createTextBox,
@@ -165,5 +184,6 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     nextColor,
+    handleUpdateColor,
   };
 };

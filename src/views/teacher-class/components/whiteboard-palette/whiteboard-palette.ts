@@ -73,6 +73,7 @@ export default defineComponent({
       isEditing,
       onObjectCreated,
       nextColor,
+      handleUpdateColor,
     } = useFabricObject();
     nextColor.value = strokeColor.value;
     watch(teacherDisconnected, currentValue => {
@@ -444,13 +445,7 @@ export default defineComponent({
       }
     };
     const updateColorValue = (value: any) => {
-      const selectedFabricObject = canvas.getActiveObject();
-      nextColor.value = value;
-      if (selectedFabricObject?.type === "textbox") {
-        selectedFabricObject.setSelectionStyles({ fill: value });
-        selectedFabricObject.set("cursorColor", value);
-        canvas.renderAll();
-      }
+      handleUpdateColor(canvas, value);
       strokeColor.value = value;
       canvas.freeDrawingBrush.color = value;
     };
