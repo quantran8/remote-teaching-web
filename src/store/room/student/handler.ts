@@ -392,6 +392,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       );
     },
     onTeacherModifyFabricObject: (payload: FabricObject) => {
+      console.log("hello payload", payload);
       dispatch(
         "annotation/setLastFabricUpdated",
         {

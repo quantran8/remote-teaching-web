@@ -76,6 +76,7 @@ export const useFabricObject = () => {
     });
 
     canvas.on("text:changed", (options: any) => {
+      console.log("run vao 1");
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
       }
@@ -90,6 +91,7 @@ export const useFabricObject = () => {
           options.target.setSelectionEnd(options.target.selectionEnd);
         }
       }
+      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
     });
   };
 
@@ -143,9 +145,12 @@ export const useFabricObject = () => {
     const { type } = fabricObject;
     switch (type) {
       case "textbox":
-        fabricObject.text = `${fabricObject.text}\n`;
+        console.log("run vao 4", fabricObject.text);
+        // fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
+        existingItem.set("text", "123");
         canvas.renderAll();
+        console.log("all object", canvas.getObjects());
         break;
       default:
         break;
