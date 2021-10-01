@@ -12,7 +12,7 @@ const WarningTiming = 1500;
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
-  width: 500,
+  width: 100,
   fontSize: 36,
   fill: "black",
   padding: 5,
