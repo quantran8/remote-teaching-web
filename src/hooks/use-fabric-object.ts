@@ -2,12 +2,7 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref, watch, computed } from "vue";
-
-/* eslint-disable */
-const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-
-const WarningTiming = 1500;
+import { ref, computed } from "vue";
 
 const defaultTextBoxProps = {
   left: 50,
@@ -28,17 +23,7 @@ const deserializeFabricObject = (item: FabricObject) => {
 export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
-  const showWarningMsg = ref(false);
-  const activeObjectId = ref("");
   const nextColor = ref("");
-
-  watch(showWarningMsg, (currentValue: any) => {
-    if (currentValue) {
-      setTimeout(() => {
-        showWarningMsg.value = false;
-      }, WarningTiming);
-    }
-  });
 
   const isEditing = ref(false);
   //listen event fire on canvas
@@ -93,19 +78,6 @@ export const useFabricObject = () => {
     canvas.on("text:changed", (options: any) => {
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
-      }
-      const hasInvalidText = specialCharactersRegex.test(options?.target.text);
-      if (hasInvalidText) {
-        showWarningMsg.value = true;
-        const filteredText = options.target.text.replace(/[^\w\s]/gi, "");
-        options.target.text.replace(/[^\w\s]/gi, "");
-        options.target.set("text", filteredText);
-        options.target.hiddenTextarea.value = filteredText;
-        //set the current cursor to the last character
-        options.target.setSelectionStart(options.target.text.length);
-        options.target.setSelectionEnd(options.target.text.length);
-        //prevent scale the width
-        options.target.set({ width: 100 });
       }
       if (nextColor.value) {
         const selectedTextStyles = options.target.getSelectionStyles(options.target.selectionEnd - 1, options.target.selectionEnd, true);
@@ -189,8 +161,6 @@ export const useFabricObject = () => {
     displayCreatedItem,
     displayModifiedItem,
     isEditing,
-    showWarningMsg,
-    activeObjectId,
     nextColor,
   };
 };
