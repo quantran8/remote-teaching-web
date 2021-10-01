@@ -7,7 +7,7 @@ import { ref, computed } from "vue";
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
-  width: 100,
+  width: 200,
   fontSize: 36,
   fill: "black",
   padding: 5,
@@ -76,7 +76,6 @@ export const useFabricObject = () => {
     });
 
     canvas.on("text:changed", (options: any) => {
-      console.log("run vao 1");
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
       }
@@ -145,12 +144,11 @@ export const useFabricObject = () => {
     const { type } = fabricObject;
     switch (type) {
       case "textbox":
-        console.log("run vao 4", fabricObject.text);
-        // fabricObject.text = `${fabricObject.text}\n`;
+        //two lines below fix the bug the text not display when texts's width not equal the Box's width (it can be fabric issue)
+        if (fabricObject.text.length === 1) fabricObject.width = 0;
+        fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
-        existingItem.set("text", "123");
         canvas.renderAll();
-        console.log("all object", canvas.getObjects());
         break;
       default:
         break;

@@ -590,7 +590,6 @@ export default defineComponent({
             displayCreatedItem(canvas, data);
             break;
           }
-          console.log("run vao 2");
           displayModifiedItem(canvas, data, existingObject);
           break;
         }
