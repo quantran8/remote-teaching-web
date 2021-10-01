@@ -3,14 +3,17 @@ import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, computed } from "vue";
+import FontFaceObserver from "fontfaceobserver";
+const FontDidactGothic = "Didact Gothic";
+const FontLoader = new FontFaceObserver(FontDidactGothic);
 
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
-  width: 200,
   fontSize: 36,
   fill: "black",
   padding: 5,
+  fontFamily: "Didact Gothic",
 };
 
 const deserializeFabricObject = (item: FabricObject) => {
@@ -117,7 +120,9 @@ export const useFabricObject = () => {
       const { type } = fabricObject;
       switch (type) {
         case "textbox":
-          canvas.add(new fabric.Textbox("", fabricObject));
+          FontLoader.load().then(() => {
+            canvas.add(new fabric.Textbox("", fabricObject));
+          });
           break;
         default:
           break;
