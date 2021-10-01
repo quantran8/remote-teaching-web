@@ -125,6 +125,7 @@ export default defineComponent({
         await clickedTool(Tools.Pen);
       } else {
         canvas.remove(...canvas.getObjects("path"));
+        canvas.remove(...canvas.getObjects("textbox"));
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         await clickedTool(Tools.Cursor);
       }
