@@ -71,9 +71,7 @@ export default defineComponent({
       onObjectModified,
       displayFabricItems,
       isEditing,
-      showWarningMsg,
       onObjectCreated,
-      activeObjectId,
       nextColor,
     } = useFabricObject();
     nextColor.value = strokeColor.value;
@@ -749,7 +747,6 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
-      showWarningMsg,
       warningMsg,
       warningMsgLeave,
     };

@@ -12,11 +12,6 @@
     />
   </div>
   <div class="whiteboard">
-    <transition @leave="warningMsgLeave">
-      <div v-if="showWarningMsg" class="whiteboard__warning">
-        {{ warningMsg }}
-      </div>
-    </transition>
     <div class="whiteboard__wrap">
       <div class="whiteboard__wrap--content" :class="isGalleryView && !showHideWhiteboard ? 'gallery-whiteboard-hidden' : 'gallery-whiteboard-show'">
         <div class="whiteboard__button-show" v-if="!showHideWhiteboard" @click="showWhiteboard">
