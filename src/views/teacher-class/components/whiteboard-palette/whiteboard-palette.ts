@@ -192,7 +192,9 @@ export default defineComponent({
           toolSelected.value === Tools.Cursor ||
           toolSelected.value === Tools.TextBox
         ) {
-          await teacherAddShapes();
+          if (canvas.getActiveObject()?.type !== "textbox") {
+            await teacherAddShapes();
+          }
         }
       });
     };
