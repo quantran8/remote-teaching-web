@@ -7,6 +7,9 @@ import FontFaceObserver from "fontfaceobserver";
 const FontDidactGothic = "Didact Gothic";
 const FontLoader = new FontFaceObserver(FontDidactGothic);
 
+// eslint-disable-next-line
+fabric.Textbox.prototype._wordJoiners = /[]/;
+
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
@@ -79,6 +82,12 @@ export const useFabricObject = () => {
     });
 
     canvas.on("text:changed", (options: any) => {
+      // adjust textbox size when remove characters
+      if (options.target instanceof fabric.IText) {
+        const maxLength = Math.max(...options.target.textLines.map((line: string) => line.length));
+        options.target.set({ width: maxLength });
+      }
+
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
       }
