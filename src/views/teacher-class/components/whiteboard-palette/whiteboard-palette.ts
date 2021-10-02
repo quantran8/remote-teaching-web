@@ -189,7 +189,8 @@ export default defineComponent({
           toolSelected.value === Tools.Star ||
           toolSelected.value === Tools.Circle ||
           toolSelected.value === Tools.Square ||
-          toolSelected.value === Tools.Cursor
+          toolSelected.value === Tools.Cursor ||
+          toolSelected.value === Tools.TextBox
         ) {
           await teacherAddShapes();
         }

@@ -137,7 +137,7 @@ export const useFabricObject = () => {
     const { type } = fabricObject;
     switch (type) {
       case "textbox": {
-        const emptyTextBox = canvas.getObjects().find((obj: any) => !obj.text);
+        const emptyTextBox = canvas.getObjects().find((obj: any) => obj.type === "textbox" && !obj.text);
         if (emptyTextBox) {
           canvas.remove(emptyTextBox);
         }
