@@ -189,7 +189,8 @@ export default defineComponent({
           toolSelected.value === Tools.Star ||
           toolSelected.value === Tools.Circle ||
           toolSelected.value === Tools.Square ||
-          toolSelected.value === Tools.Cursor
+          toolSelected.value === Tools.Cursor ||
+          toolSelected.value === Tools.TextBox
         ) {
           await teacherAddShapes();
         }
@@ -726,6 +727,10 @@ export default defineComponent({
     const warningMsgLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
     };
+
+    watch(currentExposureItemMedia, () => {
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type === "textbox"));
+    });
 
     return {
       currentExposureItemMedia,
