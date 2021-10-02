@@ -728,6 +728,10 @@ export default defineComponent({
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
     };
 
+    watch(currentExposureItemMedia, () => {
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type === "textbox"));
+    });
+
     return {
       currentExposureItemMedia,
       clickedTool,
