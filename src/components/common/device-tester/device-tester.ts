@@ -416,6 +416,8 @@ export default defineComponent({
       AgoraRTC.onMicrophoneChanged = undefined;
       AgoraRTC.onCameraChanged = undefined;
     });
+    const showTeacherFooter = computed(() => hasJoinAction.value && isTeacher.value && !props.fromParentComponent);
+    const showParentFooter = computed(() => hasJoinAction.value && isParent.value && props.fromParentComponent);
 
     return {
       SystemCheck,
@@ -465,6 +467,8 @@ export default defineComponent({
       agoraMicError,
       handleGoToClassSuccess,
       preventCloseModal,
+      showTeacherFooter,
+      showParentFooter,
     };
   },
 });
