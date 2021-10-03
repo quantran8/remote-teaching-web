@@ -1,5 +1,6 @@
 import { defineComponent, Ref, ref, watch } from "vue";
 import { Tools } from "@/commonui";
+import { Divider, Popover, Row, Space, Icon } from "ant-design-vue";
 
 export default defineComponent({
   emits: ["tool-selected", "update-color", "update-stroke"],
@@ -25,7 +26,13 @@ export default defineComponent({
       default: false,
     },
   },
-
+  components: {
+    Row,
+    Divider,
+    Popover,
+    Space,
+    Icon,
+  },
   setup(props, { emit }) {
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
@@ -38,63 +45,28 @@ export default defineComponent({
       [Tools.Delete]: "Delete Brush Stroke",
       [Tools.Clear]: "Clear Brush Strokes",
       [Tools.StrokeColor]: "Color",
+      [Tools.TextBox]: "TextBox",
     };
-    const showColorsPopover = ref<boolean>(false);
-    const showFontWeightPopover = ref<boolean>(false);
+    const showListColors = ref<boolean>(false);
+    const showListSize = ref<boolean>(false);
     const colors: any = {};
     //currently the design just have 8 color belows
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
     const strokeSize = [2, 4];
     const clickedTool = (toolName: string) => {
       emit("tool-selected", toolName);
-      if (toolName !== Tools.StrokeColor) {
-        showColorsPopover.value = false;
-      }
-      if (toolName !== Tools.Stroke) {
-        showFontWeightPopover.value = false;
-      }
     };
-    const updateColor = (value: any) => {
+    const updateColor = (value: string) => {
       emit("update-color", value);
     };
     const updateStrokeSize = (value: number) => {
       emit("update-stroke", value);
     };
-    const handleToolClick = (toolName: string) => {
-      if (toolName === Tools.StrokeColor) {
-        showColorsPopover.value = !showColorsPopover.value;
-        showFontWeightPopover.value = false;
-      }
+    const hideListSize = () => {
+      showListSize.value = false;
     };
-
-    const customIconStyle = (toolName: string) => {
-      switch (toolName) {
-        case tools.Laser:
-          return { width: "45px", height: "45px", paddingBottom: "5px", paddingLeft: "5px" };
-        case tools.Stroke:
-          return { width: "40px", height: "40px" };
-        case tools.Square:
-          return { width: "27px", height: "27px" };
-        case tools.Circle:
-          return { width: "28px", height: "28px" };
-        default:
-          return;
-      }
-    };
-
-    const handleIconClick = (toolName: any) => {
-      if (toolName === Tools.Stroke) {
-        showFontWeightPopover.value = !showFontWeightPopover.value;
-        showColorsPopover.value = false;
-      }
-    };
-
-    const hideColorsPopover = () => {
-      showColorsPopover.value = false;
-    };
-
-    const hideFontWeightPopover = () => {
-      showFontWeightPopover.value = false;
+    const hideListColors = () => {
+      showListColors.value = false;
     };
 
     return {
@@ -108,20 +80,10 @@ export default defineComponent({
       updateColor,
       updateStrokeSize,
       strokeSize,
-      showColorsPopover,
-      showFontWeightPopover,
-      handleToolClick,
-      customIconStyle,
-      hideColorsPopover,
-      hideFontWeightPopover,
-      handleIconClick,
+      showListColors,
+      showListSize,
+      hideListColors,
+      hideListSize,
     };
-  },
-  methods: {
-    checkHasIcon(toolName: any) {
-      const { Cursor, Pen, Laser, Delete, Clear, Star, Circle, Square, Stroke } = Tools;
-      const iconList = [Cursor, Pen, Laser, Delete, Clear, Star, Circle, Square, Stroke];
-      return iconList.includes(toolName);
-    },
   },
 });

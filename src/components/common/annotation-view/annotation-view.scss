@@ -1,4 +1,5 @@
 @import "../../../style/abstracts/variables";
+@import url('https://fonts.cdnfonts.com/css/didact-gothic');
 
 .annotation-view-container {
   border: 1px solid black;
@@ -52,49 +53,12 @@
   }
 }
 
-.sticker-control {
-  position: absolute;
-  right: -45px;
-  top: 0;
-  width: 45px;
-  padding-left: 5px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  &--list {
-    display: flex;
-    flex-direction: column;
-    &--item {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-    }
-  }
-  &--check {
-    width: 40px;
-    height: 40px;
-    border: 2px solid;
-    border-radius: 3px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    img {
-      max-width: 25px;
-    }
-    &-correct {
-      background-color: lightgreen;
-    }
-  }
-}
-
 .palette-tool {
   display: flex;
   width: 100%;
   background: #d8dddf;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border: 1px solid black;
@@ -123,20 +87,8 @@
     &.active {
       background: #fff;
     }
-  }
-  &__colors {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
-    grid-gap: 5px;
-    margin-left: 10px;
-    &--item {
-      width: 18px;
-      height: 18px;
-      border-radius: 12.5px;
-      cursor: pointer;
-      box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
-      border-width: 2px;
-      border-color: white;
+    &.white {
+      background-color: #ccc;
     }
   }
 
@@ -145,14 +97,6 @@
     &__item {
       width: 45px;
       height: 45px;
-      margin-right: 25px;
-    }
-    &__colors {
-      grid-gap: 10px;
-      &--item {
-        width: 25px;
-        height: 25px;
-      }
     }
   }
 }
@@ -173,4 +117,26 @@
 
 .disabled-pointer {
   pointer-events: none;
+}
+
+.colors-wrap {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+}
+.colors-item {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  transition: all 0.2s ease-out;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.3);
+  }
+  &.has-border {
+    padding: 9px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+  }
 }

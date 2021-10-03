@@ -13,7 +13,7 @@
       <!-- <BaseButton @click="onClickBack">Back</BaseButton> -->
       <div class="header-container__left" v-if="isShowBackButton">
         <BaseButton mode="clear" color="black" class="icon" @click="onClickBack">
-          <BaseIcon name="icon-back" class="w3-white"></BaseIcon>
+          <BaseIcon name="icon-back"></BaseIcon>
         </BaseButton>
       </div>
       <div :class="['header-container__left', isContentBlock && thumbnailContentURL && thumbnailURLDefault && 'thumbnail']" v-if="isContentBlock">
@@ -30,7 +30,7 @@
             <div v-html="exposure.name" />
           </div>
           <div v-if="!isTransitionBlock && hasZeroTeachingContent">
-            <Empty />
+            <Empty imageStyle="max-height: 40px" />
           </div>
         </div>
       </div>

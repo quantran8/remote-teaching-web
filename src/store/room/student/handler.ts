@@ -1,8 +1,8 @@
-import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, StudentModel, TeacherModel, RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
-import { WSEventHandler } from "@/ws";
+import { FabricObject, WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
@@ -16,54 +16,17 @@ import { reactive } from "vue";
 import { notification } from "ant-design-vue";
 import { fmtMsg } from "@/commonui";
 import { StoreLocale } from "@/locales/localeid";
+import { Logger } from "@/utils/logger";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
-  const { commit, dispatch, state, getters } = store;
+  const { commit, dispatch, state } = store;
   const handler = {
-    onRoomInfo: async (payload: RoomModel) => {
-      commit("setRoomInfo", payload);
-      await dispatch("setClassView", {
-        classView: ClassViewFromValue(payload.focusTab),
-      });
-      await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", payload.lessonPlan, { root: true });
-      await dispatch("interactive/setInfo", payload.lessonPlan.interactive, {
-        root: true,
-      });
-      await dispatch("interactive/setCurrentUserId", state.user?.id, {
-        root: true,
-      });
-      await dispatch("annotation/setInfo", payload.annotation, {
-        root: true,
-      });
-      await commit("setWhiteboard", payload.isShowWhiteBoard);
-      if (payload.studentOneToOne) {
-        await dispatch("studentRoom/setStudentOneId", { id: payload.studentOneToOne }, { root: true });
-        await dispatch("setClassView", { classView: ClassViewFromValue(payload.oneAndOneDto.focusTab) });
-        await commit("lesson/setCurrentExposure", { id: payload.oneAndOneDto.exposureSelected }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: payload.oneAndOneDto.itemContentSelected }, { root: true });
-        await commit("updateIsPalette", {
-          id: payload.oneAndOneDto.id,
-          isPalette: payload.oneAndOneDto.isEnablePalette,
-        });
-        await commit("setWhiteboard", payload.oneAndOneDto.isShowWhiteBoard);
-        await dispatch("annotation/setOneTeacherStrokes", payload.annotation.oneOneDrawing.brushstrokes, { root: true });
-        await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.annotation.oneOneDrawing.shapes }, { root: true });
-        await dispatch("annotation/setStudentAddShape", { studentShapes: payload.annotation.oneOneDrawing.shapes }, { root: true });
-        await dispatch("annotation/setOneStudentStrokes", payload.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
-      } else {
-        await store.dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
-      }
-      if (payload.teacher.disconnectTime) {
-        commit("setTeacherDisconnected", true);
-      }
-    },
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
       });
-	  commit("updateMediaStatus", payload);
+      commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
@@ -83,7 +46,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentDisconnected: (payload: StudentModel) => {
-      console.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+      Logger.log("STUDENT_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
       commit("setStudentStatus", {
         id: payload.id,
         status: payload.connectionStatus,
@@ -92,10 +55,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (_payload: any) => {
-      //   console.log(_payload);
+      //   Logger.log(_payload);
     },
     onStudentSendUnity: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentMuteAudio: (payload: StudentModel) => {
       commit("setStudentAudio", {
@@ -203,7 +166,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherDisconnect: async (payload: any) => {
-      console.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
+      Logger.log("STUDENT_SIGNALR::TEACHER_DISCONNECT => ", payload.id);
       commit("setTeacherDisconnected", true);
       notification.warn({
         message: fmtMsg(StoreLocale.WaitYourTeacher),
@@ -214,7 +177,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
       await dispatch("updateAudioAndVideoFeed", {});
     },
-    onTeacherSetFocusTab: (payload: number) => {
+    onTeacherSetTeachingMode: (payload: number) => {
       dispatch("setClassView", {
         classView: ClassViewFromValue(payload),
       });
@@ -255,10 +218,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("setWhiteboard", { isShowWhiteBoard: false });
     },
     onStudentRaisingHand: (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onStudentLike: async (payload: StudentModel) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherClearRaisingHand: (payload: any) => {
       commit("setStudentRaisingHand", {
@@ -300,7 +263,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onStudentUpdateAnswers: async (payload: any) => {
-      //   console.log(payload);
+      //   Logger.log(payload);
     },
     onTeacherSetPointer: async (payload: Pointer) => {
       await dispatch("annotation/setPointer", payload, {
@@ -362,7 +325,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       id: string;
       drawing: any;
       student: any;
-      focusTab: any;
+      teachingMode: any;
       isShowWhiteBoard: boolean;
       exposureSelected: string;
       itemContentSelected: string;
@@ -385,9 +348,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
-        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
+        await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
-        await dispatch("setClassView", { classView: ClassViewFromValue(payload.focusTab) });
+        await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await commit("updateIsPalette", {
@@ -399,6 +363,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch("annotation/setFabricsInDrawing", payload.drawing.fabrics, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
@@ -415,6 +380,35 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onStudentDrawsLine: async (payload: string) => {
       await dispatch("annotation/setStudentDrawsLine", payload, { root: true });
+    },
+    onTeacherCreateFabricObject: (payload: FabricObject) => {
+      dispatch(
+        "annotation/setLastFabricUpdated",
+        {
+          type: "create",
+          data: payload,
+        },
+        { root: true },
+      );
+    },
+    onTeacherModifyFabricObject: (payload: FabricObject) => {
+      dispatch(
+        "annotation/setLastFabricUpdated",
+        {
+          type: "modify",
+          data: payload,
+        },
+        { root: true },
+      );
+    },
+    onRoomInfo: async (payload: RoomModel) => {
+      const { teacher, students } = payload;
+      const users = {
+        teacher: teacher,
+        students: students,
+      };
+      commit("setRoomUsersInfo", users);
+      dispatch("updateAudioAndVideoFeed", {});
     },
   };
   return handler;

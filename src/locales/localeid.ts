@@ -40,6 +40,7 @@ export class CommonLocale {
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
   static OverlapWarningSession = "common.warning.overlap";
+  static CommonClassActions = "common.class.actions";
 }
 
 export class ErrorLocale {
@@ -216,4 +217,8 @@ export class JoinLoading {
 export class StoreLocale {
   static WaitYourTeacher = "store.wait_your_teacher";
   static ClickBoardToAnswer = "store.click_board_to_answer";
+}
+
+export class WhiteBoard {
+  static TextBoxWarning = "whiteboard.textbox_warning";
 }

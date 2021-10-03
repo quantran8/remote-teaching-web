@@ -34,19 +34,30 @@
       >
         <img :src="require(`@/assets/icons/tools-${name}.svg`)" alt="Icon" />
       </div>
-      <div class="palette-tool__colors">
-        <div
-          v-for="color in colorsList"
-          :key="color"
-          class="palette-tool__colors--item"
-          @click="changeColor(color)"
-          :style="{
-            backgroundColor: color,
-            borderStyle: color === activeColor ? 'solid' : '',
-            transform: color === activeColor ? 'scale(1.3)' : '',
-          }"
-        ></div>
-      </div>
+      <Popover v-model:visible="showListColors" trigger="click blur">
+        <template #content>
+          <div class="colors-wrap">
+            <div
+              v-for="(color, index) in colorsList"
+              :key="index"
+              :style="`background-color: ${color}`"
+              :class="color === 'white' ? 'colors-item has-border' : 'colors-item'"
+              @click="
+                changeColor(color);
+                hideListColors();
+              "
+            ></div>
+          </div>
+        </template>
+        <div class="palette-tool__item" :class="{ active: toolActive === 'colors', white: activeColor === 'white' }">
+          <img
+            class="tools__item__iconImg"
+            :src="require(`@/assets/tools/ColorSelectScribble-${activeColor}.svg`)"
+            alt="Color Icon"
+            :style="{ color: activeColor }"
+          />
+        </div>
+      </Popover>
     </div>
   </transition>
 </template>

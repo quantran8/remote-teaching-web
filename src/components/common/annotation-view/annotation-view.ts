@@ -5,6 +5,10 @@ import { fabric } from "fabric";
 import { toolType } from "./types";
 import { starPolygonPoints } from "commonui";
 import { TeacherModel } from "@/models";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { LastFabricUpdated } from "@/store/annotation/state";
+import { Logger } from "@/utils/logger";
+import { Popover } from "ant-design-vue";
 
 const randomPosition = () => Math.random() * 100;
 
@@ -15,6 +19,9 @@ const defaultCanvasDimension = {
 
 export default defineComponent({
   props: ["image"],
+  components: {
+    Popover,
+  },
   setup(props) {
     const store = useStore();
     let canvas: any;
@@ -62,6 +69,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -193,7 +201,8 @@ export default defineComponent({
             .getObjects()
             .filter((obj: any) => obj.id !== student.value.id)
             .filter((obj: any) => obj.id !== teacherForST.value.id)
-            .filter((obj: any) => obj.type !== "path"),
+            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => !obj.objectId),
         );
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== teacherForST.value.id) {
@@ -329,7 +338,7 @@ export default defineComponent({
     const studentAddShapes = async () => {
       const shapes: Array<string> = [];
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === student.value.id) {
+        if (obj.id === student.value.id && obj.type !== "path") {
           obj = obj.toJSON();
           obj.id = student.value.id;
           shapes.push(JSON.stringify(obj));
@@ -353,7 +362,7 @@ export default defineComponent({
         canvas.renderAll();
         if (canvas.isDrawingMode) {
           const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
-          const lastStroke = studentStrokes[studentStrokes.length - 1];
+          const lastStroke = studentStrokes[0];
           await store.dispatch("studentRoom/studentDrawsLine", JSON.stringify(lastStroke));
         } else {
           await processPushShapes();
@@ -380,6 +389,7 @@ export default defineComponent({
       listenToMouseUp();
       listenCreatedPath();
       listenSelfStudent();
+      onObjectCreated(canvas);
     };
     const canvasRef = ref(null);
     const boardSetup = () => {
@@ -441,6 +451,7 @@ export default defineComponent({
       });
       canvas.isDrawingMode = false;
       canvas.add(star);
+      canvas.setActiveObject(star);
       await studentAddShapes();
     };
     const addCircle = async () => {
@@ -457,6 +468,7 @@ export default defineComponent({
       });
       canvas.isDrawingMode = false;
       canvas.add(circle);
+      canvas.setActiveObject(circle);
       await studentAddShapes();
     };
     const addSquare = async () => {
@@ -474,6 +486,7 @@ export default defineComponent({
       });
       canvas.isDrawingMode = false;
       canvas.add(square);
+      canvas.setActiveObject(square);
       await studentAddShapes();
     };
     const clearStar = () => {
@@ -486,6 +499,13 @@ export default defineComponent({
       canvas.freeDrawingBrush.color = activeColor.value;
       canvas.freeDrawingBrush.width = 4;
     };
+    const showListColors = ref<boolean>(false);
+    const showListColorsPopover = () => {
+      toolActive.value = "colors";
+    };
+    const hideListColors = () => {
+      showListColors.value = false;
+    };
     onMounted(() => {
       boardSetup();
       window.addEventListener("resize", resizeCanvas);
@@ -495,23 +515,11 @@ export default defineComponent({
     });
 
     const paletteTools: Array<toolType> = [
-      {
-        name: "move",
-        action: cursorHand,
-      },
-      {
-        name: "star",
-        action: addStar,
-      },
-      {
-        name: "circle",
-        action: addCircle,
-      },
-      {
-        name: "square",
-        action: addSquare,
-      },
+      { name: "move", action: cursorHand },
       { name: "pen", action: addDraw },
+      { name: "star", action: addStar },
+      { name: "circle", action: addCircle },
+      { name: "square", action: addSquare },
     ];
 
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
@@ -531,11 +539,9 @@ export default defineComponent({
 
       gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
-      gsap.from(element.querySelector(".palette-tool__colors"), { duration: 0.5, scale: 0, delay: 1, ease: "back" });
     };
     const actionLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element.querySelectorAll(".palette-tool__item"), { duration: 0.1, scale: 0, stagger: 0.1 });
-      await gsap.to(element.querySelector(".palette-tool__colors"), { duration: 0.1, scale: 0 });
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
 
@@ -543,6 +549,55 @@ export default defineComponent({
       toolActive.value = "";
     };
     const hasPalette = computed(() => !isPaletteVisible.value && animationDone.value);
+
+    //get fabric items from vuex and display to whiteboard
+    const fabricItems = computed(() => {
+      const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+      if (oneToOneUserId) {
+        return store.getters["annotation/fabricItemsOneToOne"];
+      }
+      return store.getters["annotation/fabricItems"];
+    });
+
+    watch(
+      fabricItems,
+      async value => {
+        const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+        if (!oneToOneUserId) {
+          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
+        }
+        displayFabricItems(canvas, value);
+      },
+      { deep: true },
+    );
+
+    //receive the object lastFabricUpdated and update the whiteboard
+    const lastFabricUpdated = computed(() => store.getters["annotation/lastFabricUpdated"]);
+    const getObjectFromId = (id: string) => {
+      const currentObjects = canvas.getObjects();
+      return currentObjects.find((obj: any) => obj.objectId === id);
+    };
+    watch(lastFabricUpdated, (value: LastFabricUpdated) => {
+      const { type, data } = value;
+      switch (type) {
+        case "create": {
+          displayCreatedItem(canvas, data);
+          break;
+        }
+        case "modify": {
+          const existingObject = getObjectFromId(data.fabricId);
+          if (!existingObject) {
+            displayCreatedItem(canvas, data);
+            break;
+          }
+          displayModifiedItem(canvas, data, existingObject);
+          break;
+        }
+        default:
+          break;
+      }
+    });
+
     return {
       containerRef,
       pointerStyle,
@@ -566,6 +621,9 @@ export default defineComponent({
       isGalleryView,
       toolActive,
       isLessonPlan,
+      showListColors,
+      showListColorsPopover,
+      hideListColors,
     };
   },
 });

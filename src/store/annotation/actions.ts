@@ -1,6 +1,7 @@
 import { AnnotationModel } from "@/models";
+import { FabricObject } from "@/ws";
 import { ActionContext, ActionTree } from "vuex";
-import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
+import { AnnotationState, LastFabricUpdated, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationActionInterface<S, R> {
   setInfo(s: ActionContext<S, R>, p: AnnotationModel): void;
@@ -105,6 +106,15 @@ const actions: ActionTree<AnnotationState, any> = {
   },
   setClearOneStudentDrawsLine({ commit }, p: {}) {
     commit("setClearOneStudentDrawsLine", p);
+  },
+  setLastFabricUpdated({ commit }, p: LastFabricUpdated) {
+    commit("setLastFabricUpdated", p);
+  },
+  setFabricsInDrawing({ commit }, p: FabricObject[]) {
+    commit("setFabricsInDrawing", p);
+  },
+  setFabricsInOneMode({ commit }, p: FabricObject[]) {
+    commit("setFabricsInOneMode", p);
   },
 };
 export default actions;

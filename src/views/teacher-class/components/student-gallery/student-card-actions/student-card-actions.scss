@@ -20,6 +20,10 @@
     width: 35px;
     cursor: pointer;
     margin: 5px;
+    &--disable {
+      opacity: 0.5;
+      cursor: default;
+    }
   }
 
   &__btn {

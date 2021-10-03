@@ -43,23 +43,9 @@
   }
 
   @media (min-width: $md) {
-    position: static;
     height: 120px;
-
-    overflow: hidden;
-    &--hide {
-      transform: translateY(0);
-    }
-
-    &__container {
-      padding: 12px;
-    }
-
-    &__toggle {
-      display: none;
-    }
   }
-  @media (max-width: $xxl){
+  @media (max-width: $xxl) {
     height: 90px;
     position: absolute;
     overflow: unset;

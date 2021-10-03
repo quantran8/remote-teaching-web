@@ -258,12 +258,12 @@
   }
 
   &__is-speaking {
-    @include round-square(#00a1ed, flickerAnimationVoice);
+    @include round-square(#00a1ed, none);
     border-radius: 5px;
   }
 
   &__is-palette {
-    @include round-square(#030303, flickerAnimationPalette);
+    @include round-square(#030303, none);
     border-radius: 5px;
   }
 
@@ -274,10 +274,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    @include round-square(#dd0d0d, flickerAnimation);
-    .student__video {
-      border: none;
-    }
+    @include round-square(#dd0d0d, none);
   }
 
   &--hover {

@@ -1,9 +1,7 @@
 import { StudentWSEvent, StudentWSEventHandler } from "../student";
-import { RoomWSEvent, RoomWSEventHandler } from "../room";
 import { TeacherWSEvent, TeacherWSEventHandler } from "../teacher";
+import { RoomWSEvent, RoomWSEventHandler } from "../room";
 
-export type WSEvent = RoomWSEvent | StudentWSEvent | TeacherWSEvent;
+export type WSEvent = StudentWSEvent | TeacherWSEvent | RoomWSEvent;
 
-export type WSEventHandler = RoomWSEventHandler &
-  StudentWSEventHandler &
-  TeacherWSEventHandler;
+export type WSEventHandler = StudentWSEventHandler & TeacherWSEventHandler & RoomWSEventHandler;

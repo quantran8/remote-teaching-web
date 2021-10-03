@@ -26,6 +26,9 @@ const mutations: MutationTree<AppState> = {
   setClassRoomStatus(state, payload: { status: number }) {
     state.classRoomStatus = payload.status;
   },
+  setCameraDeviceId(state, payload: string) {
+    state.cameraDeviceId = payload;
+  },
 };
 
 export default mutations;

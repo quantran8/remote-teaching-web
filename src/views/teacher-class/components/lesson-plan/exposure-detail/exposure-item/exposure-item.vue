@@ -1,6 +1,6 @@
 <template>
   <div :class="['item-container']">
-    <Empty v-if="hasZeroImage" />
+    <Empty v-if="hasZeroImage" imageStyle="max-height: 40px" />
     <div :class="['item-content nice-scroll', isContent && 'content-block']">
       <div
         v-for="(item, index) in items"

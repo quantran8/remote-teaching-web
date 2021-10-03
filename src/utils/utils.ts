@@ -7,3 +7,22 @@ export const randomUUID = (prefix?: string): string => {
 export const formatImageUrl = (dataImage: string): string => {
   return dataImage.includes("http") ? dataImage : `data:image/png;base64,${dataImage}`;
 };
+
+enum DeviceType {
+  Tablet = "tablet",
+  Mobile = "mobile",
+  Desktop = "desktop",
+}
+
+const deviceType = (): DeviceType => {
+  const ua = navigator.userAgent;
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+    return DeviceType.Tablet;
+  } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    return DeviceType.Mobile;
+  }
+  return DeviceType.Desktop;
+};
+
+export const isMobileBrowser = deviceType() === DeviceType.Mobile;
+export const isDesktopBrowser = deviceType() === DeviceType.Desktop;

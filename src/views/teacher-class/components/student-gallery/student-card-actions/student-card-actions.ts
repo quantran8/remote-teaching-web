@@ -1,5 +1,5 @@
 import { defineComponent } from "@vue/runtime-core";
-import { computed, ref, watch, inject } from "vue";
+import {computed, ref, watch, inject, ComputedRef} from "vue";
 import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
 import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
 import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
@@ -32,12 +32,18 @@ export default defineComponent({
     const paletteIcon = computed(() => (props.student.isPalette ? IconPaletteOff : IconPaletteOn));
     const isRasingHand = ref(false);
     const isShowExpandIcon = computed(() => store.getters["teacherRoom/getStudentModeOneId"] !== props.student.id);
-    watch(props, () => {
-      if (props.student.raisingHand) {
-        isRasingHand.value = true;
+    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+    const isOnePalette = ref(false);
+    const checkStudentPalette = () => {
+      if (students.value.every(s => !s.isPalette)) {
+        isOnePalette.value = true;
       } else {
-        isRasingHand.value = false;
+        isOnePalette.value = props.student.isPalette;
       }
+    };
+    watch(props, () => {
+      isRasingHand.value = props.student.raisingHand;
+      checkStudentPalette();
     });
     const onClickClearRaisingHand = async () => {
       await store.dispatch("teacherRoom/clearStudentRaisingHand", {
@@ -58,10 +64,12 @@ export default defineComponent({
       });
     };
     const toggleAnnotation = async () => {
-      await store.dispatch("teacherRoom/toggleAnnotation", {
-        studentId: props.student.id,
-        isEnable: !props.student.isPalette,
-      });
+      if (isOnePalette.value) {
+        await store.dispatch("teacherRoom/toggleAnnotation", {
+          studentId: props.student.id,
+          isEnable: !props.student.isPalette,
+        });
+      }
     };
     const addABadge = async () => {
       await store.dispatch("teacherRoom/setStudentBadge", {
@@ -97,7 +105,8 @@ export default defineComponent({
       toolEnter,
       arrowIcon,
       handleExpand,
-	  isShowExpandIcon
+      isShowExpandIcon,
+      isOnePalette,
     };
   },
 });

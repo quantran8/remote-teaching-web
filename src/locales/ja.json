@@ -103,7 +103,7 @@
 	"teacher_class_gallery.no_student_join_class": "No student has joined the class yet",
 	"lost_network.message": "You have lost network connectivity. Please reconnect.",
 	"layout.edit_profile": "Edit Profile",
-	"layout.test_connect": "Test Connection",
+	"layout.test_connect": "System Check",
 	"layout.sign_out": "Sign Out",
 	"layout.privacy_policy": "Privacy Policy",
 	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
@@ -114,5 +114,10 @@
 	"teacher_class_lesson_plan.transition": "Transition",
 	"error.parent_not_have_this_student": "The parent account doesn't have this student",
 	"store.wait_your_teacher": "Please wait for your teacher",
-	"store.click_board_to_answer": "Please click on the board to answer."
+	"store.click_board_to_answer": "Please click on the board to answer.",
+	"teacher_class.leave_page": "Leave page?",
+	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
+	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
+	"common.class.actions": "None",
+	"whiteboard.textbox_warning": "Please type letters or basic punctuation only."
 }
