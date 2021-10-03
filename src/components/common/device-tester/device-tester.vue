@@ -78,7 +78,7 @@
           </div>
         </div>
       </Row>
-      <Row v-if="hasJoinAction && isTeacher" align="middle" class="device-tester__mb--default">
+      <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-6">
           <b>{{ LessonUnit }}</b>
         </div>
@@ -99,7 +99,7 @@
           </Space>
         </div>
       </Row>
-      <Row v-if="hasJoinAction && isTeacher" type="flex" justify="end" class="device-tester__mb--small">
+      <Row v-if="showTeacherFooter" type="flex" justify="end" class="device-tester__mb--small">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">
@@ -107,10 +107,10 @@
           </Button>
         </Space>
       </Row>
-      <Row v-if="hasJoinAction && isTeacher" type="flex" justify="center">
+      <Row v-if="showTeacherFooter" type="flex" justify="center">
         <span class="device-tester__mess-teacher-error">{{ messageStartClass }}</span>
       </Row>
-      <Row v-if="hasJoinAction && isParent" align="middle" class="device-tester__mb--default">
+      <Row v-if="showParentFooter" align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-6">
           <b>{{ ClassStatus }}</b>
         </div>
@@ -119,7 +119,7 @@
           <span v-else>{{ DefaultMessage2 }}</span>
         </div>
       </Row>
-      <Row v-if="hasJoinAction && isParent" type="flex" justify="end">
+      <Row v-if="showParentFooter" type="flex" justify="end">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">
