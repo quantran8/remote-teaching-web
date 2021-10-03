@@ -71,11 +71,11 @@ export default defineComponent({
       onObjectModified,
       displayFabricItems,
       isEditing,
-      showWarningMsg,
       onObjectCreated,
-      activeObjectId,
       nextColor,
+      handleUpdateColor,
     } = useFabricObject();
+    nextColor.value = strokeColor.value;
     watch(teacherDisconnected, currentValue => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
@@ -125,6 +125,7 @@ export default defineComponent({
         await clickedTool(Tools.Pen);
       } else {
         canvas.remove(...canvas.getObjects("path"));
+        canvas.remove(...canvas.getObjects("textbox"));
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         await clickedTool(Tools.Cursor);
       }
@@ -188,9 +189,12 @@ export default defineComponent({
           toolSelected.value === Tools.Star ||
           toolSelected.value === Tools.Circle ||
           toolSelected.value === Tools.Square ||
-          toolSelected.value === Tools.Cursor
+          toolSelected.value === Tools.Cursor ||
+          toolSelected.value === Tools.TextBox
         ) {
-          await teacherAddShapes();
+          if (canvas.getActiveObject()?.type !== "textbox") {
+            await teacherAddShapes();
+          }
         }
       });
     };
@@ -246,7 +250,7 @@ export default defineComponent({
               break;
             }
             if (!isEditing.value) {
-              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2, fill: strokeColor.value });
+              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
             } else {
               isEditing.value = false;
             }
@@ -400,9 +404,11 @@ export default defineComponent({
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
           if (canvas.getObjects("path").length) {
+            // path objects saved as reversed order
             const itemDelete = canvas
               .getObjects("path")
               .filter((item: any) => item.id === isTeacher.value.id)
+              .reverse()
               .pop();
             canvas.remove(itemDelete);
             await store.dispatch("teacherRoom/setDeleteBrush", {});
@@ -445,14 +451,7 @@ export default defineComponent({
       }
     };
     const updateColorValue = (value: any) => {
-      const selectedFabricObject = canvas.getActiveObject();
-      if (selectedFabricObject?.type === "textbox") {
-        selectedFabricObject.setSelectionStyles({ fill: value });
-        activeObjectId.value = selectedFabricObject.objectId;
-        nextColor.value = value;
-        selectedFabricObject.set("cursorColor", value);
-        canvas.renderAll();
-      }
+      handleUpdateColor(canvas, value);
       strokeColor.value = value;
       canvas.freeDrawingBrush.color = value;
     };
@@ -731,6 +730,10 @@ export default defineComponent({
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
     };
 
+    watch(currentExposureItemMedia, () => {
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type === "textbox"));
+    });
+
     return {
       currentExposureItemMedia,
       clickedTool,
@@ -749,7 +752,6 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
-      showWarningMsg,
       warningMsg,
       warningMsgLeave,
     };

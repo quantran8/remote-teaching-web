@@ -2,20 +2,21 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref, watch, computed } from "vue";
+import { ref, computed } from "vue";
+import FontFaceObserver from "fontfaceobserver";
+const FontDidactGothic = "Didact Gothic";
+const FontLoader = new FontFaceObserver(FontDidactGothic);
 
-/* eslint-disable */
-const specialCharactersRegex = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-
-const WarningTiming = 1500;
+// eslint-disable-next-line
+fabric.Textbox.prototype._wordJoiners = /[]/;
 
 const defaultTextBoxProps = {
   left: 50,
   top: 50,
-  width: 100,
   fontSize: 36,
   fill: "black",
   padding: 5,
+  fontFamily: "Didact Gothic",
 };
 
 const deserializeFabricObject = (item: FabricObject) => {
@@ -28,17 +29,7 @@ const deserializeFabricObject = (item: FabricObject) => {
 export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
-  const showWarningMsg = ref(false);
-  const activeObjectId = ref("");
   const nextColor = ref("");
-
-  watch(showWarningMsg, (currentValue: any) => {
-    if (currentValue) {
-      setTimeout(() => {
-        showWarningMsg.value = false;
-      }, WarningTiming);
-    }
-  });
 
   const isEditing = ref(false);
   //listen event fire on canvas
@@ -83,42 +74,40 @@ export const useFabricObject = () => {
     });
     canvas.on("text:editing:entered", (options: any) => {
       if (options?.target.type === "textbox") {
+        options.target.set("cursorColor", nextColor.value);
         isEditing.value = true;
         options.target.setSelectionStart(0);
         options.target.setSelectionEnd(options.target.text.length);
-        // dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
     });
 
     canvas.on("text:changed", (options: any) => {
+      // adjust textbox size when remove characters
+      if (options.target instanceof fabric.IText) {
+        const maxLength = Math.max(...options.target.textLines.map((line: string) => line.length));
+        options.target.set({ width: maxLength });
+      }
+
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
       }
-      const hasInvalidText = specialCharactersRegex.test(options?.target.text);
-      if (hasInvalidText) {
-        showWarningMsg.value = true;
-        const filteredText = options.target.text.replace(/[^\w\s]/gi, "");
-        options.target.text.replace(/[^\w\s]/gi, "");
-        options.target.set("text", filteredText);
-        options.target.hiddenTextarea.value = filteredText;
-        //set the current cursor to the last character
-        options.target.setSelectionStart(options.target.text.length);
-        options.target.setSelectionEnd(options.target.text.length);
-        //prevent scale the width
-        options.target.set({ width: 100 });
+      if (nextColor.value) {
+        const selectedTextStyles = options.target.getSelectionStyles(options.target.selectionEnd - 1, options.target.selectionEnd, true);
+        const [style] = selectedTextStyles;
+        if (style.fill !== nextColor.value) {
+          options.target.setSelectionStart(options.target.selectionEnd - 1);
+          options.target.setSelectionEnd(options.target.selectionEnd);
+          options.target.setSelectionStyles({ fill: nextColor.value });
+          options.target.setSelectionStart(options.target.selectionEnd);
+          options.target.setSelectionEnd(options.target.selectionEnd);
+        }
       }
-      if (options.target.objectId === activeObjectId.value && nextColor.value) {
-        options.target.setSelectionStart(options.target.selectionEnd - 1);
-        options.target.setSelectionEnd(options.target.selectionEnd);
-        options.target.setSelectionStyles({ fill: nextColor.value });
-        options.target.setSelectionStart(options.target.selectionEnd);
-        options.target.setSelectionEnd(options.target.selectionEnd);
-      }
+      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
     });
   };
 
-  const createTextBox = (canvas: any, coords: { top: number; left: number; fill: string }) => {
-    const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords });
+  const createTextBox = (canvas: any, coords: { top: number; left: number }) => {
+    const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
     const randomId = randomUUID();
     textBox.objectId = randomId;
     canvas.add(textBox).setActiveObject(textBox);
@@ -140,7 +129,9 @@ export const useFabricObject = () => {
       const { type } = fabricObject;
       switch (type) {
         case "textbox":
-          canvas.add(new fabric.Textbox("", fabricObject));
+          FontLoader.load().then(() => {
+            canvas.add(new fabric.Textbox("", fabricObject));
+          });
           break;
         default:
           break;
@@ -154,9 +145,14 @@ export const useFabricObject = () => {
     const fabricObject = deserializeFabricObject(item);
     const { type } = fabricObject;
     switch (type) {
-      case "textbox":
+      case "textbox": {
+        const emptyTextBox = canvas.getObjects().find((obj: any) => obj.type === "textbox" && !obj.text);
+        if (emptyTextBox) {
+          canvas.remove(emptyTextBox);
+        }
         canvas.add(new fabric.Textbox("", fabricObject));
         break;
+      }
       default:
         break;
     }
@@ -167,12 +163,28 @@ export const useFabricObject = () => {
     const { type } = fabricObject;
     switch (type) {
       case "textbox":
+        //two lines below fix the bug the text not display when texts's width not equal the Box's width (it can be fabric issue)
+        if (fabricObject.text.length === 1) fabricObject.width = 0;
         fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
         canvas.renderAll();
         break;
       default:
         break;
+    }
+  };
+
+  const handleUpdateColor = (canvas: any, colorValue: string) => {
+    const selectedFabricObject = canvas.getActiveObject();
+    nextColor.value = colorValue;
+    if (selectedFabricObject?.type === "textbox") {
+      const hasSelected = selectedFabricObject.selectionEnd - selectedFabricObject.selectionStart > 0;
+      if (hasSelected) {
+        selectedFabricObject.setSelectionStyles({ fill: colorValue });
+        dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+      }
+      selectedFabricObject.set("cursorColor", colorValue);
+      canvas.renderAll();
     }
   };
 
@@ -185,8 +197,7 @@ export const useFabricObject = () => {
     displayCreatedItem,
     displayModifiedItem,
     isEditing,
-    showWarningMsg,
-    activeObjectId,
     nextColor,
+    handleUpdateColor,
   };
 };

@@ -292,6 +292,15 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherModifyFabricObject: (payload: any) => {
       Logger.info("Fabric:modify object");
     },
+    onRoomInfo: (payload: RoomModel) => {
+      const { teacher, students } = payload;
+      const users = {
+        teacher: teacher,
+        students: students,
+      };
+      commit("setRoomUsersInfo", users);
+      dispatch("updateAudioAndVideoFeed", {});
+    },
   };
   return handler;
 };
