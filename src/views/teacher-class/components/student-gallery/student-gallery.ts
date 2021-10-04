@@ -1,7 +1,6 @@
-import { computed, defineComponent, ref, watch, inject } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
-import StudentOne from "./student-one/student-one.vue";
 import StudentControls from "./student-controls/student-controls.vue";
 import { fmtMsg } from "@/commonui";
 import { TeacherClassGallery } from "@/locales/localeid";
@@ -11,7 +10,6 @@ import moment from "moment";
 export default defineComponent({
   components: {
     StudentAll,
-    StudentOne,
     StudentControls,
   },
   setup() {
