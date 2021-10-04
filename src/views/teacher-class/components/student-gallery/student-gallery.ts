@@ -5,6 +5,8 @@ import StudentOne from "./student-one/student-one.vue";
 import StudentControls from "./student-controls/student-controls.vue";
 import { fmtMsg } from "@/commonui";
 import { TeacherClassGallery } from "@/locales/localeid";
+import { TIMESTAMP_ONEANDONE } from "@/utils/constant";
+import moment from "moment";
 
 export default defineComponent({
   components: {
@@ -32,8 +34,17 @@ export default defineComponent({
     }, 1000);
 
     watch(oneAndOneStatus, () => {
-      minute.value = 0;
-      second.value = 0;
+      if (!oneAndOneStatus.value) {
+        sessionStorage.removeItem(TIMESTAMP_ONEANDONE);
+        return;
+      }
+
+      const savedTimestampOneAndOne = parseInt(sessionStorage.getItem(TIMESTAMP_ONEANDONE) || Date.now().toString());
+      sessionStorage.setItem(TIMESTAMP_ONEANDONE, savedTimestampOneAndOne.toString());
+
+	  const savedMoment = moment(savedTimestampOneAndOne);
+      minute.value = moment(Date.now()).diff(savedMoment, "minute");
+      second.value = moment(Date.now()).diff(savedMoment, "second");
       timeCount.value = "";
     });
 
