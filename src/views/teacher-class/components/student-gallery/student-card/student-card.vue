@@ -1,7 +1,12 @@
 <template>
   <div
     v-if="isShow && !isNotJoinned"
-    :class="['student', focusedStudent && 'expand', isOneToOneStudent && 'one-student-mode']"
+    :class="[
+      'student',
+      focusedStudent && 'expand',
+      isOneToOneStudent && oneAndOne && 'one-student-mode animate__animated animate__zoomIn',
+      !isOneToOneStudent && oneAndOne && 'animate__animated animate__zoomOut',
+    ]"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{

@@ -88,6 +88,22 @@ export interface ExposureItemMedia {
   };
 }
 
+export enum AnnotationTypes {
+  Rect = 0,
+  Circle = 1,
+  Star = 2,
+}
+
+export interface AnnotationLesson {
+  type: AnnotationTypes;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  color: string;
+  rotate: number;
+}
+
 export interface CropMetadata {
   x: number;
   y: number;
@@ -96,6 +112,7 @@ export interface CropMetadata {
   rotate: number;
   scaleX: number;
   scaleY: number;
+  annotations?: AnnotationLesson[];
 }
 
 export interface CacheData {

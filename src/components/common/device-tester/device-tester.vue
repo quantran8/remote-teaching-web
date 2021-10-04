@@ -115,7 +115,10 @@
           <b>{{ ClassStatus }}</b>
         </div>
         <div class="ant-col-24 ant-col-sm-18">
-          <span v-if="!classIsActive">{{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}</span>
+          <span v-if="!classIsActive">
+            {{ notDisplaySpinner ? getRoomInfoErrorByMsg : DefaultMessage1 }}
+            <Spin v-if="!notDisplaySpinner"></Spin>
+          </span>
           <span v-else>{{ DefaultMessage2 }}</span>
         </div>
       </Row>

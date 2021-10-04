@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
-import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space } from "ant-design-vue";
+import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space, Spin } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
@@ -26,6 +26,7 @@ export default defineComponent({
     Divider,
     Row,
     Space,
+    Spin,
   },
   props: [
     "classIsActive",
@@ -38,7 +39,7 @@ export default defineComponent({
     "fromParentComponent",
     "getRoomInfoErrorByMsg",
   ],
-  emits: ["go-to-class", "on-join-session"],
+  emits: ["go-to-class", "on-join-session", "on-close-modal"],
   async created() {
     const { dispatch } = useStore();
     dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
@@ -369,14 +370,25 @@ export default defineComponent({
     watch(currentUnit, currentUnitValue => {
       if (props.notJoin || props.fromParentComponent) return;
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
-      const currentLessonIndex = props.unitInfo[currentUnitIndex]?.sequence?.findIndex(
-        (item: number) => item === props.infoStart.teacherClass.lessonNumber,
+	  const availableLessons = props.unitInfo[currentUnitIndex]?.sequence;
+
+	  const currentLessonValue = props.infoStart.teacherClass.lessonNumber;
+      const currentLessonIndex = availableLessons?.findIndex(
+        (item: number) => item === currentLessonValue,
       );
 
+	  // find next lesson by next number bigger than current lesson\
+	  let nextLessonIndex = availableLessons?.findIndex(
+        (item: number) => item > currentLessonValue,
+      );
+
+	  // find any lesson bigger then current lesson, leave it as max lesson
+	  nextLessonIndex = nextLessonIndex < 0 ? Math.max(currentLessonIndex, availableLessons.length - 1) : nextLessonIndex
+
       listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
-      if (currentUnit.value === props.infoStart.teacherClass.unit && currentLessonIndex >= 0 && firstTimeDefault.value) {
+      if (currentUnit.value === props.infoStart.teacherClass.unit && nextLessonIndex >= 0 && firstTimeDefault.value) {
         firstTimeDefault.value = false;
-        currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[currentLessonIndex];
+        currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[nextLessonIndex];
       } else {
         currentLesson.value = props.unitInfo[currentUnitIndex]?.sequence?.[0];
       }
@@ -418,6 +430,14 @@ export default defineComponent({
     });
     const showTeacherFooter = computed(() => hasJoinAction.value && isTeacher.value && !props.fromParentComponent);
     const showParentFooter = computed(() => hasJoinAction.value && isParent.value && props.fromParentComponent);
+
+    const notDisplaySpinner = computed(() => props.getRoomInfoError !== 0);
+
+    watch(visible, currentVisibleValue => {
+      if (!currentVisibleValue) {
+        emit("on-close-modal");
+      }
+    });
 
     return {
       SystemCheck,
@@ -469,6 +489,7 @@ export default defineComponent({
       preventCloseModal,
       showTeacherFooter,
       showParentFooter,
+      notDisplaySpinner,
     };
   },
 });

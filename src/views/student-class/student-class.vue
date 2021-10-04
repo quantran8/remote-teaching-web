@@ -51,14 +51,17 @@
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
         </div>
         <div
-          class="sc-teacher__video"
+          class="sc-teacher__video animate__animated animate__zoomIn"
           :id="teacher?.id"
           v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
         ></div>
-        <div class="sc-teacher__avatar-container" v-if="!teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)">
+        <div
+          class="sc-teacher__avatar-container animate__animated animate__zoomIn"
+          v-if="!teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)"
+        >
           <img class="sc-teacher__avatar" :src="avatarTeacher" />
         </div>
-        <div class="sc-independent" v-show="isOneToOne && !studentIsOneToOne">
+        <div class="sc-independent animate__animated animate__zoomIn" v-show="isOneToOne && !studentIsOneToOne">
           <div class="sc-independent__info-container">
             <div class="sc-independent__avatar-container">
               <img class="sc-independent__avatar-container__avatar" :src="avatarTeacher" />
@@ -77,6 +80,7 @@
           </div>
         </div>
       </div>
+
       <div class="sc-student">
         <StudentGalleryItem
           v-if="student"
