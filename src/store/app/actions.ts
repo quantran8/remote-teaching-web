@@ -2,6 +2,8 @@ import { ContentService } from "@/services";
 import { ActionTree } from "vuex";
 import { AppState, AppView, LayoutType, ToastData } from "./state";
 
+export const CAMERA_ID_KEY = "__RT_CAMERA_ID__";
+
 const actions: ActionTree<AppState, any> = {
   setToast(store, payload: ToastData) {
     store.commit("setToast", payload);
@@ -29,6 +31,10 @@ const actions: ActionTree<AppState, any> = {
   },
   setClassRoomStatus(store, payload: { status: number }) {
     store.commit("setClassRoomStatus", payload);
+  },
+  async setCameraDeviceId(store, payload: string) {
+    localStorage.setItem(CAMERA_ID_KEY, payload);
+    store.commit("setCameraDeviceId", payload);
   },
 };
 

@@ -3,7 +3,7 @@
   <div class="sc" v-else>
     <prevent-esc-firefox />
     <StudentHeader v-if="!showMessage" />
-    <div class="sc-body" v-if="!showMessage">
+    <div :class="['sc-body', videosFeedVisible && 'has-feed']" v-if="!showMessage">
       <div class="sc-content" ref="contentSectionRef">
         <UnitPlayer v-if="isPlayVideo" :sourceVideo="sourceVideo" />
         <div v-show="teacherIsDisconnected" class="sc-content__top--confused">

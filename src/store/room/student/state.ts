@@ -7,7 +7,7 @@ import { UserModel } from "@/models/user.model";
 import { ClassView, StudentState, TeacherState } from "../interface";
 
 export enum ClassAction {
-  DEFAULT = "listen",
+  DEFAULT = "default",
   LISTEN = "listen",
   QUESTION = "question",
   QUIET = "quiet",

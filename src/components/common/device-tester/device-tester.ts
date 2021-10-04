@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useStore } from "vuex";
-import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Spin } from "ant-design-vue";
+import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space, Spin } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
@@ -24,6 +24,8 @@ export default defineComponent({
     Button,
     Skeleton,
     Divider,
+    Row,
+    Space,
     Spin,
   },
   props: [
@@ -360,6 +362,7 @@ export default defineComponent({
     };
 
     const handleGoToClassSuccess = () => {
+      dispatch("setCameraDeviceId", currentCam.value?.deviceId);
       localTracks.value?.audioTrack?.close();
       localTracks.value?.videoTrack?.close();
     };
@@ -373,15 +376,15 @@ export default defineComponent({
       const currentLessonIndex = availableLessons?.findIndex(
         (item: number) => item === currentLessonValue,
       );
-      
+
 	  // find next lesson by next number bigger than current lesson\
 	  let nextLessonIndex = availableLessons?.findIndex(
         (item: number) => item > currentLessonValue,
       );
-		
+
 	  // find any lesson bigger then current lesson, leave it as max lesson
 	  nextLessonIndex = nextLessonIndex < 0 ? Math.max(currentLessonIndex, availableLessons.length - 1) : nextLessonIndex
-	
+
       listLessonByUnit.value = props.unitInfo[currentUnitIndex]?.sequence;
       if (currentUnit.value === props.infoStart.teacherClass.unit && nextLessonIndex >= 0 && firstTimeDefault.value) {
         firstTimeDefault.value = false;
@@ -425,6 +428,9 @@ export default defineComponent({
       AgoraRTC.onMicrophoneChanged = undefined;
       AgoraRTC.onCameraChanged = undefined;
     });
+    const showTeacherFooter = computed(() => hasJoinAction.value && isTeacher.value && !props.fromParentComponent);
+    const showParentFooter = computed(() => hasJoinAction.value && isParent.value && props.fromParentComponent);
+
     const notDisplaySpinner = computed(() => props.getRoomInfoError !== 0);
 
     watch(visible, currentVisibleValue => {
@@ -481,6 +487,8 @@ export default defineComponent({
       agoraMicError,
       handleGoToClassSuccess,
       preventCloseModal,
+      showTeacherFooter,
+      showParentFooter,
       notDisplaySpinner,
     };
   },

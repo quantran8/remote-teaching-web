@@ -292,6 +292,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentAudio", payload);
         commit("setMicrophoneLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_AUDIO_ERROR", error);
         commit("setMicrophoneLock", { enable: false });
       }
     } else {
@@ -310,6 +311,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentVideo", payload);
         commit("setCameraLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_VIDEO_ERROR", error);
         commit("setCameraLock", { enable: false });
       }
     } else {

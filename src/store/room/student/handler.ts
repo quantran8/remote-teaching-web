@@ -1,8 +1,8 @@
-import { ClassRoomStatus, StudentModel, TeacherModel } from "@/models";
+import { ClassRoomStatus, StudentModel, TeacherModel, RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
-import { WSEventHandler } from "@/ws";
+import { FabricObject, WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
@@ -349,6 +349,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
+        await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
@@ -362,6 +363,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
+        await dispatch("annotation/setFabricsInDrawing", payload.drawing.fabrics, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
@@ -378,6 +380,35 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onStudentDrawsLine: async (payload: string) => {
       await dispatch("annotation/setStudentDrawsLine", payload, { root: true });
+    },
+    onTeacherCreateFabricObject: (payload: FabricObject) => {
+      dispatch(
+        "annotation/setLastFabricUpdated",
+        {
+          type: "create",
+          data: payload,
+        },
+        { root: true },
+      );
+    },
+    onTeacherModifyFabricObject: (payload: FabricObject) => {
+      dispatch(
+        "annotation/setLastFabricUpdated",
+        {
+          type: "modify",
+          data: payload,
+        },
+        { root: true },
+      );
+    },
+    onRoomInfo: async (payload: RoomModel) => {
+      const { teacher, students } = payload;
+      const users = {
+        teacher: teacher,
+        students: students,
+      };
+      commit("setRoomUsersInfo", users);
+      dispatch("updateAudioAndVideoFeed", {});
     },
   };
   return handler;
