@@ -6,5 +6,3 @@ export const MIN_SPEAKING_LEVEL = 1;
 
 export const NEXT_EXPOSURE = 1;
 export const PREV_EXPOSURE = 2;
-
-export const TIMESTAMP_ONEANDONE = "TIMESTAMP_ONEANDONE"

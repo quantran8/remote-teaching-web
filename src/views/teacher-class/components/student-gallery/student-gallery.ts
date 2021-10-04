@@ -4,8 +4,9 @@ import StudentAll from "./student-all/student-all.vue";
 import StudentControls from "./student-controls/student-controls.vue";
 import { fmtMsg } from "@/commonui";
 import { TeacherClassGallery } from "@/locales/localeid";
-import { TIMESTAMP_ONEANDONE } from "@/utils/constant";
 import moment from "moment";
+
+const TIMESTAMP_ONEANDONE = "TIMESTAMP_ONEANDONE";
 
 export default defineComponent({
   components: {
