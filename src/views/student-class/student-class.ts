@@ -25,7 +25,6 @@ import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import * as sandClock from "@/assets/lotties/sand-clock.json";
 import { ClassRoomStatus } from "@/models";
 import noAvatar from "@/assets/student-class/no-avatar.png";
-import { formatImageUrl } from "@/utils/utils";
 import { notification } from "ant-design-vue";
 import "animate.css";
 import { Logger } from "@/utils/logger";
@@ -74,7 +73,7 @@ export default defineComponent({
         role: RoleName.parent,
         browserFingerPrinting: visitorId,
       });
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Parent);
       }
@@ -122,7 +121,7 @@ export default defineComponent({
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
     const breakpoint = breakpointChange();
-    const avatarTeacher = computed(() => ((teacher.value && teacher.value.avatar) ? formatImageUrl(teacher.value.avatar) : noAvatar));
+    const avatarTeacher = computed(() => (teacher.value && teacher.value.avatar ? teacher.value.avatar : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const avatarStudentOneToOne = ref("");
     const showMessage = ref(false);
@@ -152,7 +151,7 @@ export default defineComponent({
     });
 
     watch(getAvatarStudentOne, () => {
-      avatarStudentOneToOne.value = getAvatarStudentOne.value ? formatImageUrl(getAvatarStudentOne.value) : noAvatar;
+      avatarStudentOneToOne.value = getAvatarStudentOne.value ? getAvatarStudentOne.value : noAvatar;
     });
     watch(teacher, async () => {
       if (!teacher.value) return;
@@ -245,7 +244,7 @@ export default defineComponent({
       const visitorId = result.visitorId;
       try {
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
-      } catch (err) {
+      } catch (err: any) {
         if (err.code === ErrorCode.ConcurrentUserException) {
           notification.error({
             message: err.message,

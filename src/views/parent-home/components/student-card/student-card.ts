@@ -4,7 +4,6 @@ import moment from "moment";
 import { fmtMsg } from "@/commonui";
 import { ParentStudentCardLocale } from "@/locales/localeid";
 import noAvatar from "@/assets/images/user-default.png";
-import { formatImageUrl } from "@/utils/utils";
 
 export default defineComponent({
   props: {
@@ -21,7 +20,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const userAvatar = props.avatar ? formatImageUrl(props.avatar) : noAvatar;
+    const userAvatar = props.avatar ? props.avatar : noAvatar;
     const classGroupText = computed(() => fmtMsg(ParentStudentCardLocale.ClassGroup));
     const startTimeText = computed(() => fmtMsg(ParentStudentCardLocale.StartTime));
     const getInfo = () => {
