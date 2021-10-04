@@ -73,7 +73,7 @@ export default defineComponent({
         role: RoleName.parent,
         browserFingerPrinting: visitorId,
       });
-    } catch (err: any) {
+    } catch (err) {
       if (err.code === ErrorCode.ConcurrentUserException) {
         await router.push(Paths.Parent);
       }
@@ -244,7 +244,7 @@ export default defineComponent({
       const visitorId = result.visitorId;
       try {
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
-      } catch (err: any) {
+      } catch (err) {
         if (err.code === ErrorCode.ConcurrentUserException) {
           notification.error({
             message: err.message,
