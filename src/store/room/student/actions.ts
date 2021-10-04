@@ -14,6 +14,7 @@ import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
+import { isMobileBrowser } from "@/utils/utils";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -114,9 +115,14 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setUser", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, manager, students, teacher, idOne, student } = state;
+    const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible } = state;
     if (!manager) return;
-    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = students
+      .filter(s => {
+        if (!videosFeedVisible || isMobileBrowser) return false;
+        return s.videoEnabled && s.status === InClassStatus.JOINED;
+      })
+      .map(s => s.id);
     let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
@@ -286,6 +292,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentAudio", payload);
         commit("setMicrophoneLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_AUDIO_ERROR", error);
         commit("setMicrophoneLock", { enable: false });
       }
     } else {
@@ -304,6 +311,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         commit("setStudentVideo", payload);
         commit("setCameraLock", { enable: false });
       } catch (error) {
+        Logger.error("SET_STUDENT_VIDEO_ERROR", error);
         commit("setCameraLock", { enable: false });
       }
     } else {
@@ -407,6 +415,9 @@ const actions: ActionTree<StudentRoomState, any> = {
     } catch (e) {
       Logger.log(e);
     }
+  },
+  toggleVideosFeed({ commit }) {
+    commit("toggleVideosFeed");
   },
 };
 

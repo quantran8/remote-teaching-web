@@ -29,6 +29,7 @@ import { fmtMsg } from "commonui";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
+import { FabricObject } from "@/ws";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -440,6 +441,22 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async getAvatarTeacher({ commit }, payload: { teacherId: string }) {
     const response = await InfoService.getAvatarTeacher(payload.teacherId);
     if (response) commit("setAvatarTeacher", response);
+  },
+  teacherCreateFabricObject({ state }, payload: any) {
+    const { objectId } = payload;
+    const fabricObject: FabricObject = {
+      fabricId: objectId,
+      fabricData: JSON.stringify(payload.toJSON()),
+    };
+    state.manager?.WSClient.sendRequestCreateFabricObject(fabricObject);
+  },
+  teacherModifyFabricObject({ state }, payload: any) {
+    const { objectId } = payload;
+    const fabricObject: FabricObject = {
+      fabricId: objectId,
+      fabricData: JSON.stringify(payload.toJSON()),
+    };
+    state.manager?.WSClient.sendRequestModifyFabricObject(fabricObject);
   },
 };
 

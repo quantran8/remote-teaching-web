@@ -1,6 +1,6 @@
 import { GLGlobal } from "@/commonui";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-import { StudentWSEvent, TeacherWSEvent } from "..";
+import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
 import { store } from "@/store";
 import { ClassRoomStatus, SignalRStatus } from "@/models";
@@ -176,6 +176,9 @@ export class GLSocketClient {
     //   handler.onTeacherSendUnity
     // );
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_ONE_TO_ONE, handler.onTeacherSetOneToOne);
+    handlers.set(TeacherWSEvent.TEACHER_CREATE_FABRIC_OBJECT, handler.onTeacherCreateFabricObject);
+    handlers.set(TeacherWSEvent.TEACHER_MODIFY_FABRIC_OBJECT, handler.onTeacherModifyFabricObject);
+    handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         // Logger.info("RECEIVE", key, payload);

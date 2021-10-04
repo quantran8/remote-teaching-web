@@ -101,7 +101,7 @@ export default defineComponent({
     const isLpCompleteBlock = computed(() => props.type === exposureTypes.LP_COMPLETE_BLOCK);
     const isTeachingActivityBlock = computed(() => props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
     const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
-    const isShowInfoIcon = computed(() => props.type === exposureTypes.CONTENT_BLOCK || props.type === exposureTypes.TRANSITION_BLOCK);
+    const isShowInfoIcon = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
     const isShowBackButton = computed(
       () => props.type === exposureTypes.VCP_BLOCK || props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.LP_COMPLETE_BLOCK,
     );

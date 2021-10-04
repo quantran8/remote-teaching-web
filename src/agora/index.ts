@@ -218,6 +218,14 @@ export class AgoraClient implements AgoraClientSDK {
       this.cameraTrack.on("track-ended", () => {
         Logger.log("track-ended camera");
       });
+      const camId = store.getters["cameraDeviceId"];
+      if (camId) {
+        try {
+          await this.cameraTrack.setDevice(camId);
+        } catch (error) {
+          Logger.info("AGORA_SET_DEVICE_ERROR", error);
+        }
+      }
       this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
       this.setupHotPluggingDevice("camera");
@@ -505,9 +513,11 @@ export class AgoraClient implements AgoraClientSDK {
       AgoraRTC.onCameraChanged = async changedDevice => {
         if (changedDevice.state === "ACTIVE") {
           this.cameraTrack.setDevice(changedDevice.device.deviceId);
+          store.dispatch("setCameraDeviceId", changedDevice.device.deviceId);
         } else if (changedDevice.device.label === this.cameraTrack.getTrackLabel()) {
           const oldCameras = await AgoraRTC.getCameras();
           oldCameras[0] && this.cameraTrack.setDevice(oldCameras[0].deviceId);
+          store.dispatch("setCameraDeviceId", oldCameras[0].deviceId);
         }
       };
     }

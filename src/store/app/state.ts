@@ -1,4 +1,5 @@
 import { ClassRoomStatus, MediaStatus, SignalRStatus } from "@/models";
+import { CAMERA_ID_KEY } from "./actions";
 
 export type LayoutType = "" | "full" | "main";
 export enum AppView {
@@ -17,6 +18,7 @@ export interface AppState {
   isHideVideo: number;
   signalRStatus: number;
   classRoomStatus: number;
+  cameraDeviceId: string;
 }
 
 export interface ToastData {
@@ -25,6 +27,8 @@ export interface ToastData {
   bigIcon?: any;
   isMedal?: boolean;
 }
+
+const cameraDeviceId = localStorage.getItem(CAMERA_ID_KEY);
 
 const state: AppState = {
   layout: "main",
@@ -35,6 +39,7 @@ const state: AppState = {
   isHideVideo: MediaStatus.noStatus,
   signalRStatus: SignalRStatus.NoStatus,
   classRoomStatus: ClassRoomStatus.InDashBoard,
+  cameraDeviceId: cameraDeviceId || "",
 };
 
 export default state;

@@ -1,6 +1,7 @@
 import { AnnotationModel } from "@/models";
+import { FabricObject } from "@/ws";
 import { MutationTree } from "vuex";
-import { AnnotationState, Pointer, Sticker, UserShape } from "./state";
+import { AnnotationState, LastFabricUpdated, Pointer, Sticker, UserShape } from "./state";
 
 export interface AnnotationMutationInterface<S> {
   setInfo(s: S, p: AnnotationModel): void;
@@ -41,28 +42,16 @@ const mutations: AnnotationMutation<AnnotationState> = {
       s.drawing.studentStrokes = p.drawing.studentBrushstrokes;
       s.drawing.teacherShapes = p.drawing.shapes;
       s.drawing.studentShapes = p.drawing.shapes;
-    } else {
-      s.drawing = {
-        pencil: null,
-        brushstrokes: [],
-        studentShapes: [],
-        teacherShapes: [],
-        studentStrokes: [],
-      };
+      s.drawing.fabrics = p.drawing.fabrics;
     }
     if (p.oneToOne) {
       s.oneToOne = p.oneToOne;
       s.oneToOne.studentStrokes = p.oneToOne.studentBrushstrokes;
       s.oneToOne.teacherShapes = p.oneToOne.shapes;
       s.oneToOne.studentShapes = p.oneToOne.shapes;
-    } else {
-      s.oneToOne = {
-        pencil: null,
-        brushstrokes: [],
-        studentShapes: [],
-        teacherShapes: [],
-        studentStrokes: [],
-      };
+    }
+    if (p.oneOneDrawing) {
+      s.oneToOne.fabrics = p.oneOneDrawing.fabrics;
     }
     s.stickers = p.stickers;
   },
@@ -102,6 +91,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
       studentShapes: [],
       teacherShapes: [],
       studentStrokes: [],
+      fabrics: [],
     };
     s.oneToOne = {
       pencil: null,
@@ -109,6 +99,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
       studentShapes: [],
       teacherShapes: [],
       studentStrokes: [],
+      fabrics: [],
     };
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
@@ -165,6 +156,15 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setClearOneStudentDrawsLine(s: AnnotationState, p: {}) {
     s.oneToOne.studentStrokes = [];
+  },
+  setLastFabricUpdated(s: AnnotationState, p: LastFabricUpdated) {
+    s.lastFabricUpdated = p;
+  },
+  setFabricsInDrawing(s: AnnotationState, p: FabricObject[]) {
+    s.drawing.fabrics = p;
+  },
+  setFabricsInOneMode(s: AnnotationState, p: FabricObject[]) {
+    s.oneToOne.fabrics = p;
   },
 };
 

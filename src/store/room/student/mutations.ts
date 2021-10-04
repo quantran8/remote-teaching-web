@@ -1,5 +1,5 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
-import { ClassModel, RoomModel, StudentModel } from "@/models";
+import { ClassModel, RoomModel, StudentModel, RoomUsersModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -84,8 +84,6 @@ const mutations: MutationTree<StudentRoomState> = {
       if (st.id === state.user?.id) {
         student.index = 999;
         state.student = student;
-      } else {
-        state.students.push(student);
       }
     }
     state.info = room;
@@ -245,6 +243,42 @@ const mutations: MutationTree<StudentRoomState> = {
       const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
       student.avatar = avatar ? avatar : "";
     });
+  },
+  toggleVideosFeed(state: StudentRoomState) {
+    state.videosFeedVisible = !state.videosFeedVisible;
+  },
+  setRoomUsersInfo(state: StudentRoomState, room: RoomUsersModel) {
+    state.teacher = {
+      id: room.teacher.id,
+      name: room.teacher.name,
+      avatar: "",
+      audioEnabled: !room.teacher.isMuteAudio,
+      videoEnabled: !room.teacher.isMuteVideo,
+      status: room.teacher.connectionStatus,
+      disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
+    };
+    state.students = [];
+    for (const st of room.students) {
+      const student = {
+        id: st.id,
+        name: st.name,
+        englishName: st.englishName,
+        avatar: "",
+        audioEnabled: !st.isMuteAudio,
+        videoEnabled: !st.isMuteVideo,
+        badge: st.badge,
+        status: st.connectionStatus,
+        index: state.students.length,
+        raisingHand: st.isRaisingHand,
+        isPalette: st.isPalette,
+      };
+      if (st.id === state.user?.id) {
+        student.index = 999;
+        state.student = student;
+      } else {
+        state.students.push(student);
+      }
+    }
   },
 };
 
