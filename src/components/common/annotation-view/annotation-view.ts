@@ -412,19 +412,31 @@ export default defineComponent({
       processAnnotationLesson();
     };
     const addAnnotationLesson = (item: any, widthCanvas: number, heightCanvas: number, zoom: number) => {
+      let imgWidthCropFit, imgHeightCropFit;
+      const objectFitCenter = 50;
       const xMetadata = props.image?.metaData?.x;
       const yMetadata = props.image?.metaData?.y;
       const widthMetadata = props.image?.metaData?.width;
       const heightMetadata = props.image?.metaData?.height;
-      const wRatio = widthCanvas / widthMetadata;
-      const hRatio = heightCanvas / heightMetadata;
+      const cropRatio = widthMetadata / heightMetadata;
+      const canvasRatio = widthCanvas / heightCanvas;
+      if (cropRatio > canvasRatio) {
+        imgWidthCropFit = widthCanvas;
+        imgHeightCropFit = widthCanvas / cropRatio;
+      } else {
+        imgWidthCropFit = heightCanvas * cropRatio;
+        imgHeightCropFit = heightCanvas;
+      }
+      const imgLeftCrop = (widthCanvas - imgWidthCropFit) * (objectFitCenter / 100);
+      const wRatio = imgWidthCropFit / widthMetadata;
+      const hRatio = imgHeightCropFit / heightMetadata;
       const ratio = Math.min(wRatio, hRatio);
       // 0: rect, 1: circle, 2: star
       let rect, circle, star, points;
       switch (item.type) {
         case (item.type = 0):
           rect = new fabric.Rect({
-            left: ((item.x - xMetadata) * ratio) / zoom,
+            left: ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom,
             top: ((item.y - yMetadata) * ratio) / zoom,
             width: (item.width / zoom) * ratio,
             height: (item.height / zoom) * ratio,
@@ -438,7 +450,7 @@ export default defineComponent({
           break;
         case (item.type = 1):
           circle = new fabric.Circle({
-            left: ((item.x - xMetadata) * ratio) / zoom,
+            left: ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom,
             top: ((item.y - yMetadata) * ratio) / zoom,
             radius: (item.width / 2 / zoom) * ratio,
             fill: "",
@@ -452,7 +464,7 @@ export default defineComponent({
           points = starPolygonPoints(5, (item.width / 2 / zoom) * ratio, (item.width / 4 / zoom) * ratio);
           star = new fabric.Polygon(points, {
             stroke: item.color,
-            left: ((item.x - xMetadata) * ratio) / zoom,
+            left: ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom,
             top: ((item.y - yMetadata) * ratio) / zoom,
             strokeWidth: 5,
             strokeLineJoin: "round",
