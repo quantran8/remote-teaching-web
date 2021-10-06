@@ -364,7 +364,7 @@ export default defineComponent({
         canvas.renderAll();
         if (canvas.isDrawingMode) {
           const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
-          const lastStroke = studentStrokes[0];
+          const lastStroke = studentStrokes[studentStrokes.length - 1];
           await store.dispatch("studentRoom/studentDrawsLine", JSON.stringify(lastStroke));
         } else {
           await processPushShapes();
@@ -376,6 +376,7 @@ export default defineComponent({
         obj.path.id = student.value.id;
         obj.path.isOneToOne = studentOneAndOneId.value || null;
         obj.path.tag = "self-strokes";
+        obj.perPixelTargetFind = true;
       });
     };
     const listenSelfStudent = () => {
@@ -404,6 +405,7 @@ export default defineComponent({
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
+        obj.perPixelTargetFind = true;
       });
       listenToCanvasEvents();
       resizeCanvas();
@@ -516,6 +518,7 @@ export default defineComponent({
           obj.hasControls = false;
           obj.hasBorders = false;
           obj.hoverCursor = "cursor";
+          obj.perPixelTargetFind = true;
         }
       });
     };
