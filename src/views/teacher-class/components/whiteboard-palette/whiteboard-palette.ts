@@ -377,6 +377,7 @@ export default defineComponent({
           obj.hasControls = false;
           obj.hasBorders = false;
           obj.hoverCursor = "cursor";
+          obj.perPixelTargetFind = true;
         }
       });
     };

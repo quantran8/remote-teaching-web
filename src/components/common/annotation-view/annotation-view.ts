@@ -376,6 +376,7 @@ export default defineComponent({
         obj.path.id = student.value.id;
         obj.path.isOneToOne = studentOneAndOneId.value || null;
         obj.path.tag = "self-strokes";
+        obj.perPixelTargetFind = true;
       });
     };
     const listenSelfStudent = () => {
@@ -404,6 +405,7 @@ export default defineComponent({
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
+        obj.perPixelTargetFind = true;
       });
       listenToCanvasEvents();
       resizeCanvas();
@@ -516,6 +518,7 @@ export default defineComponent({
           obj.hasControls = false;
           obj.hasBorders = false;
           obj.hoverCursor = "cursor";
+          obj.perPixelTargetFind = true;
         }
       });
     };
