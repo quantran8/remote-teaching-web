@@ -42,8 +42,6 @@ export const useFabricObject = () => {
         if (options?.target.type === "path") {
           options.target.selectable = false;
           options.target.hoverCursor = "default";
-          //set path to lowest index
-          canvas.sendToBack(options?.target);
         }
       };
       handleSelect();
