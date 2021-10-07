@@ -59,6 +59,10 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("annotation/setInfo", roomResponse.data.annotation, {
         root: true,
       });
+      commit("setClassView", {
+        classView: ClassViewFromValue(roomResponse.data.teachingMode),
+      });
+      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
         await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
@@ -79,10 +83,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
       }
-      commit("setClassView", {
-        classView: ClassViewFromValue(roomResponse.data.teachingMode),
-      });
-      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
       if (error.code == null) {
         commit("setApiStatus", {
