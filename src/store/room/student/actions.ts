@@ -77,6 +77,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", roomResponse.data.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
+        await dispatch("annotation/setFabricsInOneMode", roomResponse.data.annotation.oneOneDrawing.fabrics, { root: true });
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
