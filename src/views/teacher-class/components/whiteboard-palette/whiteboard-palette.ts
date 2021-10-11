@@ -45,6 +45,7 @@ export default defineComponent({
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
     const studentStrokes = computed(() => store.getters["annotation/studentStrokes"]);
+    const oneOneTeacherStrokes = computed(() => store.getters["annotation/oneOneTeacherStrokes"]);
     const oneOneStudentStrokes = computed(() => store.getters["annotation/oneOneStudentStrokes"]);
     const oneStudentShape = computed(() => store.getters["annotation/oneStudentShape"]);
     const selfShapes = computed(() => store.getters["annotation/teacherShape"]);
@@ -702,6 +703,24 @@ export default defineComponent({
         canvas.remove(...canvas.getObjects("path").filter((obj: any) => obj.tag === "student-strokes-one"));
       }
     };
+    const renderOneTeacherStrokes = () => {
+      if (oneOneTeacherStrokes.value && oneOneTeacherStrokes.value.length > 0) {
+        oneOneTeacherStrokes.value.forEach((s: any) => {
+          const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
+            item.isOneToOne = oneAndOne.value;
+            item.tag = "teacher-strokes-one";
+            canvas.add(item);
+          });
+        });
+        objectCanvasProcess();
+      } else {
+        canvas.remove(...canvas.getObjects("path").filter((obj: any) => obj.tag === "teacher-strokes-one"));
+      }
+    };
+
+    watch(oneOneTeacherStrokes, () => {
+      renderOneTeacherStrokes();
+    });
     watch(oneOneStudentStrokes, () => {
       renderOneStudentStrokes();
     });
