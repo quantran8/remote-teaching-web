@@ -7,8 +7,14 @@ export const annotationCurriculum = () => {
     const objectFitCenter = 50;
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
-    const widthMetadata = propImage.metaData.width;
-    const heightMetadata = propImage.metaData.height;
+    let widthMetadata, heightMetadata;
+    if (propImage.metaData.width === 0 && propImage.metaData.height === 0) {
+      widthMetadata = propImage.width;
+      heightMetadata = propImage.height;
+    } else {
+      widthMetadata = propImage.metaData.width;
+      heightMetadata = propImage.metaData.height;
+    }
     const cropRatio = widthMetadata / heightMetadata;
     const canvasRatio = DefaultCanvasDimension.width / DefaultCanvasDimension.height;
     if (cropRatio > canvasRatio) {
