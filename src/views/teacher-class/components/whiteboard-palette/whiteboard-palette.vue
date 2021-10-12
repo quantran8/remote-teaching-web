@@ -23,7 +23,7 @@
         <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
         <div id="canvas-container" @mousemove="cursorPosition">
           <CropImage
-            v-if="!isGalleryView && image && image.metaData"
+            v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
             :imageUrl="image.url"
             :metadata="image.metaData"
             id="annotation-img"
