@@ -157,7 +157,7 @@ export default defineComponent({
       listenSelfStudent();
     };
     const renderTeacherStrokes = () => {
-      if (canvasData.value && canvasData.value.length > 0) {
+      if (canvasData.value && canvasData.value.length > 0 && (!studentOneAndOneId.value || studentOneAndOneId.value != student.value.id)) {
         renderStrokes(canvasData.value, null);
       }
     };
