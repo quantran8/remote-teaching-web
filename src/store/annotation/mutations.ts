@@ -44,14 +44,12 @@ const mutations: AnnotationMutation<AnnotationState> = {
       s.drawing.studentShapes = p.drawing.shapes;
       s.drawing.fabrics = p.drawing.fabrics;
     }
-    if (p.oneToOne) {
-      s.oneToOne = p.oneToOne;
-      s.oneToOne.studentStrokes = p.oneToOne.studentBrushstrokes;
-      s.oneToOne.teacherShapes = p.oneToOne.shapes;
-      s.oneToOne.studentShapes = p.oneToOne.shapes;
-    }
     if (p.oneOneDrawing) {
       s.oneToOne.fabrics = p.oneOneDrawing.fabrics;
+      s.oneToOne = p.oneOneDrawing;
+      s.oneToOne.studentStrokes = p.oneOneDrawing.studentBrushstrokes;
+      s.oneToOne.teacherShapes = p.oneOneDrawing.shapes;
+      s.oneToOne.studentShapes = p.oneOneDrawing.shapes;
     }
     s.stickers = p.stickers;
   },

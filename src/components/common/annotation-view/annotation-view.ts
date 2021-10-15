@@ -130,7 +130,7 @@ export default defineComponent({
       listenSelfStudent();
     };
     const renderTeacherStrokes = () => {
-      if (canvasData.value && canvasData.value.length > 0) {
+      if (canvasData.value && canvasData.value.length > 0 && (!studentOneAndOneId.value || studentOneAndOneId.value != student.value.id)) {
         renderStrokes(canvasData.value, null);
       }
     };
@@ -162,7 +162,10 @@ export default defineComponent({
         listenSelfStudent();
       } else {
         canvas.remove(
-          ...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson"),
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson")
+            .filter((obj: any) => !obj.objectId),
         );
       }
     };
@@ -430,7 +433,7 @@ export default defineComponent({
     //get fabric items from vuex and display to whiteboard
     const fabricItems = computed(() => {
       const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
-      if (oneToOneUserId) {
+      if (oneToOneUserId && oneToOneUserId === student.value.id) {
         return store.getters["annotation/fabricItemsOneToOne"];
       }
       return store.getters["annotation/fabricItems"];
