@@ -90,7 +90,15 @@ export default defineComponent({
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
     });
+    const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
+    watch(oneAndOneStatus, value => {
+      if (value === "" || value === null) {
+        isOneOneMode.value = "";
+      } else {
+        isOneOneMode.value = value;
+      }
+    });
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
@@ -281,7 +289,7 @@ export default defineComponent({
       isLessonPlan,
       currentExposureItemMedia,
       isBlackOutContent,
-      oneAndOneStatus,
+      isOneOneMode,
       modalVisible,
       handleOk,
       handleCancel,
