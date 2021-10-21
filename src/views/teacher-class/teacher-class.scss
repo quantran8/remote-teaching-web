@@ -93,6 +93,7 @@
   }
   &.has-sidebar {
     &.mode-one-one {
+      grid-template-columns: auto 1fr auto;
       .tc__sidebar {
         position: absolute;
         z-index: 9999;
