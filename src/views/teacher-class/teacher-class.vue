@@ -14,8 +14,8 @@
       :className="roomInfo?.classInfo?.className"
       @end="onClickEnd"
     ></teacher-page-header>
-    <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
-      <LessonPlan @open-gallery-mode="toggleView" />
+    <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']">
+      <LessonPlan @open-gallery-mode="toggleView" @toggle-lesson-mode="toggleLessonSidebar" />
     </div>
     <div class="tc__content">
       <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->

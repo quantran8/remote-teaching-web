@@ -145,6 +145,11 @@ export default defineComponent({
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
+    const showHideLesson = ref(false);
+    const toggleLessonSidebar = (value: boolean) => {
+      showHideLesson.value = value;
+    };
+
     const onClickHideAll = async () => {
       await dispatch("teacherRoom/hideAllStudents");
     };
@@ -261,7 +266,6 @@ export default defineComponent({
     });
 
     provide("isSidebarCollapsed", isSidebarCollapsed);
-
     return {
       onClickHideAll,
       onClickShowAll,
@@ -298,6 +302,8 @@ export default defineComponent({
       markAsCompleteText,
       cbMarkAsCompleteValue,
       markAsCompleteChanged,
+      toggleLessonSidebar,
+      showHideLesson,
     };
   },
 });
