@@ -125,7 +125,13 @@
       <Row v-if="showParentFooter" type="flex" justify="end">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-          <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">
+          <Button
+            :disabled="!classIsActive || !isOpenMic || listMicsId.length <= 0"
+            width="100px"
+            @click="goToClass"
+            type="primary"
+            :loading="loading"
+          >
             {{ JoinNow }}
           </Button>
         </Space>
