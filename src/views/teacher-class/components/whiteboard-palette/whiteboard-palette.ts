@@ -2,7 +2,7 @@ import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onU
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import { Tools, Mode, DefaultCanvasDimension } from "@/commonui";
+import {Tools, Mode, DefaultCanvasDimension, endImgLink} from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
@@ -139,7 +139,12 @@ export default defineComponent({
       }
     });
     const imageUrl = computed(() => {
-      return props.image ? props.image.url : {};
+      if (!props.image) return {};
+      if (endImgLink(props.image.url)) {
+        return props.image.url + "?" + new Date().getTime();
+      } else {
+        return props.image.url + "&" + new Date().getTime();
+      }
     });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === Mode.Cursor) {
