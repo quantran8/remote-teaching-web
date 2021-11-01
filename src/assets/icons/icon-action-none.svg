@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" viewBox="0 0 55 55">
-  <g id="icon-action-none" transform="translate(0.5 0.5)">
-    <rect id="Background" width="54" height="54" fill="#6dcff6" stroke="#000" stroke-width="1"/>
-  </g>
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55 55" width="55" height="55">
+	<title>icon-action-none-svg</title>
+	<style>
+		tspan { white-space:pre }
+		.shp0 { fill: #6dcff6;stroke: #000000 } 
+		.txt1 { font-size: 12px;fill: #ffffff;font-weight: 400;font-family: "WendyOne-Regular", "Wendy One" } 
+	</style>
+	<g id="icon-action-none">
+		<path id="Background" class="shp0" d="M0.5 0.5L54.5 0.5L54.5 54.5L0.5 54.5L0.5 0.5Z" />
+		<text id="Nothing" style="transform: matrix(1,0,0,1,3.876,30.192)" >
+			<tspan x="0" y="0" class="txt1">N</tspan><tspan  y="0" class="txt1">o</tspan><tspan  y="0" class="txt1">t</tspan><tspan  y="0" class="txt1">h</tspan><tspan  y="0" class="txt1">i</tspan><tspan  y="0" class="txt1">n</tspan><tspan  y="0" class="txt1">g</tspan><tspan  y="0" class="txt1">
+</tspan>
+		</text>
+	</g>
 </svg>
