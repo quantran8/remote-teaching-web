@@ -37,18 +37,25 @@ export default defineComponent({
 
     const selectAction = async (ev: KeyboardEvent) => {
       if (ev.ctrlKey && ev.code == "Digit0") {
+        ev.preventDefault();
         await onClickSelectAction(actions[0]);
       } else if (ev.ctrlKey && ev.code == "Digit1") {
+        ev.preventDefault();
         await onClickSelectAction(actions[2]);
       } else if (ev.ctrlKey && ev.code == "Digit2") {
+        ev.preventDefault();
         await onClickSelectAction(actions[1]);
       } else if (ev.ctrlKey && ev.code == "Digit3") {
+        ev.preventDefault();
         await onClickSelectAction(actions[6]);
       } else if (ev.ctrlKey && ev.code == "Digit4") {
+        ev.preventDefault();
         await onClickSelectAction(actions[4]);
       } else if (ev.ctrlKey && ev.code == "Digit5") {
+        ev.preventDefault();
         await onClickSelectAction(actions[3]);
       } else if (ev.ctrlKey && ev.code == "Digit6") {
+        ev.preventDefault();
         await onClickSelectAction(actions[5]);
       }
     };
