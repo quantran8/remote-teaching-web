@@ -1,5 +1,5 @@
 import { fmtMsg, MatIcon } from "@/commonui";
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";
 import { CommonLocale } from "@/locales/localeid";
@@ -34,6 +34,32 @@ export default defineComponent({
         action: ClassActionToValue(action.id),
       });
     };
+
+    const selectAction = async (ev: KeyboardEvent) => {
+      if (ev.ctrlKey && ev.code == "Digit0") {
+        await onClickSelectAction(actions[0]);
+      } else if (ev.ctrlKey && ev.code == "Digit1") {
+        await onClickSelectAction(actions[2]);
+      } else if (ev.ctrlKey && ev.code == "Digit2") {
+        await onClickSelectAction(actions[1]);
+      } else if (ev.ctrlKey && ev.code == "Digit3") {
+        await onClickSelectAction(actions[6]);
+      } else if (ev.ctrlKey && ev.code == "Digit4") {
+        await onClickSelectAction(actions[4]);
+      } else if (ev.ctrlKey && ev.code == "Digit5") {
+        await onClickSelectAction(actions[3]);
+      } else if (ev.ctrlKey && ev.code == "Digit6") {
+        await onClickSelectAction(actions[5]);
+      }
+    };
+
+    onMounted(async () => {
+      window.addEventListener("keyup", selectAction);
+    });
+
+    onUnmounted(async () => {
+      window.removeEventListener("keyup", selectAction);
+    });
 
     const onClickEnd = () => {
       emit("end");
