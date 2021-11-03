@@ -36,36 +36,36 @@ export default defineComponent({
     };
 
     const selectAction = async (ev: KeyboardEvent) => {
-      if (ev.ctrlKey && ev.code == "Digit0") {
+      if (ev.altKey && ev.code == "Digit0") {
         ev.preventDefault();
         await onClickSelectAction(actions[0]);
-      } else if (ev.ctrlKey && ev.code == "Digit1") {
+      } else if (ev.altKey && ev.code == "Digit1") {
         ev.preventDefault();
         await onClickSelectAction(actions[2]);
-      } else if (ev.ctrlKey && ev.code == "Digit2") {
+      } else if (ev.altKey && ev.code == "Digit2") {
         ev.preventDefault();
         await onClickSelectAction(actions[1]);
-      } else if (ev.ctrlKey && ev.code == "Digit3") {
+      } else if (ev.altKey && ev.code == "Digit3") {
         ev.preventDefault();
         await onClickSelectAction(actions[6]);
-      } else if (ev.ctrlKey && ev.code == "Digit4") {
+      } else if (ev.altKey && ev.code == "Digit4") {
         ev.preventDefault();
         await onClickSelectAction(actions[4]);
-      } else if (ev.ctrlKey && ev.code == "Digit5") {
+      } else if (ev.altKey && ev.code == "Digit5") {
         ev.preventDefault();
         await onClickSelectAction(actions[3]);
-      } else if (ev.ctrlKey && ev.code == "Digit6") {
+      } else if (ev.altKey && ev.code == "Digit6") {
         ev.preventDefault();
         await onClickSelectAction(actions[5]);
       }
     };
 
     onMounted(async () => {
-      window.addEventListener("keyup", selectAction);
+      window.addEventListener("keydown", selectAction);
     });
 
     onUnmounted(async () => {
-      window.removeEventListener("keyup", selectAction);
+      window.removeEventListener("keydown", selectAction);
     });
 
     const onClickEnd = () => {
