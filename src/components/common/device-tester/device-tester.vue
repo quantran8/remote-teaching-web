@@ -34,9 +34,12 @@
         </div>
       </Row>
       <Row align="middle" class="device-tester__mb--default">
-        <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
+        <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6" v-show="listMics.length > 0">
           <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
         </div>
+        <p v-show="listMics.length <= 0">
+          <span class="alert-device-test">Unable to access microphone, please check system settings or grant permission.</span>
+        </p>
       </Row>
       <Row align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">
@@ -59,6 +62,11 @@
             </Select>
           </Space>
         </div>
+      </Row>
+      <Row align="middle" class="device-tester__mb--default">
+        <p v-show="listCams.length <= 0">
+          <span class="alert-device-test">Unable to access camera, please check system settings or grant permission.</span>
+        </p>
       </Row>
       <Row align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
