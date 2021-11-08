@@ -1,5 +1,11 @@
 <template>
-  <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', oneAndOneStatus !== '' ? 'mode-one-one' : '']">
+  <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', isOneOneMode !== '' ? 'mode-one-one' : '']">
+    <Modal v-model:visible="modalVisible" :title="leavePageText" @ok="handleOk" @cancel="handleCancel">
+      {{ leaveNoticeText }}
+      <Checkbox :checked="cbMarkAsCompleteValue" @change="markAsCompleteChanged" class="tc__modal__notice">
+        {{ markAsCompleteText }}
+      </Checkbox>
+    </Modal>
     <prevent-esc-firefox />
     <teacher-page-header
       class="tc__header"
@@ -8,8 +14,8 @@
       :className="roomInfo?.classInfo?.className"
       @end="onClickEnd"
     ></teacher-page-header>
-    <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed']">
-      <LessonPlan @open-gallery-mode="toggleView" />
+    <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']">
+      <LessonPlan @open-gallery-mode="toggleView" @toggle-lesson-mode="toggleLessonSidebar" />
     </div>
     <div class="tc__content">
       <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->

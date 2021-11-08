@@ -1,11 +1,13 @@
 import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
-import { Modal, notification } from "ant-design-vue";
-import { computed, ComputedRef, defineComponent, ref, watch, provide } from "vue";
+import { Modal, notification, Checkbox } from "ant-design-vue";
+import { computed, ComputedRef, defineComponent, ref, watch, provide, createVNode } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+import { fmtMsg } from "@/commonui";
+import { TeacherClass } from "./../../locales/localeid";
 
 const fpPromise = FingerprintJS.load();
 import {
@@ -21,6 +23,8 @@ import {
 import { ClassRoomStatus } from "@/models";
 export default defineComponent({
   components: {
+    Modal,
+    Checkbox,
     PreventEscFirefox,
     TeacherCard,
     LessonPlan,
@@ -86,7 +90,15 @@ export default defineComponent({
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
     });
+    const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
+    watch(oneAndOneStatus, value => {
+      if (value === "" || value === null) {
+        isOneOneMode.value = "";
+      } else {
+        isOneOneMode.value = value;
+      }
+    });
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
@@ -94,6 +106,24 @@ export default defineComponent({
       isSidebarCollapsed.value = value;
     });
 
+    const modalVisible = ref(false);
+    const cbMarkAsCompleteValueRef = ref<boolean>(false);
+
+    const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
+    const leaveNoticeText = computed(() => fmtMsg(TeacherClass.LeaveNotice));
+    const markAsCompleteText = computed(() => {
+      if (roomInfo.value === undefined) return null;
+      const {
+        classInfo: { className: classname, unit, lesson },
+      } = roomInfo.value;
+      return fmtMsg(TeacherClass.MarkAsComplete, {
+        lesson,
+        unit,
+        classname,
+      });
+    });
+
+    const cbMarkAsCompleteValue = computed(() => cbMarkAsCompleteValueRef.value);
     // const isGameView = computed(() => {
     //   return getters["teacherRoom/isGameView"];
     // });
@@ -113,6 +143,11 @@ export default defineComponent({
       }
       await dispatch("teacherRoom/setClearBrush", {});
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
+    };
+
+    const showHideLesson = ref(false);
+    const toggleLessonSidebar = (value: boolean) => {
+      showHideLesson.value = value;
     };
 
     const onClickHideAll = async () => {
@@ -136,29 +171,44 @@ export default defineComponent({
       await router.push("/teacher");
     };
 
+    const showModal = () => {
+      modalVisible.value = true;
+    };
+
+    const resetModal = () => {
+      modalVisible.value = false;
+      cbMarkAsCompleteValueRef.value = false;
+    };
+
+    const markAsCompleteChanged = (e: any) => {
+      cbMarkAsCompleteValueRef.value = e.target.checked;
+    };
+
+    const handleOk = async () => {
+      try {
+        await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
+        await dispatch("teacherRoom/endClass", { markAsComplete: cbMarkAsCompleteValueRef.value });
+        await dispatch("lesson/clearLessonData");
+        await dispatch("lesson/clearCacheImage");
+        await dispatch("teacherRoom/setClearBrush", {});
+        await router.push("/teacher");
+      } catch (err) {
+        Modal.destroyAll();
+        const message = err.body.message;
+        notification.error({
+          message: message,
+        });
+      }
+
+      resetModal();
+    };
+
+    const handleCancel = () => {
+      resetModal();
+    };
+
     const onClickEnd = async () => {
-      Modal.confirm({
-        title: "This will end the session and close the remote classroom for all the students. Are you sure you want to continue?",
-        okText: "Yes",
-        cancelText: "No",
-        okButtonProps: { type: "danger" },
-        onOk: async () => {
-          try {
-            await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
-            await dispatch("teacherRoom/endClass");
-            await dispatch("lesson/clearLessonData");
-			await dispatch("lesson/clearCacheImage");
-            await dispatch("teacherRoom/setClearBrush", {});
-            await router.push("/teacher");
-          } catch (err) {
-            Modal.destroyAll();
-            const message = err.body.message;
-            notification.error({
-              message: message,
-            });
-          }
-        },
-      });
+      showModal();
     };
     const onClickCloseError = () => {
       // store.dispatch("teacherRoom/setError", null);
@@ -216,7 +266,6 @@ export default defineComponent({
     });
 
     provide("isSidebarCollapsed", isSidebarCollapsed);
-
     return {
       onClickHideAll,
       onClickShowAll,
@@ -244,7 +293,17 @@ export default defineComponent({
       isLessonPlan,
       currentExposureItemMedia,
       isBlackOutContent,
-      oneAndOneStatus,
+      isOneOneMode,
+      modalVisible,
+      handleOk,
+      handleCancel,
+      leavePageText,
+      leaveNoticeText,
+      markAsCompleteText,
+      cbMarkAsCompleteValue,
+      markAsCompleteChanged,
+      toggleLessonSidebar,
+      showHideLesson,
     };
   },
 });

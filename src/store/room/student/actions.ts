@@ -59,30 +59,33 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("annotation/setInfo", roomResponse.data.annotation, {
         root: true,
       });
+      commit("setClassView", {
+        classView: ClassViewFromValue(roomResponse.data.teachingMode),
+      });
+      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
-        await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
-        await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
-        await commit("updateIsPalette", {
-          id: roomResponse.data.oneAndOneDto.id,
-          isPalette: roomResponse.data.oneAndOneDto.isEnablePalette,
-        });
-        await commit("setWhiteboard", roomResponse.data.oneAndOneDto.isShowWhiteBoard);
-        await dispatch("annotation/setOneTeacherStrokes", roomResponse.data.annotation.oneOneDrawing.brushstrokes, { root: true });
-        await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
-        await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
-        await dispatch("annotation/setOneStudentStrokes", roomResponse.data.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
+        if(payload.studentId === roomResponse.data.studentOneToOne) {
+          await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
+          await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
+          await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
+          await commit("updateIsPalette", {
+            id: roomResponse.data.oneAndOneDto.id,
+            isPalette: roomResponse.data.oneAndOneDto.isEnablePalette,
+          });
+          await commit("setWhiteboard", roomResponse.data.oneAndOneDto.isShowWhiteBoard);
+          await dispatch("annotation/setOneTeacherStrokes", roomResponse.data.annotation.oneOneDrawing.brushstrokes, { root: true });
+          await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
+          await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
+          await dispatch("annotation/setOneStudentStrokes", roomResponse.data.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
+          await dispatch("annotation/setFabricsInOneMode", roomResponse.data.annotation.oneOneDrawing.fabrics, { root: true });
+        }
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
       }
-      commit("setClassView", {
-        classView: ClassViewFromValue(roomResponse.data.teachingMode),
-      });
-      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
     } catch (error) {
       if (error.code == null) {
         commit("setApiStatus", {

@@ -115,14 +115,23 @@
           <b>{{ ClassStatus }}</b>
         </div>
         <div class="ant-col-24 ant-col-sm-18">
-          <span v-if="!classIsActive">{{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}</span>
+          <span v-if="!classIsActive">
+            {{ notDisplaySpinner ? getRoomInfoErrorByMsg : DefaultMessage1 }}
+            <Spin v-if="!notDisplaySpinner"></Spin>
+          </span>
           <span v-else>{{ DefaultMessage2 }}</span>
         </div>
       </Row>
       <Row v-if="showParentFooter" type="flex" justify="end">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-          <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">
+          <Button
+            :disabled="!classIsActive || !isOpenMic || listMicsId.length <= 0"
+            width="100px"
+            @click="goToClass"
+            type="primary"
+            :loading="loading"
+          >
             {{ JoinNow }}
           </Button>
         </Space>

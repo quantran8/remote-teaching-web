@@ -20,7 +20,7 @@ export const exposureTypes = {
 
 export default defineComponent({
   components: { LessonActivity, ExposureDetail },
-  emits: ["open-gallery-mode"],
+  emits: ["open-gallery-mode", "toggle-lesson-mode"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
 
@@ -52,6 +52,16 @@ export default defineComponent({
 
     const lessonContainer = ref();
     const scrollPosition = ref(0);
+
+    const isOneOneMode = ref("");
+    const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
+    watch(oneAndOneStatus, value => {
+      if (value === "" || value === null) {
+        isOneOneMode.value = "";
+      } else {
+        isOneOneMode.value = value;
+      }
+    });
 
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
@@ -175,6 +185,11 @@ export default defineComponent({
         await onClickPrevNextMedia(PREV_EXPOSURE);
       }
     };
+    const showHideLesson = ref(false);
+    const showHideLessonOneOne = (value: boolean) => {
+      showHideLesson.value = !value;
+      emit("toggle-lesson-mode", showHideLesson.value);
+    };
     onMounted(() => {
       window.addEventListener("keydown", handleKeyDown);
     });
@@ -211,6 +226,9 @@ export default defineComponent({
       itemText,
       pageText,
       lessonContainer,
+      isOneOneMode,
+      showHideLessonOneOne,
+      showHideLesson,
     };
   },
 });

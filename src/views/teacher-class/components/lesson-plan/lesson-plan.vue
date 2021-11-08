@@ -13,8 +13,12 @@
           </span>
         </span>
       </div>
-      <span @click="backToGalleryMode" class="lesson-container__header-back">
+      <span @click="backToGalleryMode" v-if="isOneOneMode === ''" class="lesson-container__header-back">
         <span v-if="isGalleryView">&#8250;</span>
+        <span v-else>&#8249;</span>
+      </span>
+      <span @click="showHideLessonOneOne(showHideLesson)" v-if="isOneOneMode !== '' && !isGalleryView" class="lesson-container__header-back">
+        <span v-if="!showHideLesson">&#8250;</span>
         <span v-else>&#8249;</span>
       </span>
     </div>

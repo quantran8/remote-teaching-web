@@ -79,7 +79,7 @@ const actions: LessonActions<LessonState, any> = {
                 resolution: DEFAULT_RESOLUTION,
                 sequence: c.sequence,
                 url: c.imageUrl,
-				metaData: JSON.parse(c.metaData),
+                metaData: JSON.parse(c.metaData),
               },
             ],
           }))
@@ -93,7 +93,7 @@ const actions: LessonActions<LessonState, any> = {
               url,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
-			  metaData: p.metaData,
+              metaData: p.metaData,
             },
           };
         });
