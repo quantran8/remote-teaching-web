@@ -9,6 +9,12 @@ export enum AppView {
   Blank = 4,
 }
 
+export enum UserRole {
+  UnConfirm = 0,
+  Teacher = 1,
+  Student = 2,
+}
+
 export interface AppState {
   layout: LayoutType;
   appView: AppView;
@@ -19,8 +25,8 @@ export interface AppState {
   signalRStatus: number;
   classRoomStatus: number;
   cameraDeviceId: string;
+  userRole: UserRole;
 }
-
 export interface ToastData {
   message: string;
   isPlayingSound?: boolean;
@@ -40,6 +46,7 @@ const state: AppState = {
   signalRStatus: SignalRStatus.NoStatus,
   classRoomStatus: ClassRoomStatus.InDashBoard,
   cameraDeviceId: cameraDeviceId || "",
+  userRole: UserRole.UnConfirm,
 };
 
 export default state;
