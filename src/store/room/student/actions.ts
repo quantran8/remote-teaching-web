@@ -16,6 +16,9 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
 
+export const STUDENT_PATH_REGEX = /\/student/;
+export const CLASS_PATH_REGEX = /\/class/;
+
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
     { commit, dispatch, state },
@@ -65,7 +68,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
-        if(payload.studentId === roomResponse.data.studentOneToOne) {
+        if (payload.studentId === roomResponse.data.studentOneToOne) {
           await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
           await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
           await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
@@ -382,7 +385,11 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setOnline");
   },
   setOffline({ commit, state }) {
-    commit("setOffline");
+    const studentMatchIndex = window.location.pathname.search(STUDENT_PATH_REGEX);
+    const classMatchIndex = window.location.pathname.search(CLASS_PATH_REGEX);
+    if (studentMatchIndex > -1 && classMatchIndex > -1) {
+      commit("setOffline");
+    }
   },
   disconnectSignalR({ state }) {
     state.manager?.close();

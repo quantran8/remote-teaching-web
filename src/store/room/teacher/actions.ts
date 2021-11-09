@@ -30,6 +30,7 @@ import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { FabricObject } from "@/ws";
+import { STUDENT_PATH_REGEX, CLASS_PATH_REGEX } from "../student/actions";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -422,7 +423,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("setOnline");
   },
   setOffline({ commit }) {
-    commit("setOffline");
+    const studentMatchIndex = window.location.pathname.search(STUDENT_PATH_REGEX);
+    const classMatchIndex = window.location.pathname.search(CLASS_PATH_REGEX);
+    if (studentMatchIndex === -1 && classMatchIndex > -1) {
+      commit("setOffline");
+    }
   },
   setTeacherLowBandWidth({ commit }, p: boolean) {
     commit("setTeacherLowBandWidth", p);
