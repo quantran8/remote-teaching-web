@@ -15,9 +15,7 @@ import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
-
-export const STUDENT_PATH_REGEX = /\/student/;
-export const CLASS_PATH_REGEX = /\/class/;
+import { UserRole } from "@/store/app/state";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -384,10 +382,8 @@ const actions: ActionTree<StudentRoomState, any> = {
   setOnline({ commit }) {
     commit("setOnline");
   },
-  setOffline({ commit, state }) {
-    const studentMatchIndex = window.location.pathname.search(STUDENT_PATH_REGEX);
-    const classMatchIndex = window.location.pathname.search(CLASS_PATH_REGEX);
-    if (studentMatchIndex > -1 && classMatchIndex > -1) {
+  setOffline({ commit, rootState }) {
+    if (rootState.app.userRole === UserRole.Student) {
       commit("setOffline");
     }
   },
