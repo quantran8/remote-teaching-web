@@ -235,8 +235,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       }
       commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
-      Logger.log("initClassRoom error =>", err);
-      //   await router.push(Paths.Home);
+      await router.push(Paths.Home);
     }
   },
   async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
