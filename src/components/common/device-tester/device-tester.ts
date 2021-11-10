@@ -83,7 +83,7 @@ export default defineComponent({
         videoTrack = await AgoraRTC.createCameraVideoTrack();
       } catch (error) {
         Logger.log("setupAgora error when create videoTrack =>", error);
-		if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
+        if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
         preventCloseModal.value = false;
         agoraCamError.value = true;
       }
@@ -91,7 +91,7 @@ export default defineComponent({
         audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       } catch (error) {
         Logger.log("setupAgora error when create audioTrack =>", error);
-		if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
+        if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
         preventCloseModal.value = false;
         agoraMicError.value = true;
       }
@@ -424,6 +424,8 @@ export default defineComponent({
     const Unit = computed(() => fmtMsg(DeviceTesterLocale.Unit));
     const Cancel = computed(() => fmtMsg(DeviceTesterLocale.Cancel));
     const JoinSession = computed(() => fmtMsg(DeviceTesterLocale.JoinSession));
+    const warningMsgMicrophone = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningMic));
+    const warningMsgCamera = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningCamera));
     onUnmounted(() => {
       AgoraRTC.onMicrophoneChanged = undefined;
       AgoraRTC.onCameraChanged = undefined;
@@ -440,6 +442,8 @@ export default defineComponent({
     });
 
     return {
+      warningMsgMicrophone,
+      warningMsgCamera,
       havePermissionCamera,
       havePermissionMicrophone,
       SystemCheck,

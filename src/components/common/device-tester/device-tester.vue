@@ -38,7 +38,7 @@
           <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
         </div>
         <p v-show="!havePermissionMicrophone">
-          <span class="alert-device-test">Unable to access microphone, please check system settings or grant permission.</span>
+          <span class="alert-device-test">{{ warningMsgMicrophone }}</span>
         </p>
       </Row>
       <Row align="middle" class="device-tester__mb--small">
@@ -65,7 +65,7 @@
       </Row>
       <Row align="middle" class="device-tester__mb--default">
         <p v-show="!havePermissionCamera">
-          <span class="alert-device-test">Unable to access camera, please check system settings or grant permission.</span>
+          <span class="alert-device-test">{{ warningMsgCamera }}</span>
         </p>
       </Row>
       <Row align="middle" class="device-tester__mb--default">

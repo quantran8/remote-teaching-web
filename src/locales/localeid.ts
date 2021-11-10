@@ -114,6 +114,8 @@ export class DeviceTesterLocale {
   static Unit = "device_tester.unit";
   static Cancel = "device_tester.cancel";
   static JoinSession = "device_tester.join_session";
+  static MessageWarningMic = "device_tester.message_warning_mic";
+  static MessageWarningCamera = "device_tester.message_warning_camera";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
