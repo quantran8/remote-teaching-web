@@ -15,6 +15,7 @@ import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
+import { UserRole } from "@/store/app/state";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -65,7 +66,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
-        if(payload.studentId === roomResponse.data.studentOneToOne) {
+        if (payload.studentId === roomResponse.data.studentOneToOne) {
           await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
           await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
           await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
@@ -381,8 +382,10 @@ const actions: ActionTree<StudentRoomState, any> = {
   setOnline({ commit }) {
     commit("setOnline");
   },
-  setOffline({ commit, state }) {
-    commit("setOffline");
+  setOffline({ commit, rootState }) {
+    if (rootState.app.userRole === UserRole.Student) {
+      commit("setOffline");
+    }
   },
   disconnectSignalR({ state }) {
     state.manager?.close();

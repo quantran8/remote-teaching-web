@@ -28,6 +28,7 @@ import noAvatar from "@/assets/student-class/no-avatar.png";
 import { notification } from "ant-design-vue";
 import "animate.css";
 import { Logger } from "@/utils/logger";
+import { UserRole } from "@/store/app/state";
 
 const fpPromise = FingerprintJS.load();
 
@@ -341,13 +342,18 @@ export default defineComponent({
         await router.push(Paths.Parent);
       }
     };
+    const updateUserRoleByView = (payload: UserRole) => {
+      store.dispatch("setUserRoleByView", payload);
+    };
     onMounted(() => {
+      updateUserRoleByView(UserRole.Student);
       deviceMobile();
       window.addEventListener("resize", deviceMobile);
     });
     onUnmounted(() => {
+      updateUserRoleByView(UserRole.UnConfirm);
       handleMyTeacherReconnect();
-      window.addEventListener("resize", deviceMobile);
+      window.removeEventListener("resize", deviceMobile);
     });
     const option = reactive({ animationData: clockData.default });
     return {
@@ -394,7 +400,7 @@ export default defineComponent({
       studentOneName,
       joinLoading,
       goToHomePage,
-	  videosFeedVisible
+      videosFeedVisible,
     };
   },
 });

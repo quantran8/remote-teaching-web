@@ -30,6 +30,7 @@ import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { FabricObject } from "@/ws";
+import { UserRole } from "@/store/app/state";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -234,8 +235,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       }
       commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
-      Logger.log("initClassRoom error =>", err);
-      //   await router.push(Paths.Home);
+      await router.push(Paths.Home);
     }
   },
   async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
@@ -421,8 +421,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setOnline({ commit }) {
     commit("setOnline");
   },
-  setOffline({ commit }) {
-    commit("setOffline");
+  setOffline({ commit, rootState }) {
+    if (rootState.app.userRole === UserRole.Teacher) {
+      commit("setOffline");
+    }
   },
   setTeacherLowBandWidth({ commit }, p: boolean) {
     commit("setTeacherLowBandWidth", p);
