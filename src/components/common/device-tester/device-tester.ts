@@ -74,6 +74,8 @@ export default defineComponent({
     const currentLesson = ref();
     const listLessonByUnit = ref();
     const preventCloseModal = ref(true);
+    const havePermissionCamera = ref(true);
+    const havePermissionMicrophone = ref(true);
     const setupAgora = async () => {
       let audioTrack = null;
       let videoTrack = null;
@@ -81,6 +83,7 @@ export default defineComponent({
         videoTrack = await AgoraRTC.createCameraVideoTrack();
       } catch (error) {
         Logger.log("setupAgora error when create videoTrack =>", error);
+		if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
         preventCloseModal.value = false;
         agoraCamError.value = true;
       }
@@ -88,6 +91,7 @@ export default defineComponent({
         audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       } catch (error) {
         Logger.log("setupAgora error when create audioTrack =>", error);
+		if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
         preventCloseModal.value = false;
         agoraMicError.value = true;
       }
@@ -436,6 +440,8 @@ export default defineComponent({
     });
 
     return {
+      havePermissionCamera,
+      havePermissionMicrophone,
       SystemCheck,
       CheckMic,
       SelectDevice,
