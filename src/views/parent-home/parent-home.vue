@@ -8,7 +8,7 @@
         v-for="child in children"
         :key="child.id"
         :nextSessionInfo="studentNextSessionInfo(child.id)"
-        :name="child.englishName"
+        :name="formatName(child.englishName, child.name)"
         :avatar="child.avatar"
         @click="() => onClickChild(child)"
       >

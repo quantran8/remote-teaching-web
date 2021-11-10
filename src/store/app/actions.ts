@@ -1,6 +1,6 @@
 import { ContentService } from "@/services";
 import { ActionTree } from "vuex";
-import { AppState, AppView, LayoutType, ToastData } from "./state";
+import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
 
 export const CAMERA_ID_KEY = "__RT_CAMERA_ID__";
 
@@ -35,6 +35,9 @@ const actions: ActionTree<AppState, any> = {
   async setCameraDeviceId(store, payload: string) {
     localStorage.setItem(CAMERA_ID_KEY, payload);
     store.commit("setCameraDeviceId", payload);
+  },
+  setUserRoleByView(store, payload: UserRole) {
+    store.commit("setUserRoleByView", payload);
   },
 };
 

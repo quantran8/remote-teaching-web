@@ -162,7 +162,15 @@ export default defineComponent({
       }
     };
 
+    const formatName = (englishName: string, nativeName: string) => {
+      if (englishName && englishName.toLowerCase() != nativeName.toLowerCase()) {
+        nativeName = nativeName + ` (${englishName})`;
+      }
+      return nativeName;
+    };
+
     return {
+      formatName,
       welcomeText,
       chooseStudentText,
       cancelText,

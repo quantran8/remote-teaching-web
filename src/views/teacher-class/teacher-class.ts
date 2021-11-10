@@ -1,13 +1,14 @@
 import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Modal, notification, Checkbox } from "ant-design-vue";
-import { computed, ComputedRef, defineComponent, ref, watch, provide, createVNode } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, provide, createVNode, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import { fmtMsg } from "@/commonui";
 import { TeacherClass } from "./../../locales/localeid";
+import { UserRole } from "@/store/app/state";
 
 const fpPromise = FingerprintJS.load();
 import {
@@ -266,6 +267,15 @@ export default defineComponent({
     });
 
     provide("isSidebarCollapsed", isSidebarCollapsed);
+    const updateUserRoleByView = (payload: UserRole) => {
+      dispatch("setUserRoleByView", payload);
+    };
+    onMounted(() => {
+      updateUserRoleByView(UserRole.Teacher);
+    });
+    onUnmounted(() => {
+      updateUserRoleByView(UserRole.UnConfirm);
+    });
     return {
       onClickHideAll,
       onClickShowAll,
