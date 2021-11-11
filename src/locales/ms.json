@@ -109,7 +109,7 @@
 	"layout.test_connect": "System Check",
 	"layout.sign_out": "Sign Out",
 	"layout.privacy_policy": "Privacy Policy",
-	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
+	"layout.copy_right": "V8 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
 	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
