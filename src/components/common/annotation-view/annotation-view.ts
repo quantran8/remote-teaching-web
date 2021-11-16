@@ -74,32 +74,15 @@ export default defineComponent({
     });
     const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
     const { processAnnotationLesson } = annotationCurriculumStudent();
-    const hideWhiteboard = () => {
-      canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-      toolActive.value = "";
-      canvas.isDrawingMode = false;
-      processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
-    };
-    const processCanvasWhiteboardSetup = () => {
+    const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {
-        hideWhiteboard();
-      }
-    };
-    const processCanvasWhiteboard = () => {
-      if (isShowWhiteBoard.value) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-        if (studentOneAndOneId.value) {
-          if (student.value.id == studentOneAndOneId.value) {
-            canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-          }
-        } else {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-        }
-      } else {
-        hideWhiteboard();
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        toolActive.value = "";
+        canvas.isDrawingMode = false;
+        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
       }
     };
     watch(isShowWhiteBoard, () => {
@@ -355,7 +338,7 @@ export default defineComponent({
       });
       listenToCanvasEvents();
       resizeCanvas();
-      processCanvasWhiteboardSetup();
+      processCanvasWhiteboard();
     };
     const imgLoad = () => {
       processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
