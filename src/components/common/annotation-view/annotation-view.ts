@@ -91,8 +91,10 @@ export default defineComponent({
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-        if (studentOneAndOneId.value && student.value.id == studentOneAndOneId.value) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        if (studentOneAndOneId.value) {
+          if (student.value.id == studentOneAndOneId.value) {
+            canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+          }
         } else {
           canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
         }
