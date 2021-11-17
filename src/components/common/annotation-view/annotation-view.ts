@@ -77,9 +77,7 @@ export default defineComponent({
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-        }
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
@@ -340,6 +338,7 @@ export default defineComponent({
       });
       listenToCanvasEvents();
       resizeCanvas();
+      processCanvasWhiteboard();
     };
     const imgLoad = () => {
       processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
