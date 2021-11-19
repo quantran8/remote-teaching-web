@@ -148,7 +148,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
           currentBandwidth = 0;
         }
       });
-    }, 30000); // 30000 = 30 seconds
+    }, 300000); // 300000 = 5 minutes
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (user, mediaType) => {
         Logger.log("user-published", user.uid, mediaType);
