@@ -81,6 +81,7 @@ export default defineComponent({
       let videoTrack = null;
       try {
         videoTrack = await AgoraRTC.createCameraVideoTrack();
+        havePermissionCamera.value = true;
       } catch (error) {
         Logger.log("setupAgora error when create videoTrack =>", error);
         if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
@@ -89,6 +90,7 @@ export default defineComponent({
       }
       try {
         audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        havePermissionMicrophone.value = true;
       } catch (error) {
         Logger.log("setupAgora error when create audioTrack =>", error);
         if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
