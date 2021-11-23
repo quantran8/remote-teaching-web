@@ -89,6 +89,19 @@ export default defineComponent({
     });
     const { teacherAddShapes, addStar, addCircle, addSquare } = addShape();
     const { processAnnotationLesson } = annotationCurriculum();
+    const hasTargets = computed(() => {
+      return !!props.image?.metaData.annotations;
+    });
+    const targetsNum = computed(() => {
+      return props.image?.metaData.annotations.length;
+    });
+    const targetText = computed(() => {
+      if (props.image?.metaData.annotations.length == 1) {
+        return "Target:";
+      } else {
+        return "Targets:";
+      }
+    });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -678,6 +691,9 @@ export default defineComponent({
       imgLoad,
       warningMsg,
       warningMsgLeave,
+      hasTargets,
+      targetsNum,
+      targetText,
     };
   },
 });

@@ -37,6 +37,9 @@
         <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>
     </div>
+    <div v-if="!isGalleryView && image && image.metaData">
+      <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped src="./whiteboard-palette.scss"></style>
