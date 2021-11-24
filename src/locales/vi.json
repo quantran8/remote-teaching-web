@@ -86,9 +86,6 @@
 	"teacher_home.submit": "Gửi",
 	"teacher_home.group": "Nhóm",
 	"teacher_home.next": "Tiếp tục:",
-	"teacher_class.leave_page": "Leave page?",
-	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
-	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
 	"device_tester.system_check": "Kiểm tra hệ thống",
 	"device_tester.check_mic": "Kiểm tra Microphone",
 	"device_tester.select_device": "Không có thiết bị",
@@ -109,7 +106,7 @@
 	"layout.test_connect": "Kết nối thử",
 	"layout.sign_out": "Đăng xuất",
 	"layout.privacy_policy": "Chính sách bảo mật",
-	"layout.copy_right": "V8 | Bản quyền thuộc © {{year}} GrapeSEED Media Ltd",
+	"layout.copy_right": "V7 | Bản quyền thuộc © {{year}} GrapeSEED Media Ltd",
 	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
@@ -122,7 +119,5 @@
 	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
 	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
 	"common.class.actions": "None",
-	"whiteboard.textbox_warning": "Please type letters or basic punctuation only.",
-	"device_tester.message_warning_mic": "Unable to access microphone, please check system settings or grant permission and reload page.",
-	"device_tester.message_warning_camera": "Unable to access camera, please check system settings or grant permission and reload page."
+	"whiteboard.textbox_warning": "Please type letters or basic punctuation only."
 }
