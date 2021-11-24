@@ -2,11 +2,9 @@ import { DefaultCanvasDimension, starPolygonPoints } from "commonui";
 import { fabric } from "fabric";
 
 export const annotationCurriculum = () => {
-  const addAnnotationLesson = (propImage: any, item: any, canvas: any) => {
+  const ratioValue = (propImage: any) => {
     let imgWidthCropFit, imgHeightCropFit;
     const objectFitCenter = 50;
-    const xMetadata = propImage.metaData.x;
-    const yMetadata = propImage.metaData.y;
     let widthMetadata, heightMetadata;
     if (propImage.metaData.width === 0 && propImage.metaData.height === 0) {
       widthMetadata = propImage.width;
@@ -28,6 +26,12 @@ export const annotationCurriculum = () => {
     const wRatio = imgWidthCropFit / widthMetadata;
     const hRatio = imgHeightCropFit / heightMetadata;
     const ratio = Math.min(wRatio, hRatio);
+    return { imgLeftCrop, ratio };
+  };
+  const addAnnotationLesson = (propImage: any, item: any, canvas: any, xClick: any, yClick: any) => {
+    const { imgLeftCrop, ratio } = ratioValue(propImage);
+    const xMetadata = propImage.metaData.x;
+    const yMetadata = propImage.metaData.y;
     // 0: rect, 1: circle, 2: star
     let rect, circle, star, points;
     switch (item.type) {
@@ -54,8 +58,26 @@ export const annotationCurriculum = () => {
           stroke: item.color,
           strokeWidth: 5,
           id: "annotation-lesson",
+          tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
         });
-        canvas.add(circle);
+        if (xClick >= 0 && yClick >= 0) {
+          const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
+          const yShape = (item.y - yMetadata) * ratio;
+          const radiusShape = Math.floor((item.width / 2) * ratio);
+          const xCenter = xShape + radiusShape;
+          const yCenter = yShape + radiusShape;
+          const insideCircle = Math.sqrt((xClick - xCenter) * (xClick - xCenter) + (yClick - yCenter) * (yClick - yCenter)) < radiusShape;
+          if (insideCircle) {
+            const existing = canvas.getObjects().find((obj: any) => obj.tag === "circle-" + Math.floor(item.x) + Math.floor(item.y));
+            if (existing) {
+              canvas.remove(...canvas.getObjects().filter((obj: any) => obj.tag === "circle-" + Math.floor(item.x) + Math.floor(item.y)));
+            } else {
+              canvas.add(circle);
+            }
+          }
+        } else {
+          canvas.add(circle);
+        }
         break;
       case (item.type = 2):
         points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
@@ -73,16 +95,26 @@ export const annotationCurriculum = () => {
         break;
     }
   };
-  const processAnnotationLesson = (propImage: any, canvas: any) => {
+  const processAnnotationLesson = (propImage: any, canvas: any, x: any, y: any) => {
     if (!canvas) return;
     if (!propImage) return;
     const annotations = propImage.metaData?.annotations;
-    if (annotations && annotations.length) {
-      annotations.forEach((item: any) => {
-        addAnnotationLesson(propImage, item, canvas);
-      });
+    if (x >= 0 && y >= 0) {
+      // bind each target
+      if (annotations && annotations.length) {
+        annotations.forEach((item: any) => {
+          addAnnotationLesson(propImage, item, canvas, x, y);
+        });
+      }
     } else {
-      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      // bind all targets
+      if (annotations && annotations.length) {
+        annotations.forEach((item: any) => {
+          addAnnotationLesson(propImage, item, canvas, -1, -1);
+        });
+      } else {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      }
     }
   };
   return {

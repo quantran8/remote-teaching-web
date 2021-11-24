@@ -2,7 +2,7 @@ import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onU
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import {Tools, Mode, DefaultCanvasDimension, endImgLink} from "@/commonui";
+import { Tools, Mode, DefaultCanvasDimension, endImgLink } from "@/commonui";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
@@ -12,6 +12,7 @@ import { WhiteBoard } from "@/locales/localeid";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
+import { Button, Space } from "ant-design-vue";
 
 const DEFAULT_COLOR = "black";
 export enum Cursor {
@@ -28,6 +29,8 @@ export default defineComponent({
   },
   components: {
     ToolsCanvas,
+    Space,
+    Button,
   },
   setup(props) {
     const store = useStore();
@@ -102,6 +105,32 @@ export default defineComponent({
         return "Targets:";
       }
     });
+    const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
+    const showAllTargets = () => {
+      processAnnotationLesson(props.image, canvas, -1, -1);
+      disableShowAllTargetsBtn.value = true;
+      disableHideAllTargetsBtn.value = false;
+    };
+    const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
+    const hideAllTargets = () => {
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      disableHideAllTargetsBtn.value = true;
+      disableShowAllTargetsBtn.value = false;
+    };
+    const objectTargetOnCanvas = () => {
+      if (!canvas) return;
+      canvas.on("object:added", () => {
+        console.log(canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      });
+    };
+    const positionClick = (e: any) => {
+      const rect = document.getElementById("canvas-container");
+      if (!rect) return;
+      const rectBounding = rect.getBoundingClientRect();
+      const x = e.clientX - rectBounding.left;
+      const y = e.clientY - rectBounding.top;
+      processAnnotationLesson(props.image, canvas, Math.floor(x), Math.floor(y));
+    };
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -148,7 +177,7 @@ export default defineComponent({
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard();
       if (!isShowWhiteBoard.value) {
-        processAnnotationLesson(props.image, canvas);
+        processAnnotationLesson(props.image, canvas, -1, -1);
       }
     });
     const imageUrl = computed(() => {
@@ -287,6 +316,7 @@ export default defineComponent({
       onTextBoxEdited(canvas);
       listenMouseEvent();
       onObjectCreated(canvas);
+      objectTargetOnCanvas();
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -433,14 +463,14 @@ export default defineComponent({
       canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-      processAnnotationLesson(props.image, canvas);
+      processAnnotationLesson(props.image, canvas, -1, -1);
     };
     const imgLoad = async () => {
       if (!canvas) return;
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
-      processAnnotationLesson(props.image, canvas);
+      // processAnnotationLesson(props.image, canvas);
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -694,6 +724,11 @@ export default defineComponent({
       hasTargets,
       targetsNum,
       targetText,
+      showAllTargets,
+      disableShowAllTargetsBtn,
+      hideAllTargets,
+      disableHideAllTargetsBtn,
+      positionClick,
     };
   },
 });

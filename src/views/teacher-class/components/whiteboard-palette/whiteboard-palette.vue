@@ -21,7 +21,7 @@
           <div class="whiteboard__button-hide--icon"><img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
         </div>
         <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
-        <div id="canvas-container" @mousemove="cursorPosition">
+        <div id="canvas-container" @mousemove="cursorPosition" @mousedown="positionClick">
           <CropImage
             v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
             :imageUrl="image.url"
@@ -39,6 +39,10 @@
     </div>
     <div v-if="!isGalleryView && image && image.metaData">
       <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+      <Space>
+        <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">Show All Targets</Button>
+        <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">Hide All Targets</Button>
+      </Space>
     </div>
   </div>
 </template>
