@@ -32,27 +32,43 @@ export const annotationCurriculum = () => {
     const { imgLeftCrop, ratio } = ratioValue(propImage);
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
+    const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
+    const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle, 2: star
     let rect, circle, star, points;
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
-          left: (item.x - xMetadata) * ratio + imgLeftCrop,
-          top: (item.y - yMetadata) * ratio,
+          left: xShape,
+          top: yShape,
           width: item.width * ratio,
           height: item.height * ratio,
           fill: "",
           stroke: item.color,
           strokeWidth: 5,
           id: "annotation-lesson",
+          tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
         });
         rect.rotate(item.rotate);
-        canvas.add(rect);
+        if (xClick >= 0 && yClick >= 0) {
+          const containsPoint =
+            xShape <= xClick && xClick <= xShape + item.width * ratio && yShape <= yClick && yClick <= yShape + item.height * ratio;
+          if (containsPoint) {
+            const existing = canvas.getObjects().find((obj: any) => obj.tag === "rect-" + Math.floor(item.x) + Math.floor(item.y));
+            if (existing) {
+              canvas.remove(...canvas.getObjects().filter((obj: any) => obj.tag === "rect-" + Math.floor(item.x) + Math.floor(item.y)));
+            } else {
+              canvas.add(rect);
+            }
+          }
+        } else {
+          canvas.add(rect);
+        }
         break;
       case (item.type = 1):
         circle = new fabric.Circle({
-          left: (item.x - xMetadata) * ratio + imgLeftCrop,
-          top: (item.y - yMetadata) * ratio,
+          left: xShape,
+          top: yShape,
           radius: (item.width / 2) * ratio,
           fill: "",
           stroke: item.color,
@@ -61,8 +77,6 @@ export const annotationCurriculum = () => {
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
         });
         if (xClick >= 0 && yClick >= 0) {
-          const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
-          const yShape = (item.y - yMetadata) * ratio;
           const radiusShape = Math.floor((item.width / 2) * ratio);
           const xCenter = xShape + radiusShape;
           const yCenter = yShape + radiusShape;
@@ -83,8 +97,8 @@ export const annotationCurriculum = () => {
         points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
         star = new fabric.Polygon(points, {
           stroke: item.color,
-          left: (item.x - xMetadata) * ratio + imgLeftCrop,
-          top: (item.y - yMetadata) * ratio,
+          left: xShape,
+          top: yShape,
           strokeWidth: 5,
           strokeLineJoin: "round",
           fill: "",
