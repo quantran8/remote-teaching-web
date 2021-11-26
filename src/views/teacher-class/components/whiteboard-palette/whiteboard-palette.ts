@@ -107,29 +107,18 @@ export default defineComponent({
     });
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
     const showAllTargets = () => {
-      processAnnotationLesson(props.image, canvas, -1, -1);
+      processAnnotationLesson(props.image, canvas, true, "show-all-targets");
       disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
     };
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = () => {
-      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      processAnnotationLesson(props.image, canvas, true, "hide-all-targets");
       disableHideAllTargetsBtn.value = true;
       disableShowAllTargetsBtn.value = false;
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;
-      canvas.on("object:added", () => {
-        console.log(canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-      });
-    };
-    const positionClick = (e: any) => {
-      const rect = document.getElementById("canvas-container");
-      if (!rect) return;
-      const rectBounding = rect.getBoundingClientRect();
-      const x = e.clientX - rectBounding.left;
-      const y = e.clientY - rectBounding.top;
-      processAnnotationLesson(props.image, canvas, Math.floor(x), Math.floor(y));
     };
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
@@ -177,7 +166,7 @@ export default defineComponent({
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard();
       if (!isShowWhiteBoard.value) {
-        processAnnotationLesson(props.image, canvas, -1, -1);
+        processAnnotationLesson(props.image, canvas, true, null);
       }
     });
     const imageUrl = computed(() => {
@@ -281,6 +270,8 @@ export default defineComponent({
       });
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
+        processAnnotationLesson(props.image, canvas, false, event.target);
+        objectTargetOnCanvas();
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
@@ -316,7 +307,6 @@ export default defineComponent({
       onTextBoxEdited(canvas);
       listenMouseEvent();
       onObjectCreated(canvas);
-      objectTargetOnCanvas();
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
@@ -463,14 +453,14 @@ export default defineComponent({
       canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-      processAnnotationLesson(props.image, canvas, -1, -1);
+      processAnnotationLesson(props.image, canvas, true, null);
     };
     const imgLoad = async () => {
       if (!canvas) return;
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
-      // processAnnotationLesson(props.image, canvas);
+      processAnnotationLesson(props.image, canvas, true, null);
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -728,7 +718,6 @@ export default defineComponent({
       disableShowAllTargetsBtn,
       hideAllTargets,
       disableHideAllTargetsBtn,
-      positionClick,
     };
   },
 });

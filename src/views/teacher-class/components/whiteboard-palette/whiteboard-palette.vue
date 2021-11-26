@@ -21,7 +21,7 @@
           <div class="whiteboard__button-hide--icon"><img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
         </div>
         <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
-        <div id="canvas-container" @mousemove="cursorPosition" @mousedown="positionClick">
+        <div id="canvas-container" @mousemove="cursorPosition">
           <CropImage
             v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
             :imageUrl="image.url"

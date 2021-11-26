@@ -28,7 +28,15 @@ export const annotationCurriculum = () => {
     const ratio = Math.min(wRatio, hRatio);
     return { imgLeftCrop, ratio };
   };
-  const addAnnotationLesson = (propImage: any, item: any, canvas: any, xClick: any, yClick: any) => {
+  const setStrokeColor = (canvas: any, event: any, color: any) => {
+    canvas.getObjects().forEach((obj: any) => {
+      if (obj.tag === event.tag) {
+        obj.set("stroke", color);
+      }
+    });
+    canvas.renderAll();
+  };
+  const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any) => {
     const { imgLeftCrop, ratio } = ratioValue(propImage);
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
@@ -43,26 +51,31 @@ export const annotationCurriculum = () => {
           top: yShape,
           width: item.width * ratio,
           height: item.height * ratio,
-          fill: "",
-          stroke: item.color,
+          fill: "rgba(0,0,0,0.01)",
+          stroke: "transparent",
           strokeWidth: 5,
           id: "annotation-lesson",
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
+          perPixelTargetFind: true,
         });
         rect.rotate(item.rotate);
-        if (xClick >= 0 && yClick >= 0) {
-          const containsPoint =
-            xShape <= xClick && xClick <= xShape + item.width * ratio && yShape <= yClick && yClick <= yShape + item.height * ratio;
-          if (containsPoint) {
-            const existing = canvas.getObjects().find((obj: any) => obj.tag === "rect-" + Math.floor(item.x) + Math.floor(item.y));
-            if (existing) {
-              canvas.remove(...canvas.getObjects().filter((obj: any) => obj.tag === "rect-" + Math.floor(item.x) + Math.floor(item.y)));
+        if (!bindAll) {
+          if (event !== null) {
+            if (event.stroke === "transparent") {
+              setStrokeColor(canvas, event, item.color);
             } else {
-              canvas.add(rect);
+              setStrokeColor(canvas, event, "transparent");
             }
           }
         } else {
-          canvas.add(rect);
+          const tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
+          if (event === "show-all-targets") {
+            setStrokeColor(canvas, tagObject, item.color);
+          } else if (event === "hide-all-targets") {
+            setStrokeColor(canvas, tagObject, "transparent");
+          } else {
+            canvas.add(rect);
+          }
         }
         break;
       case (item.type = 1):
@@ -70,66 +83,86 @@ export const annotationCurriculum = () => {
           left: xShape,
           top: yShape,
           radius: (item.width / 2) * ratio,
-          fill: "",
-          stroke: item.color,
+          fill: "rgba(0,0,0,0.01)",
+          stroke: "transparent",
           strokeWidth: 5,
           id: "annotation-lesson",
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
+          perPixelTargetFind: true,
         });
-        if (xClick >= 0 && yClick >= 0) {
-          const radiusShape = Math.floor((item.width / 2) * ratio);
-          const xCenter = xShape + radiusShape;
-          const yCenter = yShape + radiusShape;
-          const insideCircle = Math.sqrt((xClick - xCenter) * (xClick - xCenter) + (yClick - yCenter) * (yClick - yCenter)) < radiusShape;
-          if (insideCircle) {
-            const existing = canvas.getObjects().find((obj: any) => obj.tag === "circle-" + Math.floor(item.x) + Math.floor(item.y));
-            if (existing) {
-              canvas.remove(...canvas.getObjects().filter((obj: any) => obj.tag === "circle-" + Math.floor(item.x) + Math.floor(item.y)));
+        if (!bindAll) {
+          if (event !== null) {
+            if (event.stroke === "transparent") {
+              setStrokeColor(canvas, event, item.color);
             } else {
-              canvas.add(circle);
+              setStrokeColor(canvas, event, "transparent");
             }
           }
         } else {
-          canvas.add(circle);
+          const tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
+          if (event === "show-all-targets") {
+            setStrokeColor(canvas, tagObject, item.color);
+          } else if (event === "hide-all-targets") {
+            setStrokeColor(canvas, tagObject, "transparent");
+          } else {
+            canvas.add(circle);
+          }
         }
         break;
       case (item.type = 2):
         points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
         star = new fabric.Polygon(points, {
-          stroke: item.color,
+          stroke: "transparent",
           left: xShape,
           top: yShape,
           strokeWidth: 5,
           strokeLineJoin: "round",
-          fill: "",
+          fill: "rgba(0,0,0,0.01)",
           id: "annotation-lesson",
+          tag: "star-" + Math.floor(item.x) + Math.floor(item.y),
+          perPixelTargetFind: true,
         });
         star.rotate(item.rotate);
-        canvas.add(star);
+        if (!bindAll) {
+          if (event !== null) {
+            if (event.stroke === "transparent") {
+              setStrokeColor(canvas, event, item.color);
+            } else {
+              setStrokeColor(canvas, event, "transparent");
+            }
+          }
+        } else {
+          const tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
+          if (event === "show-all-targets") {
+            setStrokeColor(canvas, tagObject, item.color);
+          } else if (event === "hide-all-targets") {
+            setStrokeColor(canvas, tagObject, "transparent");
+          } else {
+            canvas.add(star);
+          }
+        }
         break;
     }
   };
-  const processAnnotationLesson = (propImage: any, canvas: any, x: any, y: any) => {
+  const processAnnotationLesson = (propImage: any, canvas: any, bindAll: boolean, event: any) => {
     if (!canvas) return;
     if (!propImage) return;
     const annotations = propImage.metaData?.annotations;
-    if (x >= 0 && y >= 0) {
-      // bind each target
-      if (annotations && annotations.length) {
-        annotations.forEach((item: any) => {
-          addAnnotationLesson(propImage, item, canvas, x, y);
-        });
-      }
+    if (annotations && annotations.length) {
+      annotations.forEach((item: any) => {
+        addAnnotationLesson(propImage, item, canvas, bindAll, event);
+      });
     } else {
-      // bind all targets
-      if (annotations && annotations.length) {
-        annotations.forEach((item: any) => {
-          addAnnotationLesson(propImage, item, canvas, -1, -1);
-        });
-      } else {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-      }
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
     }
+    canvas.getObjects().forEach((obj: any) => {
+      if (obj.id === "annotation-lesson") {
+        obj.selectable = false;
+        obj.hasControls = false;
+        obj.hasBorders = false;
+        obj.hoverCursor = "cursor";
+      }
+    });
   };
   return {
     processAnnotationLesson,
