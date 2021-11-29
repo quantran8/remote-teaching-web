@@ -119,6 +119,16 @@ export default defineComponent({
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;
+      const objShow = canvas
+        .getObjects()
+        .filter((obj: any) => obj.id === "annotation-lesson")
+        .filter((obj: any) => obj.stroke !== "transparent");
+      disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
+      const objHide = canvas
+        .getObjects()
+        .filter((obj: any) => obj.id === "annotation-lesson")
+        .filter((obj: any) => obj.stroke === "transparent");
+      disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
