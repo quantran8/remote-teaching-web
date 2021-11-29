@@ -39,7 +39,7 @@
     </div>
     <div v-if="!isGalleryView && image && image.metaData">
       <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
-      <Space>
+      <Space v-if="hasTargets">
         <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">Show All Targets</Button>
         <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">Hide All Targets</Button>
       </Space>

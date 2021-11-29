@@ -1,43 +1,9 @@
-import { DefaultCanvasDimension, starPolygonPoints } from "commonui";
+import { DefaultCanvasDimension, ratioValue, starPolygonPoints, setStrokeColor } from "commonui";
 import { fabric } from "fabric";
 
 export const annotationCurriculum = () => {
-  const ratioValue = (propImage: any) => {
-    let imgWidthCropFit, imgHeightCropFit;
-    const objectFitCenter = 50;
-    let widthMetadata, heightMetadata;
-    if (propImage.metaData.width === 0 && propImage.metaData.height === 0) {
-      widthMetadata = propImage.width;
-      heightMetadata = propImage.height;
-    } else {
-      widthMetadata = propImage.metaData.width;
-      heightMetadata = propImage.metaData.height;
-    }
-    const cropRatio = widthMetadata / heightMetadata;
-    const canvasRatio = DefaultCanvasDimension.width / DefaultCanvasDimension.height;
-    if (cropRatio > canvasRatio) {
-      imgWidthCropFit = DefaultCanvasDimension.width;
-      imgHeightCropFit = DefaultCanvasDimension.width / cropRatio;
-    } else {
-      imgWidthCropFit = DefaultCanvasDimension.height * cropRatio;
-      imgHeightCropFit = DefaultCanvasDimension.height;
-    }
-    const imgLeftCrop = (DefaultCanvasDimension.width - imgWidthCropFit) * (objectFitCenter / 100);
-    const wRatio = imgWidthCropFit / widthMetadata;
-    const hRatio = imgHeightCropFit / heightMetadata;
-    const ratio = Math.min(wRatio, hRatio);
-    return { imgLeftCrop, ratio };
-  };
-  const setStrokeColor = (canvas: any, event: any, color: any) => {
-    canvas.getObjects().forEach((obj: any) => {
-      if (obj.tag === event.tag) {
-        obj.set("stroke", color);
-      }
-    });
-    canvas.renderAll();
-  };
   const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any) => {
-    const { imgLeftCrop, ratio } = ratioValue(propImage);
+    const { imgLeftCrop, ratio } = ratioValue(propImage, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
@@ -51,7 +17,7 @@ export const annotationCurriculum = () => {
           top: yShape,
           width: item.width * ratio,
           height: item.height * ratio,
-          fill: "rgba(0,0,0,0.01)",
+          fill: "rgba(255,255,255,0.01)",
           stroke: "transparent",
           strokeWidth: 5,
           id: "annotation-lesson",
@@ -83,7 +49,7 @@ export const annotationCurriculum = () => {
           left: xShape,
           top: yShape,
           radius: (item.width / 2) * ratio,
-          fill: "rgba(0,0,0,0.01)",
+          fill: "rgba(255,255,255,0.01)",
           stroke: "transparent",
           strokeWidth: 5,
           id: "annotation-lesson",
@@ -117,7 +83,7 @@ export const annotationCurriculum = () => {
           top: yShape,
           strokeWidth: 5,
           strokeLineJoin: "round",
-          fill: "rgba(0,0,0,0.01)",
+          fill: "rgba(255,255,255,0.01)",
           id: "annotation-lesson",
           tag: "star-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,

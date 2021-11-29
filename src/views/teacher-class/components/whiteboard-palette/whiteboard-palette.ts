@@ -96,7 +96,7 @@ export default defineComponent({
       return !!props.image?.metaData.annotations;
     });
     const targetsNum = computed(() => {
-      return props.image?.metaData.annotations.length;
+      return props.image?.metaData?.annotations.length;
     });
     const targetText = computed(() => {
       if (props.image?.metaData.annotations.length == 1) {
@@ -471,6 +471,7 @@ export default defineComponent({
         firstLoadImage.value = true;
       }
       processAnnotationLesson(props.image, canvas, true, null);
+      objectTargetOnCanvas();
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
