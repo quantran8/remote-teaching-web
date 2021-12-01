@@ -460,6 +460,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
     state.manager?.WSClient.sendRequestModifyFabricObject(fabricObject);
   },
+  setTargetsVisibleAllAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleAllShapes(payload);
+  },
 };
 
 export default actions;

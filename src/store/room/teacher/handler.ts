@@ -296,7 +296,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       //
     },
     onToggleAllShapes: (payload: any) => {
-      console.log(payload, "pppppppppptttttttttttt");
+      Logger.info("Toggle all targets");
     },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;

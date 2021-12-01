@@ -172,7 +172,6 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.TEACHER_MODIFY_FABRIC_OBJECT, payload);
   }
   sendRequestToggleAllShapes(payload: { userId: string; visible: boolean }) {
-    console.log(payload, "pppppppppccccccccccc");
     return this.send(WSCmd.TOGGLE_ALL_SHAPES, payload);
   }
   sendRequestToggleShape(payload: { userId: string; tag: string; visible: boolean }) {

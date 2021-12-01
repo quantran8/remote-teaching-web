@@ -179,7 +179,6 @@ const mutations: LessonMutation<LessonState> = {
     s.cropCache?.cacheValues.splice(0, s.cropCache?.cacheValues.length);
   },
   setTargetsVisibleAll(s: LessonState, p: TargetsVisibleAll) {
-    console.log(p, "pppppppppmmmmmmmmmmm");
     s.targetsVisibleAll = p;
   },
   setTargetsVisibleList(s: LessonState, p: {}) {

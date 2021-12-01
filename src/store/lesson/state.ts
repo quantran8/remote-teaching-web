@@ -166,7 +166,7 @@ const state: LessonState = {
   previousExposure: undefined,
   previousExposureItemMedia: undefined,
   cropCache: { cacheValues: [] },
-  targetsVisibleAll: undefined,
+  targetsVisibleAll: { userId: "", visible: false },
   targetsVisibleList: [],
 };
 

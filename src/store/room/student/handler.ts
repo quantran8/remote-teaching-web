@@ -405,7 +405,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       //
     },
     onToggleAllShapes: async (payload: any) => {
-      console.log(payload, "ppppppppsssssshhhhhhhh");
       await dispatch("lesson/setTargetsVisibleAllAction", payload, { root: true });
     },
     onRoomInfo: async (payload: RoomModel) => {

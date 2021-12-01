@@ -178,7 +178,6 @@ const actions: LessonActions<LessonState, any> = {
     store.commit("clearCacheImage");
   },
   setTargetsVisibleAllAction(store: ActionContext<LessonState, any>, payload) {
-    console.log(payload, "pppppppppaaaaaaaaaaaaaaa");
     store.commit("setTargetsVisibleAll", payload);
   },
 };
