@@ -40,5 +40,5 @@ export enum TeacherWSCommand {
   TEACHER_MODIFY_FABRIC_OBJECT = "TeacherModifyFabricObject",
 
   TOGGLE_ALL_SHAPES = "ToggleAllShapes",
-  TOGGLE_SHAPE = "ToggleShape"
+  TOGGLE_SHAPE = "ToggleShape",
 }

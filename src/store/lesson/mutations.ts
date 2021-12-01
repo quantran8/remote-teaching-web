@@ -1,5 +1,13 @@
 import { MutationTree } from "vuex";
-import { Exposure, ExposureStatus, ExposureType, LessonState, ExposureItemMedia, CropMetadata } from "./state";
+import {
+  Exposure,
+  ExposureStatus,
+  ExposureType,
+  LessonState,
+  ExposureItemMedia,
+  CropMetadata,
+  TargetsVisibleAll
+} from "./state";
 import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
 
@@ -12,6 +20,7 @@ interface LessonMutationInterface<S> {
   setTotalTime(s: S, payload: { time: string }): void;
   setPlayedTime(s: S, payload: { time: string }): void;
   endCurrentContent(s: S, payload: any): void;
+  setTargetsVisibleAll(s: S, payload: TargetsVisibleAll): void;
 }
 
 interface LessonMutation<S> extends MutationTree<S>, LessonMutationInterface<S> {}
@@ -168,6 +177,13 @@ const mutations: LessonMutation<LessonState> = {
   clearCacheImage(s: LessonState) {
     // clear all cropped image cache
     s.cropCache?.cacheValues.splice(0, s.cropCache?.cacheValues.length);
+  },
+  setTargetsVisibleAll(s: LessonState, p: TargetsVisibleAll) {
+    console.log(p, "pppppppppmmmmmmmmmmm");
+    s.targetsVisibleAll = p;
+  },
+  setTargetsVisibleList(s: LessonState, p: {}) {
+    //
   },
 };
 

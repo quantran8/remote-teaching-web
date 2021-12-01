@@ -85,7 +85,7 @@ const getters: LessonGetters<LessonState, any> = {
       return isRequiredExposure;
     });
 
-	return requiredExposures.length ? `${listExpo.indexOf(s.currentExposure?.id) + 1}/${requiredExposures.length}` : "0";
+    return requiredExposures.length ? `${listExpo.indexOf(s.currentExposure?.id) + 1}/${requiredExposures.length}` : "0";
   },
   getPage(s: LessonState): string {
     const listMedia: string[] = [];
@@ -137,6 +137,9 @@ const getters: LessonGetters<LessonState, any> = {
       // not found
       return undefined;
     };
+  },
+  showHideTargets(s: LessonState) {
+    return s.targetsVisibleAll;
   },
 };
 

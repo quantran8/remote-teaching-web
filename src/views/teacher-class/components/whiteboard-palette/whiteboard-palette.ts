@@ -106,16 +106,24 @@ export default defineComponent({
       }
     });
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
-    const showAllTargets = () => {
+    const showAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "show-all-targets");
       disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
+      await store.dispatch("lesson/setTargetsVisibleAllAction", {
+        userId: isTeacher.value.id,
+        visible: true,
+      });
     };
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
-    const hideAllTargets = () => {
+    const hideAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "hide-all-targets");
       disableHideAllTargetsBtn.value = true;
       disableShowAllTargetsBtn.value = false;
+      await store.dispatch("lesson/setTargetsVisibleAllAction", {
+        userId: isTeacher.value.id,
+        visible: false,
+      });
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;

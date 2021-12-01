@@ -172,11 +172,15 @@ const actions: LessonActions<LessonState, any> = {
     store.commit("clearLessonData");
   },
   storeCacheImage(store: ActionContext<LessonState, any>, payload: { url: string, metadata: CropMetadata, base64String: string }) {
-	store.commit("storeCacheImage", payload);
+    store.commit("storeCacheImage", payload);
   },
   clearCacheImage(store: ActionContext<LessonState, any>) {
-	store.commit("clearCacheImage");
-  }
+    store.commit("clearCacheImage");
+  },
+  setTargetsVisibleAllAction(store: ActionContext<LessonState, any>, payload) {
+    console.log(payload, "pppppppppaaaaaaaaaaaaaaa");
+    store.commit("setTargetsVisibleAll", payload);
+  },
 };
 
 export default actions;
