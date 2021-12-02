@@ -78,6 +78,7 @@ export interface DrawingModel {
   studentBrushstrokes: Array<string>;
   shapes: UserShapeModel[];
   fabrics: FabricObject[];
+  isShowingAllShapes: boolean;
 }
 
 export interface AnnotationModel {
@@ -87,6 +88,7 @@ export interface AnnotationModel {
   oneToOne: DrawingModel;
   oneOneDrawing: DrawingModel;
   stickers: Array<Sticker>;
+  isShowingAllShapes: boolean;
 }
 
 export interface ClassRoomModel {

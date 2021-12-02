@@ -180,6 +180,9 @@ const actions: LessonActions<LessonState, any> = {
   setTargetsVisibleAllAction(store: ActionContext<LessonState, any>, payload) {
     store.commit("setTargetsVisibleAll", payload);
   },
+  setTargetsVisibleListAction(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setTargetsVisibleList", payload);
+  },
 };
 
 export default actions;

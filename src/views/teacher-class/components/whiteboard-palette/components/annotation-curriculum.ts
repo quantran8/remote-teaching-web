@@ -1,7 +1,18 @@
 import { DefaultCanvasDimension, ratioValue, starPolygonPoints, setStrokeColor } from "commonui";
 import { fabric } from "fabric";
+import { useStore } from "vuex";
+import { computed } from "vue";
 
 export const annotationCurriculum = () => {
+  const { dispatch, getters } = useStore();
+  const isTeacher = computed(() => getters["teacherRoom/teacher"]);
+  const toggleTarget = (event: any, visible: boolean) => {
+    dispatch("teacherRoom/setTargetsVisibleListAction", {
+      userId: isTeacher.value.id,
+      tag: event.tag,
+      visible: visible,
+    });
+  };
   const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any) => {
     const { imgLeftCrop, ratio } = ratioValue(propImage, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xMetadata = propImage.metaData.x;
@@ -29,8 +40,10 @@ export const annotationCurriculum = () => {
           if (event !== null) {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
+              toggleTarget(event, true);
             } else {
               setStrokeColor(canvas, event, "transparent");
+              toggleTarget(event, false);
             }
           }
         } else {
@@ -60,8 +73,10 @@ export const annotationCurriculum = () => {
           if (event !== null) {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
+              toggleTarget(event, true);
             } else {
               setStrokeColor(canvas, event, "transparent");
+              toggleTarget(event, false);
             }
           }
         } else {
@@ -93,8 +108,10 @@ export const annotationCurriculum = () => {
           if (event !== null) {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
+              toggleTarget(event, true);
             } else {
               setStrokeColor(canvas, event, "transparent");
+              toggleTarget(event, false);
             }
           }
         } else {

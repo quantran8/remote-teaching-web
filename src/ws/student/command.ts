@@ -9,5 +9,5 @@ export enum StudentWSCommand {
   STUDENT_ACTION_GAME = "StudentActionGame",
   STUDENT_LEAVE_CLASS = "StudentLeaveClass",
 
-  TOGGLE_SHAPE = "ToggleShape"
+  TOGGLE_SHAPE = "ToggleShape",
 }

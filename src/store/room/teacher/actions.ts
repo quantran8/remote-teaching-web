@@ -463,6 +463,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setTargetsVisibleAllAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleAllShapes(payload);
   },
+  setTargetsVisibleListAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleShape(payload);
+  },
 };
 
 export default actions;

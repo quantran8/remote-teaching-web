@@ -80,6 +80,19 @@ export default defineComponent({
         processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
       }
     });
+    const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
+    watch(targetsList, () => {
+      console.log(targetsList.value, "ttttttt");
+      if (targetsList.value) {
+        console.log("1");
+        targetsList.value.forEach((obj: any) => {
+          console.log("2");
+          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj.tag);
+        });
+      } else {
+        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
+      }
+    });
     const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
     const { processAnnotationLesson } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {

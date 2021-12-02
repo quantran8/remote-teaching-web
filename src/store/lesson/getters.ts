@@ -141,6 +141,9 @@ const getters: LessonGetters<LessonState, any> = {
   showHideTargets(s: LessonState) {
     return s.targetsVisibleAll;
   },
+  targetsAnnotationList(s: LessonState) {
+    return s.targetsVisibleList;
+  },
 };
 
 export default getters;

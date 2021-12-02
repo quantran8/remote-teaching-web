@@ -401,8 +401,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         { root: true },
       );
     },
-    onToggleShape: () => {
-      //
+    onToggleShape: async (payload: any) => {
+      await dispatch("lesson/setTargetsVisibleListAction", payload, { root: true });
     },
     onToggleAllShapes: async (payload: any) => {
       await dispatch("lesson/setTargetsVisibleAllAction", payload, { root: true });

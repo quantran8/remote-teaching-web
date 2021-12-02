@@ -6,7 +6,7 @@ import {
   LessonState,
   ExposureItemMedia,
   CropMetadata,
-  TargetsVisibleAll
+  TargetsVisibleAll, TargetsVisibleList
 } from "./state";
 import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
@@ -181,8 +181,16 @@ const mutations: LessonMutation<LessonState> = {
   setTargetsVisibleAll(s: LessonState, p: TargetsVisibleAll) {
     s.targetsVisibleAll = p;
   },
-  setTargetsVisibleList(s: LessonState, p: {}) {
-    //
+  setTargetsVisibleList(s: LessonState, p: TargetsVisibleList) {
+    if (s.targetsVisibleList.length > 0) {
+      if (s.targetsVisibleList.some(obj => obj.tag === p.tag)) {
+        s.targetsVisibleList = s.targetsVisibleList.filter(obj => obj.tag !== p.tag);
+      } else {
+        s.targetsVisibleList = [...s.targetsVisibleList, p];
+      }
+    } else {
+      s.targetsVisibleList.push(p);
+    }
   },
 };
 

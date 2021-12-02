@@ -293,7 +293,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       Logger.info("Fabric:modify object");
     },
     onToggleShape: async (payload: any) => {
-      //
+      await dispatch("lesson/setTargetsVisibleListAction", payload, { root: true });
     },
     onToggleAllShapes: (payload: any) => {
       Logger.info("Toggle all targets");

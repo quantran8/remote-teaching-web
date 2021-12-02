@@ -107,11 +107,15 @@ export const annotationCurriculumStudent = () => {
             } else {
               setStrokeColor(canvas, event, "transparent");
             }
-            if (event === "show-all-targets") {
+            if (event === "show-all-targets" || event === tagObject) {
               setStrokeColor(canvas, tagObject, item.color);
             } else {
               setStrokeColor(canvas, tagObject, "transparent");
             }
+            console.log(event, "eeeeeeeee");
+            // if (event === tagObject) {
+            //   setStrokeColor(canvas, tagObject, item.color);
+            // }
           }
         } else {
           if (event === "show-all-targets") {
