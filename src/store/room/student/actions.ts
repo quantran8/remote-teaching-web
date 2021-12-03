@@ -240,7 +240,7 @@ const actions: ActionTree<StudentRoomState, any> = {
           currentBandwidth = 0;
         }
       });
-    }, 30000); // 30000 = 30 seconds
+    }, 300000); // 300000 = 5 minutes
     state.manager?.agoraClient.registerEventHandler({
       onUserPublished: (user, mediaType) => {
         Logger.log("user-published", user.uid, mediaType);

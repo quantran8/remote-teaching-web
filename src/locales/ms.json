@@ -86,9 +86,6 @@
 	"teacher_home.submit": "Submit",
 	"teacher_home.group": "Group",
 	"teacher_home.next": "Next:",
-	"teacher_class.leave_page": "Leave page?",
-	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
-	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
 	"device_tester.system_check": "System check",
 	"device_tester.check_mic": "Check Microphone",
 	"device_tester.select_device": "No Device",
@@ -109,7 +106,7 @@
 	"layout.test_connect": "System Check",
 	"layout.sign_out": "Sign Out",
 	"layout.privacy_policy": "Privacy Policy",
-	"layout.copy_right": "V7 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
+	"layout.copy_right": "V8 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
 	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
@@ -122,5 +119,7 @@
 	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
 	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
 	"common.class.actions": "None",
-	"whiteboard.textbox_warning": "Please type letters or basic punctuation only."
+	"whiteboard.textbox_warning": "Please type letters or basic punctuation only.",
+	"device_tester.message_warning_mic": "Unable to access microphone, please check system settings or grant permission and reload page.",
+	"device_tester.message_warning_camera": "Unable to access camera, please check system settings or grant permission and reload page."
 }
