@@ -81,18 +81,19 @@ export default defineComponent({
       }
     });
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
-    watch(targetsList, () => {
-      console.log(targetsList.value, "ttttttt");
-      if (targetsList.value) {
-        console.log("1");
-        targetsList.value.forEach((obj: any) => {
-          console.log("2");
-          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj.tag);
-        });
-      } else {
-        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
-      }
-    });
+    watch(
+      targetsList,
+      () => {
+        if (targetsList.value.length) {
+          targetsList.value.forEach((obj: any) => {
+            processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
+          });
+        } else {
+          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
+        }
+      },
+      { deep: true },
+    );
     const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
     const { processAnnotationLesson } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {
@@ -103,7 +104,14 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
         canvas.isDrawingMode = false;
-        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, toggleTargets.value.visible ? "show-all-targets" : "hide-all-target");
+        processAnnotationLesson(
+          canvas,
+          props.image,
+          containerRef,
+          isShowWhiteBoard,
+          true,
+          toggleTargets.value.visible ? "show-all-targets" : "hide-all-target",
+        );
       }
     };
     watch(isShowWhiteBoard, () => {
@@ -368,7 +376,14 @@ export default defineComponent({
       processCanvasWhiteboard();
     };
     const imgLoad = () => {
-      processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets");
+      processAnnotationLesson(
+        canvas,
+        props.image,
+        containerRef,
+        isShowWhiteBoard,
+        true,
+        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
+      );
     };
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
@@ -384,7 +399,14 @@ export default defineComponent({
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
       canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-      processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets");
+      processAnnotationLesson(
+        canvas,
+        props.image,
+        containerRef,
+        isShowWhiteBoard,
+        true,
+        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
+      );
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {

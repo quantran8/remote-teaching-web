@@ -27,17 +27,18 @@ export const annotationCurriculumStudent = () => {
         rect.rotate(item.rotate);
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
         if (!bindAll) {
-          if (event !== null) {
+          if (event !== null && event.tag === tagObject.tag && event.id === "annotation-lesson") {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
             } else {
               setStrokeColor(canvas, event, "transparent");
             }
-            if (event === "show-all-targets") {
-              setStrokeColor(canvas, tagObject, item.color);
-            } else {
-              setStrokeColor(canvas, tagObject, "transparent");
-            }
+          }
+          if (event === "show-all-targets" || (event.tag === tagObject.tag && event.visible)) {
+            setStrokeColor(canvas, tagObject, item.color);
+          }
+          if (event === "hide-all-targets" || (event.tag === tagObject.tag && !event.visible)) {
+            setStrokeColor(canvas, tagObject, "transparent");
           }
         } else {
           if (event === "show-all-targets") {
@@ -63,17 +64,18 @@ export const annotationCurriculumStudent = () => {
         });
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         if (!bindAll) {
-          if (event !== null) {
+          if (event !== null && event.tag === tagObject.tag && event.id === "annotation-lesson") {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
             } else {
               setStrokeColor(canvas, event, "transparent");
             }
-            if (event === "show-all-targets") {
-              setStrokeColor(canvas, tagObject, item.color);
-            } else {
-              setStrokeColor(canvas, tagObject, "transparent");
-            }
+          }
+          if (event === "show-all-targets" || (event.tag === tagObject.tag && event.visible)) {
+            setStrokeColor(canvas, tagObject, item.color);
+          }
+          if (event === "hide-all-targets" || (event.tag === tagObject.tag && !event.visible)) {
+            setStrokeColor(canvas, tagObject, "transparent");
           }
         } else {
           if (event === "show-all-targets") {
@@ -101,21 +103,18 @@ export const annotationCurriculumStudent = () => {
         star.rotate(item.rotate);
         tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
         if (!bindAll) {
-          if (event !== null) {
+          if (event !== null && event.tag === tagObject.tag && event.id === "annotation-lesson") {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
             } else {
               setStrokeColor(canvas, event, "transparent");
             }
-            if (event === "show-all-targets" || event === tagObject) {
-              setStrokeColor(canvas, tagObject, item.color);
-            } else {
-              setStrokeColor(canvas, tagObject, "transparent");
-            }
-            console.log(event, "eeeeeeeee");
-            // if (event === tagObject) {
-            //   setStrokeColor(canvas, tagObject, item.color);
-            // }
+          }
+          if (event === "show-all-targets" || (event.tag === tagObject.tag && event.visible)) {
+            setStrokeColor(canvas, tagObject, item.color);
+          }
+          if (event === "hide-all-targets" || (event.tag === tagObject.tag && !event.visible)) {
+            setStrokeColor(canvas, tagObject, "transparent");
           }
         } else {
           if (event === "show-all-targets") {

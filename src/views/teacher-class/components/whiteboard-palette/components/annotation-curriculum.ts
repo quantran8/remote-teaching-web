@@ -20,7 +20,7 @@ export const annotationCurriculum = () => {
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle, 2: star
-    let rect, circle, star, points;
+    let rect, circle, star, points, tagObject;
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
@@ -36,8 +36,9 @@ export const annotationCurriculum = () => {
           perPixelTargetFind: true,
         });
         rect.rotate(item.rotate);
+        tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
         if (!bindAll) {
-          if (event !== null) {
+          if (event !== null && event.tag === tagObject.tag) {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
               toggleTarget(event, true);
@@ -47,11 +48,12 @@ export const annotationCurriculum = () => {
             }
           }
         } else {
-          const tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
           if (event === "show-all-targets") {
             setStrokeColor(canvas, tagObject, item.color);
+            toggleTarget(tagObject, true);
           } else if (event === "hide-all-targets") {
             setStrokeColor(canvas, tagObject, "transparent");
+            toggleTarget(tagObject, false);
           } else {
             canvas.add(rect);
           }
@@ -69,8 +71,9 @@ export const annotationCurriculum = () => {
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
         });
+        tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         if (!bindAll) {
-          if (event !== null) {
+          if (event !== null && event.tag === tagObject.tag) {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
               toggleTarget(event, true);
@@ -80,11 +83,12 @@ export const annotationCurriculum = () => {
             }
           }
         } else {
-          const tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
           if (event === "show-all-targets") {
             setStrokeColor(canvas, tagObject, item.color);
+            toggleTarget(tagObject, true);
           } else if (event === "hide-all-targets") {
             setStrokeColor(canvas, tagObject, "transparent");
+            toggleTarget(tagObject, false);
           } else {
             canvas.add(circle);
           }
@@ -104,8 +108,9 @@ export const annotationCurriculum = () => {
           perPixelTargetFind: true,
         });
         star.rotate(item.rotate);
+        tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
         if (!bindAll) {
-          if (event !== null) {
+          if (event !== null && event.tag === tagObject.tag) {
             if (event.stroke === "transparent") {
               setStrokeColor(canvas, event, item.color);
               toggleTarget(event, true);
@@ -115,11 +120,12 @@ export const annotationCurriculum = () => {
             }
           }
         } else {
-          const tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
           if (event === "show-all-targets") {
             setStrokeColor(canvas, tagObject, item.color);
+            toggleTarget(tagObject, true);
           } else if (event === "hide-all-targets") {
             setStrokeColor(canvas, tagObject, "transparent");
+            toggleTarget(tagObject, false);
           } else {
             canvas.add(star);
           }

@@ -182,9 +182,14 @@ const mutations: LessonMutation<LessonState> = {
     s.targetsVisibleAll = p;
   },
   setTargetsVisibleList(s: LessonState, p: TargetsVisibleList) {
-    if (s.targetsVisibleList.length > 0) {
+    if (s.targetsVisibleList.length) {
       if (s.targetsVisibleList.some(obj => obj.tag === p.tag)) {
-        s.targetsVisibleList = s.targetsVisibleList.filter(obj => obj.tag !== p.tag);
+        s.targetsVisibleList.map((obj: any) => {
+          if (obj.tag === p.tag) {
+            const index = s.targetsVisibleList.indexOf(obj);
+            s.targetsVisibleList[index] = p;
+          }
+        });
       } else {
         s.targetsVisibleList = [...s.targetsVisibleList, p];
       }
