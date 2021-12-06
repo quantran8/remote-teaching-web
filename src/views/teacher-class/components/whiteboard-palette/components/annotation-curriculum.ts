@@ -6,12 +6,47 @@ import { computed } from "vue";
 export const annotationCurriculum = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["teacherRoom/teacher"]);
-  const toggleTarget = (event: any, visible: boolean) => {
+  const toggleTargetTeacher = (event: any, visible: boolean) => {
     dispatch("teacherRoom/setTargetsVisibleListAction", {
       userId: isTeacher.value.id,
       tag: event.tag,
       visible: visible,
     });
+  };
+  const eventSelfClick = (event: any, tagObject: any, canvas: any, item: any) => {
+    if (event !== null && event.tag === tagObject.tag && event.id === "annotation-lesson") {
+      if (event.stroke === "transparent") {
+        setStrokeColor(canvas, event, item.color);
+        toggleTargetTeacher(event, true);
+      } else {
+        setStrokeColor(canvas, event, "transparent");
+        toggleTargetTeacher(event, false);
+      }
+    }
+  };
+  const eventStudentClick = (event: any, tagObject: any, canvas: any, item: any) => {
+    if (event !== null && event.tag === tagObject.tag && event.visible && event.id !== "annotation-lesson") {
+      setStrokeColor(canvas, tagObject, item.color);
+    }
+    if (event !== null && event.tag === tagObject.tag && !event.visible && event.id !== "annotation-lesson") {
+      setStrokeColor(canvas, tagObject, "transparent");
+    }
+  };
+  const processShape = (bindAll: any, event: any, tagObject: any, canvas: any, item: any, shape: any) => {
+    if (!bindAll) {
+      eventSelfClick(event, tagObject, canvas, item);
+      eventStudentClick(event, tagObject, canvas, item);
+    } else {
+      if (event === "show-all-targets") {
+        setStrokeColor(canvas, tagObject, item.color);
+        toggleTargetTeacher(tagObject, true);
+      } else if (event === "hide-all-targets") {
+        setStrokeColor(canvas, tagObject, "transparent");
+        toggleTargetTeacher(tagObject, false);
+      } else {
+        canvas.add(shape);
+      }
+    }
   };
   const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any) => {
     const { imgLeftCrop, ratio } = ratioValue(propImage, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
@@ -37,27 +72,7 @@ export const annotationCurriculum = () => {
         });
         rect.rotate(item.rotate);
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
-        if (!bindAll) {
-          if (event !== null && event.tag === tagObject.tag) {
-            if (event.stroke === "transparent") {
-              setStrokeColor(canvas, event, item.color);
-              toggleTarget(event, true);
-            } else {
-              setStrokeColor(canvas, event, "transparent");
-              toggleTarget(event, false);
-            }
-          }
-        } else {
-          if (event === "show-all-targets") {
-            setStrokeColor(canvas, tagObject, item.color);
-            toggleTarget(tagObject, true);
-          } else if (event === "hide-all-targets") {
-            setStrokeColor(canvas, tagObject, "transparent");
-            toggleTarget(tagObject, false);
-          } else {
-            canvas.add(rect);
-          }
-        }
+        processShape(bindAll, event, tagObject, canvas, item, rect);
         break;
       case (item.type = 1):
         circle = new fabric.Circle({
@@ -72,27 +87,7 @@ export const annotationCurriculum = () => {
           perPixelTargetFind: true,
         });
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
-        if (!bindAll) {
-          if (event !== null && event.tag === tagObject.tag) {
-            if (event.stroke === "transparent") {
-              setStrokeColor(canvas, event, item.color);
-              toggleTarget(event, true);
-            } else {
-              setStrokeColor(canvas, event, "transparent");
-              toggleTarget(event, false);
-            }
-          }
-        } else {
-          if (event === "show-all-targets") {
-            setStrokeColor(canvas, tagObject, item.color);
-            toggleTarget(tagObject, true);
-          } else if (event === "hide-all-targets") {
-            setStrokeColor(canvas, tagObject, "transparent");
-            toggleTarget(tagObject, false);
-          } else {
-            canvas.add(circle);
-          }
-        }
+        processShape(bindAll, event, tagObject, canvas, item, circle);
         break;
       case (item.type = 2):
         points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
@@ -109,27 +104,7 @@ export const annotationCurriculum = () => {
         });
         star.rotate(item.rotate);
         tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
-        if (!bindAll) {
-          if (event !== null && event.tag === tagObject.tag) {
-            if (event.stroke === "transparent") {
-              setStrokeColor(canvas, event, item.color);
-              toggleTarget(event, true);
-            } else {
-              setStrokeColor(canvas, event, "transparent");
-              toggleTarget(event, false);
-            }
-          }
-        } else {
-          if (event === "show-all-targets") {
-            setStrokeColor(canvas, tagObject, item.color);
-            toggleTarget(tagObject, true);
-          } else if (event === "hide-all-targets") {
-            setStrokeColor(canvas, tagObject, "transparent");
-            toggleTarget(tagObject, false);
-          } else {
-            canvas.add(star);
-          }
-        }
+        processShape(bindAll, event, tagObject, canvas, item, star);
         break;
     }
   };

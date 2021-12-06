@@ -75,9 +75,9 @@ export default defineComponent({
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
     watch(toggleTargets, () => {
       if (toggleTargets.value.visible) {
-        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "show-all-targets");
+        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "show-all-targets");
       } else {
-        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
+        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
       }
     });
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
@@ -88,8 +88,6 @@ export default defineComponent({
           targetsList.value.forEach((obj: any) => {
             processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
           });
-        } else {
-          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
         }
       },
       { deep: true },
