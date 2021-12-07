@@ -44,11 +44,15 @@ export const annotationCurriculumStudent = () => {
       eventTeacherClick(event, tagObject, canvas, item);
     } else {
       if (event === "show-all-targets") {
-        canvas.add(shape);
-        setStrokeColor(canvas, tagObject, item.color);
+        if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
+          canvas.add(shape);
+          setStrokeColor(canvas, tagObject, item.color);
+        }
       } else {
-        canvas.add(shape);
-        setStrokeColor(canvas, tagObject, "transparent");
+        if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
+          canvas.add(shape);
+          setStrokeColor(canvas, tagObject, "transparent");
+        }
       }
     }
   };

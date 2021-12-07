@@ -222,6 +222,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
+      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.drawing.visibleShapes, { root: true });
       if (roomInfo.studentOneToOne) {
         await dispatch(
           "teacherRoom/setStudentOneId",

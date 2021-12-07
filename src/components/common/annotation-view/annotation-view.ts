@@ -72,26 +72,6 @@ export default defineComponent({
         }
       }
     });
-    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
-    watch(toggleTargets, () => {
-      if (toggleTargets.value.visible) {
-        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "show-all-targets");
-      } else {
-        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
-      }
-    });
-    const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
-    watch(
-      targetsList,
-      () => {
-        if (targetsList.value.length) {
-          targetsList.value.forEach((obj: any) => {
-            processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
-          });
-        }
-      },
-      { deep: true },
-    );
     const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
     const { processAnnotationLesson } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {
@@ -373,6 +353,30 @@ export default defineComponent({
       resizeCanvas();
       processCanvasWhiteboard();
     };
+    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
+    watch(toggleTargets, () => {
+      if (toggleTargets.value.visible) {
+        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "show-all-targets");
+      } else {
+        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
+      }
+    });
+    const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
+    const targetsListProcess = () => {
+      if (targetsList.value.length) {
+        targetsList.value.forEach((obj: any) => {
+          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
+        });
+      }
+    };
+    const firstTimeLoadTargets = ref(false);
+    watch(
+      targetsList,
+      () => {
+        targetsListProcess();
+      },
+      { deep: true },
+    );
     const imgLoad = () => {
       processAnnotationLesson(
         canvas,
@@ -382,6 +386,10 @@ export default defineComponent({
         true,
         toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
       );
+      if (!firstTimeLoadTargets.value) {
+        targetsListProcess();
+        firstTimeLoadTargets.value = true;
+      }
     };
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
@@ -402,7 +410,7 @@ export default defineComponent({
         props.image,
         containerRef,
         isShowWhiteBoard,
-        true,
+        false,
         toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
       );
     };

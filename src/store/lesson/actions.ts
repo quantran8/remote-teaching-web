@@ -183,6 +183,9 @@ const actions: LessonActions<LessonState, any> = {
   setTargetsVisibleListAction(store: ActionContext<LessonState, any>, payload) {
     store.commit("setTargetsVisibleList", payload);
   },
+  setTargetsVisibleListJoinedAction(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setTargetsVisibleListJoined", payload);
+  },
 };
 
 export default actions;

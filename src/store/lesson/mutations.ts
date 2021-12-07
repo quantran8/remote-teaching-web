@@ -197,6 +197,9 @@ const mutations: LessonMutation<LessonState> = {
       s.targetsVisibleList.push(p);
     }
   },
+  setTargetsVisibleListJoined(s: LessonState, p: TargetsVisibleList[]) {
+    s.targetsVisibleList = p;
+  },
 };
 
 export default mutations;
