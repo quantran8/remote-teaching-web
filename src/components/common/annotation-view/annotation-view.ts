@@ -354,13 +354,6 @@ export default defineComponent({
       processCanvasWhiteboard();
     };
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
-    watch(toggleTargets, () => {
-      if (toggleTargets.value.visible) {
-        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "show-all-targets");
-      } else {
-        // processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, "hide-all-targets");
-      }
-    });
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
     const targetsListProcess = () => {
       if (targetsList.value.length) {

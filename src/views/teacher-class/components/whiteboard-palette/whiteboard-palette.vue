@@ -40,8 +40,8 @@
     <div v-if="!isGalleryView && image && image.metaData" class="target-actions">
       <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
       <Space v-if="hasTargets">
-        <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">Show All Targets</Button>
-        <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">Hide All Targets</Button>
+        <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">{{ showAllTargetTextBtn }}</Button>
+        <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">{{ hideAllTargetTextBtn }}</Button>
       </Space>
     </div>
   </div>

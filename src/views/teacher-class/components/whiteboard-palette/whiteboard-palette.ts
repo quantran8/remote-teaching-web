@@ -8,7 +8,7 @@ import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { FabricObject } from "@/ws";
 import { fmtMsg } from "@/commonui";
-import { WhiteBoard } from "@/locales/localeid";
+import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
@@ -98,13 +98,16 @@ export default defineComponent({
     const targetsNum = computed(() => {
       return props.image?.metaData?.annotations.length;
     });
+    const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
+    const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
     const targetText = computed(() => {
       if (props.image?.metaData.annotations.length == 1) {
-        return "Target:";
+        return targetTextLocalize.value;
       } else {
-        return "Targets:";
+        return targetsTextLocalize.value;
       }
     });
+    const showAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.ShowAllTargets));
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
     const showAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "show-all-targets");
@@ -115,6 +118,7 @@ export default defineComponent({
         visible: true,
       });
     };
+    const hideAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.HideAllTargets));
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "hide-all-targets");
@@ -765,6 +769,8 @@ export default defineComponent({
       disableShowAllTargetsBtn,
       hideAllTargets,
       disableHideAllTargetsBtn,
+      showAllTargetTextBtn,
+      hideAllTargetTextBtn,
     };
   },
 });
