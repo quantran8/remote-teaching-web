@@ -86,6 +86,7 @@ const actions: ActionTree<StudentRoomState, any> = {
             { user: "", visible: roomResponse.data.annotation.oneOneDrawing.isShowingAllShapes },
             { root: true },
           );
+          await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.oneOneDrawing.visibleShapes, { root: true });
           await dispatch("annotation/setOneTeacherStrokes", roomResponse.data.annotation.oneOneDrawing.brushstrokes, { root: true });
           await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
           await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
