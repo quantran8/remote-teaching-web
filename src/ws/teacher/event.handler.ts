@@ -38,4 +38,6 @@ export interface TeacherWSEventHandler {
   onTeacherAddShape(payload: any): void;
   onTeacherCreateFabricObject(payload: any): void;
   onTeacherModifyFabricObject(payload: any): void;
+  onToggleAllShapes(payload: any): void;
+  onToggleShape(payload: any): void;
 }

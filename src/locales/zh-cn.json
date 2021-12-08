@@ -121,5 +121,9 @@
 	"common.class.actions": "None",
 	"whiteboard.textbox_warning": "Please type letters or basic punctuation only.",
 	"device_tester.message_warning_mic": "Unable to access microphone, please check system settings or grant permission and reload page.",
-	"device_tester.message_warning_camera": "Unable to access camera, please check system settings or grant permission and reload page."
+	"device_tester.message_warning_camera": "Unable to access camera, please check system settings or grant permission and reload page.",
+	"teacher_class.target_text": "Target:",
+	"teacher_class.targets_text": "Targets:",
+	"teacher_class.show_all_targets": "Show All Targets",
+	"teacher_class.hide_all_targets": "Hide All Targets"
 }

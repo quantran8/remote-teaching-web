@@ -292,6 +292,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherModifyFabricObject: (payload: any) => {
       Logger.info("Fabric:modify object");
     },
+    onToggleShape: async (payload: any) => {
+      await dispatch("lesson/setTargetsVisibleListAction", payload, { root: true });
+    },
+    onToggleAllShapes: (payload: any) => {
+      Logger.info("Toggle all targets");
+    },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {
