@@ -38,10 +38,8 @@ export const annotationCurriculum = () => {
       eventStudentClick(event, tagObject, canvas, item);
     } else {
       if (event === "show-all-targets") {
-        setStrokeColor(canvas, tagObject, item.color);
         toggleTargetTeacher(tagObject, true);
       } else if (event === "hide-all-targets") {
-        setStrokeColor(canvas, tagObject, "transparent");
         toggleTargetTeacher(tagObject, false);
       } else {
         canvas.add(shape);

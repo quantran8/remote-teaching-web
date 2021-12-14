@@ -142,6 +142,9 @@ export default defineComponent({
         .filter((obj: any) => obj.stroke === "transparent");
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
+    watch(canvas, () => {
+      objectTargetOnCanvas();
+    });
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
     watch(
       targetsList,
@@ -321,7 +324,6 @@ export default defineComponent({
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
         processAnnotationLesson(props.image, canvas, false, event.target);
-        objectTargetOnCanvas();
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
