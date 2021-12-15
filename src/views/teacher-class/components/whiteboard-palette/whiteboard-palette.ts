@@ -96,7 +96,9 @@ export default defineComponent({
       return !!props.image?.metaData.annotations;
     });
     const targetsNum = computed(() => {
-      return props.image?.metaData?.annotations.length;
+      if (props.image?.metaData?.annotations) {
+        return props.image?.metaData?.annotations.length;
+      }
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
@@ -142,9 +144,6 @@ export default defineComponent({
         .filter((obj: any) => obj.stroke === "transparent");
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
-    watch(canvas, () => {
-      objectTargetOnCanvas();
-    });
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
     watch(
       targetsList,
