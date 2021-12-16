@@ -96,7 +96,9 @@ export default defineComponent({
       return !!props.image?.metaData.annotations;
     });
     const targetsNum = computed(() => {
-      return props.image?.metaData?.annotations.length;
+      if (props.image?.metaData?.annotations) {
+        return props.image?.metaData?.annotations.length;
+      }
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
@@ -321,7 +323,6 @@ export default defineComponent({
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
         processAnnotationLesson(props.image, canvas, false, event.target);
-        objectTargetOnCanvas();
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {

@@ -65,10 +65,12 @@ export default defineComponent({
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
-    watch(currentExposureItemMedia, (currentItem, prevItem) => {
+    watch(currentExposureItemMedia, async (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
+          await store.dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
+          await store.dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
         }
       }
     });
