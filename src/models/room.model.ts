@@ -3,6 +3,7 @@ import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
 import { Sticker } from "@/store/annotation/state";
 import { FabricObject } from "@/ws";
+import {TargetsVisibleList} from "@/store/lesson/state";
 
 export interface ExposureItemMediaModel {
   id: string;
@@ -78,6 +79,8 @@ export interface DrawingModel {
   studentBrushstrokes: Array<string>;
   shapes: UserShapeModel[];
   fabrics: FabricObject[];
+  isShowingAllShapes: boolean;
+  visibleShapes: TargetsVisibleList[];
 }
 
 export interface AnnotationModel {

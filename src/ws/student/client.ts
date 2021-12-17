@@ -64,4 +64,7 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestStudentLeaveClass(roomId?: string, studentId?: string) {
     return this.send(WSCmd.STUDENT_LEAVE_CLASS, { roomId, studentId });
   }
+  sendRequestToggleShape(payload: { userId: string; tag: string; visible: boolean }) {
+    return this.send(WSCmd.TOGGLE_SHAPE, payload);
+  }
 }

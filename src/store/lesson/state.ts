@@ -104,6 +104,17 @@ export interface AnnotationLesson {
   rotate: number;
 }
 
+export interface TargetsVisibleAll {
+  userId: string;
+  visible: boolean;
+}
+
+export interface TargetsVisibleList {
+  userId: string;
+  tag: string;
+  visible: boolean;
+}
+
 export interface CropMetadata {
   x: number;
   y: number;
@@ -138,6 +149,8 @@ export interface LessonState {
   previousExposure?: Exposure;
   previousExposureItemMedia?: ExposureItemMedia;
   cropCache?: CropCache;
+  targetsVisibleAll?: TargetsVisibleAll;
+  targetsVisibleList: TargetsVisibleList[];
 }
 
 const state: LessonState = {
@@ -153,6 +166,8 @@ const state: LessonState = {
   previousExposure: undefined,
   previousExposureItemMedia: undefined,
   cropCache: { cacheValues: [] },
+  targetsVisibleAll: { userId: "", visible: false },
+  targetsVisibleList: [],
 };
 
 export default state;

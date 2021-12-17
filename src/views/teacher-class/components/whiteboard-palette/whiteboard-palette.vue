@@ -37,6 +37,13 @@
         <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>
     </div>
+    <div v-if="!isGalleryView && image && image.metaData && !showHideWhiteboard" class="target-actions">
+      <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+      <Space v-if="hasTargets">
+        <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">{{ showAllTargetTextBtn }}</Button>
+        <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">{{ hideAllTargetTextBtn }}</Button>
+      </Space>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped src="./whiteboard-palette.scss"></style>

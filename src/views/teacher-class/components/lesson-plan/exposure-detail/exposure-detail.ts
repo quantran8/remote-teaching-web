@@ -90,6 +90,8 @@ export default defineComponent({
         });
         await dispatch("teacherRoom/setClearBrush", {});
         await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
+        await dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
+        await dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
       }, timeoutClickItem);
     };
     const toggleInformationBox = () => {
