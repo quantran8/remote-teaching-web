@@ -68,3 +68,39 @@ export function endImgLink(url: any) {
   if(typeof url !== 'string') return false;
   return (url.match(/\.(jpg|jpeg|gif|png|tiff|bmp)$/) != null);
 }
+
+export function ratioValue(propImage: any, widthCanvas: number, heightCanvas: number) {
+  let imgWidthCropFit, imgHeightCropFit;
+  const objectFitCenter = 50;
+  let widthMetadata, heightMetadata;
+  if (propImage.metaData.width === 0 && propImage.metaData.height === 0) {
+    widthMetadata = propImage.width;
+    heightMetadata = propImage.height;
+  } else {
+    widthMetadata = propImage.metaData.width;
+    heightMetadata = propImage.metaData.height;
+  }
+  const cropRatio = widthMetadata / heightMetadata;
+  const canvasRatio = widthCanvas / heightCanvas;
+  if (cropRatio > canvasRatio) {
+    imgWidthCropFit = widthCanvas;
+    imgHeightCropFit = widthCanvas / cropRatio;
+  } else {
+    imgWidthCropFit = heightCanvas * cropRatio;
+    imgHeightCropFit = heightCanvas;
+  }
+  const imgLeftCrop = (widthCanvas - imgWidthCropFit) * (objectFitCenter / 100);
+  const wRatio = imgWidthCropFit / widthMetadata;
+  const hRatio = imgHeightCropFit / heightMetadata;
+  const ratio = Math.min(wRatio, hRatio);
+  return { imgLeftCrop, ratio };
+}
+
+export function setStrokeColor(canvas: any, event: any, color: any) {
+  canvas.getObjects().forEach((obj: any) => {
+    if (obj.tag === event.tag) {
+      obj.set("stroke", color);
+    }
+  });
+  canvas.renderAll();
+}

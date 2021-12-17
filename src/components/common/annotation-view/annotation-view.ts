@@ -65,10 +65,12 @@ export default defineComponent({
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
-    watch(currentExposureItemMedia, (currentItem, prevItem) => {
+    watch(currentExposureItemMedia, async (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
+          await store.dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
+          await store.dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
         }
       }
     });
@@ -82,7 +84,14 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
         canvas.isDrawingMode = false;
-        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
+        processAnnotationLesson(
+          canvas,
+          props.image,
+          containerRef,
+          isShowWhiteBoard,
+          true,
+          toggleTargets.value.visible ? "show-all-targets" : "hide-all-target",
+        );
       }
     };
     watch(isShowWhiteBoard, () => {
@@ -288,6 +297,11 @@ export default defineComponent({
         listenSelfStudent();
       }
     });
+    const listenToMouseDown = () => {
+      canvas.on("mouse:down", (event: any) => {
+        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, event.target);
+      });
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         canvas.renderAll();
@@ -318,6 +332,7 @@ export default defineComponent({
         });
     };
     const listenToCanvasEvents = () => {
+      listenToMouseDown();
       listenToMouseUp();
       listenCreatedPath();
       listenSelfStudent();
@@ -340,8 +355,36 @@ export default defineComponent({
       resizeCanvas();
       processCanvasWhiteboard();
     };
+    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
+    const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
+    const targetsListProcess = () => {
+      if (targetsList.value.length) {
+        targetsList.value.forEach((obj: any) => {
+          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
+        });
+      }
+    };
+    const firstTimeLoadTargets = ref(false);
+    watch(
+      targetsList,
+      () => {
+        targetsListProcess();
+      },
+      { deep: true },
+    );
     const imgLoad = () => {
-      processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
+      processAnnotationLesson(
+        canvas,
+        props.image,
+        containerRef,
+        isShowWhiteBoard,
+        true,
+        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
+      );
+      if (!firstTimeLoadTargets.value) {
+        targetsListProcess();
+        firstTimeLoadTargets.value = true;
+      }
     };
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
@@ -357,7 +400,14 @@ export default defineComponent({
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
       canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-      processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard);
+      processAnnotationLesson(
+        canvas,
+        props.image,
+        containerRef,
+        isShowWhiteBoard,
+        false,
+        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
+      );
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {

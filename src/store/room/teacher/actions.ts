@@ -222,6 +222,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
+      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.drawing.visibleShapes, { root: true });
       if (roomInfo.studentOneToOne) {
         await dispatch(
           "teacherRoom/setStudentOneId",
@@ -459,6 +460,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
       fabricData: JSON.stringify(payload.toJSON()),
     };
     state.manager?.WSClient.sendRequestModifyFabricObject(fabricObject);
+  },
+  setTargetsVisibleAllAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleAllShapes(payload);
+  },
+  setTargetsVisibleListAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleShape(payload);
   },
 };
 

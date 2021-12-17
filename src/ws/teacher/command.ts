@@ -38,4 +38,7 @@ export enum TeacherWSCommand {
   TEACHER_DRAW_LASER_PEN = "TeacherDrawLaserPen",
   TEACHER_CREATE_FABRIC_OBJECT = "TeacherCreateFabricObject",
   TEACHER_MODIFY_FABRIC_OBJECT = "TeacherModifyFabricObject",
+
+  TOGGLE_ALL_SHAPES = "ToggleAllShapes",
+  TOGGLE_SHAPE = "ToggleShape",
 }

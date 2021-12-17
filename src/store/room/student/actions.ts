@@ -64,6 +64,12 @@ const actions: ActionTree<StudentRoomState, any> = {
         classView: ClassViewFromValue(roomResponse.data.teachingMode),
       });
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
+      await dispatch(
+        "lesson/setTargetsVisibleAllAction",
+        { user: "", visible: roomResponse.data.annotation.drawing.isShowingAllShapes },
+        { root: true },
+      );
+      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.drawing.visibleShapes, { root: true });
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
         if (payload.studentId === roomResponse.data.studentOneToOne) {
@@ -75,6 +81,12 @@ const actions: ActionTree<StudentRoomState, any> = {
             isPalette: roomResponse.data.oneAndOneDto.isEnablePalette,
           });
           await commit("setWhiteboard", roomResponse.data.oneAndOneDto.isShowWhiteBoard);
+          await dispatch(
+            "lesson/setTargetsVisibleAllAction",
+            { user: "", visible: roomResponse.data.annotation.oneOneDrawing.isShowingAllShapes },
+            { root: true },
+          );
+          await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.oneOneDrawing.visibleShapes, { root: true });
           await dispatch("annotation/setOneTeacherStrokes", roomResponse.data.annotation.oneOneDrawing.brushstrokes, { root: true });
           await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
           await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
@@ -424,6 +436,9 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   toggleVideosFeed({ commit }) {
     commit("toggleVideosFeed");
+  },
+  setTargetsVisibleListAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleShape(payload);
   },
 };
 
