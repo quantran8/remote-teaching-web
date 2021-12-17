@@ -114,6 +114,8 @@ export class DeviceTesterLocale {
   static Unit = "device_tester.unit";
   static Cancel = "device_tester.cancel";
   static JoinSession = "device_tester.join_session";
+  static MessageWarningMic = "device_tester.message_warning_mic";
+  static MessageWarningCamera = "device_tester.message_warning_camera";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
@@ -195,6 +197,16 @@ export class TeacherHome {
   static Submit = "teacher_home.submit";
   static Group = "teacher_home.group";
   static Next = "teacher_home.next";
+}
+
+export class TeacherClass {
+  static LeavePage = "teacher_class.leave_page";
+  static LeaveNotice = "teacher_class.leave_notice";
+  static MarkAsComplete = "teacher_class.mark_as_complete";
+  static TargetText = "teacher_class.target_text";
+  static TargetsText = "teacher_class.targets_text";
+  static ShowAllTargets = "teacher_class.show_all_targets";
+  static HideAllTargets = "teacher_class.hide_all_targets";
 }
 
 export class LostNetwork {

@@ -79,7 +79,7 @@ const actions: LessonActions<LessonState, any> = {
                 resolution: DEFAULT_RESOLUTION,
                 sequence: c.sequence,
                 url: c.imageUrl,
-				metaData: JSON.parse(c.metaData),
+                metaData: JSON.parse(c.metaData),
               },
             ],
           }))
@@ -93,7 +93,7 @@ const actions: LessonActions<LessonState, any> = {
               url,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
-			  metaData: p.metaData,
+              metaData: p.metaData,
             },
           };
         });
@@ -172,11 +172,20 @@ const actions: LessonActions<LessonState, any> = {
     store.commit("clearLessonData");
   },
   storeCacheImage(store: ActionContext<LessonState, any>, payload: { url: string, metadata: CropMetadata, base64String: string }) {
-	store.commit("storeCacheImage", payload);
+    store.commit("storeCacheImage", payload);
   },
   clearCacheImage(store: ActionContext<LessonState, any>) {
-	store.commit("clearCacheImage");
-  }
+    store.commit("clearCacheImage");
+  },
+  setTargetsVisibleAllAction(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setTargetsVisibleAll", payload);
+  },
+  setTargetsVisibleListAction(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setTargetsVisibleList", payload);
+  },
+  setTargetsVisibleListJoinedAction(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setTargetsVisibleListJoined", payload);
+  },
 };
 
 export default actions;

@@ -24,6 +24,7 @@
     "@types/uuid": "^8.3.0",
     "@zoomus/websdk": "^1.8.3",
     "agora-rtc-sdk-ng": "^4.2.1",
+    "animate.css": "^4.1.1",
     "ant-design-vue": "^2.1.2",
     "bowser": "^2.11.0",
     "core-js": "^3.6.5",

@@ -5,6 +5,9 @@
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr 300px;
   height: 100vh;
+  &__modal__notice {
+	  margin-top: 16px;
+  }
   &__header {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -90,11 +93,21 @@
   }
   &.has-sidebar {
     &.mode-one-one {
-      @media screen and (min-width: $xl) and (max-width: $xxl) {
-        grid-template-columns: auto 1fr 300px;
+      grid-template-columns: auto 1fr auto;
+      .tc__sidebar {
+        position: absolute;
+        z-index: 9999;
+        background: #fff;
+        left: -240px;
+        top: 85px;
+        height: calc(100% - 85px);
+        box-shadow: 5px 0px 5px 0px rgba(0,0,0,0.15);
+        &--one-one {
+          left: 0;
+        }
       }
-      @media screen and (min-width: $xxl) and (max-width: $large-lap) {
-        grid-template-columns: auto 1fr 400px;
+      .tc__content {
+        padding-left: 85px;
       }
     }
   }

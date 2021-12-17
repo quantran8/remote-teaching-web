@@ -34,9 +34,12 @@
         </div>
       </Row>
       <Row align="middle" class="device-tester__mb--default">
-        <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
+        <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6" v-show="listMics.length > 0">
           <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" :show-info="false" />
         </div>
+        <p v-show="!havePermissionMicrophone">
+          <span class="alert-device-test">{{ warningMsgMicrophone }}</span>
+        </p>
       </Row>
       <Row align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">
@@ -59,6 +62,11 @@
             </Select>
           </Space>
         </div>
+      </Row>
+      <Row align="middle" class="device-tester__mb--default">
+        <p v-show="!havePermissionCamera">
+          <span class="alert-device-test">{{ warningMsgCamera }}</span>
+        </p>
       </Row>
       <Row align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
@@ -115,14 +123,23 @@
           <b>{{ ClassStatus }}</b>
         </div>
         <div class="ant-col-24 ant-col-sm-18">
-          <span v-if="!classIsActive">{{ getRoomInfoError !== 0 ? getRoomInfoErrorByMsg : DefaultMessage1 }}</span>
+          <span v-if="!classIsActive">
+            {{ notDisplaySpinner ? getRoomInfoErrorByMsg : DefaultMessage1 }}
+            <Spin v-if="!notDisplaySpinner"></Spin>
+          </span>
           <span v-else>{{ DefaultMessage2 }}</span>
         </div>
       </Row>
       <Row v-if="showParentFooter" type="flex" justify="end">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-          <Button :disabled="!classIsActive || !isOpenMic" width="100px" @click="goToClass" type="primary" :loading="loading">
+          <Button
+            :disabled="!classIsActive || !isOpenMic || listMicsId.length <= 0"
+            width="100px"
+            @click="goToClass"
+            type="primary"
+            :loading="loading"
+          >
             {{ JoinNow }}
           </Button>
         </Space>

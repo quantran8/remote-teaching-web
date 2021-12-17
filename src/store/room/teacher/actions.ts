@@ -30,6 +30,7 @@ import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { FabricObject } from "@/ws";
+import { UserRole } from "@/store/app/state";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -46,8 +47,9 @@ const lowBandWidthPoint = networkQualityStats["3"];
 const actions: ActionTree<TeacherRoomState, any> = {
   async endClass({ commit, state }, payload: DefaultPayload) {
     if (state.info) {
+      const { markAsComplete } = payload;
       await state.manager?.WSClient.sendRequestEndRoom(state.info?.id);
-      await RemoteTeachingService.teacherEndClassRoom(state.info?.id);
+      await RemoteTeachingService.teacherEndClassRoom(state.info?.id, markAsComplete);
     }
     commit("endClass", payload);
   },
@@ -146,7 +148,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
           currentBandwidth = 0;
         }
       });
-    }, 30000); // 30000 = 30 seconds
+    }, 300000); // 300000 = 5 minutes
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (user, mediaType) => {
         Logger.log("user-published", user.uid, mediaType);
@@ -220,6 +222,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
+      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.drawing.visibleShapes, { root: true });
       if (roomInfo.studentOneToOne) {
         await dispatch(
           "teacherRoom/setStudentOneId",
@@ -233,8 +236,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       }
       commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
-      Logger.log("initClassRoom error =>", err);
-      //   await router.push(Paths.Home);
+      await router.push(Paths.Home);
     }
   },
   async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
@@ -420,8 +422,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setOnline({ commit }) {
     commit("setOnline");
   },
-  setOffline({ commit }) {
-    commit("setOffline");
+  setOffline({ commit, rootState }) {
+    if (rootState.app.userRole === UserRole.Teacher) {
+      commit("setOffline");
+    }
   },
   setTeacherLowBandWidth({ commit }, p: boolean) {
     commit("setTeacherLowBandWidth", p);
@@ -456,6 +460,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
       fabricData: JSON.stringify(payload.toJSON()),
     };
     state.manager?.WSClient.sendRequestModifyFabricObject(fabricObject);
+  },
+  setTargetsVisibleAllAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleAllShapes(payload);
+  },
+  setTargetsVisibleListAction({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestToggleShape(payload);
   },
 };
 

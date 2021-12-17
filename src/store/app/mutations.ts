@@ -1,4 +1,4 @@
-import { AppState, AppView, LayoutType, ToastData } from "./state";
+import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
 import { MutationTree } from "vuex";
 
 const mutations: MutationTree<AppState> = {
@@ -28,6 +28,9 @@ const mutations: MutationTree<AppState> = {
   },
   setCameraDeviceId(state, payload: string) {
     state.cameraDeviceId = payload;
+  },
+  setUserRoleByView(state, payload: UserRole) {
+    state.userRole = payload;
   },
 };
 

@@ -2,20 +2,15 @@ import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import { toolType } from "./types";
-import { starPolygonPoints } from "commonui";
+import { DefaultCanvasDimension } from "commonui";
 import { TeacherModel } from "@/models";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { LastFabricUpdated } from "@/store/annotation/state";
-import { Logger } from "@/utils/logger";
 import { Popover } from "ant-design-vue";
-
-const randomPosition = () => Math.random() * 100;
-
-const defaultCanvasDimension = {
-  width: 717,
-  height: 435,
-};
+import { studentAddedShapes } from "@/components/common/annotation-view/components/add-shapes";
+import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
+import { annotationCurriculumStudent } from "@/components/common/annotation-view/components/annotation-curriculum";
+import { laserPen } from "@/components/common/annotation-view/components/laser-path";
 
 export default defineComponent({
   props: ["image"],
@@ -70,56 +65,38 @@ export default defineComponent({
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
-    watch(currentExposureItemMedia, (currentItem, prevItem) => {
+    watch(currentExposureItemMedia, async (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
+          await store.dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
+          await store.dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
         }
       }
     });
+    const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
+    const { processAnnotationLesson } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
-        if (!studentOneAndOneId.value || student.value.id == studentOneAndOneId.value) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-        }
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
       } else {
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
         canvas.isDrawingMode = false;
+        processAnnotationLesson(
+          canvas,
+          props.image,
+          containerRef,
+          isShowWhiteBoard,
+          true,
+          toggleTargets.value.visible ? "show-all-targets" : "hide-all-target",
+        );
       }
     };
     watch(isShowWhiteBoard, () => {
       processCanvasWhiteboard();
     });
-    const brushstrokesRender = (data: any, oneId: any, tag: any) => {
-      data.brushstrokes.forEach((s: any) => {
-        const shape = JSON.parse(s);
-        if (shape.type === "polygon") {
-          const polygon = new fabric.Polygon.fromObject(shape, (item: any) => {
-            item.isOneToOne = oneId;
-            item.tag = tag;
-            canvas.add(item);
-            item.selectable = false;
-          });
-        }
-        if (shape.type === "rect") {
-          const rect = new fabric.Rect.fromObject(shape, (item: any) => {
-            item.isOneToOne = oneId;
-            item.tag = tag;
-            canvas.add(item);
-            item.selectable = false;
-          });
-        }
-        if (shape.type === "circle") {
-          const circle = new fabric.Circle.fromObject(shape, (item: any) => {
-            item.isOneToOne = oneId;
-            item.tag = tag;
-            canvas.add(item);
-            item.selectable = false;
-          });
-        }
-      });
-    };
     const undoStrokeByTeacher = () => {
       if (undoCanvas.value) {
         canvas.remove(
@@ -160,7 +137,7 @@ export default defineComponent({
       listenSelfStudent();
     };
     const renderTeacherStrokes = () => {
-      if (canvasData.value && canvasData.value.length > 0) {
+      if (canvasData.value && canvasData.value.length > 0 && (!studentOneAndOneId.value || studentOneAndOneId.value != student.value.id)) {
         renderStrokes(canvasData.value, null);
       }
     };
@@ -168,52 +145,35 @@ export default defineComponent({
       await nextTick();
       renderTeacherStrokes();
     });
-    const laserPathByTeacher = () => {
-      if (laserPath.value) {
-        const laserPathLine = new fabric.Path.fromObject(JSON.parse(laserPath.value), (item: any) => {
-          item.animate("opacity", "0", {
-            duration: 1000,
-            easing: fabric.util.ease.easeInOutExpo,
-            onChange: () => {
-              if (oneOneStatus.value) {
-                if (studentOneAndOneId.value === student.value.id) {
-                  canvas.add(item);
-                }
-              } else {
-                canvas.add(item);
-              }
-            },
-            onComplete: async () => {
-              canvas.remove(item);
-              await store.dispatch("studentRoom/clearLaserPen", "");
-            },
-          });
-        });
-      }
-    };
     watch(laserPath, () => {
-      laserPathByTeacher();
+      laserPen(laserPath, canvas, oneOneStatus, studentOneAndOneId, student);
     });
     const studentSharingShapes = () => {
-      if (studentShapes.value) {
+      if (studentShapes.value && studentShapes.value.length) {
         canvas.remove(
           ...canvas
             .getObjects()
             .filter((obj: any) => obj.id !== student.value.id)
             .filter((obj: any) => obj.id !== teacherForST.value.id)
+            .filter((obj: any) => obj.id !== "annotation-lesson")
             .filter((obj: any) => obj.type !== "path")
             .filter((obj: any) => !obj.objectId),
         );
         studentShapes.value.forEach((item: any) => {
           if (item.userId !== teacherForST.value.id) {
             if (item.userId !== student.value.id) {
-              brushstrokesRender(item, null, "student-other-shapes");
+              brushstrokesRender(canvas, item, null, "student-other-shapes");
             }
           }
         });
         listenSelfStudent();
       } else {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id));
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson")
+            .filter((obj: any) => !obj.objectId),
+        );
       }
     };
     watch(studentShapes, () => {
@@ -222,7 +182,9 @@ export default defineComponent({
         selfStudentShapes();
         firstTimeVisit.value = true;
       } else if (studentShapes.value && studentShapes.value.length === 0) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id));
+        canvas.remove(
+          ...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson"),
+        );
       }
     });
     const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
@@ -235,7 +197,7 @@ export default defineComponent({
         );
         dataShapes.forEach((item: any) => {
           if (item.userId === teacherForST.value.id) {
-            brushstrokesRender(item, studentOneId, "teacher-shapes");
+            brushstrokesRender(canvas, item, studentOneId, "teacher-shapes");
           }
         });
       } else {
@@ -292,7 +254,7 @@ export default defineComponent({
         );
         studentShapes.value.forEach((item: any) => {
           if (item.userId === student.value.id) {
-            brushstrokesRender(item, null, "student-self-shapes");
+            brushstrokesRender(canvas, item, null, "student-self-shapes");
           }
         });
         listenSelfStudent();
@@ -335,37 +297,20 @@ export default defineComponent({
         listenSelfStudent();
       }
     });
-    const studentAddShapes = async () => {
-      const shapes: Array<string> = [];
-      canvas.getObjects().forEach((obj: any) => {
-        if (obj.id === student.value.id && obj.type !== "path") {
-          obj = obj.toJSON();
-          obj.id = student.value.id;
-          shapes.push(JSON.stringify(obj));
-        }
+    const listenToMouseDown = () => {
+      canvas.on("mouse:down", (event: any) => {
+        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, event.target);
       });
-      if (shapes.length) {
-        await store.dispatch("studentRoom/studentAddShape", shapes);
-      }
-    };
-    const processPushShapes = async () => {
-      if (oneOneStatus.value) {
-        if (studentOneAndOneId.value === student.value.id) {
-          await studentAddShapes();
-        }
-      } else {
-        await studentAddShapes();
-      }
     };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async () => {
         canvas.renderAll();
         if (canvas.isDrawingMode) {
           const studentStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === student.value.id);
-          const lastStroke = studentStrokes[0];
+          const lastStroke = studentStrokes[studentStrokes.length - 1];
           await store.dispatch("studentRoom/studentDrawsLine", JSON.stringify(lastStroke));
         } else {
-          await processPushShapes();
+          processPushShapes(canvas, student, oneOneStatus, studentOneAndOneId);
         }
       });
     };
@@ -374,6 +319,7 @@ export default defineComponent({
         obj.path.id = student.value.id;
         obj.path.isOneToOne = studentOneAndOneId.value || null;
         obj.path.tag = "self-strokes";
+        obj.perPixelTargetFind = true;
       });
     };
     const listenSelfStudent = () => {
@@ -386,6 +332,7 @@ export default defineComponent({
         });
     };
     const listenToCanvasEvents = () => {
+      listenToMouseDown();
       listenToMouseUp();
       listenCreatedPath();
       listenSelfStudent();
@@ -394,7 +341,7 @@ export default defineComponent({
     const canvasRef = ref(null);
     const boardSetup = () => {
       if (!canvasRef.value) return;
-      const { width, height } = defaultCanvasDimension;
+      const { width, height } = DefaultCanvasDimension;
       canvas = new fabric.Canvas(canvasRef.value, {
         width,
         height,
@@ -402,10 +349,42 @@ export default defineComponent({
       canvas.selectionFullyContained = false;
       canvas.getObjects("path").forEach((obj: any) => {
         obj.selectable = false;
+        obj.perPixelTargetFind = true;
       });
       listenToCanvasEvents();
       resizeCanvas();
       processCanvasWhiteboard();
+    };
+    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
+    const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
+    const targetsListProcess = () => {
+      if (targetsList.value.length) {
+        targetsList.value.forEach((obj: any) => {
+          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
+        });
+      }
+    };
+    const firstTimeLoadTargets = ref(false);
+    watch(
+      targetsList,
+      () => {
+        targetsListProcess();
+      },
+      { deep: true },
+    );
+    const imgLoad = () => {
+      processAnnotationLesson(
+        canvas,
+        props.image,
+        containerRef,
+        isShowWhiteBoard,
+        true,
+        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
+      );
+      if (!firstTimeLoadTargets.value) {
+        targetsListProcess();
+        firstTimeLoadTargets.value = true;
+      }
     };
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
@@ -420,6 +399,15 @@ export default defineComponent({
       scaleRatio.value = zoom;
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
+      processAnnotationLesson(
+        canvas,
+        props.image,
+        containerRef,
+        isShowWhiteBoard,
+        false,
+        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
+      );
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
@@ -428,6 +416,7 @@ export default defineComponent({
           obj.hasControls = false;
           obj.hasBorders = false;
           obj.hoverCursor = "cursor";
+          obj.perPixelTargetFind = true;
         }
       });
     };
@@ -435,63 +424,6 @@ export default defineComponent({
       canvas.isDrawingMode = false;
       toolActive.value = "move";
       objectCanvasProcess();
-    };
-    const addStar = async () => {
-      toolActive.value = "star";
-      const points = starPolygonPoints(5, 35, 15);
-      const star = new fabric.Polygon(points, {
-        stroke: activeColor.value,
-        left: randomPosition(),
-        top: randomPosition(),
-        strokeWidth: 3,
-        strokeLineJoin: "round",
-        fill: "",
-        id: student.value.id,
-        isOneToOne: studentOneAndOneId.value || null,
-      });
-      canvas.isDrawingMode = false;
-      canvas.add(star);
-      canvas.setActiveObject(star);
-      await studentAddShapes();
-    };
-    const addCircle = async () => {
-      toolActive.value = "circle";
-      const circle = new fabric.Circle({
-        left: randomPosition(),
-        top: randomPosition(),
-        radius: 30,
-        fill: "",
-        stroke: activeColor.value,
-        strokeWidth: 3,
-        id: student.value.id,
-        isOneToOne: studentOneAndOneId.value || null,
-      });
-      canvas.isDrawingMode = false;
-      canvas.add(circle);
-      canvas.setActiveObject(circle);
-      await studentAddShapes();
-    };
-    const addSquare = async () => {
-      toolActive.value = "square";
-      const square = new fabric.Rect({
-        left: randomPosition(),
-        top: randomPosition(),
-        width: 50,
-        height: 50,
-        fill: "",
-        stroke: activeColor.value,
-        strokeWidth: 3,
-        id: student.value.id,
-        isOneToOne: studentOneAndOneId.value || null,
-      });
-      canvas.isDrawingMode = false;
-      canvas.add(square);
-      canvas.setActiveObject(square);
-      await studentAddShapes();
-    };
-    const clearStar = () => {
-      canvas.remove(...canvas.getObjects("polygon"));
-      canvas.renderAll();
     };
     const addDraw = () => {
       toolActive.value = "pen";
@@ -506,24 +438,23 @@ export default defineComponent({
     const hideListColors = () => {
       showListColors.value = false;
     };
-    onMounted(() => {
-      boardSetup();
-      window.addEventListener("resize", resizeCanvas);
-    });
-    onUnmounted(() => {
-      window.removeEventListener("resize", resizeCanvas);
-    });
-
-    const paletteTools: Array<toolType> = [
+    const funAddStar = () => {
+      return addStar(canvas, toolActive, student, activeColor, studentOneAndOneId);
+    };
+    const funAddCircle = () => {
+      return addCircle(canvas, toolActive, student, activeColor, studentOneAndOneId);
+    };
+    const funAddSquare = () => {
+      return addSquare(canvas, toolActive, student, activeColor, studentOneAndOneId);
+    };
+    const paletteTools = [
       { name: "move", action: cursorHand },
       { name: "pen", action: addDraw },
-      { name: "star", action: addStar },
-      { name: "circle", action: addCircle },
-      { name: "square", action: addSquare },
+      { name: "star", action: funAddStar },
+      { name: "circle", action: funAddCircle },
+      { name: "square", action: funAddSquare },
     ];
-
     const colorsList = ["black", "red", "orange", "yellow", "green", "blue", "purple", "white"];
-
     const changeColor = (color: string) => {
       activeColor.value = color;
       if (canvas.isDrawingMode) {
@@ -536,7 +467,6 @@ export default defineComponent({
       animationCheck.value = false;
       // set mode move by default when active palette
       cursorHand();
-
       gsap.from(element, { duration: 0.5, height: 0, ease: "bounce", clearProps: "all" });
       gsap.from(element.querySelectorAll(".palette-tool__item"), { duration: 0.5, scale: 0, ease: "back", delay: 0.5, stagger: 0.1 });
     };
@@ -544,7 +474,6 @@ export default defineComponent({
       await gsap.to(element.querySelectorAll(".palette-tool__item"), { duration: 0.1, scale: 0, stagger: 0.1 });
       await gsap.to(element, { height: 0, onComplete: done, duration: 0.3 });
       animationCheck.value = true;
-
       canvas.isDrawingMode = false;
       toolActive.value = "";
     };
@@ -553,7 +482,7 @@ export default defineComponent({
     //get fabric items from vuex and display to whiteboard
     const fabricItems = computed(() => {
       const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
-      if (oneToOneUserId) {
+      if (oneToOneUserId && oneToOneUserId === student.value.id) {
         return store.getters["annotation/fabricItemsOneToOne"];
       }
       return store.getters["annotation/fabricItems"];
@@ -570,7 +499,6 @@ export default defineComponent({
       },
       { deep: true },
     );
-
     //receive the object lastFabricUpdated and update the whiteboard
     const lastFabricUpdated = computed(() => store.getters["annotation/lastFabricUpdated"]);
     const getObjectFromId = (id: string) => {
@@ -597,7 +525,13 @@ export default defineComponent({
           break;
       }
     });
-
+    onMounted(() => {
+      boardSetup();
+      window.addEventListener("resize", resizeCanvas);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("resize", resizeCanvas);
+    });
     return {
       containerRef,
       pointerStyle,
@@ -605,8 +539,6 @@ export default defineComponent({
       isPointerMode,
       canvasRef,
       isShowWhiteBoard,
-      addStar,
-      clearStar,
       student,
       studentOneAndOneId,
       paletteTools,
@@ -621,6 +553,7 @@ export default defineComponent({
       isGalleryView,
       toolActive,
       isLessonPlan,
+      imgLoad,
       showListColors,
       showListColorsPopover,
       hideListColors,

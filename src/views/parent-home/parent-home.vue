@@ -8,7 +8,7 @@
         v-for="child in children"
         :key="child.id"
         :nextSessionInfo="studentNextSessionInfo(child.id)"
-        :name="child.englishName"
+        :name="formatName(child.englishName, child.name)"
         :avatar="child.avatar"
         @click="() => onClickChild(child)"
       >
@@ -21,6 +21,7 @@
       @go-to-class="goToClass"
       :classIsActive="classIsActive"
       ref="deviceTesterRef"
+      @on-close-modal="onDevicesModalClose"
     />
   </div>
   <Modal :visible="visible && !policy" :closable="false" :centered="true" :maskClosable="false" :footer="null">

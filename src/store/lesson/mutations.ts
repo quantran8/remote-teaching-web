@@ -1,5 +1,13 @@
 import { MutationTree } from "vuex";
-import { Exposure, ExposureStatus, ExposureType, LessonState, ExposureItemMedia, CropMetadata } from "./state";
+import {
+  Exposure,
+  ExposureStatus,
+  ExposureType,
+  LessonState,
+  ExposureItemMedia,
+  CropMetadata,
+  TargetsVisibleAll, TargetsVisibleList
+} from "./state";
 import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
 
@@ -12,6 +20,7 @@ interface LessonMutationInterface<S> {
   setTotalTime(s: S, payload: { time: string }): void;
   setPlayedTime(s: S, payload: { time: string }): void;
   endCurrentContent(s: S, payload: any): void;
+  setTargetsVisibleAll(s: S, payload: TargetsVisibleAll): void;
 }
 
 interface LessonMutation<S> extends MutationTree<S>, LessonMutationInterface<S> {}
@@ -168,6 +177,28 @@ const mutations: LessonMutation<LessonState> = {
   clearCacheImage(s: LessonState) {
     // clear all cropped image cache
     s.cropCache?.cacheValues.splice(0, s.cropCache?.cacheValues.length);
+  },
+  setTargetsVisibleAll(s: LessonState, p: TargetsVisibleAll) {
+    s.targetsVisibleAll = p;
+  },
+  setTargetsVisibleList(s: LessonState, p: TargetsVisibleList) {
+    if (s.targetsVisibleList.length) {
+      if (s.targetsVisibleList.some(obj => obj.tag === p.tag)) {
+        s.targetsVisibleList.map((obj: any) => {
+          if (obj.tag === p.tag) {
+            const index = s.targetsVisibleList.indexOf(obj);
+            s.targetsVisibleList[index] = p;
+          }
+        });
+      } else {
+        s.targetsVisibleList = [...s.targetsVisibleList, p];
+      }
+    } else {
+      s.targetsVisibleList.push(p);
+    }
+  },
+  setTargetsVisibleListJoined(s: LessonState, p: TargetsVisibleList[]) {
+    s.targetsVisibleList = p;
   },
 };
 

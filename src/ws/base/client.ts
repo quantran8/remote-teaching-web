@@ -130,6 +130,7 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.STUDENT_LIKE, handler.onStudentLike);
     handlers.set(StudentWSEvent.EVENT_STUDENT_UPDATE_SHAPE_LIST, handler.onStudentSetBrushstrokes);
     handlers.set(StudentWSEvent.EVENT_STUDENT_DRAWS_LINE, handler.onStudentDrawsLine);
+    handlers.set(StudentWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     // handlers.set(
     //   StudentWSEvent.EVENT_STUDENT_SEND_UNITY,
     //   handler.onStudentSendUnity
@@ -178,6 +179,8 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_ONE_TO_ONE, handler.onTeacherSetOneToOne);
     handlers.set(TeacherWSEvent.TEACHER_CREATE_FABRIC_OBJECT, handler.onTeacherCreateFabricObject);
     handlers.set(TeacherWSEvent.TEACHER_MODIFY_FABRIC_OBJECT, handler.onTeacherModifyFabricObject);
+    handlers.set(TeacherWSEvent.EVENT_UPDATE_ALL_SHAPES, handler.onToggleAllShapes);
+    handlers.set(TeacherWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
