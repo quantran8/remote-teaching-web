@@ -200,9 +200,13 @@ export class TeacherHome {
 }
 
 export class TeacherClass {
-	static LeavePage = "teacher_class.leave_page";
-	static LeaveNotice = "teacher_class.leave_notice";
-	static MarkAsComplete = "teacher_class.mark_as_complete";
+  static LeavePage = "teacher_class.leave_page";
+  static LeaveNotice = "teacher_class.leave_notice";
+  static MarkAsComplete = "teacher_class.mark_as_complete";
+  static TargetText = "teacher_class.target_text";
+  static TargetsText = "teacher_class.targets_text";
+  static ShowAllTargets = "teacher_class.show_all_targets";
+  static HideAllTargets = "teacher_class.hide_all_targets";
 }
 
 export class LostNetwork {
