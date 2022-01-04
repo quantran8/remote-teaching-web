@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { AppState, AppView, LayoutType, ToastData } from "./state";
+import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
 
 const getters: GetterTree<AppState, any> = {
   appLayout(state: AppState): LayoutType {
@@ -28,6 +28,9 @@ const getters: GetterTree<AppState, any> = {
   },
   cameraDeviceId(state: AppState): string {
     return state.cameraDeviceId;
+  },
+  userRole(state: AppState): UserRole {
+    return state.userRole;
   },
 };
 
