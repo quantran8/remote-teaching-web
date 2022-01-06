@@ -1,5 +1,5 @@
 import { defineComponent } from "@vue/runtime-core";
-import {computed, ref, watch, inject, ComputedRef} from "vue";
+import { computed, ref, watch, inject, ComputedRef } from "vue";
 import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
 import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
 import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
@@ -29,7 +29,7 @@ export default defineComponent({
     const store = useStore();
     const audioIcon = computed(() => (props.student.audioEnabled ? IconAudioOn : IconAudioOff));
     const videoIcon = computed(() => (props.student.videoEnabled ? IconVideoOn : IconVideoOff));
-    const paletteIcon = computed(() => (props.student.isPalette ? IconPaletteOff : IconPaletteOn));
+    const paletteIcon = computed(() => (props.student.isPalette ? IconPaletteOn : IconPaletteOff));
     const isRasingHand = ref(false);
     const isShowExpandIcon = computed(() => store.getters["teacherRoom/getStudentModeOneId"] !== props.student.id);
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
