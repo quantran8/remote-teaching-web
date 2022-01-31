@@ -201,7 +201,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
     state.manager?.registerAgoraEventHandler(agoraEventHandler);
   },
-  async initClassRoom({ commit, dispatch }, payload: InitClassRoomPayload) {
+  async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
     try {
       const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
@@ -236,7 +236,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
       }
       commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
-      await router.push(Paths.Home);
+      if (!rootState.teacherRoom.isDisconnected) {
+        await router.push(Paths.Home);
+      }
     }
   },
   async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {

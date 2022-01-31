@@ -56,7 +56,7 @@
   grid-template-columns: 60% 40%;
   grid-template-rows: 1fr 105px;
   overflow: hidden;
-  transition: padding 0.5s;
+  //transition: padding 0.5s;
   @media (min-width: $md) {
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
