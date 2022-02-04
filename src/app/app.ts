@@ -1,5 +1,5 @@
 import { useStore } from "vuex";
-import { AuthService, LoginInfo } from "@/commonui";
+import { AuthService, LoginInfo, RoleName } from "@/commonui";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { fmtMsg } from "@/commonui";
@@ -23,8 +23,7 @@ export default defineComponent({
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
-    const isTeacher = computed(() => getters["auth/isTeacher"]);
-    const isParent = computed(() => getters["auth/isParent"]);
+    const loginInfo = computed(() => getters["auth/loginInfo"]);
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
@@ -56,14 +55,13 @@ export default defineComponent({
       if (isSignedIn.value) onUserSignedIn();
     });
 
-    watch([isTeacher, isParent], () => {
-      const isTeacher: boolean = getters["auth/isTeacher"];
-      const isParent: boolean = getters["auth/isParent"];
+    watch(loginInfo, (currentLoginInfo: LoginInfo | null) => {
+      if (!currentLoginInfo) return;
+      const isTeacher =
+        currentLoginInfo.profile?.roles.indexOf(RoleName.teacher) !== -1 && currentLoginInfo.profile?.remoteTsiSettings?.some(r => r.isAllowed);
+      const isParent = currentLoginInfo?.profile.roles.indexOf(RoleName.parent) !== -1;
       const { pathname } = window.location;
       if ((!isParent && !isTeacher) || (isParent && isTeacher)) {
-        if (pathname === "/teacher" || pathname === "/parent") {
-          location.pathname = "/";
-        }
         return;
       }
       if (isTeacher) {
