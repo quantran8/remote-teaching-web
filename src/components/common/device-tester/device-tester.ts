@@ -405,7 +405,9 @@ export default defineComponent({
     };
 
     const handleSubmit = () => {
-      emit("on-join-session", { unit: currentUnit.value, lesson: currentLesson.value });
+      const unitId = props.unitInfo.find((unit: UnitAndLesson) => unit.unit === currentUnit.value).unitId;
+      if (!unitId) return;
+      emit("on-join-session", { unitId, lesson: currentLesson.value, unit: currentUnit.value });
     };
     const handleCancel = () => {
       visible.value = false;
