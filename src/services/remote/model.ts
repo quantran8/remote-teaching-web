@@ -1,4 +1,4 @@
-import { RoomModel } from "@/models";
+import { RoomModel, UnitAndLessonModel } from "@/models";
 
 export interface BaseResponse<T> {
   success: boolean;
@@ -9,3 +9,6 @@ export interface BaseResponse<T> {
 export type TeacherGetRoomResponse = BaseResponse<RoomModel>;
 
 export type StudentGetRoomResponse = BaseResponse<RoomModel>;
+
+export type UnitAndLessonResponse = BaseResponse<UnitAndLessonModel[]>;
+

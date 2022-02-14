@@ -3,7 +3,7 @@ import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
 import { Sticker } from "@/store/annotation/state";
 import { FabricObject } from "@/ws";
-import {TargetsVisibleList} from "@/store/lesson/state";
+import { TargetsVisibleList } from "@/store/lesson/state";
 
 export interface ExposureItemMediaModel {
   id: string;
@@ -136,4 +136,11 @@ export interface RoomModel {
 export interface RoomUsersModel {
   teacher: TeacherModel;
   students: Array<StudentModel>;
+}
+
+export interface UnitAndLessonModel {
+  lessonPlanVersionId: string;
+  sequence: number;
+  unit: number;
+  unitId: number;
 }

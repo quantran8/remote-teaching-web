@@ -38,6 +38,7 @@ export interface ClassModelSchedules {
 export interface UnitAndLesson {
   unit: number;
   sequence: number[];
+  unitId: number;
 }
 
 export interface TeacherClassModel extends ClassModelSchedules {

@@ -1,6 +1,6 @@
 import { GLServiceBase, ServiceRoute } from "../base.service";
 import { RemoteTeachingServiceInterface } from "@/services";
-import { StudentGetRoomResponse, TeacherGetRoomResponse } from "./model";
+import { StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute: ServiceRoute = { prefix: "remote/v1" };
@@ -49,7 +49,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get(`student/story-dictionary/unit/${unitId}/lesson/${lessonId}`);
   }
 
-  getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<any> {
+  getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<UnitAndLessonResponse> {
     return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }
 

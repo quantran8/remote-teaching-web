@@ -5,4 +5,5 @@ export interface JoinSessionModel {
   unit: number;
   lesson: number;
   browserFingerprint: string;
+  unitId: number;
 }
