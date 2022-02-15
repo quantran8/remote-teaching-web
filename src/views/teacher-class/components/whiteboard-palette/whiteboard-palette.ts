@@ -148,7 +148,7 @@ export default defineComponent({
     watch(
       targetsList,
       async () => {
-        if (targetsList.value.length) {
+        if (targetsList.value?.length) {
           targetsList.value.forEach((obj: any) => {
             processAnnotationLesson(props.image, canvas, false, obj);
           });
