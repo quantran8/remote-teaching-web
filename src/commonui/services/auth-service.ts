@@ -177,6 +177,7 @@ class AuthServiceClass {
     });
 
     this.userManager.events.addUserSignedOut(() => {
+		return;
       // when sso signout
       this.clearSignStorage();
       store.dispatch("auth/signout");
