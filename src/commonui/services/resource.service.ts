@@ -2,13 +2,10 @@ import { GLServiceBase, ServiceRoute } from "./service";
 
 class ResourceService extends GLServiceBase<any, any> {
   serviceRoute = {
-    prefix: "admin/v1/resources",
-    itemSuffix: "{id}",
-    suffix: "{resourceId}",
+    prefix: "account/v1/users",
   };
-
   getRemoteTsiSettings() {
-    return this.get("remotetsisettings");
+    return this.get("HasGSConnectAccess");
   }
 }
 

@@ -17,7 +17,7 @@ export interface Profile {
   roleInfos: { id: string; name: string }[];
   [prop: string]: any;
   avatarUrl: string | null;
-  remoteTsiSettings: RemoteTsiSettingModel[];
+  remoteTsiSettings: boolean;
 }
 export interface RemoteTsiSettingModel {
   classId: string;
