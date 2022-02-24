@@ -495,8 +495,8 @@ class AuthServiceClass {
   private setRemoteTsiSettings(loginInfo: LoginInfo): Promise<LoginInfo> {
     return new Promise((resolve, reject) => {
       this.getRemoteTsiSettings()
-        .then((settings: any) => {
-          loginInfo.profile.remoteTsiSettings = settings;
+        .then((allowed: any) => {
+          loginInfo.profile.remoteTsiSettings = allowed;
           resolve(loginInfo);
         })
         .catch((e: Error) => {
