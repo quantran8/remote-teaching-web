@@ -1,6 +1,6 @@
 import { ContentService } from "@/services";
 import { ActionTree } from "vuex";
-import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
+import { AppState, AppView, LayoutType, ToastData, UserRole, VCPlatform } from "./state";
 
 export const CAMERA_ID_KEY = "__RT_CAMERA_ID__";
 
@@ -38,6 +38,9 @@ const actions: ActionTree<AppState, any> = {
   },
   setUserRoleByView(store, payload: UserRole) {
     store.commit("setUserRoleByView", payload);
+  },
+  setVCPlatform(store, payload: VCPlatform) {
+    store.commit("setVCPlatform", payload);
   },
 };
 

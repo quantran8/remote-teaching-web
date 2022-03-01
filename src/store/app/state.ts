@@ -15,6 +15,11 @@ export enum UserRole {
   Student = 2,
 }
 
+export enum VCPlatform {
+  Agora = 0,
+  Zoom = 1,
+}
+
 export interface AppState {
   layout: LayoutType;
   appView: AppView;
@@ -26,6 +31,8 @@ export interface AppState {
   classRoomStatus: number;
   cameraDeviceId: string;
   userRole: UserRole;
+
+  platform: VCPlatform;
 }
 export interface ToastData {
   message: string;
@@ -47,6 +54,8 @@ const state: AppState = {
   classRoomStatus: ClassRoomStatus.InDashBoard,
   cameraDeviceId: cameraDeviceId || "",
   userRole: UserRole.UnConfirm,
+
+  platform: VCPlatform.Zoom,
 };
 
 export default state;

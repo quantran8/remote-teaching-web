@@ -1,9 +1,11 @@
+import { ZoomClient, ZoomClientOptions } from "./../../zoom";
 import { AgoraClient, AgoraClientOptions, AgoraEventHandler } from "@/agora";
-import { StudentState, TeacherState } from "@/store/room/interface";
+
 import { GLSocketClient, WSEventHandler } from "@/ws";
 
 export interface RoomOptions {
   agora: AgoraClientOptions;
+  zoom: ZoomClientOptions;
 }
 
 export enum MediaDeviceStatus {
@@ -25,6 +27,7 @@ export interface MediaStateInterface {
 
 export abstract class BaseRoomManager<T extends GLSocketClient> {
   agoraClient!: AgoraClient;
+  zoomClient!: ZoomClient;
   options!: RoomOptions;
   WSClient!: T;
 

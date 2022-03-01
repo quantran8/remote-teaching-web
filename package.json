@@ -22,7 +22,7 @@
     "@types/ramda": "^0.27.38",
     "@types/superagent": "^4.1.10",
     "@types/uuid": "^8.3.0",
-    "@zoomus/websdk": "^1.8.3",
+    "@zoom/videosdk": "^1.1.7",
     "agora-rtc-sdk-ng": "^4.2.1",
     "animate.css": "^4.1.1",
     "ant-design-vue": "^2.1.2",
@@ -36,7 +36,7 @@
     "howler": "^2.2.1",
     "interactjs": "^1.10.1",
     "js-cookie": "^2.2.1",
-    "jsrsasign": "^10.0.5",
+    "jsrsasign": "^10.5.8",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "oidc-client": "^1.10.1",
@@ -91,7 +91,7 @@
     "path": "^0.12.7",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
-    "typescript": "~3.9.3",
+    "typescript": "4.3.5",
     "vue-jest": "^5.0.0-0"
   }
 }

@@ -1,33 +1,37 @@
 import { AgoraClient } from "@/agora";
+import { store } from "@/store";
+import { VCPlatform } from "@/store/app/state";
 import { StudentWSClient } from "@/ws";
+import { ZoomClient } from "@/zoom";
 import { BaseRoomManager, RoomOptions } from "./base.manager";
 
 export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   constructor(options: RoomOptions) {
     super();
     this.options = options;
-    this.agoraClient = new AgoraClient(options.agora);
+    if (store.getters.platform === VCPlatform.Agora) {
+      this.agoraClient = new AgoraClient(options.agora);
+    } else {
+      this.zoomClient = new ZoomClient(options.zoom);
+    }
     this.WSClient = new StudentWSClient({
       url: `${process.env.VUE_APP_REMOTE_TEACHING_SERVICE}/teaching`,
     });
     this.WSClient.init();
   }
 
-  async join(options: {
-    classId: string;
-    studentId?: string;
-    teacherId?: string;
-    camera?: boolean;
-    microphone?: boolean;
-  }) {
-    if (!options.studentId || !options.classId)
-      throw new Error("Missing Params");
+  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }) {
+    if (!options.studentId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
-    await this.agoraClient.joinRTCRoom(options);
+    if (store.getters.platform === VCPlatform.Agora) {
+      await this.agoraClient.joinRTCRoom(options);
+    } else {
+      await this.zoomClient.joinRTCRoom();
+    }
   }
 
-  async close() {	  
+  async close() {
     await this.WSClient.disconnect();
-    await this.agoraClient.reset();
+    await this.agoraClient?.reset();
   }
 }

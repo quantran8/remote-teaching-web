@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
+import { AppState, AppView, LayoutType, ToastData, UserRole, VCPlatform } from "./state";
 
 const getters: GetterTree<AppState, any> = {
   appLayout(state: AppState): LayoutType {
@@ -31,6 +31,9 @@ const getters: GetterTree<AppState, any> = {
   },
   userRole(state: AppState): UserRole {
     return state.userRole;
+  },
+  platform(state: AppState): VCPlatform {
+    return state.platform;
   },
 };
 

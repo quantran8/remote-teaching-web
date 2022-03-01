@@ -70,10 +70,18 @@
       </Row>
       <Row align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
+          <video
+            ref="playerRef"
+            :id="videoElementId"
+            v-show="isOpenCam && currentCam && !zoomCamError"
+            v-if="!isUsingAgora"
+            :class="['device-tester__camera--player']"
+          ></video>
           <div
             ref="playerRef"
             :id="videoElementId"
             v-show="isOpenCam && currentCam && !agoraCamError"
+            v-if="isUsingAgora"
             :class="['device-tester__camera--player']"
           ></div>
           <div v-show="!isOpenCam || agoraCamError || !currentCam" :class="['device-tester__camera--player', 'hided']">

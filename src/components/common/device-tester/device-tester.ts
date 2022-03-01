@@ -1,11 +1,15 @@
 import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import ZoomVideo from "@zoom/videosdk";
+
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space, Spin } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
+import { store } from "@/store";
+import { VCPlatform } from "@/store/app/state";
 
 interface DeviceType {
   deviceId: string;
@@ -52,6 +56,7 @@ export default defineComponent({
     const visible = ref(false);
     const isOpenMic = ref<boolean>(true);
     const isOpenCam = ref<boolean>(true);
+    const isUsingAgora = store.getters.platform === VCPlatform.Agora;
     const localTracks = ref<any>(null);
     const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
@@ -69,6 +74,8 @@ export default defineComponent({
     const agoraError = ref(false);
     const agoraMicError = ref(false);
     const agoraCamError = ref(false);
+    const zoomMicError = ref(false);
+    const zoomCamError = ref(false);
     const firstTimeDefault = ref(true);
     const currentUnit = ref();
     const currentLesson = ref();
@@ -76,6 +83,7 @@ export default defineComponent({
     const preventCloseModal = ref(true);
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
+
     const setupAgora = async () => {
       let audioTrack = null;
       let videoTrack = null;
@@ -96,6 +104,59 @@ export default defineComponent({
         if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
         preventCloseModal.value = false;
         agoraMicError.value = true;
+      }
+      localTracks.value = {
+        audioTrack,
+        videoTrack,
+      };
+    };
+
+    const setupZoom = async () => {
+      let audioTrack = null;
+      let videoTrack = null;
+      try {
+        const devices = await ZoomVideo.getDevices();
+        const cams = devices.filter(function(device) {
+          return device.kind === "videoinput";
+        });
+        if (cams.length) {
+          const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+          currentCam.value = cams[0];
+          currentCamLabel.value = cams[0]?.label;
+          listCams.value = cams;
+          listCamsId.value = cams.map(cam => cam.deviceId);
+          videoTrack = await ZoomVideo.createLocalVideoTrack(cams[0].deviceId);
+          await videoTrack.start(doc);
+          havePermissionCamera.value = true;
+        }
+      } catch (error) {
+        Logger.log("setupZoom error when create videoTrack =>", error);
+        if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
+        preventCloseModal.value = false;
+        zoomCamError.value = true;
+      }
+      try {
+        const devices = await ZoomVideo.getDevices();
+        const mics = devices.filter(function(device) {
+          return device.kind === "audioinput";
+        });
+        if (mics.length) {
+          currentMic.value = mics[0];
+          currentMicLabel.value = mics[0]?.label;
+          listMics.value = mics;
+          listMicsId.value = mics.map(mic => mic.deviceId);
+          audioTrack = await ZoomVideo.createLocalAudioTrack(mics[0].deviceId);
+          await audioTrack.start();
+          if (!volumeAnimation.value) {
+            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+          }
+          havePermissionMicrophone.value = true;
+        }
+      } catch (error) {
+        Logger.log("setupZoom error when create audioTrack =>", error);
+        if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
+        preventCloseModal.value = false;
+        zoomMicError.value = true;
       }
       localTracks.value = {
         audioTrack,
@@ -159,17 +220,24 @@ export default defineComponent({
 
     const handleHotPluggingMicro = async (newMicroId?: string) => {
       try {
-        const mics = await AgoraRTC.getMicrophones();
+        const mics =
+          store.getters.platform === VCPlatform.Agora
+            ? await AgoraRTC.getMicrophones()
+            : (await ZoomVideo.getDevices()).filter(({ kind }) => kind === "audioinput");
+
         if (mics.length) {
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
           listMicsId.value = mics.map(mic => mic.deviceId);
-          if (newMicroId) {
-            await localTracks.value.audioTrack.setDevice(newMicroId);
-          } else {
-            await localTracks.value.audioTrack.setDevice(mics[0]?.deviceId);
+          if (store.getters.platform === VCPlatform.Agora) {
+            if (newMicroId) {
+              await localTracks.value.audioTrack.setDevice(newMicroId);
+            } else {
+              await localTracks.value.audioTrack.setDevice(mics[0]?.deviceId);
+            }
           }
+
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
           }
@@ -182,19 +250,31 @@ export default defineComponent({
 
     const handleHotPluggingCamera = async (newCameraId?: string) => {
       try {
-        const cams = await AgoraRTC.getCameras();
+        const cams =
+          store.getters.platform === VCPlatform.Agora
+            ? await AgoraRTC.getCameras()
+            : (await ZoomVideo.getDevices()).filter(({ kind }) => kind === "videoinput");
+
         if (cams.length) {
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
           listCamsId.value = cams.map(cam => cam.deviceId);
-          if (newCameraId) {
-            await localTracks.value.videoTrack.setDevice(newCameraId);
-          } else {
-            await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
+
+          if (store.getters.platform === VCPlatform.Agora) {
+            if (newCameraId) {
+              await localTracks.value.videoTrack.setDevice(newCameraId);
+            } else {
+              await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
+            }
           }
+
           try {
-            await localTracks.value?.videoTrack.play(videoElementId);
+            if (store.getters.platform === VCPlatform.Agora) {
+              await localTracks.value?.videoTrack.play(videoElementId);
+            } else {
+              await localTracks.value?.videoTrack.start(document.getElementById(videoElementId) as HTMLVideoElement);
+            }
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -228,8 +308,12 @@ export default defineComponent({
     };
 
     const setupEvent = () => {
-      AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
-      AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
+      if (store.getters.platform === VCPlatform.Agora) {
+        AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
+        AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
+      } else {
+        //
+      }
     };
 
     const cancelVolumeAnimation = () => {
@@ -242,9 +326,13 @@ export default defineComponent({
       if (!props.notJoin && !props.fromParentComponent) {
         setupUnitAndLesson();
       }
-      await setupAgora();
-      await setupDevice();
-      setupEvent();
+      if (store.getters.platform === VCPlatform.Agora) {
+        await setupAgora();
+        await setupDevice();
+        setupEvent();
+      } else {
+        await setupZoom();
+      }
     };
 
     //handle for microphone
@@ -252,7 +340,7 @@ export default defineComponent({
       if (currentIsOpenMic) {
         dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         if (currentMic.value) {
-          localTracks.value?.audioTrack.setEnabled(true);
+          //   localTracks.value?.audioTrack.setEnabled(true);
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
           }
@@ -268,9 +356,13 @@ export default defineComponent({
         }
       }
     });
-    watch(currentMic, currentMicValue => {
+    watch(currentMic, async currentMicValue => {
       if (currentMicValue) {
-        localTracks.value?.audioTrack.setEnabled(true);
+        if (store.getters.platform === VCPlatform.Agora) {
+          await localTracks.value?.audioTrack.setEnabled(true);
+        } else {
+          await localTracks.value?.audioTrack.start();
+        }
         if (!volumeAnimation.value) {
           volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
         }
@@ -282,28 +374,44 @@ export default defineComponent({
       if (currentIsOpenCamValue) {
         dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
         if (currentCam.value) {
-          await localTracks.value?.videoTrack.setEnabled(true);
+          if (store.getters.platform === VCPlatform.Agora) {
+            await localTracks.value?.videoTrack.setEnabled(true);
+          } else {
+            const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+            await localTracks.value?.videoTrack.start(doc);
+          }
         }
       }
       if (!currentIsOpenCamValue) {
         dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
         if (currentCam.value) {
-          localTracks.value?.videoTrack.setEnabled(false);
+          if (store.getters.platform === VCPlatform.Agora) {
+            await localTracks.value?.videoTrack.setEnabled(false);
+          } else {
+            await localTracks.value?.videoTrack.stop();
+          }
         }
       }
     });
 
     watch(currentCam, async currentCamValue => {
       if (currentCamValue) {
-        await localTracks.value?.videoTrack?.play(videoElementId);
-        await localTracks.value?.videoTrack?.setEnabled(true);
+        if (store.getters.platform === VCPlatform.Agora) {
+          await localTracks.value?.videoTrack?.play(videoElementId);
+          await localTracks.value?.videoTrack.setEnabled(true);
+        } else {
+          await localTracks.value?.videoTrack.start(document.getElementById(videoElementId) as HTMLVideoElement);
+        }
       }
     });
 
     const setVolumeWave = () => {
       if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-      volumeByPercent.value = localTracks.value.audioTrack.getVolumeLevel() * 100;
+      volumeByPercent.value =
+        store.getters.platform === VCPlatform.Agora
+          ? localTracks.value.audioTrack.getVolumeLevel() * 100
+          : localTracks.value.audioTrack.getCurrentVolume() * 100;
     };
 
     const showModal = () => {
@@ -312,7 +420,9 @@ export default defineComponent({
 
     const handleMicroChange = async (micId: string) => {
       try {
-        await localTracks.value.audioTrack.setDevice(micId);
+        if (store.getters.platform === VCPlatform.Agora) {
+          await localTracks.value.audioTrack.setDevice(micId);
+        }
         currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
       } catch (error) {
         Logger.log("Error => ", error);
@@ -321,7 +431,9 @@ export default defineComponent({
 
     const handleCameraChange = async (camId: any) => {
       try {
-        await localTracks.value.videoTrack.setDevice(camId);
+        if (store.getters.platform === VCPlatform.Agora) {
+          await localTracks.value.videoTrack.setDevice(camId);
+        }
         currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
       } catch (error) {
         Logger.log("Error => ", error);
@@ -495,11 +607,14 @@ export default defineComponent({
       agoraError,
       agoraCamError,
       agoraMicError,
+      zoomMicError,
+      zoomCamError,
       handleGoToClassSuccess,
       preventCloseModal,
       showTeacherFooter,
       showParentFooter,
       notDisplaySpinner,
+      isUsingAgora,
     };
   },
 });

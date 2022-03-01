@@ -2,6 +2,7 @@ import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel, StudentModel, RoomUsersModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
+import { SDK_KEY, SDK_SECRET, SESSION_NAME } from "@/zoom/config";
 import { MutationTree } from "vuex";
 import { ClassView, InClassStatus } from "../interface";
 import { ClassAction, ClassActionFromValue, StudentRoomState } from "./state";
@@ -99,6 +100,12 @@ const mutations: MutationTree<StudentRoomState> = {
             token: room.streamInfo.token,
             role,
           },
+        },
+        zoom: {
+          key: SDK_KEY,
+          secret: SDK_SECRET,
+          topic: SESSION_NAME,
+          name: room.streamInfo.userId,
         },
       });
 
