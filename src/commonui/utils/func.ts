@@ -1,6 +1,8 @@
 import { Logger } from "@/utils/logger";
 import i18n from "../locales/i18n";
 
+const transparentColor = "rgba(255,255,255,0.01)";
+
 const buildSuffix = (suffix: any, key: any) => {
   return suffix ? (suffix.startsWith(key) ? suffix : `${key}${suffix}`) : "";
 };
@@ -65,8 +67,8 @@ export const mobileDevice =
   );
 
 export function endImgLink(url: any) {
-  if(typeof url !== 'string') return false;
-  return (url.match(/\.(jpg|jpeg|gif|png|tiff|bmp)$/) != null);
+  if (typeof url !== "string") return false;
+  return url.match(/\.(jpg|jpeg|gif|png|tiff|bmp)$/) != null;
 }
 
 export function ratioValue(propImage: any, widthCanvas: number, heightCanvas: number) {
@@ -100,6 +102,15 @@ export function setStrokeColor(canvas: any, event: any, color: any) {
   canvas.getObjects().forEach((obj: any) => {
     if (obj.tag === event.tag) {
       obj.set("stroke", color);
+      if (obj.realFill && obj.realOpacity) {
+        if (color !== "transparent") {
+          obj.set("fill", obj.realFill);
+          obj.set("opacity", obj.realOpacity);
+        } else {
+          obj.set("fill", transparentColor);
+          obj.set("opacity", 1);
+        }
+      }
     }
   });
   canvas.renderAll();
