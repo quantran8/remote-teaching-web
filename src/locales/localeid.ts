@@ -79,6 +79,7 @@ export class DisconnectScreenLocale {
 export class AccessDeniedLocale {
   static AccessDeniedWeAreSorry = "access_denied.we_are_sorry";
   static AccessDeniedDescription = "access_denied.description";
+  static AccessDeniedNonTeacherDescription = "access_denied.non_teacher_description";
   static AccessDeniedSuggest = "access_denied.suggest";
 }
 

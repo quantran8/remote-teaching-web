@@ -22,6 +22,7 @@
 	"common.warning.overlap": "There seems to be a session already assigned to that timeslot",
 	"access_denied.we_are_sorry": "We are sorry...",
 	"access_denied.description": "The page you're trying to access has restricted access.",
+	"access_denied.non_teacher_description": "You do not have any classes associated.",
 	"access_denied.suggest": "Please contact your administrator",
 	"disconnect.title": "Oops! There is an issue",
 	"disconnect.content1": "There was a connection issue for your teacher",
