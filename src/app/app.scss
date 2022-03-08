@@ -121,9 +121,9 @@ body {
 }
 .drawer-wrap-mobile {
   .ant-drawer-wrapper-body {
-    background-color: #00591b;
+    background-color: $main-color;
     .ant-drawer-header-no-title {
-      background-color: #00591b;
+      background-color: $main-color;
       min-height: 20px;
       svg {
         color: #fff;
