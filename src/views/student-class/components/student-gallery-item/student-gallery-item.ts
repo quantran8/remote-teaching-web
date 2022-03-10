@@ -1,3 +1,5 @@
+import { isSupportWebCodecs } from "@/zoom/utils";
+import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
 import { computed, ref, watch } from "vue";
@@ -39,6 +41,8 @@ export default defineComponent({
       isSpeaking,
       isRaisingHand,
       avatarStudent,
+      isUsingAgora: store.getters.platform === VCPlatform.Agora,
+      isSupportWebCodecs: isSupportWebCodecs(),
     };
   },
 });

@@ -16,7 +16,6 @@ import {
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { SDK_KEY, SDK_SECRET, SESSION_NAME } from "@/zoom/config";
 
 type State = TeacherRoomState;
 
@@ -130,10 +129,12 @@ const mutations: TeacherRoomMutation<State> = {
           },
         },
         zoom: {
-          key: SDK_KEY,
-          secret: SDK_SECRET,
-          topic: SESSION_NAME,
-          name: p.streamInfo.userId,
+          user: {
+            channel: p.streamInfo.chanelId,
+            username: p.streamInfo.userId,
+            token: p.streamInfo.token,
+            role: role,
+          },
         },
       });
     }

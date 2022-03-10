@@ -50,9 +50,16 @@
         <div v-show="studentIsDisconnected" class="sc-teacher__content">
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
         </div>
+        <canvas
+          class="sc-teacher__video animate__animated animate__zoomIn"
+          :id="teacher?.id + '__sub'"
+          v-if="!isUsingAgora"
+          v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
+        ></canvas>
         <div
           class="sc-teacher__video animate__animated animate__zoomIn"
           :id="teacher?.id"
+          v-else
           v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
         ></div>
         <div

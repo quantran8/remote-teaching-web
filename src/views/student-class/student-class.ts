@@ -28,7 +28,8 @@ import noAvatar from "@/assets/student-class/no-avatar.png";
 import { notification } from "ant-design-vue";
 import "animate.css";
 import { Logger } from "@/utils/logger";
-import { UserRole } from "@/store/app/state";
+import { UserRole, VCPlatform } from "@/store/app/state";
+import { isSupportWebCodecs } from "@/zoom/utils";
 
 const fpPromise = FingerprintJS.load();
 
@@ -401,6 +402,7 @@ export default defineComponent({
       joinLoading,
       goToHomePage,
       videosFeedVisible,
+      isUsingAgora: store.getters.platform === VCPlatform.Agora,
     };
   },
 });

@@ -7,6 +7,9 @@ import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { TeacherState } from "@/store/room/interface";
 import noAvatar from "@/assets/images/user-default-gray.png";
+import { store } from "@/store";
+import { VCPlatform } from "@/store/app/state";
+import { isSupportWebCodecs } from "@/zoom/utils";
 
 export default defineComponent({
   props: {
@@ -75,6 +78,8 @@ export default defineComponent({
       isLowBandWidth,
       IconLowWifi,
       avatarTeacher,
+      isUsingAgora: store.getters.platform === VCPlatform.Agora,
+      isSupportWebCodecs: isSupportWebCodecs(),
     };
   },
 });

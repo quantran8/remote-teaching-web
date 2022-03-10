@@ -10,7 +10,26 @@
       ref="containerRef"
     >
       <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
+        <video
+          v-if="isSupportWebCodecs && !isUsingAgora"
+          class="sc-gallery-item__video"
+          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :id="student.id + '__video'"
+          :title="student.englishName"
+        ></video>
+
+        <canvas
+          v-else-if="!isSupportWebCodecs && !isUsingAgora"
+          class="sc-gallery-item__video"
+          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :id="student.id + '__video'"
+          :title="student.englishName"
+        ></canvas>
+
         <div
+          v-else
           class="sc-gallery-item__video"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"

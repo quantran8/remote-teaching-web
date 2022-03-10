@@ -136,7 +136,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then(speedMbps => {
+      state.manager?.getBandwidth()?.then(speedMbps => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -199,7 +199,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       },
     };
-    state.manager?.registerAgoraEventHandler(agoraEventHandler);
+    state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });

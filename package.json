@@ -36,7 +36,6 @@
     "howler": "^2.2.1",
     "interactjs": "^1.10.1",
     "js-cookie": "^2.2.1",
-    "jsrsasign": "^10.5.8",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "oidc-client": "^1.10.1",

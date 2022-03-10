@@ -24,7 +24,7 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     if (store.getters.platform === VCPlatform.Agora) {
       await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" });
     } else {
-      await this.zoomClient.joinRTCRoom();
+      await this.zoomClient.joinRTCRoom(options);
     }
   }
 

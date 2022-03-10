@@ -1,3 +1,4 @@
+import { VCPlatform } from "./../../app/state";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -240,7 +241,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then(speedMbps => {
+      state.manager?.getBandwidth()?.then(speedMbps => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -253,25 +254,27 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    state.manager?.agoraClient.registerEventHandler({
-      onUserPublished: (user, mediaType) => {
-        Logger.log("user-published", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onUserUnPublished: (user, mediaType) => {
-        Logger.log("user-unpublished", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onException: (payload: any) => {
-        Logger.log("agora-exception-event", payload);
-      },
-      onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        dispatch("setSpeakingUsers", result);
-      },
-      onLocalNetworkUpdate(payload: any) {
-        //   Logger.log(payload);
-      },
-    });
+    if (store.getters.platform === VCPlatform.Agora) {
+      state.manager?.agoraClient?.registerEventHandler({
+        onUserPublished: (user, mediaType) => {
+          Logger.log("user-published", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onUserUnPublished: (user, mediaType) => {
+          Logger.log("user-unpublished", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onException: (payload: any) => {
+          Logger.log("agora-exception-event", payload);
+        },
+        onVolumeIndicator(result: { level: number; uid: UID }[]) {
+          dispatch("setSpeakingUsers", result);
+        },
+        onLocalNetworkUpdate(payload: any) {
+          Logger.log(payload);
+        },
+      });
+    }
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];

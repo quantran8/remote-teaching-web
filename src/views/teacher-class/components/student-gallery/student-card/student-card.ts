@@ -1,3 +1,4 @@
+import { isSupportWebCodecs } from "@/zoom/utils";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
@@ -7,6 +8,7 @@ import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
 import noAvatar from "@/assets/images/user-default-gray.png";
 import "animate.css";
+import { VCPlatform } from "@/store/app/state";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -145,6 +147,8 @@ export default defineComponent({
       isOneToOneStudent,
       avatarStudent,
       oneAndOne,
+      isUsingAgora: store.getters.platform === VCPlatform.Agora,
+      isSupportWebCodecs: isSupportWebCodecs(),
     };
   },
 });

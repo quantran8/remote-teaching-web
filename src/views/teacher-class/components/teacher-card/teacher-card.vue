@@ -1,7 +1,9 @@
 <template>
   <div :class="['tc-video', !isGalleryView && 'tc-video--small']">
     <figure class="tc-video__figure">
-      <div class="tc-video__video" :id="teacher?.id" v-show="teacher?.videoEnabled"></div>
+      <video v-if="isSupportWebCodecs && !isUsingAgora" class="tc-video__video" :id="teacher?.id + '__video'" v-show="teacher?.videoEnabled" />
+      <canvas v-else-if="!isSupportWebCodecs && !isUsingAgora" class="tc-video__video" :id="teacher?.id + '__video'" v-show="teacher?.videoEnabled" />
+      <div v-else class="tc-video__video" :id="teacher?.id" v-show="isUsingAgora && teacher?.videoEnabled"></div>
       <div class="teacher-avatar-container" v-if="!teacher?.videoEnabled">
         <img class="teacher-avatar" alt="teacher-avatar" :src="avatarTeacher" />
       </div>

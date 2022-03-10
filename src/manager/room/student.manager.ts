@@ -26,12 +26,16 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     if (store.getters.platform === VCPlatform.Agora) {
       await this.agoraClient.joinRTCRoom(options);
     } else {
-      await this.zoomClient.joinRTCRoom();
+      await this.zoomClient.joinRTCRoom(options);
     }
   }
 
   async close() {
     await this.WSClient.disconnect();
-    await this.agoraClient?.reset();
+    if (store.getters.platform === VCPlatform.Agora) {
+      await this.agoraClient?.reset();
+    } else {
+      await this.zoomClient?.reset();
+    }
   }
 }
