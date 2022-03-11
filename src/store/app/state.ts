@@ -16,8 +16,8 @@ export enum UserRole {
 }
 
 export enum VCPlatform {
-  Agora = 0,
-  Zoom = 1,
+  Agora = 1,
+  Zoom = 2,
 }
 
 export interface AppState {
