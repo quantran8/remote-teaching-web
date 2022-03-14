@@ -27,10 +27,10 @@
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-show="loadingInfo">
-        <Spin></Spin>
+        <Spin class="ant-custom-home"></Spin>
       </div>
       <div class="loading" v-if="loading">
-        <Spin tip="Loading..."></Spin>
+        <Spin tip="Loading..." class="ant-custom-home"></Spin>
       </div>
       <ClassCard
         v-else

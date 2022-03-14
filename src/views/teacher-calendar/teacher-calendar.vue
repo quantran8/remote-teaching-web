@@ -5,21 +5,21 @@
     </div>
     <div class="select-container">
       <span class="title-select">{{ classText }}</span>
-      <Select :value="selectedClassId" class="size-select" @change="handleChangeClass">
-        <Option value="all">{{ allText }}</Option>
-        <Option v-for="val in listClassSelect" :key="val.id">
+      <Select :value="selectedClassId" class="size-select ant-custom-calendar" @change="handleChangeClass">
+        <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
+        <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.id">
           {{ val.name }}
         </Option>
       </Select>
       <span class="title-select ml-20">{{ groupText }}</span>
-      <Select :value="selectedGroupId" :disabled="isDisableGroup" class="size-select" @change="handleChangeGroup">
-        <Option value="all">{{ allText }}</Option>
-        <Option v-for="val in listGroupSelect" :key="val.id">
+      <Select :value="selectedGroupId" :disabled="isDisableGroup" class="size-select ant-custom-calendar" @change="handleChangeGroup">
+        <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
+        <Option class="ant-custom-calendar" v-for="val in listGroupSelect" :key="val.id">
           {{ val.name }}
         </Option>
       </Select>
       <div class="loading-center" v-if="loading">
-        <Spin></Spin>
+        <Spin class="ant-custom-calendar"></Spin>
       </div>
     </div>
     <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
@@ -29,7 +29,7 @@
             <a-col>
               <Select
                 :dropdown-match-select-width="false"
-                class="year-select"
+                class="year-select ant-custom-calendar"
                 :value="String(value.year())"
                 @change="
                   newYear => {
@@ -37,7 +37,7 @@
                   }
                 "
               >
-                <Option v-for="val in getYears(value)" :key="String(val)">
+                <Option class="ant-custom-calendar" v-for="val in getYears(value)" :key="String(val)">
                   {{ val }}
                 </Option>
               </Select>
@@ -45,7 +45,7 @@
             <a-col>
               <Select
                 :dropdown-match-select-width="false"
-                class="month-select"
+                class="month-select ant-custom-calendar"
                 :value="String(value.month())"
                 @change="
                   selectedMonth => {
@@ -53,7 +53,7 @@
                   }
                 "
               >
-                <Option v-for="(val, index) in getMonths(value)" :key="String(index)">
+                <Option class="ant-custom-calendar" v-for="(val, index) in getMonths(value)" :key="String(index)">
                   {{ val }}
                 </Option>
               </Select>
@@ -97,16 +97,16 @@
     <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container" v-if="isCreate">
         <span class="modal-title-select">{{ classText }}</span>
-        <Select :value="selectedClassIdModal" class="modal-size-group" @change="handleChangeClassModal">
-          <Option v-for="val in listClassCreateNew" :key="val.id">
+        <Select :value="selectedClassIdModal" class="modal-size-group ant-custom-calendar" @change="handleChangeClassModal">
+          <Option class="ant-custom-calendar" v-for="val in listClassCreateNew" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>
       </div>
       <div class="select-container">
         <span class="modal-title-select">{{ groupText }}</span>
-        <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal">
-          <Option v-for="val in listGroupModal" :key="val.id">
+        <Select :value="selectedGroupIdModal" class="modal-size-group ant-custom-calendar" @change="handleChangeGroupModal">
+          <Option class="ant-custom-calendar" v-for="val in listGroupModal" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>
@@ -114,7 +114,8 @@
       <div class="select-container">
         <span class="modal-title-select">{{ startTimeText }}</span>
         <TimePicker
-          class="modal-size-time-picker"
+          class="modal-size-time-picker ant-custom-calendar"
+          popupClassName="ant-custom-calendar"
           @change="onChangeStartDateModal"
           :value="moment(selectedStartDateModal, 'HH:mm')"
           format="HH:mm"
@@ -123,7 +124,8 @@
         />
         <span class="modal-title-select ml-20">{{ endTimeText }}</span>
         <TimePicker
-          class="modal-size-time-picker"
+          class="modal-size-time-picker ant-custom-calendar"
+          popupClassName="ant-custom-calendar"
           :disabledHours="getDisabledHoursEnd"
           :disabledMinutes="getDisabledMinutesEnd"
           @change="onChangeEndDateModal"
@@ -136,16 +138,16 @@
           <Button v-if="!isCreate" type="danger" @click="onSubmit('Delete')">{{ deleteText }}</Button>
         </div>
         <div class="save-position">
-          <Button class="btn-cancel" @click="onCancel">{{ cancelText }}</Button>
-          <Button type="primary" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">{{ saveText }}</Button>
+          <Button class="btn-cancel ant-custom-calendar" @click="onCancel">{{ cancelText }}</Button>
+          <Button type="primary" class="ant-custom-calendar" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">{{ saveText }}</Button>
         </div>
       </div>
     </Modal>
     <Modal :visible="recurringVisible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container">
         <span class="modal-title-select">{{ groupText }}</span>
-        <Select :value="selectedGroupIdModal" class="modal-size-group" @change="handleChangeGroupModal" disabled>
-          <Option v-for="val in listGroupModal" :key="val.id">
+        <Select :value="selectedGroupIdModal" class="modal-size-group ant-custom-calendar" @change="handleChangeGroupModal" disabled>
+          <Option class="ant-custom-calendar" v-for="val in listGroupModal" :key="val.id">
             {{ val.name }}
           </Option>
         </Select>
@@ -153,7 +155,8 @@
       <div class="select-container">
         <span class="modal-title-select" v-if="disableTimePicker()">{{ startTimeText }}</span>
         <TimePicker
-          class="modal-size-time-picker"
+          class="modal-size-time-picker ant-custom-calendar"
+          popupClassName="ant-custom-calendar"
           v-if="disableTimePicker()"
           disabled
           :value="moment(selectedStartDateModal, 'HH:mm')"
@@ -161,7 +164,8 @@
         />
         <span class="modal-title-select ml-20" v-if="disableTimePicker()">{{ endTimeText }}</span>
         <TimePicker
-          class="modal-size-time-picker"
+          class="modal-size-time-picker ant-custom-calendar"
+          popupClassName="ant-custom-calendar"
           v-if="disableTimePicker()"
           disabled
           :value="moment(selectedEndDateModal, 'HH:mm')"
@@ -174,10 +178,10 @@
       </p>
       <div class="modal-footer">
         <div class="delete-position">
-          <Button type="primary" v-if="disableSkipButton()" @click="onSubmit('Skip')">{{ skipText }}</Button>
+          <Button type="primary" class="ant-custom-calendar" v-if="disableSkipButton()" @click="onSubmit('Skip')">{{ skipText }}</Button>
         </div>
         <div class="save-position">
-          <Button class="btn-cancel" @click="onCancel">{{ closeText }}</Button>
+          <Button class="btn-cancel ant-custom-calendar" @click="onCancel">{{ closeText }}</Button>
         </div>
       </div>
     </Modal>

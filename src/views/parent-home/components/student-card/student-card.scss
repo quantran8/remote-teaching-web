@@ -20,6 +20,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     margin: auto;
+    color: $main-color;
   }
   .next-session-info {
     display: flex;
@@ -32,6 +33,9 @@
       margin: 0 auto 5px;
       max-width: 170px;
       word-break: break-word;
+      &--name {
+        color: $main-color;
+      }
     }
     &__time {
       display: block;
