@@ -1,40 +1,40 @@
-@import "../abstracts/_variables.scss";
+@import "./_variables.less";
 
 .ant-custom-calendar {
   &.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-    background-color: $main-color-light !important;
+    background-color: @ant-main-color-light !important;
   }
 
   &.ant-select-focused:not(.ant-select-disabled) {
     &.ant-select-single:not(.ant-select-customize-input) {
       .ant-select-selector {
-        border-color: $main-color !important;
-        box-shadow: 0 0 0 2px $main-color-light !important;
+        border-color: @ant-main-color !important;
+        box-shadow: 0 0 0 2px @ant-main-color-light !important;
       }
     }
   }
   &.ant-select:not(.ant-select-disabled):hover {
     .ant-select-selector {
-      border-color: $main-color !important;
+      border-color: @ant-main-color !important;
     }
   }
 
   .ant-time-picker-panel-select {
     li:focus {
-      color: $main-color !important;
+      color: @ant-main-color !important;
     }
   }
 
   .ant-time-picker-input:not([disabled]) {
     &:hover,
     &:focus {
-      border-color: $main-color !important;
-      box-shadow: 0 0 0 2px $main-color-light !important;
+      border-color: @ant-main-color !important;
+      box-shadow: 0 0 0 2px @ant-main-color-light !important;
     }
   }
   &.ant-spin {
     .ant-spin-dot-item {
-      background-color: $main-color !important;
+      background-color: @ant-main-color !important;
     }
   }
 }
@@ -42,22 +42,22 @@
 .calendar {
   .ant-fullcalendar-selected-day {
     .ant-fullcalendar-date {
-      background: $main-color-light !important;
-      border-top-color: $main-color !important;
+      background: @ant-main-color-light !important;
+      border-top-color: @ant-main-color !important;
       .ant-fullcalendar-value {
-        color: $main-color !important;
+        color: @ant-main-color !important;
       }
     }
   }
   .ant-fullcalendar-today {
     .ant-fullcalendar-date {
-      border-top-color: $main-color !important;
+      border-top-color: @ant-main-color !important;
     }
   }
 
   .ant-fullcalendar-fullscreen {
     .ant-fullcalendar-date:active {
-      background: $main-color-light !important;
+      background: @ant-main-color-light !important;
     }
   }
 }
