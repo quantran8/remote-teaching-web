@@ -1,3 +1,5 @@
+@import "./src/style/abstracts/variables";
+
 .class-holder {
   display: flex;
   justify-content: flex-start;
@@ -76,7 +78,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: black;
+  color: $main-color;
   font-size: 17px;
 }
 
