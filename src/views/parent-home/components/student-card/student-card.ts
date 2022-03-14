@@ -28,7 +28,7 @@ export default defineComponent({
       if (!props.nextSessionInfo || !props.nextSessionInfo.classInfo) {
         return info;
       }
-      info = classGroupText.value + props.nextSessionInfo.classInfo.className;
+      info = props.nextSessionInfo.classInfo.className;
       return info;
     };
 

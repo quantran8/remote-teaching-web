@@ -1,3 +1,5 @@
+@import "./src/style/abstracts/variables";
+
 .calendar-page {
   display: flex;
   flex-direction: column;
@@ -45,6 +47,9 @@
 
   .year-select {
     width: 100px;
+  }
+  a:hover {
+    color: $main-color;
   }
 }
 
