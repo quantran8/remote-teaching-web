@@ -6,7 +6,7 @@
     <div class="select-container">
       <span class="title-select">{{ classText }}</span>
       <Select :value="selectedClassId" class="size-select ant-custom-calendar" @change="handleChangeClass">
-        <Option class="ant-custom-calendar" vale="all">{{ allText }}</Option>
+        <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
         <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.id">
           {{ val.name }}
         </Option>
