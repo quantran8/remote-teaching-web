@@ -98,6 +98,23 @@ export function ratioValue(propImage: any, widthCanvas: number, heightCanvas: nu
   return { imgLeftCrop, ratio };
 }
 
+export const getRadius = (width: number, height: number): number => {
+  return Math.min(width, height) / 2;
+}
+
+export const getScaleX = (width: number, height: number): number => {
+  const scaleX = Math.abs(width - height) / height + 1;
+  const isScaleApplied = width > height;
+  const defaultScaleX = 1;
+  return isScaleApplied ? scaleX : defaultScaleX;
+}
+export const getScaleY = (width: number, height: number): number => {
+  const scaleY = Math.abs(width - height) / width + 1;
+  const isScaleYApplied = height > width;
+  const defaultScaleY = 1;
+  return isScaleYApplied ? scaleY : defaultScaleY;
+}
+
 export function setStrokeColor(canvas: any, event: any, color: any) {
   canvas.getObjects().forEach((obj: any) => {
     if (obj.tag === event.tag) {

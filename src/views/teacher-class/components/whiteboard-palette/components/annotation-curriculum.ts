@@ -1,8 +1,9 @@
-import { DefaultCanvasDimension, ratioValue, starPolygonPoints, setStrokeColor } from "commonui";
+import { DefaultCanvasDimension, ratioValue, starPolygonPoints, setStrokeColor, getRadius, getScaleX, getScaleY } from "commonui";
 import { fabric } from "fabric";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
+const DEFAUL_FILL = "rgba(255,255,255,0.01)";
 export const annotationCurriculum = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["teacherRoom/teacher"]);
@@ -53,69 +54,47 @@ export const annotationCurriculum = () => {
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle, 2: star
-    let rect, circle, star, points, tagObject;
+    let rect, circle, tagObject;
     const commonProps = {
       originX: "center",
       originY: "center",
+      strokeUniform: true,
+      fill: DEFAUL_FILL,
+      left: xShape,
+      top: yShape,
+      realFill: item.fill,
+      realOpacity: item.opacity,
+      stroke: "transparent",
+      strokeWidth: 5 * ratio,
+      id: "annotation-lesson",
+      perPixelTargetFind: true,
     };
     switch (item.type) {
-      case (item.type = 0):
+      case (item.type = 0): {
         rect = new fabric.Rect({
-          left: xShape,
-          top: yShape,
           width: item.width * ratio,
           height: item.height * ratio,
-          fill: "rgba(255,255,255,0.01)",
-          realFill: item.fill,
-          realOpacity: item.opacity,
-          stroke: "transparent",
-          strokeWidth: 5,
-          id: "annotation-lesson",
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
           ...commonProps,
         });
         rect.rotate(item.rotate);
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, rect);
         break;
-      case (item.type = 1):
+      }
+      case (item.type = 1): {
         circle = new fabric.Circle({
-          left: xShape,
-          top: yShape,
-          radius: (item.width / 2) * ratio,
-          fill: "rgba(255,255,255,0.01)",
-          realFill: item.fill,
-          realOpacity: item.opacity,
-          stroke: "transparent",
-          strokeWidth: 5,
-          id: "annotation-lesson",
+          radius: getRadius(item.width * ratio, item.height * ratio),
+          scaleX: getScaleX(item.width * ratio, item.height * ratio),
+          scaleY: getScaleY(item.width * ratio, item.height * ratio),
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
           ...commonProps,
         });
+        circle.rotate(item.rotate);
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
         break;
-      case (item.type = 2):
-        points = starPolygonPoints(5, (item.width / 2) * ratio, (item.width / 4) * ratio);
-        star = new fabric.Polygon(points, {
-          stroke: "transparent",
-          left: xShape,
-          top: yShape,
-          strokeWidth: 5,
-          strokeLineJoin: "round",
-          fill: "rgba(255,255,255,0.01)",
-          realFill: item.fill,
-          realOpacity: item.opacity,
-          id: "annotation-lesson",
-          tag: "star-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
-        });
-        star.rotate(item.rotate);
-        tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
-        processShape(bindAll, event, tagObject, canvas, item, star);
-        break;
+      }
     }
   };
   const processAnnotationLesson = (propImage: any, canvas: any, bindAll: boolean, event: any) => {
