@@ -73,6 +73,10 @@ export const annotationCurriculumStudent = () => {
     const yShape = ((item.y - yMetadata) * ratio) / zoom;
     // 0: rect, 1: circle, 2: star
     let rect, circle, star, points, tagObject;
+    const commonProps = {
+      originX: "center",
+      originY: "center",
+    };
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
@@ -88,6 +92,7 @@ export const annotationCurriculumStudent = () => {
           id: "annotation-lesson",
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
+          ...commonProps
         });
         rect.rotate(item.rotate);
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
@@ -106,6 +111,7 @@ export const annotationCurriculumStudent = () => {
           id: "annotation-lesson",
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
+          ...commonProps
         });
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
