@@ -55,7 +55,7 @@ const state: AppState = {
   cameraDeviceId: cameraDeviceId || "",
   userRole: UserRole.UnConfirm,
 
-  platform: VCPlatform.Agora,
+  platform: VCPlatform.Zoom,
 };
 
 export default state;

@@ -77,7 +77,6 @@ export default defineComponent({
     const currentUnit = ref();
     const currentPlatform = ref<number>(platform.value);
     const isUsingAgora = ref<boolean>(platform.value === VCPlatform.Agora);
-
     const currentLesson = ref();
     const listLessonByUnit = ref();
     const preventCloseModal = ref(true);
@@ -327,7 +326,6 @@ export default defineComponent({
     };
 
     const initialSetup = async () => {
-      console.log(isUsingAgora.value);
       if (!props.notJoin && !props.fromParentComponent) {
         setupUnitAndLesson();
       }
@@ -459,22 +457,23 @@ export default defineComponent({
       }
     };
 
-    const destroy = () => {
+    const destroy = async () => {
       if (volumeAnimation.value) {
         cancelVolumeAnimation();
       }
       if (currentMic.value) {
-        localTracks.value?.audioTrack?.stop();
+        await localTracks.value?.audioTrack?.stop();
         if (isUsingAgora.value) {
-          localTracks.value?.audioTrack?.close();
+          await localTracks.value?.audioTrack?.close();
         }
       }
       if (currentCam.value) {
-        localTracks.value?.videoTrack?.stop();
+        await localTracks.value?.videoTrack?.stop();
         if (isUsingAgora.value) {
-          localTracks.value?.videoTrack?.close();
+          await localTracks.value?.videoTrack?.close();
         }
       }
+      localTracks.value = undefined;
       currentMic.value = undefined;
       currentCam.value = undefined;
       agoraError.value = false;
@@ -492,7 +491,7 @@ export default defineComponent({
 
     watch(visible, async currentValue => {
       if (!currentValue) {
-        destroy();
+        await destroy();
         return;
       }
       await initialSetup();
@@ -554,11 +553,12 @@ export default defineComponent({
     };
 
     const handleChangePlatform = async (value: any) => {
-      dispatch("setVideoCallPlatform", VCPlatform[value]);
       currentPlatform.value = value;
     };
 
     watch(currentPlatform, async currentValue => {
+      await destroy();
+      dispatch("setVideoCallPlatform", currentValue);
       isUsingAgora.value = currentValue === VCPlatform.Agora;
       await initialSetup();
     });

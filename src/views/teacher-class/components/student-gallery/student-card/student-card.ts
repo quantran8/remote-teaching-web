@@ -35,6 +35,9 @@ export default defineComponent({
     const store = useStore();
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
+    const platform = computed(() => store.getters["platform"]);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+
     const isMouseEntered = ref<boolean>(false);
     const isShow = computed(() => {
       return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
@@ -147,7 +150,7 @@ export default defineComponent({
       isOneToOneStudent,
       avatarStudent,
       oneAndOne,
-      isUsingAgora: store.getters.platform === VCPlatform.Agora,
+      isUsingAgora,
       isSupportWebCodecs: isSupportWebCodecs(),
     };
   },

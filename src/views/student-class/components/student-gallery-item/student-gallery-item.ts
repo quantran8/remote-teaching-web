@@ -19,6 +19,8 @@ export default defineComponent({
     const isRaisingHand = ref(false);
     const store = useStore();
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
+    const platform = computed(() => store.getters["platform"]);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
 
     watch(props, () => {
       if (props.raisedHand) {
@@ -41,7 +43,7 @@ export default defineComponent({
       isSpeaking,
       isRaisingHand,
       avatarStudent,
-      isUsingAgora: store.getters.platform === VCPlatform.Agora,
+      isUsingAgora,
       isSupportWebCodecs: isSupportWebCodecs(),
     };
   },

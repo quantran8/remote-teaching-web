@@ -29,7 +29,7 @@ export class GLSocketClient {
     const options = {
       //skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
-      logging: LogLevel.Trace,
+      //   logging: LogLevel.Trace,
       accessTokenFactory: () => GLGlobal.loginInfo().access_token,
     };
     this._hubConnection = new HubConnectionBuilder()
