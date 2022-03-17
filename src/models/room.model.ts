@@ -120,6 +120,7 @@ export interface RoomModel {
     chanelId: string;
     userId: string;
     appId: string;
+    platformUserId: string;
   };
   studentOneToOne: string;
   classInfo: ClassRoomModel;

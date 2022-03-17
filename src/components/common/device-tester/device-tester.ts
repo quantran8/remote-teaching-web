@@ -1,4 +1,4 @@
-import { defineComponent, computed, ref, onMounted, watch, onUnmounted } from "vue";
+import { defineComponent, computed, ref, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import ZoomVideo from "@zoom/videosdk";
 
@@ -8,9 +8,7 @@ import { UnitAndLesson, MediaStatus } from "@/models";
 import { fmtMsg } from "@/commonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
-import { store } from "@/store";
 import { VCPlatform } from "@/store/app/state";
-
 interface DeviceType {
   deviceId: string;
   groupId: string;
@@ -56,9 +54,8 @@ export default defineComponent({
     const visible = ref(false);
     const isOpenMic = ref<boolean>(true);
     const isOpenCam = ref<boolean>(true);
-    const isUsingAgora = store.getters.platform === VCPlatform.Agora;
+    const platform = computed(() => getters["platform"]);
     const localTracks = ref<any>(null);
-    const isBrowserAskingPermission = ref(false);
     const listMics = ref<DeviceType[]>([]);
     const listMicsId = ref<string[]>([]);
     const listCams = ref<DeviceType[]>([]);
@@ -78,11 +75,19 @@ export default defineComponent({
     const zoomCamError = ref(false);
     const firstTimeDefault = ref(true);
     const currentUnit = ref();
+    const currentPlatform = ref<number>(platform.value);
+    const isUsingAgora = ref<boolean>(platform.value === VCPlatform.Agora);
+
     const currentLesson = ref();
     const listLessonByUnit = ref();
     const preventCloseModal = ref(true);
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
+
+    const listPlatform = [
+      { key: VCPlatform.Agora, name: VCPlatform[1] },
+      { key: VCPlatform.Zoom, name: VCPlatform[2] },
+    ];
 
     const setupAgora = async () => {
       let audioTrack = null;
@@ -220,13 +225,15 @@ export default defineComponent({
 
     const handleHotPluggingMicro = async (newMicroId?: string) => {
       try {
-        const mics = isUsingAgora ? await AgoraRTC.getMicrophones() : (await ZoomVideo.getDevices()).filter(({ kind }) => kind === "audioinput");
+        const mics = isUsingAgora.value
+          ? await AgoraRTC.getMicrophones()
+          : (await ZoomVideo.getDevices()).filter(({ kind }) => kind === "audioinput");
         if (mics.length) {
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
           listMicsId.value = mics.map(mic => mic.deviceId);
-          if (isUsingAgora) {
+          if (isUsingAgora.value) {
             if (newMicroId) {
               await localTracks.value.audioTrack.setDevice(newMicroId);
             } else {
@@ -254,25 +261,20 @@ export default defineComponent({
 
     const handleHotPluggingCamera = async (newCameraId?: string) => {
       try {
-        const cams = isUsingAgora ? await AgoraRTC.getCameras() : (await ZoomVideo.getDevices()).filter(({ kind }) => kind === "videoinput");
-
+        const cams = isUsingAgora.value ? await AgoraRTC.getCameras() : (await ZoomVideo.getDevices()).filter(({ kind }) => kind === "videoinput");
         if (cams.length) {
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
           listCamsId.value = cams.map(cam => cam.deviceId);
 
-          if (isUsingAgora) {
-            if (newCameraId) {
-              await localTracks.value.videoTrack.setDevice(newCameraId);
-            } else {
-              await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
-            }
+          if (isUsingAgora.value) {
+            await localTracks.value.videoTrack.setDevice(newCameraId || cams[0]?.deviceId);
           } else {
             //
           }
           try {
-            if (isUsingAgora) {
+            if (isUsingAgora.value) {
               await localTracks.value?.videoTrack.play(videoElementId);
             } else {
               await localTracks.value?.videoTrack.start(document.getElementById(videoElementId) as HTMLVideoElement);
@@ -310,7 +312,7 @@ export default defineComponent({
     };
 
     const setupEvent = () => {
-      if (isUsingAgora) {
+      if (isUsingAgora.value) {
         AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
         AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
       } else {
@@ -325,10 +327,11 @@ export default defineComponent({
     };
 
     const initialSetup = async () => {
+      console.log(isUsingAgora.value);
       if (!props.notJoin && !props.fromParentComponent) {
         setupUnitAndLesson();
       }
-      if (isUsingAgora) {
+      if (isUsingAgora.value) {
         await setupAgora();
         await setupDevice();
         setupEvent();
@@ -342,7 +345,7 @@ export default defineComponent({
       if (currentIsOpenMic) {
         dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         if (currentMic.value) {
-          if (isUsingAgora) {
+          if (isUsingAgora.value) {
             await localTracks.value?.audioTrack?.setEnabled(true);
           } else {
             await localTracks.value?.audioTrack?.start();
@@ -358,7 +361,7 @@ export default defineComponent({
           cancelVolumeAnimation();
         }
         if (currentMic.value) {
-          if (isUsingAgora) {
+          if (isUsingAgora.value) {
             await localTracks.value?.audioTrack?.setEnabled(false);
           } else {
             await localTracks.value?.audioTrack?.stop();
@@ -369,7 +372,7 @@ export default defineComponent({
 
     watch(currentMic, async currentMicValue => {
       if (currentMicValue) {
-        if (isUsingAgora) {
+        if (isUsingAgora.value) {
           await localTracks.value?.audioTrack?.setEnabled(true);
         } else {
           await localTracks.value?.audioTrack.stop();
@@ -388,7 +391,7 @@ export default defineComponent({
       if (currentIsOpenCamValue) {
         dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
         if (currentCam.value) {
-          if (isUsingAgora) {
+          if (isUsingAgora.value) {
             await localTracks.value?.videoTrack.setEnabled(true);
           } else {
             const doc = document.getElementById(videoElementId) as HTMLVideoElement;
@@ -399,7 +402,7 @@ export default defineComponent({
       if (!currentIsOpenCamValue) {
         dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
         if (currentCam.value) {
-          if (isUsingAgora) {
+          if (isUsingAgora.value) {
             await localTracks.value?.videoTrack.setEnabled(false);
           } else {
             await localTracks.value?.videoTrack.stop();
@@ -410,7 +413,7 @@ export default defineComponent({
 
     watch(currentCam, async currentCamValue => {
       if (currentCamValue) {
-        if (isUsingAgora) {
+        if (isUsingAgora.value) {
           await localTracks.value?.videoTrack?.play(videoElementId);
           await localTracks.value?.videoTrack.setEnabled(true);
         } else {
@@ -425,7 +428,7 @@ export default defineComponent({
     const setVolumeWave = () => {
       if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-      volumeByPercent.value = isUsingAgora
+      volumeByPercent.value = isUsingAgora.value
         ? localTracks.value.audioTrack.getVolumeLevel() * 100
         : localTracks.value.audioTrack.getCurrentVolume() * 100;
     };
@@ -436,7 +439,7 @@ export default defineComponent({
 
     const handleMicroChange = async (micId: string) => {
       try {
-        if (isUsingAgora) {
+        if (isUsingAgora.value) {
           await localTracks.value.audioTrack.setDevice(micId);
         }
         currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
@@ -447,7 +450,7 @@ export default defineComponent({
 
     const handleCameraChange = async (camId: any) => {
       try {
-        if (isUsingAgora) {
+        if (isUsingAgora.value) {
           await localTracks.value.videoTrack.setDevice(camId);
         }
         currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
@@ -462,13 +465,13 @@ export default defineComponent({
       }
       if (currentMic.value) {
         localTracks.value?.audioTrack?.stop();
-        if (isUsingAgora) {
+        if (isUsingAgora.value) {
           localTracks.value?.audioTrack?.close();
         }
       }
       if (currentCam.value) {
         localTracks.value?.videoTrack?.stop();
-        if (isUsingAgora) {
+        if (isUsingAgora.value) {
           localTracks.value?.videoTrack?.close();
         }
       }
@@ -501,7 +504,7 @@ export default defineComponent({
 
     const handleGoToClassSuccess = () => {
       dispatch("setCameraDeviceId", currentCam.value?.deviceId);
-      if (isUsingAgora) {
+      if (isUsingAgora.value) {
         localTracks.value?.audioTrack?.close();
         localTracks.value?.videoTrack?.close();
       } else {
@@ -550,11 +553,22 @@ export default defineComponent({
       visible.value = false;
     };
 
+    const handleChangePlatform = async (value: any) => {
+      dispatch("setVideoCallPlatform", VCPlatform[value]);
+      currentPlatform.value = value;
+    };
+
+    watch(currentPlatform, async currentValue => {
+      isUsingAgora.value = currentValue === VCPlatform.Agora;
+      await initialSetup();
+    });
+
     const hasJoinAction = computed(() => !props.notJoin);
     const SystemCheck = computed(() => fmtMsg(DeviceTesterLocale.SystemCheck));
     const CheckMic = computed(() => fmtMsg(DeviceTesterLocale.CheckMic));
     const SelectDevice = computed(() => fmtMsg(DeviceTesterLocale.SelectDevice));
     const CheckCam = computed(() => fmtMsg(DeviceTesterLocale.CheckCam));
+    const Platform = computed(() => fmtMsg(DeviceTesterLocale.Platform));
     const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
     const ClassStatus = computed(() => fmtMsg(DeviceTesterLocale.ClassStatus));
     const DefaultMessage1 = computed(() => fmtMsg(DeviceTesterLocale.DefaultMessage1));
@@ -567,10 +581,12 @@ export default defineComponent({
     const JoinSession = computed(() => fmtMsg(DeviceTesterLocale.JoinSession));
     const warningMsgMicrophone = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningMic));
     const warningMsgCamera = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningCamera));
+
     onUnmounted(() => {
       AgoraRTC.onMicrophoneChanged = undefined;
       AgoraRTC.onCameraChanged = undefined;
     });
+
     const showTeacherFooter = computed(() => hasJoinAction.value && isTeacher.value && !props.fromParentComponent);
     const showParentFooter = computed(() => hasJoinAction.value && isParent.value && props.fromParentComponent);
 
@@ -591,6 +607,7 @@ export default defineComponent({
       CheckMic,
       SelectDevice,
       CheckCam,
+      Platform,
       CamOff,
       ClassStatus,
       DefaultMessage1,
@@ -640,6 +657,9 @@ export default defineComponent({
       showParentFooter,
       notDisplaySpinner,
       isUsingAgora,
+      currentPlatform,
+      handleChangePlatform,
+      listPlatform,
     };
   },
 });

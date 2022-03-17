@@ -89,6 +89,7 @@
 	"teacher_home.next": "Next:",
 	"device_tester.system_check": "System check",
 	"device_tester.check_mic": "Check Microphone",
+	"device_tester.platform": "Platform",
 	"device_tester.select_device": "No Device",
 	"device_tester.check_cam": "Check Camera",
 	"device_tester.cam_off": "Your camera is turned off",

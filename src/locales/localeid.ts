@@ -103,6 +103,7 @@ export class ParentStudentCardLocale {
 export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";
+  static Platform = "device_tester.platform";
   static SelectDevice = "device_tester.select_device";
   static CheckCam = "device_tester.check_cam";
   static CamOff = "device_tester.cam_off";

@@ -39,8 +39,8 @@ const actions: ActionTree<AppState, any> = {
   setUserRoleByView(store, payload: UserRole) {
     store.commit("setUserRoleByView", payload);
   },
-  setVCPlatform(store, payload: VCPlatform) {
-    store.commit("setVCPlatform", payload);
+  setVideoCallPlatform(store, payload: VCPlatform) {
+    store.commit("setVideoCallPlatform", payload);
   },
 };
 
