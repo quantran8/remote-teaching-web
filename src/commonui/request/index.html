@@ -51,6 +51,7 @@
         );
     }
     window.addEventListener('message', function (evt) {
+		if(!evt.data) return;
         var data = JSON.parse(evt.data);
         if (evt.origin.indexOf(data.origin) < 0) return;
         data.data.id = data.id;

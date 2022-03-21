@@ -1,7 +1,7 @@
 import { createI18n } from "vue-i18n";
 
 function loadLocaleMessages() {
-  //#TODO make generic path
+  // TODO make generic path
   const locales = require.context(
     "../../locales",
     true,
