@@ -96,7 +96,7 @@ export default defineComponent({
         havePermissionCamera.value = true;
       } catch (error) {
         Logger.log("setupAgora error when create videoTrack =>", error);
-        if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
+        if (error?.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
         preventCloseModal.value = false;
         agoraCamError.value = true;
       }
@@ -105,7 +105,7 @@ export default defineComponent({
         havePermissionMicrophone.value = true;
       } catch (error) {
         Logger.log("setupAgora error when create audioTrack =>", error);
-        if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
+        if (error?.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
         preventCloseModal.value = false;
         agoraMicError.value = true;
       }
@@ -133,7 +133,7 @@ export default defineComponent({
         }
       } catch (error) {
         Logger.log("setupZoom error when create videoTrack =>", error);
-        if (error.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
+        if (error?.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
         preventCloseModal.value = false;
         zoomCamError.value = true;
       }
@@ -152,7 +152,7 @@ export default defineComponent({
         }
       } catch (error) {
         Logger.log("setupZoom error when create audioTrack =>", error);
-        if (error.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
+        if (error?.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
         preventCloseModal.value = false;
         zoomMicError.value = true;
       }

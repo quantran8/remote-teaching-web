@@ -96,9 +96,7 @@ export default defineComponent({
       return !!props.image?.metaData.annotations;
     });
     const targetsNum = computed(() => {
-      if (props.image?.metaData?.annotations) {
-        return props.image?.metaData?.annotations.length;
-      }
+      return props.image?.metaData?.annotations?.length || 0;
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));

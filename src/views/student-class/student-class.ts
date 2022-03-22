@@ -225,7 +225,7 @@ export default defineComponent({
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           const message = apiStatus.value.message;
           notification.info({
-            message: message,
+            message: `${message}`,
           });
           await router.push(Paths.Parent);
         } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
@@ -249,7 +249,7 @@ export default defineComponent({
       try {
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
       } catch (err) {
-        if (err.code === ErrorCode.ConcurrentUserException) {
+        if (err?.code === ErrorCode.ConcurrentUserException) {
           notification.error({
             message: err.message,
           });

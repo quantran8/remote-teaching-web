@@ -1,7 +1,7 @@
 ﻿/**
  * API of Azure Media Player ([[amp]]), use azuremediaplayer.d.ts if caller is using [TypeScript](http://www.typescriptlang.org/).
  */
- declare module amp {
+ declare namespace amp {
 
     /**
      * The Player instance for [[amp]], for the caller to interact with.
@@ -334,8 +334,8 @@
          * @param  value Value in pixels, % or 'auto'.
          * @return The [[amp.Player]] calling this function when setting, pixels when getting.
          */
-        width(): Object;
-        width(value: Object): Player;
+        width(): Record<string, any>;
+        width(value: Record<string, any>): Player;
 
         /**
          * Set/Get height of the component (CSS values).
@@ -345,8 +345,8 @@
          * @param  value Value in pixels, % or 'auto'.
          * @return The [[amp.Player]] calling this function when setting, pixels when getting.
          */
-        height(): Object;
-        height(value: Object): Player;
+        height(): Record<string, any>;
+        height(value: Record<string, any>): Player;
 
         /**
          * Get the videoWidth of the player.
@@ -1730,10 +1730,10 @@
     /**
      * Function to register plugins
      */
-    function plugin(name: string, init: Object): void;
+    function plugin(name: string, init: Record<string, any>): void;
 }
 
-declare module amp.Player {
+declare namespace amp.Player {
 
     /**
      * Interface for the options of [[amp]] when it is created.
@@ -2243,59 +2243,59 @@ declare module amp.Player {
 /**
  * FlashSS tech options.
  */
-declare module amp.options.flashSS {
+declare namespace amp.options.flashSS {
 
     /**
      * Url to Strobe media player
      */
-    export var swf: string;
+    export let swf: string;
 
     /**
      * Url to the AdaptiveStreaming plugin for OSMF.
      */
-    export var plugin: string;
+    export let plugin: string;
 }
 
 /**
  * SilverlightSS tech options
  */
-declare module amp.options.silverlightSS {
+declare namespace amp.options.silverlightSS {
 
     /**
      * Url to the silverlight player
      */
-    export var xap: string;
+    export let xap: string;
 }
 
 /**
  * AzureHtml5JS tech options
  */
-declare module amp.options.azureHtml5JS {
+declare namespace amp.options.azureHtml5JS {
 
     /**
      * Number of segments to skip in case of http errors
      */
-    export var maxSkipSegments: number;
+    export let maxSkipSegments: number;
 
     /**
      * Number of total retries in case of http errors
      */
-    export var maxTotalRetries: number;
+    export let maxTotalRetries: number;
 
     /**
      * Number of retries for each segment in case of http errors
      */
-    export var maxRetryPerSegment: number;
+    export let maxRetryPerSegment: number;
 
     /**
      * Number of retries for key requests in case of http errors
      */
-    export var maxRetriesForKeyAcquireFailure: number;
+    export let maxRetriesForKeyAcquireFailure: number;
 
     /**
      * Wait time between retrying for another key acquire request
      */
-    export var maxWaitTimeBetweenRetriesForKeyAcquireMS: number;
+    export let maxWaitTimeBetweenRetriesForKeyAcquireMS: number;
 }
 
 /**

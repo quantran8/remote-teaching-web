@@ -1,13 +1,5 @@
 import { MutationTree } from "vuex";
-import {
-  Exposure,
-  ExposureStatus,
-  ExposureType,
-  LessonState,
-  ExposureItemMedia,
-  CropMetadata,
-  TargetsVisibleAll, TargetsVisibleList
-} from "./state";
+import { Exposure, ExposureStatus, ExposureType, LessonState, ExposureItemMedia, CropMetadata, TargetsVisibleAll, TargetsVisibleList } from "./state";
 import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
 
