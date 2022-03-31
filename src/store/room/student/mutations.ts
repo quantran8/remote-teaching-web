@@ -106,7 +106,7 @@ const mutations: MutationTree<StudentRoomState> = {
             username: room.streamInfo.userId,
             token: room.streamInfo.token,
             platformUserId: room.streamInfo.platformUserId,
-            role: role,
+            role,
           },
         },
       });

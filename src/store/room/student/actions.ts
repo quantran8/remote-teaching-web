@@ -17,6 +17,7 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
 import { UserRole } from "@/store/app/state";
+import { store } from "@/store";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -188,8 +189,8 @@ const actions: ActionTree<StudentRoomState, any> = {
           audios.splice(teacherAudioIndex, 1);
         }
       }
-    }
-    return manager?.updateAudioAndVideoFeed(cameras, audios);
+    } 		
+	return manager?.updateAudioAndVideoFeed(cameras, audios, idOne);
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;

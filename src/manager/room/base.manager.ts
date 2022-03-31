@@ -67,9 +67,11 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     }
   }
 
-  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
+  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>, oneToOneStudentId?: string) {
     if (store.getters.platform === VCPlatform.Agora) {
       return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+    } else {
+      return this.zoomClient.breakoutRoomOrBackToMainRoom(oneToOneStudentId);
     }
   }
 

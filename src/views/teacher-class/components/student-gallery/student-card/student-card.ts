@@ -67,6 +67,12 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
+
+        if (store.getters["platform"] === VCPlatform.Zoom) {
+		  const roomManager = store.getters["teacherRoom/roomManager"];
+          await roomManager?.zoomClient.teacherBreakoutRoom();
+        }
+		// send singalR event
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.student.id,

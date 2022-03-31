@@ -311,3 +311,10 @@
     }
   }
 }
+
+
+
+canvas.student__video--sub {
+    transform: scaleX(-1);
+	object-fit: contain;
+}
