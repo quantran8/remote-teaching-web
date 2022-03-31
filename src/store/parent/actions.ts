@@ -20,7 +20,7 @@ const actions: ActionTree<ParentState, any> = {
       }
       ParentService.getChildren<GetChildrenModel>(state.info.id)
         .then((res: any) => {
-          commit("setChildren", res.children);
+          commit("setChildren", res.children.filter((ch: { schoolClassId: any; }) => ch.schoolClassId !== null));
           resolve(res);
         })
         .catch((err) => {
