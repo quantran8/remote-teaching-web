@@ -120,7 +120,6 @@ export interface RoomModel {
     chanelId: string;
     userId: string;
     appId: string;
-    platformUserId: string;
   };
   studentOneToOne: string;
   classInfo: ClassRoomModel;
@@ -144,4 +143,8 @@ export interface UnitAndLessonModel {
   sequence: number;
   unit: number;
   unitId: number;
+}
+
+export interface GenerateTokenModal {
+	token: string;
 }

@@ -189,8 +189,8 @@ const actions: ActionTree<StudentRoomState, any> = {
           audios.splice(teacherAudioIndex, 1);
         }
       }
-    } 		
-	return manager?.updateAudioAndVideoFeed(cameras, audios, idOne);
+    }
+    return manager?.updateAudioAndVideoFeed(cameras, audios, idOne);
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
@@ -443,6 +443,16 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
+  },
+  async generateOneToOneToken({ state }, payload: { classId: string; studentId?: string }) {
+    try {
+      const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
+      if (state.manager?.zoomClient) {
+        state.manager.zoomClient.oneToOneToken = response.token;
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
   },
 };
 

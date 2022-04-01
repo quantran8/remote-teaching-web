@@ -4,7 +4,7 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
-import { GLApiStatus, GLError, GLErrorCode } from "@/models/error.model";
+import { GLApiStatus, GLErrorCode } from "@/models/error.model";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
@@ -29,7 +29,6 @@ import { notification } from "ant-design-vue";
 import "animate.css";
 import { Logger } from "@/utils/logger";
 import { UserRole, VCPlatform } from "@/store/app/state";
-import { isSupportWebCodecs } from "@/zoom/utils";
 
 const fpPromise = FingerprintJS.load();
 

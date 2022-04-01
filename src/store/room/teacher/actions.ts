@@ -469,6 +469,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
+  async generateOneToOneToken({ state }, payload: {classId: string}) {
+    try {
+      const response = await RemoteTeachingService.generateOneToOneToken(payload.classId);
+	  if(state.manager?.zoomClient){
+		state.manager.zoomClient.oneToOneToken = response.token
+	  }
+    } catch (error) {
+      Logger.log(error);
+    }
+  },
 };
 
 export default actions;

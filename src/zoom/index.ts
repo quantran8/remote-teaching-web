@@ -1,6 +1,5 @@
 import ZoomVideo, { ConnectionState, Stream, VideoClient, VideoQuality, ConnectionChangePayload, ParticipantPropertiesPayload } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
-import { generateVideoToken } from "./utils";
 
 export interface ZoomClientSDK {
   client: typeof VideoClient;
@@ -22,7 +21,6 @@ export interface ZoomUser {
   username: string;
   role: "host" | "audience";
   token: string;
-  platformUserId: string;
 }
 
 export interface ZoomEventHandler {
@@ -43,6 +41,8 @@ export class ZoomClient implements ZoomClientSDK {
   _videoElement?: HTMLVideoElement;
   _selfId?: number;
   _oneToOneStudentId?: string;
+  _isInOneToOneRoom?: boolean;
+  _oneToOneToken?: string;
   joined = false;
   isMicEnable = false;
   isCameraEnable = false;
@@ -50,6 +50,9 @@ export class ZoomClient implements ZoomClientSDK {
   constructor(options: ZoomClientOptions) {
     this._options = options;
     this._usersAdded = [];
+	this._oneToOneStudentId = undefined
+	this._isInOneToOneRoom = false
+	this._oneToOneToken = undefined
   }
 
   get client() {
@@ -74,6 +77,14 @@ export class ZoomClient implements ZoomClientSDK {
 
   get zoomRTC(): typeof ZoomVideo {
     return ZoomVideo;
+  }
+
+  set oneToOneToken(token: string) {
+    this._oneToOneToken = token;
+  }
+
+  set oneToOneStudentId(studentId: string) {
+    this._oneToOneStudentId = studentId;
   }
 
   onConnectionChange = (payload: ConnectionChangePayload) => {
@@ -122,7 +133,7 @@ export class ZoomClient implements ZoomClientSDK {
     videoEncoderConfigurationPreset?: string;
     microphone?: boolean;
     token?: string;
-	isRejoin?: boolean;
+    isRejoin?: boolean;
   }) {
     try {
       this.isMicEnable = !!options.microphone;
@@ -152,13 +163,13 @@ export class ZoomClient implements ZoomClientSDK {
         const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
         await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
       });
-	  if(!options.isRejoin){
-		this.client.on("connection-change", this.onConnectionChange);
-		this.client.on("user-added", this.userAdded);
-		this.client.on("user-updated", this.userUpdated);
-		this.client.on("user-removed", this.userRemoved);
-		this.client.on("peer-video-state-change", this.peerVideoStateChange);
-	  }
+      if (!options.isRejoin) {
+        this.client.on("connection-change", this.onConnectionChange);
+        this.client.on("user-added", this.userAdded);
+        this.client.on("user-updated", this.userUpdated);
+        this.client.on("user-removed", this.userRemoved);
+        this.client.on("peer-video-state-change", this.peerVideoStateChange);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -194,15 +205,15 @@ export class ZoomClient implements ZoomClientSDK {
     if (this.option.user.role !== "host") return;
     try {
       await this.client.leave();
-      const token = generateVideoToken(this.option.user.channel + "-one-to-one", 1);
       await this.joinRTCRoom({
         teacherId: this.option.user.username,
         camera: this.isCameraEnable,
         microphone: this.isMicEnable,
-        token,
-		isRejoin: true,
+        token: this._oneToOneToken,
+        isRejoin: true,
       });
-      this.getSessionInfo("Teacher back to main room: ");
+	  this._isInOneToOneRoom = true;
+      this.getSessionInfo("Teacher breakout room: ");
     } catch (error) {
       console.log(error);
     }
@@ -213,53 +224,50 @@ export class ZoomClient implements ZoomClientSDK {
   async teacherBackToMainRoom() {
     if (this.option.user.role !== "host") return;
     try {
-	  await this.client.leave();
+      await this.client.leave();
       await this.joinRTCRoom({
         teacherId: this.option.user.username,
         camera: this.isCameraEnable,
         microphone: this.isMicEnable,
-		isRejoin: true,
+        isRejoin: true,
       });
-      this.getSessionInfo("Teacher breakout room: ");
+	  this._isInOneToOneRoom = false;
+	  this._oneToOneToken = undefined;
+      this.getSessionInfo("Teacher back to main room: ");
     } catch (error) {
       console.log(error);
     }
   }
 
   getSessionInfo(from = "") {
-    console.log(this.client?.getAllUser());
     console.log(from + this.client?.getSessionInfo().topic);
   }
 
-  async breakoutRoomOrBackToMainRoom(id?: string) {
+  async studentBreakoutRoomOrBackToMainRoom() {
     if (this.option.user.role === "host") return;
     try {
-      if (id) {
-        if (this.option.user.username === id) {
-          console.log("Breakout room", id);
-          this._oneToOneStudentId = id;
-          await this.client.leave();
-          const token = generateVideoToken(this.option.user.channel + "-one-to-one", 0);
-          await this.joinRTCRoom({
-            studentId: this.option.user.username,
-            camera: this.isCameraEnable,
-            microphone: this.isMicEnable,
-            token,
-          });
-          this.getSessionInfo("Student breakout room: ");
-        }
+      if (this.option.user.username !== this._oneToOneStudentId) return;
+      if (this._isInOneToOneRoom) {
+        await this.client?.leave();
+        await this.joinRTCRoom({
+          studentId: this.option.user.username,
+          camera: this.isCameraEnable,
+          microphone: this.isMicEnable,
+        });
+        this._isInOneToOneRoom = false;
+		this._oneToOneStudentId = undefined;
+        this.getSessionInfo("Student back to main room: ");
       } else {
-        if (this.option.user.username === this._oneToOneStudentId) {
-          console.log("Back to class room");
-          this._oneToOneStudentId = undefined;
-          await this.client.leave();
-          await this.joinRTCRoom({
-            studentId: this.option.user.username,
-            camera: this.isCameraEnable,
-            microphone: this.isMicEnable,
-          });
-          this.getSessionInfo("Student back to main room: ");
-        }
+		console.log("Breakout room", this._oneToOneStudentId);
+        await this.client?.leave();
+		await this.joinRTCRoom({
+          studentId: this.option.user.username,
+          camera: this.isCameraEnable,
+          microphone: this.isMicEnable,
+          token: this._oneToOneToken,
+        });
+        this._isInOneToOneRoom = true;
+        this.getSessionInfo("Student breakout room: ");
       }
     } catch (error) {
       console.log(error);

@@ -1,6 +1,6 @@
 import { GLServiceBase, ServiceRoute } from "../base.service";
 import { RemoteTeachingServiceInterface } from "@/services";
-import { StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
+import { GenerateTokenResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { store } from "@/store";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
@@ -90,6 +90,13 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       studentId: studentId,
       sessionId: sessionId,
     });
+  }
+  generateOneToOneToken(roomId?: string, studentId?: string):  Promise<GenerateTokenResponse> {
+	let api = `zoom/generate-one-to-one-token?roomId=${roomId}`
+	if(studentId){
+		api += `&studentId=${studentId}`
+	}
+	return this.get(`${api}&`);
   }
 }
 

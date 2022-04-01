@@ -1,3 +1,4 @@
+import { TeacherRoomManager } from '@/manager/room/teacher.manager';
 import { isSupportWebCodecs } from "@/zoom/utils";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
@@ -67,9 +68,12 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
-
+		
         if (store.getters["platform"] === VCPlatform.Zoom) {
-		  const roomManager = store.getters["teacherRoom/roomManager"];
+		  const roomManager: TeacherRoomManager = store.getters["teacherRoom/roomManager"];
+		  await store.dispatch("teacherRoom/generateOneToOneToken", {
+			 classId: roomManager?.zoomClient.option.user.channel
+		  });
           await roomManager?.zoomClient.teacherBreakoutRoom();
         }
 		// send singalR event

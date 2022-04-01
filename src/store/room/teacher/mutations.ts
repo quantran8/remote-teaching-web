@@ -134,7 +134,6 @@ const mutations: TeacherRoomMutation<State> = {
             username: p.streamInfo.userId,
             token: p.streamInfo.token,
             role: role,
-            platformUserId: p.streamInfo.platformUserId,
           },
         },
       });

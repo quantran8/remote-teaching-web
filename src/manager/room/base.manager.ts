@@ -67,11 +67,18 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     }
   }
 
-  updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>, oneToOneStudentId?: string) {
+  async updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>, oneToOneStudentId?: string) {
     if (store.getters.platform === VCPlatform.Agora) {
       return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
     } else {
-      return this.zoomClient.breakoutRoomOrBackToMainRoom(oneToOneStudentId);
+      if (oneToOneStudentId) {
+        this.zoomClient.oneToOneStudentId = oneToOneStudentId;
+        await store.dispatch("studentRoom/generateOneToOneToken", {
+          classId: this.zoomClient.option.user.channel,
+          studentId: this.zoomClient.option.user.username,
+        });
+      }
+      return this.zoomClient.studentBreakoutRoomOrBackToMainRoom();
     }
   }
 
