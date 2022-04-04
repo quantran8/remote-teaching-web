@@ -5,6 +5,7 @@ import App from "./app/app.vue";
 import "./registerServiceWorker";
 import router from "./router";
 import i18n from "./commonui/locales/i18n";
+import { GLPlugin } from "vue-glcommonui";
 import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components/base";
 import {
   LiveCircle,
@@ -57,6 +58,10 @@ app.component("VueCropper", VueCropper);
 app.use(router);
 app.use(store);
 app.use(i18n);
+app.use(GLPlugin, {
+  i18nInstance: i18n,
+  store,
+});
 
 // Global properties
 app.config.globalProperties.$paths = Paths;
