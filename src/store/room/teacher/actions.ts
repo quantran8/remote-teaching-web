@@ -31,6 +31,7 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { FabricObject } from "@/ws";
 import { UserRole } from "@/store/app/state";
+import { store } from "@/store";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -206,7 +207,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     try {
       const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
-      if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
+
+	  if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
@@ -214,6 +216,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         return;
       }
       commit("setRoomInfo", roomResponse.data);
+	  await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {

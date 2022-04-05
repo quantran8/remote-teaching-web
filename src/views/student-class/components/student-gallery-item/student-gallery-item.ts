@@ -19,10 +19,9 @@ export default defineComponent({
     const isRaisingHand = ref(false);
     const store = useStore();
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
-    const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = computed(() => store.getters["platform"] === VCPlatform.Agora);
 
-    watch(props, () => {
+	watch(props, () => {
       if (props.raisedHand) {
         isRaisingHand.value = true;
       } else {

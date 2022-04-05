@@ -558,6 +558,7 @@ export default defineComponent({
     };
 
     watch(currentPlatform, async currentValue => {
+	  console.log("Platform changed")
       dispatch("setVideoCallPlatform", currentValue);
       isUsingAgora.value = currentValue === VCPlatform.Agora;
       await initialSetup();

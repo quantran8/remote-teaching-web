@@ -21,6 +21,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   }
 
   async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }) {
+    console.log("Platform is using: ", store.getters.platform);
     if (!options.studentId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     if (store.getters.platform === VCPlatform.Agora) {

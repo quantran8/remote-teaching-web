@@ -51,6 +51,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
+	  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
@@ -294,11 +295,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("leaveRoom", payload);
     commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
-  async loadRooms({ commit, state }, _payload: any) {
+  async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
+	await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
   },
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
