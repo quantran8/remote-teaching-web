@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import Lottie from "vue-lottie";
 import VueCropper from "vue-cropperjs";
 import App from "./app/app.vue";
-import i18n from "./commonui/locales/i18n";
+import i18n from "./utils/i18n";
 import "./registerServiceWorker";
 import router from "./router";
 import { GLPlugin } from "vue-glcommonui";

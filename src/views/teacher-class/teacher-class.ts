@@ -1,4 +1,4 @@
-import { LoginInfo, RoleName } from "@/commonui";
+import { LoginInfo } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Modal, notification, Checkbox } from "ant-design-vue";
 import { computed, ComputedRef, defineComponent, ref, watch, provide, onMounted, onUnmounted } from "vue";
@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
-import { fmtMsg } from "vue-glcommonui";
+import { fmtMsg, RoleName } from "vue-glcommonui";
 import { ErrorCode } from "@/utils/utils";
 import { TeacherClass } from "./../../locales/localeid";
 import { UserRole } from "@/store/app/state";
