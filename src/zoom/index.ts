@@ -50,9 +50,9 @@ export class ZoomClient implements ZoomClientSDK {
   constructor(options: ZoomClientOptions) {
     this._options = options;
     this._usersAdded = [];
-	this._oneToOneStudentId = undefined
-	this._isInOneToOneRoom = false
-	this._oneToOneToken = undefined
+    this._oneToOneStudentId = undefined;
+    this._isInOneToOneRoom = false;
+    this._oneToOneToken = undefined;
   }
 
   get client() {
@@ -104,6 +104,25 @@ export class ZoomClient implements ZoomClientSDK {
   userUpdated = (payload: ParticipantPropertiesPayload[]) => {
     payload.map(user => {
       Logger.log("user-updated", user.userId);
+    });
+	this.renderPeerVideos()
+  };
+
+  renderPeerVideos = async () => {
+    const users = this.client.getAllUser();
+    users.forEach(async user => {
+      if (!user.bVideoOn) return;
+      if (this.option.user.role === "host") {
+        const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
+		if(canvas){
+			await this.stream.renderVideo(canvas, user.userId, 300, canvas.height, 0, 0, VideoQuality.Video_360P);
+		}
+      } else {
+        const canvas = document.getElementById(`${user?.displayName}__video`) as HTMLCanvasElement;
+		if(canvas){
+			await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
+		}
+      }
     });
   };
 
@@ -157,12 +176,6 @@ export class ZoomClient implements ZoomClientSDK {
       if (options.camera) {
         await this.stream.startVideo({ videoElement: this._videoElement });
       }
-      const users = this.client.getAllUser();
-      users.forEach(async user => {
-        if (!user.bVideoOn) return;
-        const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
-        await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
-      });
       if (!options.isRejoin) {
         this.client.on("connection-change", this.onConnectionChange);
         this.client.on("user-added", this.userAdded);
@@ -170,6 +183,7 @@ export class ZoomClient implements ZoomClientSDK {
         this.client.on("user-removed", this.userRemoved);
         this.client.on("peer-video-state-change", this.peerVideoStateChange);
       }
+      await this.renderPeerVideos();
     } catch (error) {
       console.log(error);
     }
@@ -194,7 +208,7 @@ export class ZoomClient implements ZoomClientSDK {
 
   async setCamera(options: { enable: boolean }) {
     this.isCameraEnable = options.enable;
-    if (this.isCameraEnable) {
+    if (this.isCameraEnable && this._videoElement) {
       await this.stream.startVideo({ videoElement: this._videoElement });
     } else {
       await this.stream.stopVideo();
@@ -212,7 +226,7 @@ export class ZoomClient implements ZoomClientSDK {
         token: this._oneToOneToken,
         isRejoin: true,
       });
-	  this._isInOneToOneRoom = true;
+      this._isInOneToOneRoom = true;
       this.getSessionInfo("Teacher breakout room: ");
     } catch (error) {
       console.log(error);
@@ -231,8 +245,8 @@ export class ZoomClient implements ZoomClientSDK {
         microphone: this.isMicEnable,
         isRejoin: true,
       });
-	  this._isInOneToOneRoom = false;
-	  this._oneToOneToken = undefined;
+      this._isInOneToOneRoom = false;
+      this._oneToOneToken = undefined;
       this.getSessionInfo("Teacher back to main room: ");
     } catch (error) {
       console.log(error);
@@ -255,12 +269,12 @@ export class ZoomClient implements ZoomClientSDK {
           microphone: this.isMicEnable,
         });
         this._isInOneToOneRoom = false;
-		this._oneToOneStudentId = undefined;
+        this._oneToOneStudentId = undefined;
         this.getSessionInfo("Student back to main room: ");
       } else {
-		console.log("Breakout room", this._oneToOneStudentId);
+        console.log("Breakout room", this._oneToOneStudentId);
         await this.client?.leave();
-		await this.joinRTCRoom({
+        await this.joinRTCRoom({
           studentId: this.option.user.username,
           camera: this.isCameraEnable,
           microphone: this.isMicEnable,

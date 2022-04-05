@@ -11,7 +11,7 @@
     >
       <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
         <video
-          v-if="isSupportWebCodecs && !isUsingAgora"
+          v-if="isCurrent && !isUsingAgora"
           class="sc-gallery-item__video"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
@@ -20,7 +20,7 @@
         ></video>
 
         <canvas
-          v-else-if="!isSupportWebCodecs && !isUsingAgora"
+          v-else-if="!isCurrent && !isUsingAgora"
           class="sc-gallery-item__video"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"

@@ -1,5 +1,4 @@
 import { TeacherRoomManager } from '@/manager/room/teacher.manager';
-import { isSupportWebCodecs } from "@/zoom/utils";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
@@ -161,7 +160,6 @@ export default defineComponent({
       avatarStudent,
       oneAndOne,
       isUsingAgora,
-      isSupportWebCodecs: isSupportWebCodecs(),
     };
   },
 });

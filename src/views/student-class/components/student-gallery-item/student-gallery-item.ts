@@ -1,4 +1,3 @@
-import { isSupportWebCodecs } from "@/zoom/utils";
 import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
@@ -43,7 +42,6 @@ export default defineComponent({
       isRaisingHand,
       avatarStudent,
       isUsingAgora,
-      isSupportWebCodecs: isSupportWebCodecs(),
     };
   },
 });

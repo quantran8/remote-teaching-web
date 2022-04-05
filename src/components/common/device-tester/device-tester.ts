@@ -1,6 +1,6 @@
 import { defineComponent, computed, ref, watch, onUnmounted } from "vue";
 import AgoraRTC from "agora-rtc-sdk-ng";
-import ZoomVideo, { LocalAudioTrack } from "@zoom/videosdk";
+import ZoomVideo, { LocalAudioTrack, LocalVideoTrack } from "@zoom/videosdk";
 
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space, Spin } from "ant-design-vue";
@@ -117,7 +117,7 @@ export default defineComponent({
 
     const setupZoom = async () => {
       let audioTrack: LocalAudioTrack | null = null;
-      let videoTrack = null;
+      let videoTrack: LocalVideoTrack | null =  null;
       try {
         const devices = await ZoomVideo.getDevices();
         const cams = devices.filter(function(device) {
@@ -132,7 +132,7 @@ export default defineComponent({
           havePermissionCamera.value = true;
         }
       } catch (error) {
-        Logger.log("setupZoom error when create videoTrack =>", error);
+        Logger.log("SetupZoom error when create videoTrack =>", error);
         if (error?.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
         preventCloseModal.value = false;
         zoomCamError.value = true;
@@ -151,7 +151,7 @@ export default defineComponent({
           havePermissionMicrophone.value = true;
         }
       } catch (error) {
-        Logger.log("setupZoom error when create audioTrack =>", error);
+        Logger.log("SetupZoom error when create audioTrack =>", error);
         if (error?.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
         preventCloseModal.value = false;
         zoomMicError.value = true;
@@ -163,14 +163,24 @@ export default defineComponent({
     };
 
     const setupZoomTracking = async () => {
-      const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-      await localTracks.value.videoTrack.start(doc);
-
-      await localTracks.value.audioTrack.start();
-      await localTracks.value.audioTrack.unmute();
-      if (!volumeAnimation.value) {
-        volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-      }
+		try {
+			const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+			await localTracks.value?.videoTrack.start(doc);
+			
+			if(!localTracks.value?.audioTrack.isAudioStarted){
+				await localTracks.value?.audioTrack.start();
+			} 
+			if (!localTracks.value?.audioTrack.isMicUnmuted){
+				await localTracks.value?.audioTrack.unmute();
+			}
+			if (!volumeAnimation.value) {
+			  volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+			}
+		} catch (error) {
+			console.log("Setup Zoom tracking failed")
+			console.log(error)
+		}
+     
     };
 
     const setupDevice = async () => {
@@ -203,7 +213,7 @@ export default defineComponent({
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
           listMicsId.value = mics.map(mic => mic.deviceId);
-          await localTracks.value.audioTrack.setDevice(mics[0]?.deviceId);
+          await localTracks.value?.audioTrack.setDevice(mics[0]?.deviceId);
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
           }
@@ -236,9 +246,9 @@ export default defineComponent({
           listMics.value = mics;
           listMicsId.value = mics.map(mic => mic.deviceId);
           if (newMicroId) {
-            await localTracks.value.audioTrack.setDevice(newMicroId);
+            await localTracks.value?.audioTrack.setDevice(newMicroId);
           } else {
-            await localTracks.value.audioTrack.setDevice(mics[0]?.deviceId);
+            await localTracks.value?.audioTrack.setDevice(mics[0]?.deviceId);
           }
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
@@ -342,18 +352,19 @@ export default defineComponent({
         }
         if (currentMic.value) {
           if (isUsingAgora.value) {
-            await localTracks.value?.audioTrack?.setEnabled(false);
+            await localTracks.value?.audioTrack.setEnabled(false);
           } else {
-            await localTracks.value?.audioTrack?.mute();
+            await localTracks.value?.audioTrack.mute();
           }
         }
       }
     });
 
     watch(currentMic, async currentMicValue => {
+	  if(!localTracks.value?.audioTrack) return;
       if (currentMicValue) {
         if (isUsingAgora.value) {
-          await localTracks.value?.audioTrack?.setEnabled(true);
+          await localTracks.value?.audioTrack.setEnabled(true);
         } else {
           await localTracks.value?.audioTrack.start();
           await localTracks.value?.audioTrack.unmute();
@@ -390,15 +401,16 @@ export default defineComponent({
     });
 
     watch(currentCam, async currentCamValue => {
+	  if(!localTracks.value?.videoTrack) return;
       if (currentCamValue) {
         if (isUsingAgora.value) {
-          await localTracks.value?.videoTrack?.play(videoElementId);
+          await localTracks.value?.videoTrack.play(videoElementId);
           await localTracks.value?.videoTrack.setEnabled(true);
         } else {
-          await localTracks.value.audioTrack.stop();
-          localTracks.value.audioTrack = ZoomVideo.createLocalVideoTrack(currentCamValue.deviceId);
+          await localTracks.value?.videoTrack.stop();
+          localTracks.value["videoTrack"] = ZoomVideo.createLocalVideoTrack(currentCamValue.deviceId);
           const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-          await localTracks.value.audioTrack.start(doc);
+          await localTracks.value?.videoTrack.start(doc);
         }
       }
     });
@@ -407,8 +419,8 @@ export default defineComponent({
       if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
       volumeByPercent.value = isUsingAgora.value
-        ? localTracks.value.audioTrack.getVolumeLevel() * 100
-        : localTracks.value.audioTrack.getCurrentVolume() * 100;
+        ? localTracks.value?.audioTrack.getVolumeLevel() * 100
+        : localTracks.value?.audioTrack.getCurrentVolume() * 100;
     };
 
     const showModal = () => {
@@ -418,9 +430,9 @@ export default defineComponent({
     const handleMicroChange = async (micId: string) => {
       try {
         if (isUsingAgora.value) {
-          await localTracks.value.audioTrack.setDevice(micId);
+          await localTracks.value?.audioTrack.setDevice(micId);
         } else {
-          await localTracks.value.audioTrack?.stop();
+          await localTracks.value?.audioTrack.stop();
           const audioTrack = ZoomVideo.createLocalAudioTrack(micId);
           if (isOpenMic.value) {
             await audioTrack.start();
@@ -433,7 +445,7 @@ export default defineComponent({
         Logger.log("Error => ", error);
       }
     };
-
+	
     const handleCameraChange = async (camId: any) => {
       try {
         if (isUsingAgora.value) {
