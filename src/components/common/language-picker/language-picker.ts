@@ -1,5 +1,6 @@
 import { defineComponent, computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { GLGlobal } from "vue-glcommonui";
 import { Dropdown, Menu, Button } from "ant-design-vue";
 import { DownOutlined, GlobalOutlined } from "@ant-design/icons-vue";
 import { languages } from "./constants";
@@ -14,12 +15,11 @@ export default defineComponent({
     Button,
   },
   setup() {
-    const { t, locale } = useI18n({ useScope: "global" });
     const handleClick = (e: any) => {
-      locale.value = e.key;
+      GLGlobal.i18n.global.locale = e.key;
     };
-    const labelCurrentLanguage = computed(() => languages.find(i => i.value == locale.value)?.label);
-    const currentLanguageCode = computed(() => locale.value);
+    const labelCurrentLanguage = computed(() => languages.find(i => i.value == GLGlobal.i18n.global.locale)?.label);
+    const currentLanguageCode = computed(() => GLGlobal.i18n.global.locale);
     return { languages, handleClick, labelCurrentLanguage, currentLanguageCode };
   },
 });

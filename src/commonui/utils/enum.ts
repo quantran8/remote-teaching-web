@@ -585,31 +585,7 @@ export enum VersionGroupLicenseType {
   LittleSEED = 1,
 }
 
-export enum Tools {
-  Cursor = "cursor",
-  Pen = "pen",
-  Laser = "laser",
-  Stroke = "stroke",
-  Delete = "delete",
-  Clear = "clear",
-  StrokeColor = "stroke-color",
-  Star = "star",
-  Circle = "circle",
-  Square = "square",
-  TextBox = 'TextBox'
-}
 
-export enum Mode {
-  Cursor = 1,
-  Draw = 2,
-}
 
-export enum ErrorCode {
-  ConcurrentUserException = 1,
-  StudentNotInClass = 5,
-}
 
-export enum DefaultCanvasDimension {
-  width = 717,
-  height = 435,
-}
+

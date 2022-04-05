@@ -1,7 +1,7 @@
 import { defineComponent, computed, onMounted } from "vue";
 import { DisconnectScreenLocale } from "@/locales/localeid";
 import * as audioSource from "@/utils/audioGenerator";
-import { fmtMsg } from "commonui";
+import { fmtMsg } from "vue-glcommonui";
 
 export default defineComponent({
   setup() {

@@ -2,7 +2,7 @@ import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import { DefaultCanvasDimension } from "commonui";
+import { DefaultCanvasDimension } from "@/utils/utils";
 import { TeacherModel } from "@/models";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { LastFabricUpdated } from "@/store/annotation/state";

@@ -3,7 +3,7 @@ import { GroupModelSchedules } from "@/models/group.model";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { Spin } from "ant-design-vue";
 import moment from "moment";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 
 export default defineComponent({
   props: {

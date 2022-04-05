@@ -1,4 +1,4 @@
-import { DefaultCanvasDimension, ratioValue, starPolygonPoints, setStrokeColor, getRadius, getScaleX, getScaleY } from "commonui";
+import { DefaultCanvasDimension, ratioValue, setStrokeColor, getRadius, getScaleX, getScaleY } from "@/utils/utils";
 import { fabric } from "fabric";
 import { useStore } from "vuex";
 import { computed } from "vue";

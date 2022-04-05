@@ -1,5 +1,5 @@
 import { Layout } from "@/locales/localeid";
-import { fmtMsg, GLGlobal } from "@/commonui";
+import { fmtMsg, GLGlobal } from "vue-glcommonui";
 import { computed, defineComponent } from "vue";
 
 export default defineComponent({

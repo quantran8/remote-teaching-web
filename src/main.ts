@@ -2,9 +2,9 @@ import { createApp } from "vue";
 import Lottie from "vue-lottie";
 import VueCropper from "vue-cropperjs";
 import App from "./app/app.vue";
+import i18n from "./commonui/locales/i18n";
 import "./registerServiceWorker";
 import router from "./router";
-import i18n from "./commonui/locales/i18n";
 import { GLPlugin } from "vue-glcommonui";
 import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components/base";
 import {
@@ -54,13 +54,14 @@ app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
 app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
-//app.component("UnityView", UnityView);
 app.use(router);
 app.use(store);
-app.use(i18n);
+
+//vue-glcommonui plugin
 app.use(GLPlugin, {
   i18nInstance: i18n,
   store,
+  appConfig: process.env,
 });
 
 // Global properties

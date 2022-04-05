@@ -1,4 +1,4 @@
-import { AuthService, fmtMsg, GLGlobal, LoginInfo } from "@/commonui";
+import { AuthService, fmtMsg, GLGlobal } from "vue-glcommonui";
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import MenuItem from "./components/menu-item/menu-item.vue";

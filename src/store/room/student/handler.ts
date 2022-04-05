@@ -14,7 +14,7 @@ import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
 import { reactive } from "vue";
 import { notification } from "ant-design-vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { StoreLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 

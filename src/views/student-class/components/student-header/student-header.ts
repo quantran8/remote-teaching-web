@@ -6,7 +6,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import gsap from "gsap";
-import { fmtMsg, MatIcon } from "@/commonui";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
 import { ClassRoomStatus } from "@/models";
 
 export default defineComponent({

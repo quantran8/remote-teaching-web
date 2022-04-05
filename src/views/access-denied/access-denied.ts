@@ -1,5 +1,6 @@
 import { AccessDeniedLocale } from "@/locales/localeid";
-import { fmtMsg, RoleName } from "@/commonui";
+import { RoleName } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 

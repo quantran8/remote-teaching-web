@@ -5,7 +5,7 @@ import { exposureTypes } from "../lesson-plan";
 import { Empty } from "ant-design-vue";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 import { ExposureType } from "@/store/lesson/state";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
 
 export default defineComponent({

@@ -1,6 +1,6 @@
 import { defineComponent, computed } from "vue";
 import { useStore } from "vuex";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { LostNetwork } from "@/locales/localeid";
 import { UserRole } from "@/store/app/state";
 

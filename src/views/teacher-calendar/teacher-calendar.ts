@@ -1,13 +1,13 @@
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { Button, Calendar, Col, Modal, Row, Select, Spin, TimePicker, Tooltip } from "ant-design-vue";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
-
 import moment, { Moment } from "moment";
 import { useStore } from "vuex";
 import { ClassModelSchedules } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
-import { fmtMsg, LoginInfo } from "@/commonui";
+import { LoginInfo } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import IconWarning from "@/assets/calendar-warning.svg";
 import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 

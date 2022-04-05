@@ -1,4 +1,4 @@
-import { GLGlobal } from "@/commonui";
+import { GLGlobal } from "vue-glcommonui";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";

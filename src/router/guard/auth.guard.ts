@@ -1,6 +1,6 @@
-import { AuthService, GLUtil, locationReplace, LoginInfo } from "@/commonui";
+import { AuthService, GLUtil, locationReplace } from "vue-glcommonui";
+import { LoginInfo } from "@/commonui";
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
-
 import { store } from "@/store";
 import { AppView } from "@/store/app/state";
 import { LayoutGuard, ParentGuard, TeacherGuard } from ".";
@@ -20,8 +20,8 @@ const verifySession = () => {
       return Promise.reject();
     };
     return AuthService.clearState()
-      .then(_ => abortSignin())
-      .catch(_ => abortSignin());
+      .then(() => abortSignin())
+      .catch(() => abortSignin());
   }
   AuthService.trySetSigninVerifyToken();
   return Promise.resolve();
@@ -69,12 +69,12 @@ export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next
       };
       AuthService.signoutRedirectCallback()
         .then(onSignedOut)
-        .catch(e => {
+        .catch((e: any) => {
           Logger.error(e);
         });
     } else if (hasIdTokenInUrl) {
       verifySession().then(() => {
-        AuthService.signinRedirectCallback().then(user => {
+        AuthService.signinRedirectCallback().then((user: any) => {
           try {
             const page = AuthService.getPageAfterSignin();
             const processedUser = AuthService.processUser(user);
@@ -96,7 +96,7 @@ export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next
       if (loginInfo && loginInfo.loggedin) {
         routeAuth(loginInfo, to, from, next);
       } else {
-        AuthService.useLocalStoreToLogin().then(loginInfo => routeAuth(loginInfo, to, from, next));
+        AuthService.useLocalStoreToLogin().then((loginInfo: any) => routeAuth(loginInfo, to, from, next));
       }
     }
   } else if (to.matched.some(record => record.meta.notFound)) {

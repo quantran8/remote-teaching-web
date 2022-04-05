@@ -1,4 +1,4 @@
-import { MatIcon } from "@/commonui";
+import { MatIcon } from "vue-glcommonui";
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";

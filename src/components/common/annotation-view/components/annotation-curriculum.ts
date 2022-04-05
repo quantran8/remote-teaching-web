@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { ratioValue, setStrokeColor, starPolygonPoints } from "commonui";
+import { ratioValue, setStrokeColor, starPolygonPoints } from "@/utils/utils";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
@@ -92,7 +92,7 @@ export const annotationCurriculumStudent = () => {
           id: "annotation-lesson",
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
-          ...commonProps
+          ...commonProps,
         });
         rect.rotate(item.rotate);
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
@@ -111,7 +111,7 @@ export const annotationCurriculumStudent = () => {
           id: "annotation-lesson",
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
-          ...commonProps
+          ...commonProps,
         });
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
