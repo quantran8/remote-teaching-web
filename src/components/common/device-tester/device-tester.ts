@@ -117,7 +117,7 @@ export default defineComponent({
 
     const setupZoom = async () => {
       let audioTrack: LocalAudioTrack | null = null;
-      let videoTrack: LocalVideoTrack | null =  null;
+      let videoTrack: LocalVideoTrack | null = null;
       try {
         const devices = await ZoomVideo.getDevices();
         const cams = devices.filter(function(device) {
@@ -163,24 +163,23 @@ export default defineComponent({
     };
 
     const setupZoomTracking = async () => {
-		try {
-			const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-			await localTracks.value?.videoTrack.start(doc);
-			
-			if(!localTracks.value?.audioTrack.isAudioStarted){
-				await localTracks.value?.audioTrack.start();
-			} 
-			if (!localTracks.value?.audioTrack.isMicUnmuted){
-				await localTracks.value?.audioTrack.unmute();
-			}
-			if (!volumeAnimation.value) {
-			  volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-			}
-		} catch (error) {
-			console.log("Setup Zoom tracking failed")
-			console.log(error)
-		}
-     
+      try {
+        const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+        await localTracks.value?.videoTrack.start(doc);
+
+        if (!localTracks.value?.audioTrack.isAudioStarted) {
+          await localTracks.value?.audioTrack.start();
+        }
+        if (!localTracks.value?.audioTrack.isMicUnmuted) {
+          await localTracks.value?.audioTrack.unmute();
+        }
+        if (!volumeAnimation.value) {
+          volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+        }
+      } catch (error) {
+        console.log("Setup Zoom tracking failed");
+        console.log(error);
+      }
     };
 
     const setupDevice = async () => {
@@ -304,10 +303,8 @@ export default defineComponent({
     };
 
     const setupEvent = () => {
-      if (isUsingAgora.value) {
-        AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
-        AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
-      }
+      AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
+      AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
     };
 
     const cancelVolumeAnimation = () => {
@@ -329,6 +326,83 @@ export default defineComponent({
         await setupZoomTracking();
       }
     };
+
+    watch(currentMic, async currentMicValue => {
+      if (!localTracks.value?.audioTrack) return;
+      if (currentMicValue) {
+        if (isUsingAgora.value) {
+          await localTracks.value?.audioTrack.setEnabled(true);
+        } else {
+          const devices = await ZoomVideo.getDevices();
+          const mics = devices.filter(function(device) {
+            return device.kind === "audioinput";
+          });
+          const thisMic = mics.find(({ deviceId }) => deviceId === currentMicValue.deviceId) || mics[0];
+          await localTracks.value?.audioTrack.stop();
+          localTracks.value["audioTrack"] = ZoomVideo.createLocalAudioTrack(thisMic.deviceId);
+          await localTracks.value?.audioTrack.start();
+          if (isOpenMic.value) {
+            await localTracks.value?.audioTrack.unmute();
+          }
+          await localTracks.value?.audioTrack.start();
+          await localTracks.value?.audioTrack.unmute();
+        }
+        if (!volumeAnimation.value) {
+          volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+        }
+      }
+    });
+
+    watch(currentCam, async currentCamValue => {
+      if (!localTracks.value?.videoTrack) return;
+      if (currentCamValue) {
+        if (isUsingAgora.value) {
+          await localTracks.value?.videoTrack.play(videoElementId);
+          await localTracks.value?.videoTrack.setEnabled(true);
+        } else {
+          try {
+            const devices = await ZoomVideo.getDevices();
+            const cams = devices.filter(function(device) {
+              return device.kind === "videoinput";
+            });
+            const thisCam = cams.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || cams[0];
+            await localTracks.value?.videoTrack.stop();
+            localTracks.value["videoTrack"] = ZoomVideo.createLocalVideoTrack(thisCam.deviceId);
+            if (isOpenCam.value) {
+              const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+              await localTracks.value?.videoTrack.start(doc);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    });
+
+    //handle for camera
+    watch(isOpenCam, async currentIsOpenCamValue => {
+      if (currentIsOpenCamValue) {
+        dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
+        if (currentCam.value) {
+          if (isUsingAgora.value) {
+            await localTracks.value?.videoTrack.setEnabled(true);
+          } else {
+            const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+            await localTracks.value?.videoTrack.start(doc);
+          }
+        }
+      }
+      if (!currentIsOpenCamValue) {
+        dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
+        if (currentCam.value) {
+          if (isUsingAgora.value) {
+            await localTracks.value?.videoTrack.setEnabled(false);
+          } else {
+            await localTracks.value?.videoTrack.stop();
+          }
+        }
+      }
+    });
 
     //handle for microphone
     watch(isOpenMic, async currentIsOpenMic => {
@@ -360,61 +434,6 @@ export default defineComponent({
       }
     });
 
-    watch(currentMic, async currentMicValue => {
-	  if(!localTracks.value?.audioTrack) return;
-      if (currentMicValue) {
-        if (isUsingAgora.value) {
-          await localTracks.value?.audioTrack.setEnabled(true);
-        } else {
-          await localTracks.value?.audioTrack.start();
-          await localTracks.value?.audioTrack.unmute();
-        }
-        if (!volumeAnimation.value) {
-          volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-        }
-      }
-    });
-
-    //handle for camera
-    watch(isOpenCam, async currentIsOpenCamValue => {
-      if (currentIsOpenCamValue) {
-        dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
-        if (currentCam.value) {
-          if (isUsingAgora.value) {
-            await localTracks.value?.videoTrack.setEnabled(true);
-          } else {
-            const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-            await localTracks.value?.videoTrack.start(doc);
-          }
-        }
-      }
-      if (!currentIsOpenCamValue) {
-        dispatch("setHideVideo", { status: MediaStatus.mediaLocked });
-        if (currentCam.value) {
-          if (isUsingAgora.value) {
-            await localTracks.value?.videoTrack.setEnabled(false);
-          } else {
-            await localTracks.value?.videoTrack.stop();
-          }
-        }
-      }
-    });
-
-    watch(currentCam, async currentCamValue => {
-	  if(!localTracks.value?.videoTrack) return;
-      if (currentCamValue) {
-        if (isUsingAgora.value) {
-          await localTracks.value?.videoTrack.play(videoElementId);
-          await localTracks.value?.videoTrack.setEnabled(true);
-        } else {
-          await localTracks.value?.videoTrack.stop();
-          localTracks.value["videoTrack"] = ZoomVideo.createLocalVideoTrack(currentCamValue.deviceId);
-          const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-          await localTracks.value?.videoTrack.start(doc);
-        }
-      }
-    });
-
     const setVolumeWave = () => {
       if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
@@ -431,33 +450,17 @@ export default defineComponent({
       try {
         if (isUsingAgora.value) {
           await localTracks.value?.audioTrack.setDevice(micId);
-        } else {
-          await localTracks.value?.audioTrack.stop();
-          const audioTrack = ZoomVideo.createLocalAudioTrack(micId);
-          if (isOpenMic.value) {
-            await audioTrack.start();
-            await audioTrack.unmute();
-          }
-          localTracks.value.audioTrack = audioTrack;
         }
         currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
     };
-	
+
     const handleCameraChange = async (camId: any) => {
       try {
         if (isUsingAgora.value) {
           await localTracks.value.videoTrack.setDevice(camId);
-        } else {
-          await localTracks.value.videoTrack.stop();
-          const videoTrack = ZoomVideo.createLocalVideoTrack(camId);
-          if (isOpenCam.value) {
-            const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-            await videoTrack.start(doc);
-          }
-          localTracks.value.videoTrack = videoTrack;
         }
         currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
       } catch (error) {
@@ -570,7 +573,7 @@ export default defineComponent({
     };
 
     watch(currentPlatform, async currentValue => {
-	  console.log("Platform changed")
+      console.log("Platform changed");
       dispatch("setVideoCallPlatform", currentValue);
       isUsingAgora.value = currentValue === VCPlatform.Agora;
       await initialSetup();

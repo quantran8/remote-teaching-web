@@ -1,5 +1,14 @@
-import ZoomVideo, { ConnectionState, Stream, VideoClient, VideoQuality, ConnectionChangePayload, ParticipantPropertiesPayload } from "@zoom/videosdk";
+import ZoomVideo, {
+  ConnectionState,
+  Stream,
+  VideoClient,
+  VideoQuality,
+  ConnectionChangePayload,
+  ParticipantPropertiesPayload,
+  CaptureVideoOption,
+} from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
+import { store } from "@/store";
 
 export interface ZoomClientSDK {
   client: typeof VideoClient;
@@ -46,6 +55,10 @@ export class ZoomClient implements ZoomClientSDK {
   joined = false;
   isMicEnable = false;
   isCameraEnable = false;
+  _defaultCaptureVideoOption: CaptureVideoOption = {
+    hd: true,
+    cameraId: store.getters["cameraDeviceId"],
+  };
 
   constructor(options: ZoomClientOptions) {
     this._options = options;
@@ -105,7 +118,7 @@ export class ZoomClient implements ZoomClientSDK {
     payload.map(user => {
       Logger.log("user-updated", user.userId);
     });
-	this.renderPeerVideos()
+    this.renderPeerVideos();
   };
 
   renderPeerVideos = async () => {
@@ -114,14 +127,14 @@ export class ZoomClient implements ZoomClientSDK {
       if (!user.bVideoOn) return;
       if (this.option.user.role === "host") {
         const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
-		if(canvas){
-			await this.stream.renderVideo(canvas, user.userId, 300, canvas.height, 0, 0, VideoQuality.Video_360P);
-		}
+        if (canvas) {
+          await this.stream.renderVideo(canvas, user.userId, 300, canvas.height, 0, 0, VideoQuality.Video_360P);
+        }
       } else {
         const canvas = document.getElementById(`${user?.displayName}__video`) as HTMLCanvasElement;
-		if(canvas){
-			await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
-		}
+        if (canvas) {
+          await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
+        }
       }
     });
   };
@@ -174,7 +187,7 @@ export class ZoomClient implements ZoomClientSDK {
       }
       this._videoElement = document.getElementById((options.teacherId || options.studentId) + "__video") as HTMLVideoElement;
       if (options.camera) {
-        await this.stream.startVideo({ videoElement: this._videoElement });
+        await this.stream.startVideo({ videoElement: this._videoElement, ...this._defaultCaptureVideoOption });
       }
       if (!options.isRejoin) {
         this.client.on("connection-change", this.onConnectionChange);
@@ -209,7 +222,7 @@ export class ZoomClient implements ZoomClientSDK {
   async setCamera(options: { enable: boolean }) {
     this.isCameraEnable = options.enable;
     if (this.isCameraEnable && this._videoElement) {
-      await this.stream.startVideo({ videoElement: this._videoElement });
+      await this.stream.startVideo({ videoElement: this._videoElement, ...this._defaultCaptureVideoOption });
     } else {
       await this.stream.stopVideo();
     }
