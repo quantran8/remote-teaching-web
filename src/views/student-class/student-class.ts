@@ -1,5 +1,6 @@
 import { StudentClassLocale } from "./../../locales/localeid";
-import { ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName } from "@/commonui";
+import { ErrorCode, LoginInfo, mobileDevice, RoleName } from "@/commonui";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";

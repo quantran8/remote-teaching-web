@@ -10,7 +10,7 @@
       <Select
         placeholder="School"
         showSearch
-        :optionFilterProp="children"
+        optionLabelProp="children"
         :disabled="disabled"
         :loading="loading"
         :value="schools[0]?.id"
@@ -77,6 +77,7 @@
       <Button :disabled="!agreePolicy" type="primary" @click="submitPolicy">{{ submitText }}</Button>
     </Row>
   </Modal>
+  <MatIcon type="close" class="red-close" />
 </template>
 <style lang="scss" scoped src="./teacher-home.scss"></style>
 <script lang="ts" src="./teacher-home.ts"></script>

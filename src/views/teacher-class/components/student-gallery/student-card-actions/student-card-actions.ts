@@ -11,7 +11,7 @@ import IconShrink from "@/assets/teacher-class/minimum.png";
 import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
-import { MatIcon } from "commonui";
+import { MatIcon } from "vue-glcommonui";
 
 export default defineComponent({
   components: {

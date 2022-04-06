@@ -1,4 +1,4 @@
-import { fmtMsg, MatIcon } from "@/commonui";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
 import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";

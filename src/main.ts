@@ -6,7 +6,7 @@ import "./registerServiceWorker";
 import router from "./router";
 import i18n from "./commonui/locales/i18n";
 import { GLPlugin } from "vue-glcommonui";
-import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components/base";
+import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "vue-glcommonui";
 import {
   LiveCircle,
   Toast,
@@ -15,7 +15,6 @@ import {
   DesignateCircle,
   DesignateRectangle,
   AnnotationView,
-  LanguagePicker,
   DeviceTester,
   CropImage,
 } from "./components/common";
@@ -48,7 +47,6 @@ app.component("Notification", Notification);
 app.component("ContentView", ContentView);
 app.component("AnnotationView", AnnotationView);
 app.component("DesignateCircle", DesignateCircle);
-app.component("LanguagePicker", LanguagePicker);
 app.component("DeviceTester", DeviceTester);
 app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
