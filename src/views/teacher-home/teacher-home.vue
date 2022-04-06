@@ -10,7 +10,7 @@
       <Select
         placeholder="School"
         showSearch
-        :optionFilterProp="children"
+        optionLabelProp="children"
         :disabled="disabled"
         :loading="loading"
         :value="schools[0]?.id"
@@ -69,7 +69,7 @@
       <p>{{ policyText1 }}</p>
       <p>{{ policyText2 }}</p>
       <p>{{ policyText3 }}</p>
-      <p>{{ policyText4 }}</p>
+      <p>{{ policyText4 }}</p> 
     </div>
     <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">

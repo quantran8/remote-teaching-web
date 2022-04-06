@@ -2,9 +2,12 @@ import { useStore } from "vuex";
 import { AuthService, RoleName, fmtMsg } from "vue-glcommonui";
 import { LoginInfo } from "vue-glcommonui";
 import { computed, defineComponent, watch } from "vue";
-import { MainLayout, AppHeader, AppFooter } from "../components/layout";
+import { MainLayout } from "vue-glcommonui";
+import { AppHeader, AppFooter } from "../components/layout";
 import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
+import { AppView, UserRole } from "@/store/app/state";
+import { LostNetwork } from "./../locales/localeid";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
@@ -77,12 +80,22 @@ export default defineComponent({
       }
     });
 
+    const messageText = computed(() => fmtMsg(LostNetwork.Message));
+    const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
+    const userRole = computed(() => getters["userRole"]);
+    const isTeacher = computed(() => getters["auth/isTeacher"]);
+    const isDisconnectedMode = computed<any>(() => teacherDisconnected.value && userRole.value !== UserRole.UnConfirm);
+
     return {
       siteTitle,
       appView,
+      AppView,
       isSignedIn,
       isHeaderVisible,
       isFooterVisible,
+      messageText,
+      isDisconnectedMode,
+      isTeacher,
     };
   },
 });

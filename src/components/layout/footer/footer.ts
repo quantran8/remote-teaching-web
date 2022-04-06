@@ -1,15 +1,8 @@
-import { Layout } from "@/locales/localeid";
-import { fmtMsg, GLGlobal } from "vue-glcommonui";
-import { computed, defineComponent } from "vue";
+import { AppFooter } from "vue-glcommonui";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  setup() {
-    const openPrivacyPolicy = () => {
-      window.open(`${GLGlobal.authorityUrl()}/Copyright/PrivacyPolicy`);
-    };
-    const privacyText = computed(() => fmtMsg(Layout.PrivacyPolicy));
-    const year = new Date().getFullYear();
-    const copyRightText = computed(() => fmtMsg(Layout.CopyRight)).value.replace("{{year}}", `${year}`);
-    return { openPrivacyPolicy, privacyText, copyRightText, year };
+  components: {
+    AppFooter,
   },
 });

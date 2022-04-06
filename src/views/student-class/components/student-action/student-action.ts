@@ -1,3 +1,4 @@
+import { MatIcon } from "vue-glcommonui";
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -11,6 +12,9 @@ import IconVideoOn from "@/assets/student-class/video-on.svg";
 
 export default defineComponent({
   props: {},
+  components: {
+    MatIcon,
+  },
   setup: () => {
     const store = useStore();
     const router = useRouter();

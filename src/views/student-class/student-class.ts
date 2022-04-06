@@ -1,5 +1,5 @@
 import { StudentClassLocale } from "./../../locales/localeid";
-import { RoleName, LoginInfo, fmtMsg } from "vue-glcommonui";
+import { RoleName, LoginInfo, fmtMsg, MatIcon } from "vue-glcommonui";
 import { ErrorCode, mobileDevice } from "@/utils/utils";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
@@ -44,6 +44,7 @@ export default defineComponent({
     JoinClassLoading,
     PreventEscFirefox,
     UnityView,
+    MatIcon,
     StudentGallery,
     StudentGalleryItem,
     StudentHeader,
