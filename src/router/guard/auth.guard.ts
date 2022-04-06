@@ -1,5 +1,4 @@
-import { AuthService, GLUtil, locationReplace } from "vue-glcommonui";
-import { LoginInfo } from "@/commonui";
+import { AuthService, GLUtil, locationReplace, LoginInfo } from "vue-glcommonui";
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 import { store } from "@/store";
 import { AppView } from "@/store/app/state";

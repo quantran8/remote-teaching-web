@@ -1,6 +1,5 @@
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
-import { AuthService, RoleName } from "vue-glcommonui";
-import { LoginInfo } from "@/commonui";
+import { AuthService, RoleName, LoginInfo } from "vue-glcommonui";
 export default (to: RouteLocationNormalized, _from: RouteLocationNormalized, _next: NavigationGuardNext) => {
   const requireParent: boolean = to.matched.some(record => record.meta.requireParent);
   if (!requireParent) return true;

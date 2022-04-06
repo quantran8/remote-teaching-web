@@ -6,8 +6,7 @@ import { useStore } from "vuex";
 import { ClassModelSchedules } from "@/models";
 import { useRoute } from "vue-router";
 import { ScheduleParam } from "@/services";
-import { LoginInfo } from "@/commonui";
-import { fmtMsg } from "vue-glcommonui";
+import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import IconWarning from "@/assets/calendar-warning.svg";
 import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 

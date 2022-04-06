@@ -1,5 +1,4 @@
-import { LoginInfo } from "@/commonui";
-import { RoleName } from "vue-glcommonui";
+import { RoleName, LoginInfo } from "vue-glcommonui";
 import { GetterTree } from "vuex";
 import { AuthState } from "./state";
 

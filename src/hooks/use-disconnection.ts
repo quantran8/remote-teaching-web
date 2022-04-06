@@ -1,7 +1,6 @@
 import { LostNetwork } from "./../locales/localeid";
 import { useStore } from "vuex";
-import { fmtMsg, RoleName } from "vue-glcommonui";
-import { LoginInfo } from "@/commonui";
+import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
 import { Modal } from "ant-design-vue";
 import { computed, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
