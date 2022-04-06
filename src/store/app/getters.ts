@@ -29,6 +29,9 @@ const getters: GetterTree<AppState, any> = {
   cameraDeviceId(state: AppState): string {
     return state.cameraDeviceId;
   },
+  microphoneDeviceId(state: AppState): string {
+    return state.microphoneDeviceId;
+  },
   userRole(state: AppState): UserRole {
     return state.userRole;
   },

@@ -55,10 +55,8 @@ export class ZoomClient implements ZoomClientSDK {
   joined = false;
   isMicEnable = false;
   isCameraEnable = false;
-  _defaultCaptureVideoOption: CaptureVideoOption = {
-    hd: true,
-    cameraId: store.getters["cameraDeviceId"],
-  };
+  _defaultCaptureVideoOption?: CaptureVideoOption;
+  _selectedMicrophoneId?: string;
 
   constructor(options: ZoomClientOptions) {
     this._options = options;
@@ -66,6 +64,12 @@ export class ZoomClient implements ZoomClientSDK {
     this._oneToOneStudentId = undefined;
     this._isInOneToOneRoom = false;
     this._oneToOneToken = undefined;
+
+    this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
+    this._defaultCaptureVideoOption = {
+      hd: true,
+      cameraId: store.getters["cameraDeviceId"],
+    };
   }
 
   get client() {
@@ -184,6 +188,11 @@ export class ZoomClient implements ZoomClientSDK {
       this.joined = true;
       if (options.microphone) {
         await this.stream.startAudio();
+
+        if (this._selectedMicrophoneId) {
+          await this.stream.switchMicrophone(this._selectedMicrophoneId);
+        }
+        console.log(this._selectedMicrophoneId);
       }
       this._videoElement = document.getElementById((options.teacherId || options.studentId) + "__video") as HTMLVideoElement;
       if (options.camera) {

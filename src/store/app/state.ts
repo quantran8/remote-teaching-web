@@ -1,5 +1,5 @@
 import { ClassRoomStatus, MediaStatus, SignalRStatus } from "@/models";
-import { CAMERA_ID_KEY } from "./actions";
+import { CAMERA_ID_KEY, MICROPHONE_ID_KEY } from "./actions";
 
 export type LayoutType = "" | "full" | "main";
 export enum AppView {
@@ -30,6 +30,8 @@ export interface AppState {
   signalRStatus: number;
   classRoomStatus: number;
   cameraDeviceId: string;
+  microphoneDeviceId: string;
+
   userRole: UserRole;
 
   platform: VCPlatform;
@@ -42,6 +44,8 @@ export interface ToastData {
 }
 
 const cameraDeviceId = localStorage.getItem(CAMERA_ID_KEY);
+const microphoneDeviceId = localStorage.getItem(MICROPHONE_ID_KEY);
+
 
 const state: AppState = {
   layout: "main",
@@ -53,6 +57,7 @@ const state: AppState = {
   signalRStatus: SignalRStatus.NoStatus,
   classRoomStatus: ClassRoomStatus.InDashBoard,
   cameraDeviceId: cameraDeviceId || "",
+  microphoneDeviceId: microphoneDeviceId || "",
   userRole: UserRole.UnConfirm,
 
   platform: VCPlatform.Zoom,

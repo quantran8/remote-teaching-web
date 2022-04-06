@@ -329,6 +329,7 @@ export default defineComponent({
 
     watch(currentMic, async currentMicValue => {
       if (!localTracks.value?.audioTrack) return;
+	  if (currentMic.value?.deviceId === currentMicValue?.deviceId) return;
       if (currentMicValue) {
         if (isUsingAgora.value) {
           await localTracks.value?.audioTrack.setEnabled(true);
@@ -355,6 +356,7 @@ export default defineComponent({
 
     watch(currentCam, async currentCamValue => {
       if (!localTracks.value?.videoTrack) return;
+	  if (currentCam.value?.deviceId === currentCamValue?.deviceId) return;
       if (currentCamValue) {
         if (isUsingAgora.value) {
           await localTracks.value?.videoTrack.play(videoElementId);
@@ -406,7 +408,7 @@ export default defineComponent({
 
     //handle for microphone
     watch(isOpenMic, async currentIsOpenMic => {
-      if (currentIsOpenMic) {
+		if (currentIsOpenMic) {
         dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         if (currentMic.value) {
           if (isUsingAgora.value) {
@@ -447,6 +449,8 @@ export default defineComponent({
     };
 
     const handleMicroChange = async (micId: string) => {
+		console.log(listMics)
+		console.log(micId)
       try {
         if (isUsingAgora.value) {
           await localTracks.value?.audioTrack.setDevice(micId);
@@ -518,6 +522,7 @@ export default defineComponent({
 
     const handleGoToClassSuccess = () => {
       dispatch("setCameraDeviceId", currentCam.value?.deviceId);
+      dispatch("setMicrophoneDeviceId", currentMic.value?.deviceId);
       if (isUsingAgora.value) {
         localTracks.value?.audioTrack?.close();
         localTracks.value?.videoTrack?.close();

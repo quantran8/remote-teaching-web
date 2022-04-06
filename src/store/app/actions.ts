@@ -3,6 +3,8 @@ import { ActionTree } from "vuex";
 import { AppState, AppView, LayoutType, ToastData, UserRole, VCPlatform } from "./state";
 
 export const CAMERA_ID_KEY = "__RT_CAMERA_ID__";
+export const MICROPHONE_ID_KEY = "__RT_MICROPHONE_ID__";
+
 
 const actions: ActionTree<AppState, any> = {
   setToast(store, payload: ToastData) {
@@ -35,6 +37,10 @@ const actions: ActionTree<AppState, any> = {
   async setCameraDeviceId(store, payload: string) {
     localStorage.setItem(CAMERA_ID_KEY, payload);
     store.commit("setCameraDeviceId", payload);
+  },
+  async setMicrophoneDeviceId(store, payload: string) {
+    localStorage.setItem(MICROPHONE_ID_KEY, payload);
+    store.commit("setMicrophoneDeviceId", payload);
   },
   setUserRoleByView(store, payload: UserRole) {
     store.commit("setUserRoleByView", payload);
