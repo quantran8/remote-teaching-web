@@ -25,7 +25,7 @@ import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
 import { Paths } from "@/utils/paths";
 import router from "@/router";
-import { fmtMsg } from "commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { ErrorLocale } from "@/locales/localeid";
 import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";

@@ -1,4 +1,4 @@
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, ComputedRef, defineComponent, ref, provide, watch } from "vue";

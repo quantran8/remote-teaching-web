@@ -1,5 +1,5 @@
-import { GLServiceBase, ServiceRoute } from "./base.service";
+import { GLServiceBase } from "vue-glcommonui";
 
 export class AccountService extends GLServiceBase<any, any> {
-  serviceRoute: ServiceRoute = { prefix: "account/v1" };
+  serviceRoute = { prefix: "account/v1" };
 }

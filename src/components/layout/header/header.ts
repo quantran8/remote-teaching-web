@@ -1,3 +1,4 @@
+import { AuthService, fmtMsg, GLGlobal } from "vue-glcommonui";
 import { computed, defineComponent, ref } from "vue";
 import { AppHeader, LanguagePicker, UserAvatar, BaseIcon, DrawerHelper, fmtMsg } from "vue-glcommonui";
 import { DeviceTester } from "@/components/common";

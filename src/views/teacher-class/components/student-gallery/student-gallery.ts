@@ -2,7 +2,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentControls from "./student-controls/student-controls.vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
 import moment from "moment";
 

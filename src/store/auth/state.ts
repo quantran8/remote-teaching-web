@@ -1,4 +1,4 @@
-import { LoginInfo } from "@/commonui";
+import { LoginInfo } from "vue-glcommonui";
 
 export interface AuthState {
   loginInfo: LoginInfo | null;

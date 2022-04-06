@@ -5,7 +5,6 @@ declare module '*.vue' {
 }
 
 declare module 'fabric';
-declare module 'vue-glcommonui';
 
 declare module 'vue-dragscroll';
 declare module 'vue-cropperjs';

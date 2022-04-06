@@ -1,4 +1,4 @@
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { HomeLocale } from "@/locales/localeid";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";

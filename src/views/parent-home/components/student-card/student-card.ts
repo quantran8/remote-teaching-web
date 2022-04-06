@@ -1,7 +1,7 @@
 import { StudentNextSessionModel } from "@/models";
 import { computed, defineComponent } from "vue";
 import moment from "moment";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { ParentStudentCardLocale } from "@/locales/localeid";
 import noAvatar from "@/assets/images/user-default.png";
 

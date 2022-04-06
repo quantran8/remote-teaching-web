@@ -1,10 +1,10 @@
 import { useStore } from "vuex";
-import { AuthService, LoginInfo, RoleName } from "@/commonui";
+import { AuthService, RoleName, fmtMsg } from "vue-glcommonui";
+import { LoginInfo } from "vue-glcommonui";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout } from "vue-glcommonui";
 import { AppHeader, AppFooter } from "../components/layout";
-import { fmtMsg } from "@/commonui";
-import { CommonLocale, LostNetwork } from "@/locales/localeid";
+import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
 import { AppView, UserRole } from "@/store/app/state";
 
