@@ -1,4 +1,4 @@
-import { fmtMsg, MatIcon } from "vue-glcommonui";
+import { fmtMsg } from "vue-glcommonui";
 import { computed, defineComponent, onMounted, onUnmounted } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";
@@ -9,9 +9,6 @@ export default defineComponent({
     className: String,
   },
   emits: ["end"],
-  components: {
-    MatIcon,
-  },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const actions = [

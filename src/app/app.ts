@@ -1,6 +1,6 @@
 import { useStore } from "vuex";
 import { AuthService, RoleName, fmtMsg} from "vue-glcommonui";
-import { LoginInfo } from "@/commonui";
+import { LoginInfo } from "vue-glcommonui";
 import { computed, defineComponent, watch } from "vue";
 import { MainLayout, AppHeader, AppFooter } from "../components/layout";
 import { CommonLocale } from "@/locales/localeid";

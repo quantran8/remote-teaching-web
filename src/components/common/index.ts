@@ -8,5 +8,17 @@ import AnnotationView from "./annotation-view/annotation-view.vue";
 import LanguagePicker from "./language-picker/language-picker.vue";
 import DeviceTester from "./device-tester/device-tester.vue";
 import CropImage from "./crop-image/crop-image.vue";
-
-export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, LanguagePicker, DeviceTester, CropImage };
+import MatIcon from "./mat-icon/mat-icon.vue";
+export {
+  LiveCircle,
+  Toast,
+  Notification,
+  DesignateCircle,
+  DesignateRectangle,
+  ContentView,
+  AnnotationView,
+  LanguagePicker,
+  DeviceTester,
+  CropImage,
+  MatIcon,
+};

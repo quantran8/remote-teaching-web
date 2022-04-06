@@ -18,6 +18,7 @@ import {
   LanguagePicker,
   DeviceTester,
   CropImage,
+  MatIcon,
 } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
@@ -54,6 +55,7 @@ app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
 app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
+app.component("MatIcon", MatIcon)
 app.use(router);
 app.use(store);
 
