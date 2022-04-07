@@ -36,7 +36,7 @@ export default defineComponent({
         title: "Are you sure you wish to leave the session?",
         okText: "Yes",
         cancelText: "No",
-        okButtonProps: { type: "danger" },
+        okButtonProps: { type: "text" },
         onOk: async () => {
           await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
           await store.dispatch("studentRoom/studentLeaveClass");
