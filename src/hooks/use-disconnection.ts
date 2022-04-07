@@ -206,7 +206,7 @@ export const useDisconnection = () => {
     }
   });
 
-  watch(route, currentRoute => {
+  watch(route, (currentRoute) => {
     const classRoomStatus: number = getters["classRoomStatus"];
     if (!currentRoute.params.classId && classRoomStatus === ClassRoomStatus.InClass) {
       dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });

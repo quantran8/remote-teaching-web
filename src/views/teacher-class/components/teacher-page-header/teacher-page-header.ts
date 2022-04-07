@@ -25,7 +25,7 @@ export default defineComponent({
     ];
     const classAction = computed(() => {
       const id: ClassAction = getters["teacherRoom/classAction"];
-      return actions.find(e => e.id === id) || actions[0];
+      return actions.find((e) => e.id === id) || actions[0];
     });
     const classActionsTitle = computed(() => fmtMsg(CommonLocale.CommonClassActions));
 

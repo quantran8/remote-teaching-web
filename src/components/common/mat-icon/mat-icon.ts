@@ -10,8 +10,8 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 // }
 
 export default defineComponent({
-	components: {},
-	props: {
-		type: String
-	}
+  components: {},
+  props: {
+    type: String,
+  },
 });

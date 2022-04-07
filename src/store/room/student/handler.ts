@@ -191,7 +191,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       // do nothing
     },
     onTeacherUpdateStudentBadge: async (payload: StudentModel[]) => {
-      payload.map(item => {
+      payload.map((item) => {
         commit("setStudentBadge", {
           id: item.id,
           badge: item.badge,
@@ -253,7 +253,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onStudentAnswerSelf: async (payload: Array<Target>) => {
       await dispatch(
         "interactive/setRevealedLocalTarget",
-        payload.map(s => s.id),
+        payload.map((s) => s.id),
         { root: true },
       );
     },

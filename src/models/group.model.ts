@@ -1,4 +1,3 @@
-
 export interface SchoolClassTimeModel {
   id: string;
   start: string;
@@ -11,7 +10,7 @@ export interface SchoolClassTimeModel {
 
 export interface SchoolClassTimeRecurringModel {
   timeId: string;
-  start: string,
+  start: string;
   end: string;
   daysOfWeek: number;
   duration: number;

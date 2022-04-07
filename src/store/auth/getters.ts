@@ -45,7 +45,7 @@ const getters: GetterTree<AuthState, any> = {
     ];
     let highestRole = state.loginInfo?.profile.roles[0] || "";
     for (const role of rolesOrdering) {
-      if (state.loginInfo?.profile.roles.findIndex(r => r === role) !== -1) {
+      if (state.loginInfo?.profile.roles.findIndex((r) => r === role) !== -1) {
         highestRole = role;
         break;
       }

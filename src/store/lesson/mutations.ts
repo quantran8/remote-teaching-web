@@ -1,13 +1,5 @@
 import { MutationTree } from "vuex";
-import {
-  Exposure,
-  ExposureStatus,
-  ExposureType,
-  LessonState,
-  ExposureItemMedia,
-  CropMetadata,
-  TargetsVisibleAll, TargetsVisibleList
-} from "./state";
+import { Exposure, ExposureStatus, ExposureType, LessonState, ExposureItemMedia, CropMetadata, TargetsVisibleAll, TargetsVisibleList } from "./state";
 import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
 
@@ -30,7 +22,7 @@ const mutations: LessonMutation<LessonState> = {
     s.isBlackout = p.IsBlackOut;
   },
   setExposures(s: LessonState, p: { exposures: Exposure[] }) {
-    s.exposures = p.exposures.map(exposure => {
+    s.exposures = p.exposures.map((exposure) => {
       if (exposure.type === ExposureType.TRANSITION) {
         const mediaItem: ExposureItemMedia = {
           id: exposure.id,
@@ -102,15 +94,15 @@ const mutations: LessonMutation<LessonState> = {
     if (!s.currentExposure) return;
     const combinedItems = [...s.currentExposure.items, ...s.currentExposure.contentBlockItems, ...s.currentExposure.teachingActivityBlockItems];
     for (const item of combinedItems) {
-      const matchItemMedia = item.media.find(m => m.id === p.id);
+      const matchItemMedia = item.media.find((m) => m.id === p.id);
       if (matchItemMedia) {
-        s.currentExposureItemMedia = item.media.find(m => m.id === p.id);
+        s.currentExposureItemMedia = item.media.find((m) => m.id === p.id);
         if (s.currentExposureItemMedia) break;
       }
     }
   },
   setExposureStatus(s: LessonState, p: { id: string; status: ExposureStatus }) {
-    const exposure = s.exposures.find(e => e.id === p.id);
+    const exposure = s.exposures.find((e) => e.id === p.id);
     if (exposure) {
       if (p.status) {
         exposure.status = p.status;
@@ -127,7 +119,7 @@ const mutations: LessonMutation<LessonState> = {
     s.playedTime = payload.time;
   },
   setPreviousExposure(s: LessonState, p: { id: string }) {
-    const exposure = s.exposures.find(e => e.id === p.id);
+    const exposure = s.exposures.find((e) => e.id === p.id);
     s.previousExposure = exposure;
     if (s.previousExposure && s.previousExposure.items.length > 0) {
       s.previousExposureItemMedia = undefined;
@@ -143,7 +135,7 @@ const mutations: LessonMutation<LessonState> = {
   setPreviousExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.previousExposure) return;
     for (const item of s.previousExposure.items) {
-      s.previousExposureItemMedia = item.media.find(m => m.id === p.id);
+      s.previousExposureItemMedia = item.media.find((m) => m.id === p.id);
       if (s.previousExposureItemMedia) break;
     }
   },
@@ -163,7 +155,7 @@ const mutations: LessonMutation<LessonState> = {
   storeCacheImage(s: LessonState, payload: { url: string; metadata: CropMetadata; base64String: string }) {
     // checking if existing
     const existingCache = s.cropCache?.cacheValues.find(
-      cacheValue => cacheValue.url === payload.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(payload.metadata),
+      (cacheValue) => cacheValue.url === payload.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(payload.metadata),
     );
 
     // exist!, skip
@@ -183,7 +175,7 @@ const mutations: LessonMutation<LessonState> = {
   },
   setTargetsVisibleList(s: LessonState, p: TargetsVisibleList) {
     if (s.targetsVisibleList.length) {
-      if (s.targetsVisibleList.some(obj => obj.tag === p.tag)) {
+      if (s.targetsVisibleList.some((obj) => obj.tag === p.tag)) {
         s.targetsVisibleList.map((obj: any) => {
           if (obj.tag === p.tag) {
             const index = s.targetsVisibleList.indexOf(obj);

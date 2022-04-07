@@ -118,7 +118,7 @@ export default defineComponent({
             return { id: cl.classId, name: cl.className, startDate: cl.startDate, endDate: cl.endDate, groups: listGroup };
           }
         })
-        .filter(function(el) {
+        .filter(function (el) {
           return el != null;
         });
       let colorIndex = 0;
@@ -596,10 +596,10 @@ export default defineComponent({
         case "Create":
           dataBack = {
             day: selectedDate.value.format(formatDateTime),
-            groupName: listGroupModal.value.filter(group => {
+            groupName: listGroupModal.value.filter((group) => {
               return group.id == selectedGroupIdModal.value;
             })[0].name,
-            className: listClassCreateNew.value.filter(group => {
+            className: listClassCreateNew.value.filter((group) => {
               return group.id == selectedClassIdModal.value;
             })[0].name,
             data: {
@@ -615,7 +615,7 @@ export default defineComponent({
         case "Update":
           dataBack = {
             day: selectedDate.value.format(formatDateTime),
-            groupName: listGroupModal.value.filter(group => {
+            groupName: listGroupModal.value.filter((group) => {
               return group.id == selectedGroupIdModal.value;
             })[0].name,
             data: {

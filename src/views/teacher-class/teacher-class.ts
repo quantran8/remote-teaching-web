@@ -93,7 +93,7 @@ export default defineComponent({
     });
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
-    watch(oneAndOneStatus, value => {
+    watch(oneAndOneStatus, (value) => {
       if (value === "" || value === null) {
         isOneOneMode.value = "";
       } else {
@@ -103,7 +103,7 @@ export default defineComponent({
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
-    watch(isGalleryView, value => {
+    watch(isGalleryView, (value) => {
       isSidebarCollapsed.value = value;
     });
 

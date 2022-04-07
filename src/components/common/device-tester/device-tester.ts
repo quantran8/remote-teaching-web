@@ -110,7 +110,7 @@ export default defineComponent({
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
           try {
             await localTracks.value?.videoTrack.play(videoElementId);
@@ -132,7 +132,7 @@ export default defineComponent({
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
-          listMicsId.value = mics.map(mic => mic.deviceId);
+          listMicsId.value = mics.map((mic) => mic.deviceId);
           await localTracks.value.audioTrack.setDevice(mics[0]?.deviceId);
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
@@ -164,7 +164,7 @@ export default defineComponent({
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
-          listMicsId.value = mics.map(mic => mic.deviceId);
+          listMicsId.value = mics.map((mic) => mic.deviceId);
           if (newMicroId) {
             await localTracks.value.audioTrack.setDevice(newMicroId);
           } else {
@@ -187,7 +187,7 @@ export default defineComponent({
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           if (newCameraId) {
             await localTracks.value.videoTrack.setDevice(newCameraId);
           } else {
@@ -203,7 +203,7 @@ export default defineComponent({
         } else {
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           preventCloseModal.value = false;
         }
       } catch (error) {
@@ -248,7 +248,7 @@ export default defineComponent({
     };
 
     //handle for microphone
-    watch(isOpenMic, currentIsOpenMic => {
+    watch(isOpenMic, (currentIsOpenMic) => {
       if (currentIsOpenMic) {
         dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         if (currentMic.value) {
@@ -268,7 +268,7 @@ export default defineComponent({
         }
       }
     });
-    watch(currentMic, currentMicValue => {
+    watch(currentMic, (currentMicValue) => {
       if (currentMicValue) {
         localTracks.value?.audioTrack.setEnabled(true);
         if (!volumeAnimation.value) {
@@ -278,7 +278,7 @@ export default defineComponent({
     });
 
     //handle for camera
-    watch(isOpenCam, async currentIsOpenCamValue => {
+    watch(isOpenCam, async (currentIsOpenCamValue) => {
       if (currentIsOpenCamValue) {
         dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
         if (currentCam.value) {
@@ -293,7 +293,7 @@ export default defineComponent({
       }
     });
 
-    watch(currentCam, async currentCamValue => {
+    watch(currentCam, async (currentCamValue) => {
       if (currentCamValue) {
         await localTracks.value?.videoTrack?.play(videoElementId);
         await localTracks.value?.videoTrack?.setEnabled(true);
@@ -313,7 +313,7 @@ export default defineComponent({
     const handleMicroChange = async (micId: string) => {
       try {
         await localTracks.value.audioTrack.setDevice(micId);
-        currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
+        currentMic.value = listMics.value.find((mic) => mic.deviceId === micId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
@@ -322,7 +322,7 @@ export default defineComponent({
     const handleCameraChange = async (camId: any) => {
       try {
         await localTracks.value.videoTrack.setDevice(camId);
-        currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
+        currentCam.value = listCams.value.find((cam) => cam.deviceId === camId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
@@ -355,7 +355,7 @@ export default defineComponent({
       firstTimeDefault.value = true;
     };
 
-    watch(visible, async currentValue => {
+    watch(visible, async (currentValue) => {
       if (!currentValue) {
         destroy();
         return;
@@ -373,7 +373,7 @@ export default defineComponent({
       localTracks.value?.videoTrack?.close();
     };
 
-    watch(currentUnit, currentUnitValue => {
+    watch(currentUnit, (currentUnitValue) => {
       if (props.notJoin || props.fromParentComponent) return;
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
       const availableLessons = props.unitInfo[currentUnitIndex]?.sequence;
@@ -439,7 +439,7 @@ export default defineComponent({
 
     const notDisplaySpinner = computed(() => props.getRoomInfoError !== 0);
 
-    watch(visible, currentVisibleValue => {
+    watch(visible, (currentVisibleValue) => {
       if (!currentVisibleValue) {
         emit("on-close-modal");
       }

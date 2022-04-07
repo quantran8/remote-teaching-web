@@ -44,7 +44,7 @@
         :active="cl.isActive"
         :isTeacher="cl.isTeacher"
         :loadingStart="loadingStartClass"
-        @click-to-access="groupId => onClickClass(cl, groupId)"
+        @click-to-access="(groupId) => onClickClass(cl, groupId)"
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
@@ -69,7 +69,7 @@
       <p>{{ policyText1 }}</p>
       <p>{{ policyText2 }}</p>
       <p>{{ policyText3 }}</p>
-      <p>{{ policyText4 }}</p> 
+      <p>{{ policyText4 }}</p>
     </div>
     <Checkbox @change="onAgreePolicy">{{ acceptPolicyText }}</Checkbox>
     <Row type="flex" justify="end">

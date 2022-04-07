@@ -490,7 +490,7 @@ export default defineComponent({
 
     watch(
       fabricItems,
-      async value => {
+      async (value) => {
         const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
         if (!oneToOneUserId) {
           await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));

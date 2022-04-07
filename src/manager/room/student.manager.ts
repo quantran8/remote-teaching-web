@@ -13,20 +13,13 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     this.WSClient.init();
   }
 
-  async join(options: {
-    classId: string;
-    studentId?: string;
-    teacherId?: string;
-    camera?: boolean;
-    microphone?: boolean;
-  }) {
-    if (!options.studentId || !options.classId)
-      throw new Error("Missing Params");
+  async join(options: { classId: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }) {
+    if (!options.studentId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     await this.agoraClient.joinRTCRoom(options);
   }
 
-  async close() {	  
+  async close() {
     await this.WSClient.disconnect();
     await this.agoraClient.reset();
   }

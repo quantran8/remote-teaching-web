@@ -6,7 +6,7 @@ import i18n from "./utils/i18n";
 import "./registerServiceWorker";
 import router from "./router";
 import { GLPlugin } from "vue-glcommonui";
-import { BaseButton, BaseCard, BaseIcon, BaseTag, MatIcon} from "vue-glcommonui";
+import { BaseButton, BaseCard, BaseIcon, BaseTag, MatIcon } from "vue-glcommonui";
 import {
   LiveCircle,
   Toast,

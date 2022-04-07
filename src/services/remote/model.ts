@@ -11,4 +11,3 @@ export type TeacherGetRoomResponse = BaseResponse<RoomModel>;
 export type StudentGetRoomResponse = BaseResponse<RoomModel>;
 
 export type UnitAndLessonResponse = BaseResponse<UnitAndLessonModel[]>;
-

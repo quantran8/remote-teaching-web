@@ -277,7 +277,7 @@ export default defineComponent({
       third: 30, //00:00:30
     };
     const isPlayVideo = ref(false);
-    watch(formattedTime, async currentFormattedTime => {
+    watch(formattedTime, async (currentFormattedTime) => {
       if (toSecond(currentFormattedTime) <= milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
       }

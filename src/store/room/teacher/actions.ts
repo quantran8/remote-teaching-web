@@ -66,24 +66,24 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async updateAudioAndVideoFeed({ state }) {
     const { globalAudios, localAudios, manager, students, idOne, teacher } = state;
     if (!manager) return;
-    const cameras = students.filter(s => s.videoEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
-    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+    const cameras = students.filter((s) => s.videoEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
+    let audios = students.filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
     if (localAudios.length > 0) {
       audios = [...localAudios];
     } else if (globalAudios.length > 0) {
       audios = [...globalAudios];
     }
     if (idOne) {
-      const otherStudentsCamId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
-      const otherStudentsAudioId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+      const otherStudentsCamId = cameras.filter((camId) => camId !== idOne && camId !== teacher?.id);
+      const otherStudentsAudioId = audios.filter((audioId) => audioId !== idOne && audioId !== teacher?.id);
       for (const id of otherStudentsCamId) {
-        const index = cameras.findIndex(camId => camId === id);
+        const index = cameras.findIndex((camId) => camId === id);
         if (index > -1) {
           cameras.splice(index, 1);
         }
       }
       for (const id of otherStudentsAudioId) {
-        const index = audios.findIndex(audioId => audioId === id);
+        const index = audios.findIndex((audioId) => audioId === id);
         if (index > -1) {
           audios.splice(index, 1);
         }
@@ -136,7 +136,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then(speedMbps => {
+      state.manager?.getBandwidth().then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -180,14 +180,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
           const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
           const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
           if (uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) {
-            const studentIdExisting = listStudentLowBandWidthState.find(id => studentId === id);
+            const studentIdExisting = listStudentLowBandWidthState.find((id) => studentId === id);
             if (!studentIdExisting) {
               hasChange = true;
               listStudentLowBandWidthState.push(studentId);
             }
           }
           if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint) {
-            const studentIdExistingIndex = listStudentLowBandWidthState.findIndex(id => studentId === id);
+            const studentIdExistingIndex = listStudentLowBandWidthState.findIndex((id) => studentId === id);
             if (studentIdExistingIndex > -1) {
               hasChange = true;
               listStudentLowBandWidthState.splice(studentIdExistingIndex, 1);
@@ -248,7 +248,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
     if (payload) {
-      payload.map(item => {
+      payload.map((item) => {
         if (item.level >= MIN_SPEAKING_LEVEL) {
           // should check by a level
           validSpeakings.push(item.uid.toString());
@@ -361,7 +361,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     state.manager?.WSClient.sendRequestSetLessonItemContent(payload.id);
   },
   clearStudentRaisingHand({ state }, payload: { id: string }) {
-    const student = state.students.find(e => e.id === payload.id && e.raisingHand);
+    const student = state.students.find((e) => e.id === payload.id && e.raisingHand);
     if (student) state.manager?.WSClient.sendRequestClearRaisingHand(payload.id);
   },
   setClassAction({ state }, payload: { action: number }) {

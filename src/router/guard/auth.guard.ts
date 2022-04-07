@@ -56,7 +56,7 @@ const routeAuth = (loginInfo: LoginInfo, to: RouteLocationNormalized, from: Rout
 };
 
 export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const requiresAuth: boolean = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAuth: boolean = to.matched.some((record) => record.meta.requiresAuth);
   const hasIdTokenInUrl = window.location.href.indexOf("id_token") !== -1;
   if (requiresAuth) {
     const isSigningOut = window.location.href.indexOf("oidc/signout") !== -1;
@@ -98,7 +98,7 @@ export default (to: RouteLocationNormalized, from: RouteLocationNormalized, next
         AuthService.useLocalStoreToLogin().then((loginInfo: any) => routeAuth(loginInfo, to, from, next));
       }
     }
-  } else if (to.matched.some(record => record.meta.notFound)) {
+  } else if (to.matched.some((record) => record.meta.notFound)) {
     store.dispatch("setAppView", { appView: AppView.NotFound });
   } else {
     store.dispatch("setAppView", { appView: AppView.Blank });

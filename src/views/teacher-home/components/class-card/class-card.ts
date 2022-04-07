@@ -40,7 +40,7 @@ export default defineComponent({
     Spin,
   },
   emits: ["click-to-access"],
-  setup: function(props, { emit }) {
+  setup: function (props, { emit }) {
     const groups = ref();
     const clickedGroup = ref<string>("");
     const groupText = computed(() => fmtMsg(TeacherHome.Group));
@@ -94,7 +94,7 @@ export default defineComponent({
     onMounted(() => {
       if (props.remoteClassGroups) {
         validatedGroupHighlighted();
-        const newGroups = props.remoteClassGroups.map(group => {
+        const newGroups = props.remoteClassGroups.map((group) => {
           group.isCurrentDay = true;
           if (props.isTeacher === true) {
             group.startClass = true;

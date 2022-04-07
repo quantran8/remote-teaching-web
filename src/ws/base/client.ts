@@ -35,7 +35,7 @@ export class GLSocketClient {
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
       .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: retryContext => {
+        nextRetryDelayInMilliseconds: (retryContext) => {
           Logger.log("SIGNAL R DISCONNECTED");
           store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
           return DEFAULT_RECONNECT_TIMING;

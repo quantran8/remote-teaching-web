@@ -9,7 +9,7 @@ const actions: ActionTree<NotificationState, any> = {
     store,
     payload: {
       id: string;
-    }
+    },
   ) {
     store.commit("removeNotification", payload);
   },

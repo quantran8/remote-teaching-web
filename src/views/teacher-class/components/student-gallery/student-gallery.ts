@@ -41,7 +41,7 @@ export default defineComponent({
       const savedTimestampOneAndOne = parseInt(sessionStorage.getItem(TIMESTAMP_ONEANDONE) || Date.now().toString());
       sessionStorage.setItem(TIMESTAMP_ONEANDONE, savedTimestampOneAndOne.toString());
 
-	  const savedMoment = moment(savedTimestampOneAndOne);
+      const savedMoment = moment(savedTimestampOneAndOne);
       minute.value = moment(Date.now()).diff(savedMoment, "minute");
       second.value = moment(Date.now()).diff(savedMoment, "second");
       timeCount.value = "";

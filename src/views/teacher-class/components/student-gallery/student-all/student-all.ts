@@ -24,14 +24,14 @@ export default defineComponent({
     const scaleVideoOption = ref<number>(1.6);
     const lessonPlanCss = ref<string>("");
 
-    watch(isGalleryView, value => {
+    watch(isGalleryView, (value) => {
       lessonPlanCss.value = value ? "" : "lesson-plan-mode";
     });
 
     watch(
       students,
-      value => {
-        const onlineStudents = value.filter(s => s.status === InClassStatus.JOINED).length;
+      (value) => {
+        const onlineStudents = value.filter((s) => s.status === InClassStatus.JOINED).length;
         totalOnlineStudents.value = onlineStudents;
         if (onlineStudents <= 3) {
           scaleVideoOption.value = 1.6;

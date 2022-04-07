@@ -11,7 +11,7 @@ export default defineComponent({
     isCurrent: Boolean,
     raisedHand: Boolean,
   },
-  setup: props => {
+  setup: (props) => {
     const student = computed(() => props.student);
     const isNotJoinned = computed(() => student.value.status !== InClassStatus.JOINED);
     const isRaisingHand = ref(false);

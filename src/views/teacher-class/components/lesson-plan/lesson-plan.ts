@@ -55,7 +55,7 @@ export default defineComponent({
 
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
-    watch(oneAndOneStatus, value => {
+    watch(oneAndOneStatus, (value) => {
       if (value === "" || value === null) {
         isOneOneMode.value = "";
       } else {
@@ -80,7 +80,7 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
       const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems].filter(
-        item => item.media[0]?.image?.url,
+        (item) => item.media[0]?.image?.url,
       )[0]?.id;
 
       await dispatch("teacherRoom/setMode", {
