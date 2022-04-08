@@ -67,7 +67,7 @@ export class ZoomClient implements ZoomClientSDK {
 
     this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
     this._defaultCaptureVideoOption = {
-      hd: true,
+      hd: false,
       cameraId: store.getters["cameraDeviceId"],
     };
   }

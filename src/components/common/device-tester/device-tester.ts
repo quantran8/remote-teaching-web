@@ -82,6 +82,7 @@ export default defineComponent({
     const preventCloseModal = ref(true);
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
+    const devices = ref<MediaDeviceInfo[]>([]);
 
     const listPlatform = [
       { key: VCPlatform.Agora, name: VCPlatform[1] },
@@ -118,9 +119,20 @@ export default defineComponent({
     const setupZoom = async () => {
       let audioTrack: LocalAudioTrack | null = null;
       let videoTrack: LocalVideoTrack | null = null;
+      devices.value = await ZoomVideo.getDevices();
+      const cams = [];
+      const mics = [];
+      devices.value.map(function(device) {
+        if (device.kind === "videoinput") {
+          cams.push(device);
+        }
+        if (device.kind === "audioinput") {
+          mics.push(device);
+        }
+      });
+
       try {
-        const devices = await ZoomVideo.getDevices();
-        const cams = devices.filter(function(device) {
+        const cams = devices.value.filter(function(device) {
           return device.kind === "videoinput";
         });
         if (cams.length) {
@@ -138,8 +150,7 @@ export default defineComponent({
         zoomCamError.value = true;
       }
       try {
-        const devices = await ZoomVideo.getDevices();
-        const mics = devices.filter(function(device) {
+        const mics = devices.value.filter(function(device) {
           return device.kind === "audioinput";
         });
         if (mics.length) {
@@ -188,6 +199,7 @@ export default defineComponent({
         if (cams.length) {
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
+
           listCams.value = cams;
           listCamsId.value = cams.map(cam => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
@@ -210,6 +222,7 @@ export default defineComponent({
         if (mics.length) {
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
+
           listMics.value = mics;
           listMicsId.value = mics.map(mic => mic.deviceId);
           await localTracks.value?.audioTrack.setDevice(mics[0]?.deviceId);
@@ -329,16 +342,11 @@ export default defineComponent({
 
     watch(currentMic, async currentMicValue => {
       if (!localTracks.value?.audioTrack) return;
-	  if (currentMic.value?.deviceId === currentMicValue?.deviceId) return;
       if (currentMicValue) {
         if (isUsingAgora.value) {
           await localTracks.value?.audioTrack.setEnabled(true);
         } else {
-          const devices = await ZoomVideo.getDevices();
-          const mics = devices.filter(function(device) {
-            return device.kind === "audioinput";
-          });
-          const thisMic = mics.find(({ deviceId }) => deviceId === currentMicValue.deviceId) || mics[0];
+          const thisMic = listMics.value.find(({ deviceId }) => deviceId === currentMicValue.deviceId) || listMics.value[0];
           await localTracks.value?.audioTrack.stop();
           localTracks.value["audioTrack"] = ZoomVideo.createLocalAudioTrack(thisMic.deviceId);
           await localTracks.value?.audioTrack.start();
@@ -356,26 +364,17 @@ export default defineComponent({
 
     watch(currentCam, async currentCamValue => {
       if (!localTracks.value?.videoTrack) return;
-	  if (currentCam.value?.deviceId === currentCamValue?.deviceId) return;
       if (currentCamValue) {
         if (isUsingAgora.value) {
           await localTracks.value?.videoTrack.play(videoElementId);
           await localTracks.value?.videoTrack.setEnabled(true);
         } else {
-          try {
-            const devices = await ZoomVideo.getDevices();
-            const cams = devices.filter(function(device) {
-              return device.kind === "videoinput";
-            });
-            const thisCam = cams.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || cams[0];
-            await localTracks.value?.videoTrack.stop();
-            localTracks.value["videoTrack"] = ZoomVideo.createLocalVideoTrack(thisCam.deviceId);
-            if (isOpenCam.value) {
-              const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-              await localTracks.value?.videoTrack.start(doc);
-            }
-          } catch (error) {
-            console.log(error);
+          const thisCam = listCams.value.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || listCams.value[0];
+          await localTracks.value?.videoTrack.stop();
+          localTracks.value["videoTrack"] = ZoomVideo.createLocalVideoTrack(thisCam.deviceId);
+          if (isOpenCam.value) {
+            const doc = document.getElementById(videoElementId) as HTMLVideoElement;
+            await localTracks.value?.videoTrack.start(doc);
           }
         }
       }
@@ -408,7 +407,7 @@ export default defineComponent({
 
     //handle for microphone
     watch(isOpenMic, async currentIsOpenMic => {
-		if (currentIsOpenMic) {
+      if (currentIsOpenMic) {
         dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         if (currentMic.value) {
           if (isUsingAgora.value) {
@@ -449,8 +448,6 @@ export default defineComponent({
     };
 
     const handleMicroChange = async (micId: string) => {
-		console.log(listMics)
-		console.log(micId)
       try {
         if (isUsingAgora.value) {
           await localTracks.value?.audioTrack.setDevice(micId);
