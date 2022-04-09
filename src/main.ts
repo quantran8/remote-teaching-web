@@ -59,6 +59,7 @@ app.use(store);
 app.use(GLPlugin, {
   i18nInstance: i18n,
   store,
+  appConfig: process.env,
 });
 
 // Global properties
