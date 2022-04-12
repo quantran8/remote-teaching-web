@@ -127,6 +127,13 @@
 	"teacher_class.targets_text": "Targets:",
 	"teacher_class.show_all_targets": "Show All Targets",
 	"teacher_class.hide_all_targets": "Hide All Targets",
+	"teacher_class.bear_action_default": "default",
+	"teacher_class.bear_action_interactive": "interactive",
+	"teacher_class.bear_action_listen": "listen",
+	"teacher_class.bear_action_question": "question",
+	"teacher_class.bear_action_quiet": "quiet",
+	"teacher_class.bear_action_sing": "sing",
+	"teacher_class.bear_action_speak": "speak",
 	"teacher_class_lesson_plan.related_slides": "Related slides",
 	"teacher_class_lesson_plan.component_slides": "Component slides",
 	"teacher_class_lesson_plan.activity_slides": "Activity slides"

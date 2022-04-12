@@ -1,8 +1,9 @@
-import { fmtMsg, MatIcon } from "@/commonui";
-import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { fmtMsg, isGuid, MatIcon } from "@/commonui";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";
-import { CommonLocale } from "@/locales/localeid";
+import { CommonLocale, BearAction } from "@/locales/localeid";
+
 export default defineComponent({
   props: {
     teacherName: String,
@@ -14,6 +15,19 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
+    const classActionsTitle = computed(() => fmtMsg(CommonLocale.CommonClassActions));
+    const bearActionLabel = {
+      default: computed(() => fmtMsg(BearAction.Default)),
+      interactive: computed(() => fmtMsg(BearAction.Interactive)),
+      listen: computed(() => fmtMsg(BearAction.Listen)),
+      question: computed(() => fmtMsg(BearAction.Question)),
+      quiet: computed(() => fmtMsg(BearAction.Quiet)),
+      sing: computed(() => fmtMsg(BearAction.Sing)),
+      speak: computed(() => fmtMsg(BearAction.Speak)),
+    };
+    const genBearActionLabel = (icon: ClassAction): string => {
+      return bearActionLabel[icon].value;
+    };
     const actions = [
       { id: ClassAction.DEFAULT, icon: "default" },
       { id: ClassAction.INTERACTIVE, icon: "interactive" },
@@ -25,9 +39,8 @@ export default defineComponent({
     ];
     const classAction = computed(() => {
       const id: ClassAction = getters["teacherRoom/classAction"];
-      return actions.find(e => e.id === id) || actions[0];
+      return actions.find((e) => e.id === id) || actions[0];
     });
-    const classActionsTitle = computed(() => fmtMsg(CommonLocale.CommonClassActions));
 
     const onClickSelectAction = async (action: { id: ClassAction; icon: string }) => {
       await dispatch("teacherRoom/setClassAction", {
@@ -79,6 +92,7 @@ export default defineComponent({
       onClickSelectAction,
       ClassAction,
       classActionsTitle,
+      genBearActionLabel,
     };
   },
 });

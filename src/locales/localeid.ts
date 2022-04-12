@@ -213,6 +213,16 @@ export class TeacherClass {
   static HideAllTargets = "teacher_class.hide_all_targets";
 }
 
+export class BearAction {
+  static Default = "teacher_class.bear_action_default";
+  static Interactive = "teacher_class.bear_action_interactive";
+  static Listen = "teacher_class.bear_action_listen";
+  static Question = "teacher_class.bear_action_question";
+  static Quiet = "teacher_class.bear_action_quiet";
+  static Sing = "teacher_class.bear_action_sing";
+  static Speak = "teacher_class.bear_action_speak";
+}
+
 export class LostNetwork {
   static Message = "lost_network.message";
   static StudentMessage = "lost_network.student_message";
