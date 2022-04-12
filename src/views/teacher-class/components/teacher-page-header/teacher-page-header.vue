@@ -12,9 +12,9 @@
         <div class="toolbox"></div>
         <label class="overlay"></label>
         <div class="actions">
-          <button class="reaction-icon" @click="() => onClickSelectAction(action)" v-for="action of actions" :key="action.icon">
-            <img :src="require(`@/assets/icons/icon-action-${action.icon}.png`)" />
-            <span class="action-text">{{ action.icon }}</span>
+          <button class="reaction-icon" @click="() => onClickSelectAction(action)" v-for="action of actions" :key="action.id">
+            <img :src="require(`@/assets/icons/icon-action-${action.id}.png`)" />
+            <span class="action-text">{{ genBearActionLabel(action.id) }}</span>
           </button>
         </div>
       </div>
