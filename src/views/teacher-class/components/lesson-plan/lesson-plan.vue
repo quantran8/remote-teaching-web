@@ -53,7 +53,6 @@
     <div ref="lessonContainer" id="lesson-container" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
         <div id="lesson-container__remaining-time">
-          <p>{{ remainingText }} {{ remainingTime }}</p>
           <p>
             {{ itemText }} {{ activityStatistic }} <br />
             {{ pageText }} {{ page }}
@@ -62,6 +61,7 @@
         </div>
         <div class="progress">
           <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
+          <div class="progress__remaining-time">{{ remainingText }} {{ remainingTime }}</div>
         </div>
       </div>
       <div class="activities">

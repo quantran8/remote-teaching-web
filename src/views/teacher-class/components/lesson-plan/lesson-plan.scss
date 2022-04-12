@@ -84,19 +84,28 @@
     }
 
     .progress {
-      background: white;
+      background: black;
       border: solid 1px #cccccc;
-      height: 16px;
+      min-height: 16px;
       width: 100%;
       border-radius: 5px;
+      position: relative;
 
       .indicator {
         width: 100%;
         height: 100%;
         transform-origin: 0;
-        background-color: black;
+        background-color: #4095e9;
         transition: transform 0.3s ease-in-out;
         transform: scaleX(0);
+        position: absolute;
+      }
+
+      &__remaining-time {
+        padding: 0.25rem 0.5rem;
+        color: white;
+        text-align: center;
+        position: relative;
       }
     }
 
