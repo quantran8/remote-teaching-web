@@ -118,12 +118,19 @@
 	"teacher_class.leave_page": "Leave page?",
 	"teacher_class.mark_as_complete": "Mark lesson {lesson} in Unit {unit} complete for class {classname}",
 	"teacher_class.leave_notice": "This will end the session and close the remote classroom for all students. Are you sure you want to continue?",
-	"common.class.actions": "None",
+	"common.class.actions": "Chưa có",
 	"whiteboard.textbox_warning": "Please type letters or basic punctuation only.",
 	"device_tester.message_warning_mic": "Unable to access microphone, please check system settings or grant permission and reload page.",
 	"device_tester.message_warning_camera": "Unable to access camera, please check system settings or grant permission and reload page.",
 	"teacher_class.target_text": "Target:",
 	"teacher_class.targets_text": "Targets:",
 	"teacher_class.show_all_targets": "Show All Targets",
-	"teacher_class.hide_all_targets": "Hide All Targets"
+	"teacher_class.hide_all_targets": "Hide All Targets",
+	"teacher_class.bear_action_default": "mặc định",
+	"teacher_class.bear_action_interactive": "tương tác",
+	"teacher_class.bear_action_listen": "nghe",
+	"teacher_class.bear_action_question": "câu hỏi",
+	"teacher_class.bear_action_quiet": "im lặng",
+	"teacher_class.bear_action_sing": "hát",
+	"teacher_class.bear_action_speak": "nói"
 }
