@@ -71,6 +71,10 @@ export default defineComponent({
     const lessonContainer = ref();
     const scrollPosition = ref(0);
     const showInfo = ref(false);
+    const isTransitionBlock = computed(() => currentExposure.value?.type === exposureTypes.TRANSITION_BLOCK);
+    const hasZeroTeachingContent = computed(() => {
+      return currentExposure.value?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) <= -1;
+    });
 
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
@@ -254,6 +258,8 @@ export default defineComponent({
       exposureTitle,
       showInfo,
       toggleInformationBox,
+      hasZeroTeachingContent,
+      isTransitionBlock,
     };
   },
 });

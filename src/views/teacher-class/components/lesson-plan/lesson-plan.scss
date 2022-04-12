@@ -128,10 +128,47 @@
       position: relative;
       cursor: pointer;
 
+      &__popup-text::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent rgb(161, 151, 36) transparent;
+      }
+
+      &__popup-text {
+        visibility: hidden;
+        line-break: auto;
+        background-color: rgba(255, 245, 135, 1);
+        color: #000;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 30;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 0.3px solid rgb(161, 151, 36);
+        padding: 8px 10px;
+        font-size: 14px;
+        color: gray;
+        text-align: start;
+        width: max-content;
+        max-width: 400px;
+      }
+
       &__icon-info {
         width: 20px;
         height: 20px;
         filter: brightness(0) invert(1);
+      }
+
+      &__show {
+        visibility: visible;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s;
       }
     }
   }

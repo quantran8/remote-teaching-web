@@ -36,6 +36,17 @@
             @mouseout="toggleInformationBox"
             alt=""
           />
+          <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
+            <div v-if="!hasZeroTeachingContent">
+              <div v-for="{ id, textContent } in currentExposure.teachingActivityBlockItems" :key="id" v-html="textContent" />
+            </div>
+            <div v-if="isTransitionBlock">
+              <div v-html="currentExposure.name" />
+            </div>
+            <div v-if="!isTransitionBlock && hasZeroTeachingContent">
+              <Empty imageStyle="max-height: 40px" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
