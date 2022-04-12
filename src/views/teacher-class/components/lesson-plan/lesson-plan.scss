@@ -98,9 +98,6 @@
       flex: 1;
 	  overscroll-behavior: contain;
       margin-top: 10px;
-      background-color: #f8f8f8;
-      border: solid 1px #ccc;
-      border-radius: 5px;
     }
   }
 
@@ -161,8 +158,8 @@
 
       &__show {
         visibility: visible;
-        -webkit-animation: fadeIn 1s;
-        animation: fadeIn 1s;
+        -webkit-animation: fadeIn 0.5s;
+        animation: fadeIn 0.5s;
       }
     }
   }
