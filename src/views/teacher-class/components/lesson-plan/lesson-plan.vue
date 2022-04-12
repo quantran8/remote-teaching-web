@@ -22,6 +22,23 @@
         <span v-else>&#8249;</span>
       </span>
     </div>
+    <div :class="[isGalleryView && 'd-none']">
+      <div class="lesson-container__component-header" v-if="isShowExposureDetail">
+        <BaseButton mode="clear" class="icon" @click="onClickCloseExposure">
+          <BaseIcon name="icon-back"></BaseIcon>
+        </BaseButton>
+        <div class="exposure-title">{{ exposureTitle }}</div>
+        <div class="exposure-info">
+          <img
+            class="exposure-info__icon-info"
+            src="@/assets/images/info.png"
+            @mouseover="toggleInformationBox"
+            @mouseout="toggleInformationBox"
+            alt=""
+          />
+        </div>
+      </div>
+    </div>
     <div ref="lessonContainer" id="lesson-container" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
         <div id="lesson-container__remaining-time">
@@ -30,7 +47,7 @@
             {{ itemText }} {{ activityStatistic }} <br />
             {{ pageText }} {{ page }}
           </p>
-          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" />
+          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" alt="" />
         </div>
         <div class="progress">
           <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>

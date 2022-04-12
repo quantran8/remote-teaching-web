@@ -1,6 +1,6 @@
 .lesson-container {
   height: 100%;
-  overflow: hidden;
+  //overflow: hidden;
   border-right: 1px solid #ccc;
 
   &__icon-next {
@@ -56,7 +56,7 @@
 
   .lesson-container__body {
     overflow: auto;
-    height: calc(100% - 60px);
+    height: calc(100% - 110px);
     padding-left: 10px;
     padding-right: 10px;
     &--info {
@@ -107,6 +107,32 @@
       background-color: #f8f8f8;
       border: solid 1px #ccc;
       border-radius: 5px;
+    }
+  }
+
+  &__component-header {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 1.25rem;
+    color: white;
+    background-color: #6f6f6f;
+
+    .exposure-title {
+      padding: 0.5rem;
+      flex: 1;
+    }
+
+    .exposure-info {
+      display: flex;
+      position: relative;
+      cursor: pointer;
+
+      &__icon-info {
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) invert(1);
+      }
     }
   }
 }
