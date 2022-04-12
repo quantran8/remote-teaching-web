@@ -59,9 +59,9 @@ export default defineComponent({
         return "";
       }
       switch (exposure.type) {
-        case exposureTypes.TRANSITION_BLOCK:
+        case ExposureType.TRANSITION:
           return transitionText.value;
-        case exposureTypes.LP_COMPLETE_BLOCK:
+        case ExposureType.COMPLETE:
           return lessonCompleteText.value;
         default:
           return `${exposure.name} (${secondsToTimeStr(getSeconds(exposure.duration))})`;
@@ -71,7 +71,7 @@ export default defineComponent({
     const lessonContainer = ref();
     const scrollPosition = ref(0);
     const showInfo = ref(false);
-    const isTransitionBlock = computed(() => currentExposure.value?.type === exposureTypes.TRANSITION_BLOCK);
+    const isTransitionBlock = computed(() => currentExposure.value?.type === ExposureType.TRANSITION);
     const hasZeroTeachingContent = computed(() => {
       return currentExposure.value?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) <= -1;
     });
