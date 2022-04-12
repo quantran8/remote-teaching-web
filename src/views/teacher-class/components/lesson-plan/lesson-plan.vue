@@ -52,16 +52,16 @@
     </div>
     <div ref="lessonContainer" id="lesson-container" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
-        <div id="lesson-container__remaining-time">
-          <p>
-            {{ itemText }} {{ activityStatistic }} <br />
-            {{ pageText }} {{ page }}
-          </p>
-          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" alt="" />
-        </div>
         <div class="progress">
           <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
           <div class="progress__remaining-time">{{ remainingText }} {{ remainingTime }}</div>
+        </div>
+        <div class="lesson-container__statistic">
+          <div class="lesson-container__statistic-info">
+            <div>{{ itemText }} {{ activityStatistic }}</div>
+            <div>{{ pageText }} {{ page }}</div>
+          </div>
+          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" alt="" />
         </div>
       </div>
       <div class="activities">
