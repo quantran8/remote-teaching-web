@@ -126,5 +126,8 @@
 	"teacher_class.target_text": "Target:",
 	"teacher_class.targets_text": "Targets:",
 	"teacher_class.show_all_targets": "Show All Targets",
-	"teacher_class.hide_all_targets": "Hide All Targets"
+	"teacher_class.hide_all_targets": "Hide All Targets",
+	"teacher_class_lesson_plan.related_slides": "Related slides",
+	"teacher_class_lesson_plan.component_slides": "Component slides",
+	"teacher_class_lesson_plan.activity_slides": "Activity slides"
 }

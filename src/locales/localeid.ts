@@ -177,6 +177,9 @@ export class TeacherClassLessonPlan {
   static LessonComplete = "teacher_class_lesson_plan.lesson_complete";
   static TeachingActivity = "teacher_class_lesson_plan.teaching_activity";
   static Transition = "teacher_class_lesson_plan.transition";
+  static RelatedSlides = "teacher_class_lesson_plan.related_slides";
+  static ComponentSlides = "teacher_class_lesson_plan.component_slides";
+  static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
 }
 
 export class TeacherClassGallery {
