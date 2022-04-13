@@ -9,6 +9,8 @@ import IconNextDisable from "@/assets/images/arrow-disable.png";
 import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "@/commonui";
+import {getSeconds, secondsToTimeStr} from "@/utils/convertDuration";
+import { Empty } from "ant-design-vue";
 
 export const exposureTypes = {
   TRANSITION_BLOCK: "TRANSITION_BLOCK",
@@ -19,7 +21,7 @@ export const exposureTypes = {
 };
 
 export default defineComponent({
-  components: { LessonActivity, ExposureDetail },
+  components: { LessonActivity, ExposureDetail, Empty },
   emits: ["open-gallery-mode", "toggle-lesson-mode"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -29,6 +31,8 @@ export default defineComponent({
     const remainingText = computed(() => fmtMsg(TeacherClassLessonPlan.Remaining));
     const itemText = computed(() => fmtMsg(TeacherClassLessonPlan.Item));
     const pageText = computed(() => fmtMsg(TeacherClassLessonPlan.Page));
+    const transitionText = computed(() => fmtMsg(TeacherClassLessonPlan.Transition));
+    const lessonCompleteText = computed(() => fmtMsg(TeacherClassLessonPlan.LessonComplete));
 
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(() => getters["lesson/activityStatistic"]);
@@ -49,9 +53,28 @@ export default defineComponent({
     const canNext = computed(() => (nextExposureItemMedia.value || nextCurrentExposure.value ? true : false));
     const canPrev = computed(() => (prevExposureItemMedia.value || prevCurrentExposure ? true : false));
     const iconNext = computed(() => (canNext.value ? IconNext : IconNextDisable));
+    const exposureTitle = computed(() => {
+      const exposure = getters["lesson/currentExposure"];
+      if (!exposure) {
+        return "";
+      }
+      switch (exposure.type) {
+        case ExposureType.TRANSITION:
+          return transitionText.value;
+        case ExposureType.COMPLETE:
+          return lessonCompleteText.value;
+        default:
+          return `${exposure.name} (${secondsToTimeStr(getSeconds(exposure.duration))})`;
+      }
+    });
 
     const lessonContainer = ref();
     const scrollPosition = ref(0);
+    const showInfo = ref(false);
+    const isTransitionBlock = computed(() => currentExposure.value?.type === ExposureType.TRANSITION);
+    const hasZeroTeachingContent = computed(() => {
+      return currentExposure.value?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) <= -1;
+    });
 
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
@@ -190,6 +213,9 @@ export default defineComponent({
       showHideLesson.value = !value;
       emit("toggle-lesson-mode", showHideLesson.value);
     };
+    const toggleInformationBox = () => {
+      showInfo.value = !showInfo.value;
+    };
     onMounted(() => {
       window.addEventListener("keydown", handleKeyDown);
     });
@@ -229,6 +255,11 @@ export default defineComponent({
       isOneOneMode,
       showHideLessonOneOne,
       showHideLesson,
+      exposureTitle,
+      showInfo,
+      toggleInformationBox,
+      hasZeroTeachingContent,
+      isTransitionBlock,
     };
   },
 });

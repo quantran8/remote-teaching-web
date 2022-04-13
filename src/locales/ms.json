@@ -133,5 +133,8 @@
 	"teacher_class.bear_action_question": "question",
 	"teacher_class.bear_action_quiet": "quiet",
 	"teacher_class.bear_action_sing": "sing",
-	"teacher_class.bear_action_speak": "speak"
+	"teacher_class.bear_action_speak": "speak",
+	"teacher_class_lesson_plan.related_slides": "Related slides",
+	"teacher_class_lesson_plan.component_slides": "Component slides",
+	"teacher_class_lesson_plan.activity_slides": "Activity slides"
 }

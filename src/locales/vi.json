@@ -132,5 +132,8 @@
 	"teacher_class.bear_action_question": "câu hỏi",
 	"teacher_class.bear_action_quiet": "im lặng",
 	"teacher_class.bear_action_sing": "hát",
-	"teacher_class.bear_action_speak": "nói"
+	"teacher_class.bear_action_speak": "nói",
+	"teacher_class_lesson_plan.related_slides": "Related slides",
+	"teacher_class_lesson_plan.component_slides": "Component slides",
+	"teacher_class_lesson_plan.activity_slides": "Activity slides"
 }
