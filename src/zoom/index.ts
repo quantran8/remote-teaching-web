@@ -67,7 +67,7 @@ export class ZoomClient implements ZoomClientSDK {
 
     this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
     this._defaultCaptureVideoOption = {
-      hd: false,
+      hd: true,
       cameraId: store.getters["cameraDeviceId"],
     };
   }
@@ -132,12 +132,12 @@ export class ZoomClient implements ZoomClientSDK {
       if (this.option.user.role === "host") {
         const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
         if (canvas) {
-          await this.stream.renderVideo(canvas, user.userId, 300, canvas.height, 0, 0, VideoQuality.Video_360P);
+          await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_720P);
         }
       } else {
         const canvas = document.getElementById(`${user?.displayName}__video`) as HTMLCanvasElement;
         if (canvas) {
-          await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
+          await this.stream.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_720P);
         }
       }
     });
@@ -155,7 +155,7 @@ export class ZoomClient implements ZoomClientSDK {
     const canvas = document.getElementById(`${userAdded?.displayName}__sub`) as HTMLCanvasElement;
     if (!canvas) return;
     if (action === "Start") {
-      await this.stream.renderVideo(canvas, userId, 300, canvas.height, 0, 0, VideoQuality.Video_720P);
+      await this.stream.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_720P);
     } else if (action === "Stop") {
       await this.stream.stopRenderVideo(canvas, userId);
       await this.stream.clearVideoCanvas(canvas);
@@ -172,6 +172,7 @@ export class ZoomClient implements ZoomClientSDK {
     isRejoin?: boolean;
   }) {
     try {
+      Logger.log("Join RTC room: ", options);
       this.isMicEnable = !!options.microphone;
       this.isCameraEnable = !!options.camera;
 
@@ -186,13 +187,15 @@ export class ZoomClient implements ZoomClientSDK {
       this._stream = this.client.getMediaStream();
 
       this.joined = true;
-      if (options.microphone) {
-        await this.stream.startAudio();
 
-        if (this._selectedMicrophoneId) {
-          await this.stream.switchMicrophone(this._selectedMicrophoneId);
-        }
-        console.log(this._selectedMicrophoneId);
+      await this.stream.startAudio();
+	  if (this._selectedMicrophoneId) {
+		await this.stream.switchMicrophone(this._selectedMicrophoneId);
+	  }
+      if (options.microphone) {
+        await this.stream.unmuteAudio();
+      } else {
+        await this.stream.muteAudio();
       }
       this._videoElement = document.getElementById((options.teacherId || options.studentId) + "__video") as HTMLVideoElement;
       if (options.camera) {
@@ -222,18 +225,18 @@ export class ZoomClient implements ZoomClientSDK {
   async setMicrophone(options: { enable: boolean }) {
     this.isMicEnable = options.enable;
     if (this.isMicEnable) {
-      await this.stream.startAudio();
+      return this.stream.unmuteAudio();
     } else {
-      await this.stream.stopAudio();
+      return this.stream.muteAudio();
     }
   }
 
   async setCamera(options: { enable: boolean }) {
     this.isCameraEnable = options.enable;
     if (this.isCameraEnable && this._videoElement) {
-      await this.stream.startVideo({ videoElement: this._videoElement, ...this._defaultCaptureVideoOption });
+      return this.stream.startVideo({ videoElement: this._videoElement, ...this._defaultCaptureVideoOption });
     } else {
-      await this.stream.stopVideo();
+      return this.stream.stopVideo();
     }
   }
 
