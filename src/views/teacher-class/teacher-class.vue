@@ -14,10 +14,17 @@
       :className="roomInfo?.classInfo?.className"
       @end="onClickEnd"
     ></teacher-page-header>
-    <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']">
+    <div
+      :class="[
+        'tc__sidebar',
+        'tc__fixed-height',
+        isSidebarCollapsed && 'tc__sidebar--collapsed',
+        showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one',
+      ]"
+    >
       <LessonPlan @open-gallery-mode="toggleView" @toggle-lesson-mode="toggleLessonSidebar" />
     </div>
-    <div class="tc__content">
+    <div class="tc__content tc__fixed-height">
       <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
       <!--        <ActivityContent @on-click-content-view="onClickContentView" />-->
       <!--      </div>-->
@@ -57,7 +64,7 @@
       <!--          <GlobalAudioBar />-->
       <!--        </div>-->
     </div>
-    <div :class="['tc__gallery', isSidebarCollapsed && 'no-sidebar']">
+    <div :class="['tc__gallery tc__fixed-height', isSidebarCollapsed && 'no-sidebar']">
       <StudentGallery />
     </div>
     <!--    <DesignateTarget v-if="modalDesignateTarget" :editable="allowDesignate"></DesignateTarget>-->

@@ -1,3 +1,4 @@
+import { I18N_LOCALE } from "@/utils/constant";
 import { createI18n } from "vue-i18n";
 
 function loadLocaleMessages() {
@@ -14,8 +15,9 @@ function loadLocaleMessages() {
   return messages;
 }
 
+const currentLocale = localStorage.getItem(I18N_LOCALE);
 export default createI18n({
-  locale: process.env.VUE_APP_I18N_LOCALE || "en",
+  locale: currentLocale || process.env.VUE_APP_I18N_LOCALE || "en",
   fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
   messages: loadLocaleMessages(),
 });

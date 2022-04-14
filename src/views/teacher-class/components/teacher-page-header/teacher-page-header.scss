@@ -1,5 +1,4 @@
 @import "../../../../style/abstracts/variables";
-$header-height: 85px;
 $font-size: 2.2em;
 .header {
   height: $header-height;
@@ -209,5 +208,9 @@ $action-icon-container-size: 70px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
   }
 }
