@@ -2,8 +2,7 @@ import { createApp } from "vue";
 import Lottie from "vue-lottie";
 import VueCropper from "vue-cropperjs";
 import App from "./app/app.vue";
-import i18n from "./utils/i18n";
-import "./registerServiceWorker";
+import i18n, { persistLocale } from "./utils/i18n";
 import router from "./router";
 import { GLPlugin } from "vue-glcommonui";
 import { BaseButton, BaseCard, BaseIcon, BaseTag, MatIcon } from "vue-glcommonui";
@@ -60,6 +59,9 @@ app.use(GLPlugin, {
   i18nInstance: i18n,
   store,
   appConfig: process.env,
+  option: {
+    persistLocale,
+  },
 });
 
 // Global properties
