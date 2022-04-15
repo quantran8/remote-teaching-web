@@ -84,14 +84,7 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
         canvas.isDrawingMode = false;
-        processAnnotationLesson(
-          canvas,
-          props.image,
-          containerRef,
-          isShowWhiteBoard,
-          true,
-          toggleTargets.value.visible ? "show-all-targets" : "hide-all-target",
-        );
+        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, null);
       }
     };
     watch(isShowWhiteBoard, () => {
