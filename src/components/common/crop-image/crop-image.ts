@@ -43,8 +43,8 @@ export default defineComponent({
         complete(cacheImage);
         return;
       }
-
-      const cropper = new Cropper(imageRef.value!, {
+      if (!imageRef.value) return;
+      const cropper = new Cropper(imageRef.value, {
         autoCrop: false,
         crop(event) {
           if (event.detail.width === metadata.width || event.detail.height === metadata.height) {

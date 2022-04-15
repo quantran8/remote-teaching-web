@@ -1,5 +1,4 @@
 import { TeacherHome } from "./../../locales/localeid";
-import { LoginInfo } from "@/commonui";
 import { TeacherClassModel, UnitAndLesson, UnitAndLessonModel } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, UnitAndLessonResponse } from "@/services";
 import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
@@ -8,13 +7,14 @@ import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row, Empty, notification } from "ant-design-vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
+import { MatIcon } from "vue-glcommonui";
 
 const fpPromise = FingerprintJS.load();
 
@@ -30,6 +30,7 @@ export default defineComponent({
     Row,
     Empty,
     DeviceTester,
+    MatIcon,
   },
   setup() {
     const store = useStore();

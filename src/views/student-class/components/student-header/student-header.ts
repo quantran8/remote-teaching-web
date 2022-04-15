@@ -6,7 +6,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import gsap from "gsap";
-import { fmtMsg, MatIcon } from "@/commonui";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
 import { ClassRoomStatus } from "@/models";
 
 export default defineComponent({
@@ -36,7 +36,7 @@ export default defineComponent({
         title: "Are you sure you wish to leave the session?",
         okText: "Yes",
         cancelText: "No",
-        okButtonProps: { type: "danger" },
+        okButtonProps: { type: "text" },
         onOk: async () => {
           await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
           await store.dispatch("studentRoom/studentLeaveClass");

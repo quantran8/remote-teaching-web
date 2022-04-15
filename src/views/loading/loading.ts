@@ -1,4 +1,4 @@
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { LoadingLocale } from "@/locales/localeid";
 import { computed, defineComponent } from "vue";
 

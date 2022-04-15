@@ -1,6 +1,6 @@
 import { fabric } from "fabric";
 import { useStore } from "vuex";
-import { starPolygonPoints } from "commonui";
+import { starPolygonPoints } from "@/utils/utils";
 
 export const studentAddedShapes = () => {
   const store = useStore();

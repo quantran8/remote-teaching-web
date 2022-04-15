@@ -1,4 +1,4 @@
-import { LoginInfo, RoleName } from "@/commonui";
+import { RoleName, LoginInfo } from "vue-glcommonui";
 import { GetterTree } from "vuex";
 import { AuthState } from "./state";
 
@@ -8,24 +8,15 @@ const getters: GetterTree<AuthState, any> = {
   },
   isOnlyParent: (state: AuthState): boolean => {
     if (!state.loginInfo || !state.loginInfo.loggedin) return false;
-    return (
-      state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 &&
-      state.loginInfo.profile.roles.indexOf(RoleName.teacher) === -1
-    );
+    return state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 && state.loginInfo.profile.roles.indexOf(RoleName.teacher) === -1;
   },
   isOnlyTeacher: (state: AuthState): boolean => {
     if (!state.loginInfo || !state.loginInfo.loggedin) return false;
-    return (
-      state.loginInfo.profile.roles.indexOf(RoleName.parent) === -1 &&
-      state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1
-    );
+    return state.loginInfo.profile.roles.indexOf(RoleName.parent) === -1 && state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1;
   },
   isParentAndTeacher: (state: AuthState): boolean => {
     if (!state.loginInfo || !state.loginInfo.loggedin) return false;
-    return (
-      state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 &&
-      state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1
-    );
+    return state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 && state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1;
   },
   loginInfo: (state: AuthState): LoginInfo => {
     return state.loginInfo || ({} as LoginInfo);
@@ -34,9 +25,7 @@ const getters: GetterTree<AuthState, any> = {
     return state.loginInfo?.profile.name || "";
   },
   userAvatar: (state: AuthState): string => {
-    return (
-      state.loginInfo?.profile.avatarUrl || "/assets/images/user-default.png"
-    );
+    return state.loginInfo?.profile.avatarUrl || "/assets/images/user-default.png";
   },
   userRole: (state: AuthState): string => {
     const rolesOrdering = [

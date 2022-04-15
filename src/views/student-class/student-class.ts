@@ -1,5 +1,6 @@
 import { StudentClassLocale } from "./../../locales/localeid";
-import { ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName } from "@/commonui";
+import { RoleName, LoginInfo, fmtMsg, MatIcon } from "vue-glcommonui";
+import { ErrorCode, mobileDevice } from "@/utils/utils";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
@@ -221,9 +222,11 @@ export default defineComponent({
           joinLoading.value = false;
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           const message = apiStatus.value.message;
-          notification.info({
-            message: message,
-          });
+          if (message) {
+            notification.info({
+              message,
+            });
+          }
           await router.push(Paths.Parent);
         } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
           showMessage.value = true;
@@ -276,7 +279,7 @@ export default defineComponent({
       third: 30, //00:00:30
     };
     const isPlayVideo = ref(false);
-    watch(formattedTime, async currentFormattedTime => {
+    watch(formattedTime, async (currentFormattedTime) => {
       if (toSecond(currentFormattedTime) <= milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
       }

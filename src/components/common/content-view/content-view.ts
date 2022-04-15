@@ -67,10 +67,10 @@ export default defineComponent({
 
     const updateTargets = () => {
       const targets: Array<Target> = props.targets;
-      const revealedTargets = targets.filter(t => t.reveal || props.localTargets.indexOf(t.id) !== -1);
+      const revealedTargets = targets.filter((t) => t.reveal || props.localTargets.indexOf(t.id) !== -1);
       circles.value = revealedTargets
-        .filter(t => t.type === "circle")
-        .map(c => {
+        .filter((t) => t.type === "circle")
+        .map((c) => {
           return {
             id: c.id,
             x: rectPreview.value.x + c.x * scaleRatio.value,
@@ -81,8 +81,8 @@ export default defineComponent({
           };
         });
       rectangles.value = revealedTargets
-        .filter(t => t.type === "rectangle")
-        .map(r => {
+        .filter((t) => t.type === "rectangle")
+        .map((r) => {
           return {
             id: r.id,
             x: rectPreview.value.x + r.x * scaleRatio.value,

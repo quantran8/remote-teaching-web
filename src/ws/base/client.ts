@@ -1,4 +1,4 @@
-import { GLGlobal } from "@/commonui";
+import { GLGlobal } from "vue-glcommonui";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
@@ -35,7 +35,7 @@ export class GLSocketClient {
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
       .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: retryContext => {
+        nextRetryDelayInMilliseconds: (retryContext) => {
           Logger.log("SIGNAL R DISCONNECTED");
           store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
           return DEFAULT_RECONNECT_TIMING;

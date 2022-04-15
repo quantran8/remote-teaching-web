@@ -8,8 +8,8 @@ import IconNext from "@/assets/images/arrow.png";
 import IconNextDisable from "@/assets/images/arrow-disable.png";
 import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
-import { fmtMsg } from "@/commonui";
-import {getSeconds, secondsToTimeStr} from "@/utils/convertDuration";
+import { fmtMsg } from "vue-glcommonui";
+import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 import { Empty } from "ant-design-vue";
 
 export const exposureTypes = {

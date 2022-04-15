@@ -4,7 +4,7 @@ import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { StudentGalleryItem } from "../student-gallery-item";
 import { dragscrollNext } from "vue-dragscroll";
-import { MatIcon } from "@/commonui";
+import { MatIcon } from "vue-glcommonui";
 import { isMobileBrowser } from "@/utils/utils";
 
 export default defineComponent({

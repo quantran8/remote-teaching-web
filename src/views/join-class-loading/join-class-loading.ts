@@ -1,5 +1,5 @@
 import { JoinLoading } from "@/locales/localeid";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { computed, defineComponent } from "vue";
 
 export default defineComponent({

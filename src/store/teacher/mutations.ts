@@ -20,14 +20,10 @@ const mutations: MutationTree<TeacherState> = {
   },
   setCalendarSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
     if (payload) {
-      state.calendarSchedules = payload.map(calendarSchedule => {
-        calendarSchedule.schedules.map(schedule => {
+      state.calendarSchedules = payload.map((calendarSchedule) => {
+        calendarSchedule.schedules.map((schedule) => {
           if (schedule.customizedScheduleId == null) {
-            schedule.customizedScheduleId =
-              "0000-" +
-              Math.random()
-                .toString(36)
-                .substr(2, 9);
+            schedule.customizedScheduleId = "0000-" + Math.random().toString(36).substr(2, 9);
           }
           return schedule;
         });
@@ -37,7 +33,7 @@ const mutations: MutationTree<TeacherState> = {
   },
   setClassRoom(state: TeacherState, payload: RoomModel) {
     state.room = payload;
-    state.classesSchedules.forEach(cl => {
+    state.classesSchedules.forEach((cl) => {
       cl.isActive = state.room?.classInfo.classId === cl.classId;
     });
   },
@@ -51,13 +47,13 @@ const mutations: MutationTree<TeacherState> = {
     state.acceptPolicy = payload;
   },
   updateCalendarSchedule(state: TeacherState, payload: any) {
-    const dayExist = state.calendarSchedules.filter(calendarSchedule => {
+    const dayExist = state.calendarSchedules.filter((calendarSchedule) => {
       return calendarSchedule.day == payload.day;
     });
     switch (payload.data.type) {
       case "Create":
         if (dayExist.length > 0) {
-          state.calendarSchedules.map(dayCalendar => {
+          state.calendarSchedules.map((dayCalendar) => {
             if (dayCalendar.day == payload.day) {
               dayCalendar.schedules.push({
                 classId: payload.data.schoolClassId,
@@ -94,9 +90,9 @@ const mutations: MutationTree<TeacherState> = {
         }
         break;
       case "Skip":
-        state.calendarSchedules.map(dayCalendar => {
+        state.calendarSchedules.map((dayCalendar) => {
           if (dayCalendar.day == payload.day) {
-            dayCalendar.schedules = dayCalendar.schedules.filter(schedule => {
+            dayCalendar.schedules = dayCalendar.schedules.filter((schedule) => {
               return schedule.customizedScheduleId != payload.customId;
             });
           }
@@ -104,9 +100,9 @@ const mutations: MutationTree<TeacherState> = {
         });
         break;
       case "Delete":
-        state.calendarSchedules.map(dayCalendar => {
+        state.calendarSchedules.map((dayCalendar) => {
           if (dayCalendar.day == payload.day) {
-            dayCalendar.schedules = dayCalendar.schedules.filter(schedule => {
+            dayCalendar.schedules = dayCalendar.schedules.filter((schedule) => {
               return schedule.customizedScheduleId != payload.data.scheduleId;
             });
           }
@@ -114,9 +110,9 @@ const mutations: MutationTree<TeacherState> = {
         });
         break;
       case "Update":
-        state.calendarSchedules.map(dayCalendar => {
+        state.calendarSchedules.map((dayCalendar) => {
           if (dayCalendar.day == payload.day) {
-            dayCalendar.schedules = dayCalendar.schedules.map(schedule => {
+            dayCalendar.schedules = dayCalendar.schedules.map((schedule) => {
               if (schedule.customizedScheduleId != payload.data.customizedScheduleId) return schedule;
               schedule.groupName = payload.groupName;
               schedule.groupId = payload.data.groupId;

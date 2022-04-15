@@ -12,15 +12,10 @@ export interface InteractiveMutationInterface<S> {
   setCurrentUserId(s: S, userId: string): void;
   setRevealedTarget(s: S, targetId: string): void;
   setRevealedLocalTarget(s: S, p: Array<string>): void;
-  setUpdateStudentsAnswerForTeacher(
-    s: S,
-    p: { studentId: string; answerList: Array<string> }
-  ): void;
+  setUpdateStudentsAnswerForTeacher(s: S, p: { studentId: string; answerList: Array<string> }): void;
 }
 
-export interface InteractiveMutation<S>
-  extends MutationTree<S>,
-    InteractiveMutationInterface<S> {}
+export interface InteractiveMutation<S> extends MutationTree<S>, InteractiveMutationInterface<S> {}
 
 const mutations: InteractiveMutation<InteractiveState> = {
   setInfo(s: InteractiveState, p: InteractiveModel) {
@@ -36,16 +31,10 @@ const mutations: InteractiveMutation<InteractiveState> = {
       return { id: s.studentId, answerList: s.answerList };
     });
   },
-  setDesignatingTarget(
-    s: InteractiveState,
-    p: { isDesignatingTarget: boolean }
-  ): void {
+  setDesignatingTarget(s: InteractiveState, p: { isDesignatingTarget: boolean }): void {
     s.isDesignatingTarget = p.isDesignatingTarget;
   },
-  setModalDesignateTarget(
-    s: InteractiveState,
-    p: { modalDesignateTarget: boolean }
-  ): void {
+  setModalDesignateTarget(s: InteractiveState, p: { modalDesignateTarget: boolean }): void {
     s.modalDesignateTarget = p.modalDesignateTarget;
   },
   setTargets(s: InteractiveState, p: { targets: Array<Target> }) {
@@ -54,10 +43,7 @@ const mutations: InteractiveMutation<InteractiveState> = {
   setLocalTargets(s: InteractiveState, p: { targets: Array<string> }) {
     s.localTargets = p.targets;
   },
-  setStudentsSelected(
-    s: InteractiveState,
-    p: { studentsSelected: Array<StudentId> }
-  ) {
+  setStudentsSelected(s: InteractiveState, p: { studentsSelected: Array<StudentId> }) {
     s.studentsSelected = p.studentsSelected;
   },
   setCurrentUserId(s: InteractiveState, userId: string) {
@@ -79,10 +65,7 @@ const mutations: InteractiveMutation<InteractiveState> = {
   setRevealedLocalTarget(s: InteractiveState, p: Array<string>) {
     s.localTargets = s.localTargets.concat(p);
   },
-  setUpdateStudentsAnswerForTeacher(
-    s: InteractiveState,
-    p: { studentId: string; answerList: Array<string> }
-  ) {
+  setUpdateStudentsAnswerForTeacher(s: InteractiveState, p: { studentId: string; answerList: Array<string> }) {
     s.studentsSelected = [
       ...s.studentsSelected.map((s) => {
         if (s.id === p.studentId) {

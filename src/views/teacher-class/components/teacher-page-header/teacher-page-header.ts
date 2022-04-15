@@ -1,4 +1,4 @@
-import { fmtMsg, isGuid, MatIcon } from "@/commonui";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
 import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { ClassAction, ClassActionToValue } from "@/store/room/student/state";
 import { useStore } from "vuex";
@@ -39,7 +39,7 @@ export default defineComponent({
     ];
     const classAction = computed(() => {
       const id: ClassAction = getters["teacherRoom/classAction"];
-      return actions.find((e) => e.id === id) || actions[0];
+      return actions.find(e => e.id === id) || actions[0];
     });
 
     const onClickSelectAction = async (action: { id: ClassAction; icon: string }) => {

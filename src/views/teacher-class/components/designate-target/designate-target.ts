@@ -8,7 +8,8 @@ import StudentList from "./student-list/student-list.vue";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { MathUtils } from "@/utils/math.utils";
 import { fabric } from "fabric";
-import { fmtMsg, Tools } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
+import { Tools } from "@/utils/utils";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { Sticker } from "@/store/annotation/state";
 import * as R from "ramda/";
@@ -376,8 +377,8 @@ export default defineComponent({
       const offsetY = (boundingBoxRect.height - ratio * height) / 2;
       const targets: Array<Target> = designateTargets.value;
       circles.value = targets
-        .filter(t => t.type === "circle")
-        .map(c => {
+        .filter((t) => t.type === "circle")
+        .map((c) => {
           return {
             id: c.id,
             x: offsetX + c.x * ratio,
@@ -388,8 +389,8 @@ export default defineComponent({
           };
         });
       rectangles.value = targets
-        .filter(t => t.type === "rectangle")
-        .map(r => {
+        .filter((t) => t.type === "rectangle")
+        .map((r) => {
           return {
             id: r.id,
             x: offsetX + r.x * ratio,
@@ -404,7 +405,7 @@ export default defineComponent({
 
     const onClickToggleAssignAllStudents = () => {
       assignAll.value = !assignAll.value;
-      studentIds.value = studentIds.value.map(s => {
+      studentIds.value = studentIds.value.map((s) => {
         return {
           ...s,
           selected: assignAll.value,
@@ -415,7 +416,7 @@ export default defineComponent({
     const updateStudentSelected = () => {
       const studentSelecteds: Array<StudentId> = store.getters["interactive/studentsSelected"];
       for (const st of studentSelecteds) {
-        const student = studentIds.value.find(s => s.id === st.id);
+        const student = studentIds.value.find((s) => s.id === st.id);
         if (student) student.selected = true;
       }
     };
@@ -423,7 +424,7 @@ export default defineComponent({
     watch(store.getters["interactive/studentsSelected"], updateStudentSelected);
     const onStudentsChanged = () => {
       if (studentIds.value.length) return;
-      studentIds.value = students.value.map(s => {
+      studentIds.value = students.value.map((s) => {
         return {
           id: s.id,
           index: s.index,
@@ -438,7 +439,7 @@ export default defineComponent({
     onStudentsChanged();
 
     const onClickToggleStudent = (s: StudentViewModel) => {
-      studentIds.value = studentIds.value.map(st => {
+      studentIds.value = studentIds.value.map((st) => {
         return {
           ...st,
           selected: s.id === st.id,
@@ -450,7 +451,7 @@ export default defineComponent({
       if (props.editable || editing.value) {
         const ratio = calScaleRatio();
         const targets: Array<Target> = circles.value
-          .map(c => {
+          .map((c) => {
             return {
               id: "",
               x: Math.floor(c.x / ratio),
@@ -464,7 +465,7 @@ export default defineComponent({
             };
           })
           .concat(
-            rectangles.value.map(r => {
+            rectangles.value.map((r) => {
               return {
                 id: "",
                 x: Math.floor(r.x / ratio),
@@ -479,7 +480,7 @@ export default defineComponent({
             }),
           );
 
-        const selectedStudents = studentIds.value.filter(s => s.selected).map(s => s.id);
+        const selectedStudents = studentIds.value.filter((s) => s.selected).map((s) => s.id);
         const roomManager = await store.getters["teacherRoom/roomManager"];
         roomManager?.WSClient.sendRequestDesignateTarget(currentExposureItemMedia.value.id, targets, selectedStudents);
       }
@@ -511,7 +512,7 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find((ele) => ele.id === targetId) || circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -526,7 +527,7 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = event.target.id + "";
             if (targetId === "mediaImage") return;
-            const rectangle = rectangles.value.find(ele => ele.id === targetId);
+            const rectangle = rectangles.value.find((ele) => ele.id === targetId);
             if (!rectangle) return;
             rectangle.x = event.rect.left - boundingBox().left;
             rectangle.y = event.rect.top - boundingBox().top;
@@ -551,7 +552,7 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find((ele) => ele.id === targetId) || circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -566,7 +567,7 @@ export default defineComponent({
             addingRect.value = null;
             const targetId = `${event.target.id}`;
             if (targetId === "mediaImage") return;
-            const circle = circles.value.find(ele => ele.id === targetId);
+            const circle = circles.value.find((ele) => ele.id === targetId);
             if (!circle) return;
             const radius = event.rect.width / 2;
             circle.radius = radius;
@@ -583,7 +584,7 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find((ele) => ele.id === targetId) || circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             for (const e of rectangles.value) {
               e.zIndex = 0;
@@ -597,14 +598,14 @@ export default defineComponent({
             addingCircle.value = null;
             addingRect.value = null;
             const targetId = `${event.target.id}`;
-            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find((ele) => ele.id === targetId) || circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             ele.x += event.dx;
             ele.y += event.dy;
           },
           end(event: any) {
             const targetId = `${event.target.id}`;
-            const ele = rectangles.value.find(ele => ele.id === targetId) || circles.value.find(ele => ele.id === targetId);
+            const ele = rectangles.value.find((ele) => ele.id === targetId) || circles.value.find((ele) => ele.id === targetId);
             if (!ele) return;
             const topleft = { x: 0, y: 0 };
             const bottomRight = { x: 0, y: 0 };
@@ -634,9 +635,9 @@ export default defineComponent({
             };
 
             if (!MathUtils.isIntersect(rect, topleft) || !MathUtils.isIntersect(rect, bottomRight)) {
-              const rectIndex = rectangles.value.findIndex(r => r.id === targetId);
+              const rectIndex = rectangles.value.findIndex((r) => r.id === targetId);
               if (rectIndex !== -1) rectangles.value.splice(rectIndex, 1);
-              const circleIndex = circles.value.findIndex(r => r.id === targetId);
+              const circleIndex = circles.value.findIndex((r) => r.id === targetId);
               if (circleIndex !== -1) circles.value.splice(circleIndex, 1);
             }
           },

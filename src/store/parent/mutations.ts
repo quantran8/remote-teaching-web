@@ -8,9 +8,7 @@ const mutations: MutationTree<ParentState> = {
     state.children = payload;
   },
   setSelectedChild(state: ParentState, payload: { childId: string }) {
-    state.selectedChild = state.children.find(
-      (ele) => ele.id === payload.childId
-    );
+    state.selectedChild = state.children.find((ele) => ele.id === payload.childId);
   },
   setInfo(state: ParentState, payload: Parent) {
     state.info = payload;

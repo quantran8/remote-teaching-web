@@ -2,12 +2,12 @@ import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onU
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import { Tools, Mode, DefaultCanvasDimension, endImgLink } from "@/commonui";
+import { Tools, Mode, DefaultCanvasDimension, endImgLink } from "@/utils/utils";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { FabricObject } from "@/ws";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
@@ -60,16 +60,8 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const {
-      createTextBox,
-      onTextBoxEdited,
-      onObjectModified,
-      displayFabricItems,
-      isEditing,
-      onObjectCreated,
-      nextColor,
-      handleUpdateColor,
-    } = useFabricObject();
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, onObjectCreated, nextColor, handleUpdateColor } =
+      useFabricObject();
     nextColor.value = strokeColor.value;
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
@@ -78,13 +70,13 @@ export default defineComponent({
         }
       }
     });
-    watch(teacherDisconnected, currentValue => {
+    watch(teacherDisconnected, (currentValue) => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
         return;
       }
     });
-    watch(studentDisconnected, currentValue => {
+    watch(studentDisconnected, (currentValue) => {
       if (currentValue) {
         firstTimeLoadStrokes.value = false;
         return;
@@ -99,6 +91,7 @@ export default defineComponent({
       if (props.image?.metaData?.annotations) {
         return props.image?.metaData?.annotations.length;
       }
+      return null;
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
@@ -724,7 +717,7 @@ export default defineComponent({
     });
     watch(
       fabricItems,
-      async value => {
+      async (value) => {
         const oneToOneUserId = store.getters["teacherRoom/getStudentModeOneId"];
         if (!oneToOneUserId) {
           await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
