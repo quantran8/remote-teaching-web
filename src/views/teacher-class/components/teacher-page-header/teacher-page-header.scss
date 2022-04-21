@@ -140,17 +140,20 @@ $action-icon-container-size: 70px;
   background: #fff;
   border-radius: 4px;
   color: #000;
-  display: inline-block;
+  display: flex;
   font-size: 12px;
   font-weight: bold;
   line-height: 20px;
   opacity: 0;
   padding: 0 6px;
   transition: opacity 50ms ease;
-  left: 6px;
   position: absolute;
-  top: 0;
+  top: 12%;
   text-align: center;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  white-space:nowrap;
+
 }
 
 .box:hover [class*="reaction-"] {
@@ -178,7 +181,7 @@ $action-icon-container-size: 70px;
     width: 400px;
     //left: 50%;
     //transform: translateX(-50%);
-    z-index: 10;
+    z-index: 10000;
     position: relative;
     .reaction-icon {
       @for $i from 1 through 8 {

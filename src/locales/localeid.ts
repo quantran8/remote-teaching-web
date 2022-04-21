@@ -40,7 +40,6 @@ export class CommonLocale {
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
   static OverlapWarningSession = "common.warning.overlap";
-  static CommonClassActions = "common.class.actions";
 }
 
 export class ErrorLocale {
@@ -214,6 +213,7 @@ export class TeacherClass {
 }
 
 export class BearAction {
+  static None = "teacher_class.bear_action_none";
   static Default = "teacher_class.bear_action_default";
   static Interactive = "teacher_class.bear_action_interactive";
   static Listen = "teacher_class.bear_action_listen";
