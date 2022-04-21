@@ -15,7 +15,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
-    const classActionsTitle = computed(() => fmtMsg(CommonLocale.CommonClassActions));
+    const classActionsTitle = computed(() => fmtMsg(BearAction.None));
     const bearActionLabel = {
       default: computed(() => fmtMsg(BearAction.Default)),
       interactive: computed(() => fmtMsg(BearAction.Interactive)),
