@@ -173,20 +173,19 @@ export default defineComponent({
       };
     };
 
+	let isConfigZoomTrackingDone = false
     const setupZoomTracking = async () => {
       try {
         const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-        await localTracks.value?.videoTrack.start(doc);
+        await localTracks.value?.videoTrack?.start(doc);
 
-        if (!localTracks.value?.audioTrack.isAudioStarted) {
-          await localTracks.value?.audioTrack.start();
-        }
-        if (!localTracks.value?.audioTrack.isMicUnmuted) {
-          await localTracks.value?.audioTrack.unmute();
-        }
+		await localTracks.value?.audioTrack?.start();
+		await localTracks.value?.audioTrack.unmute();
+		
         if (!volumeAnimation.value) {
           volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
         }
+		isConfigZoomTrackingDone = true
       } catch (error) {
         console.log("Setup Zoom tracking failed");
         console.log(error);
@@ -341,6 +340,7 @@ export default defineComponent({
     };
 
     watch(currentMic, async currentMicValue => {
+	  if (!isConfigZoomTrackingDone) return
       if (!localTracks.value?.audioTrack) return;
       if (currentMicValue) {
         if (isUsingAgora.value) {
@@ -363,6 +363,7 @@ export default defineComponent({
     });
 
     watch(currentCam, async currentCamValue => {
+	  if (!isConfigZoomTrackingDone) return
       if (!localTracks.value?.videoTrack) return;
       if (currentCamValue) {
         if (isUsingAgora.value) {
