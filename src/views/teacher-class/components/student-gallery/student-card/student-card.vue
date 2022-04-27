@@ -31,7 +31,7 @@
             v-else
             class="student__video--sub"
             :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
-            v-show="isUsingAgora && !isNotJoinned && isTurnOnCamera"
+            v-show="!isNotJoinned && isTurnOnCamera"
             :id="student.id"
           ></div>
           <div :class="[isSpeaking && 'student__is-speaking']" v-show="!isNotJoinned && !isTurnOnCamera" class="student__img">

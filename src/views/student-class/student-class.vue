@@ -52,7 +52,7 @@
         </div>
         <canvas
           class="sc-teacher__video animate__animated animate__zoomIn"
-          :id="teacher?.id + '__video'"
+          :id="teacher?.id + '__sub'"
           v-if="!isUsingAgora"
           v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
         ></canvas>

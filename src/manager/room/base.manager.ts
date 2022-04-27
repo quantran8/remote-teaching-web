@@ -72,13 +72,14 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
       return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
     } else {
       if (oneToOneStudentId) {
-        this.zoomClient.oneToOneStudentId = oneToOneStudentId;
         await store.dispatch("studentRoom/generateOneToOneToken", {
           classId: this.zoomClient.option.user.channel,
           studentId: this.zoomClient.option.user.username,
         });
-      }
-      return this.zoomClient.studentBreakoutRoomOrBackToMainRoom();
+		return this.zoomClient.studentBreakoutRoom(oneToOneStudentId);
+      } else {
+		return this.zoomClient.studentBackToMainRoom();
+	  }
     }
   }
 

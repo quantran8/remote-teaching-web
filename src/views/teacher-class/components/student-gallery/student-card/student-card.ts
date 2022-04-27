@@ -138,7 +138,6 @@ export default defineComponent({
     const isOneToOneStudent = computed(() => {
       return store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
     });
-
     return {
       isNotJoinned,
       onDragStart,

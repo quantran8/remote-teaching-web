@@ -24,7 +24,7 @@
           class="sc-gallery-item__video"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
-          :id="student.id + '__video'"
+          :id="student.id + '__sub'"
           :title="student.englishName"
         ></canvas>
 
