@@ -490,6 +490,7 @@ export default defineComponent({
         AgoraRTC.onCameraChanged = undefined;
         AgoraRTC.onMicrophoneChanged = undefined;
       }
+	  isConfigZoomTrackingDone = false
       localTracks.value = undefined;
       currentMic.value = undefined;
       currentCam.value = undefined;
