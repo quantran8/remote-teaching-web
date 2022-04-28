@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
 import { Modal, Checkbox, Button, Row } from "ant-design-vue";
-import { ErrorCode, fmtMsg } from "commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";

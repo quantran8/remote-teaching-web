@@ -24,7 +24,7 @@
     </div>
     <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">
-        <div style="padding: 10px; float: right; margin-bottom: 20px;">
+        <div style="padding: 10px; float: right; margin-bottom: 20px">
           <Row type="flex">
             <a-col>
               <Select
@@ -32,7 +32,7 @@
                 class="year-select ant-custom-calendar"
                 :value="String(value.year())"
                 @change="
-                  newYear => {
+                  (newYear) => {
                     onChange(value.clone().year(newYear));
                   }
                 "
@@ -48,7 +48,7 @@
                 class="month-select ant-custom-calendar"
                 :value="String(value.month())"
                 @change="
-                  selectedMonth => {
+                  (selectedMonth) => {
                     onChange(value.clone().month(parseInt(selectedMonth, 10)));
                   }
                 "
@@ -139,7 +139,9 @@
         </div>
         <div class="save-position">
           <Button class="btn-cancel ant-custom-calendar" @click="onCancel">{{ cancelText }}</Button>
-          <Button type="primary" class="ant-custom-calendar" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">{{ saveText }}</Button>
+          <Button type="primary" class="ant-custom-calendar" @click="onSubmit(isCreate ? 'Create' : 'Update')" :disabled="onValidateTime()">{{
+            saveText
+          }}</Button>
         </div>
       </div>
     </Modal>

@@ -1,4 +1,4 @@
-import {computed, defineComponent, ref} from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { Tooltip, Empty } from "ant-design-vue";
 

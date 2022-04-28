@@ -27,7 +27,7 @@
               @change="handleMicroChange"
             >
               <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">
-                {{ listMics.find(mic => mic.deviceId === deviceId)?.label }}
+                {{ listMics.find((mic) => mic.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
           </Space>
@@ -57,7 +57,7 @@
               @change="handleCameraChange"
             >
               <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">
-                {{ listCams.find(cam => cam.deviceId === deviceId)?.label }}
+                {{ listCams.find((cam) => cam.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
           </Space>

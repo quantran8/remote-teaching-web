@@ -1,5 +1,5 @@
 import { ClassRoomStatus, MediaStatus, SignalRStatus } from "@/models";
-import { CAMERA_ID_KEY, MICROPHONE_ID_KEY } from "./actions";
+import { CAMERA_ID_KEY, MICROPHONE_ID_KEY } from "@/utils/constant";
 
 export type LayoutType = "" | "full" | "main";
 export enum AppView {

@@ -1,6 +1,6 @@
 import { LostNetwork } from "./../locales/localeid";
 import { useStore } from "vuex";
-import { fmtMsg, LoginInfo, RoleName } from "@/commonui";
+import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
 import { Modal } from "ant-design-vue";
 import { computed, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -206,7 +206,7 @@ export const useDisconnection = () => {
     }
   });
 
-  watch(route, currentRoute => {
+  watch(route, (currentRoute) => {
     const classRoomStatus: number = getters["classRoomStatus"];
     if (!currentRoute.params.classId && classRoomStatus === ClassRoomStatus.InClass) {
       dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });

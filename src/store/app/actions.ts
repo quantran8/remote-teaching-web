@@ -1,10 +1,7 @@
 import { ContentService } from "@/services";
+import { CAMERA_ID_KEY, MICROPHONE_ID_KEY } from "@/utils/constant";
 import { ActionTree } from "vuex";
 import { AppState, AppView, LayoutType, ToastData, UserRole, VCPlatform } from "./state";
-
-export const CAMERA_ID_KEY = "__RT_CAMERA_ID__";
-export const MICROPHONE_ID_KEY = "__RT_MICROPHONE_ID__";
-
 
 const actions: ActionTree<AppState, any> = {
   setToast(store, payload: ToastData) {

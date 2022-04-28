@@ -1,8 +1,7 @@
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
-import { AuthService, LoginInfo, RoleName } from "@/commonui";
-
+import { AuthService, RoleName, LoginInfo } from "vue-glcommonui";
 export default (to: RouteLocationNormalized, _from: RouteLocationNormalized, _next: NavigationGuardNext) => {
-  const requireTeacher: boolean = to.matched.some(record => record.meta.requireTeacher);
+  const requireTeacher: boolean = to.matched.some((record) => record.meta.requireTeacher);
   if (!requireTeacher) return true;
   const loginInfo: LoginInfo = AuthService.getLoginInfo();
   if (loginInfo && loginInfo.profile) {

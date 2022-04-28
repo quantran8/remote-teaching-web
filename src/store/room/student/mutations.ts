@@ -113,11 +113,11 @@ const mutations: MutationTree<StudentRoomState> = {
     state.classAction = ClassActionFromValue(room.lessonPlan.lessonAction);
   },
   setStudentAudio(state: StudentRoomState, payload: { id: string; enable: boolean }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) student.audioEnabled = payload.enable;
   },
   setStudentStatus(state: StudentRoomState, payload: { id: string; status: InClassStatus }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) student.status = payload.status;
   },
   updateMediaStatus(s: StudentRoomState, p: StudentModel): void {
@@ -125,37 +125,37 @@ const mutations: MutationTree<StudentRoomState> = {
       s.student.videoEnabled = !p.isMuteVideo;
       s.student.audioEnabled = !p.isMuteAudio;
     }
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       student.videoEnabled = !p.isMuteVideo;
       student.audioEnabled = !p.isMuteAudio;
     }
   },
   updateRaisingHand(state: StudentRoomState, payload: { id: string; isRaisingHand: boolean }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) {
       student.raisingHand = payload.isRaisingHand;
     }
   },
   updateIsPalette(state: StudentRoomState, payload: { id: string; isPalette: boolean }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) {
       student.isPalette = payload.isPalette;
     }
   },
   clearCircleStatus(state: StudentRoomState, payload: { id: string }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) {
       student.raisingHand = false;
       student.isPalette = false;
     }
   },
   setStudentVideo(state: StudentRoomState, payload: { id: string; enable: boolean }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) student.videoEnabled = payload.enable;
   },
   setStudentBadge(state: StudentRoomState, payload: { id: string; badge: number }) {
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) student.badge = payload.badge;
   },
   setTeacherAudio(state: StudentRoomState, payload: { id: string; enable: boolean }) {
@@ -169,30 +169,30 @@ const mutations: MutationTree<StudentRoomState> = {
   },
 
   hideAllStudents(state: StudentRoomState) {
-    state.students.forEach(student => (student.videoEnabled = false));
+    state.students.forEach((student) => (student.videoEnabled = false));
   },
   showAllStudents(state: StudentRoomState) {
-    state.students.forEach(student => (student.videoEnabled = true));
+    state.students.forEach((student) => (student.videoEnabled = true));
   },
   muteAllStudents(state: StudentRoomState) {
-    state.students.forEach(student => (student.audioEnabled = false));
+    state.students.forEach((student) => (student.audioEnabled = false));
   },
   unmuteAllStudents(state: StudentRoomState) {
-    state.students.forEach(student => (student.audioEnabled = true));
+    state.students.forEach((student) => (student.audioEnabled = true));
   },
   disableAllStudents(state: StudentRoomState) {
-    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
+    state.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = false));
   },
   enableAllStudents(state: StudentRoomState) {
-    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = true));
+    state.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = true));
   },
   setAnnotationStatus(s: StudentRoomState, p: { id: string; isPalette: boolean }) {
-    const student = p.id === s.student?.id ? s.student : s.students.find(st => st.id === p.id);
+    const student = p.id === s.student?.id ? s.student : s.students.find((st) => st.id === p.id);
     if (student) student.isPalette = p.isPalette;
   },
   disableAnnotationStatus(state: StudentRoomState, p: any) {
     state.student ? (state.student.isPalette = !p) : null;
-    state.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
+    state.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = !p));
   },
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
     state.classAction = payload.action;
@@ -210,7 +210,7 @@ const mutations: MutationTree<StudentRoomState> = {
     if (!payload.id && state.student?.id) {
       payload.id = state.student.id;
     }
-    const student = payload.id === state.student?.id ? state.student : state.students.find(st => st.id === payload.id);
+    const student = payload.id === state.student?.id ? state.student : state.students.find((st) => st.id === payload.id);
     if (student) student.raisingHand = payload.raisingHand;
   },
   setWhiteboard(state: StudentRoomState, payload: any) {
@@ -247,7 +247,7 @@ const mutations: MutationTree<StudentRoomState> = {
     if (state.student) state.student.avatar = p[0] ? p[0].avatar : "";
   },
   setAvatarAllStudent(state: StudentRoomState, p: { id: string; avatar: string }[]) {
-    state.students.forEach(student => {
+    state.students.forEach((student) => {
       const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
       student.avatar = avatar ? avatar : "";
     });

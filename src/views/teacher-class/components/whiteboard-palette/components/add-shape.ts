@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import { starPolygonPoints } from "commonui";
+import { starPolygonPoints } from "@/utils/utils";
 
 export const addShape = () => {
   const store = useStore();

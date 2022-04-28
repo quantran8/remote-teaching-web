@@ -5,7 +5,7 @@ import ZoomVideo, { LocalAudioTrack, LocalVideoTrack } from "@zoom/videosdk";
 import { useStore } from "vuex";
 import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space, Spin } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus } from "@/models";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 import { VCPlatform } from "@/store/app/state";
@@ -200,7 +200,7 @@ export default defineComponent({
           currentCamLabel.value = cams[0]?.label;
 
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
           try {
             await localTracks.value?.videoTrack.play(videoElementId);
@@ -255,7 +255,7 @@ export default defineComponent({
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
-          listMicsId.value = mics.map(mic => mic.deviceId);
+          listMicsId.value = mics.map((mic) => mic.deviceId);
           if (newMicroId) {
             await localTracks.value?.audioTrack.setDevice(newMicroId);
           } else {
@@ -290,7 +290,7 @@ export default defineComponent({
         } else {
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           preventCloseModal.value = false;
         }
       } catch (error) {
@@ -382,7 +382,7 @@ export default defineComponent({
     });
 
     //handle for camera
-    watch(isOpenCam, async currentIsOpenCamValue => {
+    watch(isOpenCam, async (currentIsOpenCamValue) => {
       if (currentIsOpenCamValue) {
         dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
         if (currentCam.value) {
@@ -507,7 +507,7 @@ export default defineComponent({
       firstTimeDefault.value = true;
     };
 
-    watch(visible, async currentValue => {
+    watch(visible, async (currentValue) => {
       if (!currentValue) {
         await destroy();
         return;
@@ -531,7 +531,7 @@ export default defineComponent({
       }
     };
 
-    watch(currentUnit, currentUnitValue => {
+    watch(currentUnit, (currentUnitValue) => {
       if (props.notJoin || props.fromParentComponent) return;
       const currentUnitIndex = props.unitInfo.findIndex((item: UnitAndLesson) => item.unit === currentUnitValue);
       const availableLessons = props.unitInfo[currentUnitIndex]?.sequence;
@@ -612,7 +612,7 @@ export default defineComponent({
 
     const notDisplaySpinner = computed(() => props.getRoomInfoError !== 0);
 
-    watch(visible, currentVisibleValue => {
+    watch(visible, (currentVisibleValue) => {
       if (!currentVisibleValue) {
         emit("on-close-modal");
       }

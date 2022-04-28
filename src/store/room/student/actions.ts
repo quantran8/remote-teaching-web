@@ -9,7 +9,7 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { ErrorCode, fmtMsg } from "commonui";
+import { ErrorCode, fmtMsg } from "vue-glcommonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
@@ -137,12 +137,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible } = state;
     if (!manager) return;
     const cameras = students
-      .filter(s => {
+      .filter((s) => {
         if (!videosFeedVisible || isMobileBrowser) return false;
         return s.videoEnabled && s.status === InClassStatus.JOINED;
       })
-      .map(s => s.id);
-    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+      .map((s) => s.id);
+    let audios = students.filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -157,14 +157,14 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (idOne) {
       //handle one to one student
       if (idOne === student?.id) {
-        const cameraOtherStudentId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
-        const audioOtherStudentId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+        const cameraOtherStudentId = cameras.filter((camId) => camId !== idOne && camId !== teacher?.id);
+        const audioOtherStudentId = audios.filter((audioId) => audioId !== idOne && audioId !== teacher?.id);
         for (const id of cameraOtherStudentId) {
-          const cameraIndex = cameras.findIndex(camId => camId === id);
+          const cameraIndex = cameras.findIndex((camId) => camId === id);
           cameras.splice(cameraIndex, 1);
         }
         for (const id of audioOtherStudentId) {
-          const audioIndex = audios.findIndex(audioId => audioId === id);
+          const audioIndex = audios.findIndex((audioId) => audioId === id);
           audios.splice(audioIndex, 1);
         }
       }
@@ -172,20 +172,20 @@ const actions: ActionTree<StudentRoomState, any> = {
       //handle other students
       if (idOne !== student?.id) {
         //remove student one to one
-        const studentCameraIndex = cameras.findIndex(camId => camId === idOne);
+        const studentCameraIndex = cameras.findIndex((camId) => camId === idOne);
         if (studentCameraIndex > -1) {
           cameras.splice(studentCameraIndex, 1);
         }
-        const studentAudioIndex = audios.findIndex(audioId => audioId === idOne);
+        const studentAudioIndex = audios.findIndex((audioId) => audioId === idOne);
         if (studentAudioIndex > -1) {
           audios.splice(studentAudioIndex, 1);
         }
         //remove teacher one to one
-        const teacherCameraIndex = cameras.findIndex(camId => camId === teacher?.id);
+        const teacherCameraIndex = cameras.findIndex((camId) => camId === teacher?.id);
         if (teacherCameraIndex > -1) {
           cameras.splice(teacherCameraIndex, 1);
         }
-        const teacherAudioIndex = audios.findIndex(audioId => audioId === teacher?.id);
+        const teacherAudioIndex = audios.findIndex((audioId) => audioId === teacher?.id);
         if (teacherAudioIndex > -1) {
           audios.splice(teacherAudioIndex, 1);
         }
@@ -281,7 +281,7 @@ const actions: ActionTree<StudentRoomState, any> = {
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
     if (payload) {
-      payload.map(item => {
+      payload.map((item) => {
         if (item.level >= MIN_SPEAKING_LEVEL) {
           // should check by a level
           validSpeakings.push(item.uid.toString());

@@ -1,5 +1,5 @@
 import { defineComponent, Ref, ref, watch } from "vue";
-import { Tools } from "@/commonui";
+import { Tools } from "@/utils/utils";
 import { Divider, Popover, Row, Space } from "ant-design-vue";
 
 export default defineComponent({

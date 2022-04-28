@@ -3,7 +3,7 @@ import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentControls from "./student-controls/student-controls.vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
 import moment from "moment";
 
@@ -42,7 +42,7 @@ export default defineComponent({
       const savedTimestampOneAndOne = parseInt(sessionStorage.getItem(TIMESTAMP_ONEANDONE) || Date.now().toString());
       sessionStorage.setItem(TIMESTAMP_ONEANDONE, savedTimestampOneAndOne.toString());
 
-	  const savedMoment = moment(savedTimestampOneAndOne);
+      const savedMoment = moment(savedTimestampOneAndOne);
       minute.value = moment(Date.now()).diff(savedMoment, "minute");
       second.value = moment(Date.now()).diff(savedMoment, "second");
       timeCount.value = "";

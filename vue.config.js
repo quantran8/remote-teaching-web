@@ -21,8 +21,10 @@ module.exports = {
       chunkFilename: "[name]-[hash:8].js",
     },
     resolve: {
+      symlinks: false,
       alias: {
         commonui: path.resolve(__dirname, "src/commonui"),
+        vue: path.resolve("./node_modules/vue"),
       },
     },
   },

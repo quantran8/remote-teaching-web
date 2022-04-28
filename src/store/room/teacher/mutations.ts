@@ -114,7 +114,7 @@ const mutations: TeacherRoomMutation<State> = {
         isPalette: st.isPalette,
       };
     });
-    s.localAudios = s.students.filter(ele => p.studentsAudio.indexOf(ele.id) !== -1).map(el => el.id);
+    s.localAudios = s.students.filter((ele) => p.studentsAudio.indexOf(ele.id) !== -1).map((el) => el.id);
     const role = p.streamInfo?.userId === p.teacher.id ? "host" : "audience";
     if (!s.manager) {
       s.manager = new TeacherRoomManager({
@@ -141,19 +141,19 @@ const mutations: TeacherRoomMutation<State> = {
     s.classAction = ClassActionFromValue(p.lessonPlan.lessonAction);
   },
   setStudentAudio(s: State, p: UserMediaPayload): void {
-    const student = s.students.find(st => st.id === p.id);
+    const student = s.students.find((st) => st.id === p.id);
     if (student) student.audioEnabled = p.enable;
   },
   setStudentVideo(s: State, p: UserMediaPayload): void {
-    const student = s.students.find(st => st.id === p.id);
+    const student = s.students.find((st) => st.id === p.id);
     if (student) student.videoEnabled = p.enable;
   },
   setStudentPalette(s: State, p: UserMediaPayload): void {
-    const student = s.students.find(st => st.id === p.id);
+    const student = s.students.find((st) => st.id === p.id);
     if (student) student.isPalette = p.enable;
   },
   setStudentBadge(s: State, p: StudentBadgePayload): void {
-    const student = s.students.find(st => st.id === p.id);
+    const student = s.students.find((st) => st.id === p.id);
     if (student) student.badge = p.badge;
   },
   setTeacherAudio(s: State, p: UserMediaPayload): void {
@@ -163,48 +163,48 @@ const mutations: TeacherRoomMutation<State> = {
     if (s.teacher?.id === p.id) s.teacher.videoEnabled = p.enable;
   },
   hideAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.videoEnabled = false));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.videoEnabled = false));
   },
   showAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.videoEnabled = true));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.videoEnabled = true));
   },
   muteAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = false));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.audioEnabled = false));
   },
   unmuteAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.audioEnabled = true));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.audioEnabled = true));
   },
   disableAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = false));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = false));
   },
   enableAllStudents(s: State, _): void {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = true));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = true));
   },
   studentJoinned(s: State, p: UserIdPayload): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) student.status = InClassStatus.JOINED;
   },
   updateMediaStatus(s: State, p: StudentModel): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       student.videoEnabled = !p.isMuteVideo;
       student.audioEnabled = !p.isMuteAudio;
     }
   },
   updateRaisingHand(state: State, payload: { id: string; isRaisingHand: boolean }): void {
-    const student = state.students.find(student => student.id === payload.id);
+    const student = state.students.find((student) => student.id === payload.id);
     if (student) {
       student.raisingHand = payload.isRaisingHand;
     }
   },
   updateIsPalette(state: State, payload: { id: string; isPalette: boolean }) {
-    const student = state.students.find(student => student.id === payload.id);
+    const student = state.students.find((student) => student.id === payload.id);
     if (student) {
       student.isPalette = payload.isPalette;
     }
   },
   studentLeftClass(s: State, p: UserIdPayload): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       student.raisingHand = false;
       student.isPalette = false;
@@ -212,7 +212,7 @@ const mutations: TeacherRoomMutation<State> = {
     }
   },
   studentDisconnectClass(s: State, p: UserIdPayload): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       student.raisingHand = false;
       student.isPalette = false;
@@ -220,7 +220,7 @@ const mutations: TeacherRoomMutation<State> = {
     }
   },
   studentLeaving(s: State, p: UserIdPayload): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       student.raisingHand = false;
       student.isPalette = false;
@@ -228,14 +228,14 @@ const mutations: TeacherRoomMutation<State> = {
     }
   },
   studentRaisingHand(s: State, p: { id: string; raisingHand: boolean }): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) student.raisingHand = p.raisingHand;
   },
   setGlobalAudios(s: State, p: string[]): void {
-    s.globalAudios = s.students.filter(st => p.indexOf(st.id) !== -1).map(st => st.id);
+    s.globalAudios = s.students.filter((st) => p.indexOf(st.id) !== -1).map((st) => st.id);
   },
   addGlobalAudio(s: State, p: UserIdPayload): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       if (s.globalAudios.indexOf(student.id) !== -1) {
         s.globalAudios.push(student.id);
@@ -246,7 +246,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.globalAudios = [];
   },
   addStudentAudio(s: State, p: UserIdPayload): void {
-    const student = s.students.find(student => student.id === p.id);
+    const student = s.students.find((student) => student.id === p.id);
     if (student) {
       if (s.localAudios.indexOf(student.id) !== -1) {
         s.localAudios.push(student.id);
@@ -254,7 +254,7 @@ const mutations: TeacherRoomMutation<State> = {
     }
   },
   setLocalAudios(s: State, p: string[]): void {
-    s.localAudios = s.students.filter(st => p.indexOf(st.id) !== -1).map(s => s.id);
+    s.localAudios = s.students.filter((st) => p.indexOf(st.id) !== -1).map((s) => s.id);
   },
   clearStudentAudio(s: State, _: DefaultPayload): void {
     s.localAudios = [];
@@ -272,11 +272,11 @@ const mutations: TeacherRoomMutation<State> = {
     s.speakingUsers = p.userIds;
   },
   setAnnotationStatus(s: TeacherRoomState, p: { id: string; isPalette: boolean }) {
-    const student = s.students.find(st => st.id === p.id);
+    const student = s.students.find((st) => st.id === p.id);
     if (student) student.isPalette = p.isPalette;
   },
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
-    s.students.filter(st => st.status === InClassStatus.JOINED).forEach(student => (student.isPalette = !p));
+    s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = !p));
   },
   setOnline(state: TeacherRoomState) {
     state.isDisconnected = false;
@@ -294,7 +294,7 @@ const mutations: TeacherRoomMutation<State> = {
     state.isShowWhiteboard = p;
   },
   setAvatarAllStudent(state: TeacherRoomState, p: { id: string; avatar: string }[]) {
-    state.students.forEach(student => {
+    state.students.forEach((student) => {
       const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
       student.avatar = avatar ? avatar : "";
     });

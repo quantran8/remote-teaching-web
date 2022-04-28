@@ -10,7 +10,7 @@
       <Select
         placeholder="School"
         showSearch
-        :optionFilterProp="children"
+        optionLabelProp="children"
         :disabled="disabled"
         :loading="loading"
         :value="schools[0]?.id"
@@ -44,7 +44,7 @@
         :active="cl.isActive"
         :isTeacher="cl.isTeacher"
         :loadingStart="loadingStartClass"
-        @click-to-access="groupId => onClickClass(cl, groupId)"
+        @click-to-access="(groupId) => onClickClass(cl, groupId)"
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />

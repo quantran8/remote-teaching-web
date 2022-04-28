@@ -1,4 +1,4 @@
-import { LoginInfo } from "@/commonui";
+import { LoginInfo } from "vue-glcommonui";
 import { ActionTree } from "vuex";
 import { AuthState } from "./state";
 
@@ -7,6 +7,7 @@ const actions: ActionTree<AuthState, any> = {
     store.commit("setLoginInfo", payload.loginInfo);
   },
   signout(store, _) {
+	return;
     store.commit("setLoginInfo", null);
   },
 };

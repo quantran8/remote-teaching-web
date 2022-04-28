@@ -40,7 +40,6 @@ export class CommonLocale {
   static CommonNoButtonText = "common.noButtonText";
   static CommonAccessDenied = "common.access.denied";
   static OverlapWarningSession = "common.warning.overlap";
-  static CommonClassActions = "common.class.actions";
 }
 
 export class ErrorLocale {
@@ -178,6 +177,9 @@ export class TeacherClassLessonPlan {
   static LessonComplete = "teacher_class_lesson_plan.lesson_complete";
   static TeachingActivity = "teacher_class_lesson_plan.teaching_activity";
   static Transition = "teacher_class_lesson_plan.transition";
+  static RelatedSlides = "teacher_class_lesson_plan.related_slides";
+  static ComponentSlides = "teacher_class_lesson_plan.component_slides";
+  static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
 }
 
 export class TeacherClassGallery {
@@ -209,6 +211,17 @@ export class TeacherClass {
   static TargetsText = "teacher_class.targets_text";
   static ShowAllTargets = "teacher_class.show_all_targets";
   static HideAllTargets = "teacher_class.hide_all_targets";
+}
+
+export class BearAction {
+  static None = "teacher_class.bear_action_none";
+  static Default = "teacher_class.bear_action_default";
+  static Interactive = "teacher_class.bear_action_interactive";
+  static Listen = "teacher_class.bear_action_listen";
+  static Question = "teacher_class.bear_action_question";
+  static Quiet = "teacher_class.bear_action_quiet";
+  static Sing = "teacher_class.bear_action_sing";
+  static Speak = "teacher_class.bear_action_speak";
 }
 
 export class LostNetwork {

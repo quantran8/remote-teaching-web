@@ -1,10 +1,10 @@
-import { GLServiceBase, ServiceRoute } from "../base.service";
+import { GLServiceBase } from "vue-glcommonui";
 import { RemoteTeachingServiceInterface } from "@/services";
 import { GenerateTokenResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { store } from "@/store";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
-  serviceRoute: ServiceRoute = { prefix: "remote/v1" };
+  serviceRoute = { prefix: "remote/v1" };
 
   getActiveClassRoom(bfp: string): Promise<TeacherGetRoomResponse> {
     return this.get("teacher/online-session", { browserFingerPrinting: bfp });

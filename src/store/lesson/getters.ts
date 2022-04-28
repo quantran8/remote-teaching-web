@@ -75,7 +75,7 @@ const getters: LessonGetters<LessonState, any> = {
   activityStatistic(s: LessonState): string {
     // count only required exposure as total exposure
     const listExpo: (string | undefined)[] = [];
-    const requiredExposures = s.exposures.filter(expo => {
+    const requiredExposures = s.exposures.filter((expo) => {
       const isRequiredExposure = expo.contentRootType !== ContentRootType.Optional && expo.contentRootType !== ContentRootType.Complete;
 
       if (isRequiredExposure) {
@@ -97,14 +97,14 @@ const getters: LessonGetters<LessonState, any> = {
       ...s.currentExposure.contentBlockItems,
       ...s.currentExposure.teachingActivityBlockItems,
     ].filter((item: ExposureItem) => item.media[0]?.image?.url);
-    combinedItems.map(item => {
-      item.media.map(media => {
+    combinedItems.map((item) => {
+      item.media.map((media) => {
         listMedia.push(media.id);
       });
     });
     const currentPage: string[] = [];
     if (listMedia.length > 0) {
-      listMedia.map(media => {
+      listMedia.map((media) => {
         if (media == s.currentExposureItemMedia?.id) {
           currentPage.push(media);
         }
@@ -125,9 +125,9 @@ const getters: LessonGetters<LessonState, any> = {
     return s.previousExposureItemMedia;
   },
   findCachedImage(s: LessonState) {
-    return function(imgData: { url: string; metadata: CropMetadata }): string | undefined {
+    return function (imgData: { url: string; metadata: CropMetadata }): string | undefined {
       const cacheData = s.cropCache?.cacheValues.find(
-        cacheValue => cacheValue.url === imgData.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(imgData.metadata),
+        (cacheValue) => cacheValue.url === imgData.url && JSON.stringify(cacheValue.metadata) === JSON.stringify(imgData.metadata),
       );
       if (cacheData) {
         // founded, then return the base64 string

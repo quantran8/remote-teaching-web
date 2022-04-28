@@ -1,4 +1,4 @@
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
 import { computed, defineComponent, inject } from "vue";
 import { useStore } from "vuex";

@@ -6,3 +6,10 @@ export const MIN_SPEAKING_LEVEL = 1;
 
 export const NEXT_EXPOSURE = 1;
 export const PREV_EXPOSURE = 2;
+
+const genLocalStorageKey = (key: string) => `__RT_${key}__`;
+
+//localstorage key
+export const CAMERA_ID_KEY = genLocalStorageKey("CAMERA_ID");
+export const MICROPHONE_ID_KEY = genLocalStorageKey("MICROPHONE_ID");
+export const I18N_LOCALE = genLocalStorageKey("I18N_LOCALE");
