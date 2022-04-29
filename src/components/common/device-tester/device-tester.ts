@@ -186,9 +186,11 @@ export default defineComponent({
           volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
         }
 		isConfigZoomTrackingDone = true
+        preventCloseModal.value = false;
       } catch (error) {
-        console.log("Setup Zoom tracking failed");
-        console.log(error);
+        Logger.log("Setup Zoom tracking failed");
+        preventCloseModal.value = false;
+        Logger.log(error);
       }
     };
 
@@ -577,7 +579,7 @@ export default defineComponent({
     };
 
     watch(currentPlatform, async currentValue => {
-      console.log("Platform changed");
+	  Logger.log("Platform changed");
       dispatch("setVideoCallPlatform", currentValue);
       isUsingAgora.value = currentValue === VCPlatform.Agora;
       await initialSetup();

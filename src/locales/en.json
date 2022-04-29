@@ -137,5 +137,9 @@
 	"teacher_class.bear_action_speak": "speak",
 	"teacher_class_lesson_plan.related_slides": "Related slides",
 	"teacher_class_lesson_plan.component_slides": "Component slides",
-	"teacher_class_lesson_plan.activity_slides": "Activity slides"
+	"teacher_class_lesson_plan.activity_slides": "Activity slides",
+	"teacher_class.student_has_joined_the_class": "{studentName} has joined the class.",
+	"teacher_class.student_has_left_the_class": "{studentName} has left the class.",
+	"teacher_class.student_has_lost_connection": "It seems {studentName} had some connectivity issue due to which had to drop out from the class"
+
 }

@@ -126,7 +126,7 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
-    payload.map(user => {
+    payload.map((user) => {
       Logger.log("user-removed", user.userId);
     });
     await this.renderPeerVideos();
@@ -207,7 +207,7 @@ export class ZoomClient implements ZoomClientSDK {
         await this._stream?.muteAudio();
       }
     } catch (error) {
-      console.log(error);
+      Logger.error(error);
     }
   }
 
@@ -267,7 +267,7 @@ export class ZoomClient implements ZoomClientSDK {
         await this._stream?.stopAudio();
         await this._client?.leave(options.token ? false : true);
       } catch (error) {
-        console.log(error);
+        Logger.error(error);
       }
       await this._client?.join(options.channel, options.token || this.option.user.token, this.option.user.username);
       if (this.isCameraEnable) {
@@ -280,7 +280,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._client?.on("user-removed", this.userRemoved);
       this._client?.on("peer-video-state-change", this.peerVideoStateChange);
     } catch (error) {
-      console.log(error);
+      Logger.error(error);
     }
   }
 
@@ -294,7 +294,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._isInOneToOneRoom = true;
   }
 
-  delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
   async teacherBackToMainRoom() {
     if (this.option.user.role !== "host") return;

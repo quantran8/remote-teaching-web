@@ -59,7 +59,7 @@ export default defineComponent({
     });
 
     watch(loginInfo, (currentLoginInfo: LoginInfo | null) => {
-      if (!currentLoginInfo || typeof currentLoginInfo.profile.remoteTsiSettings === "undefined") return;
+      if (!currentLoginInfo || typeof currentLoginInfo.profile?.remoteTsiSettings === "undefined") return;
       const isTeacher = currentLoginInfo.profile.roles.indexOf(RoleName.teacher) !== -1 && currentLoginInfo.profile.remoteTsiSettings;
       const isParent = currentLoginInfo.profile.roles.indexOf(RoleName.parent) !== -1;
       const { pathname } = window.location;

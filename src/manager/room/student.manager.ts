@@ -1,6 +1,7 @@
 import { AgoraClient } from "@/agora";
 import { store } from "@/store";
 import { VCPlatform } from "@/store/app/state";
+import { Logger } from "@/utils/logger";
 import { StudentWSClient } from "@/ws";
 import { ZoomClient } from "@/zoom";
 import { BaseRoomManager, RoomOptions } from "./base.manager";
@@ -21,7 +22,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   }
 
   async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }) {
-    console.log("Platform is using: ", store.getters.platform);
+    Logger.log("Platform is using: ", store.getters.platform);
     if (!options.studentId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     if (store.getters.platform === VCPlatform.Agora) {
