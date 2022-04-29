@@ -8,7 +8,7 @@ export default defineComponent({
   setup() {
     const { getters } = useStore();
     const nonTeacherWithPermission = computed(
-      () => getters["auth/loginInfo"]?.profile?.roles.indexOf(RoleName.teacher) === -1 && getters["auth/loginInfo"].profile.remoteTsiSettings,
+      () => getters["auth/loginInfo"]?.profile?.roles.indexOf(RoleName.teacher) === -1 && getters["auth/loginInfo"].profile?.remoteTsiSettings,
     );
     const accessDeniedWeAreSorry = computed(() => fmtMsg(AccessDeniedLocale.AccessDeniedWeAreSorry));
     const accessDeniedDescription = computed(() =>

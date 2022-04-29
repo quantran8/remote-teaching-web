@@ -9,9 +9,6 @@ body {
   &.mobile-device {
     overflow: hidden;
   }
-  video {
-    display: none;
-  }
 }
 
 .nice-scroll {
@@ -49,15 +46,9 @@ body {
   display: none;
 }
 
-#app {
-  video {
-    display: inline-block !important;
-  }
-}
-
 .ant-modal-root {
   video {
-    display: inline-block !important;
+    display: inline-block;
   }
 }
 

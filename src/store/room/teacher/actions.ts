@@ -31,6 +31,7 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { FabricObject } from "@/ws";
 import { UserRole } from "@/store/app/state";
+import { store } from "@/store";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -136,7 +137,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then((speedMbps) => {
+      state.manager?.getBandwidth()?.then(speedMbps => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -199,14 +200,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       },
     };
-    state.manager?.registerAgoraEventHandler(agoraEventHandler);
+    state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
     try {
       const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
-      if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
+
+	  if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
@@ -214,6 +216,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         return;
       }
       commit("setRoomInfo", roomResponse.data);
+	  await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
@@ -468,6 +471,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
+  },
+  async generateOneToOneToken({ state }, payload: {classId: string}) {
+    try {
+      const response = await RemoteTeachingService.generateOneToOneToken(payload.classId);
+	  if(state.manager?.zoomClient){
+		state.manager.zoomClient.oneToOneToken = response.token
+	  }
+    } catch (error) {
+      Logger.log(error);
+    }
   },
 };
 

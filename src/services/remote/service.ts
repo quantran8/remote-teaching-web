@@ -1,7 +1,8 @@
 import { GLServiceBase } from "vue-glcommonui";
 import { RemoteTeachingServiceInterface } from "@/services";
-import { StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
+import { GenerateTokenResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
+import { store } from "@/store";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute = { prefix: "remote/v1" };
 
@@ -10,7 +11,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   }
 
   teacherStartClassRoom(startModel: JoinSessionModel): Promise<any> {
-    return this.create("teacher/join-session", startModel);
+    return this.create("teacher/join-session", { ...startModel, videoPlatformProvider: store.getters.platform });
   }
 
   teacherEndClassRoom(roomId?: string, markAsComplete?: boolean): Promise<any> {
@@ -89,6 +90,13 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       studentId: studentId,
       sessionId: sessionId,
     });
+  }
+  generateOneToOneToken(roomId?: string, studentId?: string):  Promise<GenerateTokenResponse> {
+	let api = `zoom/generate-one-to-one-token?roomId=${roomId}`
+	if(studentId){
+		api += `&studentId=${studentId}`
+	}
+	return this.get(`${api}&`);
   }
 }
 

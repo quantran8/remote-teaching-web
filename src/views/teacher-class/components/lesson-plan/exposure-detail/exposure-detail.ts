@@ -62,7 +62,7 @@ export default defineComponent({
           break;
       }
       listMedia.value = resultList
-        .filter((m: any) => m.media[0].image.url)
+        .filter((m: any) => m.media[0]?.image?.url)
         .map((item: any) => {
           if (!item.media[0]) return;
           item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";

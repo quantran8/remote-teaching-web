@@ -1,3 +1,4 @@
+import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
 import { computed, ref, watch } from "vue";
@@ -17,8 +18,9 @@ export default defineComponent({
     const isRaisingHand = ref(false);
     const store = useStore();
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
+    const isUsingAgora = computed(() => store.getters["platform"] === VCPlatform.Agora);
 
-    watch(props, () => {
+	watch(props, () => {
       if (props.raisedHand) {
         isRaisingHand.value = true;
       } else {
@@ -39,6 +41,7 @@ export default defineComponent({
       isSpeaking,
       isRaisingHand,
       avatarStudent,
+      isUsingAgora,
     };
   },
 });

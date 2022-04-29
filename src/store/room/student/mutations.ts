@@ -100,6 +100,14 @@ const mutations: MutationTree<StudentRoomState> = {
             role,
           },
         },
+        zoom: {
+          user: {
+            channel: room.streamInfo.chanelId,
+            username: room.streamInfo.userId,
+            token: room.streamInfo.token,
+            role,
+          },
+        },
       });
 
     state.classAction = ClassActionFromValue(room.lessonPlan.lessonAction);

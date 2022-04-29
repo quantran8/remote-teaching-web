@@ -7,6 +7,7 @@ import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { TeacherState } from "@/store/room/interface";
 import noAvatar from "@/assets/images/user-default-gray.png";
+import { VCPlatform } from "@/store/app/state";
 
 export default defineComponent({
   props: {
@@ -18,6 +19,9 @@ export default defineComponent({
   emits: ["show-all", "hide-all", "mute-all", "unmute-all", "end"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
+    const platform = computed(() => getters["platform"]);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+
     const contextMenuVisibility = ref(false);
     const toggleContextMenu = () => {
       contextMenuVisibility.value = !contextMenuVisibility.value;
@@ -75,6 +79,7 @@ export default defineComponent({
       isLowBandWidth,
       IconLowWifi,
       avatarTeacher,
+      isUsingAgora,
     };
   },
 });

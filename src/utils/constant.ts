@@ -11,4 +11,5 @@ const genLocalStorageKey = (key: string) => `__RT_${key}__`;
 
 //localstorage key
 export const CAMERA_ID_KEY = genLocalStorageKey("CAMERA_ID");
+export const MICROPHONE_ID_KEY = genLocalStorageKey("MICROPHONE_ID");
 export const I18N_LOCALE = genLocalStorageKey("I18N_LOCALE");

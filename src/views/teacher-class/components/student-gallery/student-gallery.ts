@@ -1,3 +1,4 @@
+import { VCPlatform } from '@/store/app/state';
 import { computed, defineComponent, ref, watch } from "vue";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
@@ -77,7 +78,8 @@ export default defineComponent({
 
     const previousExposure = computed(() => getters["lesson/previousExposure"]);
     const previousExposureMediaItem = computed(() => getters["lesson/previousExposureItemMedia"]);
-    const backToClass = async () => {
+    
+	const backToClass = async () => {
       if (previousExposure.value) {
         await dispatch("teacherRoom/setCurrentExposure", { id: previousExposure.value.id });
       }
@@ -85,6 +87,11 @@ export default defineComponent({
         await dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
       }
       await dispatch("teacherRoom/clearStudentOneId", { id: "" });
+	  if(getters["platform"] === VCPlatform.Zoom){
+	  	const roomManager = getters["teacherRoom/roomManager"];
+		await roomManager?.zoomClient.teacherBackToMainRoom()
+	  }
+	  // send singalR event
       await dispatch("teacherRoom/sendOneAndOne", {
         status: false,
         id: null,

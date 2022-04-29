@@ -1,5 +1,5 @@
 import { ParentHomeLocale } from "./../../locales/localeid";
-import { ChildModel, RemoteTeachingService } from "@/services";
+import { ChildModel, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -71,10 +71,12 @@ export default defineComponent({
       const visitorId = result.visitorId;
       const getRoomInfo = async () => {
         try {
-          await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+          const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
           getRoomInfoError.value = "";
           getRoomInfoErrorByMsg.value = "";
           await store.dispatch("studentRoom/setOnline");
+		  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+
           if (getRoomInfoTimeout.value) {
             clearTimeout(getRoomInfoTimeout.value);
             getRoomInfoTimeout.value = null;

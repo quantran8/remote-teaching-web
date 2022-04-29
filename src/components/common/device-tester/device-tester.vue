@@ -63,6 +63,7 @@
           </Space>
         </div>
       </Row>
+
       <Row align="middle" class="device-tester__mb--default">
         <p v-show="!havePermissionCamera">
           <span class="alert-device-test">{{ warningMsgCamera }}</span>
@@ -70,10 +71,18 @@
       </Row>
       <Row align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
+          <video
+            ref="playerRef"
+            :id="videoElementId"
+            v-show="isOpenCam && currentCam && !zoomCamError"
+            v-if="!isUsingAgora"
+            :class="['device-tester__camera--player']"
+          ></video>
           <div
             ref="playerRef"
             :id="videoElementId"
             v-show="isOpenCam && currentCam && !agoraCamError"
+            v-if="isUsingAgora"
             :class="['device-tester__camera--player']"
           ></div>
           <div v-show="!isOpenCam || agoraCamError || !currentCam" :class="['device-tester__camera--player', 'hided']">
@@ -86,6 +95,20 @@
           </div>
         </div>
       </Row>
+
+      <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b>{{ Platform }}</b>
+        </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center" class="device-tester__check-mic-cam">
+            <Select v-model:value="currentPlatform" class="device-device-tester__platform" ref="select" @change="handleChangePlatform">
+              <SelectOption v-for="pl in listPlatform" :key="pl.key" :value="pl.key">{{ pl.name }}</SelectOption>
+            </Select>
+          </Space>
+        </div>
+      </Row>
+
       <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-6">
           <b>{{ LessonUnit }}</b>

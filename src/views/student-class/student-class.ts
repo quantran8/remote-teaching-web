@@ -5,7 +5,7 @@ import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
-import { GLApiStatus, GLError, GLErrorCode } from "@/models/error.model";
+import { GLApiStatus, GLErrorCode } from "@/models/error.model";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
@@ -29,7 +29,7 @@ import noAvatar from "@/assets/student-class/no-avatar.png";
 import { notification } from "ant-design-vue";
 import "animate.css";
 import { Logger } from "@/utils/logger";
-import { UserRole } from "@/store/app/state";
+import { UserRole, VCPlatform } from "@/store/app/state";
 
 const fpPromise = FingerprintJS.load();
 
@@ -138,6 +138,8 @@ export default defineComponent({
     const defaultUrl =
       "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
     const iconSand = reactive({ animationData: sandClock.default });
+    const platform = computed(() => store.getters["platform"]);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
 
     watch(lessonInfo, async () => {
       try {
@@ -222,11 +224,9 @@ export default defineComponent({
           joinLoading.value = false;
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           const message = apiStatus.value.message;
-          if (message) {
-            notification.info({
-              message,
-            });
-          }
+          notification.info({
+            message: `${message}`,
+          });
           await router.push(Paths.Parent);
         } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
           showMessage.value = true;
@@ -249,7 +249,7 @@ export default defineComponent({
       try {
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
       } catch (err) {
-        if (err.code === ErrorCode.ConcurrentUserException) {
+        if (err?.code === ErrorCode.ConcurrentUserException) {
           notification.error({
             message: err.message,
           });
@@ -404,6 +404,7 @@ export default defineComponent({
       joinLoading,
       goToHomePage,
       videosFeedVisible,
+      isUsingAgora,
     };
   },
 });

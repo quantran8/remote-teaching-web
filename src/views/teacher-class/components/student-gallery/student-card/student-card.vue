@@ -20,7 +20,15 @@
     <div class="student__figure" @mouseover="onMouseChange(true)">
       <div :class="student.raisingHand && 'student__is-question'">
         <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+          <canvas
+            v-if="!isUsingAgora"
+            class="student__video--sub"
+            :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
+            v-show="!isNotJoinned && isTurnOnCamera"
+            :id="student.id + '__sub'"
+          ></canvas>
           <div
+            v-else
             class="student__video--sub"
             :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
             v-show="!isNotJoinned && isTurnOnCamera"

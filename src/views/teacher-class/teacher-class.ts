@@ -195,9 +195,9 @@ export default defineComponent({
         await router.push("/teacher");
       } catch (err) {
         Modal.destroyAll();
-        const message = err.body.message;
+        const message = err?.body?.message;
         notification.error({
-          message: message,
+          message: `${message}`,
         });
       }
 

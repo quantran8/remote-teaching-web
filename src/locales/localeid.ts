@@ -102,6 +102,7 @@ export class ParentStudentCardLocale {
 export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";
+  static Platform = "device_tester.platform";
   static SelectDevice = "device_tester.select_device";
   static CheckCam = "device_tester.check_cam";
   static CamOff = "device_tester.cam_off";
@@ -210,6 +211,9 @@ export class TeacherClass {
   static TargetsText = "teacher_class.targets_text";
   static ShowAllTargets = "teacher_class.show_all_targets";
   static HideAllTargets = "teacher_class.hide_all_targets";
+  static StudentHasJoinedTheClass = "teacher_class.student_has_joined_the_class";
+  static StudentHasLeftTheClass = "teacher_class.student_has_left_the_class";
+  static StudentHasLostConnection = "teacher_class.student_has_lost_connection";
 }
 
 export class BearAction {

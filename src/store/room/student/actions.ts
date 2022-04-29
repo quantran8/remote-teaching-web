@@ -1,3 +1,4 @@
+import { VCPlatform } from "./../../app/state";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -16,6 +17,7 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
 import { UserRole } from "@/store/app/state";
+import { store } from "@/store";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -49,6 +51,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
+	  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
@@ -188,7 +191,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       }
     }
-    return manager?.updateAudioAndVideoFeed(cameras, audios);
+    return manager?.updateAudioAndVideoFeed(cameras, audios, idOne);
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
@@ -240,7 +243,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then((speedMbps) => {
+      state.manager?.getBandwidth()?.then(speedMbps => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -253,25 +256,27 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    state.manager?.agoraClient.registerEventHandler({
-      onUserPublished: (user, mediaType) => {
-        Logger.log("user-published", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onUserUnPublished: (user, mediaType) => {
-        Logger.log("user-unpublished", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onException: (payload: any) => {
-        Logger.log("agora-exception-event", payload);
-      },
-      onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        dispatch("setSpeakingUsers", result);
-      },
-      onLocalNetworkUpdate(payload: any) {
-        //   Logger.log(payload);
-      },
-    });
+    if (store.getters.platform === VCPlatform.Agora) {
+      state.manager?.agoraClient?.registerEventHandler({
+        onUserPublished: (user, mediaType) => {
+          Logger.log("user-published", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onUserUnPublished: (user, mediaType) => {
+          Logger.log("user-unpublished", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onException: (payload: any) => {
+          Logger.log("agora-exception-event", payload);
+        },
+        onVolumeIndicator(result: { level: number; uid: UID }[]) {
+          dispatch("setSpeakingUsers", result);
+        },
+        onLocalNetworkUpdate(payload: any) {
+          Logger.log(payload);
+        },
+      });
+    }
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
@@ -290,11 +295,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("leaveRoom", payload);
     commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
-  async loadRooms({ commit, state }, _payload: any) {
+  async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
+	await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
   },
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
@@ -439,6 +445,16 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
+  },
+  async generateOneToOneToken({ state }, payload: { classId: string; studentId?: string }) {
+    try {
+      const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
+      if (state.manager?.zoomClient) {
+        state.manager.zoomClient.oneToOneToken = response.token;
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
   },
 };
 

@@ -160,6 +160,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherEndClass: async (_payload: any) => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
+	  
+	  const roomManager = store.getters["teacherRoom/roomManager"];
+	  await roomManager?.zoomClient.reset();
+
       commit("setApiStatus", {
         code: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",

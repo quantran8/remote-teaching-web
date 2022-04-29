@@ -1,3 +1,5 @@
+import { VCPlatform } from "@/store/app/state";
+
 export interface JoinSessionModel {
   classId: string;
   groupId: string;
@@ -6,4 +8,5 @@ export interface JoinSessionModel {
   lesson: number;
   browserFingerprint: string;
   unitId: number;
+  videoPlatformProvider?: VCPlatform;
 }
