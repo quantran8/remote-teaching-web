@@ -73,6 +73,9 @@ export class ZoomClient implements ZoomClientSDK {
     this._defaultCaptureVideoOption = {
       hd: options.user.role === "host",
       cameraId: store.getters["cameraDeviceId"],
+      captureWidth: options.user.role === "host" ? 1080 : 640,
+      captureHeight: options.user.role === "host" ? 608 : 360,
+      mirrored: true,
     };
   }
 
@@ -183,22 +186,29 @@ export class ZoomClient implements ZoomClientSDK {
     if (this.isCameraEnable) {
       await this.startRenderLocalUserVideo();
     }
-    await this._stream?.startAudio();
-    if (this._selectedMicrophoneId) {
-      await this._stream?.switchMicrophone(this._selectedMicrophoneId);
-    }
-    if (options.microphone) {
-      await this._stream?.unmuteAudio();
-    } else {
-      await this._stream?.muteAudio();
-    }
+    await this.startAudio();
     this._client?.on("connection-change", this.onConnectionChange);
     this._client?.on("user-added", this.userAdded);
     this._client?.on("user-updated", this.userUpdated);
     this._client?.on("user-removed", this.userRemoved);
     this._client?.on("peer-video-state-change", this.peerVideoStateChange);
+    this.createIntervalRenderingVideos();
+  }
 
-	this.createIntervalRenderingVideos()
+  async startAudio() {
+    try {
+      await this._stream?.startAudio();
+      if (this._selectedMicrophoneId) {
+        await this._stream?.switchMicrophone(this._selectedMicrophoneId);
+      }
+      if (this.isMicEnable) {
+        await this._stream?.unmuteAudio();
+      } else {
+        await this._stream?.muteAudio();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   removeListener() {
@@ -263,22 +273,12 @@ export class ZoomClient implements ZoomClientSDK {
       if (this.isCameraEnable) {
         await this.startRenderLocalUserVideo();
       }
-      await this._stream?.startAudio();
-      if (this._selectedMicrophoneId) {
-        await this._stream?.switchMicrophone(this._selectedMicrophoneId);
-      }
-      if (this.isMicEnable) {
-        await this._stream?.unmuteAudio();
-      } else {
-        await this._stream?.muteAudio();
-      }
+      await this.startAudio();
       this._client?.on("connection-change", this.onConnectionChange);
       this._client?.on("user-added", this.userAdded);
       this._client?.on("user-updated", this.userUpdated);
       this._client?.on("user-removed", this.userRemoved);
       this._client?.on("peer-video-state-change", this.peerVideoStateChange);
-
-      console.log(this._client?.getAllUser());
     } catch (error) {
       console.log(error);
     }
@@ -357,7 +357,7 @@ export class ZoomClient implements ZoomClientSDK {
       if (this.isCameraEnable) {
         await this.startRenderLocalUserVideo();
       }
-      this.renderPeerVideos();
+      await this.renderPeerVideos();
     }, 5000);
   }
 }
