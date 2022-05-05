@@ -49,28 +49,28 @@ export default defineComponent({
     };
 
     const selectAction = async (ev: KeyboardEvent) => {
-      if (ev.altKey && ev.code == "Digit0") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[0]);
-      } else if (ev.altKey && ev.code == "Digit1") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[2]);
-      } else if (ev.altKey && ev.code == "Digit2") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[1]);
-      } else if (ev.altKey && ev.code == "Digit3") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[6]);
-      } else if (ev.altKey && ev.code == "Digit4") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[4]);
-      } else if (ev.altKey && ev.code == "Digit5") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[3]);
-      } else if (ev.altKey && ev.code == "Digit6") {
-        ev.preventDefault();
-        await onClickSelectAction(actions[5]);
-      }
+		if (ev.altKey && (ev.code == "Digit0" || ev.key === "0")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[0]);
+		  } else if (ev.altKey && (ev.code == "Digit1" || ev.key === "1")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[2]);
+		  } else if (ev.altKey && (ev.code == "Digit2" || ev.key === "2")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[1]);
+		  } else if (ev.altKey && (ev.code == "Digit3" || ev.key === "3")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[6]);
+		  } else if (ev.altKey && (ev.code == "Digit4" || ev.key === "4")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[4]);
+		  } else if (ev.altKey && (ev.code == "Digit5" || ev.key === "5")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[3]);
+		  } else if (ev.altKey && (ev.code == "Digit6" || ev.key === "6")) {
+			ev.preventDefault();
+			await onClickSelectAction(actions[5]);
+		  }
     };
 
     onMounted(async () => {

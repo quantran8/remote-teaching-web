@@ -133,7 +133,7 @@
       <Row v-if="showTeacherFooter" type="flex" justify="end" class="device-tester__mb--small">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-          <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">
+          <Button width="100px" @click="handleSubmit" type="primary" :loading="loading">
             {{ JoinSession }}
           </Button>
         </Space>
@@ -157,7 +157,7 @@
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button
-            :disabled="!classIsActive || !isOpenMic || listMicsId.length <= 0"
+            :disabled="!classIsActive || listMicsId.length <= 0"
             width="100px"
             @click="goToClass"
             type="primary"
