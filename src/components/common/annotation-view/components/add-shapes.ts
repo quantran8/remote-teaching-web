@@ -28,25 +28,6 @@ export const studentAddedShapes = () => {
       studentAddShapes(canvas, student);
     }
   };
-  const addStar = (canvas: any, toolActive: any, student: any, activeColor: any, studentOneAndOneId: any) => {
-    if (!canvas) return;
-    toolActive.value = "star";
-    const points = starPolygonPoints(5, 35, 15);
-    const star = new fabric.Polygon(points, {
-      stroke: activeColor.value,
-      left: randomPosition(),
-      top: randomPosition(),
-      strokeWidth: 3,
-      strokeLineJoin: "round",
-      fill: "",
-      id: student.value.id,
-      isOneToOne: studentOneAndOneId.value || null,
-    });
-    canvas.isDrawingMode = false;
-    canvas.add(star);
-    canvas.setActiveObject(star);
-    studentAddShapes(canvas, student);
-  };
   const addCircle = (canvas: any, toolActive: any, student: any, activeColor: any, studentOneAndOneId: any) => {
     if (!canvas) return;
     toolActive.value = "circle";
@@ -86,7 +67,6 @@ export const studentAddedShapes = () => {
   };
   return {
     processPushShapes,
-    addStar,
     addCircle,
     addSquare,
   };

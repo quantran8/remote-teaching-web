@@ -82,7 +82,7 @@ export default defineComponent({
         return;
       }
     });
-    const { teacherAddShapes, addStar, addCircle, addSquare } = addShape();
+    const { teacherAddShapes, addCircle, addSquare } = addShape();
     const { processAnnotationLesson } = annotationCurriculum();
     const hasTargets = computed(() => {
       return !!props.image?.metaData.annotations;
@@ -279,7 +279,6 @@ export default defineComponent({
           laserDraw();
         }
         if (
-          toolSelected.value === Tools.Star ||
           toolSelected.value === Tools.Circle ||
           toolSelected.value === Tools.Square ||
           toolSelected.value === Tools.Cursor ||
@@ -458,12 +457,6 @@ export default defineComponent({
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
           await setDrawMode();
-          return;
-        case Tools.Star:
-          toolSelected.value = Tools.Star;
-          await setDrawMode();
-          await addStar(canvas, strokeColor, strokeWidth, oneAndOne);
-          objectCanvasProcess();
           return;
         case Tools.Circle:
           toolSelected.value = Tools.Circle;

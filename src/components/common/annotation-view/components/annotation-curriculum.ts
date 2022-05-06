@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { ratioValue, setStrokeColor, starPolygonPoints } from "@/utils/utils";
+import { ratioValue, setStrokeColor } from "@/utils/utils";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
@@ -68,8 +68,8 @@ export const annotationCurriculumStudent = () => {
     const yMetadata = propImage.metaData?.y;
     const xShape = ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom;
     const yShape = ((item.y - yMetadata) * ratio) / zoom;
-    // 0: rect, 1: circle, 2: star
-    let rect, circle, star, points, tagObject;
+    // 0: rect, 1: circle
+    let rect, circle, points, tagObject;
     const commonProps = {
       originX: "center",
       originY: "center",
@@ -112,25 +112,6 @@ export const annotationCurriculumStudent = () => {
         });
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
-        break;
-      case (item.type = 2):
-        points = starPolygonPoints(5, (item.width / 2 / zoom) * ratio, (item.width / 4 / zoom) * ratio);
-        star = new fabric.Polygon(points, {
-          stroke: "transparent",
-          left: xShape,
-          top: yShape,
-          strokeWidth: 5,
-          strokeLineJoin: "round",
-          fill: "rgba(255,255,255,0.01)",
-          realFill: item.fill,
-          realOpacity: item.opacity,
-          id: "annotation-lesson",
-          tag: "star-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
-        });
-        star.rotate(item.rotate);
-        tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
-        processShape(bindAll, event, tagObject, canvas, item, star);
         break;
     }
   };
