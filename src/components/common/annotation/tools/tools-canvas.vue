@@ -88,7 +88,7 @@
     <Row align="middle" type="flex" justify="space-around">
       <div class="ant-col-8 tools__item tools__item--custom" @click="clickedTool('circle')">
         <div class="tools__item__wrap" :class="{ selected: toolSelected === 'circle' }">
-          <img class="tools__item__iconImg" src="@/assets/tools/Circle.svg" alt="Circle Icon" />
+          <img class="tools__item__iconImg circle" src="@/assets/tools/Circle.svg" alt="Circle Icon" />
         </div>
       </div>
       <div class="ant-col-8 tools__item tools__item--custom" @click="clickedTool('square')">
