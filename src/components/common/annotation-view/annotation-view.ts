@@ -74,7 +74,7 @@ export default defineComponent({
         }
       }
     });
-    const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
+    const { processPushShapes, addCircle, addSquare } = studentAddedShapes();
     const { processAnnotationLesson } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
@@ -431,9 +431,6 @@ export default defineComponent({
     const hideListColors = () => {
       showListColors.value = false;
     };
-    const funAddStar = () => {
-      return addStar(canvas, toolActive, student, activeColor, studentOneAndOneId);
-    };
     const funAddCircle = () => {
       return addCircle(canvas, toolActive, student, activeColor, studentOneAndOneId);
     };
@@ -443,7 +440,6 @@ export default defineComponent({
     const paletteTools = [
       { name: "move", action: cursorHand },
       { name: "pen", action: addDraw },
-      { name: "star", action: funAddStar },
       { name: "circle", action: funAddCircle },
       { name: "square", action: funAddSquare },
     ];

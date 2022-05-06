@@ -53,7 +53,7 @@ export const annotationCurriculum = () => {
     const yMetadata = propImage.metaData.y;
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
-    // 0: rect, 1: circle, 2: star
+    // 0: rect, 1: circle
     let rect, circle, tagObject;
     const commonProps = {
       originX: "center",

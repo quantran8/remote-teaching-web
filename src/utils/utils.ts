@@ -119,7 +119,6 @@ export enum Tools {
   Delete = "delete",
   Clear = "clear",
   StrokeColor = "stroke-color",
-  Star = "star",
   Circle = "circle",
   Square = "square",
   TextBox = "TextBox",

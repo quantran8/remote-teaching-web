@@ -20,22 +20,6 @@ export const addShape = () => {
       await store.dispatch("teacherRoom/setShapesForStudent", shapes);
     }
   };
-  const addStar = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-    const points = starPolygonPoints(5, 35, 15);
-    const star = new fabric.Polygon(points, {
-      stroke: strokeColor.value,
-      left: 0,
-      top: 0,
-      strokeWidth: strokeWidth.value,
-      strokeLineJoin: "round",
-      fill: "",
-      id: isTeacher.value.id,
-      isOneToOne: oneAndOne.value || null,
-    });
-    canvas.add(star);
-    canvas.setActiveObject(star);
-    await teacherAddShapes(canvas);
-  };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
     const circle = new fabric.Circle({
       left: 0,
@@ -69,7 +53,6 @@ export const addShape = () => {
   };
   return {
     teacherAddShapes,
-    addStar,
     addCircle,
     addSquare,
   };

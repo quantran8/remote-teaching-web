@@ -85,15 +85,10 @@
       </div>
     </Row>
     <Divider />
-    <Row align="middle" type="flex" justify="center">
+    <Row align="middle" type="flex" justify="space-around">
       <div class="ant-col-8 tools__item tools__item--custom" @click="clickedTool('circle')">
         <div class="tools__item__wrap" :class="{ selected: toolSelected === 'circle' }">
           <img class="tools__item__iconImg" src="@/assets/tools/Circle.svg" alt="Circle Icon" />
-        </div>
-      </div>
-      <div class="ant-col-8 tools__item tools__item--custom" @click="clickedTool('star')">
-        <div class="tools__item__wrap" :class="{ selected: toolSelected === 'star' }">
-          <img class="tools__item__iconImg" src="@/assets/tools/Star.svg" alt="Star Icon" />
         </div>
       </div>
       <div class="ant-col-8 tools__item tools__item--custom" @click="clickedTool('square')">
