@@ -262,23 +262,11 @@ export class ZoomClient implements ZoomClientSDK {
       if (!this._client) return;
       Logger.log("Rejoin RTC room: ", options);
       try {
-        this.removeListener();
-        await this._stream?.stopVideo();
-        await this._stream?.stopAudio();
         await this._client?.leave(options.token ? false : true);
       } catch (error) {
         Logger.error(error);
       }
       await this._client?.join(options.channel, options.token || this.option.user.token, this.option.user.username);
-      if (this.isCameraEnable) {
-        await this.startRenderLocalUserVideo();
-      }
-      await this.startAudio();
-      this._client?.on("connection-change", this.onConnectionChange);
-      this._client?.on("user-added", this.userAdded);
-      this._client?.on("user-updated", this.userUpdated);
-      this._client?.on("user-removed", this.userRemoved);
-      this._client?.on("peer-video-state-change", this.peerVideoStateChange);
     } catch (error) {
       Logger.error(error);
     }
