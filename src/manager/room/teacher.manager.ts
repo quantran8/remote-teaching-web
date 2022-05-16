@@ -30,12 +30,12 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     }
   }
 
-  async close() {
+  async close(end?: boolean) {
     await this.WSClient.disconnect();
     if (store.getters.platform === VCPlatform.Agora) {
       await this.agoraClient.reset();
     } else {
-      await this.zoomClient.reset();
+      await this.zoomClient.reset(end);
     }
   }
 }

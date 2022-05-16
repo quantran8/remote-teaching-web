@@ -214,10 +214,10 @@ export class ZoomClient implements ZoomClientSDK {
       if (this._selectedMicrophoneId) {
         await this._stream?.switchMicrophone(this._selectedMicrophoneId);
       }
-	  await this.delay(200)
+      await this.delay(200);
       if (!this.isMicEnable) {
-		await this._stream?.muteAudio();
-	  }
+        await this._stream?.muteAudio();
+      }
     } catch (error) {
       Logger.error(error);
     }
@@ -281,7 +281,7 @@ export class ZoomClient implements ZoomClientSDK {
         Logger.error(error);
       }
       await this._client?.join(options.channel, options.token || this.option.user.token, this.option.user.username);
-      await this.startAudio()
+      await this.startAudio();
       if (this.isCameraEnable) {
         await this.startRenderLocalUserVideo();
       }
@@ -351,12 +351,12 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
-  async reset() {
+  async reset(end = false) {
     Logger.log("Reset");
     this.isMicEnable = false;
     await this.stopRenderLocalUserVideo();
     await this._stream?.stopAudio();
-    await this._client?.leave(this.option.user.role === "host" ? true : false);
+    await this._client?.leave(end);
     this.removeListener();
     this.joined = false;
     this._stream = undefined;
