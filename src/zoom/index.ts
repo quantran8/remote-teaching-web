@@ -6,6 +6,7 @@ import ZoomVideo, {
   ConnectionChangePayload,
   ParticipantPropertiesPayload,
   CaptureVideoOption,
+  Participant,
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
@@ -46,11 +47,11 @@ export class ZoomClient implements ZoomClientSDK {
   _stream?: typeof Stream;
   _session?: string;
   _options: ZoomClientOptions;
-  _usersAdded: User[];
   _selfId?: number;
   _oneToOneStudentId?: string;
-  _isInOneToOneRoom?: boolean;
+  _isInOneToOneRoom: boolean;
   _oneToOneToken?: string;
+  _renderedList: Participant[];
 
   joined = false;
   isMicEnable = false;
@@ -61,10 +62,10 @@ export class ZoomClient implements ZoomClientSDK {
 
   constructor(options: ZoomClientOptions) {
     this._options = options;
-    this._usersAdded = [];
     this._oneToOneStudentId = undefined;
     this._isInOneToOneRoom = false;
     this._oneToOneToken = undefined;
+    this._renderedList = [];
 
     this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
     this._teacherId = store.getters["studentRoom/teacher"]?.id;
@@ -113,37 +114,52 @@ export class ZoomClient implements ZoomClientSDK {
     }
   };
 
-  userAdded = async () => {
+  userAdded = () => {
     Logger.log("user-added");
-    await this.renderPeerVideos();
   };
 
-  userUpdated = async () => {
+  userUpdated = () => {
     Logger.log("user-updated");
-    await this.renderPeerVideos();
+    this.renderPeerVideos();
   };
 
-  userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
+  userRemoved = (payload: ParticipantPropertiesPayload[]) => {
     payload.map((user) => {
       Logger.log("user-removed", user.userId);
     });
-    await this.renderPeerVideos();
+    this.renderPeerVideos();
   };
 
-  renderPeerVideos = async () => {
+  renderPeerVideos = () => {
     const users = this._client?.getAllUser()?.filter(({ userId }) => userId !== this.selfId) ?? [];
-    for (let index = 0; index < users.length; index++) {
-      const canvas = document.getElementById(`${users[index]?.displayName}__sub`) as HTMLCanvasElement;
+
+    const shouldRenderParticipants = users.filter(({ bVideoOn }) => bVideoOn);
+
+    const shouldRemoveParticipants = users.filter(({ bVideoOn }) => !bVideoOn);
+
+    const shouldAddedParticipants = shouldRenderParticipants.filter(
+      ({ userId }) => this._renderedList.findIndex(({ userId: renderedId }) => userId === renderedId) === -1,
+    );
+
+    shouldAddedParticipants.forEach(async (user) => {
+      const { userId, displayName } = user;
+      const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
       if (canvas) {
-        const { userId, displayName, bVideoOn } = users[index];
-        if (bVideoOn) {
-          this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P, displayName);
-        } else {
-          await this._stream?.stopRenderVideo(canvas, userId, displayName);
-          await this._stream?.clearVideoCanvas(canvas);
-        }
+        await this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_180P);
       }
+    });
+
+    if (shouldRemoveParticipants.length) {
+      shouldRemoveParticipants.forEach(async (user) => {
+        const { userId, displayName } = user;
+        const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
+        if (canvas) {
+          await this._stream?.stopRenderVideo(canvas, userId);
+        }
+      });
     }
+
+    this._renderedList = shouldRenderParticipants;
   };
 
   peerVideoStateChange = async (payload: { action: "Start" | "Stop"; userId: number }) => {
@@ -157,7 +173,6 @@ export class ZoomClient implements ZoomClientSDK {
       }
       if (action === "Stop") {
         await this._stream?.stopRenderVideo(canvas, userId);
-        await this._stream?.clearVideoCanvas(canvas);
       }
     }
   };
@@ -251,7 +266,7 @@ export class ZoomClient implements ZoomClientSDK {
         Logger.log("Can't find local user canvas");
       }
     } catch (e) {
-	  //
+      //
     }
   }
 
