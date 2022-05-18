@@ -214,9 +214,8 @@ export class ZoomClient implements ZoomClientSDK {
       if (this._selectedMicrophoneId) {
         await this._stream?.switchMicrophone(this._selectedMicrophoneId);
       }
-      if (this.isMicEnable) {
-        await this._stream?.unmuteAudio();
-      } else {
+      await this.delay(200);
+      if (!this.isMicEnable) {
         await this._stream?.muteAudio();
       }
     } catch (error) {
@@ -265,8 +264,8 @@ export class ZoomClient implements ZoomClientSDK {
       } else {
         Logger.log("Can't find local user canvas");
       }
-    } catch (e) {
-      //
+    } catch (error) {
+      Logger.error(error);
     }
   }
 
@@ -275,11 +274,17 @@ export class ZoomClient implements ZoomClientSDK {
       if (!this._client) return;
       Logger.log("Rejoin RTC room: ", options);
       try {
+        await this._stream?.stopAudio();
+        await this._stream?.stopVideo();
         await this._client?.leave(options.token ? false : true);
       } catch (error) {
         Logger.error(error);
       }
       await this._client?.join(options.channel, options.token || this.option.user.token, this.option.user.username);
+      await this.startAudio();
+      if (this.isCameraEnable) {
+        await this.startRenderLocalUserVideo();
+      }
     } catch (error) {
       Logger.error(error);
     }
@@ -287,12 +292,16 @@ export class ZoomClient implements ZoomClientSDK {
 
   async teacherBreakoutRoom() {
     if (this.option.user.role !== "host") return;
-    await this.rejoinRTCRoom({
-      teacherId: this.option.user.username,
-      token: this._oneToOneToken,
-      channel: this.option.user.channel + "-one-to-one",
-    });
-    this._isInOneToOneRoom = true;
+    try {
+      await this.rejoinRTCRoom({
+        teacherId: this.option.user.username,
+        token: this._oneToOneToken,
+        channel: this.option.user.channel + "-one-to-one",
+      });
+      this._isInOneToOneRoom = true;
+    } catch (error) {
+      Logger.log(error);
+    }
   }
 
   delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -342,9 +351,12 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
-  async reset() {
+  async reset(end = false) {
     Logger.log("Reset");
-    await this._client?.leave(this.option.user.role === "host" ? true : false);
+    this.isMicEnable = false;
+    await this.stopRenderLocalUserVideo();
+    await this._stream?.stopAudio();
+    await this._client?.leave(end);
     this.removeListener();
     this.joined = false;
     this._stream = undefined;

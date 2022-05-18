@@ -63,7 +63,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.microphoneLock = p.enable;
   },
   endClass(s: State, p: DefaultPayload): void {
-    s.manager?.close();
+    s.manager?.close(true);
     s.info = undefined;
     s.user = undefined;
     s.teacher = undefined;
