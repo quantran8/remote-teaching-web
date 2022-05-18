@@ -133,6 +133,17 @@ export class ZoomClient implements ZoomClientSDK {
   renderPeerVideos = () => {
     const users = this._client?.getAllUser()?.filter(({ userId }) => userId !== this.selfId) ?? [];
 
+    if (!users.length && this._renderedList) {
+      this._renderedList.forEach(async (user) => {
+        const { userId, displayName } = user;
+        const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
+        if (canvas) {
+          await this._stream?.stopRenderVideo(canvas, userId);
+        }
+      });
+      this._renderedList = [];
+    }
+
     const shouldRenderParticipants = users.filter(({ bVideoOn }) => bVideoOn);
 
     const shouldRemoveParticipants = users.filter(({ bVideoOn }) => !bVideoOn);
@@ -166,13 +177,17 @@ export class ZoomClient implements ZoomClientSDK {
     const { action, userId } = payload;
     const user = this.client.getUser(userId);
     if (!user) return;
+	const isRendered = this._renderedList.find(({ userId: renderedId }) => userId === renderedId) 
+	
     const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
     if (canvas) {
-      if (action === "Start") {
-        await this._stream?.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
+      if (action === "Start" && !isRendered) {
+        await this._stream?.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_180P);
+		this._renderedList.push(user)
       }
       if (action === "Stop") {
         await this._stream?.stopRenderVideo(canvas, userId);
+		this._renderedList = this._renderedList.filter(({ userId: renderedId }) => userId === renderedId) 
       }
     }
   };
@@ -206,6 +221,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._client?.on("user-updated", this.userUpdated);
     this._client?.on("user-removed", this.userRemoved);
     this._client?.on("peer-video-state-change", this.peerVideoStateChange);
+
   }
 
   async startAudio() {
