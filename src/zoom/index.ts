@@ -56,6 +56,8 @@ export class ZoomClient implements ZoomClientSDK {
   joined = false;
   isMicEnable = false;
   isCameraEnable = false;
+  inprogress = false;
+
   _defaultCaptureVideoOption?: CaptureVideoOption;
   _selectedMicrophoneId?: string;
   _teacherId?: string;
@@ -199,29 +201,37 @@ export class ZoomClient implements ZoomClientSDK {
     videoEncoderConfigurationPreset?: string;
     microphone?: boolean;
   }) {
-    Logger.log("Join RTC room: ", options);
-    this.isMicEnable = !!options.microphone;
-    this.isCameraEnable = !!options.camera;
+	if(this.inprogress) return;
+    this.inprogress = true;
+	try {
+		Logger.log("Join RTC room: ", options);
+		this.isMicEnable = !!options.microphone;
+		this.isCameraEnable = !!options.camera;
+	
+		this._client = this.zoomRTC.createClient();
+		await this._client.init("en-US", "Global");
+	
+		await this._client.join(this.option.user.channel, this.option.user.token, this.option.user.username);
+		this.joined = true;
 
-    this._client = this.zoomRTC.createClient();
-    await this._client.init("en-US", "Global");
+		this._selfId = this._client?.getSessionInfo().userId;
+		this._stream = this._client?.getMediaStream();
+	
+	
+		if (this.isCameraEnable) {
+		  await this.startRenderLocalUserVideo();
+		}
+		await this.startAudio();
 
-    await this._client.join(this.option.user.channel, this.option.user.token, this.option.user.username);
-    this._selfId = this._client?.getSessionInfo().userId;
-    this._stream = this._client?.getMediaStream();
-
-    this.joined = true;
-
-    if (this.isCameraEnable) {
-      await this.startRenderLocalUserVideo();
-    }
-    await this.startAudio();
-    this._client?.on("connection-change", this.onConnectionChange);
-    this._client?.on("user-added", this.userAdded);
-    this._client?.on("user-updated", this.userUpdated);
-    this._client?.on("user-removed", this.userRemoved);
-    this._client?.on("peer-video-state-change", this.peerVideoStateChange);
-
+		this._client?.on("connection-change", this.onConnectionChange);
+		this._client?.on("user-added", this.userAdded);
+		this._client?.on("user-updated", this.userUpdated);
+		this._client?.on("user-removed", this.userRemoved);
+		this._client?.on("peer-video-state-change", this.peerVideoStateChange);
+	} catch (error) {
+		this.joined = false;
+	}
+    this.inprogress = false;
   }
 
   async startAudio() {
@@ -240,6 +250,7 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   removeListener() {
+	Logger.log("Remove all listener")
     this._client?.off("connection-change", this.onConnectionChange);
     this._client?.off("user-added", this.userAdded);
     this._client?.off("user-updated", this.userUpdated);
@@ -369,13 +380,18 @@ export class ZoomClient implements ZoomClientSDK {
 
   async reset(end = false) {
     Logger.log("Reset");
-    this.isMicEnable = false;
-    await this.stopRenderLocalUserVideo();
+	this.isCameraEnable = false
+	this.isMicEnable = false
+    this.removeListener();
+    await this._stream?.stopVideo();
     await this._stream?.stopAudio();
     await this._client?.leave(end);
-    this.removeListener();
     this.joined = false;
     this._stream = undefined;
     this._client = undefined;
+    this._oneToOneStudentId = undefined;
+    this._isInOneToOneRoom = false;
+    this._oneToOneToken = undefined;
+    this._renderedList = [];
   }
 }
