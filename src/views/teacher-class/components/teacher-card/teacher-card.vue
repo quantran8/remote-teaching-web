@@ -2,7 +2,7 @@
   <div :class="['tc-video', !isGalleryView && 'tc-video--small']">
     <figure class="tc-video__figure">
       <video v-if="!isUsingAgora" class="tc-video__video" :id="teacher?.id + '__video'" v-show="teacher?.videoEnabled" />
-      <div v-else class="tc-video__video" :id="teacher?.id" v-show="isUsingAgora && teacher?.videoEnabled"></div>
+      <div v-else class="tc-video__video" :id="teacher?.id" v-show="teacher?.videoEnabled"></div>
       <div class="teacher-avatar-container" v-if="!teacher?.videoEnabled">
         <img class="teacher-avatar" alt="teacher-avatar" :src="avatarTeacher" />
       </div>
