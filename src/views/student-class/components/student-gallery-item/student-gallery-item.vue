@@ -19,14 +19,13 @@
           :title="student.englishName"
         ></video>
 
-        <canvas
-          v-else-if="!isCurrent && !isUsingAgora"
-          class="sc-gallery-item__video"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
-          v-show="student.videoEnabled && !isNotJoinned"
-          :id="student.id + '__sub'"
-          :title="student.englishName"
-        ></canvas>
+        <div :class="['sc-gallery-item__video', (!student.videoEnabled || isNotJoinned) && 'd-none']" v-else-if="!isCurrent && !isUsingAgora">
+          <canvas
+            :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
+            :id="student.id + '__sub'"
+            :title="student.englishName"
+          ></canvas>
+        </div>
 
         <div
           v-else
