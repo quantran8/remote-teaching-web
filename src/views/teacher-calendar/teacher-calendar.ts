@@ -28,7 +28,7 @@ export default defineComponent({
     const store = useStore();
     const route = useRoute();
     const { schoolId } = route.params;
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
     const visible = ref<boolean>(false);
     const recurringVisible = ref<boolean>(false);
     const listClassSelect = ref<any[]>([]);

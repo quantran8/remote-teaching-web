@@ -26,7 +26,7 @@ export default defineComponent({
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
-    const loginInfo = computed(() => getters["auth/loginInfo"]);
+    const loginInfo = computed(() => getters["auth/getLoginInfo"]);
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
@@ -46,7 +46,7 @@ export default defineComponent({
     };
 
     const onUserSignedIn = async () => {
-      const loginInfo: LoginInfo = getters["auth/loginInfo"];
+      const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
       if (isTeacher) await onTeacherSignedIn(loginInfo);
