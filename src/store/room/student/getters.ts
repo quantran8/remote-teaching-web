@@ -23,6 +23,7 @@ const getters: GetterTree<StudentRoomState, any> = {
     return state.info as RoomModel;
   },
   classInfo(state: StudentRoomState): ClassRoomModel {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return state.info?.classInfo!;
   },
   classes(state: StudentRoomState): Array<ClassModel> {

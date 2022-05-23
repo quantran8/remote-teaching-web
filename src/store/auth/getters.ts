@@ -18,7 +18,7 @@ const getters: GetterTree<AuthState, any> = {
     if (!state.loginInfo || !state.loginInfo.loggedin) return false;
     return state.loginInfo.profile.roles.indexOf(RoleName.parent) !== -1 && state.loginInfo.profile.roles.indexOf(RoleName.teacher) !== -1;
   },
-  loginInfo: (state: AuthState): LoginInfo => {
+  getLoginInfo: (state: AuthState): LoginInfo => {
     return state.loginInfo || ({} as LoginInfo);
   },
   username: (state: AuthState): string => {

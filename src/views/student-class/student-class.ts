@@ -57,7 +57,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const { studentId, classId } = route.params;
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const classRoomState = computed(() => getters["classRoomStatus"]);
 
     const fp = await fpPromise;
@@ -99,7 +99,7 @@ export default defineComponent({
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
     const teacher = computed<TeacherState>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);

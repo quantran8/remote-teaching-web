@@ -21,7 +21,6 @@ module.exports = {
     ],
 	"prettier/prettier": "off",
     "@typescript-eslint/ban-types": "off",
-    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
     "no-unused-vars": "off",
     "no-var": "off",

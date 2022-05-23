@@ -45,7 +45,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const { classId } = route.params;
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const classRoomState = computed(() => getters["classRoomStatus"]);
     const fp = await fpPromise;
     const result = await fp.get();

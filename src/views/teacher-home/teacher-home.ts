@@ -239,7 +239,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+      const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
       if (loginInfo && loginInfo.loggedin) {
         await getSchools();
         if (schools.value?.length) {

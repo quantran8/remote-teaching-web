@@ -28,7 +28,7 @@ export const useDisconnection = () => {
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
   const signalRStatus = computed<number>(() => getters["signalRStatus"]);
   const currentClassRoomStatus = computed<number>(() => getters["classRoomStatus"]);
-  const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
+  const loginInfo = computed<LoginInfo>(() => getters["auth/getLoginInfo"]);
   const route = useRoute();
   let timeoutId: any;
   const router = useRouter();
@@ -37,7 +37,7 @@ export const useDisconnection = () => {
 
   const teacherInitClass = async () => {
     const { classId } = route.params;
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
