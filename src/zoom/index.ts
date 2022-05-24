@@ -42,6 +42,20 @@ export interface User {
   displayName: string;
 }
 
+// 2160p: 3840x2160
+// 1440p: 2560x1440
+// 1080p: 1920x1080
+// 720p: 1280x720
+// 480p: 854x480
+// 360p: 640x360
+// 240p: 426x240
+
+const HOST_CAPTURE_WIDTH = 1280
+const HOST_CAPTURE_HEIGHT = 720
+
+const CLIENT_CAPTURE_WIDTH = 640
+const CLIENT_CAPTURE_HEIGHT = 360
+
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
   _stream?: typeof Stream;
@@ -74,8 +88,8 @@ export class ZoomClient implements ZoomClientSDK {
     this._defaultCaptureVideoOption = {
       hd: options.user.role === "host",
       cameraId: store.getters["cameraDeviceId"],
-      captureWidth: options.user.role === "host" ? 1080 : 640,
-      captureHeight: options.user.role === "host" ? 608 : 360,
+      captureWidth: options.user.role === "host" ? HOST_CAPTURE_WIDTH : CLIENT_CAPTURE_WIDTH,
+      captureHeight: options.user.role === "host" ? HOST_CAPTURE_HEIGHT : CLIENT_CAPTURE_HEIGHT,
       mirrored: true,
     };
   }
@@ -132,16 +146,36 @@ export class ZoomClient implements ZoomClientSDK {
     await this.renderPeerVideos();
   };
 
+  renderParticipantVideo = async (user: Participant) => {
+    try {
+      const { userId, displayName } = user;
+      const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
+      if (canvas) {
+        await this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_180P);
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
+  };
+
+  stopRenderParticipantVideo = async (user: Participant) => {
+    try {
+      const { userId, displayName } = user;
+      const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
+      if (canvas) {
+        await this._stream?.stopRenderVideo(canvas, userId);
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
+  };
+
   renderPeerVideos = () => {
     const users = this._client?.getAllUser()?.filter(({ userId }) => userId !== this.selfId) ?? [];
 
     if (!users.length && this._renderedList) {
       this._renderedList.forEach(async (user) => {
-        const { userId, displayName } = user;
-        const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-        if (canvas) {
-          await this._stream?.stopRenderVideo(canvas, userId);
-        }
+        await this.stopRenderParticipantVideo(user);
       });
       this._renderedList = [];
     }
@@ -155,20 +189,12 @@ export class ZoomClient implements ZoomClientSDK {
     );
 
     shouldAddedParticipants.forEach(async (user) => {
-      const { userId, displayName } = user;
-      const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-      if (canvas) {
-        await this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_180P);
-      }
+      await this.renderParticipantVideo(user);
     });
 
     if (shouldRemoveParticipants.length) {
       shouldRemoveParticipants.forEach(async (user) => {
-        const { userId, displayName } = user;
-        const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-        if (canvas) {
-          await this._stream?.stopRenderVideo(canvas, userId);
-        }
+        await this.stopRenderParticipantVideo(user);
       });
     }
 
@@ -180,17 +206,13 @@ export class ZoomClient implements ZoomClientSDK {
     const user = this.client.getUser(userId);
     if (!user) return;
     const isRendered = this._renderedList.find(({ userId: renderedId }) => userId === renderedId);
-
-    const canvas = document.getElementById(`${user?.displayName}__sub`) as HTMLCanvasElement;
-    if (canvas) {
-      if (action === "Start" && !isRendered) {
-        await this._stream?.renderVideo(canvas, user.userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_180P);
-        this._renderedList.push(user);
-      }
-      if (action === "Stop") {
-        await this._stream?.stopRenderVideo(canvas, userId);
-        this._renderedList = this._renderedList.filter(({ userId: renderedId }) => userId === renderedId);
-      }
+    if (action === "Start" && !isRendered) {
+      await this.renderParticipantVideo(user);
+      this._renderedList.push(user);
+    }
+    if (action === "Stop") {
+      await this.stopRenderParticipantVideo(user);
+      this._renderedList = this._renderedList.filter(({ userId: renderedId }) => userId === renderedId);
     }
   };
 
@@ -222,11 +244,15 @@ export class ZoomClient implements ZoomClientSDK {
       }
       await this.startAudio();
 
-      this.registerListener()
+      this.registerListener();
 
       await this.renderPeerVideos();
     } catch (error) {
       this.joined = false;
+	  Logger.error(error)
+
+	  this.zoomRTC.destroyClient()
+	  await this.joinRTCRoom(options)
     }
     this.inprogress = false;
   }
@@ -256,25 +282,24 @@ export class ZoomClient implements ZoomClientSDK {
 
   registerListener() {
     Logger.log("Register listener");
-	this._client?.on("connection-change", this.onConnectionChange);
-	this._client?.on("user-added", this.userAdded);
-	this._client?.on("user-updated", this.userUpdated);
-	this._client?.on("user-removed", this.userRemoved);
-	this._client?.on("peer-video-state-change", this.peerVideoStateChange);
-
+    this._client?.on("connection-change", this.onConnectionChange);
+    this._client?.on("user-added", this.userAdded);
+    this._client?.on("user-updated", this.userUpdated);
+    this._client?.on("user-removed", this.userRemoved);
+    this._client?.on("peer-video-state-change", this.peerVideoStateChange);
   }
 
   removeListener() {
-	try {
-		Logger.log("Remove all listener");
-		this._client?.off("connection-change", this.onConnectionChange);
-		this._client?.off("user-added", this.userAdded);
-		this._client?.off("user-updated", this.userUpdated);
-		this._client?.off("user-removed", this.userRemoved);
-		this._client?.off("peer-video-state-change", this.peerVideoStateChange);
-	} catch (error) {
-		Logger.error(error)
-	}
+    try {
+      Logger.log("Remove all listener");
+      this._client?.off("connection-change", this.onConnectionChange);
+      this._client?.off("user-added", this.userAdded);
+      this._client?.off("user-updated", this.userUpdated);
+      this._client?.off("user-removed", this.userRemoved);
+      this._client?.off("peer-video-state-change", this.peerVideoStateChange);
+    } catch (error) {
+      Logger.error(error);
+    }
   }
 
   async setMicrophone(options: { enable: boolean }) {
@@ -287,7 +312,7 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async setCamera(options: { enable: boolean }) {
-	if(this.isCameraEnable === options.enable) return
+    if (this.isCameraEnable === options.enable) return;
     this.isCameraEnable = options.enable;
     if (this.isCameraEnable) {
       await this.startRenderLocalUserVideo();
@@ -306,13 +331,12 @@ export class ZoomClient implements ZoomClientSDK {
     try {
       const video = document.getElementById(this.option.user.username + "__video") as HTMLVideoElement;
       if (video) {
-        await this._stream?.startVideo({videoElement: video, ...this._defaultCaptureVideoOption });
+        await this._stream?.startVideo({ videoElement: video, ...this._defaultCaptureVideoOption });
         this.isCameraEnable = true;
       } else {
         Logger.log("Cannot find local user canvas");
       }
     } catch (error) {
-		
       Logger.error(error);
     }
   }
@@ -331,7 +355,7 @@ export class ZoomClient implements ZoomClientSDK {
       if (role === "host") {
         await store.dispatch("teacherRoom/hideAllStudents");
       }
-	  await this.delay(200)
+      await this.delay(200);
     } catch (error) {
       Logger.error(error);
     }
@@ -350,18 +374,20 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
-	const isBackToMainRoom = !options.token
+    const isBackToMainRoom = !options.token;
     try {
       if (!this._client) return;
 
       Logger.log("Rejoin RTC room: ", options);
       await this.proactiveDisableVideos(options.studentId ?? options.teacherId);
-	  await this.stopAudio();
-	  this.removeListener()
-	  await this.leaveSessionForOneToOne(isBackToMainRoom);
+      await this.stopAudio();
+      this.removeListener();
+      await this.leaveSessionForOneToOne(isBackToMainRoom);
       await this._client?.join(options.channel, options.token || this.option.user.token, this.option.user.username);
+      this._selfId = this._client?.getSessionInfo().userId;
+
       await this.startAudio();
-      this.registerListener()
+      this.registerListener();
     } catch (error) {
       Logger.error(error);
     }
@@ -437,12 +463,12 @@ export class ZoomClient implements ZoomClientSDK {
     this.isCameraEnable = false;
     this.isMicEnable = false;
     this.removeListener();
-	if(this.isCameraEnable){
-		await this._stream?.stopVideo();
-	}
-	if(this.isMicEnable){
-		await this._stream?.stopAudio();
-	}
+    if (this.isCameraEnable) {
+      await this._stream?.stopVideo();
+    }
+    if (this.isMicEnable) {
+      await this._stream?.stopAudio();
+    }
     await this._client?.leave(end);
     this.joined = false;
     this._stream = undefined;
@@ -451,5 +477,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._isInOneToOneRoom = false;
     this._oneToOneToken = undefined;
     this._renderedList = [];
+
+	this.zoomRTC.destroyClient();
   }
 }
