@@ -4,7 +4,7 @@ import VueCropper from "vue-cropperjs";
 import App from "./app/app.vue";
 import i18n, { persistLocale } from "./utils/i18n";
 import router from "./router";
-import { GLPlugin } from "vue-glcommonui";
+import { GLPlugin, VueSite } from "vue-glcommonui";
 import { BaseButton, BaseCard, BaseIcon, BaseTag, MatIcon } from "vue-glcommonui";
 import {
   LiveCircle,
@@ -61,6 +61,7 @@ app.use(GLPlugin, {
   appConfig: process.env,
   option: {
     persistLocale,
+	vueSite: VueSite.GSConnect
   },
 });
 
