@@ -347,7 +347,6 @@ export default defineComponent({
       listenToCanvasEvents();
       resizeCanvas();
       processCanvasWhiteboard();
-	  cursorHand();
     };
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
@@ -414,8 +413,6 @@ export default defineComponent({
         }
       });
     };
-
-	// call this function to allow student click to hide targets
     const cursorHand = () => {
       canvas.isDrawingMode = false;
       toolActive.value = "move";
