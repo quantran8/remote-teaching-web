@@ -10,16 +10,16 @@
         <img :src="videoIcon" />
       </div>
     </span>
-    <span v-if="show" @click="toggleAudio" class="student-action__item" draggable="true" @dragstart="onDragStart">
+    <span v-if="show" @click="toggleAudio" class="student-action__item">
       <div class="student-action__btn">
         <img :src="audioIcon" />
       </div>
     </span>
-    <span v-if="show" @click="toggleAnnotation" class="student-action__item" :class="{ 'student-action__item--disable': !isOnePalette }">
+    <!-- <span v-if="show" @click="toggleAnnotation" class="student-action__item" :class="{ 'student-action__item--disable': !isOnePalette }">
       <div class="student-action__btn">
         <img :src="paletteIcon" />
       </div>
-    </span>
+    </span> -->
     <span v-if="show" @click="addABadge" class="student-action__item">
       <div class="student-action__btn">
         <img src="@/assets/teacher-class/sticker-star-small.svg" />
