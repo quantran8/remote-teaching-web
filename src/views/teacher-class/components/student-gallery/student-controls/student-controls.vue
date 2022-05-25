@@ -25,7 +25,7 @@
           </span>
         </span>
       </div>
-      <div class="student-controls__button">
+      <!-- <div class="student-controls__button">
         <span
           @click="onClickDisableAll"
           class="student-controls__button--clickable"
@@ -37,7 +37,7 @@
           />
           <span>{{ disableAllText }}</span>
         </span>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
