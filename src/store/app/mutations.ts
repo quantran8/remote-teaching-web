@@ -27,10 +27,10 @@ const mutations: MutationTree<AppState> = {
     state.classRoomStatus = payload.status;
   },
   setCameraDeviceId(state, payload: string) {
-    state.cameraDeviceId = payload;
+    state.cameraDeviceId = payload ?? ""
   },
   setMicrophoneDeviceId(state, payload: string) {
-    state.microphoneDeviceId = payload;
+    state.microphoneDeviceId = payload ?? "";
   },
   setUserRoleByView(state, payload: UserRole) {
     state.userRole = payload;
