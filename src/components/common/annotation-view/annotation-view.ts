@@ -55,6 +55,21 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
+
+    const paletteShown = computed(
+      () => (isLessonPlan.value && isPaletteVisible.value) || (isGalleryView.value && isShowWhiteBoard.value && isPaletteVisible.value),
+    );
+    watch(
+      paletteShown,
+      (currentValue) => {
+		  console.log('currentValue', currentValue);
+        if (currentValue) {
+          cursorHand();
+        }
+      },
+      { immediate: true },
+    );
+
     watch(isPaletteVisible, () => {
       if (!isPaletteVisible.value) {
         canvas.isDrawingMode = false;
@@ -347,7 +362,6 @@ export default defineComponent({
       listenToCanvasEvents();
       resizeCanvas();
       processCanvasWhiteboard();
-	  cursorHand();
     };
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
@@ -414,8 +428,6 @@ export default defineComponent({
         }
       });
     };
-
-	// call this function to allow student click to hide targets
     const cursorHand = () => {
       canvas.isDrawingMode = false;
       toolActive.value = "move";
@@ -524,6 +536,7 @@ export default defineComponent({
     onUnmounted(() => {
       window.removeEventListener("resize", resizeCanvas);
     });
+
     return {
       containerRef,
       pointerStyle,

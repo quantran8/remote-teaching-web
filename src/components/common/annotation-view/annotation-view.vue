@@ -8,11 +8,6 @@
       'disabled-pointer': toolActive === '',
     }"
     ref="containerRef"
-    :style="{
-      borderBottomLeftRadius: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '10px' : '0px',
-      borderBottomRightRadius: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '10px' : '0px',
-      borderBottomWidth: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '1px' : '0px',
-    }"
   >
     <div class="annotation-view-container__image">
       <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
@@ -30,7 +25,8 @@
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
-    <div class="palette-tool" v-if="(isLessonPlan && isPaletteVisible) || (isGalleryView && isShowWhiteBoard && isPaletteVisible)">
+	<!-- hide temporary with v-if=false -->
+    <div class="palette-tool" v-if="false">
       <div
         v-for="{ name, action } in paletteTools"
         :key="name"
