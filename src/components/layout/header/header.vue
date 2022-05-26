@@ -1,20 +1,12 @@
 <template>
   <AppHeader class="header" :title="title">
     <template #right>
-      <LanguagePicker class="desktop" />
-      <UserAvatar class="desktop">
-        <template #menuItems>
-          <div class="menu-item" @click.prevent="onClickTestDevice">{{ testConnectText }}</div>
+      <LanguagePicker />
+      <UserAvatar>
+        <template #extraItems>
+          <DropdownItem :text="testConnectText" @click.prevent="onClickTestDevice" />
         </template>
       </UserAvatar>
-      <DrawerHelper>
-        <LanguagePicker class="mobile" />
-        <UserAvatar>
-          <template #menuItems>
-            <div class="menu-item" @click.prevent="onClickTestDevice">{{ testConnectText }}</div>
-          </template>
-        </UserAvatar>
-      </DrawerHelper>
     </template>
     <DeviceTester :notJoin="true" ref="deviceTesterRef" />
   </AppHeader>
