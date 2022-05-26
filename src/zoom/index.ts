@@ -10,7 +10,6 @@ import ZoomVideo, {
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
-import { notification } from "ant-design-vue";
 
 export interface ZoomClientSDK {
   client: typeof VideoClient;
@@ -309,7 +308,6 @@ export class ZoomClient implements ZoomClientSDK {
         await this._stream?.muteAudio();
       }
     } catch (error) {
-	  notification.error({ message: error.message ?? error.reason});
       Logger.error(error);
     }
   }
@@ -386,7 +384,6 @@ export class ZoomClient implements ZoomClientSDK {
         Logger.log("Cannot find local user canvas");
       }
     } catch (error) {
-      notification.error({ message: error.message ?? error.reason});
       Logger.error(error);
     }
     this.isCameraEnable = true;
