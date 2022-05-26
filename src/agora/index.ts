@@ -11,7 +11,6 @@ import AgoraRTC, {
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
-import { AgoraRTCErrorCode } from "./interfaces";
 import { store } from "@/store";
 import { Logger } from "@/utils/logger";
 
@@ -143,10 +142,10 @@ export class AgoraClient implements AgoraClientSDK {
         store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
       }
     });
-    this.client.on("user-left", user => {
+    this.client.on("user-left", (user) => {
       Logger.log("user-left", user.uid);
     });
-    this.client.on("user-joined", user => {
+    this.client.on("user-joined", (user) => {
       Logger.log("user-joined", user.uid);
     });
     this.agoraRTC.setLogLevel(3);
@@ -310,6 +309,24 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async reset() {
+    try {
+      if (this.cameraTrack) {
+        await this.unpublishTrack(this.cameraTrack);
+        this._closeMediaTrack(this.cameraTrack);
+      }
+    } catch (error) {
+      Logger.error(error);
+    }
+    try {
+      if (this.microphoneTrack) {
+        await this.unpublishTrack(this.microphoneTrack);
+        this._closeMediaTrack(this.microphoneTrack);
+      }
+    } catch (error) {
+      Logger.error(error);
+    }
+    this.client.removeAllListeners();
+
     await this._client?.leave();
     this.publishedVideo = false;
     this.publishedAudio = false;
@@ -356,7 +373,7 @@ export class AgoraClient implements AgoraClientSDK {
 
   private _getRemoteUser(userId: string): IAgoraRTCRemoteUser | undefined {
     if (!this.client) return undefined;
-    return this.client.remoteUsers.find(e => isEqual(e.uid + "", userId));
+    return this.client.remoteUsers.find((e) => isEqual(e.uid + "", userId));
   }
 
   async getBandwidth() {
@@ -370,8 +387,8 @@ export class AgoraClient implements AgoraClientSDK {
   async updateAudioAndVideoFeed(videos: Array<string>, audios: Array<string>) {
     this.videos = videos;
     this.audios = audios;
-    const unSubscribeVideos = this.subscribedVideos.filter(s => videos.indexOf(s.userId) === -1).map(s => s.userId);
-    const unSubscribeAudios = this.subscribedAudios.filter(s => audios.indexOf(s.userId) === -1).map(s => s.userId);
+    const unSubscribeVideos = this.subscribedVideos.filter((s) => videos.indexOf(s.userId) === -1).map((s) => s.userId);
+    const unSubscribeAudios = this.subscribedAudios.filter((s) => audios.indexOf(s.userId) === -1).map((s) => s.userId);
     for (let studentId of unSubscribeVideos) {
       await this._unSubscribe(studentId, "video");
     }
@@ -397,7 +414,7 @@ export class AgoraClient implements AgoraClientSDK {
         delete this.reSubscribeAudiosCount[userId];
       }
     }
-    const subscribed = this.subscribedAudios.find(ele => ele.userId === userId);
+    const subscribed = this.subscribedAudios.find((ele) => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasAudio) return;
@@ -413,7 +430,7 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedAudios.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       Logger.error("_subscribeAudio", err);
-      const inAudios = this.audios.find(i => i === userId);
+      const inAudios = this.audios.find((i) => i === userId);
       if (inAudios) {
         if (this.reSubscribeAudiosCount[userId] === LIMIT_COUNT) {
           throw `Can't subscribe audio user with id ${userId}`;
@@ -443,7 +460,7 @@ export class AgoraClient implements AgoraClientSDK {
         delete this.reSubscribeVideosCount[userId];
       }
     }
-    const subscribed = this.subscribedVideos.find(ele => ele.userId === userId);
+    const subscribed = this.subscribedVideos.find((ele) => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
     if (!user || !user.hasVideo) return;
@@ -459,7 +476,7 @@ export class AgoraClient implements AgoraClientSDK {
       this.subscribedVideos.push({ userId: userId, track: remoteTrack });
     } catch (err) {
       Logger.error("_subscribeVideo", err);
-      const inVideos = this.videos.find(i => i === userId);
+      const inVideos = this.videos.find((i) => i === userId);
       if (inVideos) {
         if (this.reSubscribeVideosCount[userId] === LIMIT_COUNT) {
           throw `Can't subscribe video user with id ${userId}`;
@@ -486,12 +503,12 @@ export class AgoraClient implements AgoraClientSDK {
 
   private _removeMediaTrack(studentId: string, mediaType: "audio" | "video") {
     if (mediaType === "video") {
-      const trackIndex = this.subscribedVideos.findIndex(ele => ele.userId === studentId);
+      const trackIndex = this.subscribedVideos.findIndex((ele) => ele.userId === studentId);
       if (trackIndex === -1) return;
       this.subscribedVideos[trackIndex].track.stop();
       this.subscribedVideos.splice(trackIndex, 1);
     } else {
-      const trackIndex = this.subscribedAudios.findIndex(ele => ele.userId === studentId);
+      const trackIndex = this.subscribedAudios.findIndex((ele) => ele.userId === studentId);
       if (trackIndex === -1) return;
       this.subscribedAudios[trackIndex].track.stop();
       this.subscribedAudios.splice(trackIndex, 1);
@@ -500,7 +517,7 @@ export class AgoraClient implements AgoraClientSDK {
 
   setupHotPluggingDevice = (type: "camera" | "microphone") => {
     if (type === "microphone") {
-      AgoraRTC.onMicrophoneChanged = async changedDevice => {
+      AgoraRTC.onMicrophoneChanged = async (changedDevice) => {
         if (changedDevice.state === "ACTIVE") {
           this.microphoneTrack.setDevice(changedDevice.device.deviceId);
         } else if (changedDevice.device.label === this.microphoneTrack.getTrackLabel()) {
@@ -510,7 +527,7 @@ export class AgoraClient implements AgoraClientSDK {
       };
     }
     if (type === "camera") {
-      AgoraRTC.onCameraChanged = async changedDevice => {
+      AgoraRTC.onCameraChanged = async (changedDevice) => {
         if (changedDevice.state === "ACTIVE") {
           this.cameraTrack.setDevice(changedDevice.device.deviceId);
           store.dispatch("setCameraDeviceId", changedDevice.device.deviceId);
