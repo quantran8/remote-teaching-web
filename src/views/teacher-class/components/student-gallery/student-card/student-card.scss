@@ -13,7 +13,7 @@
 
 @mixin style-layout-3 {
   @include grid(2, 2%);
-  &:nth-child(3) {
+  &:nth-last-child() {
     left: 50%;
     transform: translateX(-50%);
   }

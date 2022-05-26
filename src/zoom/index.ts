@@ -151,7 +151,7 @@ export class ZoomClient implements ZoomClientSDK {
       const { userId, displayName } = user;
       const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
       if (canvas) {
-        await this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_180P);
+        await this._stream?.renderVideo(canvas, userId, CLIENT_CAPTURE_WIDTH, CLIENT_CAPTURE_HEIGHT, 0, 0, VideoQuality.Video_360P);
       }
     } catch (error) {
       Logger.log(error);
@@ -235,7 +235,6 @@ export class ZoomClient implements ZoomClientSDK {
 
       await this._client.join(this.option.user.channel, this.option.user.token, this.option.user.username);
       this.joined = true;
-
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
 
@@ -245,7 +244,6 @@ export class ZoomClient implements ZoomClientSDK {
       await this.startAudio();
 
       this.registerListener();
-
       await this.renderPeerVideos();
     } catch (error) {
       this.joined = false;
@@ -255,6 +253,28 @@ export class ZoomClient implements ZoomClientSDK {
 	  await this.joinRTCRoom(options)
     }
     this.inprogress = false;
+  }
+
+
+  async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
+    const isBackToMainRoom = !options.token;
+    try {
+      if (!this._client) return;
+
+      Logger.log("Rejoin RTC room: ", options);
+      await this.proactiveDisableVideos(options.studentId ?? options.teacherId);
+      await this.stopAudio();
+      this.removeListener();
+      await this.leaveSessionForOneToOne(isBackToMainRoom);
+      await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
+	  this._selfId = this._client?.getSessionInfo().userId;
+      this._stream = this._client?.getMediaStream();
+
+      await this.startAudio();
+      this.registerListener();
+    } catch (error) {
+      Logger.error(error);
+    }
   }
 
   async stopAudio() {
@@ -373,25 +393,7 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
-  async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
-    const isBackToMainRoom = !options.token;
-    try {
-      if (!this._client) return;
-
-      Logger.log("Rejoin RTC room: ", options);
-      await this.proactiveDisableVideos(options.studentId ?? options.teacherId);
-      await this.stopAudio();
-      this.removeListener();
-      await this.leaveSessionForOneToOne(isBackToMainRoom);
-      await this._client?.join(options.channel, options.token || this.option.user.token, this.option.user.username);
-      this._selfId = this._client?.getSessionInfo().userId;
-
-      await this.startAudio();
-      this.registerListener();
-    } catch (error) {
-      Logger.error(error);
-    }
-  }
+  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
   async teacherBreakoutRoom() {
     const { role, username, channel } = this.option.user;
@@ -408,8 +410,6 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
-  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
   async teacherBackToMainRoom() {
     const { role, username, channel } = this.option.user;
     if (role !== "host") return;
@@ -422,22 +422,6 @@ export class ZoomClient implements ZoomClientSDK {
       this._oneToOneToken = undefined;
     } catch (error) {
       Logger.log(error);
-    }
-  }
-
-  async studentBackToMainRoom() {
-    if (!this._oneToOneStudentId) return;
-    const { role, username, channel } = this.option.user;
-    if (role === "host" || !this._isInOneToOneRoom) return;
-
-    if (username === this._oneToOneStudentId) {
-      Logger.log("Back to main room");
-      await this.rejoinRTCRoom({
-        studentId: username,
-        channel: channel,
-      });
-      this._isInOneToOneRoom = false;
-      this._oneToOneStudentId = undefined;
     }
   }
 
@@ -455,6 +439,24 @@ export class ZoomClient implements ZoomClientSDK {
         channel: channel + "-one-to-one",
       });
       this._isInOneToOneRoom = true;
+    }
+  }
+
+  async studentBackToMainRoom() {
+    if (!this._oneToOneStudentId) return;
+    const { role, username, channel } = this.option.user;
+    if (role === "host" || !this._isInOneToOneRoom) return;
+
+    if (username === this._oneToOneStudentId) {
+      Logger.log("Back to main room");
+      await this.rejoinRTCRoom({
+        studentId: username,
+        channel: channel,
+      });
+      this._isInOneToOneRoom = false;
+      this._oneToOneToken = undefined;
+
+      this._oneToOneStudentId = undefined;
     }
   }
 
