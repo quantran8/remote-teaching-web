@@ -120,16 +120,6 @@ export default defineComponent({
       let audioTrack: LocalAudioTrack | null = null;
       let videoTrack: LocalVideoTrack | null = null;
       devices.value = await ZoomVideo.getDevices();
-      const cams = [];
-      const mics = [];
-      devices.value.map(function(device) {
-        if (device.kind === "videoinput") {
-          cams.push(device);
-        }
-        if (device.kind === "audioinput") {
-          mics.push(device);
-        }
-      });
 
       try {
         const cams = devices.value.filter(function(device) {
@@ -522,8 +512,8 @@ export default defineComponent({
     };
 
     const handleGoToClassSuccess = () => {
-      dispatch("setCameraDeviceId", currentCam.value?.deviceId);
-      dispatch("setMicrophoneDeviceId", currentMic.value?.deviceId);
+      dispatch("setCameraDeviceId", currentCam.value?.deviceId ?? "");
+      dispatch("setMicrophoneDeviceId", currentMic.value?.deviceId ?? "");
       if (isUsingAgora.value) {
         localTracks.value?.audioTrack?.close();
         localTracks.value?.videoTrack?.close();

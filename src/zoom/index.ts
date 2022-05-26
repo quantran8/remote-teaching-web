@@ -10,6 +10,7 @@ import ZoomVideo, {
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
+import { notification } from "ant-design-vue";
 
 export interface ZoomClientSDK {
   client: typeof VideoClient;
@@ -50,11 +51,11 @@ export interface User {
 // 360p: 640x360
 // 240p: 426x240
 
-const HOST_CAPTURE_WIDTH = 1280
-const HOST_CAPTURE_HEIGHT = 720
+const HOST_CAPTURE_WIDTH = 1280;
+const HOST_CAPTURE_HEIGHT = 720;
 
-const CLIENT_CAPTURE_WIDTH = 640
-const CLIENT_CAPTURE_HEIGHT = 360
+const CLIENT_CAPTURE_WIDTH = 640;
+const CLIENT_CAPTURE_HEIGHT = 360;
 
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
@@ -72,8 +73,9 @@ export class ZoomClient implements ZoomClientSDK {
   isCameraEnable = false;
   inprogress = false;
 
-  _defaultCaptureVideoOption?: CaptureVideoOption;
+  _defaultCaptureVideoOption: CaptureVideoOption;
   _selectedMicrophoneId?: string;
+  _selectedCameraId?: string;
   _teacherId?: string;
 
   constructor(options: ZoomClientOptions) {
@@ -84,10 +86,11 @@ export class ZoomClient implements ZoomClientSDK {
     this._renderedList = [];
 
     this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
+    this._selectedCameraId = store.getters["cameraDeviceId"];
     this._teacherId = store.getters["studentRoom/teacher"]?.id;
     this._defaultCaptureVideoOption = {
       hd: options.user.role === "host",
-      cameraId: store.getters["cameraDeviceId"],
+      cameraId: this._selectedCameraId,
       captureWidth: options.user.role === "host" ? HOST_CAPTURE_WIDTH : CLIENT_CAPTURE_WIDTH,
       captureHeight: options.user.role === "host" ? HOST_CAPTURE_HEIGHT : CLIENT_CAPTURE_HEIGHT,
       mirrored: true,
@@ -247,14 +250,13 @@ export class ZoomClient implements ZoomClientSDK {
       await this.renderPeerVideos();
     } catch (error) {
       this.joined = false;
-	  Logger.error(error)
+      Logger.error(error);
 
-	  this.zoomRTC.destroyClient()
-	  await this.joinRTCRoom(options)
+      this.zoomRTC.destroyClient();
+      await this.joinRTCRoom(options);
     }
     this.inprogress = false;
   }
-
 
   async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
     const isBackToMainRoom = !options.token;
@@ -267,7 +269,7 @@ export class ZoomClient implements ZoomClientSDK {
       this.removeListener();
       await this.leaveSessionForOneToOne(isBackToMainRoom);
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
-	  this._selfId = this._client?.getSessionInfo().userId;
+      this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
 
       await this.startAudio();
@@ -288,6 +290,17 @@ export class ZoomClient implements ZoomClientSDK {
   async startAudio() {
     try {
       await this._stream?.startAudio();
+
+	  if (!this._selectedMicrophoneId) {
+        const devices = await this.zoomRTC?.getDevices();
+        const mics = devices.filter(function (device) {
+          return device.kind === "audioinput";
+        });
+        if (!mics.length) {
+          throw new Error("Cannot detect your microphone");
+        }
+        this._selectedMicrophoneId = mics[0].deviceId;
+      }
       if (this._selectedMicrophoneId) {
         await this._stream?.switchMicrophone(this._selectedMicrophoneId);
       }
@@ -296,6 +309,7 @@ export class ZoomClient implements ZoomClientSDK {
         await this._stream?.muteAudio();
       }
     } catch (error) {
+	  notification.error({ message: error.message ?? error.reason});
       Logger.error(error);
     }
   }
@@ -343,22 +357,39 @@ export class ZoomClient implements ZoomClientSDK {
 
   async stopRenderLocalUserVideo() {
     Logger.log("Stop render local user video");
-    await this._stream?.stopVideo();
+    try {
+      await this._stream?.stopVideo();
+    } catch (error) {
+      Logger.error(error);
+    }
     this.isCameraEnable = false;
   }
 
   async startRenderLocalUserVideo() {
     try {
+      if (!this._selectedCameraId) {
+        const devices = await this.zoomRTC?.getDevices();
+        const cams = devices.filter(function (device) {
+          return device.kind === "videoinput";
+        });
+        if (!cams.length) {
+          throw new Error("Cannot detect your camera");
+        }
+        this._selectedCameraId = cams[0].deviceId;
+		this._defaultCaptureVideoOption.cameraId = this._selectedCameraId
+      }
+
       const video = document.getElementById(this.option.user.username + "__video") as HTMLVideoElement;
       if (video) {
         await this._stream?.startVideo({ videoElement: video, ...this._defaultCaptureVideoOption });
-        this.isCameraEnable = true;
       } else {
         Logger.log("Cannot find local user canvas");
       }
     } catch (error) {
+      notification.error({ message: error.message ?? error.reason});
       Logger.error(error);
     }
+    this.isCameraEnable = true;
   }
 
   async proactiveDisableVideos(id?: string) {
@@ -480,6 +511,6 @@ export class ZoomClient implements ZoomClientSDK {
     this._oneToOneToken = undefined;
     this._renderedList = [];
 
-	this.zoomRTC.destroyClient();
+    this.zoomRTC.destroyClient();
   }
 }

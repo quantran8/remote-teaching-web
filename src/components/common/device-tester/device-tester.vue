@@ -157,7 +157,7 @@
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button
-            :disabled="!classIsActive || listMicsId.length <= 0"
+            :disabled="!classIsActive"
             width="100px"
             @click="goToClass"
             type="primary"
