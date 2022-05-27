@@ -73,7 +73,7 @@ export default defineComponent({
 		  await store.dispatch("teacherRoom/generateOneToOneToken", {
 			 classId: roomManager?.zoomClient.option.user.channel
 		  });
-          await roomManager?.zoomClient.teacherBreakoutRoom();
+          await roomManager?.zoomClient.teacherBreakoutRoom(props.student.id);
         }
 		// send singalR event
         await store.dispatch("teacherRoom/sendOneAndOne", {

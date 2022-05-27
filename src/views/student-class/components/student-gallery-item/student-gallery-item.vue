@@ -9,9 +9,9 @@
       ]"
       ref="containerRef"
     >
-      <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
+      <div class="sc-gallery-item__container" :id="student.id + '__sub-wrapper'" :class="[student.isPalette && 'sc-gallery-item--palette']">
         <video
-          v-if="isCurrent && !isUsingAgora"
+          v-if="isCurrent && !isUsingAgora && isSupportedVideo"
           class="sc-gallery-item__video"
           :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
@@ -19,7 +19,25 @@
           :title="student.englishName"
         ></video>
 
-        <div :class="['sc-gallery-item__video', (!student.videoEnabled || isNotJoinned) && 'd-none']" v-else-if="!isCurrent && !isUsingAgora">
+        <canvas
+          v-else-if="isCurrent && !isUsingAgora && !isSupportedVideo"
+          class="sc-gallery-item__video"
+          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :id="student.id + '__video'"
+          :title="student.englishName"
+        ></canvas>
+
+        <div
+          v-else-if="isCurrent && isUsingAgora"
+          class="sc-gallery-item__video"
+          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :id="student.id"
+          :title="student.englishName"
+        ></div>
+
+        <div :class="['sc-gallery-item__video']" v-else v-show="student.videoEnabled && !isNotJoinned">
           <canvas
             :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
             :id="student.id + '__sub'"
@@ -27,14 +45,6 @@
           ></canvas>
         </div>
 
-        <div
-          v-else
-          class="sc-gallery-item__video"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
-          v-show="student.videoEnabled && !isNotJoinned"
-          :id="student.id"
-          :title="student.englishName"
-        ></div>
         <img
           class="sc-gallery-item__img"
           :class="[isSpeaking && 'sc-gallery-item--speaking', isNotJoinned && 'sc-gallery-item--disabled-avatar']"
