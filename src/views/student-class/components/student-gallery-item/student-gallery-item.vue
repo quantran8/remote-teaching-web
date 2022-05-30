@@ -12,8 +12,7 @@
       <div class="sc-gallery-item__container" :id="student.id + '__sub-wrapper'" :class="[student.isPalette && 'sc-gallery-item--palette']">
         <video
           v-if="isCurrent && !isUsingAgora && isSupportedVideo"
-          class="sc-gallery-item__video"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
           :id="student.id + '__video'"
           :title="student.englishName"
@@ -21,8 +20,7 @@
 
         <canvas
           v-else-if="isCurrent && !isUsingAgora && !isSupportedVideo"
-          class="sc-gallery-item__video"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
           :id="student.id + '__video'"
           :title="student.englishName"
@@ -30,16 +28,15 @@
 
         <div
           v-else-if="isCurrent && isUsingAgora"
-          class="sc-gallery-item__video"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
+          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
           :id="student.id"
           :title="student.englishName"
         ></div>
 
-        <div :class="['sc-gallery-item__video']" v-else v-show="student.videoEnabled && !isNotJoinned">
+        <div :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']" v-else v-show="student.videoEnabled && !isNotJoinned">
           <canvas
-            :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
+            :class="['sc-gallery-item__video']"
             :id="student.id + '__sub'"
             :title="student.englishName"
           ></canvas>

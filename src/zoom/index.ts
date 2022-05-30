@@ -76,6 +76,7 @@ export class ZoomClient implements ZoomClientSDK {
   _selectedMicrophoneId?: string;
   _selectedCameraId?: string;
   _teacherId?: string;
+  _speakerTimeout?: any;
 
   constructor(options: ZoomClientOptions) {
     this._options = options;
@@ -148,23 +149,29 @@ export class ZoomClient implements ZoomClientSDK {
     await this.renderPeerVideos();
   };
 
+  clearActiveSpeaker() {
+    store.dispatch("teacherRoom/setSpeakingUsers", []);
+  }
+
+  activeSpeaker = async (payload: Array<{ userId: number; displayName: string }>) => {
+    if (this._speakerTimeout) {
+      window.clearTimeout(this._speakerTimeout);
+      this._speakerTimeout = null;
+    }
+    const ids = payload.map(({ displayName }) => ({ uid: displayName, level: 1 }));
+    await store.dispatch("teacherRoom/setSpeakingUsers", ids);
+    this._speakerTimeout = setTimeout(this.clearActiveSpeaker, 500);
+  };
+
   renderParticipantVideo = async (user: Participant) => {
     try {
       const { userId, displayName } = user;
       const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
       if (canvas) {
         const clonedCanvas = canvas.cloneNode(true);
-		canvas.replaceWith(clonedCanvas)
-		const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-        await this._stream?.renderVideo(
-            _canvas,
-            userId,
-            CLIENT_CAPTURE_WIDTH,
-            CLIENT_CAPTURE_HEIGHT,
-            0,
-            0,
-            VideoQuality.Video_360P,
-          );
+        canvas.replaceWith(clonedCanvas);
+        const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
+        await this._stream?.renderVideo(_canvas, userId, CLIENT_CAPTURE_WIDTH, CLIENT_CAPTURE_HEIGHT, 0, 0, VideoQuality.Video_360P);
       }
     } catch (error) {
       Logger.log(error);
@@ -177,11 +184,10 @@ export class ZoomClient implements ZoomClientSDK {
       const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
       if (canvas) {
         const clonedCanvas = canvas.cloneNode(true);
-		canvas.replaceWith(clonedCanvas)
-		const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-		await this._stream?.stopRenderVideo(_canvas, userId, undefined, "#E7E7E7");
-		await this._stream?.clearVideoCanvas(_canvas, "#E7E7E7");
-
+        canvas.replaceWith(clonedCanvas);
+        const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
+        await this._stream?.stopRenderVideo(_canvas, userId, undefined, "#E7E7E7");
+        await this._stream?.clearVideoCanvas(_canvas, "#E7E7E7");
       }
     } catch (error) {
       Logger.log(error);
@@ -190,7 +196,6 @@ export class ZoomClient implements ZoomClientSDK {
 
   renderPeerVideos = () => {
     const users = this._client?.getAllUser()?.filter(({ userId }) => userId !== this.selfId) ?? [];
-
     if (!users.length && this._renderedList) {
       this._renderedList.forEach(async (user) => {
         await this.stopRenderParticipantVideo(user);
@@ -245,6 +250,8 @@ export class ZoomClient implements ZoomClientSDK {
       }
       await this.startAudio();
       this.registerListener();
+
+      console.log(this._stream.getActiveSpeaker());
 
       await this.renderPeerVideos();
     } catch (error) {
@@ -319,7 +326,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._client?.on("user-added", this.userAdded);
     this._client?.on("user-updated", this.userUpdated);
     this._client?.on("user-removed", this.userRemoved);
-
+    this._client?.on("active-speaker", this.activeSpeaker);
   }
 
   removeListener() {
@@ -329,6 +336,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._client?.off("user-added", this.userAdded);
       this._client?.off("user-updated", this.userUpdated);
       this._client?.off("user-removed", this.userRemoved);
+      this._client?.off("active-speaker", this.activeSpeaker);
     } catch (error) {
       Logger.error(error);
     }
@@ -385,7 +393,7 @@ export class ZoomClient implements ZoomClientSDK {
       } else {
         const canvas = document.getElementById(this.option.user.username + "__video") as HTMLCanvasElement;
         if (canvas && this._selfId) {
-		  await this._stream?.startVideo({ ...this._defaultCaptureVideoOption });
+          await this._stream?.startVideo({ ...this._defaultCaptureVideoOption });
           await this._stream?.renderVideo(canvas, this._selfId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_720P);
         }
       }
