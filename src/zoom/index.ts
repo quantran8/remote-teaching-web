@@ -385,7 +385,8 @@ export class ZoomClient implements ZoomClientSDK {
       } else {
         const canvas = document.getElementById(this.option.user.username + "__video") as HTMLCanvasElement;
         if (canvas && this._selfId) {
-          await this._stream?.renderVideo(canvas, this._selfId, HOST_CAPTURE_WIDTH, HOST_CAPTURE_HEIGHT, 0, 0, VideoQuality.Video_720P);
+		  await this._stream?.startVideo({ ...this._defaultCaptureVideoOption });
+          await this._stream?.renderVideo(canvas, this._selfId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_720P);
         }
       }
     } catch (error) {
