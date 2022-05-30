@@ -35,6 +35,8 @@ export default defineComponent({
       return speakingUsers.indexOf(student.value.id) >= 0;
     });
 
+	const isSupportedVideo = !!(window as any).chrome && !(typeof SharedArrayBuffer === "function")
+
     return {
       isNotJoinned,
       containerRef,
@@ -42,6 +44,7 @@ export default defineComponent({
       isRaisingHand,
       avatarStudent,
       isUsingAgora,
+	  isSupportedVideo
     };
   },
 });

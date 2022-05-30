@@ -91,7 +91,6 @@ export default defineComponent({
 	  	const roomManager = getters["teacherRoom/roomManager"];
 		await roomManager?.zoomClient.teacherBackToMainRoom()
 	  }
-	  // send singalR event
       await dispatch("teacherRoom/sendOneAndOne", {
         status: false,
         id: null,

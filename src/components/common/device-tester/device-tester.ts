@@ -345,8 +345,6 @@ export default defineComponent({
           if (isOpenMic.value) {
             await localTracks.value?.audioTrack.unmute();
           }
-          await localTracks.value?.audioTrack.start();
-          await localTracks.value?.audioTrack.unmute();
         }
         if (!volumeAnimation.value) {
           volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);

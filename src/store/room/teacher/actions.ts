@@ -1,3 +1,4 @@
+import { VCPlatform } from "./../../app/state";
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -137,7 +138,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth()?.then(speedMbps => {
+      state.manager?.getBandwidth()?.then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -150,57 +151,59 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    const agoraEventHandler: AgoraEventHandler = {
-      onUserPublished: (user, mediaType) => {
-        Logger.log("user-published", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onUserUnPublished: (user, mediaType) => {
-        Logger.log("user-unpublished", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onException: (payload: any) => {
-        Logger.log("agora-exception-event", payload);
-      },
-      onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        dispatch("setSpeakingUsers", result);
-      },
-      onLocalNetworkUpdate(payload: NetworkQualityPayload) {
-        const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
-        if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
-          dispatch("setTeacherLowBandWidth", true);
-        }
-        if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint && state.isLowBandWidth) {
-          dispatch("setTeacherLowBandWidth", false);
-        }
-        const studentIdNetworkQuality = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
-        let hasChange = false;
-        const listStudentLowBandWidthState = [...state.listStudentLowBandWidth];
-        if (_.isEmpty(studentIdNetworkQuality)) return;
-        for (const studentId in studentIdNetworkQuality) {
-          const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
-          const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
-          if (uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) {
-            const studentIdExisting = listStudentLowBandWidthState.find((id) => studentId === id);
-            if (!studentIdExisting) {
-              hasChange = true;
-              listStudentLowBandWidthState.push(studentId);
+    if (store.rootGetters["platform"] === VCPlatform.Agora) {
+      const agoraEventHandler: AgoraEventHandler = {
+        onUserPublished: (user, mediaType) => {
+          Logger.log("user-published", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onUserUnPublished: (user, mediaType) => {
+          Logger.log("user-unpublished", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onException: (payload: any) => {
+          Logger.log("agora-exception-event", payload);
+        },
+        onVolumeIndicator(result: { level: number; uid: UID }[]) {
+          dispatch("setSpeakingUsers", result);
+        },
+        onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+          const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
+          if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
+            dispatch("setTeacherLowBandWidth", true);
+          }
+          if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint && state.isLowBandWidth) {
+            dispatch("setTeacherLowBandWidth", false);
+          }
+          const studentIdNetworkQuality = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
+          let hasChange = false;
+          const listStudentLowBandWidthState = [...state.listStudentLowBandWidth];
+          if (_.isEmpty(studentIdNetworkQuality)) return;
+          for (const studentId in studentIdNetworkQuality) {
+            const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
+            const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
+            if (uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) {
+              const studentIdExisting = listStudentLowBandWidthState.find((id) => studentId === id);
+              if (!studentIdExisting) {
+                hasChange = true;
+                listStudentLowBandWidthState.push(studentId);
+              }
+            }
+            if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint) {
+              const studentIdExistingIndex = listStudentLowBandWidthState.findIndex((id) => studentId === id);
+              if (studentIdExistingIndex > -1) {
+                hasChange = true;
+                listStudentLowBandWidthState.splice(studentIdExistingIndex, 1);
+              }
             }
           }
-          if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint) {
-            const studentIdExistingIndex = listStudentLowBandWidthState.findIndex((id) => studentId === id);
-            if (studentIdExistingIndex > -1) {
-              hasChange = true;
-              listStudentLowBandWidthState.splice(studentIdExistingIndex, 1);
-            }
+          if (hasChange) {
+            dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
           }
-        }
-        if (hasChange) {
-          dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
-        }
-      },
-    };
-    state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
+        },
+      };
+      state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
+    }
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
@@ -208,7 +211,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       const roomInfo: RoomModel = roomResponse.data;
 
-	  if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
+      if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {
         commit("setError", {
           errorCode: GLErrorCode.CLASS_IS_NOT_ACTIVE,
           message: fmtMsg(ErrorLocale.ClassNotStarted),
@@ -216,7 +219,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         return;
       }
       commit("setRoomInfo", roomResponse.data);
-	  await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
+      await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
@@ -254,7 +257,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       payload.map((item) => {
         if (item.level >= MIN_SPEAKING_LEVEL) {
           // should check by a level
-          validSpeakings.push(item.uid.toString());
+          validSpeakings.push(item.uid?.toString());
         }
       });
     }
@@ -472,12 +475,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
-  async generateOneToOneToken({ state }, payload: {classId: string}) {
+  async generateOneToOneToken({ state }, payload: { classId: string }) {
     try {
       const response = await RemoteTeachingService.generateOneToOneToken(payload.classId);
-	  if(state.manager?.zoomClient){
-		state.manager.zoomClient.oneToOneToken = response.token
-	  }
+      if (state.manager?.zoomClient) {
+        state.manager.zoomClient.oneToOneToken = response.token;
+      }
     } catch (error) {
       Logger.log(error);
     }
