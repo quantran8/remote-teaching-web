@@ -149,6 +149,10 @@ export class ZoomClient implements ZoomClientSDK {
     await this.renderPeerVideos();
   };
 
+  currentAudioChange = async (payload: { action: string; source: string }) => {
+    Logger.log(payload);
+  };
+
   clearActiveSpeaker() {
     store.dispatch("teacherRoom/setSpeakingUsers", []);
   }
@@ -251,8 +255,6 @@ export class ZoomClient implements ZoomClientSDK {
       await this.startAudio();
       this.registerListener();
 
-      console.log(this._stream.getActiveSpeaker());
-
       await this.renderPeerVideos();
     } catch (error) {
       this.joined = false;
@@ -271,16 +273,12 @@ export class ZoomClient implements ZoomClientSDK {
 
       Logger.log("Rejoin RTC room: ", options);
       await this.proactiveDisableVideos(options.studentId ?? options.teacherId);
-
       await this.stopAudio();
-      this.removeListener();
       await this.leaveSessionForOneToOne(isBackToMainRoom);
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
-
       await this.startAudio();
-      this.registerListener();
     } catch (error) {
       Logger.error(error);
     }
@@ -294,10 +292,19 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
+  async muteAudio() {
+    try {
+      await this._stream?.muteAudio();
+    } catch (error) {
+      Logger.error("Mute audio error: ", error);
+	  await this.delay(500)
+	  await this._stream?.muteAudio();
+    }
+  }
+
   async startAudio() {
     try {
       await this._stream?.startAudio();
-
       if (!this._selectedMicrophoneId) {
         const devices = await this.zoomRTC?.getDevices();
         const mics = devices.filter(function (device) {
@@ -311,9 +318,10 @@ export class ZoomClient implements ZoomClientSDK {
       if (this._selectedMicrophoneId) {
         await this._stream?.switchMicrophone(this._selectedMicrophoneId);
       }
-      await this.delay(200);
+
       if (!this.isMicEnable) {
-        await this._stream?.muteAudio();
+	    await this.delay(500)
+        await this.muteAudio();
       }
     } catch (error) {
       Logger.error(error);
@@ -327,6 +335,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._client?.on("user-updated", this.userUpdated);
     this._client?.on("user-removed", this.userRemoved);
     this._client?.on("active-speaker", this.activeSpeaker);
+    this._client?.on("current-audio-change", this.currentAudioChange);
   }
 
   removeListener() {
@@ -337,6 +346,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._client?.off("user-updated", this.userUpdated);
       this._client?.off("user-removed", this.userRemoved);
       this._client?.off("active-speaker", this.activeSpeaker);
+	  this._client?.off("current-audio-change", this.currentAudioChange);
     } catch (error) {
       Logger.error(error);
     }
@@ -420,7 +430,6 @@ export class ZoomClient implements ZoomClientSDK {
           enable: false,
         });
       }
-
       await this.delay(200);
     } catch (error) {
       Logger.error("Proactive Disable Videos", error);
