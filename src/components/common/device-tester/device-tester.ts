@@ -119,17 +119,21 @@ export default defineComponent({
     const setupZoom = async () => {
       let audioTrack: LocalAudioTrack | null = null;
       let videoTrack: LocalVideoTrack | null = null;
-      devices.value = await ZoomVideo.getDevices();
+      try {
+        devices.value = await ZoomVideo.getDevices();
+      } catch (error) {
+        devices.value = await ZoomVideo.getDevices(true);
+	  }
 
       try {
-        const cams = devices.value.filter(function(device) {
+        const cams = devices.value.filter(function (device) {
           return device.kind === "videoinput";
         });
         if (cams.length) {
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           videoTrack = ZoomVideo.createLocalVideoTrack(cams[0].deviceId);
           havePermissionCamera.value = true;
         }
