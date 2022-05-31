@@ -59,10 +59,15 @@ export default defineComponent({
     const paletteShown = computed(
       () => (isLessonPlan.value && isPaletteVisible.value) || (isGalleryView.value && isShowWhiteBoard.value && isPaletteVisible.value),
     );
+
+    watch(toolActive, () => {
+      if (paletteShown.value) {
+        cursorHand();
+      }
+    });
     watch(
       paletteShown,
       (currentValue) => {
-		  console.log('currentValue', currentValue);
         if (currentValue) {
           cursorHand();
         }
