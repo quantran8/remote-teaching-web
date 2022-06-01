@@ -312,7 +312,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       if (this.cameraTrack) {
         await this.unpublishTrack(this.cameraTrack);
-        this._closeMediaTrack(this.cameraTrack);
+		Logger.log("Turn off camera")
       }
     } catch (error) {
       Logger.error(error);
@@ -320,18 +320,20 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       if (this.microphoneTrack) {
         await this.unpublishTrack(this.microphoneTrack);
-        this._closeMediaTrack(this.microphoneTrack);
+		Logger.log("Turn off audio")
       }
     } catch (error) {
       Logger.error(error);
     }
+	this._closeMediaTrack(this.cameraTrack);
+    this._closeMediaTrack(this.microphoneTrack);
+	
     this.client.removeAllListeners();
 
     await this._client?.leave();
     this.publishedVideo = false;
     this.publishedAudio = false;
-    this._closeMediaTrack(this.cameraTrack);
-    this._closeMediaTrack(this.microphoneTrack);
+
     this.joined = false;
     this._publishedTrackIds = [];
     this._client = undefined;
