@@ -123,8 +123,7 @@ export default defineComponent({
         devices.value = await ZoomVideo.getDevices();
       } catch (error) {
         devices.value = await ZoomVideo.getDevices(true);
-	  }
-
+      }
       try {
         const cams = devices.value.filter(function (device) {
           return device.kind === "videoinput";
@@ -144,14 +143,14 @@ export default defineComponent({
         zoomCamError.value = true;
       }
       try {
-        const mics = devices.value.filter(function(device) {
+        const mics = devices.value.filter(function (device) {
           return device.kind === "audioinput";
         });
         if (mics.length) {
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
-          listMicsId.value = mics.map(mic => mic.deviceId);
+          listMicsId.value = mics.map((mic) => mic.deviceId);
           audioTrack = ZoomVideo.createLocalAudioTrack(mics[0].deviceId);
           havePermissionMicrophone.value = true;
         }
@@ -167,19 +166,19 @@ export default defineComponent({
       };
     };
 
-	let isConfigZoomTrackingDone = false
+    let isConfigZoomTrackingDone = false;
     const setupZoomTracking = async () => {
       try {
         const doc = document.getElementById(videoElementId) as HTMLVideoElement;
         await localTracks.value?.videoTrack?.start(doc);
-
-		await localTracks.value?.audioTrack?.start();
-		await localTracks.value?.audioTrack.unmute();
 		
+        await localTracks.value?.audioTrack?.start();
+        await localTracks.value?.audioTrack.unmute();
+
         if (!volumeAnimation.value) {
           volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
         }
-		isConfigZoomTrackingDone = true
+        isConfigZoomTrackingDone = true;
         preventCloseModal.value = false;
       } catch (error) {
         Logger.log("Setup Zoom tracking failed");
@@ -219,7 +218,7 @@ export default defineComponent({
           currentMicLabel.value = mics[0]?.label;
 
           listMics.value = mics;
-          listMicsId.value = mics.map(mic => mic.deviceId);
+          listMicsId.value = mics.map((mic) => mic.deviceId);
           await localTracks.value?.audioTrack.setDevice(mics[0]?.deviceId);
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
@@ -274,7 +273,7 @@ export default defineComponent({
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
-          listCamsId.value = cams.map(cam => cam.deviceId);
+          listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(newCameraId || cams[0]?.deviceId);
           try {
             await localTracks.value?.videoTrack.play(videoElementId);
@@ -335,8 +334,8 @@ export default defineComponent({
       }
     };
 
-    watch(currentMic, async currentMicValue => {
-	  if (!isConfigZoomTrackingDone) return
+    watch(currentMic, async (currentMicValue) => {
+      if (!isConfigZoomTrackingDone) return;
       if (!localTracks.value?.audioTrack) return;
       if (currentMicValue) {
         if (isUsingAgora.value) {
@@ -356,8 +355,8 @@ export default defineComponent({
       }
     });
 
-    watch(currentCam, async currentCamValue => {
-	  if (!isConfigZoomTrackingDone) return
+    watch(currentCam, async (currentCamValue) => {
+      if (!isConfigZoomTrackingDone) return;
       if (!localTracks.value?.videoTrack) return;
       if (currentCamValue) {
         if (isUsingAgora.value) {
@@ -401,7 +400,7 @@ export default defineComponent({
     });
 
     //handle for microphone
-    watch(isOpenMic, async currentIsOpenMic => {
+    watch(isOpenMic, async (currentIsOpenMic) => {
       if (currentIsOpenMic) {
         dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
         if (currentMic.value) {
@@ -447,7 +446,7 @@ export default defineComponent({
         if (isUsingAgora.value) {
           await localTracks.value?.audioTrack.setDevice(micId);
         }
-        currentMic.value = listMics.value.find(mic => mic.deviceId === micId);
+        currentMic.value = listMics.value.find((mic) => mic.deviceId === micId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
@@ -458,42 +457,49 @@ export default defineComponent({
         if (isUsingAgora.value) {
           await localTracks.value.videoTrack.setDevice(camId);
         }
-        currentCam.value = listCams.value.find(cam => cam.deviceId === camId);
+        currentCam.value = listCams.value.find((cam) => cam.deviceId === camId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
     };
 
-    const destroy = async () => {
+    const destroySDK = async (isAgora: boolean) => {
       if (volumeAnimation.value) {
         cancelVolumeAnimation();
       }
       if (currentMic.value) {
         await localTracks.value?.audioTrack?.stop();
-        if (isUsingAgora.value) {
+        if (isAgora) {
           await localTracks.value?.audioTrack?.close();
         }
       }
       if (currentCam.value) {
         await localTracks.value?.videoTrack?.stop();
-        if (isUsingAgora.value) {
+        if (isAgora) {
           await localTracks.value?.videoTrack?.close();
+          AgoraRTC.onCameraChanged = undefined;
+          AgoraRTC.onMicrophoneChanged = undefined;
+
+		  agoraError.value = false;
+		  agoraCamError.value = false;
+		  agoraMicError.value = false;
         }
       }
-      if (currentCam.value) {
-        AgoraRTC.onCameraChanged = undefined;
-        AgoraRTC.onMicrophoneChanged = undefined;
-      }
-	  isConfigZoomTrackingDone = false
-      localTracks.value = undefined;
-      currentMic.value = undefined;
+	  localTracks.value = undefined;
+	  currentMic.value = undefined;
       currentCam.value = undefined;
-      agoraError.value = false;
-      agoraCamError.value = false;
-      agoraMicError.value = false;
-      isOpenMic.value = true;
+	  isOpenMic.value = true;
       isOpenCam.value = true;
-      volumeAnimation.value = undefined;
+	  volumeAnimation.value = undefined;
+      isConfigZoomTrackingDone = false;
+	  
+      Logger.log("Destroy SDK");
+    };
+
+    const destroy = async () => {
+      await destroySDK(isUsingAgora.value);
+      isConfigZoomTrackingDone = false;
+
       preventCloseModal.value = true;
       if (props.notJoin || props.fromParentComponent) return;
       currentUnit.value = null;
@@ -565,15 +571,13 @@ export default defineComponent({
       visible.value = false;
     };
 
-    const handleChangePlatform = async (value: any) => {
-      await destroy();
-      currentPlatform.value = value;
-    };
-
-    watch(currentPlatform, async currentValue => {
-	  Logger.log("Platform changed");
-      dispatch("setVideoCallPlatform", currentValue);
+    watch(currentPlatform, async (currentValue) => {
       isUsingAgora.value = currentValue === VCPlatform.Agora;
+
+      await destroySDK(!isUsingAgora.value);
+
+      Logger.log("Platform changed");
+      dispatch("setVideoCallPlatform", currentValue);
       await initialSetup();
     });
 
@@ -672,7 +676,6 @@ export default defineComponent({
       notDisplaySpinner,
       isUsingAgora,
       currentPlatform,
-      handleChangePlatform,
       listPlatform,
     };
   },

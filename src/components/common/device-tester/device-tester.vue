@@ -102,7 +102,7 @@
         </div>
         <div class="ant-col-24 ant-col-sm-18">
           <Space size="large" align="center" class="device-tester__check-mic-cam">
-            <Select v-model:value="currentPlatform" class="device-device-tester__platform" ref="select" @change="handleChangePlatform">
+            <Select v-model:value="currentPlatform" class="device-device-tester__platform" ref="select">
               <SelectOption v-for="pl in listPlatform" :key="pl.key" :value="pl.key">{{ pl.name }}</SelectOption>
             </Select>
           </Space>
