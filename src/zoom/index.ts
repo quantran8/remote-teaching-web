@@ -56,6 +56,8 @@ const HOST_CAPTURE_HEIGHT = 720;
 const CLIENT_CAPTURE_WIDTH = 640;
 const CLIENT_CAPTURE_HEIGHT = 360;
 
+let _speakerTimeout: any = null;
+
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
   _stream?: typeof Stream;
@@ -76,7 +78,6 @@ export class ZoomClient implements ZoomClientSDK {
   _selectedMicrophoneId?: string;
   _selectedCameraId?: string;
   _teacherId?: string;
-  _speakerTimeout?: any;
 
   constructor(options: ZoomClientOptions) {
     this._options = options;
@@ -153,18 +154,20 @@ export class ZoomClient implements ZoomClientSDK {
     Logger.log(payload);
   };
 
-  clearActiveSpeaker() {
-    store.dispatch("teacherRoom/setSpeakingUsers", []);
-  }
 
-  activeSpeaker = async (payload: Array<{ userId: number; displayName: string }>) => {
-    if (this._speakerTimeout) {
-      window.clearTimeout(this._speakerTimeout);
-      this._speakerTimeout = null;
+  async activeSpeaker(payload: Array<{ userId: number; displayName: string }>) {
+    if (_speakerTimeout) {
+      clearTimeout(_speakerTimeout);
+      _speakerTimeout = null;
     }
     const ids = payload.map(({ displayName }) => ({ uid: displayName, level: 1 }));
     await store.dispatch("teacherRoom/setSpeakingUsers", ids);
-    this._speakerTimeout = setTimeout(this.clearActiveSpeaker, 500);
+    await store.dispatch("studentRoom/setSpeakingUsers", ids);
+    _speakerTimeout = setTimeout(function(){
+		store.dispatch("teacherRoom/setSpeakingUsers", []);
+		store.dispatch("studentRoom/setSpeakingUsers", []);
+		_speakerTimeout = null;
+	}, 800);
   };
 
   renderParticipantVideo = async (user: Participant) => {
@@ -175,7 +178,7 @@ export class ZoomClient implements ZoomClientSDK {
         const clonedCanvas = canvas.cloneNode(true);
         canvas.replaceWith(clonedCanvas);
         const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-        await this._stream?.renderVideo(_canvas, userId, CLIENT_CAPTURE_WIDTH, CLIENT_CAPTURE_HEIGHT, 0, 0, VideoQuality.Video_360P);
+        await this._stream?.renderVideo(_canvas, userId, _canvas.width, _canvas.height, 0, 0, VideoQuality.Video_360P);
       }
     } catch (error) {
       Logger.log(error);
