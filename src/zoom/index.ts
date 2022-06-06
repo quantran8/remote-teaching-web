@@ -144,8 +144,14 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
-    payload.map((user) => {
+    payload.forEach(async (user) => {
       Logger.log("user-removed", user.userId);
+      const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
+      if (shouldRemoveParticipant) {
+        await this.stopRenderParticipantVideo(shouldRemoveParticipant);
+		this._renderedList = this._renderedList.filter(({ userId }) => userId !== user.userId);
+
+      }
     });
     await this.renderPeerVideos();
   };
@@ -153,7 +159,6 @@ export class ZoomClient implements ZoomClientSDK {
   currentAudioChange = async (payload: { action: string; source: string }) => {
     Logger.log(payload);
   };
-
 
   async activeSpeaker(payload: Array<{ userId: number; displayName: string }>) {
     if (_speakerTimeout) {
@@ -163,12 +168,12 @@ export class ZoomClient implements ZoomClientSDK {
     const ids = payload.map(({ displayName }) => ({ uid: displayName, level: 1 }));
     await store.dispatch("teacherRoom/setSpeakingUsers", ids);
     await store.dispatch("studentRoom/setSpeakingUsers", ids);
-    _speakerTimeout = setTimeout(function(){
-		store.dispatch("teacherRoom/setSpeakingUsers", []);
-		store.dispatch("studentRoom/setSpeakingUsers", []);
-		_speakerTimeout = null;
-	}, 800);
-  };
+    _speakerTimeout = setTimeout(function () {
+      store.dispatch("teacherRoom/setSpeakingUsers", []);
+      store.dispatch("studentRoom/setSpeakingUsers", []);
+      _speakerTimeout = null;
+    }, 800);
+  }
 
   renderParticipantVideo = async (user: Participant) => {
     try {
@@ -190,11 +195,7 @@ export class ZoomClient implements ZoomClientSDK {
       const { userId, displayName } = user;
       const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
       if (canvas) {
-        const clonedCanvas = canvas.cloneNode(true);
-        canvas.replaceWith(clonedCanvas);
-        const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-        await this._stream?.stopRenderVideo(_canvas, userId, undefined, "#E7E7E7");
-        await this._stream?.clearVideoCanvas(_canvas, "#E7E7E7");
+        await this._stream?.stopRenderVideo(canvas, userId, undefined, "#E7E7E7");
       }
     } catch (error) {
       Logger.log(error);
@@ -300,8 +301,8 @@ export class ZoomClient implements ZoomClientSDK {
       await this._stream?.muteAudio();
     } catch (error) {
       Logger.error("Mute audio error: ", error);
-	  await this.delay(500)
-	  await this._stream?.muteAudio();
+      await this.delay(500);
+      await this._stream?.muteAudio();
     }
   }
 
@@ -323,7 +324,7 @@ export class ZoomClient implements ZoomClientSDK {
       }
 
       if (!this.isMicEnable) {
-	    await this.delay(500)
+        await this.delay(500);
         await this.muteAudio();
       }
     } catch (error) {
@@ -349,7 +350,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._client?.off("user-updated", this.userUpdated);
       this._client?.off("user-removed", this.userRemoved);
       this._client?.off("active-speaker", this.activeSpeaker);
-	  this._client?.off("current-audio-change", this.currentAudioChange);
+      this._client?.off("current-audio-change", this.currentAudioChange);
     } catch (error) {
       Logger.error(error);
     }
