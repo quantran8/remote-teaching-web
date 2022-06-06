@@ -20,7 +20,7 @@ export default defineComponent({
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
     const isUsingAgora = computed(() => store.getters["platform"] === VCPlatform.Agora);
 
-	watch(props, () => {
+    watch(props, () => {
       if (props.raisedHand) {
         isRaisingHand.value = true;
       } else {
@@ -35,7 +35,7 @@ export default defineComponent({
       return speakingUsers.indexOf(student.value.id) >= 0;
     });
 
-	const isSupportedVideo = !!(window as any).chrome && !(typeof SharedArrayBuffer === "function")
+    const isSupportedVideo = computed(() => !!(window as any).chrome && !(typeof SharedArrayBuffer === "function"));
 
     return {
       isNotJoinned,
@@ -44,7 +44,7 @@ export default defineComponent({
       isRaisingHand,
       avatarStudent,
       isUsingAgora,
-	  isSupportedVideo
+      isSupportedVideo,
     };
   },
 });

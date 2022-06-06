@@ -63,7 +63,7 @@ export default defineComponent({
 
     const isLowBandWidth = computed(() => getters["teacherRoom/isLowBandWidth"]);
     const avatarTeacher = computed(() => (props.teacher?.avatar ? props.teacher?.avatar : noAvatar));
-	const isSupportedVideo = !!(window as any).chrome && !(typeof SharedArrayBuffer === "function")
+    const isSupportedVideo = computed(() => !!(window as any).chrome && !(typeof SharedArrayBuffer === "function"));
 
     return {
       audioIcon,
@@ -81,7 +81,7 @@ export default defineComponent({
       IconLowWifi,
       avatarTeacher,
       isUsingAgora,
-	  isSupportedVideo
+      isSupportedVideo,
     };
   },
 });
