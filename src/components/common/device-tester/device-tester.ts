@@ -119,6 +119,7 @@ export default defineComponent({
     const setupZoom = async () => {
       let audioTrack: LocalAudioTrack | null = null;
       let videoTrack: LocalVideoTrack | null = null;
+      await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
       try {
         devices.value = await ZoomVideo.getDevices();
       } catch (error) {
