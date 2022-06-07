@@ -45,9 +45,9 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 
   isJoinedRoom() {
     if (store.getters.platform === VCPlatform.Agora) {
-      this.agoraClient.joined;
+      this.agoraClient?.joined;
     } else {
-      this.zoomClient.joined;
+      this.zoomClient?.joined;
     }
   }
 
