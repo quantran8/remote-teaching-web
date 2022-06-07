@@ -1,12 +1,12 @@
-import { ErrorCode, LoginInfo, RoleName } from "@/commonui";
 import { ClassView, TeacherState } from "@/store/room/interface";
 import { Modal, notification, Checkbox } from "ant-design-vue";
-import { computed, ComputedRef, defineComponent, ref, watch, provide, createVNode, onMounted, onUnmounted } from "vue";
+import { computed, ComputedRef, defineComponent, ref, watch, provide, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
+import { ErrorCode } from "@/utils/utils";
 import { TeacherClass } from "./../../locales/localeid";
 import { UserRole } from "@/store/app/state";
 
@@ -45,7 +45,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const { classId } = route.params;
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const classRoomState = computed(() => getters["classRoomStatus"]);
     const fp = await fpPromise;
     const result = await fp.get();
@@ -93,7 +93,7 @@ export default defineComponent({
     });
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
-    watch(oneAndOneStatus, value => {
+    watch(oneAndOneStatus, (value) => {
       if (value === "" || value === null) {
         isOneOneMode.value = "";
       } else {
@@ -103,7 +103,7 @@ export default defineComponent({
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
     const isSidebarCollapsed = ref<boolean>(true);
-    watch(isGalleryView, value => {
+    watch(isGalleryView, (value) => {
       isSidebarCollapsed.value = value;
     });
 
@@ -195,9 +195,9 @@ export default defineComponent({
         await router.push("/teacher");
       } catch (err) {
         Modal.destroyAll();
-        const message = err.body.message;
+        const message = err?.body?.message;
         notification.error({
-          message: message,
+          message: `${message}`,
         });
       }
 

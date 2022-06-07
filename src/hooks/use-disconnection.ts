@@ -1,6 +1,6 @@
 import { LostNetwork } from "./../locales/localeid";
 import { useStore } from "vuex";
-import { fmtMsg, LoginInfo, RoleName } from "@/commonui";
+import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
 import { Modal } from "ant-design-vue";
 import { computed, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -28,7 +28,7 @@ export const useDisconnection = () => {
   const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
   const signalRStatus = computed<number>(() => getters["signalRStatus"]);
   const currentClassRoomStatus = computed<number>(() => getters["classRoomStatus"]);
-  const loginInfo = computed<LoginInfo>(() => getters["auth/loginInfo"]);
+  const loginInfo = computed<LoginInfo>(() => getters["auth/getLoginInfo"]);
   const route = useRoute();
   let timeoutId: any;
   const router = useRouter();
@@ -37,7 +37,7 @@ export const useDisconnection = () => {
 
   const teacherInitClass = async () => {
     const { classId } = route.params;
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
@@ -206,7 +206,7 @@ export const useDisconnection = () => {
     }
   });
 
-  watch(route, currentRoute => {
+  watch(route, (currentRoute) => {
     const classRoomStatus: number = getters["classRoomStatus"];
     if (!currentRoute.params.classId && classRoomStatus === ClassRoomStatus.InClass) {
       dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });

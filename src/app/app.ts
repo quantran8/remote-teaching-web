@@ -1,10 +1,13 @@
 import { useStore } from "vuex";
-import { AuthService, LoginInfo, RoleName } from "@/commonui";
+import { AuthService, RoleName, fmtMsg } from "vue-glcommonui";
+import { LoginInfo } from "vue-glcommonui";
 import { computed, defineComponent, watch } from "vue";
-import { MainLayout, AppHeader, AppFooter } from "../components/layout";
-import { fmtMsg } from "@/commonui";
+import { MainLayout } from "vue-glcommonui";
+import { AppHeader, AppFooter } from "../components/layout";
 import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
+import { AppView, UserRole } from "@/store/app/state";
+import { LostNetwork } from "./../locales/localeid";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
@@ -23,7 +26,7 @@ export default defineComponent({
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
-    const loginInfo = computed(() => getters["auth/loginInfo"]);
+    const loginInfo = computed(() => getters["auth/getLoginInfo"]);
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
@@ -43,7 +46,7 @@ export default defineComponent({
     };
 
     const onUserSignedIn = async () => {
-      const loginInfo: LoginInfo = getters["auth/loginInfo"];
+      const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
       if (isTeacher) await onTeacherSignedIn(loginInfo);
@@ -56,10 +59,9 @@ export default defineComponent({
     });
 
     watch(loginInfo, (currentLoginInfo: LoginInfo | null) => {
-      if (!currentLoginInfo) return;
-      const isTeacher =
-        currentLoginInfo.profile?.roles.indexOf(RoleName.teacher) !== -1 && currentLoginInfo.profile?.remoteTsiSettings?.some(r => r.isAllowed);
-      const isParent = currentLoginInfo?.profile.roles.indexOf(RoleName.parent) !== -1;
+      if (!currentLoginInfo || typeof currentLoginInfo.profile?.remoteTsiSettings === "undefined") return;
+      const isTeacher = currentLoginInfo.profile.roles.indexOf(RoleName.teacher) !== -1 && currentLoginInfo.profile.remoteTsiSettings;
+      const isParent = currentLoginInfo.profile.roles.indexOf(RoleName.parent) !== -1;
       const { pathname } = window.location;
       if ((!isParent && !isTeacher) || (isParent && isTeacher)) {
         return;
@@ -78,12 +80,22 @@ export default defineComponent({
       }
     });
 
+    const messageText = computed(() => fmtMsg(LostNetwork.Message));
+    const teacherDisconnected = computed<boolean>(() => getters["teacherRoom/isDisconnected"]);
+    const userRole = computed(() => getters["userRole"]);
+    const isTeacher = computed(() => getters["auth/isTeacher"]);
+    const isDisconnectedMode = computed<any>(() => teacherDisconnected.value && userRole.value !== UserRole.UnConfirm);
+
     return {
       siteTitle,
       appView,
+      AppView,
       isSignedIn,
       isHeaderVisible,
       isFooterVisible,
+      messageText,
+      isDisconnectedMode,
+      isTeacher,
     };
   },
 });

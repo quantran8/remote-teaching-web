@@ -2,7 +2,7 @@ import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import { DefaultCanvasDimension } from "commonui";
+import { DefaultCanvasDimension } from "@/utils/utils";
 import { TeacherModel } from "@/models";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { LastFabricUpdated } from "@/store/annotation/state";
@@ -55,6 +55,26 @@ export default defineComponent({
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
+
+    const paletteShown = computed(
+      () => (isLessonPlan.value && isPaletteVisible.value) || (isGalleryView.value && isShowWhiteBoard.value && isPaletteVisible.value),
+    );
+
+    watch(toolActive, () => {
+      if (paletteShown.value) {
+        cursorHand();
+      }
+    });
+    watch(
+      paletteShown,
+      (currentValue) => {
+        if (currentValue) {
+          cursorHand();
+        }
+      },
+      { immediate: true },
+    );
+
     watch(isPaletteVisible, () => {
       if (!isPaletteVisible.value) {
         canvas.isDrawingMode = false;
@@ -74,7 +94,7 @@ export default defineComponent({
         }
       }
     });
-    const { processPushShapes, addStar, addCircle, addSquare } = studentAddedShapes();
+    const { processPushShapes, addCircle, addSquare } = studentAddedShapes();
     const { processAnnotationLesson } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
@@ -84,14 +104,7 @@ export default defineComponent({
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         toolActive.value = "";
         canvas.isDrawingMode = false;
-        processAnnotationLesson(
-          canvas,
-          props.image,
-          containerRef,
-          isShowWhiteBoard,
-          true,
-          toggleTargets.value.visible ? "show-all-targets" : "hide-all-target",
-        );
+        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, null);
       }
     };
     watch(isShowWhiteBoard, () => {
@@ -438,9 +451,6 @@ export default defineComponent({
     const hideListColors = () => {
       showListColors.value = false;
     };
-    const funAddStar = () => {
-      return addStar(canvas, toolActive, student, activeColor, studentOneAndOneId);
-    };
     const funAddCircle = () => {
       return addCircle(canvas, toolActive, student, activeColor, studentOneAndOneId);
     };
@@ -450,7 +460,6 @@ export default defineComponent({
     const paletteTools = [
       { name: "move", action: cursorHand },
       { name: "pen", action: addDraw },
-      { name: "star", action: funAddStar },
       { name: "circle", action: funAddCircle },
       { name: "square", action: funAddSquare },
     ];
@@ -490,7 +499,7 @@ export default defineComponent({
 
     watch(
       fabricItems,
-      async value => {
+      async (value) => {
         const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
         if (!oneToOneUserId) {
           await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
@@ -532,6 +541,7 @@ export default defineComponent({
     onUnmounted(() => {
       window.removeEventListener("resize", resizeCanvas);
     });
+
     return {
       containerRef,
       pointerStyle,

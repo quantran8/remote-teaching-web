@@ -1,7 +1,7 @@
 import { ExposureStatus, ExposureType } from "@/store/lesson/state";
 import { defineComponent, computed } from "vue";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
 
 const exposureIcon = (type: ExposureType) => {

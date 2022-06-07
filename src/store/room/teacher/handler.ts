@@ -13,6 +13,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
   const handler = {
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
+	  const student = state.students.find(student => student.id === payload.id);
+      if (student && student.englishName) {
+        notification.warn({
+          message: `${student.englishName} has joined the class.`,
+        });
+      }
       commit("updateMediaStatus", payload);
       commit("updateRaisingHand", {
         id: payload.id,
@@ -44,22 +50,22 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onStudentLeave: async (payload: StudentModel) => {
       commit("studentLeftClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
-      const student = state.students.find(student => student.id === payload.id);
+      const student = state.students.find((student) => student.id === payload.id);
       if (student && student.englishName) {
         notification.warn({
-          message: `${student.englishName} left the class.`,
+          message: `${student.englishName} has left the class.`,
         });
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
       Logger.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
-      const student = state.students.find(student => student.id === payload.id);
+      const student = state.students.find((student) => student.id === payload.id);
       if (student?.status === InClassStatus.LEFT) return;
       commit("studentDisconnectClass", { id: payload.id });
       await dispatch("updateAudioAndVideoFeed", {});
       if (student && student.englishName) {
         notification.warn({
-          message: `${student.englishName} has lost connection.`,
+          message: `It seems ${student.englishName} had some connectivity issue due to which had to drop out from the class`,
         });
       }
     },
@@ -126,7 +132,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onTeacherUpdateStudentBadge: (payload: StudentModel[]) => {
-      payload.map(item => {
+      payload.map((item) => {
         commit("setStudentBadge", {
           id: item.id,
           badge: item.badge,

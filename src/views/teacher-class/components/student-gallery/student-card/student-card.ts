@@ -1,3 +1,4 @@
+import { TeacherRoomManager } from '@/manager/room/teacher.manager';
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
@@ -7,6 +8,7 @@ import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
 import noAvatar from "@/assets/images/user-default-gray.png";
 import "animate.css";
+import { VCPlatform } from "@/store/app/state";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -33,6 +35,9 @@ export default defineComponent({
     const store = useStore();
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
+    const platform = computed(() => store.getters["platform"]);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+
     const isMouseEntered = ref<boolean>(false);
     const isShow = computed(() => {
       return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
@@ -62,6 +67,15 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
+		
+        if (store.getters["platform"] === VCPlatform.Zoom) {
+		  const roomManager: TeacherRoomManager = store.getters["teacherRoom/roomManager"];
+		  await store.dispatch("teacherRoom/generateOneToOneToken", {
+			 classId: roomManager?.zoomClient.option.user.channel
+		  });
+          await roomManager?.zoomClient.teacherBreakoutRoom(props.student.id);
+        }
+		// send singalR event
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.student.id,
@@ -93,7 +107,7 @@ export default defineComponent({
       if (width + 10 <= studentRef.value.offsetLeft) {
         right = width - 50;
       }
-      if (width > studentRef.value.offsetParent.offsetWidth / 2) {
+      if (width > studentRef.value.offsetParent?.offsetWidth / 2) {
         right = width + 150;
       }
       currentPosition.value = {
@@ -124,7 +138,6 @@ export default defineComponent({
     const isOneToOneStudent = computed(() => {
       return store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
     });
-
     return {
       isNotJoinned,
       onDragStart,
@@ -145,6 +158,7 @@ export default defineComponent({
       isOneToOneStudent,
       avatarStudent,
       oneAndOne,
+      isUsingAgora,
     };
   },
 });

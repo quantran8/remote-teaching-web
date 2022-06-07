@@ -1,3 +1,4 @@
+import { VCPlatform } from "./../../app/state";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -8,7 +9,7 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { ErrorCode, fmtMsg } from "commonui";
+import { ErrorCode, fmtMsg } from "vue-glcommonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
@@ -16,6 +17,7 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
 import { UserRole } from "@/store/app/state";
+import { store } from "@/store";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -49,6 +51,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
+	  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
@@ -134,12 +137,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible } = state;
     if (!manager) return;
     const cameras = students
-      .filter(s => {
+      .filter((s) => {
         if (!videosFeedVisible || isMobileBrowser) return false;
         return s.videoEnabled && s.status === InClassStatus.JOINED;
       })
-      .map(s => s.id);
-    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+      .map((s) => s.id);
+    let audios = students.filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -154,14 +157,14 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (idOne) {
       //handle one to one student
       if (idOne === student?.id) {
-        const cameraOtherStudentId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
-        const audioOtherStudentId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+        const cameraOtherStudentId = cameras.filter((camId) => camId !== idOne && camId !== teacher?.id);
+        const audioOtherStudentId = audios.filter((audioId) => audioId !== idOne && audioId !== teacher?.id);
         for (const id of cameraOtherStudentId) {
-          const cameraIndex = cameras.findIndex(camId => camId === id);
+          const cameraIndex = cameras.findIndex((camId) => camId === id);
           cameras.splice(cameraIndex, 1);
         }
         for (const id of audioOtherStudentId) {
-          const audioIndex = audios.findIndex(audioId => audioId === id);
+          const audioIndex = audios.findIndex((audioId) => audioId === id);
           audios.splice(audioIndex, 1);
         }
       }
@@ -169,26 +172,26 @@ const actions: ActionTree<StudentRoomState, any> = {
       //handle other students
       if (idOne !== student?.id) {
         //remove student one to one
-        const studentCameraIndex = cameras.findIndex(camId => camId === idOne);
+        const studentCameraIndex = cameras.findIndex((camId) => camId === idOne);
         if (studentCameraIndex > -1) {
           cameras.splice(studentCameraIndex, 1);
         }
-        const studentAudioIndex = audios.findIndex(audioId => audioId === idOne);
+        const studentAudioIndex = audios.findIndex((audioId) => audioId === idOne);
         if (studentAudioIndex > -1) {
           audios.splice(studentAudioIndex, 1);
         }
         //remove teacher one to one
-        const teacherCameraIndex = cameras.findIndex(camId => camId === teacher?.id);
+        const teacherCameraIndex = cameras.findIndex((camId) => camId === teacher?.id);
         if (teacherCameraIndex > -1) {
           cameras.splice(teacherCameraIndex, 1);
         }
-        const teacherAudioIndex = audios.findIndex(audioId => audioId === teacher?.id);
+        const teacherAudioIndex = audios.findIndex((audioId) => audioId === teacher?.id);
         if (teacherAudioIndex > -1) {
           audios.splice(teacherAudioIndex, 1);
         }
       }
     }
-    return manager?.updateAudioAndVideoFeed(cameras, audios);
+    return manager?.updateAudioAndVideoFeed(cameras, audios, idOne);
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
@@ -240,7 +243,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then(speedMbps => {
+      state.manager?.getBandwidth()?.then(speedMbps => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -253,30 +256,32 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    state.manager?.agoraClient.registerEventHandler({
-      onUserPublished: (user, mediaType) => {
-        Logger.log("user-published", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onUserUnPublished: (user, mediaType) => {
-        Logger.log("user-unpublished", user.uid, mediaType);
-        dispatch("updateAudioAndVideoFeed", {});
-      },
-      onException: (payload: any) => {
-        Logger.log("agora-exception-event", payload);
-      },
-      onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        dispatch("setSpeakingUsers", result);
-      },
-      onLocalNetworkUpdate(payload: any) {
-        //   Logger.log(payload);
-      },
-    });
+    if (store.getters.platform === VCPlatform.Agora) {
+      state.manager?.agoraClient?.registerEventHandler({
+        onUserPublished: (user, mediaType) => {
+          Logger.log("user-published", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onUserUnPublished: (user, mediaType) => {
+          Logger.log("user-unpublished", user.uid, mediaType);
+          dispatch("updateAudioAndVideoFeed", {});
+        },
+        onException: (payload: any) => {
+          Logger.log("agora-exception-event", payload);
+        },
+        onVolumeIndicator(result: { level: number; uid: UID }[]) {
+          dispatch("setSpeakingUsers", result);
+        },
+        onLocalNetworkUpdate(payload: any) {
+          Logger.log(payload);
+        },
+      });
+    }
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
     if (payload) {
-      payload.map(item => {
+      payload.map((item) => {
         if (item.level >= MIN_SPEAKING_LEVEL) {
           // should check by a level
           validSpeakings.push(item.uid.toString());
@@ -290,11 +295,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("leaveRoom", payload);
     commit({ type: "lesson/clearCacheImage" }, { root: true });
   },
-  async loadRooms({ commit, state }, _payload: any) {
+  async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
+	await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
   },
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
@@ -439,6 +445,16 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
+  },
+  async generateOneToOneToken({ state }, payload: { classId: string; studentId?: string }) {
+    try {
+      const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
+      if (state.manager?.zoomClient) {
+        state.manager.zoomClient.oneToOneToken = response.token;
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
   },
 };
 

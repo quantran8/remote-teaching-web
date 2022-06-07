@@ -1,3 +1,4 @@
+import { store } from '@/store';
 import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { Logger } from "@/utils/logger";
@@ -9,18 +10,22 @@ const actions: ActionTree<TeacherState, any> = {
     await dispatch("setAcceptPolicy");
     commit("setInfo", payload);
   },
-  async loadClasses({ commit, state }: ActionContext<TeacherState, any>, payload: { schoolId: string; browserFingerPrinting: string }) {
+  async loadClasses({ commit, dispatch, state }: ActionContext<TeacherState, any>, payload: { schoolId: string; browserFingerPrinting: string }) {
     if (!state.info) return;
     const response = await TeacherService.getClasses(state.info.id, payload.schoolId);
     commit("setClasses", response.data);
     try {
       const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       commit("setClassRoom", responseActive.data);
+	  await store.dispatch("setVideoCallPlatform", responseActive.data.videoPlatformProvider);
     } catch (err) {
       // process with err
     }
   },
-  async loadAllClassesSchedules({ commit }: ActionContext<TeacherState, any>, payload: { schoolId: string; browserFingerPrinting: string }) {
+  async loadAllClassesSchedules(
+    { commit, dispatch }: ActionContext<TeacherState, any>,
+    payload: { schoolId: string; browserFingerPrinting: string },
+  ) {
     const response = await TeacherService.getAllClassesSchedule(payload.schoolId);
     commit("setClassesSchedules", response);
     try {
@@ -28,6 +33,7 @@ const actions: ActionTree<TeacherState, any> = {
         const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
         if (responseActive.data) {
           commit("setClassRoom", responseActive.data);
+          await store.dispatch("setVideoCallPlatform", responseActive.data.videoPlatformProvider);
           commit("setClassOnline", responseActive.data.classInfo);
         } else {
           commit("setClassOnline", undefined);

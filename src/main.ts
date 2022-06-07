@@ -2,10 +2,10 @@ import { createApp } from "vue";
 import Lottie from "vue-lottie";
 import VueCropper from "vue-cropperjs";
 import App from "./app/app.vue";
-import "./registerServiceWorker";
+import i18n, { persistLocale } from "./utils/i18n";
 import router from "./router";
-import i18n from "./commonui/locales/i18n";
-import { BaseButton, BaseCard, BaseIcon, BaseModal, BaseTag } from "./components/base";
+import { GLPlugin, VueSite } from "vue-glcommonui";
+import { BaseButton, BaseCard, BaseIcon, BaseTag, MatIcon } from "vue-glcommonui";
 import {
   LiveCircle,
   Toast,
@@ -14,7 +14,6 @@ import {
   DesignateCircle,
   DesignateRectangle,
   AnnotationView,
-  LanguagePicker,
   DeviceTester,
   CropImage,
 } from "./components/common";
@@ -40,23 +39,31 @@ app.component("BaseIcon", BaseIcon);
 app.component("BaseButton", BaseButton);
 app.component("BaseCard", BaseCard);
 app.component("BaseTag", BaseTag);
-app.component("BaseModal", BaseModal);
 app.component("LiveCircle", LiveCircle);
 app.component("Toast", Toast);
 app.component("Notification", Notification);
 app.component("ContentView", ContentView);
 app.component("AnnotationView", AnnotationView);
 app.component("DesignateCircle", DesignateCircle);
-app.component("LanguagePicker", LanguagePicker);
 app.component("DeviceTester", DeviceTester);
 app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
 app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
-//app.component("UnityView", UnityView);
+app.component("MatIcon", MatIcon);
 app.use(router);
 app.use(store);
-app.use(i18n);
+
+//vue-glcommonui plugin
+app.use(GLPlugin, {
+  i18nInstance: i18n,
+  store,
+  appConfig: process.env,
+  option: {
+    persistLocale,
+	vueSite: VueSite.GSConnect
+  },
+});
 
 // Global properties
 app.config.globalProperties.$paths = Paths;

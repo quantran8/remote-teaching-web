@@ -1,6 +1,6 @@
 import { defineComponent, Ref, ref, watch } from "vue";
-import { Tools } from "@/commonui";
-import { Divider, Popover, Row, Space, Icon } from "ant-design-vue";
+import { Tools } from "@/utils/utils";
+import { Divider, Popover, Row, Space } from "ant-design-vue";
 
 export default defineComponent({
   emits: ["tool-selected", "update-color", "update-stroke"],
@@ -31,7 +31,6 @@ export default defineComponent({
     Divider,
     Popover,
     Space,
-    Icon,
   },
   setup(props, { emit }) {
     const tools = Tools;

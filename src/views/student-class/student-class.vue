@@ -51,13 +51,34 @@
           <img class="sc-teacher__image" :src="require(`@/assets/student-class/bear-confuse.png`)" alt="confused" />
         </div>
         <div
-          class="sc-teacher__video animate__animated animate__zoomIn"
+          v-if="!isUsingAgora"
+          :class="[
+		  	'sc-teacher__video',
+            'animate__animated',
+            'animate__zoomIn',
+			!(teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)) && 'd-none',
+          ]"
+        >
+          <canvas :class="['sc-teacher__video']" :id="teacher?.id + '__sub'"></canvas>
+        </div>
+
+        <div
+          v-else
+          :class="[
+            'sc-teacher__video',
+            'animate__animated',
+            'animate__zoomIn',
+            !(teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)) && 'd-none',
+          ]"
           :id="teacher?.id"
-          v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
         ></div>
         <div
-          class="sc-teacher__avatar-container animate__animated animate__zoomIn"
-          v-if="!teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)"
+          :class="[
+            'sc-teacher__avatar-container',
+            'animate__animated',
+            'animate__zoomIn',
+            ((teacher?.videoEnabled && (!isOneToOne || studentIsOneToOne)) || showBearConfused || (isOneToOne && !studentIsOneToOne)) && 'd-none',
+          ]"
         >
           <img class="sc-teacher__avatar" :src="avatarTeacher" />
         </div>

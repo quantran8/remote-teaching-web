@@ -5,7 +5,7 @@ import { exposureTypes } from "../lesson-plan";
 import { Empty } from "ant-design-vue";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 import { ExposureType } from "@/store/lesson/state";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
 
 export default defineComponent({
@@ -20,11 +20,14 @@ export default defineComponent({
     const showInfo = ref(false);
     const listMedia = ref([]);
     const exposureTitle = ref("");
-    const thumbnailURLDefault = ref("");
+    // const thumbnailURLDefault = ref("");
     const hasZeroTeachingContent = ref(true);
     const transitionText = computed(() => fmtMsg(TeacherClassLessonPlan.Transition));
     const lessonCompleteText = computed(() => fmtMsg(TeacherClassLessonPlan.LessonComplete));
-    const teachingActivityText = computed(() => fmtMsg(TeacherClassLessonPlan.TeachingActivity));
+    // const teachingActivityText = computed(() => fmtMsg(TeacherClassLessonPlan.TeachingActivity));
+    const relatedSlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.RelatedSlides));
+    const componentSlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.ComponentSlides));
+    const activitySlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.ActivitySlides));
 
     const timeoutClickItem = 300; // 300ms
     const postClickTimer = ref<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -44,23 +47,22 @@ export default defineComponent({
           exposureTitle.value = lessonCompleteText.value;
           break;
         case exposureTypes.VCP_BLOCK:
-          exposureTitle.value = `${props.exposure.name} (${secondsToTimeStr(getSeconds(props.exposure.duration))})`;
+          exposureTitle.value = relatedSlidesText.value;
           break;
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
           resultList = props.exposure.teachingActivityBlockItems;
-          exposureTitle.value = teachingActivityText.value;
-
+          exposureTitle.value = activitySlidesText.value;
           break;
         case exposureTypes.CONTENT_BLOCK:
           resultList = props.exposure.contentBlockItems;
-          exposureTitle.value = `${props.exposure.name}`;
-          thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
+          exposureTitle.value = componentSlidesText.value;
+          // thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
           break;
         default:
           break;
       }
       listMedia.value = resultList
-        .filter((m: any) => m.media[0].image.url)
+        .filter((m: any) => m.media[0]?.image?.url)
         .map((item: any) => {
           if (!item.media[0]) return;
           item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
@@ -102,11 +104,9 @@ export default defineComponent({
     const isTransitionBlock = computed(() => props.type === exposureTypes.TRANSITION_BLOCK);
     const isLpCompleteBlock = computed(() => props.type === exposureTypes.LP_COMPLETE_BLOCK);
     const isTeachingActivityBlock = computed(() => props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
-    const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
-    const isShowInfoIcon = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
-    const isShowBackButton = computed(
-      () => props.type === exposureTypes.VCP_BLOCK || props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.LP_COMPLETE_BLOCK,
-    );
+    // const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
+    // const isShowInfoIcon = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
+    // const isShowBackButton = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.LP_COMPLETE_BLOCK);
 
     return {
       onClickItem,
@@ -120,12 +120,12 @@ export default defineComponent({
       isTeachingActivityBlock,
       isLpCompleteBlock,
       exposureTitle,
-      thumbnailContentURL,
-      thumbnailURLDefault,
+      // thumbnailContentURL,
+      // thumbnailURLDefault,
       hasZeroTeachingContent,
-      isShowBackButton,
+      // isShowBackButton,
       isTransitionBlock,
-      isShowInfoIcon,
+      // isShowInfoIcon,
     };
   },
 });

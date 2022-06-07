@@ -14,7 +14,7 @@ import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
 import { reactive } from "vue";
 import { notification } from "ant-design-vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { StoreLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 
@@ -160,6 +160,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherEndClass: async (_payload: any) => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
+	  
+	  const roomManager = store.getters["teacherRoom/roomManager"];
+	  await roomManager?.zoomClient.reset();
+
       commit("setApiStatus", {
         code: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",
@@ -191,7 +195,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       // do nothing
     },
     onTeacherUpdateStudentBadge: async (payload: StudentModel[]) => {
-      payload.map(item => {
+      payload.map((item) => {
         commit("setStudentBadge", {
           id: item.id,
           badge: item.badge,
@@ -253,7 +257,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onStudentAnswerSelf: async (payload: Array<Target>) => {
       await dispatch(
         "interactive/setRevealedLocalTarget",
-        payload.map(s => s.id),
+        payload.map((s) => s.id),
         { root: true },
       );
     },

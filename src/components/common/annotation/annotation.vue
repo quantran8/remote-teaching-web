@@ -1,6 +1,6 @@
 <template>
   <div id="canvas-container">
-    <canvas id="canvas"/>
+    <canvas id="canvas" />
   </div>
 </template>
 <style lang="scss" scoped src="./annotation.scss"></style>

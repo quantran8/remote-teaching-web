@@ -3,7 +3,8 @@ import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
 import { Sticker } from "@/store/annotation/state";
 import { FabricObject } from "@/ws";
-import {TargetsVisibleList} from "@/store/lesson/state";
+import { TargetsVisibleList } from "@/store/lesson/state";
+import { VCPlatform } from "@/store/app/state";
 
 export interface ExposureItemMediaModel {
   id: string;
@@ -131,9 +132,21 @@ export interface RoomModel {
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
   oneAndOneDto: any;
+  videoPlatformProvider: VCPlatform
 }
 
 export interface RoomUsersModel {
   teacher: TeacherModel;
   students: Array<StudentModel>;
+}
+
+export interface UnitAndLessonModel {
+  lessonPlanVersionId: string;
+  sequence: number;
+  unit: number;
+  unitId: number;
+}
+
+export interface GenerateTokenModal {
+	token: string;
 }

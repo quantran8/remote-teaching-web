@@ -11,7 +11,7 @@ import IconShrink from "@/assets/teacher-class/minimum.png";
 import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
-import { MatIcon } from "commonui";
+import { MatIcon } from "vue-glcommonui";
 
 export default defineComponent({
   components: {
@@ -35,7 +35,7 @@ export default defineComponent({
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     const isOnePalette = ref(false);
     const checkStudentPalette = () => {
-      if (students.value.every(s => !s.isPalette)) {
+      if (students.value.every((s) => !s.isPalette)) {
         isOnePalette.value = true;
       } else {
         isOnePalette.value = props.student.isPalette;

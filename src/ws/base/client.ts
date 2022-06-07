@@ -1,4 +1,4 @@
-import { GLGlobal } from "@/commonui";
+import { GLGlobal } from "vue-glcommonui";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
@@ -15,6 +15,8 @@ export class GLSocketClient {
   private _hubConnection?: HubConnection;
   private readonly _options?: GLSocketOptions;
   private _isConnected = false;
+  private _listener: any = {};
+
   constructor(options: GLSocketOptions) {
     this._options = options;
   }
@@ -29,13 +31,13 @@ export class GLSocketClient {
     const options = {
       //skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
-      logging: LogLevel.Trace,
+      //   logging: LogLevel.Trace,
       accessTokenFactory: () => GLGlobal.loginInfo().access_token,
     };
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(this.options.url, options)
       .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: retryContext => {
+        nextRetryDelayInMilliseconds: (retryContext) => {
           Logger.log("SIGNAL R DISCONNECTED");
           store.dispatch("setSignalRStatus", { status: SignalRStatus.Disconnected });
           return DEFAULT_RECONNECT_TIMING;
@@ -43,6 +45,7 @@ export class GLSocketClient {
       })
       .configureLogging(LogLevel.Debug)
       .build();
+
     this._hubConnection.onclose(this.onClosed);
     // this._hubConnection
     this._hubConnection.onreconnected((id: any) => {
@@ -68,13 +71,23 @@ export class GLSocketClient {
   }
   async disconnect(): Promise<void> {
     if (!this.isConnected) return;
+	const keys = Object.keys(this._listener);
+	keys.forEach((key) => {
+	  this.hubConnection.off(key);
+	});
     return this._hubConnection?.stop();
   }
   async connect(): Promise<any> {
-    if (this.isConnected) return Promise.resolve();
+    if (this._isConnected) return Promise.resolve();
+    if ([HubConnectionState.Connecting, HubConnectionState.Connected].includes(this.hubConnection.state)) return Promise.resolve();
+    if (this.hubConnection.state === HubConnectionState.Connected) {
+      return Promise.resolve();
+    }
     try {
       await this.init();
       await this.hubConnection.start();
+      Logger.log("Connected success");
+
       const currentClassRoomStatus = store.getters["classRoomStatus"];
       const currentSignalRStatus = store.getters["signalRStatus"];
       if (currentClassRoomStatus === ClassRoomStatus.InClass && currentSignalRStatus === SignalRStatus.Closed) {
@@ -82,6 +95,7 @@ export class GLSocketClient {
       }
       this._isConnected = true;
     } catch (error) {
+	  Logger.error(error);
       this._isConnected = false;
     }
   }
@@ -116,6 +130,11 @@ export class GLSocketClient {
   }
 
   registerEventHandler(handler: WSEventHandler) {
+	const keys = Object.keys(this._listener);
+	keys.forEach((key) => {
+	  this.hubConnection.off(key);
+	});
+
     const handlers: Map<WSEvent, Function> = new Map<WSEvent, Function>();
     handlers.set(StudentWSEvent.JOIN_CLASS, handler.onStudentJoinClass);
     handlers.set(StudentWSEvent.STREAM_CONNECT, handler.onStudentStreamConnect);
@@ -184,9 +203,9 @@ export class GLSocketClient {
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
-        // Logger.info("RECEIVE", key, payload);
         func(payload);
       });
+      this._listener[key] = key;
     });
   }
 }

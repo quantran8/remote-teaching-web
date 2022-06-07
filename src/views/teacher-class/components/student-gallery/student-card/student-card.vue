@@ -1,12 +1,13 @@
 <template>
   <div
-    v-if="isShow && !isNotJoinned"
+    v-if="isShow"
     :class="[
       'student',
       focusedStudent && 'expand',
       isOneToOneStudent && oneAndOne && 'one-student-mode animate__animated animate__zoomIn',
       !isOneToOneStudent && oneAndOne && 'animate__animated animate__zoomOut',
     ]"
+    v-show="!isNotJoinned"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{
@@ -20,13 +21,19 @@
     <div class="student__figure" @mouseover="onMouseChange(true)">
       <div :class="student.raisingHand && 'student__is-question'">
         <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+          <div v-if="!isUsingAgora" :class="['student__video--sub', isSpeaking && 'student__is-speaking', (isNotJoinned || !isTurnOnCamera) && 'd-none']">
+            <canvas
+              :class="['student__video--sub']"
+              :id="student.id + '__sub'"
+            ></canvas>
+          </div>
+
           <div
-            class="student__video--sub"
-            :class="[isSpeaking && 'student__is-speaking', !isTurnOnCamera && 'student__video--disabled']"
-            v-show="!isNotJoinned && isTurnOnCamera"
+            v-else
+            :class="[(isNotJoinned || !isTurnOnCamera) && 'd-none', 'student__video--sub', isSpeaking && 'student__is-speaking']"
             :id="student.id"
           ></div>
-          <div :class="[isSpeaking && 'student__is-speaking']" v-show="!isNotJoinned && !isTurnOnCamera" class="student__img">
+          <div :class="[isSpeaking && 'student__is-speaking', !isNotJoinned && isTurnOnCamera && 'd-none']" class="student__img">
             <img :class="['student-avatar', isOneToOneStudent && 'size-one-one']" alt="boys-avatar" :src="avatarStudent" />
           </div>
         </div>

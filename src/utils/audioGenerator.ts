@@ -4,8 +4,8 @@ const audioGenerator = (path: string, loop = false) => {
   const sound = new Howl({
     src: [require(`@/assets/audio/disconnection${path}`)],
     loop,
-    onplayerror: function() {
-      sound.once("unlock", function() {
+    onplayerror: function () {
+      sound.once("unlock", function () {
         sound.play();
       });
     },

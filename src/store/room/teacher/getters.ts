@@ -17,8 +17,8 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   globalAudios(state: TeacherRoomState): Array<{ studentId: string; tag: string }> {
     return state.students
-      .filter(s => state.globalAudios.indexOf(s.id) !== -1)
-      .map(s => {
+      .filter((s) => state.globalAudios.indexOf(s.id) !== -1)
+      .map((s) => {
         return {
           studentId: s.id,
           tag: `${s.index + 1}`,
@@ -27,8 +27,8 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   localAudios(state: TeacherRoomState): Array<{ studentId: string; tag: string }> {
     return state.students
-      .filter(s => state.localAudios.indexOf(s.id) !== -1)
-      .map(s => {
+      .filter((s) => state.localAudios.indexOf(s.id) !== -1)
+      .map((s) => {
         return {
           studentId: s.id,
           tag: `${s.index + 1}`,
@@ -66,21 +66,21 @@ const getters: GetterTree<TeacherRoomState, any> = {
   //   return state.classView === ClassView.GAME;
   // },
   isAllVideoHidden(state: TeacherRoomState) {
-    const allStudents = state.students.filter(s => s.status === InClassStatus.JOINED);
+    const allStudents = state.students.filter((s) => s.status === InClassStatus.JOINED);
     for (const student of allStudents) {
       if (student.videoEnabled) return false;
     }
     return true;
   },
   isAllAudioMuted(state: TeacherRoomState) {
-    const allStudents = state.students.filter(s => s.status === InClassStatus.JOINED);
+    const allStudents = state.students.filter((s) => s.status === InClassStatus.JOINED);
     for (const student of allStudents) {
       if (student.audioEnabled) return false;
     }
     return true;
   },
   isAllPaletteHidden(state: TeacherRoomState) {
-    const allStudents = state.students.filter(s => s.status === InClassStatus.JOINED);
+    const allStudents = state.students.filter((s) => s.status === InClassStatus.JOINED);
     for (const student of allStudents) {
       if (student.isPalette) return false;
     }

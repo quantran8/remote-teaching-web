@@ -1,16 +1,17 @@
-import { GLServiceBase, ServiceRoute } from "../base.service";
+import { GLServiceBase } from "vue-glcommonui";
 import { RemoteTeachingServiceInterface } from "@/services";
-import { StudentGetRoomResponse, TeacherGetRoomResponse } from "./model";
+import { GenerateTokenResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
+import { store } from "@/store";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
-  serviceRoute: ServiceRoute = { prefix: "remote/v1" };
+  serviceRoute = { prefix: "remote/v1" };
 
   getActiveClassRoom(bfp: string): Promise<TeacherGetRoomResponse> {
     return this.get("teacher/online-session", { browserFingerPrinting: bfp });
   }
 
   teacherStartClassRoom(startModel: JoinSessionModel): Promise<any> {
-    return this.create("teacher/join-session", startModel);
+    return this.create("teacher/join-session", { ...startModel, videoPlatformProvider: store.getters.platform });
   }
 
   teacherEndClassRoom(roomId?: string, markAsComplete?: boolean): Promise<any> {
@@ -49,7 +50,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get(`student/story-dictionary/unit/${unitId}/lesson/${lessonId}`);
   }
 
-  getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<any> {
+  getListLessonByUnit(classId: string, groupId: string, unit: number): Promise<UnitAndLessonResponse> {
     return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }
 
@@ -89,6 +90,13 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       studentId: studentId,
       sessionId: sessionId,
     });
+  }
+  generateOneToOneToken(roomId?: string, studentId?: string):  Promise<GenerateTokenResponse> {
+	let api = `zoom/generate-one-to-one-token?roomId=${roomId}`
+	if(studentId){
+		api += `&studentId=${studentId}`
+	}
+	return this.get(`${api}&`);
   }
 }
 

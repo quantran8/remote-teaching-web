@@ -1,8 +1,11 @@
 <template>
   <div :class="['tc-video', !isGalleryView && 'tc-video--small']">
     <figure class="tc-video__figure">
-      <div class="tc-video__video" :id="teacher?.id" v-show="teacher?.videoEnabled"></div>
-      <div class="teacher-avatar-container" v-if="!teacher?.videoEnabled">
+      <video v-if="!isUsingAgora && isSupportedVideo" class="tc-video__video" :id="teacher?.id + '__video'" v-show="teacher?.videoEnabled" />
+      <canvas v-else-if="!isUsingAgora && !isSupportedVideo" class="tc-video__video" :id="teacher?.id + '__video'" v-show="teacher?.videoEnabled" />
+      <div v-else class="tc-video__video" :id="teacher?.id" v-show="teacher?.videoEnabled"></div>
+     
+	  <div v-if="!teacher?.videoEnabled" class="teacher-avatar-container">
         <img class="teacher-avatar" alt="teacher-avatar" :src="avatarTeacher" />
       </div>
     </figure>
@@ -17,42 +20,6 @@
         <img :src="IconLowWifi" class="tc-action__item--wifi" />
       </span>
     </div>
-    <!-- <div class="item-container">
-      <div class="mask">
-        <div class="info">
-          <BaseButton class="media-button" @click="toggleAudio">
-            <BaseIcon :name="audioIcon" />
-          </BaseButton>
-          <BaseButton class="media-button" @click="toggleVideo">
-            <BaseIcon :name="videoIcon" />
-          </BaseButton>
-        </div>
-      </div>
-    </div> -->
-    <!--      Temporary hide, do not delete-->
-    <!--      <div class="setting" style="display: none">-->
-    <!--        <div class="sound" @dragover="onDragOver" @drop="onDrop">-->
-    <!--          <BaseButton mode="fill">-->
-    <!--            <BaseIcon name="icon-audio-on"></BaseIcon>-->
-    <!--          </BaseButton>-->
-    <!--          <div class="content">-->
-    <!--            <div-->
-    <!--              class="student-audio"-->
-    <!--              v-for="studentAudio in localAudios"-->
-    <!--              :key="studentAudio.studentId"-->
-    <!--            >-->
-    <!--              <BaseTag :tag="studentAudio.tag" />-->
-    <!--            </div>-->
-    <!--          </div>-->
-    <!--          <BaseButton-->
-    <!--            mode="clear"-->
-    <!--            @click="onClickClearAll"-->
-    <!--            v-if="localAudios.length"-->
-    <!--          >-->
-    <!--            <BaseIcon class="close" name="icon-close" />-->
-    <!--          </BaseButton>-->
-    <!--        </div>-->
-    <!--      </div>-->
   </div>
 </template>
 <style lang="scss" scoped src="./teacher-card.scss"></style>

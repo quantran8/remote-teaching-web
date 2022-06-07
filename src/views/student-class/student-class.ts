@@ -1,10 +1,11 @@
 import { StudentClassLocale } from "./../../locales/localeid";
-import { ErrorCode, fmtMsg, LoginInfo, MatIcon, mobileDevice, RoleName } from "@/commonui";
+import { RoleName, LoginInfo, fmtMsg, MatIcon } from "vue-glcommonui";
+import { ErrorCode, mobileDevice } from "@/utils/utils";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
-import { GLApiStatus, GLError, GLErrorCode } from "@/models/error.model";
+import { GLApiStatus, GLErrorCode } from "@/models/error.model";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
@@ -28,7 +29,7 @@ import noAvatar from "@/assets/student-class/no-avatar.png";
 import { notification } from "ant-design-vue";
 import "animate.css";
 import { Logger } from "@/utils/logger";
-import { UserRole } from "@/store/app/state";
+import { UserRole, VCPlatform } from "@/store/app/state";
 
 const fpPromise = FingerprintJS.load();
 
@@ -56,7 +57,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const { studentId, classId } = route.params;
-    const loginInfo: LoginInfo = getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const classRoomState = computed(() => getters["classRoomStatus"]);
 
     const fp = await fpPromise;
@@ -98,7 +99,7 @@ export default defineComponent({
     const student = computed<StudentState>(() => store.getters["studentRoom/student"]);
     const classInfo = computed<StudentState>(() => store.getters["studentRoom/classInfo"]);
     const lessonInfo = computed<LessonInfo>(() => store.getters["studentRoom/classInfo"]);
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
     const teacher = computed<TeacherState>(() => store.getters["studentRoom/teacher"]);
     const students = computed(() => store.getters["studentRoom/students"]);
     const designateTargets = computed(() => store.getters["interactive/targets"]);
@@ -137,6 +138,8 @@ export default defineComponent({
     const defaultUrl =
       "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
     const iconSand = reactive({ animationData: sandClock.default });
+    const platform = computed(() => store.getters["platform"]);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
 
     watch(lessonInfo, async () => {
       try {
@@ -222,7 +225,7 @@ export default defineComponent({
         } else if (apiStatus.value.code === GLErrorCode.CLASS_HAS_BEEN_ENDED) {
           const message = apiStatus.value.message;
           notification.info({
-            message: message,
+            message: `${message}`,
           });
           await router.push(Paths.Parent);
         } else if (apiStatus.value.code === GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT) {
@@ -246,7 +249,7 @@ export default defineComponent({
       try {
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
       } catch (err) {
-        if (err.code === ErrorCode.ConcurrentUserException) {
+        if (err?.code === ErrorCode.ConcurrentUserException) {
           notification.error({
             message: err.message,
           });
@@ -276,7 +279,7 @@ export default defineComponent({
       third: 30, //00:00:30
     };
     const isPlayVideo = ref(false);
-    watch(formattedTime, async currentFormattedTime => {
+    watch(formattedTime, async (currentFormattedTime) => {
       if (toSecond(currentFormattedTime) <= milestonesSecond.first) {
         audioSource.tryReconnectLoop2.stop();
       }
@@ -401,6 +404,7 @@ export default defineComponent({
       joinLoading,
       goToHomePage,
       videosFeedVisible,
+      isUsingAgora,
     };
   },
 });

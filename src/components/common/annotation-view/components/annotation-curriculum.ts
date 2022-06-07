@@ -1,11 +1,12 @@
 import { fabric } from "fabric";
-import { ratioValue, setStrokeColor, starPolygonPoints } from "commonui";
+import { ratioValue, setStrokeColor } from "@/utils/utils";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
 export const annotationCurriculumStudent = () => {
   const { dispatch, getters } = useStore();
   const student = computed(() => getters["studentRoom/student"]);
+  const targetsList = computed(() => getters["lesson/targetsAnnotationList"]);
   const toggleTargetStudent = (event: any, visible: boolean) => {
     dispatch("studentRoom/setTargetsVisibleListAction", {
       userId: student.value.id,
@@ -42,17 +43,13 @@ export const annotationCurriculumStudent = () => {
     if (!bindAll) {
       eventStudentClick(event, tagObject, canvas, item);
       eventTeacherClick(event, tagObject, canvas, item);
-    } else {
-      if (event === "show-all-targets") {
-        if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
-          canvas.add(shape);
-          setStrokeColor(canvas, tagObject, item.color);
-        }
-      } else {
-        if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
-          canvas.add(shape);
-          setStrokeColor(canvas, tagObject, "transparent");
-        }
+    } else if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
+      canvas.add(shape);
+      const target = targetsList.value.find((a: any) => a.tag === tagObject.tag);
+      if (event === "show-all-targets" || (target && target.visible)) {
+        setStrokeColor(canvas, tagObject, item.color);
+      } else if (event === "hide-all-targets") {
+        setStrokeColor(canvas, tagObject, "transparent");
       }
     }
   };
@@ -71,8 +68,12 @@ export const annotationCurriculumStudent = () => {
     const yMetadata = propImage.metaData?.y;
     const xShape = ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom;
     const yShape = ((item.y - yMetadata) * ratio) / zoom;
-    // 0: rect, 1: circle, 2: star
-    let rect, circle, star, points, tagObject;
+    // 0: rect, 1: circle
+    let rect, circle, points, tagObject;
+    const commonProps = {
+      originX: "center",
+      originY: "center",
+    };
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
@@ -81,11 +82,14 @@ export const annotationCurriculumStudent = () => {
           width: (item.width / zoom) * ratio,
           height: (item.height / zoom) * ratio,
           fill: "rgba(255,255,255,0.01)",
+          realFill: item.fill,
+          realOpacity: item.opacity,
           stroke: "transparent",
           strokeWidth: 5,
           id: "annotation-lesson",
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
+          ...commonProps,
         });
         rect.rotate(item.rotate);
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
@@ -97,31 +101,17 @@ export const annotationCurriculumStudent = () => {
           top: yShape,
           radius: (item.width / 2 / zoom) * ratio,
           fill: "rgba(255,255,255,0.01)",
+          realFill: item.fill,
+          realOpacity: item.opacity,
           stroke: "transparent",
           strokeWidth: 5,
           id: "annotation-lesson",
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           perPixelTargetFind: true,
+          ...commonProps,
         });
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
-        break;
-      case (item.type = 2):
-        points = starPolygonPoints(5, (item.width / 2 / zoom) * ratio, (item.width / 4 / zoom) * ratio);
-        star = new fabric.Polygon(points, {
-          stroke: "transparent",
-          left: xShape,
-          top: yShape,
-          strokeWidth: 5,
-          strokeLineJoin: "round",
-          fill: "rgba(255,255,255,0.01)",
-          id: "annotation-lesson",
-          tag: "star-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
-        });
-        star.rotate(item.rotate);
-        tagObject = { tag: "star-" + Math.floor(item.x) + Math.floor(item.y) };
-        processShape(bindAll, event, tagObject, canvas, item, star);
         break;
     }
   };

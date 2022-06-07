@@ -22,18 +22,46 @@
         <span v-else>&#8249;</span>
       </span>
     </div>
+    <div :class="[isGalleryView && 'd-none']">
+      <div class="lesson-container__component-header" v-if="isShowExposureDetail">
+        <BaseButton mode="clear" class="icon" @click="onClickCloseExposure">
+          <BaseIcon name="icon-back"></BaseIcon>
+        </BaseButton>
+        <div class="exposure-title">{{ exposureTitle }}</div>
+        <div class="exposure-info">
+          <img
+            class="exposure-info__icon-info"
+            src="@/assets/images/info.png"
+            @mouseover="toggleInformationBox"
+            @mouseout="toggleInformationBox"
+            alt=""
+          />
+          <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
+            <div v-if="!hasZeroTeachingContent">
+              <div v-for="{ id, textContent } in currentExposure.teachingActivityBlockItems" :key="id" v-html="textContent" />
+            </div>
+            <div v-if="isTransitionBlock">
+              <div v-html="currentExposure.name" />
+            </div>
+            <div v-if="!isTransitionBlock && hasZeroTeachingContent">
+              <Empty imageStyle="max-height: 40px" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div ref="lessonContainer" id="lesson-container" class="lesson-container__body nice-scroll" :class="[isGalleryView && 'd-none']">
       <div class="lesson-container__body--info">
-        <div id="lesson-container__remaining-time">
-          <p>{{ remainingText }} {{ remainingTime }}</p>
-          <p>
-            {{ itemText }} {{ activityStatistic }} <br />
-            {{ pageText }} {{ page }}
-          </p>
-          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" />
-        </div>
         <div class="progress">
           <div class="indicator" :style="{ transform: `scaleX(${progress})` }"></div>
+          <div class="progress__remaining-time">{{ remainingText }} {{ remainingTime }}</div>
+        </div>
+        <div class="lesson-container__statistic">
+          <div class="lesson-container__statistic-info">
+            <div>{{ itemText }} {{ activityStatistic }}</div>
+            <div>{{ pageText }} {{ page }}</div>
+          </div>
+          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" alt="" />
         </div>
       </div>
       <div class="activities">
