@@ -7,6 +7,7 @@ import ZoomVideo, {
   ParticipantPropertiesPayload,
   CaptureVideoOption,
   Participant,
+  ActiveSpeaker,
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
@@ -56,7 +57,6 @@ const HOST_CAPTURE_HEIGHT = 720;
 const CLIENT_CAPTURE_WIDTH = 640;
 const CLIENT_CAPTURE_HEIGHT = 360;
 
-let _speakerTimeout: any = null;
 
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
@@ -68,6 +68,7 @@ export class ZoomClient implements ZoomClientSDK {
   _isInOneToOneRoom: boolean;
   _oneToOneToken?: string;
   _renderedList: Participant[];
+  _speakerTimeout: any = null;
 
   joined = false;
   isMicEnable = false;
@@ -149,8 +150,7 @@ export class ZoomClient implements ZoomClientSDK {
       const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
       if (shouldRemoveParticipant) {
         await this.stopRenderParticipantVideo(shouldRemoveParticipant);
-		this._renderedList = this._renderedList.filter(({ userId }) => userId !== user.userId);
-
+        this._renderedList = this._renderedList.filter(({ userId }) => userId !== user.userId);
       }
     });
     await this.renderPeerVideos();
@@ -160,19 +160,24 @@ export class ZoomClient implements ZoomClientSDK {
     Logger.log(payload);
   };
 
-  async activeSpeaker(payload: Array<{ userId: number; displayName: string }>) {
-    if (_speakerTimeout) {
-      clearTimeout(_speakerTimeout);
-      _speakerTimeout = null;
+  activeSpeaker = (payload: Array<ActiveSpeaker>) => {
+	const { role } = this.option.user;
+    if (this._speakerTimeout) {
+      clearTimeout(this._speakerTimeout);
     }
     const ids = payload.map(({ displayName }) => ({ uid: displayName, level: 1 }));
-    await store.dispatch("teacherRoom/setSpeakingUsers", ids);
-    await store.dispatch("studentRoom/setSpeakingUsers", ids);
-    _speakerTimeout = setTimeout(function () {
-      store.dispatch("teacherRoom/setSpeakingUsers", []);
-      store.dispatch("studentRoom/setSpeakingUsers", []);
-      _speakerTimeout = null;
-    }, 800);
+    if (role === "host") {
+      store.dispatch("teacherRoom/setSpeakingUsers", ids);
+    } else {
+      store.dispatch("studentRoom/setSpeakingUsers", ids);
+    }
+    this._speakerTimeout = setTimeout(() => {
+      if (role === "host") {
+        store.dispatch("teacherRoom/setSpeakingUsers", []);
+      } else {
+        store.dispatch("studentRoom/setSpeakingUsers", []);
+      }
+    }, 1000);
   }
 
   renderParticipantVideo = async (user: Participant) => {
