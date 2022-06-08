@@ -57,7 +57,6 @@ const HOST_CAPTURE_HEIGHT = 720;
 const CLIENT_CAPTURE_WIDTH = 640;
 const CLIENT_CAPTURE_HEIGHT = 360;
 
-
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
   _stream?: typeof Stream;
@@ -74,6 +73,9 @@ export class ZoomClient implements ZoomClientSDK {
   isMicEnable = false;
   isCameraEnable = false;
   inprogress = false;
+
+  _isBeforeOneToOneCameraEnable = false;
+  _isBeforeOneToOneCameraStudentEnable = false;
 
   _defaultCaptureVideoOption: CaptureVideoOption;
   _selectedMicrophoneId?: string;
@@ -161,7 +163,7 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   activeSpeaker = (payload: Array<ActiveSpeaker>) => {
-	const { role } = this.option.user;
+    const { role } = this.option.user;
     if (this._speakerTimeout) {
       clearTimeout(this._speakerTimeout);
     }
@@ -178,7 +180,7 @@ export class ZoomClient implements ZoomClientSDK {
         store.dispatch("studentRoom/setSpeakingUsers", []);
       }
     }, 1000);
-  }
+  };
 
   renderParticipantVideo = async (user: Participant) => {
     try {
@@ -279,15 +281,36 @@ export class ZoomClient implements ZoomClientSDK {
     const isBackToMainRoom = !options.token;
     try {
       if (!this._client) return;
-
+      const { role } = this.option.user;
       Logger.log("Rejoin RTC room: ", options);
-      await this.proactiveDisableVideos(options.studentId ?? options.teacherId);
+      if (role === "host") {
+        await this.proactiveDisableVideos(options.teacherId);
+      }
       await this.stopAudio();
+	  this.removeListener()
       await this.leaveSessionForOneToOne(isBackToMainRoom);
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
       await this.startAudio();
+
+      if (role === "host" && this._isBeforeOneToOneCameraEnable) {
+        Logger.log("Turn on my video again");
+        await store.dispatch("teacherRoom/setTeacherVideo", {
+          id: options.teacherId,
+          enable: true,
+        });
+        this._isBeforeOneToOneCameraEnable = false;
+      }
+      if (role === "host" && this._isBeforeOneToOneCameraStudentEnable) {
+        Logger.log("Turn on one to one student again");
+        await store.dispatch("teacherRoom/setStudentVideo", {
+          id: this._oneToOneStudentId,
+          enable: true,
+        });
+        this._isBeforeOneToOneCameraStudentEnable = false;
+      }
+	  this.registerListener()
     } catch (error) {
       Logger.error(error);
     }
@@ -428,16 +451,22 @@ export class ZoomClient implements ZoomClientSDK {
       const { role } = this.option.user;
       if (role === "host") {
         if (this.isCameraEnable) {
+          this._isBeforeOneToOneCameraEnable = true;
           Logger.log("Turn off my video");
           await store.dispatch("teacherRoom/setTeacherVideo", {
             id: id,
             enable: false,
           });
         }
-        await store.dispatch("teacherRoom/setStudentVideo", {
-          id: this._oneToOneStudentId,
-          enable: false,
-        });
+        const students = store.getters["teacherRoom/students"];
+        const isOneToOneStudentEnabledVideo = students?.find((student: any) => student.id === this._oneToOneStudentId)?.videoEnabled;
+        if (isOneToOneStudentEnabledVideo) {
+          this._isBeforeOneToOneCameraStudentEnable = true;
+          await store.dispatch("teacherRoom/setStudentVideo", {
+            id: this._oneToOneStudentId,
+            enable: false,
+          });
+        }
       }
       await this.delay(200);
     } catch (error) {
