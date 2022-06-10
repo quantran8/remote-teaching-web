@@ -51,7 +51,6 @@ app.component("Lottie", Lottie);
 app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
 app.component("MatIcon", MatIcon);
-app.use(router);
 app.use(store);
 
 //vue-glcommonui plugin
@@ -64,6 +63,7 @@ app.use(GLPlugin, {
 	vueSite: VueSite.GSConnect
   },
 });
+app.use(router);
 
 // Global properties
 app.config.globalProperties.$paths = Paths;
