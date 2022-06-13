@@ -87,14 +87,14 @@ export default defineComponent({
         await dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
       }
       await dispatch("teacherRoom/clearStudentOneId", { id: "" });
+	  await dispatch("teacherRoom/sendOneAndOne", {
+        status: false,
+        id: null,
+      });
 	  if(getters["platform"] === VCPlatform.Zoom){
 	  	const roomManager = getters["teacherRoom/roomManager"];
 		await roomManager?.zoomClient.teacherBackToMainRoom()
 	  }
-      await dispatch("teacherRoom/sendOneAndOne", {
-        status: false,
-        id: null,
-      });
     };
 
     return {

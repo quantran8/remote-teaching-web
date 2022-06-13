@@ -75,7 +75,6 @@ export class ZoomClient implements ZoomClientSDK {
   inprogress = false;
 
   _isBeforeOneToOneCameraEnable = false;
-  _isBeforeOneToOneCameraStudentEnable = false;
 
   _defaultCaptureVideoOption: CaptureVideoOption;
   _selectedMicrophoneId?: string;
@@ -278,39 +277,34 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
-    const isBackToMainRoom = !options.token;
     try {
       if (!this._client) return;
+      await this.stopAudio();
+
       const { role } = this.option.user;
       Logger.log("Rejoin RTC room: ", options);
-      if (role === "host") {
-        await this.proactiveDisableVideos(options.teacherId);
-      }
-      await this.stopAudio();
-	  this.removeListener()
-      await this.leaveSessionForOneToOne(isBackToMainRoom);
+	  await this.proactiveDisableVideos(options.teacherId ?? options.studentId);
+      await this.leaveSessionForOneToOne();
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
       await this.startAudio();
 
-      if (role === "host" && this._isBeforeOneToOneCameraEnable) {
+      if (this._isBeforeOneToOneCameraEnable) {
         Logger.log("Turn on my video again");
-        await store.dispatch("teacherRoom/setTeacherVideo", {
-          id: options.teacherId,
-          enable: true,
-        });
+        if (role === "host") {
+          await store.dispatch("teacherRoom/setTeacherVideo", {
+            id: options.teacherId,
+            enable: true,
+          });
+        } else if (this._oneToOneStudentId === options.studentId) {
+          await store.dispatch("studentRoom/setStudentVideo", {
+            id: options.studentId,
+            enable: true,
+          });
+        }
         this._isBeforeOneToOneCameraEnable = false;
       }
-      if (role === "host" && this._isBeforeOneToOneCameraStudentEnable) {
-        Logger.log("Turn on one to one student again");
-        await store.dispatch("teacherRoom/setStudentVideo", {
-          id: this._oneToOneStudentId,
-          enable: true,
-        });
-        this._isBeforeOneToOneCameraStudentEnable = false;
-      }
-	  this.registerListener()
     } catch (error) {
       Logger.error(error);
     }
@@ -352,11 +346,12 @@ export class ZoomClient implements ZoomClientSDK {
       }
 
       if (!this.isMicEnable) {
+		// to avoid SDK not receiving media device
         await this.delay(500);
         await this.muteAudio();
       }
     } catch (error) {
-      Logger.error(error);
+      Logger.error("Start audio error: ", error);
     }
   }
 
@@ -449,38 +444,31 @@ export class ZoomClient implements ZoomClientSDK {
     try {
       if (!id) return;
       const { role } = this.option.user;
-      if (role === "host") {
-        if (this.isCameraEnable) {
-          this._isBeforeOneToOneCameraEnable = true;
-          Logger.log("Turn off my video");
+      if (this.isCameraEnable) {
+		Logger.log("Turn off my video");
+        if (role === "host") {
           await store.dispatch("teacherRoom/setTeacherVideo", {
-            id: id,
+            id,
+            enable: false,
+          });
+        } else if (this._oneToOneStudentId === id) {
+          await store.dispatch("studentRoom/setStudentVideo", {
+            id,
             enable: false,
           });
         }
-        const students = store.getters["teacherRoom/students"];
-        const isOneToOneStudentEnabledVideo = students?.find((student: any) => student.id === this._oneToOneStudentId)?.videoEnabled;
-        if (isOneToOneStudentEnabledVideo) {
-          this._isBeforeOneToOneCameraStudentEnable = true;
-          await store.dispatch("teacherRoom/setStudentVideo", {
-            id: this._oneToOneStudentId,
-            enable: false,
-          });
-        }
+		this._isBeforeOneToOneCameraEnable = true
       }
+	  // to avoid turn off camera and leave class happening at the same time
       await this.delay(200);
     } catch (error) {
       Logger.error("Proactive Disable Videos", error);
     }
   }
 
-  async leaveSessionForOneToOne(shouldEnd: boolean) {
+  async leaveSessionForOneToOne() {
     try {
-      if (this.option.user.role === "host") {
-        await this._client?.leave(shouldEnd);
-      } else {
-        await this._client?.leave();
-      }
+      await this._client?.leave();
     } catch (error) {
       Logger.error(error);
     }

@@ -68,6 +68,10 @@ export default defineComponent({
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
 		
+		await store.dispatch("teacherRoom/sendOneAndOne", {
+		  status: true,
+	      id: props.student.id,
+		});
         if (store.getters["platform"] === VCPlatform.Zoom) {
 		  const roomManager: TeacherRoomManager = store.getters["teacherRoom/roomManager"];
 		  await store.dispatch("teacherRoom/generateOneToOneToken", {
@@ -75,11 +79,6 @@ export default defineComponent({
 		  });
           await roomManager?.zoomClient.teacherBreakoutRoom(props.student.id);
         }
-		// send singalR event
-        await store.dispatch("teacherRoom/sendOneAndOne", {
-          status: true,
-          id: props.student.id,
-        });
       }
     };
 
