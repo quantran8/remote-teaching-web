@@ -121,10 +121,22 @@ export default defineComponent({
     const setupZoom = async () => {
       let audioTrack: LocalAudioTrack | null = null;
       let videoTrack: LocalVideoTrack | null = null;
-      await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (error) {
+        Logger.error("Get user audio: ", error);
+        havePermissionMicrophone.value = false;
+      }
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (error) {
+        Logger.error("Get user camera: ", error);
+        havePermissionCamera.value = false;
+      }
       try {
         devices.value = await ZoomVideo.getDevices();
       } catch (error) {
+        Logger.error("Get user devices: ", error);
         devices.value = await ZoomVideo.getDevices(true);
       }
       Logger.log("Setup camera");
@@ -132,13 +144,12 @@ export default defineComponent({
         const cams = devices.value.filter(function (device) {
           return device.kind === "videoinput";
         });
-        if (cams.length) {
+        if (cams.length && havePermissionCamera.value) {
           currentCam.value = cams[0];
           currentCamLabel.value = cams[0]?.label;
           listCams.value = cams;
           listCamsId.value = cams.map((cam) => cam.deviceId);
           videoTrack = ZoomVideo.createLocalVideoTrack(cams[0].deviceId);
-          havePermissionCamera.value = true;
         }
       } catch (error) {
         Logger.log("SetupZoom error when create videoTrack =>", error);
@@ -151,13 +162,12 @@ export default defineComponent({
         const mics = devices.value.filter(function (device) {
           return device.kind === "audioinput";
         });
-        if (mics.length) {
+        if (mics.length && havePermissionMicrophone.value) {
           currentMic.value = mics[0];
           currentMicLabel.value = mics[0]?.label;
           listMics.value = mics;
           listMicsId.value = mics.map((mic) => mic.deviceId);
           audioTrack = ZoomVideo.createLocalAudioTrack(mics[0].deviceId);
-          havePermissionMicrophone.value = true;
         }
       } catch (error) {
         Logger.log("SetupZoom error when create audioTrack =>", error);
@@ -176,15 +186,18 @@ export default defineComponent({
       Logger.log("Setup zoom media tracking");
       try {
         const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-        await localTracks.value?.videoTrack?.start(doc);
-
-        await localTracks.value?.audioTrack?.start();
-        await localTracks.value?.audioTrack?.unmute();
-
-        if (!volumeAnimation.value) {
-          volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+        if (havePermissionMicrophone.value) {
+          await localTracks.value?.videoTrack?.start(doc);
         }
-        isConfigTrackingDone.value = true;
+        if (havePermissionMicrophone.value) {
+          await localTracks.value?.audioTrack?.start();
+          await localTracks.value?.audioTrack?.unmute();
+
+          if (!volumeAnimation.value) {
+            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+          }
+        }
+
         preventCloseModal.value = false;
         Logger.log("Setup zoom media tracking done");
       } catch (error) {
@@ -192,6 +205,7 @@ export default defineComponent({
         preventCloseModal.value = false;
         Logger.log(error);
       }
+      isConfigTrackingDone.value = true;
     };
 
     const setupDevice = async () => {
@@ -320,7 +334,7 @@ export default defineComponent({
       AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
       AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
 
-	  isConfigTrackingDone.value = true
+      isConfigTrackingDone.value = true;
     };
 
     const cancelVolumeAnimation = () => {
@@ -521,6 +535,9 @@ export default defineComponent({
       currentCam.value = undefined;
       isOpenMic.value = true;
       isOpenCam.value = true;
+
+      havePermissionCamera.value = true;
+      havePermissionMicrophone.value = true;
 
       Logger.log("Destroy SDK");
     };
