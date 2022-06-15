@@ -31,6 +31,8 @@ export interface TeacherRoomState {
   currentLesson: number;
   currentUnit: number;
   isShowWhiteboard: boolean;
+  imgWidth?: number;
+  imgHeight?: number;
 }
 
 const state: TeacherRoomState = {
