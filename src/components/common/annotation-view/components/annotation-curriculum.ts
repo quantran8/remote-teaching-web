@@ -65,8 +65,8 @@ export const annotationCurriculumStudent = () => {
   ) => {
     const xMetadata = propImage.metaData?.x;
     const yMetadata = propImage.metaData?.y;
-    const imgWidth = getters["teacherRoom/imgWidth"];
-    const imgHeight = getters["teacherRoom/imgHeight"];
+    const imgWidth = getters["annotation/imgWidth"];
+    const imgHeight = getters["annotation/imgHeight"];
     const { imgLeftCrop, ratio } = ratioValue(propImage, imgWidth, imgHeight, widthCanvas, heightCanvas);
     const xShape = ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom;
     const yShape = ((item.y - yMetadata) * ratio) / zoom;

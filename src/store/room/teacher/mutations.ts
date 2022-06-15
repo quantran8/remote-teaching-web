@@ -51,7 +51,6 @@ export interface TeacherRoomMutationInterface<S> {
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
   setWhiteboard(s: S, p: boolean): void;
-  setImgDimension(s: S, p: { width?: number, height?: number }): void;
 }
 
 export interface TeacherRoomMutation<S> extends MutationTree<S>, TeacherRoomMutationInterface<S> {}
@@ -327,10 +326,6 @@ const mutations: TeacherRoomMutation<State> = {
         isPalette: st.isPalette,
       };
     });
-  },
-  setImgDimension(state: TeacherRoomState, p: { width?: number, height?: number }) {
-    state.imgWidth = p.width;
-    state.imgHeight = p.height;
   },
 };
 

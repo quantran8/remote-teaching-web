@@ -5,8 +5,6 @@ import { ClassView, InClassStatus, StudentState, TeacherState } from "../interfa
 import { ClassAction } from "../student/state";
 import { TeacherRoomState } from "./state";
 
-const DEFAULT_RESOLUTION = "1024X722";
-
 const getters: GetterTree<TeacherRoomState, any> = {
   isConnected(state: TeacherRoomState): boolean {
     if (!state.manager || !state.manager.WSClient) return false;
@@ -114,12 +112,6 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   isShowWhiteBoard(state: TeacherRoomState): boolean {
     return state.isShowWhiteboard;
-  },
-  imgWidth(state: TeacherRoomState): number {
-    return state.imgWidth || parseInt(DEFAULT_RESOLUTION.split("X")[0]);
-  },
-  imgHeight(state: TeacherRoomState): number {
-    return state.imgHeight || parseInt(DEFAULT_RESOLUTION.split("X")[1]);
   },
 };
 

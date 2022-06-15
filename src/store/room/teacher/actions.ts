@@ -485,9 +485,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
       Logger.log(error);
     }
   },
-  setImgDimension({ commit }, payload: { width?: number, height?: number }) {
-    commit("setImgDimension", payload);
-  },
 };
 
 export default actions;
