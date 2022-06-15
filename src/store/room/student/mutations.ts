@@ -66,6 +66,7 @@ const mutations: MutationTree<StudentRoomState> = {
       status: room.teacher.connectionStatus,
       disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
+	state.teacherIsDisconnected = room.teacher.connectionStatus === InClassStatus.DEFAULT
     state.students = [];
     for (const st of room.students) {
       const student = {
