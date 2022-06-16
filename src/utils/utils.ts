@@ -28,13 +28,13 @@ export enum DefaultCanvasDimension {
   width = 717,
   height = 435,
 }
-export function ratioValue(propImage: any, widthCanvas: number, heightCanvas: number) {
+export function ratioValue(propImage: any, widthImg: number, heightImg: number, widthCanvas: number, heightCanvas: number) {
   let imgWidthCropFit, imgHeightCropFit;
   const objectFitCenter = 50;
   let widthMetadata, heightMetadata;
   if (propImage.metaData.width === 0 && propImage.metaData.height === 0) {
-    widthMetadata = propImage.width;
-    heightMetadata = propImage.height;
+    widthMetadata = widthImg;
+    heightMetadata = heightImg;
   } else {
     widthMetadata = propImage.metaData.width;
     heightMetadata = propImage.metaData.height;

@@ -495,8 +495,14 @@ export default defineComponent({
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
-    const imgLoad = async () => {
+    const imgLoad = async (e: UIEvent) => {
       if (!canvas) return;
+      const img = e?.target as HTMLImageElement;
+      if (img && img.naturalWidth && img.naturalHeight) {
+        await store.dispatch("annotation/setImgDimension", {width: img.naturalWidth, height: img.naturalHeight});
+      } else {
+        await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
+      }
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
