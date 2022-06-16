@@ -48,9 +48,11 @@ export const annotationCurriculum = () => {
     }
   };
   const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any) => {
-    const { imgLeftCrop, ratio } = ratioValue(propImage, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
+    const imgWidth = getters["annotation/imgWidth"];
+    const imgHeight = getters["annotation/imgHeight"];
+    const { imgLeftCrop, ratio } = ratioValue(propImage, imgWidth, imgHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle

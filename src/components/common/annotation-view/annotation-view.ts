@@ -385,7 +385,13 @@ export default defineComponent({
       },
       { deep: true },
     );
-    const imgLoad = () => {
+    const imgLoad = async (e: UIEvent) => {
+      const img = e?.target as HTMLImageElement;
+      if (img && img.naturalWidth && img.naturalHeight) {
+        await store.dispatch("annotation/setImgDimension", { width: img.naturalWidth, height: img.naturalHeight });
+      } else {
+        await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
+      }
       processAnnotationLesson(
         canvas,
         props.image,
