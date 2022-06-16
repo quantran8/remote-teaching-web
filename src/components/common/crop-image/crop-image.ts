@@ -30,8 +30,8 @@ export default defineComponent({
       return props.imageUrl ? props.imageUrl : {};
     });
 
-    const onImageLoad = () => {
-      emit("img-load");
+    const onImageLoad = (e: Event) => {
+      emit("img-load", e);
     };
 
     const processImg = (withCropData: { url: any; metadata: any }) => {

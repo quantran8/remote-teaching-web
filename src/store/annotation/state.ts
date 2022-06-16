@@ -33,6 +33,8 @@ export interface AnnotationState {
   oneToOne: Drawing;
   stickers: Array<Sticker>;
   lastFabricUpdated: null | LastFabricUpdated;
+  imgWidth?: number;
+  imgHeight?: number;
 }
 
 export interface LastFabricUpdated {
