@@ -4,14 +4,33 @@ import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, ComputedRef, defineComponent, ref, provide, watch } from "vue";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
+import { store } from '@/store';
+
 
 export default defineComponent({
   components: {
     StudentCard,
   },
+  data: () => {
+	return {
+		roomManager: null,
+	}
+  },
+  mounted() {
+    window.addEventListener("resize", this.onWindowResize);
+  },
+  unmounted() {
+	window.removeEventListener("resize", this.onWindowResize);
+  },
+  methods: {
+	onWindowResize() {
+		const roomManager = store.getters["teacherRoom/roomManager"];
+		roomManager?.rerenderParticipantsVideo()
+	}
+  },
   setup() {
-    const store = useStore();
-    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+	const store = useStore();
+	const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     const isGalleryView = computed(() => store.getters["teacherRoom/isGalleryView"]);
     const topStudents = computed(() => students.value.slice(0, 12));
     const oneAndOneStatus = computed(() => {

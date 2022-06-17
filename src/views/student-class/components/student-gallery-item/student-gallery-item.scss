@@ -7,6 +7,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  position: relative;
 }
 
 .sc-gallery-item {
@@ -200,6 +202,7 @@
     $self: &;
     height: 60px;
     width: 60px;
+	position: relative;
 
     &__container {
       height: 100%;
@@ -207,11 +210,26 @@
     &__video {
       height: 100%;
     }
+	
+	&__overlay {
+		top: 0;
+		position: absolute;
+		width: 60px;
+		height: 60px;
+		background: -webkit-radial-gradient(transparent 30px, #f5f5f5 30px);
+		pointer-events: none;
+	}
 
     @media (min-width: $xxl) {
       &:not(#{$self}--current) {
         height: 90px;
         width: 90px;
+		
+		&__overlay {
+			width: 90px;
+			height: 90px;
+		    background: -webkit-radial-gradient(transparent 45px, #f5f5f5 45px);
+		}
       }
     }
   }

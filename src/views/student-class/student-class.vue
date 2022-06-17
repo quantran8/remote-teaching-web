@@ -56,8 +56,8 @@
 		  	'sc-teacher__video',
             'animate__animated',
             'animate__zoomIn',
-			!(teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)) && 'd-none',
           ]"
+		  v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
         >
           <canvas :class="['sc-teacher__video']" :id="teacher?.id + '__sub'"></canvas>
         </div>
@@ -68,8 +68,8 @@
             'sc-teacher__video',
             'animate__animated',
             'animate__zoomIn',
-            !(teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)) && 'd-none',
           ]"
+		  v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
           :id="teacher?.id"
         ></div>
         <div

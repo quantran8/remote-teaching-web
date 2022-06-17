@@ -38,4 +38,10 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
       await this.zoomClient.reset(end);
     }
   }
+
+  rerenderParticipantsVideo() {
+    if (store.getters.platform === VCPlatform.Zoom) {
+      return this.zoomClient.rerenderParticipantsVideo();
+    }
+  }
 }

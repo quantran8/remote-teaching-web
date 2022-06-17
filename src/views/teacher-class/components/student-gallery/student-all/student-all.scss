@@ -20,12 +20,23 @@
 }
 
 .student-list {
+  position: relative;
+
   &:after {
-    content: '';
+    content: "";
     display: block;
-    clear: both;;
+    clear: both;
   }
 
+  canvas.participant-videos {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+	width: 100%;
+	display: block;
+  }
   margin: 0 auto;
   @media (min-width: $large-lap) {
     width: 90%;
