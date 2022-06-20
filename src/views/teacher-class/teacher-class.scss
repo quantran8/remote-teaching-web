@@ -1,5 +1,5 @@
 @import "../../style/abstracts/variables";
-$scale-ratio: 0.7;
+$scale-ratio: 0.68;
 
 .tc {
   display: grid;
@@ -18,9 +18,6 @@ $scale-ratio: 0.7;
     overflow: auto;
   }
   @media (max-width: $large-lap) {
-    &__header {
-      zoom: 0.7;
-    }
     &__fixed-height {
       height: calc(100vh - #{$header-height * $scale-ratio});
     }
