@@ -116,5 +116,8 @@ const actions: ActionTree<AnnotationState, any> = {
   setFabricsInOneMode({ commit }, p: FabricObject[]) {
     commit("setFabricsInOneMode", p);
   },
+  setImgDimension({ commit }, payload: { width?: number, height?: number }) {
+    commit("setImgDimension", payload);
+  },
 };
 export default actions;

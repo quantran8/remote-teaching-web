@@ -2,6 +2,8 @@ import { FabricObject } from "@/ws";
 import { GetterTree } from "vuex";
 import { AnnotationState, LastFabricUpdated, Pointer, Sticker, UserShape } from "./state";
 
+const DEFAULT_RESOLUTION = "1024X722";
+
 const getters: GetterTree<AnnotationState, any> = {
   pointer(state: AnnotationState): Pointer {
     return state.pointer;
@@ -59,6 +61,12 @@ const getters: GetterTree<AnnotationState, any> = {
   },
   lastFabricUpdated(state: AnnotationState): LastFabricUpdated | null {
     return state.lastFabricUpdated;
+  },
+  imgWidth(state: AnnotationState): number {
+    return state.imgWidth || parseInt(DEFAULT_RESOLUTION.split("X")[0]);
+  },
+  imgHeight(state: AnnotationState): number {
+    return state.imgHeight || parseInt(DEFAULT_RESOLUTION.split("X")[1]);
   },
 };
 
