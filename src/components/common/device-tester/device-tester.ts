@@ -125,13 +125,17 @@ export default defineComponent({
         await navigator.mediaDevices.getUserMedia({ audio: true });
       } catch (error) {
         Logger.error("Get user audio: ", error);
-        havePermissionMicrophone.value = false;
+		if(error.message.includes('Permission denied')){
+			havePermissionMicrophone.value = false;
+		}
       }
       try {
         await navigator.mediaDevices.getUserMedia({ video: true });
       } catch (error) {
         Logger.error("Get user camera: ", error);
-        havePermissionCamera.value = false;
+		if(error?.message ==='Permission denied'){
+			havePermissionCamera.value = false;
+		}
       }
       try {
         devices.value = await ZoomVideo.getDevices();
