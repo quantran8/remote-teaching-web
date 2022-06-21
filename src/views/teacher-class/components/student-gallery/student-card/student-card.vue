@@ -21,19 +21,22 @@
     <div class="student__figure" @mouseover="onMouseChange(true)">
       <div :class="student.raisingHand && 'student__is-question'">
         <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
+
           <div
-            v-if="!isUsingAgora && !isNotJoinned && isTurnOnCamera && isOneToOneStudent"
+            v-if="!isUsingAgora && isOneToOneStudent"
+			v-show="!isNotJoinned && isTurnOnCamera"
             :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
           >
             <canvas :id="student.id + '__sub'"></canvas>
           </div>
 
           <div
-            v-else-if="!isNotJoinned && isTurnOnCamera"
+            v-else
+			v-show="!isNotJoinned && isTurnOnCamera"
             :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
             :id="student.id"
           />
-          <div v-else :class="[isSpeaking && 'student__is-speaking']" class="student__img">
+          <div v-if="isNotJoinned || !isTurnOnCamera" :class="[isSpeaking && 'student__is-speaking']" class="student__img">
             <img :class="['student-avatar', isOneToOneStudent && 'size-one-one']" alt="boys-avatar" :src="avatarStudent" />
           </div>
         </div>

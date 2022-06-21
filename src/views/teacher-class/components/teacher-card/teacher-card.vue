@@ -2,12 +2,13 @@
   <div :class="['tc-video', !isGalleryView && 'tc-video--small']">
     <figure class="tc-video__figure">
       <div v-if="isUsingAgora" v-show="teacher?.videoEnabled" class="tc-video__video" :id="teacher?.id" />
-      <div v-else class="tc-video__video" v-show="teacher?.videoEnabled">
-        <video v-if="isSupportedVideo" class="tc-video__video" :id="teacher?.id + '__video'" />
-        <canvas v-else class="tc-video__video" :id="teacher?.id + '__video'" />
+     
+	  <div v-else class="tc-video__video" v-show="teacher?.videoEnabled" :id="teacher?.id">
+        <video v-if="isSupportedVideo" :id="teacher?.id + '__video'" />
+        <canvas v-else :id="teacher?.id + '__video'" />
       </div>
 
-      <div v-show="!teacher?.videoEnabled" class="teacher-avatar-container">
+      <div v-if="!teacher?.videoEnabled" class="teacher-avatar-container">
         <img class="teacher-avatar" alt="teacher-avatar" :src="avatarTeacher" />
       </div>
     </figure>

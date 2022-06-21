@@ -10,34 +10,26 @@
       ref="containerRef"
     >
       <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
-        <video
-          v-if="isCurrent && !isUsingAgora && isSupportedVideo"
-          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
-          :id="student.id + '__video'"
-          :title="student.englishName"
-		  v-show="student.videoEnabled && !isNotJoinned"
-        ></video>
-
         <div
-          v-else-if="isCurrent && !isUsingAgora && !isSupportedVideo"
-          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
-		  v-show="student.videoEnabled && !isNotJoinned"
-        >
-          <canvas class="sc-gallery-item__video" :id="student.id + '__video'" :title="student.englishName"></canvas>
-        </div>
-
-        <div
-          v-else-if="isCurrent && isUsingAgora"
+          v-if="isCurrent && isUsingAgora"
+          v-show="student.videoEnabled && !isNotJoinned"
           :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
           :id="student.id"
           :title="student.englishName"
-		  v-show="student.videoEnabled && !isNotJoinned"
-        ></div>
+        />
+
+        <div
+          v-else-if="isCurrent && !isUsingAgora"
+          v-show="student.videoEnabled && !isNotJoinned"
+          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
+        >
+          <video v-if="isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
+          <canvas v-else :id="student.id + '__video'" :title="student.englishName"/>
+        </div>
 
         <img
-          class="sc-gallery-item__img"
-          :class="[isSpeaking && 'sc-gallery-item--speaking', isNotJoinned && 'sc-gallery-item--disabled-avatar']"
           v-if="!student.videoEnabled || isNotJoinned"
+          :class="['sc-gallery-item__img', isSpeaking && 'sc-gallery-item--speaking', isNotJoinned && 'sc-gallery-item--disabled-avatar']"
           :src="avatarStudent"
           :alt="student.englishName"
           :title="student.englishName"

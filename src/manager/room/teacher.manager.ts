@@ -19,13 +19,18 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     this.WSClient.init();
   }
 
-  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }) {
+  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string }) {
     Logger.log("Platform teacher is using: ", store.getters["platform"]);
     if (!options.teacherId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     if (store.getters.platform === VCPlatform.Agora) {
       await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" });
     } else {
+      if (options.idOne) {
+        await store.dispatch("teacherRoom/generateOneToOneToken", {
+          classId: options.classId,
+        });
+      }
       await this.zoomClient.joinRTCRoom(options);
     }
   }

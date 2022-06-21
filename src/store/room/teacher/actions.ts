@@ -134,6 +134,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       microphone: microphoneStatus,
       classId: state.info.id,
       teacherId: state.user?.id,
+	  idOne: state.idOne
     });
     let currentBandwidth = 0;
     let time = 0;

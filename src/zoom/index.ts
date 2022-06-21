@@ -9,6 +9,8 @@ import ZoomVideo, {
   ParticipantPropertiesPayload,
   CaptureVideoOption,
   ActiveSpeaker,
+  VideoActiveState,
+  Participant,
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
@@ -43,12 +45,6 @@ export interface User {
   displayName: string;
 }
 
-export interface ClassmateVideo {
-  userId: number;
-  bVideoOn: boolean;
-  displayName: string;
-}
-
 // 2160p: 3840x2160
 // 1440p: 2560x1440
 // 1080p: 1920x1080
@@ -74,8 +70,7 @@ export class ZoomClient implements ZoomClientSDK {
   _isInOneToOneRoom: boolean;
   _isInOneToOneProgress: boolean;
   _oneToOneToken?: string;
-  _renderedList: ClassmateVideo[];
-  _sessionParticipants: ClassmateVideo[];
+  _renderedList: Participant[];
   _speakerTimeout: any = null;
   _isHost = false;
 
@@ -100,7 +95,6 @@ export class ZoomClient implements ZoomClientSDK {
     this._oneToOneToken = undefined;
     this._isInOneToOneProgress = false;
     this._renderedList = [];
-    this._sessionParticipants = [];
     this._isHost = options.user.role === "host";
     this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
     this._selectedCameraId = store.getters["cameraDeviceId"];
@@ -153,24 +147,19 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   userUpdated = async (payload: ParticipantPropertiesPayload[]) => {
-    Logger.log("User update: ", payload);
     if (payload.filter(({ userId }) => userId !== this._selfId).some((participant) => "bVideoOn" in participant)) {
       await this.renderPeerVideos();
     }
   };
 
   userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
-    Logger.log("user-removed", payload);
+    Logger.log("User removed", payload);
     for (const user of payload) {
       const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
       if (!shouldRemoveParticipant) return;
       await this.stopRenderParticipantVideo(shouldRemoveParticipant);
       this._renderedList = this._renderedList.filter(({ userId }) => userId !== shouldRemoveParticipant.userId);
     }
-  };
-
-  currentAudioChange = async (payload: { action: string; source: string }) => {
-    Logger.log(payload);
   };
 
   activeSpeaker = (payload: Array<ActiveSpeaker>) => {
@@ -192,7 +181,7 @@ export class ZoomClient implements ZoomClientSDK {
     }, 1000);
   };
 
-  stopRenderParticipantVideo = async (user: ClassmateVideo) => {
+  stopRenderParticipantVideo = async (user: Participant) => {
     try {
       const { userId, displayName } = user;
       const participantElementId = `${displayName}__sub`;
@@ -200,6 +189,7 @@ export class ZoomClient implements ZoomClientSDK {
         const canvas = document.getElementById(participantElementId) as HTMLCanvasElement;
         if (canvas) {
           await this._stream?.stopRenderVideo(canvas, userId);
+          return;
         }
       }
       const canvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
@@ -211,7 +201,7 @@ export class ZoomClient implements ZoomClientSDK {
     }
   };
 
-  renderParticipantVideo = async (user: ClassmateVideo) => {
+  renderParticipantVideo = async (user: Participant) => {
     try {
       const { userId, displayName } = user;
       if (displayName === store.getters["studentRoom/teacher"]?.id || displayName === store.getters["teacherRoom/getStudentModeOneId"]) {
@@ -219,7 +209,6 @@ export class ZoomClient implements ZoomClientSDK {
         const canvas = document.getElementById(participantElementId) as HTMLCanvasElement;
         if (canvas) {
           await this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_90P);
-		 
         }
       } else {
         const canvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
@@ -250,23 +239,21 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   renderPeerVideos = async () => {
-	await this.rerenderParticipantsVideo();
-	
-    const users = this._client?.getAllUser().filter(({ userId }) => userId !== this._selfId) ?? [];
-    const classmates: ClassmateVideo[] = users.map(({ userId, bVideoOn, displayName }) => ({ userId, bVideoOn, displayName }));
+    await this.rerenderParticipantsVideo();
 
-    if (!classmates.length && this._renderedList) {
+    const users = this._client?.getAllUser().filter(({ userId }) => userId !== this._selfId) ?? [];
+
+    if (!users.length && this._renderedList) {
       Logger.log("Remove all rendered students");
-      for (let index = 0; index < this._renderedList.length; index++) {
-        const user = this._renderedList[index];
+      for (const user of this._renderedList) {
         await this.stopRenderParticipantVideo(user);
       }
       this._renderedList = [];
     }
 
-    const shouldRenderParticipants = classmates.filter(({ bVideoOn }) => bVideoOn);
+    const shouldRenderParticipants = users.filter(({ bVideoOn }) => bVideoOn);
 
-    const shouldRemoveParticipants = classmates.filter(({ bVideoOn }) => !bVideoOn);
+    const shouldRemoveParticipants = users.filter(({ bVideoOn }) => !bVideoOn);
 
     const shouldAddedParticipants = shouldRenderParticipants.filter(
       ({ userId, displayName }) =>
@@ -276,7 +263,7 @@ export class ZoomClient implements ZoomClientSDK {
     );
 
     for (const user of shouldAddedParticipants) {
-      Logger.log("Should render:", user.userId);
+      Logger.log("Should render:", user);
       await this.renderParticipantVideo(user);
     }
 
@@ -296,9 +283,9 @@ export class ZoomClient implements ZoomClientSDK {
     camera?: boolean;
     videoEncoderConfigurationPreset?: string;
     microphone?: boolean;
+    idOne?: string;
   }) {
     try {
-      Logger.log("Join RTC room: ", options);
       this.isMicEnable = !!options.microphone;
       this.isCameraEnable = !!options.camera;
 
@@ -307,7 +294,15 @@ export class ZoomClient implements ZoomClientSDK {
         webEndpoint: "zoom.us",
         enforceMultipleVideos: !window.crossOriginIsolated,
       });
-      await this._client.join(this.option.user.channel, this.option.user.token, this.option.user.username);
+      let token = this.option.user.token;
+      let channel = this.option.user.channel;
+      if (options.idOne && this._oneToOneToken) {
+        token = this._oneToOneToken;
+        channel += "-one-to-one";
+      }
+      Logger.log("Join RTC room: ", { ...options, channel, token });
+
+      await this._client.join(channel, token, this.option.user.username);
       this.joined = true;
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
@@ -322,6 +317,9 @@ export class ZoomClient implements ZoomClientSDK {
     } catch (error) {
       this.joined = false;
       Logger.error(error);
+
+      this.zoomRTC.destroyClient();
+      await this.joinRTCRoom(options);
     }
   }
 
@@ -342,7 +340,7 @@ export class ZoomClient implements ZoomClientSDK {
       Logger.log("Rejoin RTC room: ", options);
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
       this._stream = this._client?.getMediaStream();
-      this._selfId = this._client.getCurrentUserInfo().userId;
+      this._selfId = this._client?.getCurrentUserInfo().userId;
 
       await this.startAudio();
 
@@ -413,6 +411,14 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
+  videoActiveChange = async (payload: { state: VideoActiveState; userId: number }) => {
+    if (payload.state === VideoActiveState.Active) {
+      const user = this._client?.getUser(payload.userId);
+      if (!user) return;
+      await this.renderParticipantVideo(user);
+    }
+  };
+
   registerListener() {
     Logger.log("Register listener");
     this._client?.on("connection-change", this.onConnectionChange);
@@ -420,7 +426,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._client?.on("user-updated", this.userUpdated);
     this._client?.on("user-removed", this.userRemoved);
     this._client?.on("active-speaker", this.activeSpeaker);
-    this._client?.on("current-audio-change", this.currentAudioChange);
+    this._client?.on("video-active-change", this.videoActiveChange);
   }
 
   removeListener() {
@@ -431,7 +437,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._client?.off("user-updated", this.userUpdated);
       this._client?.off("user-removed", this.userRemoved);
       this._client?.off("active-speaker", this.activeSpeaker);
-      this._client?.off("current-audio-change", this.currentAudioChange);
+      this._client?.off("video-active-change", this.videoActiveChange);
     } catch (error) {
       Logger.error(error);
     }
@@ -456,7 +462,7 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async stopRenderLocalUserVideo() {
-    Logger.log("Stop render local user video: ");
+    Logger.log("Stop render local user video");
     try {
       await this._stream?.stopVideo();
     } catch (error) {
