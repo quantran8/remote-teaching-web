@@ -12,7 +12,6 @@ import ZoomVideo, {
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
-import { isEqual } from "lodash";
 
 export interface ZoomClientSDK {
   joinRTCRoom(options: {
@@ -64,6 +63,8 @@ const HOST_CAPTURE_HEIGHT = 720;
 const CLIENT_CAPTURE_WIDTH = 640;
 const CLIENT_CAPTURE_HEIGHT = 360;
 
+const PARTICIPANT_CANVAS_ID = "participant-videos";
+
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
   _stream?: typeof Stream;
@@ -97,7 +98,7 @@ export class ZoomClient implements ZoomClientSDK {
     this._oneToOneStudentId = undefined;
     this._isInOneToOneRoom = false;
     this._oneToOneToken = undefined;
-	this._isInOneToOneProgress = false;
+    this._isInOneToOneProgress = false;
     this._renderedList = [];
     this._sessionParticipants = [];
     this._isHost = options.user.role === "host";
@@ -152,22 +153,20 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   userUpdated = async (payload: ParticipantPropertiesPayload[]) => {
+    Logger.log("User update: ", payload);
     if (payload.filter(({ userId }) => userId !== this._selfId).some((participant) => "bVideoOn" in participant)) {
-      Logger.log("user-updated");
       await this.renderPeerVideos();
     }
   };
 
   userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
+    Logger.log("user-removed", payload);
     for (const user of payload) {
-      Logger.log("user-removed", user.userId);
       const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
-      if (shouldRemoveParticipant) {
-        await this.stopRenderParticipantVideo(shouldRemoveParticipant);
-        this._renderedList = this._renderedList.filter(({ userId }) => userId !== user.userId);
-      }
+      if (!shouldRemoveParticipant) return;
+      await this.stopRenderParticipantVideo(shouldRemoveParticipant);
+      this._renderedList = this._renderedList.filter(({ userId }) => userId !== shouldRemoveParticipant.userId);
     }
-    await this.renderPeerVideos();
   };
 
   currentAudioChange = async (payload: { action: string; source: string }) => {
@@ -196,13 +195,14 @@ export class ZoomClient implements ZoomClientSDK {
   stopRenderParticipantVideo = async (user: ClassmateVideo) => {
     try {
       const { userId, displayName } = user;
-	  const participantElementId = `${displayName}__sub`
-      const specialCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
-      if (specialCanvas && specialCanvas.tagName === "CANVAS") {
-        await this._stream?.stopRenderVideo(specialCanvas, userId);
-        return;
+      const participantElementId = `${displayName}__sub`;
+      if (!this._isHost && displayName === this._teacherId) {
+        const canvas = document.getElementById(participantElementId) as HTMLCanvasElement;
+        if (canvas) {
+          await this._stream?.stopRenderVideo(canvas, userId);
+        }
       }
-      const canvas = document.getElementById("participant-videos") as HTMLCanvasElement;
+      const canvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
       if (canvas) {
         await this._stream?.stopRenderVideo(canvas, userId);
       }
@@ -215,14 +215,15 @@ export class ZoomClient implements ZoomClientSDK {
     try {
       const { userId, displayName } = user;
       if (displayName === store.getters["studentRoom/teacher"]?.id || displayName === store.getters["teacherRoom/getStudentModeOneId"]) {
-		const participantElementId = `${displayName}__sub`
+        const participantElementId = `${displayName}__sub`;
         const canvas = document.getElementById(participantElementId) as HTMLCanvasElement;
         if (canvas) {
           await this._stream?.renderVideo(canvas, userId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_90P);
+		 
         }
       } else {
-        const position = getPositionAndSize(this._isHost, displayName);
-        const canvas = document.getElementById("participant-videos") as HTMLCanvasElement;
+        const canvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
+        const position = getPositionAndSize(this._isHost, displayName, canvas);
         if (position && canvas) {
           await this._stream?.renderVideo(canvas, userId, position.w, position.h, position.x, position.y, VideoQuality.Video_90P);
         }
@@ -235,11 +236,10 @@ export class ZoomClient implements ZoomClientSDK {
   rerenderParticipantsVideo = async () => {
     Logger.log("Rerender participants video");
     try {
-      const canvas = document.getElementById("participant-videos") as HTMLCanvasElement;
-      for (let index = 0; index < this._renderedList.length; index++) {
-        const user = this._renderedList[index];
-        const { userId, displayName } = user;
-        const position = getPositionAndSize(this._isHost, displayName);
+      const canvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
+      for (const participant of this._renderedList) {
+        const { userId, displayName } = participant;
+        const position = getPositionAndSize(this._isHost, displayName, canvas);
         if (position && canvas) {
           await this._stream?.adjustRenderedVideoPosition(canvas, userId, position.w, position.h, position.x, position.y);
         }
@@ -250,11 +250,13 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   renderPeerVideos = async () => {
+	await this.rerenderParticipantsVideo();
+	
     const users = this._client?.getAllUser().filter(({ userId }) => userId !== this._selfId) ?? [];
     const classmates: ClassmateVideo[] = users.map(({ userId, bVideoOn, displayName }) => ({ userId, bVideoOn, displayName }));
-    if (isEqual(classmates, this._sessionParticipants)) return;
 
     if (!classmates.length && this._renderedList) {
+      Logger.log("Remove all rendered students");
       for (let index = 0; index < this._renderedList.length; index++) {
         const user = this._renderedList[index];
         await this.stopRenderParticipantVideo(user);
@@ -274,7 +276,7 @@ export class ZoomClient implements ZoomClientSDK {
     );
 
     for (const user of shouldAddedParticipants) {
-      console.log("Turn on video: ", user.displayName);
+      Logger.log("Should render:", user.userId);
       await this.renderParticipantVideo(user);
     }
 
@@ -286,9 +288,6 @@ export class ZoomClient implements ZoomClientSDK {
       }
     }
     this._renderedList = [...shouldRenderParticipants];
-    this._sessionParticipants = [...classmates];
-
-	await this.rerenderParticipantsVideo();
   };
 
   async joinRTCRoom(options: {
@@ -298,35 +297,32 @@ export class ZoomClient implements ZoomClientSDK {
     videoEncoderConfigurationPreset?: string;
     microphone?: boolean;
   }) {
-    if (this.inprogress) return;
-    this.inprogress = true;
     try {
       Logger.log("Join RTC room: ", options);
       this.isMicEnable = !!options.microphone;
       this.isCameraEnable = !!options.camera;
 
       this._client = this.zoomRTC.createClient();
-      await this._client.init("en-US", "Global");
-
+      await this._client.init("en-US", "Global", {
+        webEndpoint: "zoom.us",
+        enforceMultipleVideos: !window.crossOriginIsolated,
+      });
       await this._client.join(this.option.user.channel, this.option.user.token, this.option.user.username);
       this.joined = true;
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
 
       if (this.isCameraEnable) {
-        await this.setCamera({enable: true})
+        await this.setCamera({ enable: this.isCameraEnable });
       }
       await this.startAudio();
+
       this.registerListener();
       await this.renderPeerVideos();
     } catch (error) {
       this.joined = false;
       Logger.error(error);
-
-      this.zoomRTC.destroyClient();
-      await this.joinRTCRoom(options);
     }
-    this.inprogress = false;
   }
 
   async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
@@ -334,19 +330,20 @@ export class ZoomClient implements ZoomClientSDK {
       if (!this._client) return;
       await this.stopAudio();
 
-      Logger.log("Rejoin RTC room: ", options);
       await this.proactiveDisableVideos(options.teacherId ?? options.studentId);
 
-	  const studentsCanvas = document.getElementById("participant-videos") as HTMLCanvasElement;
-	  for (const user of this._renderedList) {
-		await this.stopRenderParticipantVideo(user)
-	  }
-	  this._renderedList = []
-	  await this._stream?.clearVideoCanvas(studentsCanvas)
+      // remove all students video
+      for (const user of this._renderedList) {
+        await this.stopRenderParticipantVideo(user);
+      }
+      this._renderedList = [];
+      await this.leaveSession();
 
-      await this.leaveSessionForOneToOne();
+      Logger.log("Rejoin RTC room: ", options);
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
       this._stream = this._client?.getMediaStream();
+      this._selfId = this._client.getCurrentUserInfo().userId;
+
       await this.startAudio();
 
       if (this._isBeforeOneToOneCameraEnable) {
@@ -459,7 +456,7 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async stopRenderLocalUserVideo() {
-    Logger.log("Stop render local user video: ", this.isCameraEnable);
+    Logger.log("Stop render local user video: ");
     try {
       await this._stream?.stopVideo();
     } catch (error) {
@@ -481,7 +478,7 @@ export class ZoomClient implements ZoomClientSDK {
         this._defaultCaptureVideoOption.cameraId = this._selectedCameraId;
       }
 
-	  const mineVideoElementId = this.option.user.username + "__video"
+      const mineVideoElementId = this.option.user.username + "__video";
 
       if (this._isNotSupportSharedArrayBuffer) {
         const video = document.getElementById(mineVideoElementId) as HTMLVideoElement;
@@ -489,13 +486,6 @@ export class ZoomClient implements ZoomClientSDK {
           await this._stream?.startVideo({ ...this._defaultCaptureVideoOption, videoElement: video });
         }
       } else {
-		const selfId = this._client?.getSessionInfo().userId;
-		if(selfId !== this._selfId){
-			const canvas = document.getElementById(mineVideoElementId) as HTMLCanvasElement;
-			const clonedCanvas = canvas.cloneNode();
-			canvas.replaceWith(clonedCanvas);
-			this._selfId = selfId
-		}
         const canvas = document.getElementById(mineVideoElementId) as HTMLCanvasElement;
         if (canvas && this._selfId) {
           await this._stream?.startVideo(this._defaultCaptureVideoOption);
@@ -503,7 +493,7 @@ export class ZoomClient implements ZoomClientSDK {
         }
       }
     } catch (error) {
-      Logger.error(error);
+      Logger.error("Start render local user video: ", error);
     }
   }
 
@@ -524,14 +514,13 @@ export class ZoomClient implements ZoomClientSDK {
           });
         }
         this._isBeforeOneToOneCameraEnable = true;
-		await this.delay(200)
       }
     } catch (error) {
       Logger.error("Proactive Disable Videos", error);
     }
   }
 
-  async leaveSessionForOneToOne() {
+  async leaveSession() {
     try {
       await this._client?.leave();
     } catch (error) {
@@ -541,8 +530,7 @@ export class ZoomClient implements ZoomClientSDK {
 
   delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-  async teacherBreakoutRoom(oneToOneStudentId: string) {
-    this._oneToOneStudentId = oneToOneStudentId;
+  async teacherBreakoutRoom() {
     const { username, channel } = this.option.user;
     if (!this._isHost) return;
     try {
@@ -566,7 +554,6 @@ export class ZoomClient implements ZoomClientSDK {
         channel: channel,
       });
       this._isInOneToOneRoom = false;
-      this._oneToOneStudentId = undefined;
       this._oneToOneToken = undefined;
     } catch (error) {
       Logger.log(error);
@@ -577,9 +564,9 @@ export class ZoomClient implements ZoomClientSDK {
     if (this._oneToOneStudentId) return;
     const { username, channel } = this.option.user;
     if (this._isHost || this._isInOneToOneRoom) return;
-	if (this._isInOneToOneProgress) return;
+    if (this._isInOneToOneProgress) return;
 
-	this._isInOneToOneProgress = true;
+    this._isInOneToOneProgress = true;
     if (username === oneToOneStudentId) {
       this._oneToOneStudentId = oneToOneStudentId;
       Logger.log("Breakout room");
@@ -590,16 +577,16 @@ export class ZoomClient implements ZoomClientSDK {
       });
       this._isInOneToOneRoom = true;
     }
-	this._isInOneToOneProgress = false;
+    this._isInOneToOneProgress = false;
   }
 
   async studentBackToMainRoom() {
     if (!this._oneToOneStudentId) return;
     const { username, channel } = this.option.user;
     if (this._isHost || !this._isInOneToOneRoom) return;
-	if (this._isInOneToOneProgress) return;
+    if (this._isInOneToOneProgress) return;
 
-	this._isInOneToOneProgress = true;
+    this._isInOneToOneProgress = true;
     if (username === this._oneToOneStudentId) {
       Logger.log("Back to main room");
       await this.rejoinRTCRoom({
@@ -610,7 +597,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._oneToOneToken = undefined;
       this._oneToOneStudentId = undefined;
     }
-	this._isInOneToOneProgress = false;
+    this._isInOneToOneProgress = false;
   }
 
   async reset(end = false) {

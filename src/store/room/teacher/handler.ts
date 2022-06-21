@@ -68,6 +68,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
           message: `It seems ${student.englishName} had some connectivity issue due to which had to drop out from the class`,
         });
       }
+	  await state.manager?.zoomClient?.rerenderParticipantsVideo()
     },
     onStudentSendUnity: async (payload: any) => {
       await dispatch(

@@ -1,3 +1,4 @@
+import { Logger } from '@/utils/logger';
 import { VCPlatform } from "@/store/app/state";
 import { ZoomClient, ZoomClientOptions, ZoomEventHandler } from "./../../zoom";
 import { AgoraClient, AgoraClientOptions, AgoraEventHandler } from "@/agora";
@@ -67,20 +68,19 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     }
   }
 
-  async updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>, oneToOneStudentId?: string) {
+  async updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
     if (store.getters.platform === VCPlatform.Agora) {
       return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
     } else {
-      if (oneToOneStudentId) {
-        await store.dispatch("studentRoom/generateOneToOneToken", {
-          classId: this.zoomClient.option.user.channel,
-          studentId: this.zoomClient.option.user.username,
-        });
-		return this.zoomClient.studentBreakoutRoom(oneToOneStudentId);
-      } else {
-		return this.zoomClient.studentBackToMainRoom();
-	  }
-    }
+      Logger.log("Zoom update feed")
+	  return this.zoomClient.rerenderParticipantsVideo()
+	}
+  }
+
+  async studentOneAndOne(cameras: Array<string>, audios: Array<string>) {
+    if (store.getters.platform === VCPlatform.Agora) {
+      return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+    } 
   }
 
   getBandwidth() {

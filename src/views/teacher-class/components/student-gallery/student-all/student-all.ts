@@ -67,7 +67,6 @@ export default defineComponent({
         deep: true,
       },
     );
-
     const focusedStudent = ref<string>("");
     const updateFocusStudent = (studentId?: string) => {
       if (studentId) {

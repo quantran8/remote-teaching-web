@@ -59,7 +59,7 @@
           ]"
 		  v-show="teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne)"
         >
-          <canvas :class="['sc-teacher__video']" :id="teacher?.id + '__sub'"></canvas>
+          <canvas :id="teacher?.id + '__sub'"></canvas>
         </div>
 
         <div

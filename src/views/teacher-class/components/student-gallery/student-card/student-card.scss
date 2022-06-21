@@ -13,7 +13,7 @@
 
 @mixin style-layout-3 {
   @include grid(2, 2%);
-  &:nth-last-child() {
+  &:nth-child(3) {
     left: 50%;
     transform: translateX(-50%);
   }
@@ -170,6 +170,9 @@
     &.student__video--disabled {
       background-color: #fff;
     }
+	canvas {
+		object-fit: cover;
+	}
   }
   &__img {
     object-fit: cover;
@@ -184,10 +187,6 @@
     left: 0;
     bottom: 0;
     right: 0;
-
-	&--sub{
-		object-fit: cover;
-	}
   }
   &__info {
     position: absolute;

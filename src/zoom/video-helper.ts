@@ -1,5 +1,4 @@
-export const getPositionAndSize = (isHost: boolean, displayName: string) => {
-  const canvas = document.getElementById("participant-videos") as HTMLCanvasElement;
+export const getPositionAndSize = (isHost: boolean, displayName: string, canvas: HTMLCanvasElement) => {
   const div = document.getElementById(`${displayName}__sub-wrapper`) as HTMLDivElement;
   if (canvas && div) {
     const offsetHeight = isHost ? div.offsetHeight : div.offsetWidth;

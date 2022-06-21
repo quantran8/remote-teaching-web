@@ -73,11 +73,9 @@ export default defineComponent({
 	      id: props.student.id,
 		});
         if (store.getters["platform"] === VCPlatform.Zoom) {
-		  const roomManager: TeacherRoomManager = store.getters["teacherRoom/roomManager"];
 		  await store.dispatch("teacherRoom/generateOneToOneToken", {
-			 classId: roomManager?.zoomClient.option.user.channel
+			 classId: store.getters["teacherRoom/info"]?.id
 		  });
-          await roomManager?.zoomClient.teacherBreakoutRoom(props.student.id);
         }
       }
     };

@@ -478,8 +478,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async generateOneToOneToken({ state }, payload: { classId: string }) {
     try {
       const response = await RemoteTeachingService.generateOneToOneToken(payload.classId);
-      if (state.manager?.zoomClient) {
-        state.manager.zoomClient.oneToOneToken = response.token;
+	  const zoom = state.manager?.zoomClient
+      if (zoom) {
+        zoom.oneToOneToken = response.token;
+		await zoom.teacherBreakoutRoom()
       }
     } catch (error) {
       Logger.log(error);
