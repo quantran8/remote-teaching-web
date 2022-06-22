@@ -28,7 +28,7 @@
     clear: both;
   }
 
-  canvas.participant-videos {
+  .participant-videos-wrapper {
     top: 0;
     bottom: 0;
     left: 0;
@@ -37,6 +37,7 @@
 	width: 100%;
 	display: block;
   }
+  
   margin: 0 auto;
   @media (min-width: $large-lap) {
     width: 90%;

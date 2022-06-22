@@ -321,33 +321,39 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
+  replaceVideoCanvas = (elementId: string) => {
+    const canvas = document.getElementById(elementId) as HTMLCanvasElement;
+    if (canvas) {
+      const cloneCanvas = canvas.cloneNode();
+      canvas.replaceWith(cloneCanvas);
+    }
+  };
+
   async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
     try {
       if (!this._client) return;
       await this.stopAudio();
 
       await this.proactiveDisableVideos(options.teacherId ?? options.studentId);
+      // replace self canvas
+      this.replaceVideoCanvas(this.option.user.username + "__video");
 
       // remove all students video
       for (const user of this._renderedList) {
         await this.stopRenderParticipantVideo(user);
       }
       this._renderedList = [];
+      this.replaceVideoCanvas(PARTICIPANT_CANVAS_ID);
 
       await this.leaveSession();
 
       Logger.log("Rejoin RTC room: ", options);
+
       await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
       this._stream = this._client?.getMediaStream();
       this._selfId = this._client?.getCurrentUserInfo().userId;
 
       await this.startAudio();
-
-      // replace self canvas
-      const mineVideoElementId = this.option.user.username + "__video";
-      const canvas = document.getElementById(mineVideoElementId) as HTMLCanvasElement;
-      const cloneCanvas = canvas.cloneNode();
-      canvas.replaceWith(cloneCanvas);
 
       if (this._isBeforeOneToOneCameraEnable) {
         Logger.log("Turn on my video again");
@@ -570,6 +576,7 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async studentBreakoutRoom(oneToOneStudentId: string) {
+    this.replaceVideoCanvas(`${this._teacherId}__sub`);
     if (this._oneToOneStudentId) return;
     const { username, channel } = this.option.user;
     if (this._isHost || this._isInOneToOneRoom) return;
@@ -590,6 +597,7 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async studentBackToMainRoom() {
+    this.replaceVideoCanvas(`${this._teacherId}__sub`);
     if (!this._oneToOneStudentId) return;
     const { username, channel } = this.option.user;
     if (this._isHost || !this._isInOneToOneRoom) return;

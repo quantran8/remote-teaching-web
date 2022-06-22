@@ -65,8 +65,12 @@
           :id="teacher?.id"
         ></div>
         <div
-          v-if="!(teacher?.videoEnabled && !showBearConfused && (!isOneToOne || studentIsOneToOne))"
-          :class="['sc-teacher__avatar-container', 'animate__animated', 'animate__zoomIn']"
+          :class="[
+            'sc-teacher__avatar-container',
+            'animate__animated',
+            'animate__zoomIn',
+          ]"
+		  v-if="!teacher?.videoEnabled && !showBearConfused && (!isOneToOne || (isOneToOne && studentIsOneToOne))"
         >
           <img class="sc-teacher__avatar" :src="avatarTeacher" />
         </div>

@@ -12,9 +12,10 @@
       :focusStudentId="focusedStudent"
     />
 
-    <canvas v-show="!oneAndOneStatus && totalOnlineStudents" class="participant-videos" :id="'participant-videos'" width="700" height="1080"/>
+    <div class="participant-videos-wrapper" v-show="!oneAndOneStatus && totalOnlineStudents">
+      <canvas :id="'participant-videos'" width="850" height="1080" />
+    </div>
   </div>
-
 </template>
 <style lang="scss" scoped src="./student-all.scss"></style>
 <script lang="ts" src="./student-all.ts"></script>
