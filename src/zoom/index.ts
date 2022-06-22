@@ -262,17 +262,15 @@ export class ZoomClient implements ZoomClientSDK {
         ) === -1,
     );
 
+    for (const user of shouldRemoveParticipants) {
+      if (this._renderedList.find(({ displayName }) => displayName === user.displayName)) {
+        await this.stopRenderParticipantVideo(user);
+      }
+    }
+
     for (const user of shouldAddedParticipants) {
       Logger.log("Should render:", user);
       await this.renderParticipantVideo(user);
-    }
-
-    if (shouldRemoveParticipants.length) {
-      for (const user of shouldRemoveParticipants) {
-        if (this._renderedList.find(({ displayName }) => displayName === user.displayName)) {
-          await this.stopRenderParticipantVideo(user);
-        }
-      }
     }
     this._renderedList = [...shouldRenderParticipants];
   };
@@ -335,6 +333,7 @@ export class ZoomClient implements ZoomClientSDK {
         await this.stopRenderParticipantVideo(user);
       }
       this._renderedList = [];
+
       await this.leaveSession();
 
       Logger.log("Rejoin RTC room: ", options);
@@ -343,6 +342,12 @@ export class ZoomClient implements ZoomClientSDK {
       this._selfId = this._client?.getCurrentUserInfo().userId;
 
       await this.startAudio();
+
+      // replace self canvas
+      const mineVideoElementId = this.option.user.username + "__video";
+      const canvas = document.getElementById(mineVideoElementId) as HTMLCanvasElement;
+      const cloneCanvas = canvas.cloneNode();
+      canvas.replaceWith(cloneCanvas);
 
       if (this._isBeforeOneToOneCameraEnable) {
         Logger.log("Turn on my video again");
@@ -483,9 +488,7 @@ export class ZoomClient implements ZoomClientSDK {
         this._selectedCameraId = cams[0].deviceId;
         this._defaultCaptureVideoOption.cameraId = this._selectedCameraId;
       }
-
       const mineVideoElementId = this.option.user.username + "__video";
-
       if (this._isNotSupportSharedArrayBuffer) {
         const video = document.getElementById(mineVideoElementId) as HTMLVideoElement;
         if (video) {
