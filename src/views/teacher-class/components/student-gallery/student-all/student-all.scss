@@ -48,8 +48,20 @@
   }
 
   &.student-layout-6,
+  &.student-layout-2 {
+    @media (max-width: 1799px) {
+      width: 90%;
+    }
+    @media (min-width: 1800px) {
+      width: 700px;
+    }
+  }
+
   &.student-layout-3 {
     @media (max-width: 1799px) {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
       width: 90%;
     }
     @media (min-width: 1800px) {

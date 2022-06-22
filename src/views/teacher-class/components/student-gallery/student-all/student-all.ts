@@ -52,7 +52,10 @@ export default defineComponent({
       (value) => {
         const onlineStudents = value.filter((s) => s.status === InClassStatus.JOINED).length;
         totalOnlineStudents.value = onlineStudents;
-        if (onlineStudents <= 3) {
+		if (onlineStudents <= 2) {
+			scaleVideoOption.value = 1.6;
+			studentLayout.value = 2;
+        } else if (onlineStudents == 3) {
           scaleVideoOption.value = 1.6;
           studentLayout.value = 3;
         } else if (onlineStudents <= 6) {
