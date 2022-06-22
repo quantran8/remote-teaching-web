@@ -92,11 +92,10 @@ export class ZoomClient implements ZoomClientSDK {
     this._selectedCameraId = store.getters["cameraDeviceId"];
     this._teacherId = store.getters["studentRoom/teacher"]?.id;
     this._defaultCaptureVideoOption = {
-      hd: options.user.role === "host",
+      hd: false,
       cameraId: this._selectedCameraId,
       captureWidth: options.user.role === "host" ? HOST_CAPTURE_WIDTH : CLIENT_CAPTURE_WIDTH,
       captureHeight: options.user.role === "host" ? HOST_CAPTURE_HEIGHT : CLIENT_CAPTURE_HEIGHT,
-      mirrored: true,
     };
   }
 
