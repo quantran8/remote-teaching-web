@@ -1,3 +1,4 @@
+import { ref } from 'vue';
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent } from "@vue/runtime-core";
 import { useStore } from "vuex";
@@ -44,6 +45,7 @@ export default defineComponent({
     const store = useStore();
     const isVisible = computed(() => store.getters["studentRoom/videosFeedVisible"]);
     const topStudents = computed(() => props.students.slice(0, 11));
+    const maximumGroup = ref<number>(2);
 
     const onEnter = (el: HTMLDivElement) => {
       gsap.from(el.querySelector(".sc-gallery-item"), { translateX: 0, clearProps: "all", translateY: 0, duration: 1, ease: "Power2.easeInOut" });
@@ -61,6 +63,6 @@ export default defineComponent({
       return !isMobileBrowser && !props.isOneToOne;
     });
 
-    return { topStudents, onEnter, onLeave, isVisible, toggle, isDisplay };
+    return { topStudents, onEnter, onLeave, isVisible, toggle, isDisplay, maximumGroup };
   },
 });

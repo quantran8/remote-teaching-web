@@ -1,8 +1,8 @@
 <template>
   <div :class="['sc-gallery', !isVisible && 'sc-gallery--hide']" v-show="isDisplay">
     <div class="sc-gallery__container" v-dragscroll.x>
-      <div class="participant-videos-wrapper">
-        <canvas class="participant-videos" :id="'participant-videos'" :width="topStudents.length * 120 - 30" height="135" />
+      <div class="participant-videos-wrapper" :id="'participant-videos-wrapper'">
+      	<canvas v-for="n in maximumGroup" :key="n" :id="`participant-videos-${n}`" />
       </div>
       <StudentGalleryItem v-for="student in topStudents" :key="student.id" :student="student" :raisedHand="student.raisingHand ?? false" />
     </div>

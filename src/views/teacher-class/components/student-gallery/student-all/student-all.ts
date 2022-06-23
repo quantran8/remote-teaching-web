@@ -4,33 +4,32 @@ import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, ComputedRef, defineComponent, ref, provide, watch } from "vue";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
-import { store } from '@/store';
-
+import { store } from "@/store";
 
 export default defineComponent({
   components: {
     StudentCard,
   },
   data: () => {
-	return {
-		roomManager: null,
-	}
+    return {
+      timer: null as any,
+    };
   },
-  mounted() {
+  async mounted() {
     window.addEventListener("resize", this.onWindowResize);
   },
   unmounted() {
-	window.removeEventListener("resize", this.onWindowResize);
+    window.removeEventListener("resize", this.onWindowResize);
   },
   methods: {
-	onWindowResize() {
-		const roomManager = store.getters["teacherRoom/roomManager"];
-		roomManager?.rerenderParticipantsVideo()
-	}
+    async onWindowResize() {
+      const roomManager = store.getters["teacherRoom/roomManager"];
+      await roomManager?.rerenderParticipantsVideo();
+    },
   },
   setup() {
-	const store = useStore();
-	const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+    const store = useStore();
+    const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     const isGalleryView = computed(() => store.getters["teacherRoom/isGalleryView"]);
     const topStudents = computed(() => students.value.slice(0, 12));
     const oneAndOneStatus = computed(() => {
@@ -39,6 +38,8 @@ export default defineComponent({
     const noStudentJoinText = computed(() => fmtMsg(TeacherClassGallery.NoStudentJoinClass));
 
     const studentLayout = ref<number>(3);
+    const maximumGroup = ref<number>(2);
+
     const totalOnlineStudents = ref<number>(0);
     const scaleVideoOption = ref<number>(1.6);
     const lessonPlanCss = ref<string>("");
@@ -52,18 +53,18 @@ export default defineComponent({
       (value) => {
         const onlineStudents = value.filter((s) => s.status === InClassStatus.JOINED).length;
         totalOnlineStudents.value = onlineStudents;
-		if (onlineStudents <= 2) {
-			scaleVideoOption.value = 1.6;
-			studentLayout.value = 2;
-        } else if (onlineStudents == 3) {
+        if (onlineStudents <= 2) {
+          scaleVideoOption.value = 1.6;
+          studentLayout.value = 2;
+        } else if (onlineStudents <= 3) {
           scaleVideoOption.value = 1.6;
           studentLayout.value = 3;
         } else if (onlineStudents <= 6) {
-          studentLayout.value = 6;
           scaleVideoOption.value = 1.4;
+          studentLayout.value = 6;
         } else {
-          studentLayout.value = 12;
           scaleVideoOption.value = 2;
+          studentLayout.value = 12;
         }
       },
       {
@@ -89,6 +90,7 @@ export default defineComponent({
       totalOnlineStudents,
       scaleVideoOption,
       noStudentJoinText,
+	  maximumGroup
     };
   },
 });

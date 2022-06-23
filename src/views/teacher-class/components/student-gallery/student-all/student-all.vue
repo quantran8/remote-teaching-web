@@ -3,6 +3,7 @@
     {{ noStudentJoinText }}
   </h2>
   <div :id="'student-list'" :class="oneAndOneStatus ? 'oneToOne' : lessonPlanCss + ' student-list student-layout-' + studentLayout">
+	
     <StudentCard
       v-for="student in topStudents"
       :key="student.id"
@@ -11,9 +12,8 @@
       :setModeOne="true"
       :focusStudentId="focusedStudent"
     />
-
-    <div class="participant-videos-wrapper" v-show="!oneAndOneStatus && totalOnlineStudents">
-      <canvas :id="'participant-videos'" width="850" height="1080" />
+	<div class="participant-videos-wrapper" v-show="!oneAndOneStatus && totalOnlineStudents">
+      <canvas v-for="n in maximumGroup" :key="n" :id="`participant-videos-${n}`" />
     </div>
   </div>
 </template>
