@@ -125,13 +125,17 @@ export default defineComponent({
         await navigator.mediaDevices.getUserMedia({ audio: true });
       } catch (error) {
         Logger.error("Get user audio: ", error);
-        havePermissionMicrophone.value = false;
+        if (error?.name === "NotAllowedError") {
+          havePermissionMicrophone.value = false;
+        }
       }
       try {
         await navigator.mediaDevices.getUserMedia({ video: true });
       } catch (error) {
         Logger.error("Get user camera: ", error);
-        havePermissionCamera.value = false;
+        if (error?.name === "NotAllowedError") {
+          havePermissionCamera.value = false;
+        }
       }
       try {
         devices.value = await ZoomVideo.getDevices();
@@ -140,59 +144,63 @@ export default defineComponent({
         devices.value = await ZoomVideo.getDevices(true);
       }
       Logger.log("Setup camera");
-      try {
-        const cams = devices.value.filter(function (device) {
-          return device.kind === "videoinput";
-        });
-        if (cams.length && havePermissionCamera.value) {
-          currentCam.value = cams[0];
-          currentCamLabel.value = cams[0]?.label;
-          listCams.value = cams;
-          listCamsId.value = cams.map((cam) => cam.deviceId);
-          videoTrack = ZoomVideo.createLocalVideoTrack(cams[0].deviceId);
+      if (havePermissionCamera.value) {
+        try {
+          const cams = devices.value.filter(function (device) {
+            return device.kind === "videoinput";
+          });
+          if (cams.length && havePermissionCamera.value) {
+            currentCam.value = cams[0];
+            currentCamLabel.value = cams[0]?.label;
+            listCams.value = cams;
+            listCamsId.value = cams.map((cam) => cam.deviceId);
+            videoTrack = ZoomVideo.createLocalVideoTrack(cams[0].deviceId);
+          }
+        } catch (error) {
+          Logger.log("SetupZoom error when create videoTrack =>", error);
+          if (error?.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
+          preventCloseModal.value = false;
+          zoomCamError.value = true;
         }
-      } catch (error) {
-        Logger.log("SetupZoom error when create videoTrack =>", error);
-        if (error?.code === "PERMISSION_DENIED") havePermissionCamera.value = false;
-        preventCloseModal.value = false;
-        zoomCamError.value = true;
       }
+
       Logger.log("Setup microphone");
-      try {
-        const mics = devices.value.filter(function (device) {
-          return device.kind === "audioinput";
-        });
-        if (mics.length && havePermissionMicrophone.value) {
-          currentMic.value = mics[0];
-          currentMicLabel.value = mics[0]?.label;
-          listMics.value = mics;
-          listMicsId.value = mics.map((mic) => mic.deviceId);
-          audioTrack = ZoomVideo.createLocalAudioTrack(mics[0].deviceId);
+      if (havePermissionMicrophone.value) {
+        try {
+          const mics = devices.value.filter(function (device) {
+            return device.kind === "audioinput";
+          });
+          if (mics.length && havePermissionMicrophone.value) {
+            currentMic.value = mics[0];
+            currentMicLabel.value = mics[0]?.label;
+            listMics.value = mics;
+            listMicsId.value = mics.map((mic) => mic.deviceId);
+            audioTrack = ZoomVideo.createLocalAudioTrack(mics[0].deviceId);
+          }
+        } catch (error) {
+          Logger.log("SetupZoom error when create audioTrack =>", error);
+          if (error?.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
+          preventCloseModal.value = false;
+          zoomMicError.value = true;
         }
-      } catch (error) {
-        Logger.log("SetupZoom error when create audioTrack =>", error);
-        if (error?.code === "PERMISSION_DENIED") havePermissionMicrophone.value = false;
-        preventCloseModal.value = false;
-        zoomMicError.value = true;
+        Logger.log("Setup zoom media done");
+        localTracks.value = {
+          audioTrack,
+          videoTrack,
+        };
       }
-      Logger.log("Setup zoom media done");
-      localTracks.value = {
-        audioTrack,
-        videoTrack,
-      };
     };
 
     const setupZoomTracking = async () => {
       Logger.log("Setup zoom media tracking");
       try {
         const doc = document.getElementById(videoElementId) as HTMLVideoElement;
-        if (havePermissionMicrophone.value) {
+        if (havePermissionMicrophone.value && currentCam.value) {
           await localTracks.value?.videoTrack?.start(doc);
         }
-        if (havePermissionMicrophone.value) {
+        if (havePermissionMicrophone.value && currentMic.value) {
           await localTracks.value?.audioTrack?.start();
           await localTracks.value?.audioTrack?.unmute();
-
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
           }
@@ -361,6 +369,7 @@ export default defineComponent({
       try {
         if (!isConfigTrackingDone.value) return;
         if (!localTracks.value?.audioTrack) return;
+        if (!havePermissionMicrophone.value) return;
         if (currentMicValue) {
           if (isUsingAgora.value) {
             await localTracks.value?.audioTrack.setEnabled(true);
@@ -386,6 +395,8 @@ export default defineComponent({
       try {
         if (!isConfigTrackingDone.value) return;
         if (!localTracks.value?.videoTrack) return;
+        if (!havePermissionCamera.value) return;
+
         if (currentCamValue) {
           if (isUsingAgora.value) {
             await localTracks.value?.videoTrack.play(videoElementId, {mirror: false});
