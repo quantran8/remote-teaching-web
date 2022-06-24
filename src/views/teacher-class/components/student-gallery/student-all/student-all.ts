@@ -24,7 +24,19 @@ export default defineComponent({
   methods: {
     async onWindowResize() {
       const roomManager = store.getters["teacherRoom/roomManager"];
-      await roomManager?.rerenderParticipantsVideo();
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      const canvasWrapper = document.getElementById("participant-videos-wrapper");
+      if (canvasWrapper) {
+        canvasWrapper.style.visibility = "hidden";
+      }
+      this.timer = setTimeout(async () => {
+        await roomManager?.rerenderParticipantsVideo();
+        if (canvasWrapper) {
+          canvasWrapper.style.visibility = "visible";
+        }
+      }, 200);
     },
   },
   setup() {
@@ -90,7 +102,7 @@ export default defineComponent({
       totalOnlineStudents,
       scaleVideoOption,
       noStudentJoinText,
-	  maximumGroup
+      maximumGroup,
     };
   },
 });

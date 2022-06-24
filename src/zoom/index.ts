@@ -58,6 +58,8 @@ const HOST_CAPTURE_HEIGHT = 720;
 const CLIENT_CAPTURE_WIDTH = 640;
 const CLIENT_CAPTURE_HEIGHT = 360;
 
+const MAXIMUM_PARTICIPANT_PER_CANVAS = 6;
+
 enum PARTICIPANT_GROUPS {
   ONE = "1",
   TWO = "2",
@@ -163,7 +165,7 @@ export class ZoomClient implements ZoomClientSDK {
       const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
       if (!shouldRemoveParticipant) return;
       await this.stopRenderParticipantVideo(shouldRemoveParticipant);
-	  delete this._renderedGroup[shouldRemoveParticipant.displayName]
+      delete this._renderedGroup[shouldRemoveParticipant.displayName];
       this._renderedList = this._renderedList.filter(({ userId }) => userId !== shouldRemoveParticipant.userId);
     }
   };
@@ -197,7 +199,7 @@ export class ZoomClient implements ZoomClientSDK {
           await this._stream?.stopRenderVideo(canvas, userId);
         }
       } else {
-        const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + '-' + this._renderedGroup[displayName]) as HTMLCanvasElement;
+        const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + this._renderedGroup[displayName]) as HTMLCanvasElement;
         if (canvas) {
           await this._stream?.stopRenderVideo(canvas, userId);
         }
@@ -230,7 +232,6 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   rerenderParticipantsVideo = async () => {
-    Logger.log("Rerender participants video");
     try {
       await this.updateCanvasDimension();
       for (const participant of this._renderedList) {
@@ -266,7 +267,7 @@ export class ZoomClient implements ZoomClientSDK {
         await this.stopRenderParticipantVideo(user);
       }
       this._renderedList = [];
-	  this._renderedGroup = {}
+      this._renderedGroup = {};
     }
     const shouldRenderParticipants = users.filter(({ bVideoOn }) => bVideoOn);
     const shouldRemoveParticipants = users.filter(({ bVideoOn }) => !bVideoOn);
@@ -285,10 +286,8 @@ export class ZoomClient implements ZoomClientSDK {
       }
     }
 
-    for (const [index, user] of shouldAddedParticipants.entries()) {
-      const group = index <= 6 ? PARTICIPANT_GROUPS.ONE : PARTICIPANT_GROUPS.TWO;
-      Logger.log("Should render:", user.displayName, group);
-
+    for (const user of shouldAddedParticipants) {
+      const group = Object.keys(this._renderedGroup).length < MAXIMUM_PARTICIPANT_PER_CANVAS ? PARTICIPANT_GROUPS.ONE : PARTICIPANT_GROUPS.TWO;
       this._renderedGroup[user.displayName] = group;
       await this.renderParticipantVideo(user, group);
     }
@@ -357,7 +356,7 @@ export class ZoomClient implements ZoomClientSDK {
     for (const user of this._renderedList) {
       await this.stopRenderParticipantVideo(user);
     }
-	this._renderedGroup = {}
+    this._renderedGroup = {};
     this._renderedList = [];
     for (const group of Object.values(PARTICIPANT_GROUPS)) {
       const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + group) as HTMLCanvasElement;

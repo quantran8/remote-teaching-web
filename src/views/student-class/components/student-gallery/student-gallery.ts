@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent } from "@vue/runtime-core";
 import { useStore } from "vuex";
@@ -18,21 +18,33 @@ export default defineComponent({
     MatIcon,
   },
   data: () => {
-	return {
-		roomManager: null,
-	}
+    return {
+      timer: null as any,
+    };
   },
   mounted() {
     window.addEventListener("resize", this.onWindowResize);
   },
   unmounted() {
-	window.removeEventListener("resize", this.onWindowResize);
+    window.removeEventListener("resize", this.onWindowResize);
   },
   methods: {
-	onWindowResize() {
-		const roomManager = store.getters["studentRoom/roomManager"];
-		roomManager?.rerenderParticipantsVideo()
-	}
+    async onWindowResize() {
+      const roomManager = store.getters["teacherRoom/roomManager"];
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      const canvasWrapper = document.getElementById("participant-videos-wrapper");
+      if (canvasWrapper) {
+        canvasWrapper.style.visibility = "hidden";
+      }
+      this.timer = setTimeout(async () => {
+        await roomManager?.rerenderParticipantsVideo();
+        if (canvasWrapper) {
+          canvasWrapper.style.visibility = "visible";
+        }
+      }, 200);
+    },
   },
   props: {
     students: {
