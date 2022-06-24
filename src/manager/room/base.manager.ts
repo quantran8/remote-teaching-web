@@ -72,7 +72,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     if (store.getters.platform === VCPlatform.Agora) {
       return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
     } else {
-      Logger.log("Zoom update feed")
+      Logger.log("Update audio and video feed")
 	  return this.zoomClient.rerenderParticipantsVideo()
 	}
   }

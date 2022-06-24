@@ -1,6 +1,6 @@
 <template>
   <div :class="['sc-gallery', !isVisible && 'sc-gallery--hide']" v-show="isDisplay">
-    <div class="sc-gallery__container" v-dragscroll.x>
+    <div class="sc-gallery__container" :id="'student-list'" v-dragscroll.x>
       <div class="participant-videos-wrapper" :id="'participant-videos-wrapper'">
       	<canvas v-for="n in maximumGroup" :key="n" :id="`participant-videos-${n}`" />
       </div>

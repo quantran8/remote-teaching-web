@@ -143,7 +143,7 @@ export default defineComponent({
 
     watch(lessonInfo, async () => {
       try {
-        const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value.unit, lessonInfo.value.lesson);
+        const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value?.unit, lessonInfo.value?.lesson);
         if (response.url) {
           sourceVideo.src = response.url;
         } else {

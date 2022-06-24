@@ -8,6 +8,7 @@ import { dragscrollNext } from "vue-dragscroll";
 import { MatIcon } from "vue-glcommonui";
 import { isMobileBrowser } from "@/utils/utils";
 import { store } from "@/store";
+import { StudentRoomManager } from "@/manager/room/student.manager";
 
 export default defineComponent({
   directives: {
@@ -30,7 +31,7 @@ export default defineComponent({
   },
   methods: {
     async onWindowResize() {
-      const roomManager = store.getters["teacherRoom/roomManager"];
+      const roomManager: StudentRoomManager | undefined = store.getters["studentRoom/roomManager"];
       if (this.timer) {
         clearTimeout(this.timer);
       }

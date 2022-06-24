@@ -44,9 +44,21 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     }
   }
 
-  rerenderParticipantsVideo() {
+  async rerenderParticipantsVideo() {
+    try {
+      if (store.getters.platform === VCPlatform.Zoom) {
+        await this.zoomClient.rerenderParticipantsVideo();
+      }
+    } catch (error) {
+		Logger.log("Rerender: ", error)
+	}
+  }
+
+  async removeParticipantVideo(userId: string) {
     if (store.getters.platform === VCPlatform.Zoom) {
-      return this.zoomClient.rerenderParticipantsVideo();
+      const user = this.zoomClient?.getParticipantByDisplayName(userId);
+      if (!user) return;
+      await this.zoomClient.removeParticipantVideo(user);
     }
   }
 }

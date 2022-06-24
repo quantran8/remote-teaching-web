@@ -386,7 +386,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
     } else {
-      await state.manager?.zoomClient.studentBackToMainRoom();
+      await state.manager?.studentBackToMainRoom();
     }
   },
   clearStudentOneId({ commit }, p: { id: string }) {

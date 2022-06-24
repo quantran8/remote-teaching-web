@@ -1,3 +1,5 @@
+
+import { Logger } from "./../../../../../utils/logger";
 import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
 import { InClassStatus, StudentState } from "@/store/room/interface";
@@ -5,6 +7,8 @@ import { computed, ComputedRef, defineComponent, ref, provide, watch } from "vue
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
 import { store } from "@/store";
+import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 
 export default defineComponent({
   components: {
@@ -17,13 +21,25 @@ export default defineComponent({
   },
   async mounted() {
     window.addEventListener("resize", this.onWindowResize);
+    try {
+      const studentListElement = document.getElementById("student-list") as HTMLDivElement;
+      for (const group of Object.values(PARTICIPANT_GROUPS)) {
+        const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + group) as HTMLCanvasElement;
+        if (canvas) {
+          canvas.width = studentListElement.offsetWidth;
+          canvas.height = studentListElement.offsetHeight;
+        }
+      }
+    } catch (error) {
+      Logger.error("Set canvas error: ", error);
+    }
   },
   unmounted() {
     window.removeEventListener("resize", this.onWindowResize);
   },
   methods: {
     async onWindowResize() {
-      const roomManager = store.getters["teacherRoom/roomManager"];
+      const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
       if (this.timer) {
         clearTimeout(this.timer);
       }
@@ -36,7 +52,12 @@ export default defineComponent({
         if (canvasWrapper) {
           canvasWrapper.style.visibility = "visible";
         }
-      }, 200);
+      }, 100);
+    },
+    async onStudentListResize() {
+      Logger.log("Student list size changed");
+      const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
+      await roomManager?.rerenderParticipantsVideo();
     },
   },
   setup() {
@@ -78,6 +99,8 @@ export default defineComponent({
           scaleVideoOption.value = 2;
           studentLayout.value = 12;
         }
+		const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
+		roomManager?.rerenderParticipantsVideo();
       },
       {
         deep: true,

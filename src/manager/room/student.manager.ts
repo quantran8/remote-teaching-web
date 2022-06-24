@@ -52,4 +52,10 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
       return this.zoomClient.rerenderParticipantsVideo();
     }
   }
+
+  studentBackToMainRoom() {
+    if (store.getters.platform === VCPlatform.Zoom) {
+      return this.zoomClient.studentBackToMainRoom();
+    }
+  }
 }
