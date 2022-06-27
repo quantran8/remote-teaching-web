@@ -22,7 +22,7 @@
       </div>
       <BaseButton mode="clear" class="icon back-btn" @click="onClickBack">
         <BaseIcon name="icon-back"></BaseIcon>
-        <span>Back</span>
+        <span>{{ backText }}</span>
       </BaseButton>
     </div>
     <div class="loading-center" v-if="loading">

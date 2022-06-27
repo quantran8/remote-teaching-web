@@ -78,6 +78,7 @@ export default defineComponent({
     const noteText = computed(() => fmtMsg(TeacherCalendarLocale.Note));
     const schoolText = computed(() => fmtMsg(TeacherCalendarLocale.School));
     const allText = computed(() => fmtMsg(TeacherCalendarLocale.All));
+    const backText = computed(() => fmtMsg(TeacherCalendarLocale.Back));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId });
@@ -771,6 +772,7 @@ export default defineComponent({
       noteText,
       schoolText,
       allText,
+      backText,
       onClickBack,
     };
   },

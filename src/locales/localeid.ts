@@ -153,6 +153,7 @@ export class TeacherCalendarLocale {
   static Note = "teacher_calendar.note";
   static School = "teacher_calendar.school";
   static All = "teacher_calendar.all";
+  static Back = "teacher_calendar.back";
 }
 
 export class TeacherClassDesignate {
