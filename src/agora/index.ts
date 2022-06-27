@@ -225,7 +225,7 @@ export class AgoraClient implements AgoraClientSDK {
           Logger.info("AGORA_SET_DEVICE_ERROR", error);
         }
       }
-      this.cameraTrack.play(this.user.username, { mirror: false });
+      this.cameraTrack.play(this.user.username, { mirror: true });
       this.cameraError = null;
       this.setupHotPluggingDevice("camera");
     } catch (err) {

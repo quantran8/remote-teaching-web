@@ -227,7 +227,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, {mirror: false});
+            await localTracks.value?.videoTrack.play(videoElementId, {mirror: true});
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -305,7 +305,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(newCameraId || cams[0]?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, {mirror: false});
+            await localTracks.value?.videoTrack.play(videoElementId, {mirror: true});
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -399,7 +399,7 @@ export default defineComponent({
 
         if (currentCamValue) {
           if (isUsingAgora.value) {
-            await localTracks.value?.videoTrack.play(videoElementId, {mirror: false});
+            await localTracks.value?.videoTrack.play(videoElementId, {mirror: true});
             await localTracks.value?.videoTrack.setEnabled(true);
           } else {
             const thisCam = listCams.value.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || listCams.value[0];
