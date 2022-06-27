@@ -9,7 +9,8 @@
     "build:dev": "vue-cli-service build --mode dev",
     "build:prod": "vue-cli-service build --mode prod",
     "build:test": "vue-cli-service build --mode test",
-    "start": "vue-cli-service serve --host 127.0.0.1 --port 8091 --open --mode local"
+    "start": "vue-cli-service serve --host 127.0.0.1 --port 8091 --open --mode local",
+	"postinstall": "vendor-copy"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.0.1",
@@ -23,7 +24,7 @@
     "@types/superagent": "^4.1.10",
     "@types/uuid": "^8.3.0",
     "@vue/eslint-config-prettier": "^7.0.0",
-    "@zoom/videosdk": "^1.2.7",
+    "@zoom/videosdk": "^1.3.0",
     "agora-rtc-sdk-ng": "4.5.0",
     "animate.css": "^4.1.1",
     "ant-design-vue": "^2.1.2",
@@ -47,6 +48,7 @@
     "register-service-worker": "^1.7.1",
     "superagent": "^6.1.0",
     "uuid": "^8.3.1",
+    "vendor-copy": "^3.0.1",
     "vue": "^3.2.13",
     "vue-cropperjs": "^5.0.0",
     "vue-dragscroll": "^3.0.0",
@@ -72,12 +74,12 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-e2e-cypress": "~4.5.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.5",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-plugin-unit-jest": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~5.0.0",
-    "@vue/cli-plugin-pwa": "~5.0.5",
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-typescript": "^9.1.0",
     "@vue/test-utils": "^2.0.0-0",
@@ -95,5 +97,11 @@
     "sass-loader": "^8.0.2",
     "typescript": "^4.5.5",
     "vue-jest": "^5.0.0-0"
-  }
+  },
+  "vendorCopy": [
+    {
+      "from": "vue-glcommonui/vue-glcommonui.common.js",
+      "to": "node_modules/vue-glcommonui/dist/vue-glcommonui.common.js"
+    }
+  ]
 }

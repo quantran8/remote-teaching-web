@@ -51,7 +51,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
-	  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+      await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
@@ -191,7 +191,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       }
     }
-    return manager?.updateAudioAndVideoFeed(cameras, audios, idOne);
+    return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager || !store.state.user) return;
@@ -238,12 +238,13 @@ const actions: ActionTree<StudentRoomState, any> = {
         microphone: microphoneStatus,
         classId: state.info?.id,
         studentId: state.user?.id,
+		idOne: state.idOne
       });
     }
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth()?.then(speedMbps => {
+      state.manager?.getBandwidth()?.then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -301,18 +302,18 @@ const actions: ActionTree<StudentRoomState, any> = {
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
-	await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+    await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
   },
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
       commit("setMicrophoneLock", { enable: true });
       try {
+        commit("setStudentAudio", payload);
         await state.manager?.setMicrophone({ enable: payload.enable });
         if (!payload.preventSendMsg) {
           await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
         }
-        commit("setStudentAudio", payload);
         commit("setMicrophoneLock", { enable: false });
       } catch (error) {
         Logger.error("SET_STUDENT_AUDIO_ERROR", error);
@@ -327,11 +328,11 @@ const actions: ActionTree<StudentRoomState, any> = {
       if (state.cameraLock) return;
       try {
         commit("setCameraLock", { enable: true });
+        commit("setStudentVideo", payload);
         await state.manager?.setCamera({ enable: payload.enable });
         if (!payload.preventSendMsg) {
           await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
         }
-        commit("setStudentVideo", payload);
         commit("setCameraLock", { enable: false });
       } catch (error) {
         Logger.error("SET_STUDENT_VIDEO_ERROR", error);
@@ -375,8 +376,18 @@ const actions: ActionTree<StudentRoomState, any> = {
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
   },
-  setStudentOneId({ commit }, p: { id: string }) {
+  async setStudentOneId({ state, commit, dispatch }, p: { id: string }) {
     commit("setStudentOneId", p);
+    if (p.id) {
+      if (store.getters["platform"] === VCPlatform.Zoom) {
+        await dispatch("generateOneToOneToken", {
+          classId: store.getters["studentRoom/info"]?.id,
+          studentId: p.id,
+        });
+      }
+    } else {
+      await state.manager?.studentBackToMainRoom();
+    }
   },
   clearStudentOneId({ commit }, p: { id: string }) {
     commit("clearStudentOneId", p);
@@ -447,11 +458,13 @@ const actions: ActionTree<StudentRoomState, any> = {
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
-  async generateOneToOneToken({ state }, payload: { classId: string; studentId?: string }) {
+  async generateOneToOneToken({ state }, payload: { classId: string; studentId: string }) {
     try {
       const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
-      if (state.manager?.zoomClient) {
-        state.manager.zoomClient.oneToOneToken = response.token;
+      const zoom = state.manager?.zoomClient;
+      if (zoom) {
+        zoom.oneToOneToken = response.token;
+        await zoom.studentBreakoutRoom(payload.studentId);
       }
     } catch (error) {
       Logger.log(error);
