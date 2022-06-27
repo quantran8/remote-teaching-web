@@ -4,7 +4,7 @@ import { PlusCircleOutlined } from "@ant-design/icons-vue";
 import moment, { Moment } from "moment";
 import { useStore } from "vuex";
 import { ClassModelSchedules } from "@/models";
-import { useRoute } from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import { ScheduleParam } from "@/services";
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import IconWarning from "@/assets/calendar-warning.svg";
@@ -707,6 +707,11 @@ export default defineComponent({
       return selectedTimeIdModal.value;
     };
 
+    const router = useRouter();
+    const onClickBack = () => {
+      router.push("/teacher");
+    }
+
     return {
       listClassSelect,
       listClassCreateNew,
@@ -766,6 +771,7 @@ export default defineComponent({
       noteText,
       schoolText,
       allText,
+      onClickBack,
     };
   },
 });
