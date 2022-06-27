@@ -19,7 +19,11 @@
             :metadata="item.image.metaData"
             class="media-image"
           />
-          <img v-else :src="item.image.url" class="media-image" />
+          <img v-else 
+			class="media-image"
+		  	:src="item.image.url" 
+		 	:style="[item.image.metaData ?{'transform':`scale(${item.image.metaData.scaleX},${item.image.metaData.scaleY}) rotate(${item.image.metaData.rotate}deg)`}:'']" 
+		  />
           <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
         </Tooltip>
         <!-- <Tooltip v-else placement="topRight">

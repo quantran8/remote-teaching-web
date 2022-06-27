@@ -15,10 +15,14 @@ import { annotationCurriculum } from "@/views/teacher-class/components/whiteboar
 import { Button, Space } from "ant-design-vue";
 
 const DEFAULT_COLOR = "black";
+const DEFAULT_STYLE ={
+	transform:'scale(1,1) rotate(0deg)',
+}
 export enum Cursor {
   Default = "default",
   Text = "text",
 }
+
 
 export default defineComponent({
   props: {
@@ -49,6 +53,7 @@ export default defineComponent({
     let canvas: any;
     const tools = Tools;
     const toolNames: string[] = Object.values(tools);
+	const styles = ref(DEFAULT_STYLE)
     const toolSelected: Ref<string> = ref("cursor");
     const strokeColor: Ref<string> = ref(DEFAULT_COLOR);
     const strokeWidth: Ref<number> = ref(2);
@@ -65,7 +70,10 @@ export default defineComponent({
     nextColor.value = strokeColor.value;
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
-        if (currentItem.id !== prevItem.id) {
+        if (currentItem.id !== prevItem.id) {	
+		styles.value = {
+			transform:`scale(${prevItem.image.metaData?.scaleX ?? 1},${prevItem.image.metaData?.scaleY ?? 1}) rotate(${prevItem.image.metaData?.rotate ?? 0}deg)`,
+		}
           canvas.remove(...canvas.getObjects());
         }
       }
@@ -223,14 +231,14 @@ export default defineComponent({
       //   processAnnotationLesson(props.image, canvas, true, null);
       // }
     });
-    const imageUrl = computed(() => {
-      if (!props.image) return {};
-      if (endImgLink(props.image.url)) {
-        return props.image.url + "?" + new Date().getTime();
-      } else {
-        return props.image.url + "&" + new Date().getTime();
-      }
-    });
+	const imageUrl = computed(() => {
+		if (!props.image) return {};
+		if (endImgLink(props.image.url)) {
+		  return props.image.url + "?" + new Date().getTime();
+		} else {
+		  return props.image.url + "&" + new Date().getTime();
+		}
+	  });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === Mode.Cursor) {
         const rect = document.getElementById("canvas-container");
@@ -507,7 +515,7 @@ export default defineComponent({
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
-    const imgLoad = async (e: UIEvent) => {
+    const imgLoad = async (e: UIEvent) => {	
       if (!canvas) return;
       const img = e?.target as HTMLImageElement;
       if (img && img.naturalWidth && img.naturalHeight) {
@@ -520,6 +528,9 @@ export default defineComponent({
       }
       processAnnotationLesson(props.image, canvas, true, null);
       objectTargetOnCanvas();
+	  styles.value = {
+		transform:`scale(${currentExposureItemMedia.value.image.metaData?.scaleX ?? 1},${currentExposureItemMedia.value.image.metaData?.scaleY ?? 1}) rotate(${currentExposureItemMedia.value.image.metaData?.rotate ?? 0}deg)`,
+	  }
       // showHideWhiteboard.value = isShowWhiteBoard.value;
       // if (isShowWhiteBoard.value) {
       //   canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -768,6 +779,7 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
+	  styles,
       warningMsg,
       warningMsgLeave,
       hasTargets,
