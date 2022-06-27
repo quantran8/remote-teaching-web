@@ -60,7 +60,7 @@ const state: AppState = {
   microphoneDeviceId: microphoneDeviceId || "",
   userRole: UserRole.UnConfirm,
 
-  platform: VCPlatform.Zoom,
+  platform: VCPlatform.Agora,
 };
 
 export default state;
