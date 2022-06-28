@@ -141,5 +141,6 @@
 	"device_tester.platform": "Platform",
 	"teacher_class.student_has_joined_the_class": "{studentName} has joined the class.",
 	"teacher_class.student_has_left_the_class": "{studentName} has left the class.",
-	"teacher_class.student_has_lost_connection": "It seems {studentName} had a connectivity issue that caused them to leave the class."
+	"teacher_class.student_has_lost_connection": "It seems {studentName} had a connectivity issue that caused them to leave the class.",
+	"teacher_calendar.back": "Back"
 }
