@@ -9,6 +9,7 @@ import { fmtMsg } from "vue-glcommonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 import { VCPlatform } from "@/store/app/state";
+
 interface DeviceType {
   deviceId: string;
   groupId: string;
@@ -227,7 +228,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, {mirror: true});
+            await localTracks.value?.videoTrack.play(videoElementId, { mirror: true });
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -275,16 +276,19 @@ export default defineComponent({
     const handleHotPluggingMicro = async (newMicroId?: string) => {
       try {
         const mics = await AgoraRTC.getMicrophones();
+        const newMicro = mics.find(({ deviceId }) => deviceId === newMicroId);
+
+        // check if the old microphone is working
+        let oldMicro = undefined;
+        if (newMicroId) {
+          oldMicro = mics.find(({ deviceId }) => currentMic.value?.deviceId === deviceId);
+        }
         if (mics.length) {
-          currentMic.value = mics[0];
-          currentMicLabel.value = mics[0]?.label;
+          currentMic.value = newMicro ?? oldMicro ?? mics[0];
+          currentMicLabel.value = currentMic.value?.label;
           listMics.value = mics;
           listMicsId.value = mics.map((mic) => mic.deviceId);
-          if (newMicroId) {
-            await localTracks.value?.audioTrack.setDevice(newMicroId);
-          } else {
-            await localTracks.value?.audioTrack.setDevice(mics[0]?.deviceId);
-          }
+          await localTracks.value?.audioTrack.setDevice(currentMic.value?.deviceId);
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
           }
@@ -298,24 +302,26 @@ export default defineComponent({
     const handleHotPluggingCamera = async (newCameraId?: string) => {
       try {
         const cams = await AgoraRTC.getCameras();
+        const newCamera = cams.find(({ deviceId }) => deviceId === newCameraId);
+
+        // check if the old camera is working
+        let oldCamera = undefined;
+        if (newCameraId) {
+          oldCamera = cams.find(({ deviceId }) => currentCam.value?.deviceId === deviceId);
+        }
         if (cams.length) {
-          currentCam.value = cams[0];
-          currentCamLabel.value = cams[0]?.label;
+          currentCam.value = newCamera ?? oldCamera ?? cams[0];
+          currentCamLabel.value = currentCam.value?.label;
           listCams.value = cams;
           listCamsId.value = cams.map((cam) => cam.deviceId);
-          await localTracks.value.videoTrack.setDevice(newCameraId || cams[0]?.deviceId);
+          await localTracks.value.videoTrack.setDevice(currentCam.value?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, {mirror: true});
+            await localTracks.value?.videoTrack.play(videoElementId, { mirror: true });
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
             Logger.log("Error when play video => ", error);
           }
-        } else {
-          currentCamLabel.value = cams[0]?.label;
-          listCams.value = cams;
-          listCamsId.value = cams.map((cam) => cam.deviceId);
-          preventCloseModal.value = false;
         }
       } catch (error) {
         Logger.log("setupCam error => ", error);
@@ -339,9 +345,8 @@ export default defineComponent({
     };
 
     const setupEvent = () => {
-      AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
       AgoraRTC.onCameraChanged = onHotCameraPluggingDevice;
-
+      AgoraRTC.onMicrophoneChanged = onHotMicroPluggingDevice;
       isConfigTrackingDone.value = true;
     };
 
@@ -399,7 +404,7 @@ export default defineComponent({
 
         if (currentCamValue) {
           if (isUsingAgora.value) {
-            await localTracks.value?.videoTrack.play(videoElementId, {mirror: true});
+            await localTracks.value?.videoTrack.play(videoElementId, { mirror: true });
             await localTracks.value?.videoTrack.setEnabled(true);
           } else {
             const thisCam = listCams.value.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || listCams.value[0];
