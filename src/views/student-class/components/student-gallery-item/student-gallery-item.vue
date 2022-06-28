@@ -11,20 +11,13 @@
     >
       <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
         <div
-          v-if="isCurrent && isUsingAgora"
           v-show="student.videoEnabled && !isNotJoinned"
           :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
           :id="student.id"
           :title="student.englishName"
-        />
-
-        <div
-          v-else-if="isCurrent && !isUsingAgora"
-          v-show="student.videoEnabled && !isNotJoinned"
-          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
         >
-          <video v-if="isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
-          <canvas v-else :id="student.id + '__video'" :title="student.englishName"/>
+          <video v-if="isCurrent && !isUsingAgora && isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
+          <canvas v-if="isCurrent && !isUsingAgora && !isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
         </div>
 
         <img
