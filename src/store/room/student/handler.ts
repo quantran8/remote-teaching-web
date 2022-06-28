@@ -1,3 +1,4 @@
+import { store as AppStore } from "@/store";
 import { ClassRoomStatus, StudentModel, TeacherModel, RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
@@ -17,9 +18,11 @@ import { notification } from "ant-design-vue";
 import { fmtMsg } from "vue-glcommonui";
 import { StoreLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
+import _ from "lodash";
+import { VCPlatform } from "@/store/app/state";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
-  const { commit, dispatch, state } = store;
+  const { commit, dispatch, state, getters } = store;
   const handler = {
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -160,10 +163,6 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherEndClass: async (_payload: any) => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
       await dispatch("leaveRoom", {});
-	  
-	  const roomManager = store.getters["teacherRoom/roomManager"];
-	  await roomManager?.zoomClient.reset();
-
       commit("setApiStatus", {
         code: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",
@@ -334,6 +333,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       exposureSelected: string;
       itemContentSelected: string;
     }) => {
+      const roomManager = AppStore.getters["studentRoom/roomManager"];
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -342,6 +342,13 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
             root: true,
           },
         );
+        if (AppStore.getters["platform"] === VCPlatform.Zoom) {
+          if (payload.id) {
+            //
+          } else {
+            await roomManager?.zoomClient.studentBackToMainRoom();
+          }
+        }
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }

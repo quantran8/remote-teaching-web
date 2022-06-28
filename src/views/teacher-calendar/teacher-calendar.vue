@@ -3,24 +3,30 @@
     <div class="calendar-title mt-20">
       <h2>{{ titleText }}</h2>
     </div>
-    <div class="select-container">
-      <span class="title-select">{{ classText }}</span>
-      <Select :value="selectedClassId" class="size-select ant-custom-calendar" @change="handleChangeClass">
-        <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
-        <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.id">
-          {{ val.name }}
-        </Option>
-      </Select>
-      <span class="title-select ml-20">{{ groupText }}</span>
-      <Select :value="selectedGroupId" :disabled="isDisableGroup" class="size-select ant-custom-calendar" @change="handleChangeGroup">
-        <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
-        <Option class="ant-custom-calendar" v-for="val in listGroupSelect" :key="val.id">
-          {{ val.name }}
-        </Option>
-      </Select>
-      <div class="loading-center" v-if="loading">
-        <Spin class="ant-custom-calendar"></Spin>
+    <div class="control-container">
+      <div class="select-container">
+        <span class="title-select">{{ classText }}</span>
+        <Select :value="selectedClassId" class="size-select ant-custom-calendar" @change="handleChangeClass">
+          <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
+          <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.id">
+            {{ val.name }}
+          </Option>
+        </Select>
+        <span class="title-select ml-20">{{ groupText }}</span>
+        <Select :value="selectedGroupId" :disabled="isDisableGroup" class="size-select ant-custom-calendar" @change="handleChangeGroup">
+          <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
+          <Option class="ant-custom-calendar" v-for="val in listGroupSelect" :key="val.id">
+            {{ val.name }}
+          </Option>
+        </Select>
       </div>
+      <BaseButton mode="clear" class="icon back-btn" @click="onClickBack">
+        <BaseIcon name="icon-back"></BaseIcon>
+        <span>{{ backText }}</span>
+      </BaseButton>
+    </div>
+    <div class="loading-center" v-if="loading">
+      <Spin class="ant-custom-calendar"></Spin>
     </div>
     <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">

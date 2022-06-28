@@ -1,13 +1,13 @@
 <template>
   <div
-    v-if="isShow"
+    v-if="isShow && !isNotJoinned"
     :class="[
       'student',
       focusedStudent && 'expand',
       isOneToOneStudent && oneAndOne && 'one-student-mode animate__animated animate__zoomIn',
       !isOneToOneStudent && oneAndOne && 'animate__animated animate__zoomOut',
     ]"
-    v-show="!isNotJoinned"
+    :id="student.id + '__sub-wrapper'"
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{
@@ -21,19 +21,22 @@
     <div class="student__figure" @mouseover="onMouseChange(true)">
       <div :class="student.raisingHand && 'student__is-question'">
         <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
-          <div v-if="!isUsingAgora" :class="['student__video--sub', isSpeaking && 'student__is-speaking', (isNotJoinned || !isTurnOnCamera) && 'd-none']">
-            <canvas
-              :class="['student__video--sub']"
-              :id="student.id + '__sub'"
-            ></canvas>
+
+          <div
+            v-if="!isUsingAgora && isOneToOneStudent"
+			v-show="!isNotJoinned && isTurnOnCamera"
+            :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
+          >
+            <canvas :id="student.id + '__sub'"></canvas>
           </div>
 
           <div
             v-else
-            :class="[(isNotJoinned || !isTurnOnCamera) && 'd-none', 'student__video--sub', isSpeaking && 'student__is-speaking']"
+			v-show="!isNotJoinned && isTurnOnCamera"
+            :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
             :id="student.id"
-          ></div>
-          <div :class="[isSpeaking && 'student__is-speaking', !isNotJoinned && isTurnOnCamera && 'd-none']" class="student__img">
+          />
+          <div v-if="isNotJoinned || !isTurnOnCamera" :class="[isSpeaking && 'student__is-speaking']" class="student__img">
             <img :class="['student-avatar', isOneToOneStudent && 'size-one-one']" alt="boys-avatar" :src="avatarStudent" />
           </div>
         </div>

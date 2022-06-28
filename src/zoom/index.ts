@@ -1,3 +1,5 @@
+import { delay, getClassmatePositionAndSize, getStudentPositionAndSize } from "./video-helper";
+import { TeacherState } from "./../store/room/interface";
 import ZoomVideo, {
   ConnectionState,
   Stream,
@@ -6,14 +8,13 @@ import ZoomVideo, {
   ConnectionChangePayload,
   ParticipantPropertiesPayload,
   CaptureVideoOption,
-  Participant,
   ActiveSpeaker,
+  Participant,
 } from "@zoom/videosdk";
 import { Logger } from "@/utils/logger";
 import { store } from "@/store";
 
 export interface ZoomClientSDK {
-  client: typeof VideoClient;
   joinRTCRoom(options: {
     studentId?: string;
     teacherId?: string;
@@ -57,17 +58,27 @@ const HOST_CAPTURE_HEIGHT = 720;
 const CLIENT_CAPTURE_WIDTH = 640;
 const CLIENT_CAPTURE_HEIGHT = 360;
 
+const MAXIMUM_PARTICIPANT_PER_CANVAS = 6;
+
+export enum PARTICIPANT_GROUPS {
+  ONE = "1",
+  TWO = "2",
+}
+export const PARTICIPANT_CANVAS_ID = "participant-videos";
+
 export class ZoomClient implements ZoomClientSDK {
   _client?: typeof VideoClient;
   _stream?: typeof Stream;
-  _session?: string;
   _options: ZoomClientOptions;
   _selfId?: number;
   _oneToOneStudentId?: string;
   _isInOneToOneRoom: boolean;
+  _isInOneToOneProgress: boolean;
   _oneToOneToken?: string;
   _renderedList: Participant[];
+  _renderedGroup: any = {};
   _speakerTimeout: any = null;
+  _isHost = false;
 
   joined = false;
   isMicEnable = false;
@@ -81,35 +92,28 @@ export class ZoomClient implements ZoomClientSDK {
   _selectedCameraId?: string;
   _teacherId?: string;
 
+  _isNotSupportSharedArrayBuffer: boolean;
+
   constructor(options: ZoomClientOptions) {
     this._options = options;
     this._oneToOneStudentId = undefined;
     this._isInOneToOneRoom = false;
     this._oneToOneToken = undefined;
+    this._isInOneToOneProgress = false;
     this._renderedList = [];
-
+    this._renderedGroup = {};
+    this._isHost = options.user.role === "host";
     this._selectedMicrophoneId = store.getters["microphoneDeviceId"];
     this._selectedCameraId = store.getters["cameraDeviceId"];
     this._teacherId = store.getters["studentRoom/teacher"]?.id;
+    this._isNotSupportSharedArrayBuffer = !!(window as any).chrome && !(typeof SharedArrayBuffer === "function");
+
     this._defaultCaptureVideoOption = {
-      hd: options.user.role === "host",
+      hd: false,
       cameraId: this._selectedCameraId,
       captureWidth: options.user.role === "host" ? HOST_CAPTURE_WIDTH : CLIENT_CAPTURE_WIDTH,
       captureHeight: options.user.role === "host" ? HOST_CAPTURE_HEIGHT : CLIENT_CAPTURE_HEIGHT,
-      mirrored: true,
     };
-  }
-
-  get client() {
-    return this._client as typeof VideoClient;
-  }
-
-  get selfId() {
-    return this._selfId as number;
-  }
-
-  get stream() {
-    return this._stream as typeof Stream;
   }
 
   get option() {
@@ -128,141 +132,41 @@ export class ZoomClient implements ZoomClientSDK {
     this._oneToOneStudentId = studentId;
   }
 
-  onConnectionChange = (payload: ConnectionChangePayload) => {
-    if (payload.state === ConnectionState.Connected) {
-      Logger.log("connection-change", ConnectionState.Connected);
-    } else if (payload.state === ConnectionState.Reconnecting) {
-      Logger.log("connection-change", ConnectionState.Reconnecting);
-    }
-  };
-
-  userAdded = () => {
-    Logger.log("user-added");
-  };
-
-  userUpdated = async () => {
-    Logger.log("user-updated");
-    await this.renderPeerVideos();
-  };
-
-  userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
-    payload.forEach(async (user) => {
-      Logger.log("user-removed", user.userId);
-      const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
-      if (shouldRemoveParticipant) {
-        await this.stopRenderParticipantVideo(shouldRemoveParticipant);
-        this._renderedList = this._renderedList.filter(({ userId }) => userId !== user.userId);
-      }
-    });
-    await this.renderPeerVideos();
-  };
-
-  currentAudioChange = async (payload: { action: string; source: string }) => {
-    Logger.log(payload);
-  };
-
-  activeSpeaker = (payload: Array<ActiveSpeaker>) => {
-    const { role } = this.option.user;
-    if (this._speakerTimeout) {
-      clearTimeout(this._speakerTimeout);
-    }
-    const ids = payload.map(({ displayName }) => ({ uid: displayName, level: 1 }));
-    if (role === "host") {
-      store.dispatch("teacherRoom/setSpeakingUsers", ids);
-    } else {
-      store.dispatch("studentRoom/setSpeakingUsers", ids);
-    }
-    this._speakerTimeout = setTimeout(() => {
-      if (role === "host") {
-        store.dispatch("teacherRoom/setSpeakingUsers", []);
-      } else {
-        store.dispatch("studentRoom/setSpeakingUsers", []);
-      }
-    }, 1000);
-  };
-
-  renderParticipantVideo = async (user: Participant) => {
-    try {
-      const { userId, displayName } = user;
-      const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-      if (canvas) {
-        const clonedCanvas = canvas.cloneNode(true);
-        canvas.replaceWith(clonedCanvas);
-        const _canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-        await this._stream?.renderVideo(_canvas, userId, _canvas.width, _canvas.height, 0, 0, VideoQuality.Video_360P);
-      }
-    } catch (error) {
-      Logger.log(error);
-    }
-  };
-
-  stopRenderParticipantVideo = async (user: Participant) => {
-    try {
-      const { userId, displayName } = user;
-      const canvas = document.getElementById(`${displayName}__sub`) as HTMLCanvasElement;
-      if (canvas) {
-        await this._stream?.stopRenderVideo(canvas, userId, undefined, "#E7E7E7");
-      }
-    } catch (error) {
-      Logger.log(error);
-    }
-  };
-
-  renderPeerVideos = () => {
-    const users = this._client?.getAllUser()?.filter(({ userId }) => userId !== this.selfId) ?? [];
-    if (!users.length && this._renderedList) {
-      this._renderedList.forEach(async (user) => {
-        await this.stopRenderParticipantVideo(user);
-      });
-      this._renderedList = [];
-    }
-
-    const shouldRenderParticipants = users.filter(({ bVideoOn }) => bVideoOn);
-
-    const shouldRemoveParticipants = users.filter(({ bVideoOn }) => !bVideoOn);
-
-    const shouldAddedParticipants = shouldRenderParticipants.filter(
-      ({ userId }) => this._renderedList.findIndex(({ userId: renderedId }) => userId === renderedId) === -1,
-    );
-
-    shouldAddedParticipants.forEach(async (user) => {
-      await this.renderParticipantVideo(user);
-    });
-
-    if (shouldRemoveParticipants.length) {
-      shouldRemoveParticipants.forEach(async (user) => {
-        await this.stopRenderParticipantVideo(user);
-      });
-    }
-    this._renderedList = [...shouldRenderParticipants];
-  };
-
   async joinRTCRoom(options: {
     studentId?: string;
     teacherId?: string;
     camera?: boolean;
     videoEncoderConfigurationPreset?: string;
     microphone?: boolean;
+    idOne?: string;
   }) {
-    if (this.inprogress) return;
-    this.inprogress = true;
     try {
-      Logger.log("Join RTC room: ", options);
       this.isMicEnable = !!options.microphone;
       this.isCameraEnable = !!options.camera;
 
       this._client = this.zoomRTC.createClient();
-      await this._client.init("en-US", "Global");
+      await this._client.init("en-US", "Global", {
+        webEndpoint: "zoom.us",
+        enforceMultipleVideos: !window.crossOriginIsolated,
+      });
+      let token = this.option.user.token;
+      let channel = this.option.user.channel;
+      if (options.idOne && this._oneToOneToken) {
+        token = this._oneToOneToken;
+        channel += "-one-to-one";
+      }
+      Logger.log("Join RTC room: ", { ...options, channel, token });
 
-      await this._client.join(this.option.user.channel, this.option.user.token, this.option.user.username);
+      await this._client.join(channel, token, this.option.user.username);
       this.joined = true;
       this._selfId = this._client?.getSessionInfo().userId;
       this._stream = this._client?.getMediaStream();
 
       if (this.isCameraEnable) {
-        await this.startRenderLocalUserVideo();
+        await this.setCamera({ enable: this.isCameraEnable });
       }
       await this.startAudio();
+
       this.registerListener();
 
       await this.renderPeerVideos();
@@ -273,87 +177,64 @@ export class ZoomClient implements ZoomClientSDK {
       this.zoomRTC.destroyClient();
       await this.joinRTCRoom(options);
     }
-    this.inprogress = false;
   }
 
-  async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
-    try {
-      if (!this._client) return;
-      await this.stopAudio();
+  onConnectionChange = (payload: ConnectionChangePayload) => {
+    if (payload.state === ConnectionState.Connected) {
+      Logger.log("connection-change", ConnectionState.Connected);
+    } else if (payload.state === ConnectionState.Reconnecting) {
+      Logger.log("connection-change", ConnectionState.Reconnecting);
+    }
+  };
 
-      const { role } = this.option.user;
-      Logger.log("Rejoin RTC room: ", options);
-	  await this.proactiveDisableVideos(options.teacherId ?? options.studentId);
-      await this.leaveSessionForOneToOne();
-      await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
-      this._selfId = this._client?.getSessionInfo().userId;
-      this._stream = this._client?.getMediaStream();
-      await this.startAudio();
-
-      if (this._isBeforeOneToOneCameraEnable) {
-        Logger.log("Turn on my video again");
-        if (role === "host") {
-          await store.dispatch("teacherRoom/setTeacherVideo", {
-            id: options.teacherId,
-            enable: true,
-          });
-        } else if (this._oneToOneStudentId === options.studentId) {
-          await store.dispatch("studentRoom/setStudentVideo", {
-            id: options.studentId,
-            enable: true,
-          });
+  userAdded = async (payload: ParticipantPropertiesPayload[]) => {
+    if (!this._isHost || !this._client?.getCurrentUserInfo()?.isHost) return;
+    for (const element of payload) {
+      const participant = this._client?.getUser(element.userId);
+      if (participant) {
+        Logger.log("User added: ", participant.displayName);
+        if ((store.getters["studentRoom/teacher"] as TeacherState)?.id === participant.displayName) {
+          await this._client?.makeHost(participant.userId);
+          return;
         }
-        this._isBeforeOneToOneCameraEnable = false;
       }
-    } catch (error) {
-      Logger.error(error);
     }
-  }
+  };
 
-  async stopAudio() {
-    try {
-      await this._stream?.stopAudio();
-    } catch (error) {
-      Logger.error("Stop audio error: ", error);
+  userUpdated = async (payload: ParticipantPropertiesPayload[]) => {
+    if (payload.filter(({ userId }) => userId !== this._selfId).some((participant) => "bVideoOn" in participant)) {
+      await this.renderPeerVideos();
     }
-  }
+  };
 
-  async muteAudio() {
-    try {
-      await this._stream?.muteAudio();
-    } catch (error) {
-      Logger.error("Mute audio error: ", error);
-      await this.delay(500);
-      await this._stream?.muteAudio();
-    }
-  }
-
-  async startAudio() {
-    try {
-      await this._stream?.startAudio();
-      if (!this._selectedMicrophoneId) {
-        const devices = await this.zoomRTC?.getDevices();
-        const mics = devices.filter(function (device) {
-          return device.kind === "audioinput";
-        });
-        if (!mics.length) {
-          throw new Error("Cannot detect your microphone");
-        }
-        this._selectedMicrophoneId = mics[0].deviceId;
+  userRemoved = async (payload: ParticipantPropertiesPayload[]) => {
+    Logger.log("User removed: ", payload);
+    for (const user of payload) {
+      const participant = this._client?.getUser(user.userId);
+      if (participant) {
+        await this.removeParticipantVideo(participant);
       }
-      if (this._selectedMicrophoneId) {
-        await this._stream?.switchMicrophone(this._selectedMicrophoneId);
-      }
-
-      if (!this.isMicEnable) {
-		// to avoid SDK not receiving media device
-        await this.delay(500);
-        await this.muteAudio();
-      }
-    } catch (error) {
-      Logger.error("Start audio error: ", error);
     }
-  }
+  };
+
+  activeSpeaker = (payload: Array<ActiveSpeaker>) => {
+    if (this._speakerTimeout) {
+      clearTimeout(this._speakerTimeout);
+    }
+    const ids = payload.map(({ displayName }) => ({ uid: displayName, level: 1 }));
+    if (this._isHost) {
+      store.dispatch("teacherRoom/setSpeakingUsers", ids);
+    } else {
+      store.dispatch("studentRoom/setSpeakingUsers", ids);
+    }
+    this._speakerTimeout = setTimeout(() => {
+      if (this._isHost) {
+        store.dispatch("teacherRoom/setSpeakingUsers", []);
+      } else {
+        store.dispatch("studentRoom/setSpeakingUsers", []);
+      }
+    }, 1000);
+  };
 
   registerListener() {
     Logger.log("Register listener");
@@ -362,7 +243,6 @@ export class ZoomClient implements ZoomClientSDK {
     this._client?.on("user-updated", this.userUpdated);
     this._client?.on("user-removed", this.userRemoved);
     this._client?.on("active-speaker", this.activeSpeaker);
-    this._client?.on("current-audio-change", this.currentAudioChange);
   }
 
   removeListener() {
@@ -373,9 +253,269 @@ export class ZoomClient implements ZoomClientSDK {
       this._client?.off("user-updated", this.userUpdated);
       this._client?.off("user-removed", this.userRemoved);
       this._client?.off("active-speaker", this.activeSpeaker);
-      this._client?.off("current-audio-change", this.currentAudioChange);
     } catch (error) {
       Logger.error(error);
+    }
+  }
+
+  async removeParticipantVideo(user: Participant) {
+    const shouldRemoveParticipant = this._renderedList.find(({ userId }) => userId === user.userId);
+    if (!shouldRemoveParticipant) return;
+    await this.stopRenderParticipantVideo(shouldRemoveParticipant);
+    delete this._renderedGroup[shouldRemoveParticipant.displayName];
+    this._renderedList = this._renderedList.filter(({ userId }) => userId !== shouldRemoveParticipant.userId);
+  }
+
+  stopRenderParticipantVideo = async (user: Participant) => {
+    try {
+      const { userId, displayName } = user;
+      const participantElementId = `${displayName}__sub`;
+      const specialParticipantCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
+      if (specialParticipantCanvas) {
+        await this._stream?.stopRenderVideo(specialParticipantCanvas, userId);
+        return;
+      }
+      const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + this._renderedGroup[displayName]) as HTMLCanvasElement;
+      if (participantsCanvas) {
+        await this._stream?.stopRenderVideo(participantsCanvas, userId);
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
+  };
+
+  renderParticipantVideo = async (user: Participant, groups: PARTICIPANT_GROUPS) => {
+    try {
+      await this.updateCanvasDimension();
+      const { userId, displayName } = user;
+      const participantElementId = `${displayName}__sub`;
+      const specialParticipantCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
+      if (specialParticipantCanvas) {
+        await this._stream?.renderVideo(
+          specialParticipantCanvas,
+          userId,
+          specialParticipantCanvas.width,
+          specialParticipantCanvas.height,
+          0,
+          0,
+          VideoQuality.Video_90P,
+        );
+        return;
+      }
+      const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + groups) as HTMLCanvasElement;
+      const position = this._isHost
+        ? getStudentPositionAndSize(displayName, participantsCanvas)
+        : getClassmatePositionAndSize(displayName, participantsCanvas);
+      if (position && participantsCanvas) {
+        await this._stream?.renderVideo(participantsCanvas, userId, position.w, position.h, position.x, position.y, VideoQuality.Video_90P);
+      }
+    } catch (error) {
+      Logger.log("Render video error: ", error);
+    }
+  };
+
+  rerenderParticipantsVideo = async () => {
+    try {
+      await this.updateCanvasDimension();
+      for (const participant of this._renderedList) {
+        const { userId, displayName } = participant;
+		const participantElementId = `${displayName}__sub`;
+        const specialParticipantCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
+        if (specialParticipantCanvas) {
+          await this._stream?.adjustRenderedVideoPosition(
+            specialParticipantCanvas,
+            userId,
+            specialParticipantCanvas.width,
+            specialParticipantCanvas.height,
+            0,
+            0,
+          );
+          continue;
+        }
+        const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + this._renderedGroup[displayName]) as HTMLCanvasElement;
+        const position = this._isHost
+          ? getStudentPositionAndSize(displayName, participantsCanvas)
+          : getClassmatePositionAndSize(displayName, participantsCanvas);
+        if (position && participantsCanvas) {
+          await this._stream?.adjustRenderedVideoPosition(participantsCanvas, userId, position.w, position.h, position.x, position.y);
+        }
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
+  };
+
+  updateCanvasDimension = async () => {
+    try {
+      const studentListElement = document.getElementById("student-list") as HTMLDivElement;
+      for (const group of Object.values(PARTICIPANT_GROUPS)) {
+        const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + group) as HTMLCanvasElement;
+        if (!canvas) return;
+        await this._stream?.updateVideoCanvasDimension(canvas, studentListElement.offsetWidth, studentListElement.offsetHeight);
+      }
+    } catch (error) {
+      Logger.error("Update canvas dimension", error);
+    }
+  };
+
+  renderPeerVideos = async () => {
+    const users = this._client?.getAllUser().filter(({ userId }) => userId !== this._selfId) ?? [];
+    if (!users.length && this._renderedList) {
+      Logger.log("Remove all rendered students");
+      for (const user of this._renderedList) {
+        await this.stopRenderParticipantVideo(user);
+      }
+      this._renderedList = [];
+      this._renderedGroup = {};
+    }
+    const shouldRenderParticipants = users.filter(({ bVideoOn }) => bVideoOn);
+    const shouldRemoveParticipants = users.filter(({ bVideoOn }) => !bVideoOn);
+
+    const shouldAddedParticipants = shouldRenderParticipants.filter(
+      ({ userId, displayName }) =>
+        this._renderedList.findIndex(
+          ({ userId: renderedId, displayName: renderedDisplayName }) => userId === renderedId || displayName === renderedDisplayName,
+        ) === -1,
+    );
+
+    for (const user of shouldRemoveParticipants) {
+      if (this._renderedList.find(({ displayName }) => displayName === user.displayName)) {
+        delete this._renderedGroup[user.displayName];
+        Logger.log("Should remove: ", user.displayName);
+        await this.stopRenderParticipantVideo(user);
+      }
+    }
+
+    for (const user of shouldAddedParticipants) {
+      const group = Object.keys(this._renderedGroup).length < MAXIMUM_PARTICIPANT_PER_CANVAS ? PARTICIPANT_GROUPS.ONE : PARTICIPANT_GROUPS.TWO;
+      this._renderedGroup[user.displayName] = group;
+      Logger.log("Should render: ", user.displayName);
+      await this.renderParticipantVideo(user, group);
+    }
+    this._renderedList = [...shouldRenderParticipants];
+
+    Logger.log("Total rendered: ", this._renderedList.length);
+    await this.rerenderParticipantsVideo();
+  };
+
+  stopRenderAllParticipantVideosAndReplaceStudentsCanvas = async () => {
+    Logger.log("Stop render all participant videos and replace students canvas");
+    for (const user of this._renderedList) {
+      await this.stopRenderParticipantVideo(user);
+    }
+    this._renderedGroup = {};
+    this._renderedList = [];
+
+    for (const group of Object.values(PARTICIPANT_GROUPS)) {
+      const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + group) as HTMLCanvasElement;
+      await this._stream?.clearVideoCanvas(canvas);
+      this.replaceVideoCanvas(PARTICIPANT_CANVAS_ID + "-" + group);
+    }
+  };
+
+  async rejoinRTCRoom(options: { studentId?: string; teacherId?: string; token?: string; channel: string }) {
+    try {
+      if (!this._client) return;
+      await this.stopAudio();
+
+      // stop local video
+      Logger.log("Stop local video: ", options.teacherId ?? options.studentId);
+      await this.proactiveDisableVideos(options.teacherId ?? options.studentId);
+
+      // replace self canvas
+      this.replaceVideoCanvas(this.option.user.username + "__video");
+
+      // remove all students video
+      await this.stopRenderAllParticipantVideosAndReplaceStudentsCanvas();
+
+      // replace 1-1 or teacher canvas
+      if (this._isHost) {
+        this.replaceVideoCanvas(`${this._oneToOneStudentId}__sub`);
+      } else {
+        this.replaceVideoCanvas(`${this._teacherId}__sub`);
+      }
+
+      await this.leaveSession();
+
+      Logger.log("Rejoin RTC room: ", options);
+
+      await this._client?.join(options.channel, options.token ?? this.option.user.token, this.option.user.username);
+
+      this._stream = this._client?.getMediaStream();
+      this._selfId = this._client?.getCurrentUserInfo().userId;
+
+      await this.startAudio();
+
+      if (this._isBeforeOneToOneCameraEnable) {
+        Logger.log("Turn on my video again");
+        if (this._isHost) {
+          await store.dispatch("teacherRoom/setTeacherVideo", {
+            id: options.teacherId,
+            enable: true,
+          });
+        } else {
+          await store.dispatch("studentRoom/setStudentVideo", {
+            id: options.studentId,
+            enable: true,
+          });
+        }
+        this._isBeforeOneToOneCameraEnable = false;
+      }
+
+      await this.renderPeerVideos();
+    } catch (error) {
+      Logger.error(error);
+    }
+  }
+
+  async stopAudio() {
+    try {
+      if (this.isMicEnable) {
+        await this._stream?.stopAudio();
+      }
+    } catch (error) {
+      Logger.error("Stop audio error: ", error);
+    }
+  }
+
+  async muteAudio() {
+    try {
+      await this._stream?.muteAudio();
+    } catch (error) {
+      Logger.error("Mute audio error: ", error);
+      await delay(200);
+      await this._stream?.muteAudio();
+    }
+  }
+
+  async selectMicrophone() {
+    if (!this._selectedMicrophoneId) {
+      const devices = await this.zoomRTC?.getDevices();
+      const mics = devices.filter(function (device) {
+        return device.kind === "audioinput";
+      });
+      if (!mics.length) {
+        throw new Error("Cannot detect your microphone");
+      }
+      this._selectedMicrophoneId = mics[0].deviceId;
+    }
+    if (this._selectedMicrophoneId) {
+      await this._stream?.switchMicrophone(this._selectedMicrophoneId);
+    }
+  }
+
+  async startAudio() {
+    try {
+      await this._stream?.startAudio();
+      await this.selectMicrophone();
+
+      if (!this.isMicEnable) {
+        // to avoid SDK not receiving media device
+        await delay(200);
+        await this.muteAudio();
+      }
+    } catch (error) {
+      Logger.error("Start audio error: ", error);
     }
   }
 
@@ -389,7 +529,6 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async setCamera(options: { enable: boolean }) {
-    if (this.isCameraEnable === options.enable) return;
     this.isCameraEnable = options.enable;
     if (this.isCameraEnable) {
       await this.startRenderLocalUserVideo();
@@ -398,6 +537,14 @@ export class ZoomClient implements ZoomClientSDK {
     }
   }
 
+  replaceVideoCanvas = (elementId: string) => {
+    const canvas = document.getElementById(elementId) as HTMLCanvasElement;
+    if (canvas) {
+      const cloneCanvas = canvas.cloneNode();
+      canvas.replaceWith(cloneCanvas);
+    }
+  };
+
   async stopRenderLocalUserVideo() {
     Logger.log("Stop render local user video");
     try {
@@ -405,7 +552,6 @@ export class ZoomClient implements ZoomClientSDK {
     } catch (error) {
       Logger.error("Stop render local user video: ", error);
     }
-    this.isCameraEnable = false;
   }
 
   async startRenderLocalUserVideo() {
@@ -421,65 +567,50 @@ export class ZoomClient implements ZoomClientSDK {
         this._selectedCameraId = cams[0].deviceId;
         this._defaultCaptureVideoOption.cameraId = this._selectedCameraId;
       }
-
-      if (!!(window as any).chrome && !(typeof SharedArrayBuffer === "function")) {
-        const video = document.getElementById(this.option.user.username + "__video") as HTMLVideoElement;
+      const mineVideoElementId = this.option.user.username + "__video";
+      if (this._isNotSupportSharedArrayBuffer) {
+        const video = document.getElementById(mineVideoElementId) as HTMLVideoElement;
         if (video) {
           await this._stream?.startVideo({ ...this._defaultCaptureVideoOption, videoElement: video });
         }
       } else {
-        const canvas = document.getElementById(this.option.user.username + "__video") as HTMLCanvasElement;
+        const canvas = document.getElementById(mineVideoElementId) as HTMLCanvasElement;
         if (canvas && this._selfId) {
-          await this._stream?.startVideo({ ...this._defaultCaptureVideoOption });
-          await this._stream?.renderVideo(canvas, this._selfId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_720P);
+          await this._stream?.startVideo(this._defaultCaptureVideoOption);
+          await this._stream?.renderVideo(canvas, this._selfId, canvas.width, canvas.height, 0, 0, VideoQuality.Video_360P);
         }
       }
     } catch (error) {
-      Logger.error(error);
+      Logger.error("Start render local user video: ", error);
     }
-    this.isCameraEnable = true;
   }
 
   async proactiveDisableVideos(id?: string) {
     try {
       if (!id) return;
-      const { role } = this.option.user;
       if (this.isCameraEnable) {
-		Logger.log("Turn off my video");
-        if (role === "host") {
+        Logger.log("Turn off my video");
+        if (this._isHost) {
           await store.dispatch("teacherRoom/setTeacherVideo", {
             id,
             enable: false,
           });
-        } else if (this._oneToOneStudentId === id) {
+        } else {
           await store.dispatch("studentRoom/setStudentVideo", {
             id,
             enable: false,
           });
         }
-		this._isBeforeOneToOneCameraEnable = true
+        this._isBeforeOneToOneCameraEnable = true;
       }
-	  // to avoid turn off camera and leave class happening at the same time
-      await this.delay(200);
     } catch (error) {
       Logger.error("Proactive Disable Videos", error);
     }
   }
 
-  async leaveSessionForOneToOne() {
-    try {
-      await this._client?.leave();
-    } catch (error) {
-      Logger.error(error);
-    }
-  }
-
-  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-  async teacherBreakoutRoom(oneToOneStudentId: string) {
-    this._oneToOneStudentId = oneToOneStudentId;
-    const { role, username, channel } = this.option.user;
-    if (role !== "host") return;
+  async teacherBreakoutRoom() {
+    const { username, channel } = this.option.user;
+    if (!this._isHost) return;
     try {
       await this.rejoinRTCRoom({
         teacherId: username,
@@ -493,15 +624,14 @@ export class ZoomClient implements ZoomClientSDK {
   }
 
   async teacherBackToMainRoom() {
-    const { role, username, channel } = this.option.user;
-    if (role !== "host") return;
+    const { username, channel } = this.option.user;
+    if (!this._isHost) return;
     try {
       await this.rejoinRTCRoom({
         teacherId: username,
         channel: channel,
       });
       this._isInOneToOneRoom = false;
-      this._oneToOneStudentId = undefined;
       this._oneToOneToken = undefined;
     } catch (error) {
       Logger.log(error);
@@ -510,9 +640,11 @@ export class ZoomClient implements ZoomClientSDK {
 
   async studentBreakoutRoom(oneToOneStudentId: string) {
     if (this._oneToOneStudentId) return;
-    const { role, username, channel } = this.option.user;
-    if (role === "host" || this._isInOneToOneRoom) return;
+    const { username, channel } = this.option.user;
+    if (this._isHost || this._isInOneToOneRoom) return;
+    if (this._isInOneToOneProgress) return;
 
+    this._isInOneToOneProgress = true;
     if (username === oneToOneStudentId) {
       this._oneToOneStudentId = oneToOneStudentId;
       Logger.log("Breakout room");
@@ -523,13 +655,16 @@ export class ZoomClient implements ZoomClientSDK {
       });
       this._isInOneToOneRoom = true;
     }
+    this._isInOneToOneProgress = false;
   }
 
   async studentBackToMainRoom() {
     if (!this._oneToOneStudentId) return;
-    const { role, username, channel } = this.option.user;
-    if (role === "host" || !this._isInOneToOneRoom) return;
+    const { username, channel } = this.option.user;
+    if (this._isHost || !this._isInOneToOneRoom) return;
+    if (this._isInOneToOneProgress) return;
 
+    this._isInOneToOneProgress = true;
     if (username === this._oneToOneStudentId) {
       Logger.log("Back to main room");
       await this.rejoinRTCRoom({
@@ -538,8 +673,16 @@ export class ZoomClient implements ZoomClientSDK {
       });
       this._isInOneToOneRoom = false;
       this._oneToOneToken = undefined;
-
       this._oneToOneStudentId = undefined;
+    }
+    this._isInOneToOneProgress = false;
+  }
+
+  async leaveSession(end = false) {
+    try {
+      await this._client?.leave(end);
+    } catch (error) {
+      Logger.error(error);
     }
   }
 
@@ -554,7 +697,7 @@ export class ZoomClient implements ZoomClientSDK {
     if (this.isMicEnable) {
       await this._stream?.stopAudio();
     }
-    await this._client?.leave(end);
+    await this.leaveSession(end);
     this.joined = false;
     this._stream = undefined;
     this._client = undefined;
@@ -564,5 +707,11 @@ export class ZoomClient implements ZoomClientSDK {
     this._renderedList = [];
 
     this.zoomRTC.destroyClient();
+  }
+
+  // extensions
+  getParticipantByDisplayName(displayName: string) {
+    const users = this._client?.getAllUser();
+    return users?.find((user) => user.displayName === displayName);
   }
 }

@@ -1,3 +1,4 @@
+import { ref } from "vue";
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent } from "@vue/runtime-core";
 import { useStore } from "vuex";
@@ -6,6 +7,8 @@ import { StudentGalleryItem } from "../student-gallery-item";
 import { dragscrollNext } from "vue-dragscroll";
 import { MatIcon } from "vue-glcommonui";
 import { isMobileBrowser } from "@/utils/utils";
+import { store } from "@/store";
+import { StudentRoomManager } from "@/manager/room/student.manager";
 
 export default defineComponent({
   directives: {
@@ -14,6 +17,35 @@ export default defineComponent({
   components: {
     StudentGalleryItem,
     MatIcon,
+  },
+  data: () => {
+    return {
+      timer: null as any,
+    };
+  },
+  mounted() {
+    window.addEventListener("resize", this.onWindowResize);
+  },
+  unmounted() {
+    window.removeEventListener("resize", this.onWindowResize);
+  },
+  methods: {
+    async onWindowResize() {
+      const roomManager: StudentRoomManager | undefined = store.getters["studentRoom/roomManager"];
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      const canvasWrapper = document.getElementById("participant-videos-wrapper");
+      if (canvasWrapper) {
+        canvasWrapper.style.visibility = "hidden";
+      }
+      this.timer = setTimeout(async () => {
+        await roomManager?.rerenderParticipantsVideo();
+        if (canvasWrapper) {
+          canvasWrapper.style.visibility = "visible";
+        }
+      }, 200);
+    },
   },
   props: {
     students: {
@@ -26,6 +58,7 @@ export default defineComponent({
     const store = useStore();
     const isVisible = computed(() => store.getters["studentRoom/videosFeedVisible"]);
     const topStudents = computed(() => props.students.slice(0, 11));
+    const maximumGroup = ref<number>(2);
 
     const onEnter = (el: HTMLDivElement) => {
       gsap.from(el.querySelector(".sc-gallery-item"), { translateX: 0, clearProps: "all", translateY: 0, duration: 1, ease: "Power2.easeInOut" });
@@ -43,6 +76,6 @@ export default defineComponent({
       return !isMobileBrowser && !props.isOneToOne;
     });
 
-    return { topStudents, onEnter, onLeave, isVisible, toggle, isDisplay };
+    return { topStudents, onEnter, onLeave, isVisible, toggle, isDisplay, maximumGroup };
   },
 });

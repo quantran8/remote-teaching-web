@@ -13,7 +13,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
   const handler = {
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
-	  const student = state.students.find(student => student.id === payload.id);
+      const student = state.students.find((student) => student.id === payload.id);
       if (student && student.englishName) {
         notification.warn({
           message: `${student.englishName} has joined the class.`,
@@ -58,15 +58,18 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       }
     },
     onStudentDisconnected: async (payload: StudentModel) => {
-      Logger.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
-      const student = state.students.find((student) => student.id === payload.id);
-      if (student?.status === InClassStatus.LEFT) return;
-      commit("studentDisconnectClass", { id: payload.id });
-      await dispatch("updateAudioAndVideoFeed", {});
-      if (student && student.englishName) {
-        notification.warn({
-          message: `It seems ${student.englishName} had some connectivity issue due to which had to drop out from the class`,
-        });
+      if (payload) {
+        Logger.log("TEACHER_SIGNALR::STUDENT_DISCONNECT => ", payload.id);
+        const student = state.students.find((student) => student.id === payload.id);
+        if (student?.status === InClassStatus.LEFT) return;
+        commit("studentDisconnectClass", { id: payload.id });
+        await dispatch("updateAudioAndVideoFeed", {});
+        if (student && student.englishName) {
+          notification.warn({
+            message: `It seems ${student.englishName} had some connectivity issue due to which had to drop out from the class`,
+          });
+        }
+        await state.manager?.rerenderParticipantsVideo();
       }
     },
     onStudentSendUnity: async (payload: any) => {

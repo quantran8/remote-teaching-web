@@ -51,7 +51,6 @@ export const useFabricObject = () => {
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
       if (options?.target?.type === "textbox") {
-        dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
         if (options?.target.text === "") {
           canvas.remove(options.target);
         }
@@ -61,9 +60,6 @@ export const useFabricObject = () => {
   const onTextBoxEdited = (canvas: any) => {
     canvas.on("text:editing:exited", (options: any) => {
       if (options?.target.type === "textbox") {
-        if (options?.target.textIsChanged) {
-          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
-        }
         if (options?.target.text === "" || !options?.target.textIsChanged) {
           setTimeout(() => {
             canvas.remove(options.target);

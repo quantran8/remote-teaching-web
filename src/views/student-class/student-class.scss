@@ -255,6 +255,11 @@
       left: 0;
       transform: translate(0, -50%);
     }
+	canvas {
+		object-fit: cover;
+		height: 100%;
+		width: 100%;
+	}
   }
   &__one-to-one {
     width: 100%;
@@ -380,8 +385,4 @@
       }
     }
   }
-}
-
-canvas.sc-teacher__video {
-	object-fit: cover;
 }
