@@ -236,8 +236,20 @@ export default defineComponent({
         const rect = document.getElementById("canvas-container");
         if (!rect) return;
         const rectBounding = rect.getBoundingClientRect();
-        const x = e.clientX - rectBounding.left;
-        const y = e.clientY - rectBounding.top;
+        let x = e.clientX - rectBounding.left;
+        let y = e.clientY - rectBounding.top;
+
+        const windowWidth = window.innerWidth;
+        const scaleRatio = 0.68;
+        const scaleBreakpoint = 1600;
+
+        // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
+        // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
+        if (windowWidth <= scaleBreakpoint) {
+          x = x / scaleRatio;
+          y = y / scaleRatio;
+        }
+
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
