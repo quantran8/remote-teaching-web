@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { ratioValue, setStrokeColor } from "@/utils/utils";
+import {getRadius, getScaleX, getScaleY, ratioValue, setStrokeColor} from "@/utils/utils";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
@@ -101,7 +101,9 @@ export const annotationCurriculumStudent = () => {
         circle = new fabric.Circle({
           left: xShape,
           top: yShape,
-          radius: (item.width / 2 / zoom) * ratio,
+          radius: getRadius(item.width * ratio, item.height * ratio),
+          scaleX: getScaleX(item.width * ratio, item.height * ratio),
+          scaleY: getScaleY(item.width * ratio, item.height * ratio),
           fill: "rgba(255,255,255,0.01)",
           realFill: item.fill,
           realOpacity: item.opacity,
@@ -112,6 +114,7 @@ export const annotationCurriculumStudent = () => {
           perPixelTargetFind: true,
           ...commonProps,
         });
+        circle.rotate(item.rotate);
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
         break;
