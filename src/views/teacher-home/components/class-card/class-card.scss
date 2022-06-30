@@ -42,7 +42,7 @@
 
   &__size {
     margin: 8px;
-    width: 185px;
+    width: auto;
     height: 100px;
     cursor: default;
     box-shadow: none !important;
@@ -59,7 +59,8 @@
 }
 
 .m-10 {
-	padding: 0px 5px 10px 8px;
+	padding: 0px 5px 5px 8px;
+	min-width: 155px;
 }
 
 .card {
@@ -77,7 +78,7 @@
 }
 
 .icon-view {
-	padding: 6px 3px;
+	padding: 2px 4px;
 	display: flex;
 	align-items: flex-end;
 }
