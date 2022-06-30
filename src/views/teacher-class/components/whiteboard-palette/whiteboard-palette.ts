@@ -84,11 +84,11 @@ export default defineComponent({
     });
     const { teacherAddShapes, addCircle, addSquare } = addShape();
     const { processAnnotationLesson } = annotationCurriculum();
-    const hasTargets = computed(() => {
-      return !!props.image?.metaData.annotations;
-    });
     const targetsNum = computed(() => {
       return props.image?.metaData?.annotations?.length || 0;
+    });
+    const hasTargets = computed(() => {
+      return !!props.image?.metaData.annotations && targetsNum.value;
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
