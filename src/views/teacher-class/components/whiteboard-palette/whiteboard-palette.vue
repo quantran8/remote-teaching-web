@@ -29,7 +29,10 @@
             id="annotation-img"
             @img-load="imgLoad"
           />
-          <img v-else-if="typeof imageUrl === 'string'" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />
+          <img v-else-if="typeof imageUrl === 'string' && image" 
+		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" 
+		  :style="[{...styles}]" 
+		  />
           <div class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
