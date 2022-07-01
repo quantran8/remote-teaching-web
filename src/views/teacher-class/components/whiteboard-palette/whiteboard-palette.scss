@@ -64,6 +64,9 @@
     border-top-left-radius: 10px;
 
     animation: expandUp 0.1s ease-out;
+    @media (max-width: $large-lap) {
+      font-size: 18px;
+    }
     &--icon {
       animation: invertedUp 0.1s ease-out;
       width: 30px;
@@ -79,6 +82,9 @@
     animation: expandDown 0.1s ease-out;
     padding: 10px;
     top: 425px;
+    @media (max-width: $large-lap) {
+      font-size: 18px;
+    }
     &--icon {
       animation: invertedUp 0.1s ease-out;
       width: 30px;
@@ -118,6 +124,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 5px;
+  @media (max-width: $large-lap) {
+    font-size: 18px;
+  }
+  .ant-btn {
+    @media (max-width: $large-lap) {
+      font-size: 18px;
+      height: 40px;
+    }
+  }
 }
 
 //animations

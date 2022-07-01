@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { ratioValue, setStrokeColor } from "@/utils/utils";
+import {getRadius, getScaleX, getScaleY, ratioValue, setStrokeColor} from "@/utils/utils";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
@@ -75,22 +75,22 @@ export const annotationCurriculumStudent = () => {
     const commonProps = {
       originX: "center",
       originY: "center",
+      fill: "rgba(255,255,255,0.01)",
+      left: xShape,
+      top: yShape,
+      realFill: item.fill,
+      realOpacity: item.opacity,
+      stroke: "transparent",
+      strokeWidth: 5 * ratio,
+      id: "annotation-lesson",
+      perPixelTargetFind: true,
     };
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
-          left: xShape,
-          top: yShape,
           width: (item.width / zoom) * ratio,
           height: (item.height / zoom) * ratio,
-          fill: "rgba(255,255,255,0.01)",
-          realFill: item.fill,
-          realOpacity: item.opacity,
-          stroke: "transparent",
-          strokeWidth: 5,
-          id: "annotation-lesson",
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
           ...commonProps,
         });
         rect.rotate(item.rotate);
@@ -99,19 +99,13 @@ export const annotationCurriculumStudent = () => {
         break;
       case (item.type = 1):
         circle = new fabric.Circle({
-          left: xShape,
-          top: yShape,
-          radius: (item.width / 2 / zoom) * ratio,
-          fill: "rgba(255,255,255,0.01)",
-          realFill: item.fill,
-          realOpacity: item.opacity,
-          stroke: "transparent",
-          strokeWidth: 5,
-          id: "annotation-lesson",
+          radius: getRadius(item.width * ratio, item.height * ratio),
+          scaleX: getScaleX(item.width * ratio, item.height * ratio),
+          scaleY: getScaleY(item.width * ratio, item.height * ratio),
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
-          perPixelTargetFind: true,
           ...commonProps,
         });
+        circle.rotate(item.rotate);
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
         break;

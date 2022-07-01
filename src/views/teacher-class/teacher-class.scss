@@ -58,6 +58,7 @@ $scale-ratio: 0.68;
       &__whiteboard-content {
         transform: scale($scale-ratio);
         transform-origin: top;
+        will-change: transform;
       }
     }
   }
