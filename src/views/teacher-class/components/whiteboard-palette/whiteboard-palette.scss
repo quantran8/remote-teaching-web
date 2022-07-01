@@ -127,6 +127,12 @@
   @media (max-width: $large-lap) {
     font-size: 18px;
   }
+  .ant-btn {
+    @media (max-width: $large-lap) {
+      font-size: 18px;
+      height: 40px;
+    }
+  }
 }
 
 //animations
