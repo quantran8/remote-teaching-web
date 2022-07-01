@@ -80,7 +80,7 @@ const getters: GetterTree<StudentRoomState, any> = {
   isShowWhiteboard(state: StudentRoomState): boolean {
     return state.showWhiteBoard;
   },
-  laserPath(state: StudentRoomState): string {
+  laserPath(state: StudentRoomState): any {
     return state.laserPath;
   },
   isDisconnected(state: StudentRoomState): boolean {

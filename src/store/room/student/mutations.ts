@@ -221,7 +221,12 @@ const mutations: MutationTree<StudentRoomState> = {
     state.laserPath = payload;
   },
   clearLaserPen(state: StudentRoomState, p: "") {
-    state.laserPath = p;
+    state.laserPath = {
+		points :[],
+		strokeColor:'black',
+		strokeWidth:2,
+		isDone:false
+	}
   },
   setOnline(state: StudentRoomState) {
     state.isDisconnected = false;
@@ -289,6 +294,7 @@ const mutations: MutationTree<StudentRoomState> = {
       }
     }
   },
+  
 };
 
 export default mutations;
