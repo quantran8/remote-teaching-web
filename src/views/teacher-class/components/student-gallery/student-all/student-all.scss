@@ -70,8 +70,20 @@
 	  }
   }
 
-  &.student-layout-6,
+  &.student-layout-6 {
+    @media (max-width: 1799px) {
+      width: 90%;
+    }
+    @media (min-width: 1800px) {
+      width: 700px;
+    }
+  }
+
   &.student-layout-3 {
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+	
     @media (max-width: 1799px) {
       width: 90%;
     }
