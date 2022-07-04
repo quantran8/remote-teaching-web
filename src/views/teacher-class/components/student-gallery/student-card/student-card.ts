@@ -100,13 +100,23 @@ export default defineComponent({
     const handleResize = debounce(() => {
       if (!studentRef.value) return;
       let right = 0;
-      const { width } = studentRef.value.getBoundingClientRect();
-      if (width + 10 <= studentRef.value.offsetLeft) {
-        right = width - 50;
+      const { width, top } = studentRef.value.getBoundingClientRect();
+      if (width <= studentRef.value.offsetLeft) {
+		right = studentRef.value.offsetLeft - width - 10;
       }
-      if (width > studentRef.value.offsetParent?.offsetWidth / 2) {
-        right = width + 150;
-      }
+
+	  else {
+		if (top > studentRef.value.offsetHeight) {
+			if (width <= studentRef.value.offsetLeft) {
+				right = 0;
+			} else {
+				right = studentRef.value.offsetParent?.offsetWidth /4 - (studentRef.value.offsetWidth / 2);
+			}
+		} else {
+			right = 0;
+		}
+	  }
+	  
       currentPosition.value = {
         x: studentRef.value.offsetLeft,
         y: studentRef.value.offsetTop,
@@ -120,10 +130,10 @@ export default defineComponent({
     });
     onMounted(() => {
       handleResize();
-      window.addEventListener("resize", handleResize);
+      window.addEventListener("click", handleResize);
     });
     onUnmounted(() => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("click", handleResize);
     });
 
     const focusedStudent = computed(() => props.focusStudentId === props.student.id);

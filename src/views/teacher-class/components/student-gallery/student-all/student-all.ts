@@ -74,7 +74,7 @@ export default defineComponent({
     const maximumGroup = ref<number>(2);
 
     const totalOnlineStudents = ref<number>(0);
-    const scaleVideoOption = ref<number>(1.6);
+    const scaleVideoOption = ref<number>(1.2);
     const lessonPlanCss = ref<string>("");
 
     watch(isGalleryView, (value) => {
@@ -87,16 +87,16 @@ export default defineComponent({
         const onlineStudents = value.filter((s) => s.status === InClassStatus.JOINED).length;
         totalOnlineStudents.value = onlineStudents;
         if (onlineStudents <= 2) {
-          scaleVideoOption.value = 1.6;
+          scaleVideoOption.value = 1.2;
           studentLayout.value = 2;
         } else if (onlineStudents <= 3) {
-          scaleVideoOption.value = 1.6;
+          scaleVideoOption.value = 1.3;
           studentLayout.value = 3;
         } else if (onlineStudents <= 6) {
-          scaleVideoOption.value = 1.4;
+          scaleVideoOption.value = 1.3;
           studentLayout.value = 6;
         } else {
-          scaleVideoOption.value = 2;
+          scaleVideoOption.value = 1.5;
           studentLayout.value = 12;
         }
 		const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];

@@ -21,7 +21,7 @@
 @mixin style-layout-3 {
   @include grid(2, 2%);
   &:nth-child(3) {
-    left: 25%;
+    // left: 25%;
 	
 	// left: 50%
     // transform: translateX(-50%); DOM can't get element position if using transform
