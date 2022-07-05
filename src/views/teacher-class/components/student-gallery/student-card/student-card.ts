@@ -9,6 +9,7 @@ import { debounce } from "lodash";
 import noAvatar from "@/assets/images/user-default-gray.png";
 import "animate.css";
 import { VCPlatform } from "@/store/app/state";
+import {useElementBounding} from "@vueuse/core";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -96,44 +97,46 @@ export default defineComponent({
     });
 
     const studentRef = ref<any>(null);
-    const currentPosition = ref<any>(null);
-    const handleResize = debounce(() => {
-      if (!studentRef.value) return;
-      let right = 0;
-      const { width, top } = studentRef.value.getBoundingClientRect();
-      if (width <= studentRef.value.offsetLeft) {
-		right = studentRef.value.offsetLeft - width - 10;
-      }
+    const parentCard = computed(() => studentRef.value?.parentElement);
+    const { width, height, top, bottom, left, right } =
+        useElementBounding(studentRef);
+    const {
+      width: parentWidth,
+      top: parentTop,
+      bottom: parentBottom,
+      left: parentLeft,
+      right: parentRight,
+    } = useElementBounding(parentCard);
 
-	  else {
-		if (top > studentRef.value.offsetHeight) {
-			if (width <= studentRef.value.offsetLeft) {
-				right = 0;
-			} else {
-				right = studentRef.value.offsetParent?.offsetWidth /4 - (studentRef.value.offsetWidth / 2);
-			}
-		} else {
-			right = 0;
-		}
-	  }
-	  
-      currentPosition.value = {
-        x: studentRef.value.offsetLeft,
-        y: studentRef.value.offsetTop,
-        right: right,
-      };
-    }, 100);
-    watch(isNotJoinned, () => {
-      if (!isNotJoinned.value) {
-        handleResize();
+    const maxScaleRatio = computed(() =>
+        width.value ? parentWidth.value / width.value : 1
+    );
+    const actualScaleRatio = computed(() =>
+        focusedStudent.value ? Math.min(props.scaleOption || 1, maxScaleRatio.value) : 1
+    );
+    const translateX = computed(() => {
+      const scaledWidth = width.value * actualScaleRatio.value;
+      const difference = (scaledWidth - width.value) / 2;
+      const translateValue = Math.round(difference / actualScaleRatio.value);
+      if (left.value === parentLeft.value) {
+        return translateValue;
       }
+      if (right.value === parentRight.value) {
+        return -translateValue;
+      }
+      return 0;
     });
-    onMounted(() => {
-      handleResize();
-      window.addEventListener("click", handleResize);
-    });
-    onUnmounted(() => {
-      window.removeEventListener("click", handleResize);
+    const translateY = computed(() => {
+      const scaledHeight = height.value * actualScaleRatio.value;
+      const difference = (scaledHeight - height.value) / 2;
+      const translateValue = Math.round(difference / actualScaleRatio.value);
+      if (top.value === parentTop.value) {
+        return translateValue;
+      }
+      if (bottom.value === parentBottom.value) {
+        return -translateValue;
+      }
+      return 0;
     });
 
     const focusedStudent = computed(() => props.focusStudentId === props.student.id);
@@ -160,12 +163,14 @@ export default defineComponent({
       isLowBandWidth,
       focusedStudent,
       studentRef,
-      currentPosition,
       isTurnOnCamera,
       isOneToOneStudent,
       avatarStudent,
       oneAndOne,
       isUsingAgora,
+      actualScaleRatio,
+      translateX,
+      translateY,
     };
   },
 });

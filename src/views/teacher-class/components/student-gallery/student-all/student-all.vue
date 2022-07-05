@@ -2,7 +2,10 @@
   <h2 v-if="!totalOnlineStudents" class="no-students-message">
     {{ noStudentJoinText }}
   </h2>
-  <div :id="'student-list'" :class="oneAndOneStatus ? 'oneToOne' : lessonPlanCss + ' student-list student-layout-' + studentLayout">
+  <div
+      ref="studentGallery"
+      :id="'student-list'"
+      :class="[oneAndOneStatus ? 'oneToOne' : '', studentLayout, 'student-list']">
 	
     <StudentCard
       v-for="student in topStudents"

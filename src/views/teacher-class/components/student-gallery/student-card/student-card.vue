@@ -11,11 +11,7 @@
     @mouseleave="onMouseChange(false)"
     ref="studentRef"
     :style="{
-      top: focusedStudent && !isOneToOneStudent ? `${currentPosition?.y}px` : '',
-      left: focusedStudent && !isOneToOneStudent && currentPosition.right === 0 ? `${currentPosition?.x}px` : '',
-      right: focusedStudent && !isOneToOneStudent && currentPosition.right > 0 ? `${currentPosition?.right}px` : '',
-      position: focusedStudent && !isOneToOneStudent ? 'sticky' : '',
-      transform: focusedStudent && !isOneToOneStudent ? `scale(${scaleOption})` : '',
+      transform: focusedStudent && !isOneToOneStudent ? `scale(${actualScaleRatio}) translate(${translateX}px, ${translateY}px)` : '',
     }"
   >
     <div class="student__figure" @mouseover="onMouseChange(true)">
