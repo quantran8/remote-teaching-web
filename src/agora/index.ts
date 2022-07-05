@@ -335,10 +335,10 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       const trackId = track.getTrackId();
       const idx = this._publishedTrackIds.indexOf(trackId);
-      if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
+      if (this.client && this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
         await this.client.unpublish([this.cameraTrack]);
       }
-      if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
+      if (this.client && this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
         await this.client.unpublish([this.microphoneTrack]);
       }
       this._publishedTrackIds.splice(idx, 1);
@@ -346,10 +346,10 @@ export class AgoraClient implements AgoraClientSDK {
       if (!track) return;
       const trackId = track.getTrackId();
       const idx = this._publishedTrackIds.indexOf(trackId);
-      if (this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
+      if (this.client && this.cameraTrack && this.cameraTrack.getTrackId() === trackId) {
         await this.client.unpublish([this.cameraTrack]);
       }
-      if (this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
+      if (this.client && this.microphoneTrack && this.microphoneTrack.getTrackId() === trackId) {
         await this.client.unpublish([this.microphoneTrack]);
       }
       this._publishedTrackIds.splice(idx, 1);
@@ -524,7 +524,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedAudios.find((ele) => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    if (!user || !user.hasAudio) return;
+    if (!user || !user.hasAudio || !this.client) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "audio");
       remoteTrack.play();
@@ -570,7 +570,7 @@ export class AgoraClient implements AgoraClientSDK {
     const subscribed = this.subscribedVideos.find((ele) => ele.userId === userId);
     if (subscribed) return;
     const user = this._getRemoteUser(userId);
-    if (!user || !user.hasVideo) return;
+    if (!user || !user.hasVideo || !this.client) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
       remoteTrack.play(userId, {mirror: true});
