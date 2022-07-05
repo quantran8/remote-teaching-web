@@ -253,3 +253,8 @@ export class StoreLocale {
 export class WhiteBoard {
   static TextBoxWarning = "whiteboard.textbox_warning";
 }
+
+export class TeacherClassError {
+  static ConnectAgoraServersError = "teacher_class_error.connect_agora_servers_error";
+  static PublishStreamAgoraServersError = "teacher_class_error.publish_stream_error";
+}

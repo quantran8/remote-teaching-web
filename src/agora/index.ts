@@ -11,8 +11,11 @@ import AgoraRTC, {
   VideoEncoderConfigurationPreset,
 } from "agora-rtc-sdk-ng";
 import { isEqual } from "lodash";
+import { notification } from "ant-design-vue";
 import { store } from "@/store";
 import { Logger } from "@/utils/logger";
+import { fmtMsg } from "vue-glcommonui";
+import { TeacherClassError } from "@/locales/localeid";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -189,7 +192,7 @@ export class AgoraClient implements AgoraClientSDK {
 					Logger.log("AGORA_JOIN_RETRY_OK");
 				}
 				catch(err) {
-					alert("Cannot connect to Agora servers, please try to reload the page.");
+					notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
 				}
 				if(this.joined) {
 					await this._afterJoin(options);
@@ -402,7 +405,7 @@ export class AgoraClient implements AgoraClientSDK {
 		}
 		// @ts-ignore: no overlap error
 		if(this.client.connectionState != "CONNECTED" && currentTry > retryCount) {
-			alert("Cannot publish video or audio streams to Agora servers, please try to reload the page.");
+			notification.error({message: fmtMsg(TeacherClassError.PublishStreamAgoraServersError)});
 		}
 	}
     
