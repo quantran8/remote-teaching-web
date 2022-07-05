@@ -11,6 +11,7 @@ import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "vue-glcommonui";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 import { Empty } from "ant-design-vue";
+import {useElementSize} from "@vueuse/core";
 
 export const exposureTypes = {
   TRANSITION_BLOCK: "TRANSITION_BLOCK",
@@ -216,6 +217,10 @@ export default defineComponent({
     const toggleInformationBox = () => {
       showInfo.value = !showInfo.value;
     };
+
+    const lessonContainerHeaderFixed = ref<HTMLDivElement>();
+    const { height: lessonContainerHeaderFixedHeight } = useElementSize(lessonContainerHeaderFixed);
+
     onMounted(() => {
       window.addEventListener("keydown", handleKeyDown);
     });
@@ -260,6 +265,8 @@ export default defineComponent({
       toggleInformationBox,
       hasZeroTeachingContent,
       isTransitionBlock,
+      lessonContainerHeaderFixed,
+      lessonContainerHeaderFixedHeight,
     };
   },
 });
