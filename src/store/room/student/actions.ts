@@ -459,16 +459,16 @@ const actions: ActionTree<StudentRoomState, any> = {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
   async generateOneToOneToken({ state }, payload: { classId: string; studentId: string }) {
-    try {
-      const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
-      const zoom = state.manager?.zoomClient;
-      if (zoom) {
-        zoom.oneToOneToken = response.token;
-        await zoom.studentBreakoutRoom(payload.studentId);
-      }
-    } catch (error) {
-      Logger.log(error);
-    }
+    // try {
+    //   const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
+    //   const zoom = state.manager?.zoomClient;
+    //   if (zoom) {
+    //     zoom.oneToOneToken = response.token;
+    //     await zoom.studentBreakoutRoom(payload.studentId);
+    //   }
+    // } catch (error) {
+    //   Logger.log(error);
+    // }
   },
 };
 
