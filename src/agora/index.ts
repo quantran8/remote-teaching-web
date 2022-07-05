@@ -431,7 +431,7 @@ export class AgoraClient implements AgoraClientSDK {
 	this._closeMediaTrack(this.cameraTrack);
     this._closeMediaTrack(this.microphoneTrack);
 	
-    this.client.removeAllListeners();
+    this.client?.removeAllListeners();
 
     await this._client?.leave();
     this.publishedVideo = false;
