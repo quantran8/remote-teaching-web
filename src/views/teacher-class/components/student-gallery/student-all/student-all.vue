@@ -12,7 +12,7 @@
       :setModeOne="true"
       :focusStudentId="focusedStudent"
     />
-	<div class="participant-videos-wrapper" :id="'participant-videos-wrapper'" v-show="!oneAndOneStatus && totalOnlineStudents">
+	  <div class="participant-videos-wrapper" :id="'participant-videos-wrapper'" v-show="!oneAndOneStatus && totalOnlineStudents">
       <canvas v-for="n in maximumGroup" :key="n" :id="`participant-videos-${n}`" />
     </div>
   </div>
