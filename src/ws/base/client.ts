@@ -7,6 +7,7 @@ import { ClassRoomStatus, SignalRStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 export interface GLSocketOptions {
   url: string;
+  reConnectedCallback: ()=>Promise<any>;
 }
 
 const DEFAULT_RECONNECT_TIMING = 5000;
@@ -48,8 +49,9 @@ export class GLSocketClient {
 
     this._hubConnection.onclose(this.onClosed);
     // this._hubConnection
-    this._hubConnection.onreconnected((id: any) => {
+    this._hubConnection.onreconnected(async (id: any) => {
       store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
+	  await this._options?.reConnectedCallback();
     });
     const currentClassRoomStatus = store.getters["classRoomStatus"];
     const currentSignalRStatus = store.getters["signalRStatus"];
@@ -94,6 +96,7 @@ export class GLSocketClient {
         store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
       }
       this._isConnected = true;
+	  await this._options?.reConnectedCallback();
     } catch (error) {
 	  Logger.error(error);
       this._isConnected = false;

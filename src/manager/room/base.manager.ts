@@ -32,6 +32,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   zoomClient!: ZoomClient;
   options!: RoomOptions;
   WSClient!: T;
+  agoraEventHandler!: AgoraEventHandler;
 
   abstract join(options: { classId: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }): Promise<any>;
 
@@ -40,9 +41,20 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   }
   registerVideoCallSDKEventHandler(eventHandler: AgoraEventHandler | ZoomEventHandler) {
     if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
+	  if(eventHandler) {
+		this.agoraEventHandler = eventHandler as AgoraEventHandler;
+        return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
+	  }
     }
   }
+
+  reRegisterVideoCallSDKEventHandler() {
+    if (store.getters.platform === VCPlatform.Agora) {
+	  if(this.agoraEventHandler)
+	  	return this.agoraClient.registerEventHandler(this.agoraEventHandler);
+    }
+  }
+
 
   isJoinedRoom() {
     if (store.getters.platform === VCPlatform.Agora) {

@@ -15,8 +15,23 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
 
     this.WSClient = new TeacherWSClient({
       url: `${process.env.VUE_APP_REMOTE_TEACHING_SERVICE}/teaching`,
+	  reConnectedCallback: async()=> { await this.wsReConnectSucessful();}
     });
     this.WSClient.init();
+  }
+
+  async wsReConnectSucessful(){
+	if (store.getters.platform === VCPlatform.Agora) {
+		//if Agora client failed to be created first time, we shall try to recreate
+		//Agora client once the internet connection is back (SignalR reconnected!)
+		if(this.agoraClient.client == null && this.agoraClient.joinRoomOptions) {
+			Logger.log("AGORA CLIENT FAILED TO INIT, REINIT WHEN SIGNALR RECONNECTED");
+			await this.agoraClient.joinRTCRoom(this.agoraClient.joinRoomOptions, true);
+			this.reRegisterVideoCallSDKEventHandler();
+		}
+	  } else {
+		//do nothing now, will handle Zoom reconnect later
+	  }
   }
 
   async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string }) {
@@ -24,7 +39,8 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     if (!options.teacherId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     if (store.getters.platform === VCPlatform.Agora) {
-      await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" });
+		Logger.log("AGORA CLIENT INIT FIRST TIME");
+      await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" }, false);
     } else {
       if (options.idOne) {
         await store.dispatch("teacherRoom/generateOneToOneToken", {
