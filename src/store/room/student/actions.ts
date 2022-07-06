@@ -257,7 +257,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    if (store.getters.platform === VCPlatform.Agora) {
+    //if (store.getters.platform === VCPlatform.Agora) {
       state.manager?.agoraClient?.registerEventHandler({
         onUserPublished: (user, mediaType) => {
           Logger.log("user-published", user.uid, mediaType);
@@ -277,7 +277,7 @@ const actions: ActionTree<StudentRoomState, any> = {
           Logger.log(payload);
         },
       });
-    }
+    //}
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
@@ -379,12 +379,12 @@ const actions: ActionTree<StudentRoomState, any> = {
   async setStudentOneId({ state, commit, dispatch }, p: { id: string }) {
     commit("setStudentOneId", p);
     if (p.id) {
-      if (store.getters["platform"] === VCPlatform.Zoom) {
-        await dispatch("generateOneToOneToken", {
-          classId: store.getters["studentRoom/info"]?.id,
-          studentId: p.id,
-        });
-      }
+    //   if (store.getters["platform"] === VCPlatform.Zoom) {
+    //     await dispatch("generateOneToOneToken", {
+    //       classId: store.getters["studentRoom/info"]?.id,
+    //       studentId: p.id,
+    //     });
+    //   }
     } else {
       await state.manager?.studentBackToMainRoom();
     }

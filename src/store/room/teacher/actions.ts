@@ -152,7 +152,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    if (store.rootGetters["platform"] === VCPlatform.Agora) {
+    //if (store.rootGetters["platform"] === VCPlatform.Agora) {
       const agoraEventHandler: AgoraEventHandler = {
         onUserPublished: (user, mediaType) => {
           Logger.log("user-published", user.uid, mediaType);
@@ -204,7 +204,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         },
       };
       state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
-    }
+    //}
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });

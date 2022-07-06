@@ -23,7 +23,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   }
 
   async wsReConnectSucessful(){
-	if (store.getters.platform === VCPlatform.Agora) {
+	//if (store.getters.platform === VCPlatform.Agora) {
 		//if Agora client failed to be created first time, we shall try to recreate
 		//Agora client once the internet connection is back (SignalR reconnected!)
 		if(this.agoraClient.client == null && this.agoraClient.joinRoomOptions) {
@@ -31,9 +31,9 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
 			await this.agoraClient.joinRTCRoom(this.agoraClient.joinRoomOptions, true);
 			this.reRegisterVideoCallSDKEventHandler();
 		}
-	  } else {
-		//do nothing now, will handle Zoom reconnect later
-	  }
+	//   } else {
+	// 	//do nothing now, will handle Zoom reconnect later
+	//   }
   }
 
   async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string }) {

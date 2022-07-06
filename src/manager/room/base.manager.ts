@@ -40,19 +40,19 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     return this.WSClient.registerEventHandler(eventHandler);
   }
   registerVideoCallSDKEventHandler(eventHandler: AgoraEventHandler) {
-    if (store.getters.platform === VCPlatform.Agora) {
+    //if (store.getters.platform === VCPlatform.Agora) {
 	  if(eventHandler) {
 		this.agoraEventHandler = eventHandler as AgoraEventHandler;
         return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
 	  }
-    }
+    //}
   }
 
   reRegisterVideoCallSDKEventHandler() {
-    if (store.getters.platform === VCPlatform.Agora) {
+    //if (store.getters.platform === VCPlatform.Agora) {
 	  if(this.agoraEventHandler)
 	  	return this.agoraClient.registerEventHandler(this.agoraEventHandler);
-    }
+    //}
   }
 
 
