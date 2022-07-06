@@ -342,13 +342,13 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
             root: true,
           },
         );
-        if (AppStore.getters["platform"] === VCPlatform.Zoom) {
-          if (payload.id) {
-            //
-          } else {
-            await roomManager?.zoomClient.studentBackToMainRoom();
-          }
-        }
+        // if (AppStore.getters["platform"] === VCPlatform.Zoom) {
+        //   if (payload.id) {
+        //     //
+        //   } else {
+        //     await roomManager?.zoomClient.studentBackToMainRoom();
+        //   }
+        // }
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
