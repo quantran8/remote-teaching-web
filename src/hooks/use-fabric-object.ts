@@ -30,9 +30,8 @@ export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
   const nextColor = ref("");
-
+  const currentSelectionEnd = ref<any>(-1);
   const isEditing = ref(false);
-  //listen event fire on canvas
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       const handleSelect = () => {
@@ -67,6 +66,10 @@ export const useFabricObject = () => {
         }
       }
     });
+
+    canvas.on("text:selection:changed", (options: any) => {
+      currentSelectionEnd.value = options.target.selectionEnd;
+    });
     canvas.on("text:editing:entered", (options: any) => {
       if (options?.target.type === "textbox") {
         options.target.set("cursorColor", nextColor.value);
@@ -82,21 +85,21 @@ export const useFabricObject = () => {
         const maxLength = Math.max(...options.target.textLines.map((line: string) => line.length));
         options.target.set({ width: maxLength });
       }
-
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
       }
-      if (nextColor.value) {
-        const selectedTextStyles = options.target.getSelectionStyles(options.target.selectionEnd - 1, options.target.selectionEnd, true);
-        const [style] = selectedTextStyles;
-        if (style.fill !== nextColor.value) {
-          options.target.setSelectionStart(options.target.selectionEnd - 1);
+      if (nextColor.value && options.target.prevTextValue.length < options.target.text.length) {
+        const selectedTextStyles = options.target.getSelectionStyles(currentSelectionEnd.value, options.target.selectionEnd, true);
+        if (selectedTextStyles?.some((style: any) => style && style.fill !== nextColor.value)) {
+          options.target.setSelectionStart(currentSelectionEnd.value);
           options.target.setSelectionEnd(options.target.selectionEnd);
           options.target.setSelectionStyles({ fill: nextColor.value });
           options.target.setSelectionStart(options.target.selectionEnd);
           options.target.setSelectionEnd(options.target.selectionEnd);
         }
       }
+      options.target.prevTextValue = options.target.text;
+      currentSelectionEnd.value = options.target.selectionEnd;
       dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
     });
   };
@@ -105,6 +108,7 @@ export const useFabricObject = () => {
     const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
     const randomId = randomUUID();
     textBox.objectId = randomId;
+    textBox.prevTextValue = "";
     canvas.add(textBox).setActiveObject(textBox);
     textBox.textIsChanged = false;
     textBox.enterEditing();

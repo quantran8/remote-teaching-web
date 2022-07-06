@@ -91,10 +91,10 @@ export default defineComponent({
         status: false,
         id: null,
       });
-	  if(getters["platform"] === VCPlatform.Zoom){
-	  	const roomManager = getters["teacherRoom/roomManager"];
-		await roomManager?.zoomClient.teacherBackToMainRoom()
-	  }
+	//   if(getters["platform"] === VCPlatform.Zoom){
+	//   	const roomManager = getters["teacherRoom/roomManager"];
+	// 	await roomManager?.zoomClient.teacherBackToMainRoom()
+	//   }
     };
 
     return {

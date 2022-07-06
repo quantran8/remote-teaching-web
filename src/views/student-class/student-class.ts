@@ -139,7 +139,7 @@ export default defineComponent({
       "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
     const iconSand = reactive({ animationData: sandClock.default });
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
 
     watch(lessonInfo, async () => {
       try {
