@@ -30,7 +30,7 @@
             @img-load="imgLoad"
           />
           <img v-else-if="typeof imageUrl === 'string' && image" 
-		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" 
+		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView"
 		  :style="[{...styles}]" 
 		  />
           <div class="wrap-canvas">
