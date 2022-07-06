@@ -128,14 +128,14 @@ const mutations: TeacherRoomMutation<State> = {
             role: role,
           },
         },
-        zoom: {
-          user: {
-            channel: p.streamInfo.chanelId,
-            username: p.streamInfo.userId,
-            token: p.streamInfo.token,
-            role: role,
-          },
-        },
+        // zoom: {
+        //   user: {
+        //     channel: p.streamInfo.chanelId,
+        //     username: p.streamInfo.userId,
+        //     token: p.streamInfo.token,
+        //     role: role,
+        //   },
+        // },
       });
     }
     s.classAction = ClassActionFromValue(p.lessonPlan.lessonAction);

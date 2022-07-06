@@ -10,7 +10,7 @@ import { Select, Spin, Modal, Checkbox, Button, Row, Empty, notification } from 
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AppView } from "@/store/app/state";
+import { AppView, VCPlatform } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
@@ -87,6 +87,7 @@ export default defineComponent({
           lesson: lesson,
           browserFingerprint: result.visitorId,
           unitId,
+		  videoPlatformProvider: VCPlatform.Agora
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
