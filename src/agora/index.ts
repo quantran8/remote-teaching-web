@@ -61,6 +61,7 @@ export class AgoraClient implements AgoraClientSDK {
   _joinRoomOptions?: JoinRoomOptions;
   _cameraTrack?: ICameraVideoTrack;
   _microphoneTrack?: IMicrophoneAudioTrack;
+  _callbackWhenJoinFailed?:  ()=>Promise<any>;
 
   get cameraTrack(): ICameraVideoTrack {
     return this._cameraTrack as ICameraVideoTrack;
@@ -102,7 +103,7 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideosTimeout: any = {};
   publishedAudiosTimeout: any = {};
 
-  async joinRTCRoom(options: JoinRoomOptions, reInit: boolean) {
+  async joinRTCRoom(options: JoinRoomOptions | undefined, reInit: boolean, callbackWhenJoinFailed?: ()=>Promise<any>) {
     if (this._client || this.joined) return;
 	if(reInit)
 		Logger.log("AGORA START REINIT");
@@ -192,11 +193,13 @@ export class AgoraClient implements AgoraClientSDK {
 					Logger.log("AGORA_JOIN_RETRY_OK");
 				}
 				catch(err) {
+					//reset everything here so when signalR reconnect, Agora client may be re-init
+					await this.reset();
 					notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
-				}
-				if(this.joined) {
-					await this._afterJoin(options);
-					Logger.log("AGORA CLIENT PUBLISHING AFTER RETRY JOINED OK");
+					Logger.log("AGORA_JOIN_RETRY_FAILED");
+					if(this._callbackWhenJoinFailed) {
+						await this._callbackWhenJoinFailed();
+					}
 				}
 			}, 1000);
 		}
@@ -211,14 +214,15 @@ export class AgoraClient implements AgoraClientSDK {
 	finally {
 		//make this option available for next retry the agora join process
 		this._joinRoomOptions = options;
+		this._callbackWhenJoinFailed = callbackWhenJoinFailed;
 	}
   }
 
-  private async _afterJoin(options: JoinRoomOptions): Promise<any> {
-	if (options.camera) {
-      await this.openCamera(options.videoEncoderConfigurationPreset);
+  private async _afterJoin(options: JoinRoomOptions | undefined): Promise<any> {
+	if (options?.camera) {
+      await this.openCamera(options?.videoEncoderConfigurationPreset);
     }
-    if (options.microphone) await this.openMicrophone();
+    if (options?.microphone) await this.openMicrophone();
     this.client?.enableAudioVolumeIndicator();
     await this._publish();
   }
