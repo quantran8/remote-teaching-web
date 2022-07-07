@@ -9,6 +9,7 @@ import StudentCard from "../student-card/student-card.vue";
 import { store } from "@/store";
 import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
+import {useElementSize} from "@vueuse/core";
 
 export default defineComponent({
   components: {
@@ -54,51 +55,54 @@ export default defineComponent({
         }
       }, 100);
     },
-    async onStudentListResize() {
-      Logger.log("Student list size changed");
-      const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
-      await roomManager?.rerenderParticipantsVideo();
-    },
+    // async onStudentListResize() {
+    //   Logger.log("Student list size changed");
+    //   const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
+    //   await roomManager?.rerenderParticipantsVideo();
+    // },
   },
   setup() {
     const store = useStore();
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
-    const isGalleryView = computed(() => store.getters["teacherRoom/isGalleryView"]);
+    // const isGalleryView = computed(() => store.getters["teacherRoom/isGalleryView"]);
     const topStudents = computed(() => students.value.slice(0, 12));
     const oneAndOneStatus = computed(() => {
       return store.getters["teacherRoom/getStudentModeOneId"];
     });
     const noStudentJoinText = computed(() => fmtMsg(TeacherClassGallery.NoStudentJoinClass));
 
-    const studentLayout = ref<number>(3);
     const maximumGroup = ref<number>(2);
 
-    const totalOnlineStudents = ref<number>(0);
-    const scaleVideoOption = ref<number>(1.2);
-    const lessonPlanCss = ref<string>("");
+    const studentGallery = ref<HTMLElement>();
+    const { width: studentGalleryWidth } = useElementSize(studentGallery);
+    const breakpoints = 450;
+    const totalOnlineStudents = computed(() => {
+      return students.value.filter((s) => s.status === InClassStatus.JOINED).length;
+    });
 
-    watch(isGalleryView, (value) => {
-      lessonPlanCss.value = value ? "" : "lesson-plan-mode";
+    const studentLayout = computed(() => {
+      if (
+          totalOnlineStudents.value <= 2 ||
+          (totalOnlineStudents.value <= 6 && studentGalleryWidth.value < breakpoints)
+      )
+        return "student-layout-1";
+      if (
+          totalOnlineStudents.value <= 6 ||
+          (totalOnlineStudents.value > 6 && studentGalleryWidth.value < breakpoints)
+      )
+        return "student-layout-2";
+      return "student-layout-3";
+    });
+
+    const scaleVideoOption = computed(() => {
+      if (totalOnlineStudents.value <= 3) return 1.6;
+      if (totalOnlineStudents.value <= 6) return 1.4;
+      return 2;
     });
 
     watch(
       students,
-      (value) => {
-        const onlineStudents = value.filter((s) => s.status === InClassStatus.JOINED).length;
-        totalOnlineStudents.value = onlineStudents;
-        if (onlineStudents <= 2) {
-          scaleVideoOption.value = 1.2;
-          studentLayout.value = 2;
-        } else if (onlineStudents <= 3) {
-          scaleVideoOption.value = 1.3;
-          studentLayout.value = 3;
-        } else if (onlineStudents <= 6) {
-          scaleVideoOption.value = 1.3;
-          studentLayout.value = 6;
-        } else {
-          scaleVideoOption.value = 1.5;
-          studentLayout.value = 12;
-        }
+      () => {
 		const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
 		roomManager?.rerenderParticipantsVideo();
       },
@@ -120,12 +124,12 @@ export default defineComponent({
       topStudents,
       oneAndOneStatus,
       focusedStudent,
-      studentLayout,
-      lessonPlanCss,
       totalOnlineStudents,
       scaleVideoOption,
       noStudentJoinText,
       maximumGroup,
+      studentLayout,
+      studentGallery,
     };
   },
 });
