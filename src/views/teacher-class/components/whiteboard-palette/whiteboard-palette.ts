@@ -713,6 +713,12 @@ export default defineComponent({
     });
     watch(oneAndOne, async () => {
       if (!canvas) return;
+      const activeFabricObject = canvas.getActiveObject();
+      if (activeFabricObject?.type === "textbox" && activeFabricObject.isEditing) {
+        activeFabricObject.exitEditing();
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));

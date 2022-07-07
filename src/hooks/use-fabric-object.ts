@@ -94,7 +94,7 @@ export const useFabricObject = () => {
       let endIndex = -1;
       if (nextColor.value) {
         if (currentSelectionEnd.value === currentSelectionStart.value) {
-          if (options.target.prevTextValue.length < options.target.text.length) {
+          if (options.target?.prevTextValue?.length < options.target?.text?.length) {
             startIndex = currentSelectionEnd.value;
             endIndex = options.target.selectionEnd;
           }
