@@ -108,12 +108,20 @@ export default defineComponent({
       right: parentRight,
     } = useElementBounding(parentCard);
 
-    const maxScaleRatio = computed(() =>
-        width.value ? parentWidth.value / width.value : 1
-    );
-    const actualScaleRatio = computed(() =>
-        focusedStudent.value ? Math.min(props.scaleOption || 1, maxScaleRatio.value) : 1
-    );
+    const maxScaleRatio = computed(() => {
+      return width.value ? parentWidth.value / width.value : 1
+    });
+    const actualScaleRatio = computed(() => {
+      return Math.min(props.scaleOption || 1, maxScaleRatio.value);
+    });
+    const wrapperWidth = computed(() => {
+      // if in one-to-one mode, or the card has room to expand, keep the width as is
+      if (isOneToOneStudent.value || maxScaleRatio.value >= 1.1) {
+        return "100%";
+      }
+      // otherwise, make the width 80% (so it can expand)
+      return focusedStudent.value ? "100%" : "80%";
+    });
     const translateX = computed(() => {
       const scaledWidth = width.value * actualScaleRatio.value;
       const difference = (scaledWidth - width.value) / 2;
@@ -169,8 +177,10 @@ export default defineComponent({
       oneAndOne,
       isUsingAgora,
       actualScaleRatio,
+      maxScaleRatio,
       translateX,
       translateY,
+      wrapperWidth,
     };
   },
 });
