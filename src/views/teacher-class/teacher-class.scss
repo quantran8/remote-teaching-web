@@ -68,6 +68,7 @@ $scale-ratio: 0.66;
     }
   }
   &__gallery {
+    position: relative;
     height: 100%;
     overflow-y: auto;
     flex: 1 1 0;
@@ -113,8 +114,7 @@ $scale-ratio: 0.66;
         z-index: 9999;
         background: #fff;
         left: -240px;
-        top: 85px;
-        height: calc(100% - 85px);
+        height: 100%;
         box-shadow: 5px 0px 5px 0px rgba(0,0,0,0.15);
         &--one-one {
           left: 0;

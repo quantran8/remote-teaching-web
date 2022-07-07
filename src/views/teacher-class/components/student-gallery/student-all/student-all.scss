@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 0;
+  inset: 0;
   height: 100%;
   width: 100%;
 }
@@ -19,7 +19,7 @@
   color: #7b7b7b;
 }
 
-.student-list {
+.student-list:not(.oneToOne) {
   position: relative;
   margin-top: 24px;
   display: grid;
@@ -95,15 +95,15 @@
   //}
 }
 
-.student-layout-1 {
+.student-layout-1:not(.oneToOne) {
     grid-template-columns: repeat(1, 1fr);
 }
 
-.student-layout-2 {
+.student-layout-2:not(.oneToOne) {
     grid-template-columns: repeat(2, 1fr);
 }
 
-.student-layout-3 {
+.student-layout-3:not(.oneToOne) {
   grid-template-columns: repeat(2, 1fr);
   @media (min-width: $large-lap) {
     grid-template-columns: repeat(3, 1fr);
