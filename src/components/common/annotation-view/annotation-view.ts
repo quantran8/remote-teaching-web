@@ -1,4 +1,4 @@
-import { computed, defineComponent, nextTick, onMounted, onUnmounted, onUpdated, ref, watch } from "vue";
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
@@ -406,12 +406,9 @@ export default defineComponent({
         firstTimeLoadTargets.value = true;
       }
     };
-
-    const resizeCanvas = async () => {
+    const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
-      if (!outerCanvasContainer || !outerCanvasContainer.clientWidth) {
-        return;
-      }
+      if (!outerCanvasContainer || !outerCanvasContainer.clientWidth) return;
       const ratio = canvas.getWidth() / canvas.getHeight();
       const containerWidth = outerCanvasContainer.clientWidth;
       const scale = containerWidth / canvas.getWidth();
