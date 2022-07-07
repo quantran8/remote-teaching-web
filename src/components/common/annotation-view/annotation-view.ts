@@ -11,6 +11,7 @@ import { studentAddedShapes } from "@/components/common/annotation-view/componen
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculumStudent } from "@/components/common/annotation-view/components/annotation-curriculum";
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
+import { debounce } from "lodash";
 
 export default defineComponent({
   props: ["image"],
@@ -407,11 +408,8 @@ export default defineComponent({
     };
     const resizeCanvas = () => {
       const outerCanvasContainer = containerRef.value;
-      if (!outerCanvasContainer) {
-        return;
-      }
+      if (!outerCanvasContainer || !outerCanvasContainer.clientWidth) return;
       const ratio = canvas.getWidth() / canvas.getHeight();
-
       const containerWidth = outerCanvasContainer.clientWidth;
       const scale = containerWidth / canvas.getWidth();
       const zoom = canvas.getZoom() * scale;
@@ -542,10 +540,10 @@ export default defineComponent({
     });
     onMounted(() => {
       boardSetup();
-      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("resize", debounce(resizeCanvas, 300));
     });
     onUnmounted(() => {
-      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("resize", debounce(resizeCanvas, 300));
     });
 
     return {
