@@ -39,7 +39,8 @@
       </div>
     </div>
     <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi" alt="Low bandwidth" />
-    <div class="student__info" @mouseover="onMouseChange(true)">
+    <div class="student__info" @mouseover="onMouseChange(true)"
+         :style="{transform: focusedStudent && !isOneToOneStudent ? `scale(${1 / actualScaleRatio})` : ''}">
       <p
         class="student__info--name"
         :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned, ellipText: true }"
@@ -50,7 +51,12 @@
       </p>
     </div>
 
-    <StudentCardActions v-if="!isNotJoinned" :student="student" :show="isMouseEntered" :focusedStudent="focusedStudent" />
+    <StudentCardActions v-if="!isNotJoinned"
+                        :student="student"
+                        :show="isMouseEntered"
+                        :focusedStudent="focusedStudent"
+                        :style="{transform: focusedStudent && !isOneToOneStudent ? `scale(${1 / actualScaleRatio})` : ''}"
+    />
   </div>
 
   <!--        Comment BaseTag but DO NOT remove this-->
