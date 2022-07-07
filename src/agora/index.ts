@@ -192,11 +192,10 @@ export class AgoraClient implements AgoraClientSDK {
 					Logger.log("AGORA_JOIN_RETRY_OK");
 				}
 				catch(err) {
+					//reset everything here so when signalR reconnect, Agora client may be re-init
+					await this.reset();
 					notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
-				}
-				if(this.joined) {
-					await this._afterJoin(options);
-					Logger.log("AGORA CLIENT PUBLISHING AFTER RETRY JOINED OK");
+					Logger.log("AGORA_JOIN_RETRY_FAILED");
 				}
 			}, 1000);
 		}
