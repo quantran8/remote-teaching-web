@@ -101,6 +101,33 @@ const actions: ActionTree<StudentRoomState, any> = {
       }
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
+		//check for teacher connected status while student's signalR has not initialized properly to get
+		//the TeacherJoinedClass event. Workaround for a bug user refresh teacher's screen and student's screen at same time!
+		const maxRetry = 5;
+		let currentTry = 1;
+		let teacherConnected = false;
+		
+		const intervalId = setInterval(async () => {
+			if(currentTry > maxRetry || teacherConnected || store.getters.singalrInited)
+			{
+				clearInterval(intervalId);
+				Logger.log(`Stopped loop, currentTry ${currentTry}, teacherConnected ${teacherConnected}, signalRinited ${store.getters.singalrInited}`)
+			}
+				
+			Logger.log("CALL JOIN CLASS AGAIN");
+
+			const roomResponse2: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
+			if (!roomResponse2.data.teacher.disconnectTime) {
+				teacherConnected = true;
+				Logger.log("SET TEACHER ONLINE");
+				commit("setTeacherDisconnected", false);
+				commit("setTeacherStatus", {
+					id: roomResponse2.data.teacher.id,
+					status: roomResponse2.data.teacher.connectionStatus,
+				});
+			}
+			currentTry +=1;
+		}, 1000);		
       }
     } catch (error) {
       if (error.code == null) {

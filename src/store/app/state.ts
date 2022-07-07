@@ -35,6 +35,7 @@ export interface AppState {
   userRole: UserRole;
 
   platform: VCPlatform;
+  singalrInited: boolean;
 }
 export interface ToastData {
   message: string;
@@ -61,6 +62,7 @@ const state: AppState = {
   userRole: UserRole.UnConfirm,
 
   platform: VCPlatform.Agora,
+  singalrInited: false
 };
 
 export default state;

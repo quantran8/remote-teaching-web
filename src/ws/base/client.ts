@@ -96,6 +96,7 @@ export class GLSocketClient {
         store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
       }
       this._isConnected = true;
+	  store.dispatch("setSingalrInited", true);
 	  await this._options?.reConnectedCallback();
     } catch (error) {
 	  Logger.error(error);

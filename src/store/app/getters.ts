@@ -38,6 +38,9 @@ const getters: GetterTree<AppState, any> = {
   platform(state: AppState): VCPlatform {
     return state.platform;
   },
+  isSingalrInited(state: AppState): boolean {
+    return state.singalrInited;
+  },
 };
 
 export default getters;
