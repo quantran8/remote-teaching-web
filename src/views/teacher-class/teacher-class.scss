@@ -14,6 +14,7 @@ $scale-ratio: 0.66;
     right: 0;
     bottom: $header-height;
     width: 100%;
+    z-index: 2;
   }
   &__main {
     position: fixed;
