@@ -232,12 +232,10 @@ export default defineComponent({
       // }
     });
 	const imageUrl = computed(() => {
-		if (!props.image) return {};
-		if (endImgLink(props.image.url)) {
-		  return props.image.url + "?" + new Date().getTime();
-		} else {
-		  return props.image.url + "&" + new Date().getTime();
-		}
+      const image = new Image();
+      image.onload = imgLoad;
+      image.src = props.image ? props.image.url : {};
+      return image.src;
 	  });
     const cursorPosition = async (e: any) => {
       if (modeAnnotation.value === Mode.Cursor) {
@@ -515,7 +513,7 @@ export default defineComponent({
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
-    const imgLoad = async (e: UIEvent) => {	
+    const imgLoad = async (e: Event) => {
       if (!canvas) return;
       const img = e?.target as HTMLImageElement;
       if (img && img.naturalWidth && img.naturalHeight) {

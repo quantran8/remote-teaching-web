@@ -37,7 +37,7 @@ export default defineComponent({
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
 
     const isMouseEntered = ref<boolean>(false);
     const isShow = computed(() => {
@@ -73,11 +73,11 @@ export default defineComponent({
 		  status: true,
 	      id: props.student.id,
 		});
-        if (store.getters["platform"] === VCPlatform.Zoom) {
-		  await store.dispatch("teacherRoom/generateOneToOneToken", {
-			 classId: store.getters["teacherRoom/info"]?.id
-		  });
-        }
+        // if (store.getters["platform"] === VCPlatform.Zoom) {
+		//   await store.dispatch("teacherRoom/generateOneToOneToken", {
+		// 	 classId: store.getters["teacherRoom/info"]?.id
+		//   });
+        // }
       }
     };
 

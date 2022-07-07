@@ -20,7 +20,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const platform = computed(() => getters["platform"]);
-    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
 
     const contextMenuVisibility = ref(false);
     const toggleContextMenu = () => {

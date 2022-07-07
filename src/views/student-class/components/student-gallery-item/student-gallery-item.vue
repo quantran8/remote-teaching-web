@@ -3,9 +3,9 @@
     <div
       :class="[
         'sc-gallery-item',
-        isCurrent && 'sc-gallery-item--current',
-        isRaisingHand && 'sc-gallery-item--help',
         isNotJoinned && 'sc-gallery-item--disabled',
+        isCurrent && 'sc-gallery-item--current',
+        isCurrent && isRaisingHand && 'sc-gallery-item--help',
       ]"
       ref="containerRef"
     >
