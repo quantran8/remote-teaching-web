@@ -86,6 +86,7 @@ export interface StudentRoomState {
   avatarStudentOneToOne: string;
   apiStatus: GLApiStatus | null;
   videosFeedVisible: boolean;
+  browserFingerPrinting: string;
 }
 
 const initialVideosFeedVisible = isDesktopBrowser ? true : false;
@@ -119,6 +120,7 @@ const state: StudentRoomState = {
   avatarStudentOneToOne: "",
   apiStatus: null,
   videosFeedVisible: initialVideosFeedVisible,
+  browserFingerPrinting: ""
 };
 
 export default state;

@@ -18,6 +18,8 @@ import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
 import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
+import { notification } from "ant-design-vue";
+import { TeacherClassError } from "@/locales/localeid";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -51,6 +53,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
+	  commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
@@ -99,35 +102,38 @@ const actions: ActionTree<StudentRoomState, any> = {
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+	  await dispatch("setTeacherMessageVersion", roomResponse.data.teacher.messageVersion, { root: true });
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
-		//check for teacher connected status while student's signalR has not initialized properly to get
-		//the TeacherJoinedClass event. Workaround for a bug user refresh teacher's screen and student's screen at same time!
-		const maxRetry = 5;
-		let currentTry = 1;
-		let teacherConnected = false;
-		
-		const intervalId = setInterval(async () => {
-			if(currentTry > maxRetry || teacherConnected || store.getters.singalrInited)
-			{
-				clearInterval(intervalId);
-				Logger.log(`Stopped loop, currentTry ${currentTry}, teacherConnected ${teacherConnected}, signalRinited ${store.getters.singalrInited}`)
-			}
-				
-			Logger.log("CALL JOIN CLASS AGAIN");
+        //check for teacher connected status while student's signalR has not initialized properly to get
+        //the TeacherJoinedClass event. Workaround for a bug user refresh teacher's screen and student's screen at same time!
+        const maxRetry = 5;
+        let currentTry = 1;
+        let teacherConnected = false;
 
-			const roomResponse2: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(payload.studentId, payload.browserFingerPrinting);
-			if (!roomResponse2.data.teacher.disconnectTime) {
-				teacherConnected = true;
-				Logger.log("SET TEACHER ONLINE");
-				commit("setTeacherDisconnected", false);
-				commit("setTeacherStatus", {
-					id: roomResponse2.data.teacher.id,
-					status: roomResponse2.data.teacher.connectionStatus,
-				});
-			}
-			currentTry +=1;
-		}, 1000);		
+        const intervalId = setInterval(async () => {
+          if (currentTry > maxRetry || teacherConnected || store.getters.singalrInited) {
+            clearInterval(intervalId);
+            Logger.log(`Stopped loop, currentTry ${currentTry}, teacherConnected ${teacherConnected}, signalRinited ${store.getters.singalrInited}`);
+          }
+
+          Logger.log("CALL JOIN CLASS AGAIN");
+
+          const roomResponse2: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
+            payload.studentId,
+            payload.browserFingerPrinting,
+          );
+          if (!roomResponse2.data.teacher.disconnectTime) {
+            teacherConnected = true;
+            Logger.log("SET TEACHER ONLINE");
+            commit("setTeacherDisconnected", false);
+            commit("setTeacherStatus", {
+              id: roomResponse2.data.teacher.id,
+              status: roomResponse2.data.teacher.connectionStatus,
+            });
+          }
+          currentTry += 1;
+        }, 1000);
       }
     } catch (error) {
       if (error.code == null) {
@@ -265,7 +271,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         microphone: microphoneStatus,
         classId: state.info?.id,
         studentId: state.user?.id,
-		idOne: state.idOne
+        idOne: state.idOne,
       });
     }
     let currentBandwidth = 0;
@@ -285,23 +291,47 @@ const actions: ActionTree<StudentRoomState, any> = {
       });
     }, 300000); // 300000 = 5 minutes
     //if (store.getters.platform === VCPlatform.Agora) {
-      state.manager?.agoraClient?.registerEventHandler({
-        onUserPublished: (user, mediaType) => {
-          Logger.log("user-published", user.uid, mediaType);
-          dispatch("updateAudioAndVideoFeed", {});
-        },
-        onUserUnPublished: (user, mediaType) => {
-          Logger.log("user-unpublished", user.uid, mediaType);
-          dispatch("updateAudioAndVideoFeed", {});
-        },
-        onException: (payload: any) => {
-          Logger.log("agora-exception-event", payload);
-        },
-        onLocalNetworkUpdate(payload: any) {
-          Logger.log(payload);
-        },
-      });
+    state.manager?.agoraClient?.registerEventHandler({
+      onUserPublished: (user, mediaType) => {
+        Logger.log("user-published", user.uid, mediaType);
+        dispatch("updateAudioAndVideoFeed", {});
+      },
+      onUserUnPublished: (user, mediaType) => {
+        Logger.log("user-unpublished", user.uid, mediaType);
+        dispatch("updateAudioAndVideoFeed", {});
+      },
+      onException: (payload: any) => {
+        Logger.log("agora-exception-event", payload);
+      },
+      onVolumeIndicator(result: { level: number; uid: UID }[]) {
+        dispatch("setSpeakingUsers", result);
+      },
+      onLocalNetworkUpdate(payload: any) {
+        Logger.log(payload);
+      },
+    });
     //}
+    var checkMessageTimer = setInterval(async () => {
+      var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+      const localMessageVersion = store.rootGetters["teacherMessageVersion"];
+        if (techerMessageVersion > localMessageVersion) {
+			console.log(`TEACHER MESSAGE VERSION: server ${techerMessageVersion} local ${localMessageVersion} `);
+        	//reinit the class data here
+			notification.error({message: fmtMsg(TeacherClassError.MissingImportantClassMessages)});
+			const user = store.getters["user"] as UserModel;
+			const room = store.getters["info"] as RoomModel
+			await dispatch("initClassRoom", {
+				classId: room.classInfo.classId,
+				userId: user.id,
+				userName: user.name,
+				studentId: user.id,
+				role: "parent",
+				browserFingerPrinting: store.getters["browserFingerPrint"],
+			});
+			console.log("REINIT CLASS INFO OK");
+      }
+    }, 3000);
+    store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
@@ -315,11 +345,15 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
     commit("setSpeakingUsers", { userIds: validSpeakings });
   },
-  async leaveRoom({ state, commit }, payload: any) {
+  async leaveRoom({ state, commit, rootGetters, dispatch }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
     commit({ type: "lesson/clearLessonData" }, { root: true });
     commit({ type: "lesson/clearCacheImage" }, { root: true });
+    const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
+	if(checkMessageTimer)
+    	clearInterval(checkMessageTimer);
+    dispatch("setCheckMessageVersionTimer", -1, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;
@@ -403,12 +437,12 @@ const actions: ActionTree<StudentRoomState, any> = {
   async setStudentOneId({ state, commit, dispatch }, p: { id: string }) {
     commit("setStudentOneId", p);
     if (p.id) {
-    //   if (store.getters["platform"] === VCPlatform.Zoom) {
-    //     await dispatch("generateOneToOneToken", {
-    //       classId: store.getters["studentRoom/info"]?.id,
-    //       studentId: p.id,
-    //     });
-    //   }
+      //   if (store.getters["platform"] === VCPlatform.Zoom) {
+      //     await dispatch("generateOneToOneToken", {
+      //       classId: store.getters["studentRoom/info"]?.id,
+      //       studentId: p.id,
+      //     });
+      //   }
     } else {
       await state.manager?.studentBackToMainRoom();
     }

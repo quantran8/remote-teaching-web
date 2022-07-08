@@ -41,6 +41,12 @@ const getters: GetterTree<AppState, any> = {
   isSingalrInited(state: AppState): boolean {
     return state.singalrInited;
   },
+  teacherMessageVersion(state: AppState): number {
+    return state.teacherMessageVersion;
+  },
+  checkMessageVersionTimer(state: AppState): number {
+	return state.checkMessageVersionTimer;
+  }
 };
 
 export default getters;

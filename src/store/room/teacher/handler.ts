@@ -251,6 +251,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
       await dispatch("updateAudioAndVideoFeed", {});
+	  await dispatch("setTeacherMessageVersion", payload.messageVersion);
+	  //console.log(`Get 1-1 message with version ${payload.messageVersion}`);
       if (payload.id) {
         // process in one one
         await dispatch("annotation/setOneTeacherStrokes", payload.drawing.brushstrokes, { root: true });

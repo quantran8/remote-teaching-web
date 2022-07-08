@@ -237,6 +237,9 @@ const mutations: MutationTree<StudentRoomState> = {
   setOffline(state: StudentRoomState) {
     state.isDisconnected = true;
   },
+  setBrowserFingerPrint(state: StudentRoomState, p: string) {
+    state.browserFingerPrinting = p;
+  },
   setIsJoined(state: StudentRoomState, p: { isJoined: boolean }) {
     state.isJoined = p.isJoined;
   },
