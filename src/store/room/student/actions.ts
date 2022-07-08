@@ -297,9 +297,6 @@ const actions: ActionTree<StudentRoomState, any> = {
         onException: (payload: any) => {
           Logger.log("agora-exception-event", payload);
         },
-        onVolumeIndicator(result: { level: number; uid: UID }[]) {
-          dispatch("setSpeakingUsers", result);
-        },
         onLocalNetworkUpdate(payload: any) {
           Logger.log(payload);
         },

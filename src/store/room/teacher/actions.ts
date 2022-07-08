@@ -165,9 +165,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
         onException: (payload: any) => {
           Logger.log("agora-exception-event", payload);
         },
-        onVolumeIndicator(result: { level: number; uid: UID }[]) {
-          dispatch("setSpeakingUsers", result);
-        },
         onLocalNetworkUpdate(payload: NetworkQualityPayload) {
           const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
           if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {

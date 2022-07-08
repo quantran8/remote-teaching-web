@@ -38,12 +38,6 @@ export interface AgoraEventHandler {
   onUserPublished(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video"): void;
   onUserUnPublished(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video"): void;
   onException(payload: any): void;
-  onVolumeIndicator(
-    result: {
-      level: number;
-      uid: UID;
-    }[],
-  ): void;
   onLocalNetworkUpdate(payload: any): void;
 }
 
@@ -169,8 +163,17 @@ export class AgoraClient implements AgoraClientSDK {
 		Logger.log("user-left", user.uid);
 		});
 		this.client.on("user-joined", (user) => {
-		Logger.log("user-joined", user.uid);
+			Logger.log("user-joined", user.uid);
 		});
+		this.client?.enableAudioVolumeIndicator();
+		this.client.on("volume-indicator", (result: { level: number; uid: UID }[]) => {
+			if (this.options.user?.role === "host") {
+				store.dispatch("teacherRoom/setSpeakingUsers", result);
+			} else {
+				store.dispatch("studentRoom/setSpeakingUsers", result);
+			}
+		});
+
 		this.agoraRTC.setLogLevel(3);
 		
 		if(reInit)
@@ -223,13 +226,11 @@ export class AgoraClient implements AgoraClientSDK {
       await this.openCamera(options?.videoEncoderConfigurationPreset);
     }
     if (options?.microphone) await this.openMicrophone();
-    this.client?.enableAudioVolumeIndicator();
     await this._publish();
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
     this.client?.on("exception", handler.onException);
-    this.client?.on("volume-indicator", handler.onVolumeIndicator);
     this.client?.on("network-quality", handler.onLocalNetworkUpdate);
     this.client?.on("connection-state-change", async (currentState, prevState, reason) => {
       Logger.log("connection state changed! => currentState", currentState);
