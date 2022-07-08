@@ -2,7 +2,7 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import FontFaceObserver from "fontfaceobserver";
 const FontDidactGothic = "Didact Gothic";
 const FontLoader = new FontFaceObserver(FontDidactGothic);
@@ -29,9 +29,27 @@ const deserializeFabricObject = (item: FabricObject) => {
 export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
+  const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
+  const oneToOneId = computed(() =>getters["teacherRoom/getStudentModeOneId"])
   const nextColor = ref("");
   const currentSelectionEnd = ref(-1);
   const currentSelectionStart = ref(-1);
+  const isChangeImage= ref(false);
+
+  watch(currentExposureItemMedia, (currentItem, prevItem) => {
+	if (currentItem && prevItem) {
+	  if (currentItem.id !== prevItem.id) {
+		isChangeImage.value =true;
+	  }
+	}
+  });
+
+  watch(oneToOneId, (currentOneToOneId, prevOneToOneId) => {
+	if(currentOneToOneId !==prevOneToOneId && isChangeImage.value){
+		isChangeImage.value = false;
+	}
+  })
+
   const isEditing = ref(false);
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
@@ -51,10 +69,16 @@ export const useFabricObject = () => {
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
       if (options?.target?.type === "textbox") {
+		if(!isChangeImage.value){
+			dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+		}
         if (options?.target.text === "") {
           canvas.remove(options.target);
         }
       }
+	  if(isChangeImage.value){
+		isChangeImage.value =false
+	}
     });
   };
   const onTextBoxEdited = (canvas: any) => {
