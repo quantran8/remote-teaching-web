@@ -68,7 +68,7 @@ export default defineComponent({
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
 
 	const isDrawing : Ref<boolean> = ref(false);
-	const points : Ref<Array<Pointer>> = ref([]);
+	const prevPoint :Ref<Pointer|undefined> = ref(undefined)
 
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
@@ -245,14 +245,12 @@ export default defineComponent({
       //   processAnnotationLesson(props.image, canvas, true, null);
       // }
     });
-    const imageUrl = computed(() => {
-      if (!props.image) return {};
-      if (endImgLink(props.image.url)) {
-        return props.image.url + "?" + new Date().getTime();
-      } else {
-        return props.image.url + "&" + new Date().getTime();
-      }
-    });
+	const imageUrl = computed(() => {
+		const image = new Image();
+		image.onload = imgLoad;
+		image.src = props.image ? props.image.url : {};
+		return image.src;
+	  });
     const cursorPosition = async (e: any , isDone = false ) => {
 		const rect = document.getElementById("canvas-container");
         if (!rect) return;
@@ -277,13 +275,27 @@ export default defineComponent({
 		return;
       }
 	  if(toolSelected.value === Tools.Laser && isDrawing.value){
-		points.value.push({x,y})
-        await store.dispatch("teacherRoom/setLaserPath", {
-			points:points.value,
-			strokeColor:strokeColor.value,
-			strokeWidth:strokeWidth.value,
-			isDone});
-		return;
+		const _point = { 
+			x: Math.floor(x),
+			y: Math.floor(y),
+		}
+		if(!prevPoint.value){
+			prevPoint.value = _point;
+		}
+		else{
+			const absX = Math.abs(_point.x - prevPoint.value.x)
+			const absY = Math.abs(_point.y - prevPoint.value.y)
+		if((absX > 8 || absY >8) || isDone)
+		{
+			prevPoint.value = _point;
+			await store.dispatch("teacherRoom/setLaserPath", {
+				points:_point,
+				strokeColor:strokeColor.value,
+				strokeWidth:strokeWidth.value,
+				isDone});
+			return;
+		}
+		}
 	  }
 	  
     };
@@ -320,7 +332,7 @@ export default defineComponent({
         if (toolSelected.value === Tools.Laser) {
 		  cursorPosition(event.e,true)
 		  isDrawing.value = false;
-		  points.value = []
+		  prevPoint.value = undefined;
           canvas.renderAll();
           laserDraw();
         }
