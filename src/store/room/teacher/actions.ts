@@ -93,7 +93,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
-  async leaveRoom({ state }, _payload: any) {
+  async leaveRoom({ state, dispatch, rootGetters }, _payload: any) {
+	const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
+	if(checkMessageTimer)
+    	clearInterval(checkMessageTimer);
+    dispatch("setCheckMessageVersionTimer", -1, { root: true });
     return state.manager?.close();
   },
   async joinWSRoom(store, _payload: any) {
@@ -202,6 +206,21 @@ const actions: ActionTree<TeacherRoomState, any> = {
       };
       state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
     //}
+
+	var checkMessageTimer = setInterval(async () => {
+		try {
+		  await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+		}
+		catch(err) {
+		  //error here loss signalR network, for loss API connection
+		  //disconnect now because window.offline event not work correctly sometimes
+		  if(store.getters["isDisconnected"] == false) {
+		  	console.log("PING FAILED-DISCONNECT TEACHER");
+		  	dispatch("teacherRoom/setOffline");
+		  }
+		}
+	  }, 3000);
+	  store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });

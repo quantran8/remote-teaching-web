@@ -303,17 +303,15 @@ const actions: ActionTree<StudentRoomState, any> = {
       onException: (payload: any) => {
         Logger.log("agora-exception-event", payload);
       },
-      onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        dispatch("setSpeakingUsers", result);
-      },
       onLocalNetworkUpdate(payload: any) {
         Logger.log(payload);
       },
     });
     //}
     var checkMessageTimer = setInterval(async () => {
-      var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
-      const localMessageVersion = store.rootGetters["teacherMessageVersion"];
+	  try {
+		var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+      	const localMessageVersion = store.rootGetters["teacherMessageVersion"];
         if (techerMessageVersion > localMessageVersion) {
 			console.log(`TEACHER MESSAGE VERSION: server ${techerMessageVersion} local ${localMessageVersion} `);
         	//reinit the class data here
@@ -329,7 +327,17 @@ const actions: ActionTree<StudentRoomState, any> = {
 				browserFingerPrinting: store.getters["browserFingerPrint"],
 			});
 			console.log("REINIT CLASS INFO OK");
-      }
+      	}
+	  }
+	  catch(err) {
+		//error here loss signalR network, for loss API connection
+		//disconnect now because window.offline event not work correctly sometimes
+		if(store.getters["isDisconnected"] == false) {
+			console.log("PING FAEILED-DISCONNECT STUDENT")
+			dispatch("studentRoom/setOffline");
+		}
+	  }
+      
     }, 3000);
     store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
