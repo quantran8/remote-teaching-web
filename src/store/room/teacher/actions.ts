@@ -33,6 +33,7 @@ import { Logger } from "@/utils/logger";
 import { FabricObject } from "@/ws";
 import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
+import { HubConnectionState } from "@microsoft/signalr";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -209,7 +210,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
 
 	var checkMessageTimer = setInterval(async () => {
 		try {
-		  await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+		  if(state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
+		  	await state.manager?.WSClient.sendCheckTeacherMessageVersion();
 		}
 		catch(err) {
 		  //error here loss signalR network, for loss API connection

@@ -20,6 +20,7 @@ import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
 import { notification } from "ant-design-vue";
 import { TeacherClassError } from "@/locales/localeid";
+import { HubConnectionState } from "@microsoft/signalr";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -310,6 +311,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     //}
     var checkMessageTimer = setInterval(async () => {
 	  try {
+		if(state.manager?.WSClient.hubConnection.state != HubConnectionState.Connected)
+			return;
 		var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
       	const localMessageVersion = store.rootGetters["teacherMessageVersion"];
         if (techerMessageVersion > localMessageVersion) {
