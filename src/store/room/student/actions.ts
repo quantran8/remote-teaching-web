@@ -273,8 +273,11 @@ const actions: ActionTree<StudentRoomState, any> = {
         classId: state.info?.id,
         studentId: state.user?.id,
         idOne: state.idOne,
+		reJoin: _payload ? _payload.reJoin: false
       });
     }
+	if(_payload && _payload.reJoin)
+		return;
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
@@ -336,8 +339,8 @@ const actions: ActionTree<StudentRoomState, any> = {
 		//error here loss signalR network, for loss API connection
 		//disconnect now because window.offline event not work correctly sometimes
 		if(store.getters["isDisconnected"] == false) {
-			console.log("PING FAEILED-DISCONNECT STUDENT")
-			dispatch("setOffline");
+			console.log("PING FAILED- SHOULD DISCONNECT STUDENT")
+			//dispatch("setOffline");
 		}
 	  }
       

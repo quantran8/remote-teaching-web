@@ -37,15 +37,15 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
 	//   }
   }
 
-  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string }) {
+  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string; reJoin?: boolean }) {
     Logger.log("Platform is using: ", store.getters["platform"]);
     if (!options.studentId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     //if (store.getters.platform === VCPlatform.Agora) {
-
+	if(!options.reJoin) {
 	  Logger.log("AGORA CLIENT INIT FIRST TIME");
       await this.agoraClient.joinRTCRoom(options, false, async () => await this.callBackWhenAgoraJoinFailed());
-
+	}
     // } else {
     //   if (options.idOne) {
     //     await store.dispatch("studentRoom/generateOneToOneToken", {
