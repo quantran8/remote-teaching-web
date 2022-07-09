@@ -13,6 +13,11 @@ import { annotationCurriculumStudent } from "@/components/common/annotation-view
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
 import { debounce } from "lodash";
 
+const DEFAULT_STYLE ={
+	width:'100%',
+	transform:'scale(1,1) rotate(0deg)',
+}
+
 export default defineComponent({
   props: ["image"],
   components: {
@@ -53,6 +58,7 @@ export default defineComponent({
     const oneTeacherShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const oneOneStatus = ref<boolean>(false);
     const oneOneIdNear = ref<string>("");
+
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
@@ -85,8 +91,18 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
+	const styles = ref(DEFAULT_STYLE)
+
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
     watch(currentExposureItemMedia, async (currentItem, prevItem) => {
+		let width = '100%';
+		if(currentItem.image.metaData && currentItem.image.metaData.rotate){
+			width = containerRef.value?.offsetHeight+'px'
+		}
+		styles.value = {
+			width,
+			transform:`scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${currentItem.image.metaData?.rotate ?? 0}deg)`,
+		}
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
@@ -368,6 +384,7 @@ export default defineComponent({
       listenToCanvasEvents();
       resizeCanvas();
       processCanvasWhiteboard();
+	  
     };
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
@@ -425,6 +442,10 @@ export default defineComponent({
         false,
         toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
       );
+	  styles.value = {
+		...styles.value,
+		width:outerCanvasContainer.offsetHeight+'px'
+	  }
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
@@ -540,7 +561,7 @@ export default defineComponent({
     });
     onMounted(() => {
       boardSetup();
-      window.addEventListener("resize", debounce(resizeCanvas, 300));
+      window.addEventListener("resize",debounce(resizeCanvas, 300));
     });
     onUnmounted(() => {
       window.removeEventListener("resize", debounce(resizeCanvas, 300));
@@ -571,6 +592,7 @@ export default defineComponent({
       showListColors,
       showListColorsPopover,
       hideListColors,
+	  styles
     };
   },
 });
