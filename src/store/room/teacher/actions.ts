@@ -216,7 +216,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
 		  //disconnect now because window.offline event not work correctly sometimes
 		  if(store.getters["isDisconnected"] == false) {
 		  	console.log("PING FAILED-DISCONNECT TEACHER");
-		  	dispatch("teacherRoom/setOffline");
+		  	dispatch("setOffline");
 		  }
 		}
 	  }, 3000);
