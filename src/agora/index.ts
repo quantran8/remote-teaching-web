@@ -213,6 +213,12 @@ export class AgoraClient implements AgoraClientSDK {
 	}
 	catch(err) {
 		Logger.log("AGORA JOIN PROCESS ERROR", err);
+		//reset everything here so when signalR reconnect, Agora client may be re-init
+		await this.reset();
+		notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
+		if(this._callbackWhenJoinFailed) {
+			await this._callbackWhenJoinFailed();
+		}
 	}
 	finally {
 		//make this option available for next retry the agora join process
