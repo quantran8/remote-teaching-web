@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 0;
+  inset: 0;
   height: 100%;
   width: 100%;
 }
@@ -19,14 +19,17 @@
   color: #7b7b7b;
 }
 
-.student-list {
+.student-list:not(.oneToOne) {
   position: relative;
+  margin-top: 24px;
+  display: grid;
+  gap: 1rem;
 
-  &:after {
-    content: "";
-    display: block;
-    clear: both;
-  }
+  //&:after {
+  //  content: "";
+  //  display: block;
+  //  clear: both;
+  //}
 
   .participant-videos-wrapper {
     top: 0;
@@ -47,48 +50,62 @@
 	}
   }
 
-  margin: 0 auto;
+  //@media (min-width: $large-lap) {
+  //  width: 90%;
+  //}
+  //
+  //@media (min-width: 1921px) {
+  //  width: 850px;
+  //}
+
+  //&.student-layout-2 {
+  //  display: flex;
+  //  flex-wrap: wrap;
+  //  justify-content: center;
+  //
+	//@media (max-width: 1799px) {
+	//	width: 90%;
+	//	max-width: 330px;
+	//  }
+	//  @media (min-width: 1800px) {
+	//	width: 550px;
+	//  }
+  //}
+  //
+  //&.student-layout-6 {
+  //  @media (max-width: 1799px) {
+  //    width: 90%;
+  //  }
+  //  @media (min-width: 1800px) {
+  //    width: 700px;
+  //  }
+  //}
+  //
+  //&.student-layout-3 {
+	//display: flex;
+  //  flex-wrap: wrap;
+  //  justify-content: center;
+	//
+  //  @media (max-width: 1799px) {
+  //    width: 90%;
+  //  }
+  //  @media (min-width: 1800px) {
+  //    width: 700px;
+  //  }
+  //}
+}
+
+.student-layout-1:not(.oneToOne) {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+.student-layout-2:not(.oneToOne) {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.student-layout-3:not(.oneToOne) {
+  grid-template-columns: repeat(2, 1fr);
   @media (min-width: $large-lap) {
-    width: 90%;
-  }
-
-  @media (min-width: 1921px) {
-    width: 850px;
-  }
-
-  &.student-layout-2 {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-
-	@media (max-width: 1799px) {
-		width: 90%;
-		max-width: 330px;
-	  }
-	  @media (min-width: 1800px) {
-		width: 550px;
-	  }
-  }
-
-  &.student-layout-6 {
-    @media (max-width: 1799px) {
-      width: 90%;
-    }
-    @media (min-width: 1800px) {
-      width: 700px;
-    }
-  }
-
-  &.student-layout-3 {
-	display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-	
-    @media (max-width: 1799px) {
-      width: 90%;
-    }
-    @media (min-width: 1800px) {
-      width: 700px;
-    }
+    grid-template-columns: repeat(3, 1fr);
   }
 }

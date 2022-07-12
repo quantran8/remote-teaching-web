@@ -1,6 +1,7 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, ClassRoomModel, RoomModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
+import { UserModel } from "@/models/user.model";
 import { GetterTree } from "vuex";
 import { ClassView, StudentState, TeacherState } from "../interface";
 import { ClassAction, StudentRoomState } from "./state";
@@ -80,7 +81,7 @@ const getters: GetterTree<StudentRoomState, any> = {
   isShowWhiteboard(state: StudentRoomState): boolean {
     return state.showWhiteBoard;
   },
-  laserPath(state: StudentRoomState): string {
+  laserPath(state: StudentRoomState): any {
     return state.laserPath;
   },
   isDisconnected(state: StudentRoomState): boolean {
@@ -98,6 +99,12 @@ const getters: GetterTree<StudentRoomState, any> = {
   videosFeedVisible(state: StudentRoomState): boolean {
     return state.videosFeedVisible;
   },
+  user(state: StudentRoomState) : UserModel | undefined {
+	return state.user;
+  },
+  browserFingerPrint(state: StudentRoomState): string {
+	return state.browserFingerPrinting;
+  }
 };
 
 export default getters;

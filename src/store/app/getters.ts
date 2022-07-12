@@ -38,6 +38,15 @@ const getters: GetterTree<AppState, any> = {
   platform(state: AppState): VCPlatform {
     return state.platform;
   },
+  isSingalrInited(state: AppState): boolean {
+    return state.singalrInited;
+  },
+  teacherMessageVersion(state: AppState): number {
+    return state.teacherMessageVersion;
+  },
+  checkMessageVersionTimer(state: AppState): number {
+	return state.checkMessageVersionTimer;
+  }
 };
 
 export default getters;

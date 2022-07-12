@@ -3,6 +3,7 @@ import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
 import { Tools, Mode, DefaultCanvasDimension, endImgLink } from "@/utils/utils";
+import { onClickOutside } from "@vueuse/core";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
 import { useFabricObject } from "@/hooks/use-fabric-object";
@@ -13,16 +14,18 @@ import { addShape } from "@/views/teacher-class/components/whiteboard-palette/co
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
 import { Button, Space } from "ant-design-vue";
+import { Pointer } from "@/store/annotation/state";
+import { all } from "ramda";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE ={
+	width:'100%',
 	transform:'scale(1,1) rotate(0deg)',
 }
 export enum Cursor {
   Default = "default",
   Text = "text",
 }
-
 
 export default defineComponent({
   props: {
@@ -52,8 +55,9 @@ export default defineComponent({
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     let canvas: any;
     const tools = Tools;
+    const wrapCanvasRef = ref<any>(null);
     const toolNames: string[] = Object.values(tools);
-	const styles = ref(DEFAULT_STYLE)
+    const styles = ref(DEFAULT_STYLE);
     const toolSelected: Ref<string> = ref("cursor");
     const strokeColor: Ref<string> = ref(DEFAULT_COLOR);
     const strokeWidth: Ref<number> = ref(2);
@@ -62,6 +66,10 @@ export default defineComponent({
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
+
+	const isDrawing : Ref<boolean> = ref(false);
+	const prevPoint :Ref<Pointer|undefined> = ref(undefined)
+
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
@@ -70,10 +78,16 @@ export default defineComponent({
     nextColor.value = strokeColor.value;
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem && prevItem) {
-        if (currentItem.id !== prevItem.id) {	
-		styles.value = {
-			transform:`scale(${prevItem.image.metaData?.scaleX ?? 1},${prevItem.image.metaData?.scaleY ?? 1}) rotate(${prevItem.image.metaData?.rotate ?? 0}deg)`,
+		let width ='100%'
+		if(currentItem.image.metaData && currentItem.image.metaData.rotate){
+			//if img is rotated, width equal to height of the whiteboard
+			width = '435px';
 		}
+		styles.value = {
+			width,
+			transform:`scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${currentItem.image.metaData?.rotate ?? 0}deg)`,
+		}
+        if (currentItem.id !== prevItem.id) {			
           canvas.remove(...canvas.getObjects());
         }
       }
@@ -232,35 +246,58 @@ export default defineComponent({
       // }
     });
 	const imageUrl = computed(() => {
-      const image = new Image();
-      image.onload = imgLoad;
-      image.src = props.image ? props.image.url : {};
-      return image.src;
+		const image = new Image();
+		image.onload = imgLoad;
+		image.src = props.image ? props.image.url : {};
+		return image.src;
 	  });
-    const cursorPosition = async (e: any) => {
-      if (modeAnnotation.value === Mode.Cursor) {
-        const rect = document.getElementById("canvas-container");
+    const cursorPosition = async (e: any , isDone = false ) => {
+		const rect = document.getElementById("canvas-container");
         if (!rect) return;
         const rectBounding = rect.getBoundingClientRect();
         let x = e.clientX - rectBounding.left;
         let y = e.clientY - rectBounding.top;
+		const windowWidth = window.innerWidth;
+		const scaleRatio = 0.68;
+		const scaleBreakpoint = 1600;
 
-        const windowWidth = window.innerWidth;
-        const scaleRatio = 0.68;
-        const scaleBreakpoint = 1600;
-
-        // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
-        // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
-        if (windowWidth <= scaleBreakpoint) {
-          x = x / scaleRatio;
-          y = y / scaleRatio;
-        }
-
+		// when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
+		// so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
+		if (windowWidth <= scaleBreakpoint) {
+			x = x / scaleRatio;
+			y = y / scaleRatio;
+		}
+      if (modeAnnotation.value === Mode.Cursor) {
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
         });
+		return;
       }
+	  if(toolSelected.value === Tools.Laser && isDrawing.value){
+		const _point = { 
+			x: Math.floor(x),
+			y: Math.floor(y),
+		}
+		if(!prevPoint.value){
+			prevPoint.value = _point;
+		}
+		else{
+			const absX = Math.abs(_point.x - prevPoint.value.x)
+			const absY = Math.abs(_point.y - prevPoint.value.y)
+		if((absX > 8 || absY >8) || isDone)
+		{
+			prevPoint.value = _point;
+			await store.dispatch("teacherRoom/setLaserPath", {
+				points:_point,
+				strokeColor:strokeColor.value,
+				strokeWidth:strokeWidth.value,
+				isDone});
+			return;
+		}
+		}
+	  }
+	  
     };
     const objectsCanvas = async () => {
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
@@ -271,7 +308,8 @@ export default defineComponent({
         });
       }
       if (toolSelected.value === Tools.Laser) {
-        await store.dispatch("teacherRoom/setLaserPath", lastObject);
+        // await store.dispatch("teacherRoom/setLaserPath", {point,isDone});
+
       }
     };
     const laserDraw = () => {
@@ -286,14 +324,16 @@ export default defineComponent({
       });
     };
     const listenToMouseUp = () => {
-      canvas.on("mouse:up", async () => {
+      canvas.on("mouse:up", async (event:any) => {
         if (toolSelected.value === "pen") {
           canvas.renderAll();
           await objectsCanvas();
         }
         if (toolSelected.value === Tools.Laser) {
+		  cursorPosition(event.e,true)
+		  isDrawing.value = false;
+		  prevPoint.value = undefined;
           canvas.renderAll();
-          await objectsCanvas();
           laserDraw();
         }
         if (
@@ -352,10 +392,14 @@ export default defineComponent({
             if (!isEditing.value) {
               createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
             } else {
-              isEditing.value = false;
+              isEditing.value = false;	
             }
             break;
           }
+		  case Tools.Laser : {
+			  isDrawing.value = true;
+			  break;
+		  }
           default:
             break;
         }
@@ -517,7 +561,7 @@ export default defineComponent({
       if (!canvas) return;
       const img = e?.target as HTMLImageElement;
       if (img && img.naturalWidth && img.naturalHeight) {
-        await store.dispatch("annotation/setImgDimension", {width: img.naturalWidth, height: img.naturalHeight});
+        await store.dispatch("annotation/setImgDimension", { width: img.naturalWidth, height: img.naturalHeight });
       } else {
         await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
       }
@@ -526,9 +570,6 @@ export default defineComponent({
       }
       processAnnotationLesson(props.image, canvas, true, null);
       objectTargetOnCanvas();
-	  styles.value = {
-		transform:`scale(${currentExposureItemMedia.value.image.metaData?.scaleX ?? 1},${currentExposureItemMedia.value.image.metaData?.scaleY ?? 1}) rotate(${currentExposureItemMedia.value.image.metaData?.rotate ?? 0}deg)`,
-	  }
       // showHideWhiteboard.value = isShowWhiteBoard.value;
       // if (isShowWhiteBoard.value) {
       //   canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -708,6 +749,12 @@ export default defineComponent({
     });
     watch(oneAndOne, async () => {
       if (!canvas) return;
+      const activeFabricObject = canvas.getActiveObject();
+      if (activeFabricObject?.type === "textbox" && activeFabricObject.isEditing) {
+        activeFabricObject.exitEditing();
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
@@ -753,6 +800,15 @@ export default defineComponent({
     const warningMsgLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
     };
+
+    const handleClickOutsideCanvas = (event: any) => {
+      const activeFabricObject = canvas.getActiveObject();
+      if (activeFabricObject?.type === "textbox" && activeFabricObject.isEditing) {
+        activeFabricObject.hiddenTextarea.focus();
+        activeFabricObject.enterEditing();
+      }
+    };
+
     onMounted(async () => {
       await boardSetup();
       await defaultWhiteboard();
@@ -761,6 +817,8 @@ export default defineComponent({
     onUnmounted(() => {
       canvas.dispose();
     });
+
+    onClickOutside(wrapCanvasRef, handleClickOutsideCanvas);
     return {
       currentExposureItemMedia,
       clickedTool,
@@ -777,7 +835,7 @@ export default defineComponent({
       isLessonPlan,
       imageUrl,
       imgLoad,
-	  styles,
+      styles,
       warningMsg,
       warningMsgLeave,
       hasTargets,
@@ -789,6 +847,8 @@ export default defineComponent({
       disableHideAllTargetsBtn,
       showAllTargetTextBtn,
       hideAllTargetTextBtn,
+      handleClickOutsideCanvas,
+      wrapCanvasRef,
     };
   },
 });

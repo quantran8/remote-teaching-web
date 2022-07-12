@@ -38,12 +38,6 @@ export interface AgoraEventHandler {
   onUserPublished(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video"): void;
   onUserUnPublished(user: IAgoraRTCRemoteUser, mediaType: "audio" | "video"): void;
   onException(payload: any): void;
-  onVolumeIndicator(
-    result: {
-      level: number;
-      uid: UID;
-    }[],
-  ): void;
   onLocalNetworkUpdate(payload: any): void;
 }
 
@@ -61,6 +55,7 @@ export class AgoraClient implements AgoraClientSDK {
   _joinRoomOptions?: JoinRoomOptions;
   _cameraTrack?: ICameraVideoTrack;
   _microphoneTrack?: IMicrophoneAudioTrack;
+  _callbackWhenJoinFailed?:  ()=>Promise<any>;
 
   get cameraTrack(): ICameraVideoTrack {
     return this._cameraTrack as ICameraVideoTrack;
@@ -102,7 +97,7 @@ export class AgoraClient implements AgoraClientSDK {
   publishedVideosTimeout: any = {};
   publishedAudiosTimeout: any = {};
 
-  async joinRTCRoom(options: JoinRoomOptions, reInit: boolean) {
+  async joinRTCRoom(options: JoinRoomOptions | undefined, reInit: boolean, callbackWhenJoinFailed?: ()=>Promise<any>) {
     if (this._client || this.joined) return;
 	if(reInit)
 		Logger.log("AGORA START REINIT");
@@ -168,8 +163,17 @@ export class AgoraClient implements AgoraClientSDK {
 		Logger.log("user-left", user.uid);
 		});
 		this.client.on("user-joined", (user) => {
-		Logger.log("user-joined", user.uid);
+			Logger.log("user-joined", user.uid);
 		});
+		this.client?.enableAudioVolumeIndicator();
+		this.client.on("volume-indicator", (result: { level: number; uid: UID }[]) => {
+			if (this.options.user?.role === "host") {
+				store.dispatch("teacherRoom/setSpeakingUsers", result);
+			} else {
+				store.dispatch("studentRoom/setSpeakingUsers", result);
+			}
+		});
+
 		this.agoraRTC.setLogLevel(3);
 		
 		if(reInit)
@@ -192,11 +196,13 @@ export class AgoraClient implements AgoraClientSDK {
 					Logger.log("AGORA_JOIN_RETRY_OK");
 				}
 				catch(err) {
+					//reset everything here so when signalR reconnect, Agora client may be re-init
+					await this.reset();
 					notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
-				}
-				if(this.joined) {
-					await this._afterJoin(options);
-					Logger.log("AGORA CLIENT PUBLISHING AFTER RETRY JOINED OK");
+					Logger.log("AGORA_JOIN_RETRY_FAILED");
+					if(this._callbackWhenJoinFailed) {
+						await this._callbackWhenJoinFailed();
+					}
 				}
 			}, 1000);
 		}
@@ -207,35 +213,40 @@ export class AgoraClient implements AgoraClientSDK {
 	}
 	catch(err) {
 		Logger.log("AGORA JOIN PROCESS ERROR", err);
+		//reset everything here so when signalR reconnect, Agora client may be re-init
+		await this.reset();
+		notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
+		if(this._callbackWhenJoinFailed) {
+			await this._callbackWhenJoinFailed();
+		}
 	}
 	finally {
 		//make this option available for next retry the agora join process
 		this._joinRoomOptions = options;
+		this._callbackWhenJoinFailed = callbackWhenJoinFailed;
 	}
   }
 
-  private async _afterJoin(options: JoinRoomOptions): Promise<any> {
-	if (options.camera) {
-      await this.openCamera(options.videoEncoderConfigurationPreset);
+  private async _afterJoin(options: JoinRoomOptions | undefined): Promise<any> {
+	if (options?.camera) {
+      await this.openCamera(options?.videoEncoderConfigurationPreset);
     }
-    if (options.microphone) await this.openMicrophone();
-    this.client?.enableAudioVolumeIndicator();
+    if (options?.microphone) await this.openMicrophone();
     await this._publish();
   }
 
   registerEventHandler(handler: AgoraEventHandler) {
     this.client?.on("exception", handler.onException);
-    this.client?.on("volume-indicator", handler.onVolumeIndicator);
     this.client?.on("network-quality", handler.onLocalNetworkUpdate);
     this.client?.on("connection-state-change", async (currentState, prevState, reason) => {
       Logger.log("connection state changed! => currentState", currentState);
       Logger.log("connection state changed! => prevState", prevState);
       Logger.log("connection state changed! => reason", reason);
 
-	  if(prevState == "RECONNECTING" && currentState == "CONNECTED") {
-		Logger.log("AGORA: PULISH STREAMS AFTER RECOVERED TO CONNECTED STATE");
-		await this._afterJoin(this._joinRoomOptions as JoinRoomOptions);
-	  }
+	//   if(prevState == "RECONNECTING" && currentState == "CONNECTED") {
+	// 	Logger.log("AGORA: PULISH STREAMS AFTER RECOVERED TO CONNECTED STATE");
+	// 	await this._afterJoin(this._joinRoomOptions as JoinRoomOptions);
+	//   }
     });
   }
 
@@ -412,22 +423,22 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async reset() {
-    try {
-      if (this.cameraTrack) {
-        await this.unpublishTrack(this.cameraTrack);
-		Logger.log("Turn off camera")
-      }
-    } catch (error) {
-      Logger.error(error);
-    }
-    try {
-      if (this.microphoneTrack) {
-        await this.unpublishTrack(this.microphoneTrack);
-		Logger.log("Turn off audio")
-      }
-    } catch (error) {
-      Logger.error(error);
-    }
+    // try {
+    //   if (this.cameraTrack) {
+    //     await this.unpublishTrack(this.cameraTrack);
+	// 	Logger.log("Turn off camera")
+    //   }
+    // } catch (error) {
+    //   Logger.error(error);
+    // }
+    // try {
+    //   if (this.microphoneTrack) {
+    //     await this.unpublishTrack(this.microphoneTrack);
+	// 	Logger.log("Turn off audio")
+    //   }
+    // } catch (error) {
+    //   Logger.error(error);
+    // }
 	this._closeMediaTrack(this.cameraTrack);
     this._closeMediaTrack(this.microphoneTrack);
 	

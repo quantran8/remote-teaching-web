@@ -38,6 +38,15 @@ const mutations: MutationTree<AppState> = {
   setVideoCallPlatform(state, payload: VCPlatform) {
     state.platform = payload;
   },
+  setSingalrInited(state, payload: boolean) {
+    state.singalrInited = payload;
+  },
+  setTeacherMessageVersion(state, payload: number) {
+    state.teacherMessageVersion = payload;
+  },
+  setCheckMessageVersionTimer(state, payload: number) {
+    state.checkMessageVersionTimer = payload;
+  },
 };
 
 export default mutations;

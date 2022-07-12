@@ -2,21 +2,29 @@
 $scale-ratio: 0.66;
 
 .tc {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto 1fr 300px;
   height: 100vh;
   overflow: hidden;
   &__modal__notice {
 	  margin-top: 16px;
   }
   &__header {
-    grid-column-start: 1;
-    grid-column-end: 3;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: $header-height;
+    width: 100%;
+    z-index: 2;
   }
-  &__fixed-height {
-    height: calc(100vh - #{$header-height});
-    overflow: auto;
+  &__main {
+    position: fixed;
+    top: $header-height;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    column-gap: 1.5rem;
   }
   &__sidebar {
     width: 320px;
@@ -29,7 +37,8 @@ $scale-ratio: 0.66;
   }
   &__content {
     padding: 5px;
-    margin: 0 auto;
+    height: 100%;
+    overflow: auto;
     &__teacher {
       &--gallery {
       }
@@ -53,24 +62,18 @@ $scale-ratio: 0.66;
     @media (max-width: $large-lap) {
       &__whiteboard-content {
         transform: scale($scale-ratio);
-        transform-origin: top;
+        transform-origin: top left;
         will-change: transform;
+        margin-right: -240px;
       }
     }
   }
   &__gallery {
-	position: relative;
-    grid-column-start: 1;
-    grid-column-end: 3;
-    @media (max-width: $large-lap) {
-      //max-width: 470px;
-    }
-    @media screen and (min-width: $xl) and (max-width: $xxl) {
-      padding-right: 20px;
-    }
-    &.no-sidebar {
-      max-width: 100%;
-    }
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1 1 0;
+    padding: 12px 0;
   }
 
   @media (min-width: $lg) {
@@ -112,8 +115,7 @@ $scale-ratio: 0.66;
         z-index: 9999;
         background: #fff;
         left: -240px;
-        top: 85px;
-        height: calc(100% - 85px);
+        height: 100%;
         box-shadow: 5px 0px 5px 0px rgba(0,0,0,0.15);
         &--one-one {
           left: 0;

@@ -45,6 +45,15 @@ const actions: ActionTree<AppState, any> = {
   setVideoCallPlatform(store, payload: VCPlatform) {
     store.commit("setVideoCallPlatform", payload);
   },
+  setSingalrInited(store, payload: boolean) {
+    store.commit("setSingalrInited", payload);
+  },
+  setCheckMessageVersionTimer(store, payload: number) {
+    store.commit("setCheckMessageVersionTimer", payload);
+  },
+  setTeacherMessageVersion(store, payload: number) {
+    store.commit("setTeacherMessageVersion", payload);
+  },
 };
 
 export default actions;

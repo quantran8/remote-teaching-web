@@ -5,6 +5,7 @@ import { VCPlatform } from "@/store/app/state";
 import { TeacherWSClient } from "@/ws";
 import { BaseRoomManager, RoomOptions } from "./base.manager";
 import { Logger } from "@/utils/logger";
+import { HubConnectionState } from "@microsoft/signalr";
 
 export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
   constructor(options: RoomOptions) {
@@ -34,13 +35,15 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
 	//   }
   }
 
-  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string }) {
+  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string; reJoin?: boolean }) {
     Logger.log("Platform teacher is using: ", store.getters["platform"]);
     if (!options.teacherId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     //if (store.getters.platform === VCPlatform.Agora) {
-		Logger.log("AGORA CLIENT INIT FIRST TIME");
-      await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" }, false);
+	if(!options.reJoin) {
+	  Logger.log("AGORA CLIENT INIT FIRST TIME");
+      await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" }, false, async () => await this.callBackWhenAgoraJoinFailed());
+	}
     // } else {
     //   if (options.idOne) {
     //     await store.dispatch("teacherRoom/generateOneToOneToken", {
@@ -49,6 +52,17 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     //   }
     //   await this.zoomClient.joinRTCRoom(options);
     // }
+  }
+
+  async callBackWhenAgoraJoinFailed() {
+	//when Agora join failed, all Agora data has been reset
+	//check if SignalR connected
+	if(this.WSClient.hubConnection && this.WSClient.hubConnection.state === HubConnectionState.Connected ) {
+		Logger.log("AGORA CLIENT INIT OK BUT FAILED TO JOIN, REINIT NOW");
+		await this.agoraClient.joinRTCRoom(this.agoraClient.joinRoomOptions, true);
+		this.reRegisterVideoCallSDKEventHandler();
+	}
+	//if signalR not connected, when it reconnect or connect again it will init Agora again!
   }
 
   async close(end?: boolean) {
