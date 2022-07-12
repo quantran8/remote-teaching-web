@@ -221,6 +221,10 @@ export default defineComponent({
     const lessonContainerHeaderFixed = ref<HTMLDivElement>();
     const { height: lessonContainerHeaderFixedHeight } = useElementSize(lessonContainerHeaderFixed);
 
+    const hasLongShortcutHeader = computed(() => {
+      return currentLesson.value >= 10 || currentUnit.value >= 10;
+    });
+
     onMounted(() => {
       window.addEventListener("keydown", handleKeyDown);
     });
@@ -267,6 +271,7 @@ export default defineComponent({
       isTransitionBlock,
       lessonContainerHeaderFixed,
       lessonContainerHeaderFixedHeight,
+      hasLongShortcutHeader,
     };
   },
 });

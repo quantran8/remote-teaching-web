@@ -20,6 +20,9 @@
       font-size: 24px;
       &--text-right {
         margin-right: 20px;
+        &.long-title {
+          padding-right: 4px;
+        }
       }
       &--wrap {
         border-bottom: 3px solid white;
@@ -31,11 +34,17 @@
         &__lesson {
           font-size: 20px;
           display: inline-block;
+          &.shortcut.long-title {
+            font-size: 16px;
+          }
         }
         &__unit {
           &.shortcut {
             font-size: 20px;
             margin-right: 0px;
+            &.long-title {
+              font-size: 16px;
+            }
           }
           display: inline-block;
           margin-right: 10px;
@@ -51,6 +60,9 @@
       top: -8px;
       right: 15px;
       cursor: pointer;
+      &.long-title {
+        right: 4px;
+      }
     }
   }
 
