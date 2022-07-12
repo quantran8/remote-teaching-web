@@ -35,13 +35,15 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
 	//   }
   }
 
-  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string }) {
+  async join(options: { classId?: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean; idOne?: string; reJoin?: boolean }) {
     Logger.log("Platform teacher is using: ", store.getters["platform"]);
     if (!options.teacherId || !options.classId) throw new Error("Missing Params");
     await this.WSClient.connect();
     //if (store.getters.platform === VCPlatform.Agora) {
-		Logger.log("AGORA CLIENT INIT FIRST TIME");
+	if(!options.reJoin) {
+	  Logger.log("AGORA CLIENT INIT FIRST TIME");
       await this.agoraClient.joinRTCRoom({ ...options, videoEncoderConfigurationPreset: "480p" }, false, async () => await this.callBackWhenAgoraJoinFailed());
+	}
     // } else {
     //   if (options.idOne) {
     //     await store.dispatch("teacherRoom/generateOneToOneToken", {

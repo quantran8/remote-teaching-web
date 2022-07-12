@@ -218,16 +218,27 @@ const mutations: MutationTree<StudentRoomState> = {
     state.showWhiteBoard = payload;
   },
   setDrawLaser(state: StudentRoomState, payload: any) {
-    state.laserPath = payload;
+    state.laserPath = {
+		...payload,
+		points:payload.isDone ? [] :[...state.laserPath.points,payload.points]
+	};
   },
   clearLaserPen(state: StudentRoomState, p: "") {
-    state.laserPath = p;
+    state.laserPath = {
+		points :[],
+		strokeColor:'black',
+		strokeWidth:2,
+		isDone:false
+	}
   },
   setOnline(state: StudentRoomState) {
     state.isDisconnected = false;
   },
   setOffline(state: StudentRoomState) {
     state.isDisconnected = true;
+  },
+  setBrowserFingerPrint(state: StudentRoomState, p: string) {
+    state.browserFingerPrinting = p;
   },
   setIsJoined(state: StudentRoomState, p: { isJoined: boolean }) {
     state.isJoined = p.isJoined;
@@ -289,6 +300,7 @@ const mutations: MutationTree<StudentRoomState> = {
       }
     }
   },
+  
 };
 
 export default mutations;

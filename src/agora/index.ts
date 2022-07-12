@@ -243,10 +243,10 @@ export class AgoraClient implements AgoraClientSDK {
       Logger.log("connection state changed! => prevState", prevState);
       Logger.log("connection state changed! => reason", reason);
 
-	  if(prevState == "RECONNECTING" && currentState == "CONNECTED") {
-		Logger.log("AGORA: PULISH STREAMS AFTER RECOVERED TO CONNECTED STATE");
-		await this._afterJoin(this._joinRoomOptions as JoinRoomOptions);
-	  }
+	//   if(prevState == "RECONNECTING" && currentState == "CONNECTED") {
+	// 	Logger.log("AGORA: PULISH STREAMS AFTER RECOVERED TO CONNECTED STATE");
+	// 	await this._afterJoin(this._joinRoomOptions as JoinRoomOptions);
+	//   }
     });
   }
 
@@ -423,22 +423,22 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   async reset() {
-    try {
-      if (this.cameraTrack) {
-        await this.unpublishTrack(this.cameraTrack);
-		Logger.log("Turn off camera")
-      }
-    } catch (error) {
-      Logger.error(error);
-    }
-    try {
-      if (this.microphoneTrack) {
-        await this.unpublishTrack(this.microphoneTrack);
-		Logger.log("Turn off audio")
-      }
-    } catch (error) {
-      Logger.error(error);
-    }
+    // try {
+    //   if (this.cameraTrack) {
+    //     await this.unpublishTrack(this.cameraTrack);
+	// 	Logger.log("Turn off camera")
+    //   }
+    // } catch (error) {
+    //   Logger.error(error);
+    // }
+    // try {
+    //   if (this.microphoneTrack) {
+    //     await this.unpublishTrack(this.microphoneTrack);
+	// 	Logger.log("Turn off audio")
+    //   }
+    // } catch (error) {
+    //   Logger.error(error);
+    // }
 	this._closeMediaTrack(this.cameraTrack);
     this._closeMediaTrack(this.microphoneTrack);
 	

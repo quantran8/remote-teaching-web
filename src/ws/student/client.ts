@@ -67,4 +67,7 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestToggleShape(payload: { userId: string; tag: string; visible: boolean }) {
     return this.send(WSCmd.TOGGLE_SHAPE, payload);
   }
+  sendCheckTeacherMessageVersion() {
+	return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
+  }
 }

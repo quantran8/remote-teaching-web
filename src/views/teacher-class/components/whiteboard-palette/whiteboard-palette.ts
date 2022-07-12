@@ -14,6 +14,8 @@ import { addShape } from "@/views/teacher-class/components/whiteboard-palette/co
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
 import { Button, Space } from "ant-design-vue";
+import { Pointer } from "@/store/annotation/state";
+import { all } from "ramda";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE ={
@@ -64,6 +66,10 @@ export default defineComponent({
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
+
+	const isDrawing : Ref<boolean> = ref(false);
+	const prevPoint :Ref<Pointer|undefined> = ref(undefined)
+
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
@@ -239,36 +245,59 @@ export default defineComponent({
       //   processAnnotationLesson(props.image, canvas, true, null);
       // }
     });
-    const imageUrl = computed(() => {
-      const image = new Image();
-      image.onload = imgLoad;
-      image.src = props.image ? props.image.url : {};
-      return image.src;
-    });
-    const cursorPosition = async (e: any) => {
-      if (modeAnnotation.value === Mode.Cursor) {
-        const rect = document.getElementById("canvas-container");
+	const imageUrl = computed(() => {
+		const image = new Image();
+		image.onload = imgLoad;
+		image.src = props.image ? props.image.url : {};
+		return image.src;
+	  });
+    const cursorPosition = async (e: any , isDone = false ) => {
+		const rect = document.getElementById("canvas-container");
         if (!rect) return;
         const rectBounding = rect.getBoundingClientRect();
         let x = e.clientX - rectBounding.left;
         let y = e.clientY - rectBounding.top;
+		const windowWidth = window.innerWidth;
+		const scaleRatio = 0.68;
+		const scaleBreakpoint = 1600;
 
-        const windowWidth = window.innerWidth;
-        const scaleRatio = 0.68;
-        const scaleBreakpoint = 1600;
-
-        // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
-        // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
-        if (windowWidth <= scaleBreakpoint) {
-          x = x / scaleRatio;
-          y = y / scaleRatio;
-        }
-
+		// when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
+		// so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
+		if (windowWidth <= scaleBreakpoint) {
+			x = x / scaleRatio;
+			y = y / scaleRatio;
+		}
+      if (modeAnnotation.value === Mode.Cursor) {
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
         });
+		return;
       }
+	  if(toolSelected.value === Tools.Laser && isDrawing.value){
+		const _point = { 
+			x: Math.floor(x),
+			y: Math.floor(y),
+		}
+		if(!prevPoint.value){
+			prevPoint.value = _point;
+		}
+		else{
+			const absX = Math.abs(_point.x - prevPoint.value.x)
+			const absY = Math.abs(_point.y - prevPoint.value.y)
+		if((absX > 8 || absY >8) || isDone)
+		{
+			prevPoint.value = _point;
+			await store.dispatch("teacherRoom/setLaserPath", {
+				points:_point,
+				strokeColor:strokeColor.value,
+				strokeWidth:strokeWidth.value,
+				isDone});
+			return;
+		}
+		}
+	  }
+	  
     };
     const objectsCanvas = async () => {
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
@@ -279,7 +308,8 @@ export default defineComponent({
         });
       }
       if (toolSelected.value === Tools.Laser) {
-        await store.dispatch("teacherRoom/setLaserPath", lastObject);
+        // await store.dispatch("teacherRoom/setLaserPath", {point,isDone});
+
       }
     };
     const laserDraw = () => {
@@ -294,14 +324,16 @@ export default defineComponent({
       });
     };
     const listenToMouseUp = () => {
-      canvas.on("mouse:up", async () => {
+      canvas.on("mouse:up", async (event:any) => {
         if (toolSelected.value === "pen") {
           canvas.renderAll();
           await objectsCanvas();
         }
         if (toolSelected.value === Tools.Laser) {
+		  cursorPosition(event.e,true)
+		  isDrawing.value = false;
+		  prevPoint.value = undefined;
           canvas.renderAll();
-          await objectsCanvas();
           laserDraw();
         }
         if (
@@ -360,10 +392,14 @@ export default defineComponent({
             if (!isEditing.value) {
               createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
             } else {
-              isEditing.value = false;
+              isEditing.value = false;	
             }
             break;
           }
+		  case Tools.Laser : {
+			  isDrawing.value = true;
+			  break;
+		  }
           default:
             break;
         }

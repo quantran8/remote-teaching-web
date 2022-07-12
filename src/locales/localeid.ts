@@ -257,4 +257,5 @@ export class WhiteBoard {
 export class TeacherClassError {
   static ConnectAgoraServersError = "teacher_class_error.connect_agora_servers_error";
   static PublishStreamAgoraServersError = "teacher_class_error.publish_stream_error";
+  static MissingImportantClassMessages= "teacher_class_error.miss_messages"
 }

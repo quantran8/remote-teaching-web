@@ -332,6 +332,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       isShowWhiteBoard: boolean;
       exposureSelected: string;
       itemContentSelected: string;
+	  messageVersion: number;
     }) => {
       const roomManager = AppStore.getters["studentRoom/roomManager"];
       if (payload) {
@@ -352,6 +353,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+	  await dispatch("setTeacherMessageVersion", payload.messageVersion, { root: true });
       await dispatch("updateAudioAndVideoFeed", {});
       if (payload.id) {
         // process in one one
@@ -381,7 +383,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("setWhiteboard", payload);
     },
     onTeacherDrawLaser: async (payload: any) => {
-      await commit("setDrawLaser", payload);
+      await commit("setDrawLaser", JSON.parse(payload));
     },
     onStudentSetBrushstrokes: async (payload: Array<UserShape>) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });
