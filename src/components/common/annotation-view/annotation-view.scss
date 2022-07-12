@@ -6,6 +6,7 @@
   width: 100%;
   position: relative;
   border-radius: 10px;
+  overflow: hidden;
   @media screen and (min-width: $md) and (max-width: $lg) {
     max-width: 550px;
     margin: auto;

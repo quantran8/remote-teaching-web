@@ -95,6 +95,7 @@ export default defineComponent({
 
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
     watch(currentExposureItemMedia, async (currentItem, prevItem) => {
+	  if(currentItem){
 		let width = '100%';
 		if(currentItem.image.metaData && currentItem.image.metaData.rotate){
 			width = containerRef.value?.offsetHeight+'px'
@@ -103,6 +104,7 @@ export default defineComponent({
 			width,
 			transform:`scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${currentItem.image.metaData?.rotate ?? 0}deg)`,
 		}
+	  }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
