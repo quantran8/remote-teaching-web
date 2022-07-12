@@ -102,7 +102,7 @@ export default defineComponent({
     });
     const isBlackOutContent = computed(() => getters["lesson/isBlackOut"]);
 
-    const isSidebarCollapsed = ref<boolean>(true);
+    const isSidebarCollapsed = ref<boolean>(isGalleryView.value);
     watch(isGalleryView, (value) => {
       isSidebarCollapsed.value = value;
     });
