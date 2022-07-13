@@ -77,7 +77,7 @@ export default defineComponent({
       useFabricObject();
     nextColor.value = strokeColor.value;
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
-      if (currentItem && prevItem) {
+	  if(currentItem){
 		let width ='100%'
 		if(currentItem.image.metaData && currentItem.image.metaData.rotate){
 			//if img is rotated, width equal to height of the whiteboard
@@ -87,6 +87,9 @@ export default defineComponent({
 			width,
 			transform:`scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${currentItem.image.metaData?.rotate ?? 0}deg)`,
 		}
+	  }
+      if (currentItem && prevItem) {
+		
         if (currentItem.id !== prevItem.id) {			
           canvas.remove(...canvas.getObjects());
         }
