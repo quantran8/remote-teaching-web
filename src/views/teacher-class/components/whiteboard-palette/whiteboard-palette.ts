@@ -239,7 +239,7 @@ export default defineComponent({
             obj.set("visible", true);
           });
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-        await clickedTool(Tools.Cursor);
+        // await clickedTool(Tools.Cursor);
       }
     };
     watch(isShowWhiteBoard, async () => {
@@ -556,7 +556,7 @@ export default defineComponent({
     };
     const hideWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
-      await clickedTool(Tools.Cursor);
+      // await clickedTool(Tools.Cursor);
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
