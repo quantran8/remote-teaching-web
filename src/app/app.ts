@@ -8,6 +8,7 @@ import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
 import { AppView, UserRole } from "@/store/app/state";
 import { LostNetwork } from "./../locales/localeid";
+import { Spin } from "ant-design-vue";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
@@ -17,6 +18,7 @@ export default defineComponent({
     MainLayout,
     AppHeader,
     AppFooter,
+	Spin
   },
   created() {
     AuthService.localSilentLogin();
@@ -85,7 +87,7 @@ export default defineComponent({
     const userRole = computed(() => getters["userRole"]);
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isDisconnectedMode = computed<any>(() => teacherDisconnected.value && userRole.value !== UserRole.UnConfirm);
-
+	const isMaskMain = computed(() => getters["spin/getMaskMain"]);
     return {
       siteTitle,
       appView,
@@ -96,6 +98,7 @@ export default defineComponent({
       messageText,
       isDisconnectedMode,
       isTeacher,
+	  isMaskMain
     };
   },
 });

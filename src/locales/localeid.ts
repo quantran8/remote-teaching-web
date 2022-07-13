@@ -75,6 +75,17 @@ export class DisconnectScreenLocale {
   static Content2 = "disconnect.content2";
   static Goto = "disconnect.goto";
 }
+
+export class AccessInformationScreenLocale {
+  static Line1 = "accessinformation.line1";
+  static Line2 = "accessinformation.line2";
+  static Line3 = "accessinformation.line3";
+  static Line4 = "accessinformation.line4";
+  static Line5Part1 = "accessinformation.line5.part1";
+  static Line5Part2 = "accessinformation.line5.part2";
+  static Line6 = "accessinformation.line6";
+  static ContactLink = "accessinformation.link";
+}
 export class AccessDeniedLocale {
   static AccessDeniedWeAreSorry = "access_denied.we_are_sorry";
   static AccessDeniedDescription = "access_denied.description";
@@ -257,5 +268,5 @@ export class WhiteBoard {
 export class TeacherClassError {
   static ConnectAgoraServersError = "teacher_class_error.connect_agora_servers_error";
   static PublishStreamAgoraServersError = "teacher_class_error.publish_stream_error";
-  static MissingImportantClassMessages= "teacher_class_error.miss_messages"
+  static MissingImportantClassMessages = "teacher_class_error.miss_messages";
 }

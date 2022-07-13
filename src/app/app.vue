@@ -16,6 +16,9 @@
       <AppHeader :title="siteTitle" />
     </template>
     <router-view />
+    <div v-if="isMaskMain" class="mask-main">
+      <Spin class="ant-custom-home" />
+    </div>
     <div class="disconnected-popup" v-if="isDisconnectedMode && isTeacher">{{ messageText }}</div>
     <template v-if="isFooterVisible" v-slot:footer>
       <AppFooter />
