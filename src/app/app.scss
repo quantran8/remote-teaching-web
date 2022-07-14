@@ -97,3 +97,18 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.disconnected-popup {
+  position: fixed;
+  z-index: 99999;
+  background-color: #fceed6;
+  color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 0;
+  border-top: 2px solid #fec16a;
+  font-weight: 600;
+}
