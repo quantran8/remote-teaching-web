@@ -429,11 +429,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   setClassView(store, payload: ClassViewPayload) {
     store.commit("setClassView", payload);
   },
-  async studentRaisingHand(store, payload: any) {
+  async studentRaisingHand(store, payload: boolean) {
     store.commit("setStudentRaisingHand", {
-      raisingHand: true,
+      raisingHand: payload,
     });
-    await store.state.manager?.WSClient.sendRequestRaisingHand();
+    await store.state.manager?.WSClient.sendRequestRaisingHand(payload);
   },
   async studentLike({ state }, _: any) {
     await state.manager?.WSClient.sendRequestLike();
