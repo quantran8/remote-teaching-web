@@ -21,15 +21,18 @@ export const addShape = () => {
     }
   };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-    const circle = new fabric.Circle({
-      left: 0,
-      top: 0,
+	const initTopLeftXY = 30 + strokeWidth.value
+	const circle = new fabric.Circle({
+      left: initTopLeftXY,
+      top: initTopLeftXY,
       radius: 30,
       fill: "",
       stroke: strokeColor.value,
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
+	  originX: "center",
+	  originY: "center",
     });
     canvas.add(circle);
     canvas.setActiveObject(circle);
