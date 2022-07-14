@@ -9,7 +9,7 @@
         :key="item.id"
         :class="{ 'item-active': item.id === currentExposureItemMedia?.id, 'content-block': isContent }"
       >
-        <Tooltip placement="rightBottom" :overlayStyle="{ maxWidth: '400px', maxHeight: '200px'}">
+        <Tooltip placement="topLeft" :overlayStyle="{ maxWidth: '400px'}">
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
