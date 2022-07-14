@@ -7,6 +7,7 @@
   position: relative;
   border-radius: 10px;
   overflow: hidden;
+  z-index: 1;
   @media screen and (min-width: $md) and (max-width: $lg) {
     max-width: 550px;
     margin: auto;
