@@ -112,3 +112,8 @@ body {
   border-top: 2px solid #fec16a;
   font-weight: 600;
 }
+
+.ant-tooltip-inner {
+	max-height: 200px;
+	overflow-y: auto;
+}
