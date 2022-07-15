@@ -46,8 +46,8 @@ export class GLSocketClient {
       })
       .configureLogging(LogLevel.Debug)
       .build();
-    this._hubConnection.serverTimeoutInMilliseconds = 8000;
-	this._hubConnection.keepAliveIntervalInMilliseconds = 4000;
+    //this._hubConnection.serverTimeoutInMilliseconds = 8000;
+	//this._hubConnection.keepAliveIntervalInMilliseconds = 4000;
     this._hubConnection.onclose(this.onClosed);
     // this._hubConnection
     this._hubConnection.onreconnected(async (id: any) => {
