@@ -21,24 +21,28 @@ export const addShape = () => {
     }
   };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-    const circle = new fabric.Circle({
-      left: 0,
-      top: 0,
+	const initTopLeftXY = 30 + strokeWidth.value
+	const circle = new fabric.Circle({
+      left: initTopLeftXY,
+      top: initTopLeftXY,
       radius: 30,
       fill: "",
       stroke: strokeColor.value,
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
+	  originX: "center",
+	  originY: "center",
     });
     canvas.add(circle);
     canvas.setActiveObject(circle);
     await teacherAddShapes(canvas);
   };
   const addSquare = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-    const square = new fabric.Rect({
-      left: 0,
-      top: 0,
+	const initTopLeftXY = 25 + strokeWidth.value
+	const square = new fabric.Rect({
+      left: initTopLeftXY,
+      top: initTopLeftXY,
       width: 50,
       height: 50,
       fill: "",
@@ -46,6 +50,8 @@ export const addShape = () => {
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
+	  originX: "center",
+	  originY: "center",
     });
     canvas.add(square);
     canvas.setActiveObject(square);

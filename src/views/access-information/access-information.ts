@@ -2,7 +2,7 @@ import { defineComponent, computed } from "vue";
 import { AccessInformationScreenLocale, CommonLocale } from "@/locales/localeid";
 import { fmtMsg, MainLayout } from "vue-glcommonui";
 import { AppHeader, AppFooter } from "@/components/layout";
-const GRAPE_SEED_CONTACT_PAGE_URL = "https://grapeseed.com/vn/contact";
+const GRAPE_SEED_CONTACT_PAGE_URL = "https://grapeseed.com/contact/";
 export default defineComponent({
   components: {
     AppHeader,

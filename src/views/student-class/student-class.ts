@@ -127,8 +127,7 @@ export default defineComponent({
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const avatarStudentOneToOne = ref("");
     const showMessage = ref(false);
-    const studentOneName = ref("");
-
+    const studentOneName = computed<string>(() => students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name ?? "");
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
 
     const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
@@ -139,7 +138,7 @@ export default defineComponent({
       "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
     const iconSand = reactive({ animationData: sandClock.default });
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
 
     watch(lessonInfo, async () => {
       try {
@@ -176,7 +175,6 @@ export default defineComponent({
 
     watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
-        studentOneName.value = students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name;
         await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
       }
       isOneToOne.value = !!studentOneAndOneId.value;

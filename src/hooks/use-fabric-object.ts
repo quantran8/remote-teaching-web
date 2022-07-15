@@ -17,6 +17,8 @@ const defaultTextBoxProps = {
   fill: "black",
   padding: 5,
   fontFamily: "Didact Gothic",
+  originX: "center",
+  originY: "center",
 };
 
 const deserializeFabricObject = (item: FabricObject) => {
