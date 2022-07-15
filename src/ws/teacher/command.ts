@@ -41,4 +41,5 @@ export enum TeacherWSCommand {
 
   TOGGLE_ALL_SHAPES = "ToggleAllShapes",
   TOGGLE_SHAPE = "ToggleShape",
+  CHECK_MESSAGE_VERSION = "StudentCheckMessageVersion"
 }

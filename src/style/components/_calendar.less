@@ -1,0 +1,63 @@
+@import "./_variables.less";
+
+.ant-custom-calendar {
+  &.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: @ant-main-color-light !important;
+  }
+
+  &.ant-select-focused:not(.ant-select-disabled) {
+    &.ant-select-single:not(.ant-select-customize-input) {
+      .ant-select-selector {
+        border-color: @ant-main-color !important;
+        box-shadow: 0 0 0 2px @ant-main-color-light !important;
+      }
+    }
+  }
+  &.ant-select:not(.ant-select-disabled):hover {
+    .ant-select-selector {
+      border-color: @ant-main-color !important;
+    }
+  }
+
+  .ant-time-picker-panel-select {
+    li:focus {
+      color: @ant-main-color !important;
+    }
+  }
+
+  .ant-time-picker-input:not([disabled]) {
+    &:hover,
+    &:focus {
+      border-color: @ant-main-color !important;
+      box-shadow: 0 0 0 2px @ant-main-color-light !important;
+    }
+  }
+  &.ant-spin {
+    .ant-spin-dot-item {
+      background-color: @ant-main-color !important;
+    }
+  }
+}
+
+.calendar {
+  .ant-fullcalendar-selected-day {
+    .ant-fullcalendar-date {
+      background: @ant-main-color-light !important;
+      border-top-color: @ant-main-color !important;
+      .ant-fullcalendar-value {
+        color: @ant-main-color !important;
+      }
+    }
+  }
+  .ant-fullcalendar-today {
+    .ant-fullcalendar-date {
+      border-top-color: @ant-main-color !important;
+    }
+  }
+
+  .ant-fullcalendar-fullscreen {
+    .ant-fullcalendar-date:active {
+      background: @ant-main-color-light !important;
+    }
+  }
+}

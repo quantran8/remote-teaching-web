@@ -1,13 +1,12 @@
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { Button, Calendar, Col, Modal, Row, Select, Spin, TimePicker, Tooltip } from "ant-design-vue";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
-
 import moment, { Moment } from "moment";
 import { useStore } from "vuex";
 import { ClassModelSchedules } from "@/models";
-import { useRoute } from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import { ScheduleParam } from "@/services";
-import { fmtMsg, LoginInfo } from "@/commonui";
+import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import IconWarning from "@/assets/calendar-warning.svg";
 import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 
@@ -29,7 +28,7 @@ export default defineComponent({
     const store = useStore();
     const route = useRoute();
     const { schoolId } = route.params;
-    const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
     const visible = ref<boolean>(false);
     const recurringVisible = ref<boolean>(false);
     const listClassSelect = ref<any[]>([]);
@@ -79,6 +78,7 @@ export default defineComponent({
     const noteText = computed(() => fmtMsg(TeacherCalendarLocale.Note));
     const schoolText = computed(() => fmtMsg(TeacherCalendarLocale.School));
     const allText = computed(() => fmtMsg(TeacherCalendarLocale.All));
+    const backText = computed(() => fmtMsg(TeacherCalendarLocale.Back));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId });
@@ -119,7 +119,7 @@ export default defineComponent({
             return { id: cl.classId, name: cl.className, startDate: cl.startDate, endDate: cl.endDate, groups: listGroup };
           }
         })
-        .filter(function(el) {
+        .filter(function (el) {
           return el != null;
         });
       let colorIndex = 0;
@@ -597,10 +597,10 @@ export default defineComponent({
         case "Create":
           dataBack = {
             day: selectedDate.value.format(formatDateTime),
-            groupName: listGroupModal.value.filter(group => {
+            groupName: listGroupModal.value.filter((group) => {
               return group.id == selectedGroupIdModal.value;
             })[0].name,
-            className: listClassCreateNew.value.filter(group => {
+            className: listClassCreateNew.value.filter((group) => {
               return group.id == selectedClassIdModal.value;
             })[0].name,
             data: {
@@ -616,7 +616,7 @@ export default defineComponent({
         case "Update":
           dataBack = {
             day: selectedDate.value.format(formatDateTime),
-            groupName: listGroupModal.value.filter(group => {
+            groupName: listGroupModal.value.filter((group) => {
               return group.id == selectedGroupIdModal.value;
             })[0].name,
             data: {
@@ -708,6 +708,11 @@ export default defineComponent({
       return selectedTimeIdModal.value;
     };
 
+    const router = useRouter();
+    const onClickBack = () => {
+      router.push("/teacher");
+    }
+
     return {
       listClassSelect,
       listClassCreateNew,
@@ -767,6 +772,8 @@ export default defineComponent({
       noteText,
       schoolText,
       allText,
+      backText,
+      onClickBack,
     };
   },
 });

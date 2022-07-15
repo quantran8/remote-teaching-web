@@ -1,6 +1,6 @@
-import { defineComponent, Ref, ref, watch } from "vue";
+import { defineComponent, Ref, ref } from "vue";
 import { fabric } from "fabric";
-import { Tools } from "../../../commonui/utils/enum";
+import { Tools } from "@/utils/utils";
 
 export default defineComponent({
   setup() {
@@ -80,7 +80,7 @@ export default defineComponent({
       fabric.Object.prototype.set({
         transparentCorners: false,
         borderColor: "#63CBAB",
-        cornerColor: "#87E5CA"
+        cornerColor: "#87E5CA",
       });
 
       listenToCanvasEvents();
@@ -89,7 +89,7 @@ export default defineComponent({
     return {
       boardSetup,
       updateColorValue,
-      updateStrokeWidth
+      updateStrokeWidth,
     };
-  }
+  },
 });

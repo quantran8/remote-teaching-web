@@ -1,7 +1,7 @@
 @import "./src/style/abstracts/variables";
 
 .header {
-  background-color: #00591b;
+  background-color: $main-color;
   color: white;
   display: flex;
   flex-direction: row;

@@ -1,10 +1,8 @@
-import { store } from "@/store";
-import { AppView } from "@/store/app/state";
 import { Paths } from "@/utils/paths";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home/home.vue";
-import { RequireParentError, RequireTeacherError } from "./error";
-import { LayoutGuard, AuthGuard, TeacherGuard, ParentGuard } from "./guard";
+import { AuthGuard } from "./guard";
+import { checkGSConnectPermission4Parent } from "./guard/parent.guard";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -29,6 +27,15 @@ const routes: Array<RouteRecordRaw> = [
     path: "/disconnect-issue",
     name: "disconnect-issue",
     component: () => import("../views/disconnect-issue/disconnect-issue.vue"),
+    meta: {
+      layout: "full",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/access-information",
+    name: "access-information",
+    component: () => import("../views/access-information/access-information.vue"),
     meta: {
       layout: "full",
       requiresAuth: true,
@@ -72,6 +79,7 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true,
       requireParent: true,
     },
+    beforeEnter: checkGSConnectPermission4Parent,
   },
   {
     path: "/student/:studentId/class/:classId",

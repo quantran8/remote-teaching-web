@@ -1,7 +1,7 @@
-import { GLServiceBase, ServiceRoute } from "./base.service";
+import { GLServiceBase } from "vue-glcommonui";
 
 export class GLContentService extends GLServiceBase<any, any> {
-  serviceRoute: ServiceRoute = { prefix: "content/v1" };
+  serviceRoute = { prefix: "content/v1" };
 
   getSASUrl(): Promise<{ pageContainer: string }> {
     const cacheTime = 60 * 5; //5 minutes

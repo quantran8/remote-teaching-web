@@ -9,12 +9,25 @@
         :key="item.id"
         :class="{ 'item-active': item.id === currentExposureItemMedia?.id, 'content-block': isContent }"
       >
-        <Tooltip placement="topRight">
+        <Tooltip placement="rightBottom" :overlayStyle="{ maxWidth: '400px'}">
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
-          <CropImage v-if="item.image.metaData && item.image.metaData.width > 0 && item.image.metaData.height > 0" :imageUrl="item.image.url" :metadata="item.image.metaData" class="media-image" />
-          <img v-else :src="item.image.url" class="media-image" />
+          <CropImage
+            v-if="item.image.metaData && item.image.metaData.width > 0 && item.image.metaData.height > 0"
+            :imageUrl="item.image.url"
+            :metadata="item.image.metaData"
+            class="media-image"
+          />
+          <img v-else 
+			class="media-image"
+		  	:src="item.image.url" 
+		 	:style="[item.image.metaData ?{
+				'transform':`scale(${item.image.metaData.scaleX},${item.image.metaData.scaleY}) rotate(${item.image.metaData.rotate}deg)`,
+				// if img is rotated, width equal to height of the parent div
+				 'width':(item.image.metaData &&item.image.metaData.rotate) ? '100px' : '100%'
+				}:'']" 
+		  />
           <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
         </Tooltip>
         <!-- <Tooltip v-else placement="topRight">

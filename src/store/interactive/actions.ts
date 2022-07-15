@@ -3,26 +3,18 @@ import { ActionContext, ActionTree } from "vuex";
 import { InteractiveState, StudentId, Target } from "./state";
 
 export interface InteractiveActionInterface<S, R> {
-  setDesignatingTarget(
-    s: ActionContext<S, R>,
-    p: { isDesignatingTarget: boolean }
-  ): void;
+  setDesignatingTarget(s: ActionContext<S, R>, p: { isDesignatingTarget: boolean }): void;
   setModalDesignateTarget(s: ActionContext<S, R>, p: { modalDesignateTarget: boolean }): void;
   setTargets(s: ActionContext<S, R>, p: { targets: Array<Target> }): void;
   setLocalTargets(s: ActionContext<S, R>, p: { targets: Array<string> }): void;
-  setStudentsSelected(
-    s: ActionContext<S, R>,
-    p: { studentsSelected: Array<StudentId> }
-  ): void;
+  setStudentsSelected(s: ActionContext<S, R>, p: { studentsSelected: Array<StudentId> }): void;
   setInfo(s: ActionContext<S, R>, p: InteractiveModel): void;
   setCurrentUserId(s: ActionContext<S, R>, p: string): void;
   setRevealedTarget(s: ActionContext<S, R>, targetId: string): void;
   setRevealedLocalTarget(s: ActionContext<S, R>, p: Array<string>): void;
 }
 
-export interface InteractiveAction<S, R>
-  extends ActionTree<S, R>,
-    InteractiveActionInterface<S, R> {}
+export interface InteractiveAction<S, R> extends ActionTree<S, R>, InteractiveActionInterface<S, R> {}
 
 const actions: ActionTree<InteractiveState, any> = {
   setDesignatingTarget({ commit }, p: { isDesignatingTarget: boolean }) {
@@ -52,7 +44,7 @@ const actions: ActionTree<InteractiveState, any> = {
   setRevealedLocalTarget({ commit }, p: Array<string>) {
     commit("setRevealedLocalTarget", p);
   },
-  setUpdateStudentsAnswerForTeacher({commit}, p: {studentId: string, answerList: Array<string>}) {
+  setUpdateStudentsAnswerForTeacher({ commit }, p: { studentId: string; answerList: Array<string> }) {
     commit("setUpdateStudentsAnswerForTeacher", p);
   },
 };

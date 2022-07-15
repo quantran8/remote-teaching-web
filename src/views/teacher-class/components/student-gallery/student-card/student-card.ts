@@ -1,3 +1,4 @@
+import { TeacherRoomManager } from '@/manager/room/teacher.manager';
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
@@ -7,6 +8,8 @@ import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { debounce } from "lodash";
 import noAvatar from "@/assets/images/user-default-gray.png";
 import "animate.css";
+import { VCPlatform } from "@/store/app/state";
+import {useElementBounding} from "@vueuse/core";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -33,6 +36,9 @@ export default defineComponent({
     const store = useStore();
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
+    const platform = computed(() => store.getters["platform"]);
+    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
+
     const isMouseEntered = ref<boolean>(false);
     const isShow = computed(() => {
       return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
@@ -62,10 +68,16 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
-        await store.dispatch("teacherRoom/sendOneAndOne", {
-          status: true,
-          id: props.student.id,
-        });
+		
+		await store.dispatch("teacherRoom/sendOneAndOne", {
+		  status: true,
+	      id: props.student.id,
+		});
+        // if (store.getters["platform"] === VCPlatform.Zoom) {
+		//   await store.dispatch("teacherRoom/generateOneToOneToken", {
+		// 	 classId: store.getters["teacherRoom/info"]?.id
+		//   });
+        // }
       }
     };
 
@@ -85,34 +97,54 @@ export default defineComponent({
     });
 
     const studentRef = ref<any>(null);
-    const currentPosition = ref<any>(null);
-    const handleResize = debounce(() => {
-      if (!studentRef.value) return;
-      let right = 0;
-      const { width } = studentRef.value.getBoundingClientRect();
-      if (width + 10 <= studentRef.value.offsetLeft) {
-        right = width - 50;
-      }
-      if (width > studentRef.value.offsetParent.offsetWidth / 2) {
-        right = width + 150;
-      }
-      currentPosition.value = {
-        x: studentRef.value.offsetLeft,
-        y: studentRef.value.offsetTop,
-        right: right,
-      };
-    }, 100);
-    watch(isNotJoinned, () => {
-      if (!isNotJoinned.value) {
-        handleResize();
-      }
+    const parentCard = computed(() => studentRef.value?.parentElement);
+    const { width, height, top, bottom, left, right } =
+        useElementBounding(studentRef);
+    const {
+      width: parentWidth,
+      top: parentTop,
+      bottom: parentBottom,
+      left: parentLeft,
+      right: parentRight,
+    } = useElementBounding(parentCard);
+
+    const maxScaleRatio = computed(() => {
+      return width.value ? parentWidth.value / width.value : 1
     });
-    onMounted(() => {
-      handleResize();
-      window.addEventListener("resize", handleResize);
+    const actualScaleRatio = computed(() => {
+      return Math.min(props.scaleOption || 1, maxScaleRatio.value);
     });
-    onUnmounted(() => {
-      window.removeEventListener("resize", handleResize);
+    const wrapperWidth = computed(() => {
+      // if in one-to-one mode, or the card has room to expand, keep the width as is
+      if (isOneToOneStudent.value || maxScaleRatio.value >= 1.1) {
+        return "100%";
+      }
+      // otherwise, make the width 80% (so it can expand)
+      return focusedStudent.value ? "100%" : "80%";
+    });
+    const translateX = computed(() => {
+      const scaledWidth = width.value * actualScaleRatio.value;
+      const difference = (scaledWidth - width.value) / 2;
+      const translateValue = Math.round(difference / actualScaleRatio.value);
+      if (left.value === parentLeft.value) {
+        return translateValue;
+      }
+      if (right.value === parentRight.value) {
+        return -translateValue;
+      }
+      return 0;
+    });
+    const translateY = computed(() => {
+      const scaledHeight = height.value * actualScaleRatio.value;
+      const difference = (scaledHeight - height.value) / 2;
+      const translateValue = Math.round(difference / actualScaleRatio.value);
+      if (top.value === parentTop.value) {
+        return translateValue;
+      }
+      if (bottom.value === parentBottom.value) {
+        return -translateValue;
+      }
+      return 0;
     });
 
     const focusedStudent = computed(() => props.focusStudentId === props.student.id);
@@ -124,7 +156,6 @@ export default defineComponent({
     const isOneToOneStudent = computed(() => {
       return store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
     });
-
     return {
       isNotJoinned,
       onDragStart,
@@ -140,11 +171,16 @@ export default defineComponent({
       isLowBandWidth,
       focusedStudent,
       studentRef,
-      currentPosition,
       isTurnOnCamera,
       isOneToOneStudent,
       avatarStudent,
       oneAndOne,
+      isUsingAgora,
+      actualScaleRatio,
+      maxScaleRatio,
+      translateX,
+      translateY,
+      wrapperWidth,
     };
   },
 });

@@ -8,23 +8,28 @@
       'disabled-pointer': toolActive === '',
     }"
     ref="containerRef"
-    :style="{
-      borderBottomLeftRadius: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '10px' : '0px',
-      borderBottomRightRadius: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '10px' : '0px',
-      borderBottomWidth: (hasPalette && isLessonPlan) || (isGalleryView && isShowWhiteBoard && hasPalette) ? '1px' : '0px',
-    }"
   >
     <div class="annotation-view-container__image">
       <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
         <img src="@/assets/icon-select.png" alt="" />
       </div>
-      <CropImage id="annotation-img" v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0" :imageUrl="image.url" :metadata="image.metaData" @img-load="imgLoad" />
-      <img v-else-if="typeof imageUrl === 'string'" :src="imageUrl" id="annotation-img" v-show="!isGalleryView && imageUrl" @load="imgLoad" />
+      <CropImage
+        id="annotation-img"
+        v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
+        :imageUrl="image.url"
+        :metadata="image.metaData"
+        @img-load="imgLoad"
+      />
+	 <img v-else-if="typeof imageUrl === 'string' && image" 
+		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" 
+		  :style="[{...styles}]" 
+		  />
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
-    <div class="palette-tool" v-if="(isLessonPlan && isPaletteVisible) || (isGalleryView && isShowWhiteBoard && isPaletteVisible)">
+	<!-- hide temporary with v-if=false -->
+    <div class="palette-tool" v-if="false">
       <div
         v-for="{ name, action } in paletteTools"
         :key="name"

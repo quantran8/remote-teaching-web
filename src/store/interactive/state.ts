@@ -30,7 +30,7 @@ const state: InteractiveState = {
   localTargets: [],
   studentsSelected: [],
   currentUserId: "",
-  modalDesignateTarget: false
+  modalDesignateTarget: false,
 };
 
 export default state;

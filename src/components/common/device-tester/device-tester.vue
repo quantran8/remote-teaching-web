@@ -27,7 +27,7 @@
               @change="handleMicroChange"
             >
               <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">
-                {{ listMics.find(mic => mic.deviceId === deviceId)?.label }}
+                {{ listMics.find((mic) => mic.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
           </Space>
@@ -57,12 +57,13 @@
               @change="handleCameraChange"
             >
               <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">
-                {{ listCams.find(cam => cam.deviceId === deviceId)?.label }}
+                {{ listCams.find((cam) => cam.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
           </Space>
         </div>
       </Row>
+
       <Row align="middle" class="device-tester__mb--default">
         <p v-show="!havePermissionCamera">
           <span class="alert-device-test">{{ warningMsgCamera }}</span>
@@ -70,10 +71,18 @@
       </Row>
       <Row align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-12 ant-col-sm-offset-6">
+          <video
+            ref="playerRef"
+            :id="videoElementId"
+            v-show="isOpenCam && currentCam && !zoomCamError"
+            v-if="!isUsingAgora"
+            :class="['device-tester__camera--player']"
+          ></video>
           <div
             ref="playerRef"
             :id="videoElementId"
             v-show="isOpenCam && currentCam && !agoraCamError"
+            v-if="isUsingAgora"
             :class="['device-tester__camera--player']"
           ></div>
           <div v-show="!isOpenCam || agoraCamError || !currentCam" :class="['device-tester__camera--player', 'hided']">
@@ -86,6 +95,20 @@
           </div>
         </div>
       </Row>
+
+      <!-- <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b>{{ Platform }}</b>
+        </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center" class="device-tester__check-mic-cam">
+            <Select v-model:value="currentPlatform" class="device-device-tester__platform" ref="select" :disabled="!isConfigTrackingDone">
+              <SelectOption v-for="pl in listPlatform" :key="pl.key" :value="pl.key">{{ pl.name }}</SelectOption>
+            </Select>
+          </Space>
+        </div>
+      </Row> -->
+
       <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--default">
         <div class="ant-col-24 ant-col-sm-6">
           <b>{{ LessonUnit }}</b>
@@ -110,7 +133,7 @@
       <Row v-if="showTeacherFooter" type="flex" justify="end" class="device-tester__mb--small">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-          <Button :disabled="!currentMic || !isOpenMic" width="100px" @click="handleSubmit" type="primary" :loading="loading">
+          <Button width="100px" @click="handleSubmit" type="primary" :loading="loading">
             {{ JoinSession }}
           </Button>
         </Space>
@@ -134,7 +157,7 @@
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button
-            :disabled="!classIsActive || !isOpenMic || listMicsId.length <= 0"
+            :disabled="!classIsActive"
             width="100px"
             @click="goToClass"
             type="primary"

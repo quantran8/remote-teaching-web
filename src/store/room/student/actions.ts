@@ -1,3 +1,4 @@
+import { VCPlatform } from "./../../app/state";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -8,7 +9,7 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 import { UID } from "agora-rtc-sdk-ng";
 import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { ErrorCode, fmtMsg } from "commonui";
+import { ErrorCode, fmtMsg } from "vue-glcommonui";
 import router from "@/router";
 import { Paths } from "@/utils/paths";
 import { ErrorLocale } from "@/locales/localeid";
@@ -16,6 +17,10 @@ import { MediaStatus } from "@/models";
 import { Logger } from "@/utils/logger";
 import { isMobileBrowser } from "@/utils/utils";
 import { UserRole } from "@/store/app/state";
+import { store } from "@/store";
+import { notification } from "ant-design-vue";
+import { TeacherClassError } from "@/locales/localeid";
+import { HubConnectionState } from "@microsoft/signalr";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async initClassRoom(
@@ -49,6 +54,8 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
+	  commit("setBrowserFingerPrint", payload.browserFingerPrinting);
+      await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
@@ -96,8 +103,38 @@ const actions: ActionTree<StudentRoomState, any> = {
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+	  await dispatch("setTeacherMessageVersion", roomResponse.data.teacher.messageVersion, { root: true });
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
+        //check for teacher connected status while student's signalR has not initialized properly to get
+        //the TeacherJoinedClass event. Workaround for a bug user refresh teacher's screen and student's screen at same time!
+        const maxRetry = 5;
+        let currentTry = 1;
+        let teacherConnected = false;
+
+        const intervalId = setInterval(async () => {
+          if (currentTry > maxRetry || teacherConnected || store.getters.singalrInited) {
+            clearInterval(intervalId);
+            Logger.log(`Stopped loop, currentTry ${currentTry}, teacherConnected ${teacherConnected}, signalRinited ${store.getters.singalrInited}`);
+          }
+
+          Logger.log("CALL JOIN CLASS AGAIN");
+
+          const roomResponse2: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(
+            payload.studentId,
+            payload.browserFingerPrinting,
+          );
+          if (!roomResponse2.data.teacher.disconnectTime) {
+            teacherConnected = true;
+            Logger.log("SET TEACHER ONLINE");
+            commit("setTeacherDisconnected", false);
+            commit("setTeacherStatus", {
+              id: roomResponse2.data.teacher.id,
+              status: roomResponse2.data.teacher.connectionStatus,
+            });
+          }
+          currentTry += 1;
+        }, 1000);
       }
     } catch (error) {
       if (error.code == null) {
@@ -134,12 +171,12 @@ const actions: ActionTree<StudentRoomState, any> = {
     const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible } = state;
     if (!manager) return;
     const cameras = students
-      .filter(s => {
+      .filter((s) => {
         if (!videosFeedVisible || isMobileBrowser) return false;
         return s.videoEnabled && s.status === InClassStatus.JOINED;
       })
-      .map(s => s.id);
-    let audios = students.filter(s => s.audioEnabled && s.status === InClassStatus.JOINED).map(s => s.id);
+      .map((s) => s.id);
+    let audios = students.filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
     if (globalAudios.length > 0) {
       audios = globalAudios;
     }
@@ -154,14 +191,14 @@ const actions: ActionTree<StudentRoomState, any> = {
     if (idOne) {
       //handle one to one student
       if (idOne === student?.id) {
-        const cameraOtherStudentId = cameras.filter(camId => camId !== idOne && camId !== teacher?.id);
-        const audioOtherStudentId = audios.filter(audioId => audioId !== idOne && audioId !== teacher?.id);
+        const cameraOtherStudentId = cameras.filter((camId) => camId !== idOne && camId !== teacher?.id);
+        const audioOtherStudentId = audios.filter((audioId) => audioId !== idOne && audioId !== teacher?.id);
         for (const id of cameraOtherStudentId) {
-          const cameraIndex = cameras.findIndex(camId => camId === id);
+          const cameraIndex = cameras.findIndex((camId) => camId === id);
           cameras.splice(cameraIndex, 1);
         }
         for (const id of audioOtherStudentId) {
-          const audioIndex = audios.findIndex(audioId => audioId === id);
+          const audioIndex = audios.findIndex((audioId) => audioId === id);
           audios.splice(audioIndex, 1);
         }
       }
@@ -169,20 +206,20 @@ const actions: ActionTree<StudentRoomState, any> = {
       //handle other students
       if (idOne !== student?.id) {
         //remove student one to one
-        const studentCameraIndex = cameras.findIndex(camId => camId === idOne);
+        const studentCameraIndex = cameras.findIndex((camId) => camId === idOne);
         if (studentCameraIndex > -1) {
           cameras.splice(studentCameraIndex, 1);
         }
-        const studentAudioIndex = audios.findIndex(audioId => audioId === idOne);
+        const studentAudioIndex = audios.findIndex((audioId) => audioId === idOne);
         if (studentAudioIndex > -1) {
           audios.splice(studentAudioIndex, 1);
         }
         //remove teacher one to one
-        const teacherCameraIndex = cameras.findIndex(camId => camId === teacher?.id);
+        const teacherCameraIndex = cameras.findIndex((camId) => camId === teacher?.id);
         if (teacherCameraIndex > -1) {
           cameras.splice(teacherCameraIndex, 1);
         }
-        const teacherAudioIndex = audios.findIndex(audioId => audioId === teacher?.id);
+        const teacherAudioIndex = audios.findIndex((audioId) => audioId === teacher?.id);
         if (teacherAudioIndex > -1) {
           audios.splice(teacherAudioIndex, 1);
         }
@@ -235,12 +272,16 @@ const actions: ActionTree<StudentRoomState, any> = {
         microphone: microphoneStatus,
         classId: state.info?.id,
         studentId: state.user?.id,
+        idOne: state.idOne,
+		reJoin: _payload ? _payload.reJoin: false
       });
     }
+	if(_payload && _payload.reJoin)
+		return;
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
-      state.manager?.getBandwidth().then(speedMbps => {
+      state.manager?.getBandwidth()?.then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
@@ -253,7 +294,8 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
-    state.manager?.agoraClient.registerEventHandler({
+    //if (store.getters.platform === VCPlatform.Agora) {
+    state.manager?.agoraClient?.registerEventHandler({
       onUserPublished: (user, mediaType) => {
         Logger.log("user-published", user.uid, mediaType);
         dispatch("updateAudioAndVideoFeed", {});
@@ -265,18 +307,50 @@ const actions: ActionTree<StudentRoomState, any> = {
       onException: (payload: any) => {
         Logger.log("agora-exception-event", payload);
       },
-      onVolumeIndicator(result: { level: number; uid: UID }[]) {
-        dispatch("setSpeakingUsers", result);
-      },
       onLocalNetworkUpdate(payload: any) {
-        //   Logger.log(payload);
+        Logger.log(payload);
       },
     });
+    //}
+    var checkMessageTimer = setInterval(async () => {
+	  try {
+		if(state.manager?.WSClient.hubConnection.state != HubConnectionState.Connected)
+			return;
+		var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+      	const localMessageVersion = store.rootGetters["teacherMessageVersion"];
+        if (techerMessageVersion > localMessageVersion) {
+			console.log(`TEACHER MESSAGE VERSION: server ${techerMessageVersion} local ${localMessageVersion} `);
+        	//reinit the class data here
+			notification.error({message: fmtMsg(TeacherClassError.MissingImportantClassMessages)});
+			const user = store.getters["user"] as UserModel;
+			const room = store.getters["info"] as RoomModel
+			await dispatch("initClassRoom", {
+				classId: room.classInfo.classId,
+				userId: user.id,
+				userName: user.name,
+				studentId: user.id,
+				role: "parent",
+				browserFingerPrinting: store.getters["browserFingerPrint"],
+			});
+			console.log("REINIT CLASS INFO OK");
+      	}
+	  }
+	  catch(err) {
+		//error here loss signalR network, for loss API connection
+		//disconnect now because window.offline event not work correctly sometimes
+		if(store.getters["isDisconnected"] == false) {
+			console.log("PING FAILED- SHOULD DISCONNECT STUDENT")
+			//dispatch("setOffline");
+		}
+	  }
+      
+    }, 3000);
+    store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   setSpeakingUsers({ commit }, payload: { level: number; uid: UID }[]) {
     const validSpeakings: Array<string> = [];
     if (payload) {
-      payload.map(item => {
+      payload.map((item) => {
         if (item.level >= MIN_SPEAKING_LEVEL) {
           // should check by a level
           validSpeakings.push(item.uid.toString());
@@ -285,27 +359,33 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
     commit("setSpeakingUsers", { userIds: validSpeakings });
   },
-  async leaveRoom({ state, commit }, payload: any) {
+  async leaveRoom({ state, commit, rootGetters, dispatch }, payload: any) {
     await state.manager?.close();
     commit("leaveRoom", payload);
+    commit({ type: "lesson/clearLessonData" }, { root: true });
     commit({ type: "lesson/clearCacheImage" }, { root: true });
+    const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
+	if(checkMessageTimer)
+    	clearInterval(checkMessageTimer);
+    dispatch("setCheckMessageVersionTimer", -1, { root: true });
   },
-  async loadRooms({ commit, state }, _payload: any) {
+  async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;
     const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(state.user.id, _payload);
     if (!roomResponse) return;
     commit("setRoomInfo", roomResponse.data);
+    await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
   },
   async setStudentAudio({ commit, state }, payload: { id: string; enable: boolean; preventSendMsg?: boolean }) {
     if (payload.id === state.student?.id) {
       if (state.microphoneLock) return;
       commit("setMicrophoneLock", { enable: true });
       try {
+        commit("setStudentAudio", payload);
         await state.manager?.setMicrophone({ enable: payload.enable });
         if (!payload.preventSendMsg) {
           await state.manager?.WSClient.sendRequestMuteAudio(!payload.enable);
         }
-        commit("setStudentAudio", payload);
         commit("setMicrophoneLock", { enable: false });
       } catch (error) {
         Logger.error("SET_STUDENT_AUDIO_ERROR", error);
@@ -320,11 +400,11 @@ const actions: ActionTree<StudentRoomState, any> = {
       if (state.cameraLock) return;
       try {
         commit("setCameraLock", { enable: true });
+        commit("setStudentVideo", payload);
         await state.manager?.setCamera({ enable: payload.enable });
         if (!payload.preventSendMsg) {
           await state.manager?.WSClient.sendRequestMuteVideo(!payload.enable);
         }
-        commit("setStudentVideo", payload);
         commit("setCameraLock", { enable: false });
       } catch (error) {
         Logger.error("SET_STUDENT_VIDEO_ERROR", error);
@@ -349,11 +429,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   setClassView(store, payload: ClassViewPayload) {
     store.commit("setClassView", payload);
   },
-  async studentRaisingHand(store, payload: any) {
+  async studentRaisingHand(store, payload: boolean) {
     store.commit("setStudentRaisingHand", {
-      raisingHand: true,
+      raisingHand: payload,
     });
-    await store.state.manager?.WSClient.sendRequestRaisingHand();
+    await store.state.manager?.WSClient.sendRequestRaisingHand(payload);
   },
   async studentLike({ state }, _: any) {
     await state.manager?.WSClient.sendRequestLike();
@@ -368,8 +448,18 @@ const actions: ActionTree<StudentRoomState, any> = {
   ) {
     await state.manager?.WSClient.sendRequestAnswer(payload);
   },
-  setStudentOneId({ commit }, p: { id: string }) {
+  async setStudentOneId({ state, commit, dispatch }, p: { id: string }) {
     commit("setStudentOneId", p);
+    if (p.id) {
+      //   if (store.getters["platform"] === VCPlatform.Zoom) {
+      //     await dispatch("generateOneToOneToken", {
+      //       classId: store.getters["studentRoom/info"]?.id,
+      //       studentId: p.id,
+      //     });
+      //   }
+    } else {
+      await state.manager?.studentBackToMainRoom();
+    }
   },
   clearStudentOneId({ commit }, p: { id: string }) {
     commit("clearStudentOneId", p);
@@ -439,6 +529,18 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
+  },
+  async generateOneToOneToken({ state }, payload: { classId: string; studentId: string }) {
+    // try {
+    //   const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
+    //   const zoom = state.manager?.zoomClient;
+    //   if (zoom) {
+    //     zoom.oneToOneToken = response.token;
+    //     await zoom.studentBreakoutRoom(payload.studentId);
+    //   }
+    // } catch (error) {
+    //   Logger.log(error);
+    // }
   },
 };
 

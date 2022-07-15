@@ -97,11 +97,29 @@
 	}
   }
 
+@mixin glow($color, $duration: 1s) {
+  -webkit-animation: glow $duration infinite;
+  -moz-animation: glow $duration infinite;
+  -o-animation: glow $duration infinite;
+  animation: glow $duration infinite;
+  @keyframes glow {
+    0% {
+      box-shadow: 0 0 5px -5px $color;
+    }
+    50% {
+      box-shadow: 0 0 5px 5px $color;
+    }
+    100% {
+      box-shadow: 0 0 5px -5px $color;
+    }
+  }
+}
+
 @mixin grid($cols,$margin){
   float:left;
   margin-right:$margin;
   margin-bottom:$margin;
-  width:(100% - (($cols - 1) * $margin))/$cols;
+  width:(100% - ($cols * $margin))/$cols;
   &:nth-child(#{$cols}n){
     margin-right:0;
   }

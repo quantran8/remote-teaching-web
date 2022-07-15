@@ -2,7 +2,7 @@ import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
 import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import FontFaceObserver from "fontfaceobserver";
 const FontDidactGothic = "Didact Gothic";
 const FontLoader = new FontFaceObserver(FontDidactGothic);
@@ -17,6 +17,8 @@ const defaultTextBoxProps = {
   fill: "black",
   padding: 5,
   fontFamily: "Didact Gothic",
+  originX: "center",
+  originY: "center",
 };
 
 const deserializeFabricObject = (item: FabricObject) => {
@@ -29,10 +31,28 @@ const deserializeFabricObject = (item: FabricObject) => {
 export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
+  const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
+  const oneToOneId = computed(() =>getters["teacherRoom/getStudentModeOneId"])
   const nextColor = ref("");
+  const currentSelectionEnd = ref(-1);
+  const currentSelectionStart = ref(-1);
+  const isChangeImage= ref(false);
+
+  watch(currentExposureItemMedia, (currentItem, prevItem) => {
+	if (currentItem && prevItem) {
+	  if (currentItem.id !== prevItem.id) {
+		isChangeImage.value =true;
+	  }
+	}
+  });
+
+  watch(oneToOneId, (currentOneToOneId, prevOneToOneId) => {
+	if(currentOneToOneId !==prevOneToOneId && isChangeImage.value){
+		isChangeImage.value = false;
+	}
+  })
 
   const isEditing = ref(false);
-  //listen event fire on canvas
   const onObjectCreated = (canvas: any) => {
     canvas.on("object:added", (options: any) => {
       const handleSelect = () => {
@@ -51,25 +71,32 @@ export const useFabricObject = () => {
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
       if (options?.target?.type === "textbox") {
-        dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+		if(!isChangeImage.value){
+			dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+		}
         if (options?.target.text === "") {
           canvas.remove(options.target);
         }
       }
+	  if(isChangeImage.value){
+		isChangeImage.value =false
+	}
     });
   };
   const onTextBoxEdited = (canvas: any) => {
     canvas.on("text:editing:exited", (options: any) => {
       if (options?.target.type === "textbox") {
-        if (options?.target.textIsChanged) {
-          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
-        }
         if (options?.target.text === "" || !options?.target.textIsChanged) {
           setTimeout(() => {
             canvas.remove(options.target);
           }, 0);
         }
       }
+    });
+
+    canvas.on("text:selection:changed", (options: any) => {
+      currentSelectionEnd.value = options.target.selectionEnd;
+      currentSelectionStart.value = options.target.selectionStart;
     });
     canvas.on("text:editing:entered", (options: any) => {
       if (options?.target.type === "textbox") {
@@ -86,21 +113,35 @@ export const useFabricObject = () => {
         const maxLength = Math.max(...options.target.textLines.map((line: string) => line.length));
         options.target.set({ width: maxLength });
       }
-
       if (!options.target.textIsChanged) {
         options.target.textIsChanged = true;
       }
+      let startIndex = -1;
+      let endIndex = -1;
       if (nextColor.value) {
-        const selectedTextStyles = options.target.getSelectionStyles(options.target.selectionEnd - 1, options.target.selectionEnd, true);
-        const [style] = selectedTextStyles;
-        if (style.fill !== nextColor.value) {
-          options.target.setSelectionStart(options.target.selectionEnd - 1);
-          options.target.setSelectionEnd(options.target.selectionEnd);
+        if (currentSelectionEnd.value === currentSelectionStart.value) {
+          if (options.target?.prevTextValue?.length < options.target?.text?.length) {
+            startIndex = currentSelectionEnd.value;
+            endIndex = options.target.selectionEnd;
+          }
+        } else {
+          startIndex = currentSelectionStart.value;
+          endIndex = options.target.selectionEnd;
+        }
+      }
+      if (startIndex > -1 && endIndex > -1) {
+        const selectedTextStyles = options.target.getSelectionStyles(startIndex, endIndex, true);
+        if (selectedTextStyles?.some((style: any) => style && style.fill !== nextColor.value)) {
+          options.target.setSelectionStart(startIndex);
+          options.target.setSelectionEnd(endIndex);
           options.target.setSelectionStyles({ fill: nextColor.value });
           options.target.setSelectionStart(options.target.selectionEnd);
           options.target.setSelectionEnd(options.target.selectionEnd);
         }
       }
+      options.target.prevTextValue = options.target.text;
+      currentSelectionEnd.value = options.target.selectionEnd;
+      currentSelectionStart.value = options.target.selectionEnd;
       dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
     });
   };
@@ -109,6 +150,7 @@ export const useFabricObject = () => {
     const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
     const randomId = randomUUID();
     textBox.objectId = randomId;
+    textBox.prevTextValue = "";
     canvas.add(textBox).setActiveObject(textBox);
     textBox.textIsChanged = false;
     textBox.enterEditing();

@@ -1,3 +1,4 @@
+/* eslint-disable */
 @import "../assets/css/w3.css";
 @import "../assets/fonts/rt-icon/style.css";
 @import "../style/abstracts/variables";
@@ -7,9 +8,6 @@ body {
     sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
   &.mobile-device {
     overflow: hidden;
-  }
-  video {
-    display: none;
   }
 }
 
@@ -45,85 +43,20 @@ body {
   display: block;
 }
 .d-none {
-  display: none;
-}
-
-#app {
-  video {
-    display: inline-block !important;
-  }
+  display: none !important;
 }
 
 .ant-modal-root {
   video {
-    display: inline-block !important;
+    display: inline-block;
   }
 }
-.user-container-wrap {
-  &:hover {
-    cursor: pointer;
-  }
-  &.desktop {
-    padding-right: 25px;
-    @media (max-width: $lg) {
-      display: none;
-    }
-  }
-  .user-container {
-    display: flex;
-    align-items: center;
-    position: relative;
-    height: 100%;
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      margin: 0 16px;
-      border-radius: 18px;
-      object-fit: cover;
-      object-position: center;
-    }
-    .user-info {
-      .user-name {
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-      }
-      .user-role {
-        color: lightgray;
-        font-size: 14px;
-        margin-top: 4px;
-      }
-    }
-  }
-  .anticon-down {
-    position: absolute;
-    top: 6px;
-    right: 5px;
-    color: #fff;
-  }
-  .menu-item {
-    padding: 1rem 2rem;
-    color: rgb(50, 50, 50);
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    .item-action {
-      -webkit-transform: scaleX(-1);
-      transform: scaleX(-1);
-      margin-left: 0.5rem;
-    }
-    &:hover {
-      cursor: pointer;
-      background-color: #00591b23;
-    }
-  }
-}
+
 .drawer-wrap-mobile {
   .ant-drawer-wrapper-body {
-    background-color: #00591b;
+    background-color: $main-color;
     .ant-drawer-header-no-title {
-      background-color: #00591b;
+      background-color: $main-color;
       min-height: 20px;
       svg {
         color: #fff;
@@ -137,9 +70,6 @@ body {
     display: flex;
     align-items: start;
     flex-direction: column;
-    .user-container-wrap .user-container .user-avatar {
-      margin: 0 5px 0 0;
-    }
     ._item_wrapper {
       margin-bottom: 15px;
       padding-right: 20px;
@@ -147,7 +77,43 @@ body {
     ._popup_wrapper {
       left: 0;
       right: auto;
-      transform: translate(0, 5%);
+      transform: translate(0, 10px);
     }
   }
+}
+
+.vjs-progress-control {
+  pointer-events: none;
+}
+
+.mask-main {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.disconnected-popup {
+  position: fixed;
+  z-index: 99999;
+  background-color: #fceed6;
+  color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 0;
+  border-top: 2px solid #fec16a;
+  font-weight: 600;
+}
+
+.ant-tooltip-inner {
+	max-height: 200px;
+	overflow-y: auto;
 }

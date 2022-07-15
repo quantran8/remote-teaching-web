@@ -1,3 +1,5 @@
+@import "./src/style/abstracts/variables";
+
 .class-holder {
   display: flex;
   justify-content: flex-start;
@@ -9,7 +11,7 @@
   display: flex;
   justify-content: center;
   flex-direction: row;
-  margin-right: 50px;
+  margin-right: 40px;
 
   .class__size {
     width: 200px;
@@ -35,12 +37,12 @@
 }
 
 .class-group {
-  margin-left: 30px;
+  margin-left: 20px;
   position: relative;
 
   &__size {
-    margin: 10px;
-    width: 170px;
+    margin: 8px;
+    width: auto;
     height: 100px;
     cursor: default;
     box-shadow: none !important;
@@ -50,18 +52,15 @@
     }
   }
   &__play-icon {
-    position: absolute;
     width: 30px;
     height: 30px;
-    right: 5px;
-    bottom: 5px;
     cursor: pointer;
   }
 }
 
 .m-10 {
-  margin-top: 10px;
-  margin-left: 10px;
+	padding: 0px 5px 5px 8px;
+	min-width: 155px;
 }
 
 .card {
@@ -72,11 +71,23 @@
   border: 3px solid rgb(250, 191, 28) !important;
 }
 
+.group-content {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.icon-view {
+	padding: 2px 4px;
+	display: flex;
+	align-items: flex-end;
+}
+
 .title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: black;
+  color: $main-color;
   font-size: 17px;
 }
 

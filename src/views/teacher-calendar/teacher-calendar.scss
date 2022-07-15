@@ -1,3 +1,5 @@
+@import "./src/style/abstracts/variables";
+
 .calendar-page {
   display: flex;
   flex-direction: column;
@@ -15,7 +17,6 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    margin-top: 20px;
   }
 
   .size-select {
@@ -46,10 +47,30 @@
   .year-select {
     width: 100px;
   }
+  a:hover {
+    color: $main-color;
+  }
 }
 
 .ml-20 {
   margin-left: 20px;
+}
+
+.control-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+
+  .back-btn {
+    color: black;
+
+    span {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 18px;
+    }
+  }
 }
 
 .select-container {
@@ -57,7 +78,6 @@
   align-items: center;
   flex-direction: row;
   min-width: 300px;
-  margin-top: 10px;
 }
 
 .modal-title-select {

@@ -10,7 +10,10 @@
       <div class="user-name">{{ name }}</div>
       <div class="next-session-info" v-if="nextSessionInfo">
         <p class="next-session-info__class">
-          {{ getInfo() }}
+          {{ classGroupText }}
+          <span class="next-session-info__class--name">
+            {{ getInfo() }}
+          </span>
         </p>
         <p class="next-session-info__time">{{ nextSessionInfo && convertDate(nextSessionInfo.nextTime) }}</p>
       </div>

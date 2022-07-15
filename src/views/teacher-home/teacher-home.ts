@@ -1,20 +1,20 @@
 import { TeacherHome } from "./../../locales/localeid";
-import { LoginInfo } from "@/commonui";
-import { TeacherClassModel, UnitAndLesson } from "@/models";
-import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
+import { TeacherClassModel, UnitAndLesson, UnitAndLessonModel } from "@/models";
+import { AccessibleSchoolQueryParam, RemoteTeachingService, UnitAndLessonResponse } from "@/services";
 import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import ClassCard from "./components/class-card/class-card.vue";
 import { ResourceModel } from "@/models/resource.model";
 import { Select, Spin, Modal, Checkbox, Button, Row, Empty, notification } from "ant-design-vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AppView } from "@/store/app/state";
+import { AppView, VCPlatform } from "@/store/app/state";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
+import { MatIcon } from "vue-glcommonui";
 
 const fpPromise = FingerprintJS.load();
 
@@ -30,6 +30,7 @@ export default defineComponent({
     Row,
     Empty,
     DeviceTester,
+    MatIcon,
   },
   setup() {
     const store = useStore();
@@ -72,7 +73,7 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
 
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number) => {
       messageStartClass.value = "";
       try {
         const fp = await fpPromise;
@@ -85,6 +86,8 @@ export default defineComponent({
           unit: unit,
           lesson: lesson,
           browserFingerprint: result.visitorId,
+          unitId,
+		  videoPlatformProvider: VCPlatform.Agora
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
@@ -165,20 +168,20 @@ export default defineComponent({
         const listUnit: UnitAndLesson[] = [];
 
         if (response && response.success) {
-          response.data.map((res: any) => {
+          response.data.map((res: UnitAndLessonModel) => {
             let isUnitExist = false;
             listUnit.map((singleUnit: UnitAndLesson) => {
-              if (res.unitId == singleUnit.unit) {
+              if (res.unitId == singleUnit.unitId) {
                 isUnitExist = true;
               }
             });
             if (!isUnitExist) {
-              listUnit.push({ unit: res.unitId, sequence: [] });
+              listUnit.push({ unit: res.unit, sequence: [], unitId: res.unitId });
             }
           });
-          response.data.map((res: any) => {
+          response.data.map((res: UnitAndLessonModel) => {
             listUnit.map((singleUnit: UnitAndLesson, index) => {
-              if (res.unitId == singleUnit.unit) {
+              if (res.unitId == singleUnit.unitId) {
                 listUnit[index].sequence.push(res.sequence);
               }
             });
@@ -197,11 +200,11 @@ export default defineComponent({
       loadingInfo.value = false;
     };
 
-    const onStartClass = async (data: { unit: number; lesson: number }) => {
+    const onStartClass = async (data: { unitId: number; lesson: number; unit: number }) => {
       popUpLoading.value = true;
       if (!(await joinTheCurrentSession(selectedGroupId.value))) {
         if (infoStart.value) {
-          await startClass(infoStart.value.teacherClass, selectedGroupId.value, data.unit, data.lesson);
+          await startClass(infoStart.value.teacherClass, selectedGroupId.value, data.unit, data.lesson, data.unitId);
         }
       }
       popUpLoading.value = false;
@@ -237,7 +240,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const loginInfo: LoginInfo = store.getters["auth/loginInfo"];
+      const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
       if (loginInfo && loginInfo.loggedin) {
         await getSchools();
         if (schools.value?.length) {

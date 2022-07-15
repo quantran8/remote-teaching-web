@@ -1,8 +1,8 @@
 <template>
-  <LoadingPage v-if="appView === 4" />
-  <NotFoundPage v-else-if="appView === 3" />
+  <LoadingPage v-if="appView === AppView.Blank" />
+  <NotFoundPage v-else-if="appView === AppView.NotFound" />
 
-  <MainLayout v-else-if="appView === 2">
+  <MainLayout v-else-if="appView === AppView.UnAuthorized">
     <template v-slot:header>
       <AppHeader :title="siteTitle" />
     </template>
@@ -16,6 +16,10 @@
       <AppHeader :title="siteTitle" />
     </template>
     <router-view />
+    <div v-if="isMaskMain" class="mask-main">
+      <Spin class="ant-custom-home" />
+    </div>
+    <div class="disconnected-popup" v-if="isDisconnectedMode && isTeacher">{{ messageText }}</div>
     <template v-if="isFooterVisible" v-slot:footer>
       <AppFooter />
     </template>

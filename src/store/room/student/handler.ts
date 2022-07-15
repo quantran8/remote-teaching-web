@@ -1,3 +1,4 @@
+import { store as AppStore } from "@/store";
 import { ClassRoomStatus, StudentModel, TeacherModel, RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { Target } from "@/store/interactive/state";
@@ -14,12 +15,14 @@ import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
 import { reactive } from "vue";
 import { notification } from "ant-design-vue";
-import { fmtMsg } from "@/commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { StoreLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
+import _ from "lodash";
+import { VCPlatform } from "@/store/app/state";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
-  const { commit, dispatch, state } = store;
+  const { commit, dispatch, state, getters } = store;
   const handler = {
     onStudentJoinClass: (payload: StudentModel) => {
       commit("setStudentStatus", {
@@ -191,7 +194,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       // do nothing
     },
     onTeacherUpdateStudentBadge: async (payload: StudentModel[]) => {
-      payload.map(item => {
+      payload.map((item) => {
         commit("setStudentBadge", {
           id: item.id,
           badge: item.badge,
@@ -253,7 +256,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onStudentAnswerSelf: async (payload: Array<Target>) => {
       await dispatch(
         "interactive/setRevealedLocalTarget",
-        payload.map(s => s.id),
+        payload.map((s) => s.id),
         { root: true },
       );
     },
@@ -329,7 +332,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       isShowWhiteBoard: boolean;
       exposureSelected: string;
       itemContentSelected: string;
+	  messageVersion: number;
     }) => {
+      const roomManager = AppStore.getters["studentRoom/roomManager"];
       if (payload) {
         await dispatch(
           "studentRoom/setStudentOneId",
@@ -338,9 +343,17 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
             root: true,
           },
         );
+        // if (AppStore.getters["platform"] === VCPlatform.Zoom) {
+        //   if (payload.id) {
+        //     //
+        //   } else {
+        //     await roomManager?.zoomClient.studentBackToMainRoom();
+        //   }
+        // }
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
+	  await dispatch("setTeacherMessageVersion", payload.messageVersion, { root: true });
       await dispatch("updateAudioAndVideoFeed", {});
       if (payload.id) {
         // process in one one
@@ -370,7 +383,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await commit("setWhiteboard", payload);
     },
     onTeacherDrawLaser: async (payload: any) => {
-      await commit("setDrawLaser", payload);
+      await commit("setDrawLaser", JSON.parse(payload));
     },
     onStudentSetBrushstrokes: async (payload: Array<UserShape>) => {
       await dispatch("annotation/setStudentAddShape", { studentShapes: payload }, { root: true });

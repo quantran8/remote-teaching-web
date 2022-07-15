@@ -1,4 +1,4 @@
-import { MatIcon } from "@/commonui";
+import { MatIcon } from "vue-glcommonui";
 import { StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -22,7 +22,7 @@ export default defineComponent({
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
     const isToggleTime = ref(false);
     const onClickRaisingHand = async () => {
-      await store.dispatch("studentRoom/studentRaisingHand", {});
+      await store.dispatch("studentRoom/studentRaisingHand", !raisedHand.value);
     };
 
     const toggleAudio = async () => {

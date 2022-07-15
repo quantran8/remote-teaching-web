@@ -1,7 +1,16 @@
 import { preloadImage } from "@/utils/preloadImage";
 import { LessonPlanModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
-import { Exposure, ExposureItem, ExposureItemMedia, ExposureStatus, ExposureTypeFromValue, LessonState, ContentRootTypeFromValue, CropMetadata } from "./state";
+import {
+  Exposure,
+  ExposureItem,
+  ExposureItemMedia,
+  ExposureStatus,
+  ExposureTypeFromValue,
+  LessonState,
+  ContentRootTypeFromValue,
+  CropMetadata,
+} from "./state";
 
 interface LessonActionsInterface<S, R> {
   setInfo(store: ActionContext<S, R>, payload: any): any;
@@ -30,9 +39,9 @@ const actions: LessonActions<LessonState, any> = {
       await store.dispatch("loadContentSignature", {}, { root: true });
       signalture = store.rootGetters["contentSignature"];
     }
-    const exposures: Array<Exposure> = payload.contents.map(e => {
-      const items: Array<ExposureItem> = e.contents.map(c => {
-        const media: Array<ExposureItemMedia> = c.page.map(p => {
+    const exposures: Array<Exposure> = payload.contents.map((e) => {
+      const items: Array<ExposureItem> = e.contents.map((c) => {
+        const media: Array<ExposureItemMedia> = c.page.map((p) => {
           return {
             id: p.id,
             image: {
@@ -50,9 +59,9 @@ const actions: LessonActions<LessonState, any> = {
       });
 
       //handle content block
-      const newPage = e.page ? e.page.map(p => ({ ...p, page: [{ ...p }] })) : [];
-      const contentBlockItems: Array<ExposureItem> = newPage.map(c => {
-        const media: Array<ExposureItemMedia> = c.page.map(p => {
+      const newPage = e.page ? e.page.map((p) => ({ ...p, page: [{ ...p }] })) : [];
+      const contentBlockItems: Array<ExposureItem> = newPage.map((c) => {
+        const media: Array<ExposureItemMedia> = c.page.map((p) => {
           return {
             id: p.id,
             image: {
@@ -71,7 +80,7 @@ const actions: LessonActions<LessonState, any> = {
 
       //handle teaching activity block
       const newContentExposureTeachingActivity = e.contentExposureTeachingActivity
-        ? e.contentExposureTeachingActivity?.map(c => ({
+        ? e.contentExposureTeachingActivity?.map((c) => ({
             ...c,
             page: [
               {
@@ -84,7 +93,7 @@ const actions: LessonActions<LessonState, any> = {
             ],
           }))
         : [];
-      const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map(c => {
+      const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map((c) => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
           const url = p.url ? payload.contentStorageUrl + p.url + signalture : "";
           return {
@@ -119,9 +128,9 @@ const actions: LessonActions<LessonState, any> = {
     });
 
     const listUrl = exposures
-      .map(expo => {
-        const url = expo.items.map(item => {
-          const urlImage = item.media.map(img => {
+      .map((expo) => {
+        const url = expo.items.map((item) => {
+          const urlImage = item.media.map((img) => {
             return img.image.url;
           });
           return urlImage;
@@ -133,7 +142,7 @@ const actions: LessonActions<LessonState, any> = {
     store.commit("setIsBlackOut", { IsBlackOut: payload.isBlackout });
     store.commit("setExposures", { exposures: exposures });
     store.commit("setCurrentExposure", { id: payload.contentSelected });
-    const exposure = payload.contents.find(e => e.id === payload.contentSelected);
+    const exposure = payload.contents.find((e) => e.id === payload.contentSelected);
     if (exposure && exposure.pageSelected) {
       store.commit("setCurrentExposureItemMedia", {
         id: exposure.pageSelected,
@@ -171,7 +180,7 @@ const actions: LessonActions<LessonState, any> = {
   clearLessonData(store: ActionContext<LessonState, any>) {
     store.commit("clearLessonData");
   },
-  storeCacheImage(store: ActionContext<LessonState, any>, payload: { url: string, metadata: CropMetadata, base64String: string }) {
+  storeCacheImage(store: ActionContext<LessonState, any>, payload: { url: string; metadata: CropMetadata; base64String: string }) {
     store.commit("storeCacheImage", payload);
   },
   clearCacheImage(store: ActionContext<LessonState, any>) {

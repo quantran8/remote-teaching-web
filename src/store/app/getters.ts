@@ -1,5 +1,5 @@
 import { GetterTree } from "vuex";
-import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
+import { AppState, AppView, LayoutType, ToastData, UserRole, VCPlatform } from "./state";
 
 const getters: GetterTree<AppState, any> = {
   appLayout(state: AppState): LayoutType {
@@ -29,9 +29,24 @@ const getters: GetterTree<AppState, any> = {
   cameraDeviceId(state: AppState): string {
     return state.cameraDeviceId;
   },
+  microphoneDeviceId(state: AppState): string {
+    return state.microphoneDeviceId;
+  },
   userRole(state: AppState): UserRole {
     return state.userRole;
   },
+  platform(state: AppState): VCPlatform {
+    return state.platform;
+  },
+  isSingalrInited(state: AppState): boolean {
+    return state.singalrInited;
+  },
+  teacherMessageVersion(state: AppState): number {
+    return state.teacherMessageVersion;
+  },
+  checkMessageVersionTimer(state: AppState): number {
+	return state.checkMessageVersionTimer;
+  }
 };
 
 export default getters;

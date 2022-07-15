@@ -30,8 +30,8 @@ export default defineComponent({
       return props.imageUrl ? props.imageUrl : {};
     });
 
-    const onImageLoad = () => {
-      emit("img-load");
+    const onImageLoad = (e: Event) => {
+      emit("img-load", e);
     };
 
     const processImg = (withCropData: { url: any; metadata: any }) => {
@@ -43,8 +43,8 @@ export default defineComponent({
         complete(cacheImage);
         return;
       }
-
-      const cropper = new Cropper(imageRef.value!, {
+      if (!imageRef.value) return;
+      const cropper = new Cropper(imageRef.value, {
         autoCrop: false,
         crop(event) {
           if (event.detail.width === metadata.width || event.detail.height === metadata.height) {

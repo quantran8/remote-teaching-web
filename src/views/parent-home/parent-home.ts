@@ -1,11 +1,11 @@
 import { ParentHomeLocale } from "./../../locales/localeid";
-import { ChildModel, RemoteTeachingService } from "@/services";
+import { ChildModel, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import StudentCard from "./components/student-card/student-card.vue";
 import { Modal, Checkbox, Button, Row } from "ant-design-vue";
-import { ErrorCode, fmtMsg } from "commonui";
+import { fmtMsg } from "vue-glcommonui";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { AppView } from "@/store/app/state";
@@ -71,10 +71,12 @@ export default defineComponent({
       const visitorId = result.visitorId;
       const getRoomInfo = async () => {
         try {
-          await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+          const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
           getRoomInfoError.value = "";
           getRoomInfoErrorByMsg.value = "";
           await store.dispatch("studentRoom/setOnline");
+		  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+
           if (getRoomInfoTimeout.value) {
             clearTimeout(getRoomInfoTimeout.value);
             getRoomInfoTimeout.value = null;
@@ -164,7 +166,7 @@ export default defineComponent({
 
     const formatName = (englishName: string, nativeName: string) => {
       if (englishName && englishName.toLowerCase() != nativeName.toLowerCase()) {
-        nativeName = nativeName + ` (${englishName})`;
+        nativeName = englishName + ` (${nativeName})`;
       }
       return nativeName;
     };

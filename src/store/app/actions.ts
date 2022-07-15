@@ -1,8 +1,7 @@
 import { ContentService } from "@/services";
+import { CAMERA_ID_KEY, MICROPHONE_ID_KEY } from "@/utils/constant";
 import { ActionTree } from "vuex";
-import { AppState, AppView, LayoutType, ToastData, UserRole } from "./state";
-
-export const CAMERA_ID_KEY = "__RT_CAMERA_ID__";
+import { AppState, AppView, LayoutType, ToastData, UserRole, VCPlatform } from "./state";
 
 const actions: ActionTree<AppState, any> = {
   setToast(store, payload: ToastData) {
@@ -36,8 +35,24 @@ const actions: ActionTree<AppState, any> = {
     localStorage.setItem(CAMERA_ID_KEY, payload);
     store.commit("setCameraDeviceId", payload);
   },
+  async setMicrophoneDeviceId(store, payload: string) {
+    localStorage.setItem(MICROPHONE_ID_KEY, payload);
+    store.commit("setMicrophoneDeviceId", payload);
+  },
   setUserRoleByView(store, payload: UserRole) {
     store.commit("setUserRoleByView", payload);
+  },
+  setVideoCallPlatform(store, payload: VCPlatform) {
+    store.commit("setVideoCallPlatform", payload);
+  },
+  setSingalrInited(store, payload: boolean) {
+    store.commit("setSingalrInited", payload);
+  },
+  setCheckMessageVersionTimer(store, payload: number) {
+    store.commit("setCheckMessageVersionTimer", payload);
+  },
+  setTeacherMessageVersion(store, payload: number) {
+    store.commit("setTeacherMessageVersion", payload);
   },
 };
 

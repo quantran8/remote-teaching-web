@@ -28,7 +28,7 @@
     </span>
     <span v-if="show && isShowExpandIcon" @click="handleExpand" class="student-action__item">
       <div class="student-action__btn">
-        <img :src="arrowIcon" style="width: 27px;border-radius: 50%" />
+        <img :src="arrowIcon" style="width: 27px; border-radius: 50%" />
       </div>
     </span>
   </transition-group>

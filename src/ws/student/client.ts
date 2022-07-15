@@ -48,9 +48,8 @@ export class StudentWSClient extends GLSocketClient {
   sendRequestMuteAudio(IsMute: boolean) {
     return this.send(WSCmd.MUTE_AUDIO, { IsMute: IsMute });
   }
-
-  sendRequestRaisingHand() {
-    return this.send(WSCmd.RAISING_HAND, {});
+  sendRequestRaisingHand(IsRaisingHand: boolean) {
+    return this.send(WSCmd.RAISING_HAND, IsRaisingHand);
   }
   sendRequestLike() {
     return this.send(WSCmd.LIKE, {});
@@ -66,5 +65,8 @@ export class StudentWSClient extends GLSocketClient {
   }
   sendRequestToggleShape(payload: { userId: string; tag: string; visible: boolean }) {
     return this.send(WSCmd.TOGGLE_SHAPE, payload);
+  }
+  sendCheckTeacherMessageVersion() {
+    return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
   }
 }

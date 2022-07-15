@@ -1,4 +1,4 @@
 export interface toolType {
-	name: string;
-	action: () => void
+  name: string;
+  action: () => void;
 }

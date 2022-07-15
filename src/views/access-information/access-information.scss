@@ -1,0 +1,25 @@
+@import "./src/style/abstracts/variables";
+
+.access-information {
+  display: flex;
+  flex-direction: column;
+  color: $main-color;
+  min-height: 100vh;
+  &__content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    &--title {
+      margin-bottom: 50px;
+    }
+    &--link {
+      text-decoration: underline;
+      color: rgb(1, 106, 255);
+    }
+    &--sign {
+      margin-top: 30px;
+    }
+  }
+}

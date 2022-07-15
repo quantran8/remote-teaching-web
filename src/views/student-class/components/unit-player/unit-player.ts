@@ -11,7 +11,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup: props => {
+  setup: (props) => {
     const videoRef = ref(null);
     let videoPlayer: any;
     const createVideoPlayer = (amp: any) => {
@@ -59,12 +59,12 @@ export default defineComponent({
     };
 
     waitForAmp()
-      .then(amp => {
+      .then((amp) => {
         videoPlayer = createVideoPlayer(amp);
         videoPlayer.src([props.sourceVideo]);
         videoPlayer.autoplay();
       })
-      .catch(e => Logger.error("Could not found Azure Media Player plugin", e));
+      .catch((e) => Logger.error("Could not found Azure Media Player plugin", e));
 
     onUnmounted(() => {
       videoPlayer.dispose();

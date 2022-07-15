@@ -5,6 +5,7 @@ import { RoomModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { ClassView, StudentState, TeacherState } from "../interface";
+import { Pointer } from "@/store/annotation/state";
 
 export enum ClassAction {
   DEFAULT = "default",
@@ -72,13 +73,20 @@ export interface StudentRoomState {
   idOne: string;
   speakingUsers: Array<string>;
   showWhiteBoard: boolean;
-  laserPath: string;
+  laserPath: {
+	points:Array<Pointer>;
+	strokeColor:string;
+	strokeWidth:number;
+	isDone:boolean
+  };
+ 
   isDisconnected: boolean;
   isJoined: boolean;
   teacherIsDisconnected: boolean;
   avatarStudentOneToOne: string;
   apiStatus: GLApiStatus | null;
   videosFeedVisible: boolean;
+  browserFingerPrinting: string;
 }
 
 const initialVideosFeedVisible = isDesktopBrowser ? true : false;
@@ -99,13 +107,20 @@ const state: StudentRoomState = {
   idOne: "",
   speakingUsers: [],
   showWhiteBoard: false,
-  laserPath: "",
+  laserPath:{
+	points:[],
+	strokeColor:'black',
+	strokeWidth:2,
+	isDone:false
+  },
+
   isDisconnected: !navigator.onLine,
   teacherIsDisconnected: false,
   isJoined: false,
   avatarStudentOneToOne: "",
   apiStatus: null,
   videosFeedVisible: initialVideosFeedVisible,
+  browserFingerPrinting: ""
 };
 
 export default state;

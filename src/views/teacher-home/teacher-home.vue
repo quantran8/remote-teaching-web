@@ -10,7 +10,7 @@
       <Select
         placeholder="School"
         showSearch
-        :optionFilterProp="children"
+        optionLabelProp="children"
         :disabled="disabled"
         :loading="loading"
         :value="schools[0]?.id"
@@ -27,10 +27,10 @@
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-show="loadingInfo">
-        <Spin></Spin>
+        <Spin class="ant-custom-home"></Spin>
       </div>
       <div class="loading" v-if="loading">
-        <Spin tip="Loading..."></Spin>
+        <Spin tip="Loading..." class="ant-custom-home"></Spin>
       </div>
       <ClassCard
         v-else
@@ -44,7 +44,7 @@
         :active="cl.isActive"
         :isTeacher="cl.isTeacher"
         :loadingStart="loadingStartClass"
-        @click-to-access="groupId => onClickClass(cl, groupId)"
+        @click-to-access="(groupId) => onClickClass(cl, groupId)"
       />
     </div>
     <Empty v-show="!hasClassesShowUp()" />

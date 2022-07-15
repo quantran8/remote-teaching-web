@@ -21,7 +21,9 @@
       @enable-all="onClickEnableAll"
       @add-sticker-all="onClickStickerAll"
     />
-    <StudentAll />
+    <div class="student-all-container">
+      <StudentAll />
+    </div>
   </div>
 </template>
 <style lang="scss" scoped src="./student-gallery.scss"></style>

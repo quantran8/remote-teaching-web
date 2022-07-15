@@ -1,30 +1,33 @@
 <template>
-  <div class="item-container">
+  <div class="item-container" :id="student.id + '__sub-wrapper'">
     <div
       :class="[
         'sc-gallery-item',
-        isCurrent && 'sc-gallery-item--current',
-        isRaisingHand && 'sc-gallery-item--help',
         isNotJoinned && 'sc-gallery-item--disabled',
+        isCurrent && 'sc-gallery-item--current',
+        isCurrent && isRaisingHand && 'sc-gallery-item--help',
       ]"
       ref="containerRef"
     >
       <div class="sc-gallery-item__container" :class="[student.isPalette && 'sc-gallery-item--palette']">
         <div
-          class="sc-gallery-item__video"
-          :class="[isSpeaking && 'sc-gallery-item--speaking']"
           v-show="student.videoEnabled && !isNotJoinned"
+          :class="['sc-gallery-item__video', isSpeaking && 'sc-gallery-item--speaking']"
           :id="student.id"
           :title="student.englishName"
-        ></div>
+        >
+          <video v-if="isCurrent && !isUsingAgora && isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
+          <canvas v-if="isCurrent && !isUsingAgora && !isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
+        </div>
+
         <img
-          class="sc-gallery-item__img"
-          :class="[isSpeaking && 'sc-gallery-item--speaking', isNotJoinned && 'sc-gallery-item--disabled-avatar']"
-          v-show="!student.videoEnabled || isNotJoinned"
+          v-if="!student.videoEnabled || isNotJoinned"
+          :class="['sc-gallery-item__img', isSpeaking && 'sc-gallery-item--speaking', isNotJoinned && 'sc-gallery-item--disabled-avatar']"
           :src="avatarStudent"
           :alt="student.englishName"
           :title="student.englishName"
         />
+
         <span class="sc-gallery-item__star" v-if="isCurrent">
           <span class="sc-gallery-item__star__content">{{ student.badge }}</span>
         </span>
@@ -33,6 +36,7 @@
     <h3 :title="student.englishName" class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">
       {{ student.englishName }}
     </h3>
+    <div class="sc-gallery-item__overlay" />
   </div>
 </template>
 <script lang="ts" src="./student-gallery-item.ts"></script>
