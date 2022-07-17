@@ -13,6 +13,10 @@ const actions: ActionTree<SpinState, any> = {
   setSplash(store, value: boolean): void {
     store.commit("setSplash", value);
   },
+
+  setMaskGrandAccess(store, value: boolean): void {
+    store.commit("setMaskGrandAccess", value);
+  },
 };
 
 export default actions;
