@@ -13,6 +13,10 @@ const mutations: MutationTree<SpinState> = {
   setSplash(state: SpinState, value: boolean): void {
     state.splash = value;
   },
+
+  setMaskGrandAccess(state: SpinState, value: boolean): void {
+    state.maskGrandAccess = value;
+  },
 };
 
 export default mutations;

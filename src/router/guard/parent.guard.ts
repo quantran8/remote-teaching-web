@@ -17,9 +17,9 @@ export default (to: RouteLocationNormalized, _from: RouteLocationNormalized, _ne
 export const checkGSConnectPermission4Parent = async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
   let canAccess = true;
   if (to?.name === "ParentHome" || (to?.name === "StudentClass" && from?.name !== "ParentHome")) {
-    store.dispatch("spin/setMaskMain", true);
+    store.dispatch("spin/setMaskGrandAccess", true);
     canAccess = await ParentService.getGSConnectAccess();
-    store.dispatch("spin/setMaskMain", false);
+    store.dispatch("spin/setMaskGrandAccess", false);
   }
   if (canAccess) {
     return true;
