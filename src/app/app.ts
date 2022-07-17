@@ -87,7 +87,7 @@ export default defineComponent({
     const userRole = computed(() => getters["userRole"]);
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isDisconnectedMode = computed<any>(() => teacherDisconnected.value && userRole.value !== UserRole.UnConfirm);
-	const isMaskMain = computed(() => getters["spin/getMaskMain"]);
+	const isMaskGrandAccess = computed(() => getters["spin/getMaskGrandAccess"]);
     return {
       siteTitle,
       appView,
@@ -98,7 +98,7 @@ export default defineComponent({
       messageText,
       isDisconnectedMode,
       isTeacher,
-	  isMaskMain
+	  isMaskGrandAccess
     };
   },
 });
