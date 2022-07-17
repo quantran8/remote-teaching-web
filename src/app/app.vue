@@ -16,7 +16,7 @@
       <AppHeader :title="siteTitle" />
     </template>
     <router-view />
-    <div v-if="isMaskMain" class="mask-main">
+    <div v-if="isMaskGrandAccess" class="mask-grand-access">
       <Spin class="ant-custom-home" />
     </div>
     <div class="disconnected-popup" v-if="isDisconnectedMode && isTeacher">{{ messageText }}</div>
