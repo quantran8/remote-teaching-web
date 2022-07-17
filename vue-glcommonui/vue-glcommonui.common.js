@@ -2566,9 +2566,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
   if (true) {
     !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function'
-		? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module))
-		: __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+		__WEBPACK_AMD_DEFINE_FACTORY__),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
     registeredInModuleLoader = true;
   }
@@ -3644,10 +3644,10 @@ Stack.prototype.clear=stackClear;Stack.prototype['delete']=stackDelete;Stack.pro
      * @param {boolean} inherited Specify returning inherited property names.
      * @returns {Array} Returns the array of property names.
      */function arrayLikeKeys(value,inherited){var isArr=isArray(value),isArg=!isArr&&isArguments(value),isBuff=!isArr&&!isArg&&isBuffer(value),isType=!isArr&&!isArg&&!isBuff&&isTypedArray(value),skipIndexes=isArr||isArg||isBuff||isType,result=skipIndexes?baseTimes(value.length,String):[],length=result.length;for(var key in value){if((inherited||hasOwnProperty.call(value,key))&&!(skipIndexes&&(// Safari 9 has enumerable `arguments.length` in strict mode.
-key=='length'// Node.js 0.10 has enumerable non-index properties on buffers.
-||isBuff&&(key=='offset'||key=='parent')// PhantomJS 2 has enumerable non-index properties on typed arrays.
-||isType&&(key=='buffer'||key=='byteLength'||key=='byteOffset')// Skip index properties.
-||isIndex(key,length)))){result.push(key);}}return result;}/**
+key=='length'||// Node.js 0.10 has enumerable non-index properties on buffers.
+isBuff&&(key=='offset'||key=='parent')||// PhantomJS 2 has enumerable non-index properties on typed arrays.
+isType&&(key=='buffer'||key=='byteLength'||key=='byteOffset')||// Skip index properties.
+isIndex(key,length)))){result.push(key);}}return result;}/**
      * A specialized version of `_.sample` for arrays.
      *
      * @private
@@ -28700,9 +28700,9 @@ __webpack_require__(1703);
         milliseconds = normalizedInput.millisecond || 0;
     this._isValid = isDurationValid(normalizedInput); // representation for dateAddRemove
 
-    this._milliseconds = +milliseconds + seconds * 1e3 // 1000
-    + minutes * 6e4 // 1000 * 60
-    + hours * 1000 * 60 * 60; //using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors https://github.com/moment/moment/issues/2978
+    this._milliseconds = +milliseconds + seconds * 1e3 + // 1000
+    minutes * 6e4 + // 1000 * 60
+    hours * 1000 * 60 * 60; //using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors https://github.com/moment/moment/issues/2978
     // Because of dateAddRemove treats 24 hours as different from a
     // day when working around DST, we need to store them separately
 
@@ -33369,7 +33369,7 @@ __webpack_require__(6699);
           n.Log.debug("CheckSessionIFrame.start"), this.stop(), this._session_state = e;
 
           var i = function t() {
-            r._frame.contentWindow.postMessage(r._client_id + " " + r._session_state, "*");
+            r._frame.contentWindow.postMessage(r._client_id + " " + r._session_state, r._frame_origin);
           };
 
           i(), this._timer = window.setInterval(i, this._interval);
@@ -34273,7 +34273,7 @@ __webpack_require__(6699);
       function w(t) {
         var e,
             r = b(t),
-            n = [];
+            n = new Array();
 
         for (e = 0; 2 * e < r.length; ++e) n[e] = parseInt(r.substring(2 * e, 2 * e + 2), 16);
 
@@ -34317,7 +34317,7 @@ __webpack_require__(6699);
       F.prototype.FV = Math.pow(2, 52), F.prototype.F1 = 52 - m, F.prototype.F2 = 2 * m - 52;
       var P,
           C,
-          T = [];
+          T = new Array();
 
       for (P = "0".charCodeAt(0), C = 0; C <= 9; ++C) T[P++] = C;
 
@@ -34633,7 +34633,7 @@ __webpack_require__(6699);
        */
 
       function Dt() {
-        this.i = 0, this.j = 0, this.S = [];
+        this.i = 0, this.j = 0, this.S = new Array();
       }
 
       F.prototype.chunkSize = function Lt(t) {
@@ -34663,7 +34663,7 @@ __webpack_require__(6699);
         if ("number" == typeof e) {
           if (t < 2) this.fromInt(1);else for (this.fromNumber(t, r), this.testBit(t - 1) || this.bitwiseTo(F.ONE.shiftLeft(t - 1), O, this), this.isEven() && this.dAddOffset(1, 0); !this.isProbablePrime(e);) this.dAddOffset(2, 0), this.bitLength() > t && this.subTo(F.ONE.shiftLeft(t - 1), this);
         } else {
-          var n = [],
+          var n = new Array(),
               i = 7 & t;
           n.length = 1 + (t >> 3), e.nextBytes(n), i > 0 ? n[0] &= (1 << i) - 1 : n[0] = 0, this.fromString(n, 256);
         }
@@ -34755,10 +34755,10 @@ __webpack_require__(6699);
         }
 
         return !0;
-      }, F.prototype.clone
+      }, F.prototype.clone =
       /*! (c) Tom Wu | http://www-cs-students.stanford.edu/~tjw/jsbn/
        */
-      = function zt() {
+      function zt() {
         var t = E();
         return this.copyTo(t), t;
       }, F.prototype.intValue = function Yt() {
@@ -34779,7 +34779,7 @@ __webpack_require__(6699);
         return this.s < 0 ? -1 : this.t <= 0 || 1 == this.t && this[0] <= 0 ? 0 : 1;
       }, F.prototype.toByteArray = function Qt() {
         var t = this.t,
-            e = [];
+            e = new Array();
         e[0] = this.s;
         var r,
             n = this.DB - t * this.DB % 8,
@@ -34849,7 +34849,7 @@ __webpack_require__(6699);
       }, F.prototype.divideAndRemainder = function Se(t) {
         var e = E(),
             r = E();
-        return this.divRemTo(t, e, r), [e, r];
+        return this.divRemTo(t, e, r), new Array(e, r);
       }, F.prototype.modPow = function be(t, e) {
         var r,
             n,
@@ -34857,7 +34857,7 @@ __webpack_require__(6699);
             o = D(1);
         if (i <= 0) return o;
         r = i < 18 ? 1 : i < 48 ? 3 : i < 144 ? 4 : i < 768 ? 5 : 6, n = i < 8 ? new N(e) : e.isEven() ? new J(e) : new U(e);
-        var s = [],
+        var s = new Array(),
             a = 3,
             u = r - 1,
             c = (1 << r) - 1;
@@ -34965,7 +34965,7 @@ __webpack_require__(6699);
       if (null == Te) {
         var De;
 
-        if (Te = [], Re = 0, void 0 !== i && (void 0 !== i.crypto || void 0 !== i.msCrypto)) {
+        if (Te = new Array(), Re = 0, void 0 !== i && (void 0 !== i.crypto || void 0 !== i.msCrypto)) {
           var Le = i.crypto || i.msCrypto;
 
           if (Le.getRandomValues) {
@@ -35045,14 +35045,14 @@ __webpack_require__(6699);
         var e = function r(t, e) {
           if (e < t.length + 11) throw "Message too long for RSA";
 
-          for (var r = [], n = t.length - 1; n >= 0 && e > 0;) {
+          for (var r = new Array(), n = t.length - 1; n >= 0 && e > 0;) {
             var i = t.charCodeAt(n--);
             i < 128 ? r[--e] = i : i > 127 && i < 2048 ? (r[--e] = 63 & i | 128, r[--e] = i >> 6 | 192) : (r[--e] = 63 & i | 128, r[--e] = i >> 6 & 63 | 128, r[--e] = i >> 12 | 224);
           }
 
           r[--e] = 0;
 
-          for (var o = new Oe(), s = []; e > 2;) {
+          for (var o = new Oe(), s = new Array(); e > 2;) {
             for (s[0] = 0; 0 == s[0];) o.nextBytes(s);
 
             r[--e] = s[0];
@@ -35634,7 +35634,7 @@ __webpack_require__(6699);
           this.hTLV = null, this.isModified = !0, this.asn1Array = t;
         }, this.appendASN1Object = function (t) {
           this.hTLV = null, this.isModified = !0, this.asn1Array.push(t);
-        }, this.asn1Array = [], void 0 !== t && void 0 !== t.array && (this.asn1Array = t.array);
+        }, this.asn1Array = new Array(), void 0 !== t && void 0 !== t.array && (this.asn1Array = t.array);
       }, o.lang.extend(br.asn1.DERAbstractStructured, br.asn1.ASN1Object), br.asn1.DERBoolean = function (t) {
         br.asn1.DERBoolean.superclass.constructor.call(this), this.hT = "01", this.hTLV = 0 == t ? "010100" : "0101ff";
       }, o.lang.extend(br.asn1.DERBoolean, br.asn1.ASN1Object), br.asn1.DERInteger = function (t) {
@@ -35797,7 +35797,7 @@ __webpack_require__(6699);
         };
       }, o.lang.extend(br.asn1.DERSequence, br.asn1.DERAbstractStructured), br.asn1.DERSet = function (t) {
         br.asn1.DERSet.superclass.constructor.call(this, t), this.hT = "31", this.sortFlag = !0, this.getFreshValueHex = function () {
-          for (var t = [], e = 0; e < this.asn1Array.length; e++) {
+          for (var t = new Array(), e = 0; e < this.asn1Array.length; e++) {
             var r = this.asn1Array[e];
             t.push(r.getEncodedHex());
           }
@@ -35821,7 +35821,7 @@ __webpack_require__(6699);
           Er = new function () {}();
 
       function xr(t) {
-        for (var e = [], r = 0; r < t.length; r++) e[r] = t.charCodeAt(r);
+        for (var e = new Array(), r = 0; r < t.length; r++) e[r] = t.charCodeAt(r);
 
         return e;
       }
@@ -37733,7 +37733,7 @@ __webpack_require__(6699);
             c = r(t, e[6]),
             h = r(t, e[7]),
             l = r(t, e[8]);
-        return (e = []).push(n, i, o, s, a, u, c, h, l), e;
+        return (e = new Array()).push(n, i, o, s, a, u, c, h, l), e;
       }, He.prototype.readPrivateKeyFromPEMString = function (t) {
         var e = Hr(t),
             r = He.getHexValueArrayOfChildrenFromHex(e);
@@ -37892,11 +37892,11 @@ __webpack_require__(6699);
           } else {
             a = Hr(t);
             var u = h(a, 0, [0, 3, 0, 0], "06");
-            if ("2a864886f70d01090e" != i(a, u)) return void (this.aExtInfo = []);
+            if ("2a864886f70d01090e" != i(a, u)) return void (this.aExtInfo = new Array());
             e = h(a, 0, [0, 3, 0, 1, 0], "30"), o = n(a, e), this.hex = a;
           }
 
-          this.aExtInfo = [];
+          this.aExtInfo = new Array();
 
           for (var c = 0; c < o.length; c++) {
             var l = {
@@ -37953,7 +37953,7 @@ __webpack_require__(6699);
           var r = "000000000000000" + parseInt(t.substr(6), 16).toString(2);
           return 8 == t.length && (r = r.slice(-8)), 10 == t.length && (r = r.slice(-16)), "" == (r = r.replace(/0+$/, "")) && (r = "0"), r;
         }, this.getExtKeyUsageString = function (t) {
-          for (var e = this.getExtKeyUsageBin(t), r = [], n = 0; n < e.length; n++) "1" == e.substr(n, 1) && r.push(on.KEYUSAGE_NAME[n]);
+          for (var e = this.getExtKeyUsageBin(t), r = new Array(), n = 0; n < e.length; n++) "1" == e.substr(n, 1) && r.push(on.KEYUSAGE_NAME[n]);
 
           return r.join(",");
         }, this.getExtSubjectKeyIdentifier = function (t, e) {
@@ -38019,7 +38019,7 @@ __webpack_require__(6699);
         }, this.getExtExtKeyUsageName = function () {
           var t = this.getExtInfo("extKeyUsage");
           if (void 0 === t) return t;
-          var e = [],
+          var e = new Array(),
               r = o(this.hex, t.vidx);
           if ("" === r) return e;
 
@@ -38079,7 +38079,7 @@ __webpack_require__(6699);
               s = this.getExtInfo("subjectAltName");
           if (void 0 === s) return s;
 
-          for (var a = [], u = o(this.hex, s.vidx), c = n(u, 0), h = 0; h < c.length; h++) r = u.substr(c[h], 2), t = i(u, c[h]), "81" === r && (e = Lr(t), a.push(["MAIL", e])), "82" === r && (e = Lr(t), a.push(["DNS", e])), "84" === r && (e = on.hex2dn(t, 0), a.push(["DN", e])), "86" === r && (e = Lr(t), a.push(["URI", e])), "87" === r && (e = Yr(t), a.push(["IP", e]));
+          for (var a = new Array(), u = o(this.hex, s.vidx), c = n(u, 0), h = 0; h < c.length; h++) r = u.substr(c[h], 2), t = i(u, c[h]), "81" === r && (e = Lr(t), a.push(["MAIL", e])), "82" === r && (e = Lr(t), a.push(["DNS", e])), "84" === r && (e = on.hex2dn(t, 0), a.push(["DN", e])), "86" === r && (e = Lr(t), a.push(["URI", e])), "87" === r && (e = Yr(t), a.push(["IP", e]));
 
           return a;
         }, this.getExtCRLDistributionPoints = function (t, e) {
@@ -38121,7 +38121,7 @@ __webpack_require__(6699);
           var t = this.getExtInfo("cRLDistributionPoints");
           if (void 0 === t) return t;
 
-          for (var e = [], r = n(this.hex, t.vidx), i = 0; i < r.length; i++) try {
+          for (var e = new Array(), r = n(this.hex, t.vidx), i = 0; i < r.length; i++) try {
             var o = Lr(s(this.hex, r[i], [0, 0, 0], "86"));
             e.push(o);
           } catch (t) {}
@@ -38573,7 +38573,7 @@ __webpack_require__(6699);
       }, He.SALT_LEN_HLEN = -1, He.SALT_LEN_MAX = -2, He.SALT_LEN_RECOVER = -2, on.hex2dn = function (t, e) {
         if (void 0 === e && (e = 0), "30" !== t.substr(e, 2)) throw new Error("malformed DN");
 
-        for (var r = [], n = Er.getChildIdx(t, e), i = 0; i < n.length; i++) r.push(on.hex2rdn(t, n[i]));
+        for (var r = new Array(), n = Er.getChildIdx(t, e), i = 0; i < n.length; i++) r.push(on.hex2rdn(t, n[i]));
 
         return "/" + (r = r.map(function (t) {
           return t.replace("/", "\\/");
@@ -38581,7 +38581,7 @@ __webpack_require__(6699);
       }, on.hex2rdn = function (t, e) {
         if (void 0 === e && (e = 0), "31" !== t.substr(e, 2)) throw new Error("malformed RDN");
 
-        for (var r = [], n = Er.getChildIdx(t, e), i = 0; i < n.length; i++) r.push(on.hex2attrTypeValue(t, n[i]));
+        for (var r = new Array(), n = Er.getChildIdx(t, e), i = 0; i < n.length; i++) r.push(on.hex2attrTypeValue(t, n[i]));
 
         return (r = r.map(function (t) {
           return t.replace("+", "\\+");
@@ -40875,7 +40875,7 @@ __webpack_require__(6699);
           }) : this._error("Invalid response from frame");
         }
       }, t.notifyParent = function t(e) {
-        i.Log.debug("IFrameWindow.notifyParent"), (e = e || window.location.href) && (i.Log.debug("IFrameWindow.notifyParent: posting url message to parent"), window.parent.postMessage(e, "*"));
+        i.Log.debug("IFrameWindow.notifyParent"), (e = e || window.location.href) && (i.Log.debug("IFrameWindow.notifyParent: posting url message to parent"), window.parent.postMessage(e, location.protocol + "//" + location.host));
       }, n(t, [{
         key: "promise",
         get: function t() {
@@ -43421,9 +43421,9 @@ var Reflect;
       var cacheSentinel = {};
       var arraySentinel = [];
 
-      var MapIterator
+      var MapIterator =
       /** @class */
-      = function () {
+      function () {
         function MapIterator(keys, values, selector) {
           this._index = 0;
           this._keys = keys;
@@ -47158,15 +47158,15 @@ var check = function (it) {
 };
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-module.exports
+module.exports =
   // eslint-disable-next-line es-x/no-global-this -- safe
-  = check(typeof globalThis == 'object' && globalThis)
-  || check(typeof window == 'object' && window)
+  check(typeof globalThis == 'object' && globalThis) ||
+  check(typeof window == 'object' && window) ||
   // eslint-disable-next-line no-restricted-globals -- safe
-  || check(typeof self == 'object' && self)
-  || check(typeof __webpack_require__.g == 'object' && __webpack_require__.g)
+  check(typeof self == 'object' && self) ||
+  check(typeof __webpack_require__.g == 'object' && __webpack_require__.g) ||
   // eslint-disable-next-line no-new-func -- fallback
-  || (function () { return this; })() || Function('return this')();
+  (function () { return this; })() || Function('return this')();
 
 
 /***/ }),
@@ -47260,12 +47260,12 @@ module.exports = function ($this, dummy, Wrapper) {
   var NewTarget, NewTargetPrototype;
   if (
     // it can work only with native `setPrototypeOf`
-    setPrototypeOf
+    setPrototypeOf &&
     // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
-    && isCallable(NewTarget = dummy.constructor)
-    && NewTarget !== Wrapper
-    && isObject(NewTargetPrototype = NewTarget.prototype)
-    && NewTargetPrototype !== Wrapper.prototype
+    isCallable(NewTarget = dummy.constructor) &&
+    NewTarget !== Wrapper &&
+    isObject(NewTargetPrototype = NewTarget.prototype) &&
+    NewTargetPrototype !== Wrapper.prototype
   ) setPrototypeOf($this, NewTargetPrototype);
   return $this;
 };
@@ -47566,9 +47566,9 @@ module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
   var symbol = Symbol();
   // Chrome 38 Symbol has incorrect toString conversion
   // `get-own-property-symbols` polyfill symbols converted to object are not Symbol instances
-  return !String(symbol) || !(Object(symbol) instanceof Symbol)
+  return !String(symbol) || !(Object(symbol) instanceof Symbol) ||
     // Chrome 38-40 symbols are not inherited from DOM collections prototypes to instances
-    || !Symbol.sham && V8_VERSION && V8_VERSION < 41;
+    !Symbol.sham && V8_VERSION && V8_VERSION < 41;
 });
 
 
@@ -50240,8 +50240,8 @@ var hasDocument = typeof document !== 'undefined'
 if (typeof DEBUG !== 'undefined' && DEBUG) {
   if (!hasDocument) {
     throw new Error(
-    'vue-style-loader cannot be used in a non-browser environment. '
-    + "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
   ) }
 }
 
@@ -50382,9 +50382,9 @@ function addStyle (obj /* StyleObjectPart */) {
 
   return function updateStyle (newObj /* StyleObjectPart */) {
     if (newObj) {
-      if (newObj.css === obj.css
-          && newObj.media === obj.media
-          && newObj.sourceMap === obj.sourceMap) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
         return
       }
       update(obj = newObj)
@@ -50494,9 +50494,9 @@ function applyToTag (styleElement, obj) {
 /******/ 	!function() {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = function(module) {
-/******/ 			var getter = module && module.__esModule
-/******/ 				? function() { return module['default']; }
-/******/ 				: function() { return module; };
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
 /******/ 			__webpack_require__.d(getter, { a: getter });
 /******/ 			return getter;
 /******/ 		};
@@ -51514,10 +51514,10 @@ function lexer(str) {
         var code = str.charCodeAt(j);
 
         if ( // `0-9`
-        code >= 48 && code <= 57 // `A-Z`
-        || code >= 65 && code <= 90 // `a-z`
-        || code >= 97 && code <= 122 // `_`
-        || code === 95) {
+        code >= 48 && code <= 57 || // `A-Z`
+        code >= 65 && code <= 90 || // `a-z`
+        code >= 97 && code <= 122 || // `_`
+        code === 95) {
           name += str[j++];
           continue;
         }
@@ -51991,33 +51991,33 @@ function pathToRegexp(path, keys, options) {
 // EXTERNAL MODULE: ./node_modules/query-string/index.js
 var query_string = __webpack_require__(8529);
 ;// CONCATENATED MODULE: ./src/locales/ar-sa.json
-var ar_sa_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var ar_sa_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/en.json
-var en_namespaceObject = JSON.parse('{"common.warningTitle":"Warning","common.successTitle":"Success","common.failedTitle":"Failed","common.httpAggregate":"More errors","common.httpArgumentIsnullorInvalid":"request arguments are null or invalid","common.httpBadrequest":"it is a bad request","common.httpCodeHasBeenUsed":"invitation code has already been used","common.httpCodeNotExist":"The invitation has been removed","common.httpInvalidGrant":"invalid permission","common.httpLengthOverRun":"Some form contents are too long.","common.httpNoPermission":"You are not permitted to execute the action","common.httpNotFound":"requested resource is not found","common.httpServerError":"Oops! We are currently experiencing a system error. Please try again later.","common.httpStrongAssociation":"This resource is associated with other resources and cannot be processed","common.httpTargetDisabled":"resource could not be used","common.httpTargetHasExisted":"resource already exists","common.httpTargetIsNull":"resource does not exist","common.httpTooManyRequests":"There are too many requests, please try again later.","common.httpUnknown":"unknown errors appear","common.httpUnsuportedOperation":"this operation is unsupported","privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved","impersonation.banner.impersonationswitchback":"You have logged in as","impersonation.banner.clickhere":"Click here","impersonation.banner.toswitchback":"to return to your own account.","impersonation.header.impersonating":"Impersonating","impersonation.header.stopimpersonation":"Stop user impersonation"}');
+var en_namespaceObject = JSON.parse('{"common.warningTitle":"Warning","common.successTitle":"Success","common.failedTitle":"Failed","common.httpAggregate":"More errors","common.httpArgumentIsnullorInvalid":"request arguments are null or invalid","common.httpBadrequest":"it is a bad request","common.httpCodeHasBeenUsed":"invitation code has already been used","common.httpCodeNotExist":"The invitation has been removed","common.httpInvalidGrant":"invalid permission","common.httpLengthOverRun":"Some form contents are too long.","common.httpNoPermission":"You are not permitted to execute the action","common.httpNotFound":"requested resource is not found","common.httpServerError":"Oops! We are currently experiencing a system error. Please try again later.","common.httpStrongAssociation":"This resource is associated with other resources and cannot be processed","common.httpTargetDisabled":"resource could not be used","common.httpTargetHasExisted":"resource already exists","common.httpTargetIsNull":"resource does not exist","common.httpTooManyRequests":"There are too many requests, please try again later.","common.httpUnknown":"unknown errors appear","common.httpUnsuportedOperation":"this operation is unsupported","privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved","impersonation.banner.impersonationswitchback":"You have logged in as","impersonation.banner.clickhere":"Click here","impersonation.banner.toswitchback":"to return to your own account.","impersonation.header.impersonating":"Impersonating","impersonation.header.stopimpersonation":"Stop user impersonation"}');
 ;// CONCATENATED MODULE: ./src/locales/en-us.json
-var en_us_namespaceObject = JSON.parse('{"common.warningTitle":"Warning","common.successTitle":"Success","common.failedTitle":"Failed","common.httpAggregate":"More errors","common.httpArgumentIsnullorInvalid":"request arguments are null or invalid","common.httpBadrequest":"it is a bad request","common.httpCodeHasBeenUsed":"invitation code has already been used","common.httpCodeNotExist":"The invitation has been removed","common.httpInvalidGrant":"invalid permission","common.httpLengthOverRun":"Some form contents are too long.","common.httpNoPermission":"You are not permitted to execute the action","common.httpNotFound":"requested resource is not found","common.httpServerError":"Oops! We are currently experiencing a system error. Please try again later.","common.httpStrongAssociation":"This resource is associated with other resources and cannot be processed","common.httpTargetDisabled":"resource could not be used","common.httpTargetHasExisted":"resource already exists","common.httpTargetIsNull":"resource does not exist","common.httpTooManyRequests":"There are too many requests, please try again later.","common.httpUnknown":"unknown errors appear","common.httpUnsuportedOperation":"this operation is unsupported","privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved","impersonation.banner.impersonationswitchback":"You have logged in as","impersonation.banner.clickhere":"Click here","impersonation.banner.toswitchback":"to return to your own account.","impersonation.header.impersonating":"Impersonating","impersonation.header.stopimpersonation":"Stop user impersonation"}');
+var en_us_namespaceObject = JSON.parse('{"common.warningTitle":"Warning","common.successTitle":"Success","common.failedTitle":"Failed","common.httpAggregate":"More errors","common.httpArgumentIsnullorInvalid":"request arguments are null or invalid","common.httpBadrequest":"it is a bad request","common.httpCodeHasBeenUsed":"invitation code has already been used","common.httpCodeNotExist":"The invitation has been removed","common.httpInvalidGrant":"invalid permission","common.httpLengthOverRun":"Some form contents are too long.","common.httpNoPermission":"You are not permitted to execute the action","common.httpNotFound":"requested resource is not found","common.httpServerError":"Oops! We are currently experiencing a system error. Please try again later.","common.httpStrongAssociation":"This resource is associated with other resources and cannot be processed","common.httpTargetDisabled":"resource could not be used","common.httpTargetHasExisted":"resource already exists","common.httpTargetIsNull":"resource does not exist","common.httpTooManyRequests":"There are too many requests, please try again later.","common.httpUnknown":"unknown errors appear","common.httpUnsuportedOperation":"this operation is unsupported","privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved","impersonation.banner.impersonationswitchback":"You have logged in as","impersonation.banner.clickhere":"Click here","impersonation.banner.toswitchback":"to return to your own account.","impersonation.header.impersonating":"Impersonating","impersonation.header.stopimpersonation":"Stop user impersonation"}');
 ;// CONCATENATED MODULE: ./src/locales/es.json
-var es_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var es_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/ja.json
-var ja_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var ja_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/ko.json
-var ko_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var ko_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/mn.json
-var mn_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var mn_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/ms.json
-var ms_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var ms_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/ms-en.json
-var ms_en_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var ms_en_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/my.json
-var my_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var my_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/ru.json
-var ru_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var ru_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/th.json
-var th_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var th_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/locales/vi.json
-var vi_namespaceObject = JSON.parse('{"privacy.policy":"Chính sách bảo mật","layout.edit_profile":"Sửa thông tin","layout.sign_out":"Đăng xuất","layout.privacy_policy":"Chính sách bảo mật","layout.copy_right":"V8 &#124; Bản quyền thuộc © {year} GrapeSEED Media Ltd"}');
+var vi_namespaceObject = JSON.parse('{"privacy.policy":"Chính sách bảo mật","layout.edit_profile":"Sửa thông tin","layout.sign_out":"Đăng xuất","layout.privacy_policy":"Chính sách bảo mật","layout.copy_right":"V8.5 &#124; Bản quyền thuộc © {year} GrapeSEED Media Ltd"}');
 ;// CONCATENATED MODULE: ./src/locales/zh-cn.json
-var zh_cn_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
+var zh_cn_namespaceObject = JSON.parse('{"privacy.policy":"Privacy Policy","layout.edit_profile":"Edit Profile","layout.sign_out":"Sign Out","layout.privacy_policy":"Privacy Policy","layout.copy_right":"V8.5 &#124; Copyright © {year} GrapeSEED Media Ltd. All rights reserved"}');
 ;// CONCATENATED MODULE: ./src/common/request/cors.ts
 
 
@@ -58745,9 +58745,9 @@ var mutationObserverSupported = typeof MutationObserver !== 'undefined';
  * Singleton controller class which handles updates of ResizeObserver instances.
  */
 
-var ResizeObserverController
+var ResizeObserverController =
 /** @class */
-= function () {
+function () {
   /**
    * Creates a new instance of ResizeObserverController.
    *
@@ -59271,9 +59271,9 @@ function createRectInit(x, y, width, height) {
  */
 
 
-var ResizeObservation
+var ResizeObservation =
 /** @class */
-= function () {
+function () {
   /**
    * Creates an instance of ResizeObservation.
    *
@@ -59333,9 +59333,9 @@ var ResizeObservation
   return ResizeObservation;
 }();
 
-var ResizeObserverEntry
+var ResizeObserverEntry =
 /** @class */
-= function () {
+function () {
   /**
    * Creates an instance of ResizeObserverEntry.
    *
@@ -59359,9 +59359,9 @@ var ResizeObserverEntry
   return ResizeObserverEntry;
 }();
 
-var ResizeObserverSPI
+var ResizeObserverSPI =
 /** @class */
-= function () {
+function () {
   /**
    * Creates a new instance of ResizeObserver.
    *
@@ -59548,9 +59548,9 @@ var observers = typeof WeakMap !== 'undefined' ? new WeakMap() : new MapShim();
  * exposing only those methods and properties that are defined in the spec.
  */
 
-var ResizeObserver
+var ResizeObserver =
 /** @class */
-= function () {
+function () {
   /**
    * Creates a new instance of ResizeObserver.
    *
@@ -61376,10 +61376,10 @@ function getVisibleRectForElement(element, alwaysByViewport) {
 
   while (el) {
     // clientWidth is zero for inline block elements in ie.
-    if ((navigator.userAgent.indexOf('MSIE') === -1 || el.clientWidth !== 0) // body may have overflow set on it, yet we still get the entire
+    if ((navigator.userAgent.indexOf('MSIE') === -1 || el.clientWidth !== 0) && // body may have overflow set on it, yet we still get the entire
     // viewport. In some browsers, el.offsetParent may be
     // document.documentElement, so check for that too.
-    && el !== body && el !== documentElement && utils.css(el, 'overflow') !== 'visible') {
+    el !== body && el !== documentElement && utils.css(el, 'overflow') !== 'visible') {
       var pos = utils.offset(el); // add border
 
       pos.left += el.clientLeft;
@@ -67606,8 +67606,8 @@ var EMPTY_LIST = [];
       var childList = flattenChildren((_a = slots.default) === null || _a === void 0 ? void 0 : _a.call(slots));
       var allVisible = lastVisibleIndex.value >= childList.length - 1 || mergedMode.value !== 'horizontal' || props.disabledOverflow; // >>>>> Children
 
-      var wrappedChildList = mergedMode.value !== 'horizontal' || props.disabledOverflow ? childList // Need wrap for overflow dropdown that do not response for open
-      : childList.map(function (child, index) {
+      var wrappedChildList = mergedMode.value !== 'horizontal' || props.disabledOverflow ? childList : // Need wrap for overflow dropdown that do not response for open
+      childList.map(function (child, index) {
         return (// Always wrap provider to avoid sub node re-mount
           (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createVNode)(MenuContextProvider, {
             "key": child.key,
@@ -68227,8 +68227,8 @@ function isNotGrey(color) {
 
       styleForPesudo = styleForPesudo || document.createElement('style');
 
-      if (waveColor && waveColor !== '#ffffff' && waveColor !== 'rgb(255, 255, 255)' && isNotGrey(waveColor) && !/rgba\(\d*, \d*, \d*, 0\)/.test(waveColor) // any transparent rgba color
-      && waveColor !== 'transparent') {
+      if (waveColor && waveColor !== '#ffffff' && waveColor !== 'rgb(255, 255, 255)' && isNotGrey(waveColor) && !/rgba\(\d*, \d*, \d*, 0\)/.test(waveColor) && // any transparent rgba color
+      waveColor !== 'transparent') {
         // Add nonce if CSP exist
         if (this.csp && this.csp.nonce) {
           styleForPesudo.nonce = this.csp.nonce;
@@ -68288,8 +68288,8 @@ function isNotGrey(color) {
         _this2.resetEffect(node); // Get wave color from target
 
 
-        var waveColor = getComputedStyle(node).getPropertyValue('border-top-color') // Firefox Compatible
-        || getComputedStyle(node).getPropertyValue('border-color') || getComputedStyle(node).getPropertyValue('background-color');
+        var waveColor = getComputedStyle(node).getPropertyValue('border-top-color') || // Firefox Compatible
+        getComputedStyle(node).getPropertyValue('border-color') || getComputedStyle(node).getPropertyValue('background-color');
         _this2.clickWaveTimeoutId = window.setTimeout(function () {
           return _this2.onClick(node, waveColor);
         }, 0);
@@ -69436,8 +69436,8 @@ function drawer_helpervue_type_template_id_9db93704_ts_true_render(_ctx, _cache,
 
   return (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.openBlock)(), (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createElementBlock)("div", drawer_helpervue_type_template_id_9db93704_ts_true_hoisted_1, [(0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createElementVNode)("div", {
     class: "drawer-button-mobile",
-    onClick: _cache[0] || (_cache[0] //@ts-ignore
-    = (...args) => _ctx.onClickOpenDrawer && _ctx.onClickOpenDrawer(...args))
+    onClick: _cache[0] || (_cache[0] = //@ts-ignore
+    (...args) => _ctx.onClickOpenDrawer && _ctx.onClickOpenDrawer(...args))
   }, [(0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createVNode)(_component_MoreOutlined)]), (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createVNode)(_component_Drawer, {
     class: "drawer-wrap-mobile-common",
     placement: "right",
@@ -71062,8 +71062,8 @@ const footervue_type_template_id_075f0428_scoped_true_ts_true_hoisted_1 = {
 function footervue_type_template_id_075f0428_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.openBlock)(), (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createElementBlock)("div", footervue_type_template_id_075f0428_scoped_true_ts_true_hoisted_1, [(0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createElementVNode)("a", {
     class: "footer-link",
-    onClick: _cache[0] || (_cache[0] //@ts-ignore
-    = (...args) => _ctx.openPrivacyPolicy && _ctx.openPrivacyPolicy(...args))
+    onClick: _cache[0] || (_cache[0] = //@ts-ignore
+    (...args) => _ctx.openPrivacyPolicy && _ctx.openPrivacyPolicy(...args))
   }, (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.toDisplayString)(_ctx.privacyText), 1), (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.createElementVNode)("span", null, (0,external_commonjs_vue_commonjs2_vue_root_Vue_namespaceObject.toDisplayString)(_ctx.copyRightText), 1)]);
 }
 ;// CONCATENATED MODULE: ./src/common/layout/footer/footer.vue?vue&type=template&id=075f0428&scoped=true&ts=true
