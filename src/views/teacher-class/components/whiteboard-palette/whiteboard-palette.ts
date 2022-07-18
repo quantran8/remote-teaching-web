@@ -216,7 +216,7 @@ export default defineComponent({
         }
       }
     });
-    const processCanvasWhiteboard = async () => {
+    const processCanvasWhiteboard = async (shouldResetClickedTool = true) => {
       if (!canvas) return;
       showHideWhiteboard.value = isShowWhiteBoard.value;
       if (isShowWhiteBoard.value) {
@@ -228,7 +228,9 @@ export default defineComponent({
             obj.set("visible", false);
           });
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-        await clickedTool(Tools.Pen);
+		if(shouldResetClickedTool){
+        	await clickedTool(Tools.Pen);
+		}
       } else {
         canvas.remove(...canvas.getObjects("path"));
         canvas.remove(...canvas.getObjects("textbox"));
@@ -243,7 +245,7 @@ export default defineComponent({
       }
     };
     watch(isShowWhiteBoard, async () => {
-      await processCanvasWhiteboard();
+      await processCanvasWhiteboard(false);
       // if (!isShowWhiteBoard.value) {
       //   processAnnotationLesson(props.image, canvas, true, null);
       // }
@@ -550,7 +552,7 @@ export default defineComponent({
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
-      await clickedTool(Tools.Clear);
+    //   await clickedTool(Tools.Clear);
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
     };
