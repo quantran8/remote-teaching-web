@@ -206,7 +206,6 @@ export const useFabricObject = () => {
       case "textbox":
         //two lines below fix the bug the text not display when texts's width not equal the Box's width (it can be fabric issue)
         if (fabricObject.text.length === 1) fabricObject.width = 0;
-        fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
         canvas.renderAll();
         break;
