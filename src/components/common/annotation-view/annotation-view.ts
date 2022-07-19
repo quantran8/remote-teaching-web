@@ -1,4 +1,4 @@
-import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
@@ -108,8 +108,14 @@ export default defineComponent({
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
-          await store.dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
           await store.dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
+		  if(prevTargetsList.value.length && !studentOneAndOneId.value){
+			await store.dispatch("lesson/setTargetsVisibleListJoinedAction",prevTargetsList.value , { root: true });
+			prevTargetsList.value = []
+		  }
+		  else{
+			await store.dispatch("lesson/setTargetsVisibleListJoinedAction",[] , { root: true });
+		  }
         }
       }
     });
@@ -292,10 +298,11 @@ export default defineComponent({
         listenSelfStudent();
       }
     };
-    watch(studentOneAndOneId, () => {
+    watch(studentOneAndOneId, async() => {
       if (studentOneAndOneId.value) {
         oneOneIdNear.value = studentOneAndOneId.value;
         oneOneStatus.value = true;
+		prevTargetsList.value = [...targetsList.value]
         processCanvasWhiteboard();
         if (studentOneAndOneId.value !== student.value.id) {
           // disable shapes of student not 1-1
@@ -313,6 +320,7 @@ export default defineComponent({
             });
         }
       } else {
+		await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
         oneOneStatus.value = false;
         if (student.value.id === oneOneIdNear.value) {
           canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
@@ -390,6 +398,7 @@ export default defineComponent({
     };
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
+	const prevTargetsList:Ref<any[]> = ref([])
     const targetsListProcess = () => {
       if (targetsList.value.length) {
         targetsList.value.forEach((obj: any) => {

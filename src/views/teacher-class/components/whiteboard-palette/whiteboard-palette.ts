@@ -15,7 +15,6 @@ import { brushstrokesRender } from "@/components/common/annotation-view/componen
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
 import { Button, Space } from "ant-design-vue";
 import { Pointer } from "@/store/annotation/state";
-import { all } from "ramda";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE ={
@@ -160,9 +159,8 @@ export default defineComponent({
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
-    watch(
-      targetsList,
-      async () => {
+    const prevTargetsList:Ref<any[]> = ref([])
+	const processTargetsList =  async () => {
         if (targetsList.value?.length) {
           targetsList.value.forEach((obj: any) => {
             processAnnotationLesson(props.image, canvas, false, obj);
@@ -184,9 +182,8 @@ export default defineComponent({
             });
           }
         }
-      },
-      { deep: true },
-    );
+      }
+    watch(targetsList,processTargetsList,{ deep: true });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -759,20 +756,25 @@ export default defineComponent({
         activeFabricObject.exitEditing();
         canvas.discardActiveObject();
         canvas.renderAll();
-      }
+      } 
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
         // render objects again before into mode 1-1
         renderStudentsShapes();
+		await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
         // remove and render objects again of teacher, set object can move
         setTimeout(() => {
           renderSelfStrokes();
-          renderSelfShapes();
+          renderSelfShapes();	 
+		  processTargetsList()
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();
       }
+	  else{
+		prevTargetsList.value = [...targetsList.value]
+	  }
     });
     //get fabric items from vuex and display to whiteboard
     const fabricItems = computed(() => {
