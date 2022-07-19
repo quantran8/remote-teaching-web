@@ -52,7 +52,9 @@ export default defineComponent({
     const oneStudentShape = computed(() => store.getters["annotation/oneStudentShape"]);
     const selfShapes = computed(() => store.getters["annotation/teacherShape"]);
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
-    let canvas: any;
+    const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
+ 
+	let canvas: any;
     const tools = Tools;
     const wrapCanvasRef = ref<any>(null);
     const toolNames: string[] = Object.values(tools);
@@ -61,7 +63,7 @@ export default defineComponent({
     const strokeColor: Ref<string> = ref(DEFAULT_COLOR);
     const strokeWidth: Ref<number> = ref(2);
     const modeAnnotation: Ref<number> = ref(-1);
-    const showHideWhiteboard: Ref<boolean> = ref(false);
+	const showHideWhiteboard: Ref<boolean> = ref(isShowWhiteBoard.value);
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
@@ -69,7 +71,6 @@ export default defineComponent({
 	const isDrawing : Ref<boolean> = ref(false);
 	const prevPoint :Ref<Pointer|undefined> = ref(undefined)
 
-    const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, onObjectCreated, nextColor, handleUpdateColor } =
@@ -199,17 +200,14 @@ export default defineComponent({
     // watch whiteboard state to display
     watch(infoTeacher, async () => {
       if (infoTeacher.value) {
-        showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         if (!canvas) return;
         if (infoTeacher.value.isShowWhiteBoard) {
           canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
           await clickedTool(Tools.Pen);
-          showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         } else {
           canvas.remove(...canvas.getObjects("path"));
           canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
           await clickedTool(Tools.Cursor);
-          showHideWhiteboard.value = infoTeacher.value.isShowWhiteBoard;
         }
       }
     });
