@@ -74,11 +74,14 @@ export interface StudentRoomState {
   speakingUsers: Array<string>;
   showWhiteBoard: boolean;
   laserPath: {
-	points:Array<Pointer>;
-	strokeColor:string;
-	strokeWidth:number;
+	lines : Array<{
+		id:string;
+		points:Array<Pointer>;
+		strokeColor:string;
+		strokeWidth:number;
+	  }>;
 	isDone:boolean
-  };
+  }
  
   isDisconnected: boolean;
   isJoined: boolean;
@@ -108,9 +111,7 @@ const state: StudentRoomState = {
   speakingUsers: [],
   showWhiteBoard: false,
   laserPath:{
-	points:[],
-	strokeColor:'black',
-	strokeWidth:2,
+	lines:[],
 	isDone:false
   },
 

@@ -2,7 +2,7 @@ import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onU
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
-import { Tools, Mode, DefaultCanvasDimension, endImgLink } from "@/utils/utils";
+import { Tools, Mode, DefaultCanvasDimension } from "@/utils/utils";
 import { onClickOutside } from "@vueuse/core";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { ClassView } from "@/store/room/interface";
@@ -68,18 +68,27 @@ export default defineComponent({
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
 
-	const isDrawing : Ref<boolean> = ref(false);
-	const prevPoint :Ref<Pointer|undefined> = ref(undefined)
+	const isDrawing: Ref<boolean> = ref(false);
+	const prevPoint: Ref<Pointer|undefined> = ref(undefined)
+	const isMouseOver: Ref<boolean> = ref(false);
+	const isMouseOut: Ref<boolean> = ref(false);
+
 
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, onObjectCreated, nextColor, handleUpdateColor } =
       useFabricObject();
     nextColor.value = strokeColor.value;
+
+	const generateLineId = () => {
+		return 'line-'+Math.floor(Math.random()*10000)
+	}
+	const lineId: Ref<string> = ref(generateLineId())
+
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
 	  if(currentItem){
 		let width ='100%'
-		if(currentItem.image.metaData && currentItem.image.metaData.rotate){
+		if(currentItem.image.metaData && currentItem.image.metaData.rotate && currentItem.image.metaData.rotate%90 !== 0){
 			//if img is rotated, width equal to height of the whiteboard
 			width = '435px';
 		}
@@ -285,14 +294,35 @@ export default defineComponent({
 		else{
 			const absX = Math.abs(_point.x - prevPoint.value.x)
 			const absY = Math.abs(_point.y - prevPoint.value.y)
-		if((absX > 8 || absY >8) || isDone)
+		if((absX > 8 || absY > 8) || isDone)
 		{
 			prevPoint.value = _point;
-			await store.dispatch("teacherRoom/setLaserPath", {
-				points:_point,
-				strokeColor:strokeColor.value,
-				strokeWidth:strokeWidth.value,
-				isDone});
+			if(isMouseOut.value && isMouseOver.value){
+				lineId.value = generateLineId()
+				await store.dispatch("teacherRoom/setLaserPath", {
+					data:{
+						id:lineId.value,
+						points:_point,
+						strokeColor:strokeColor.value,
+						strokeWidth:strokeWidth.value
+					},
+					isDone
+				});
+				isMouseOver.value = false;
+				isMouseOut.value = false;
+				prevPoint.value = undefined
+			}
+			else{
+				await store.dispatch("teacherRoom/setLaserPath", {
+					data:{
+						id:lineId.value,
+						points:_point,
+						strokeColor:strokeColor.value,
+						strokeWidth:strokeWidth.value
+					},
+					isDone
+				});
+			}
 			return;
 		}
 		}
@@ -348,6 +378,20 @@ export default defineComponent({
         }
       });
     };
+	const listenToMouseOut = () => {
+		canvas.on("mouse:out", async (event:any) => {
+			if(isDrawing.value){
+				isMouseOut.value = true;
+			}
+		});
+	  };
+	  const listenToMouseOver = () => {
+		canvas.on("mouse:over", async (event:any) => {
+			if(isDrawing.value){
+				isMouseOver.value = true;
+			}
+		});
+	  };
     const listenCreatedPath = () => {
       canvas.on("path:created", (obj: any) => {
         obj.path.id = isTeacher.value.id;
@@ -415,6 +459,8 @@ export default defineComponent({
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
+	  listenToMouseOut();
+	  listenToMouseOver();
       listenCreatedPath();
       listenSelfTeacher();
       onObjectModified(canvas);
@@ -424,7 +470,6 @@ export default defineComponent({
     };
     const boardSetup = async () => {
       const canvasEl = document.getElementById("canvasDesignate");
-      if (!canvasEl) return;
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
