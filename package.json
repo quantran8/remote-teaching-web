@@ -49,7 +49,6 @@
     "register-service-worker": "^1.7.1",
     "superagent": "^6.1.0",
     "uuid": "^8.3.1",
-    "vendor-copy": "^3.0.1",
     "vue": "^3.2.13",
     "vue-cropperjs": "^5.0.0",
     "vue-dragscroll": "^3.0.0",
@@ -98,11 +97,5 @@
     "sass-loader": "^8.0.2",
     "typescript": "^4.5.5",
     "vue-jest": "^5.0.0-0"
-  },
-  "vendorCopy": [
-    {
-      "from": "vue-glcommonui/vue-glcommonui.common.js",
-      "to": "node_modules/vue-glcommonui/dist/vue-glcommonui.common.js"
-    }
-  ]
+  }
 }
