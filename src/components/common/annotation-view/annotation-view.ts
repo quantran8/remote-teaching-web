@@ -185,7 +185,7 @@ export default defineComponent({
     });
     watch(laserPath, () => {
       laserPen(laserPath, canvas, oneOneStatus, studentOneAndOneId, student);
-    });
+    },{deep:true});
     const studentSharingShapes = () => {
       if (studentShapes.value && studentShapes.value.length) {
         canvas.remove(

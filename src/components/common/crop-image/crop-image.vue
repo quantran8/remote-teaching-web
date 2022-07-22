@@ -7,7 +7,7 @@
 	id="imgCrop" 
 	ref="imageRef" 
 	@load="onImageLoad" 
-	:style="{'transform':`scale(${metadata.scaleX},${metadata.scaleY}) rotate(${metadata.rotate}deg)`}"
+	:style="{'transform':`scale(${metadata.scaleX},${metadata.scaleY})`}"
 	/>
   </div>
 </template>

@@ -25,7 +25,7 @@
 		 	:style="[item.image.metaData ?{
 				'transform':`scale(${item.image.metaData.scaleX},${item.image.metaData.scaleY}) rotate(${item.image.metaData.rotate}deg)`,
 				// if img is rotated, width equal to height of the parent div
-				 'width':(item.image.metaData &&item.image.metaData.rotate) ? '100px' : '100%'
+				 'width':(item.image.metaData &&item.image.metaData.rotate &&item.image.metaData.rotate%90 !== 0) ? '100px' : '100%'
 				}:'']" 
 		  />
           <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
