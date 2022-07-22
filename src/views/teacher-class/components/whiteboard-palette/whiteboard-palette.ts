@@ -593,6 +593,7 @@ export default defineComponent({
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
     //   await clickedTool(Tools.Clear);
+	  await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
     };
