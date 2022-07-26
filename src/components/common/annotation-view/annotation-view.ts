@@ -97,7 +97,7 @@ export default defineComponent({
     watch(currentExposureItemMedia, async (currentItem, prevItem) => {
 	  if(currentItem){
 		let width = '100%';
-		if(currentItem.image.metaData && currentItem.image.metaData.rotate){
+		if(currentItem.image.metaData && currentItem.image.metaData.rotate && (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate)=== 90)){
 			width = containerRef.value?.offsetHeight+'px'
 		}
 		styles.value = {

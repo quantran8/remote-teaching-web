@@ -88,7 +88,7 @@ export default defineComponent({
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
 	  if(currentItem){
 		let width ='100%'
-		if(currentItem.image.metaData && currentItem.image.metaData.rotate && currentItem.image.metaData.rotate%90 !== 0){
+		if(currentItem.image.metaData && currentItem.image.metaData.rotate && (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate)=== 90)){
 			//if img is rotated, width equal to height of the whiteboard
 			width = '435px';
 		}
