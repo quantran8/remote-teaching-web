@@ -238,6 +238,7 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     nextColor,
+	FontLoader,
     handleUpdateColor,
   };
 };
