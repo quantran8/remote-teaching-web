@@ -15,6 +15,7 @@ import { brushstrokesRender } from "@/components/common/annotation-view/componen
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
 import { Button, Space } from "ant-design-vue";
 import { Pointer } from "@/store/annotation/state";
+import { Logger } from "@/utils/logger";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE ={
@@ -76,7 +77,7 @@ export default defineComponent({
 
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, onObjectCreated, nextColor, handleUpdateColor } =
+    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, onObjectCreated, nextColor, handleUpdateColor,FontLoader } =
       useFabricObject();
     nextColor.value = strokeColor.value;
 
@@ -474,7 +475,12 @@ export default defineComponent({
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
       canvas.selectionFullyContained = false;
-      await processCanvasWhiteboard();
+	 try{
+		await FontLoader.load()
+		await processCanvasWhiteboard();
+	 }catch(error){
+		Logger.log(error)
+	 }
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {
