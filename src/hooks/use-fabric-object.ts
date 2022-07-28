@@ -4,8 +4,8 @@ import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, computed, watch } from "vue";
 import FontFaceObserver from "fontfaceobserver";
-const FontDidactGothicRegular = "Didact Gothic Regular";
-const FontLoader = new FontFaceObserver(FontDidactGothicRegular);
+const FontDidactGothic = "Didact Gothic";
+const FontLoader = new FontFaceObserver(FontDidactGothic);
 
 // eslint-disable-next-line
 fabric.Textbox.prototype._wordJoiners = /[]/;
@@ -16,7 +16,7 @@ const defaultTextBoxProps = {
   fontSize: 36,
   fill: "black",
   padding: 5,
-  fontFamily: FontDidactGothicRegular,
+  fontFamily: FontDidactGothic,
   originX: "center",
   originY: "center",
 };
