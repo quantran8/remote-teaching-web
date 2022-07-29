@@ -16,7 +16,7 @@ const defaultTextBoxProps = {
   fontSize: 36,
   fill: "black",
   padding: 5,
-  fontFamily: "Didact Gothic",
+  fontFamily: FontDidactGothic,
   originX: "center",
   originY: "center",
 };
@@ -147,17 +147,17 @@ export const useFabricObject = () => {
   };
 
   const createTextBox = (canvas: any, coords: { top: number; left: number }) => {
-    const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
-    const randomId = randomUUID();
-    textBox.objectId = randomId;
-    textBox.prevTextValue = "";
-    canvas.add(textBox).setActiveObject(textBox);
-    textBox.textIsChanged = false;
-    textBox.enterEditing();
-    textBox.setSelectionStart(0);
-    textBox.setSelectionEnd(textBox.text.length);
-    dispatch("teacherRoom/teacherCreateFabricObject", textBox);
-    return textBox;
+	const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
+		const randomId = randomUUID();
+		textBox.objectId = randomId;
+		textBox.prevTextValue = "";
+		canvas.add(textBox).setActiveObject(textBox);
+		textBox.textIsChanged = false;
+		textBox.enterEditing();
+		textBox.setSelectionStart(0);
+		textBox.setSelectionEnd(textBox.text.length);
+		dispatch("teacherRoom/teacherCreateFabricObject", textBox);
+		return textBox;
   };
 
   //display the fabric items get from getRoomInfo API which save in vuex store
@@ -206,7 +206,6 @@ export const useFabricObject = () => {
       case "textbox":
         //two lines below fix the bug the text not display when texts's width not equal the Box's width (it can be fabric issue)
         if (fabricObject.text.length === 1) fabricObject.width = 0;
-        fabricObject.text = `${fabricObject.text}\n`;
         existingItem.set(fabricObject);
         canvas.renderAll();
         break;
@@ -239,6 +238,7 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     nextColor,
+	FontLoader,
     handleUpdateColor,
   };
 };
