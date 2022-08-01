@@ -54,7 +54,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
       commit("setRoomInfo", roomResponse.data);
-	  commit("setBrowserFingerPrint", payload.browserFingerPrinting);
+      commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
@@ -103,7 +103,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
-	  await dispatch("setTeacherMessageVersion", roomResponse.data.teacher.messageVersion, { root: true });
+      await dispatch("setTeacherMessageVersion", roomResponse.data.teacher.messageVersion, { root: true });
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
         //check for teacher connected status while student's signalR has not initialized properly to get
@@ -273,11 +273,10 @@ const actions: ActionTree<StudentRoomState, any> = {
         classId: state.info?.id,
         studentId: state.user?.id,
         idOne: state.idOne,
-		reJoin: _payload ? _payload.reJoin: false
+        reJoin: _payload ? _payload.reJoin : false,
       });
     }
-	if(_payload && _payload.reJoin)
-		return;
+    if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
@@ -313,37 +312,34 @@ const actions: ActionTree<StudentRoomState, any> = {
     });
     //}
     var checkMessageTimer = setInterval(async () => {
-	  try {
-		if(state.manager?.WSClient.hubConnection.state != HubConnectionState.Connected)
-			return;
-		var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
-      	const localMessageVersion = store.rootGetters["teacherMessageVersion"];
+      try {
+        if (state.manager?.WSClient.hubConnection.state != HubConnectionState.Connected) return;
+        var techerMessageVersion = await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+        const localMessageVersion = store.rootGetters["teacherMessageVersion"];
         if (techerMessageVersion > localMessageVersion) {
-			console.log(`TEACHER MESSAGE VERSION: server ${techerMessageVersion} local ${localMessageVersion} `);
-        	//reinit the class data here
-			notification.error({message: fmtMsg(TeacherClassError.MissingImportantClassMessages)});
-			const user = store.getters["user"] as UserModel;
-			const room = store.getters["info"] as RoomModel
-			await dispatch("initClassRoom", {
-				classId: room.classInfo.classId,
-				userId: user.id,
-				userName: user.name,
-				studentId: user.id,
-				role: "parent",
-				browserFingerPrinting: store.getters["browserFingerPrint"],
-			});
-			console.log("REINIT CLASS INFO OK");
-      	}
-	  }
-	  catch(err) {
-		//error here loss signalR network, for loss API connection
-		//disconnect now because window.offline event not work correctly sometimes
-		if(store.getters["isDisconnected"] == false) {
-			console.log("PING FAILED- SHOULD DISCONNECT STUDENT")
-			//dispatch("setOffline");
-		}
-	  }
-      
+          console.log(`TEACHER MESSAGE VERSION: server ${techerMessageVersion} local ${localMessageVersion} `);
+          //reinit the class data here
+          notification.error({ message: fmtMsg(TeacherClassError.MissingImportantClassMessages) });
+          const user = store.getters["user"] as UserModel;
+          const room = store.getters["info"] as RoomModel;
+          await dispatch("initClassRoom", {
+            classId: room.classInfo.classId,
+            userId: user.id,
+            userName: user.name,
+            studentId: user.id,
+            role: "parent",
+            browserFingerPrinting: store.getters["browserFingerPrint"],
+          });
+          console.log("REINIT CLASS INFO OK");
+        }
+      } catch (err) {
+        //error here loss signalR network, for loss API connection
+        //disconnect now because window.offline event not work correctly sometimes
+        if (store.getters["isDisconnected"] == false) {
+          console.log("PING FAILED- SHOULD DISCONNECT STUDENT");
+          //dispatch("setOffline");
+        }
+      }
     }, 3000);
     store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
@@ -365,8 +361,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit({ type: "lesson/clearLessonData" }, { root: true });
     commit({ type: "lesson/clearCacheImage" }, { root: true });
     const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
-	if(checkMessageTimer)
-    	clearInterval(checkMessageTimer);
+    if (checkMessageTimer) clearInterval(checkMessageTimer);
     dispatch("setCheckMessageVersionTimer", -1, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {

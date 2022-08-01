@@ -32,7 +32,7 @@ export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
   const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
-  const oneToOneId = computed(() =>getters["teacherRoom/getStudentModeOneId"])
+  const oneToOneId = computed(() =>getters["teacherRoom/getStudentModeOneId"]);
   const nextColor = ref("");
   const currentSelectionEnd = ref(-1);
   const currentSelectionStart = ref(-1);
@@ -50,7 +50,7 @@ export const useFabricObject = () => {
 	if(currentOneToOneId !==prevOneToOneId && isChangeImage.value){
 		isChangeImage.value = false;
 	}
-  })
+  });
 
   const isEditing = ref(false);
   const onObjectCreated = (canvas: any) => {
@@ -79,7 +79,7 @@ export const useFabricObject = () => {
         }
       }
 	  if(isChangeImage.value){
-		isChangeImage.value =false
+		isChangeImage.value =false;
 	}
     });
   };

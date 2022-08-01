@@ -711,7 +711,7 @@ export default defineComponent({
     const router = useRouter();
     const onClickBack = () => {
       router.push("/teacher");
-    }
+    };
 
     return {
       listClassSelect,
