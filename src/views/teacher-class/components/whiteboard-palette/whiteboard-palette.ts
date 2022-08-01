@@ -18,10 +18,10 @@ import { Pointer } from "@/store/annotation/state";
 import { Logger } from "@/utils/logger";
 
 const DEFAULT_COLOR = "black";
-const DEFAULT_STYLE ={
-	width:'100%',
-	transform:'scale(1,1) rotate(0deg)',
-}
+const DEFAULT_STYLE = {
+  width: "100%",
+  transform: "scale(1,1) rotate(0deg)",
+};
 export enum Cursor {
   Default = "default",
   Text = "text",
@@ -54,8 +54,8 @@ export default defineComponent({
     const selfShapes = computed(() => store.getters["annotation/teacherShape"]);
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
- 
-	let canvas: any;
+
+    let canvas: any;
     const tools = Tools;
     const wrapCanvasRef = ref<any>(null);
     const toolNames: string[] = Object.values(tools);
@@ -64,43 +64,56 @@ export default defineComponent({
     const strokeColor: Ref<string> = ref(DEFAULT_COLOR);
     const strokeWidth: Ref<number> = ref(2);
     const modeAnnotation: Ref<number> = ref(-1);
-	const showHideWhiteboard: Ref<boolean> = ref(isShowWhiteBoard.value);
+    const showHideWhiteboard: Ref<boolean> = ref(isShowWhiteBoard.value);
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
 
-	const isDrawing: Ref<boolean> = ref(false);
-	const prevPoint: Ref<Pointer|undefined> = ref(undefined)
-	const isMouseOver: Ref<boolean> = ref(false);
-	const isMouseOut: Ref<boolean> = ref(false);
-
+    const isDrawing: Ref<boolean> = ref(false);
+    const prevPoint: Ref<Pointer | undefined> = ref(undefined);
+    const isMouseOver: Ref<boolean> = ref(false);
+    const isMouseOut: Ref<boolean> = ref(false);
 
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
-    const { createTextBox, onTextBoxEdited, onObjectModified, displayFabricItems, isEditing, onObjectCreated, nextColor, handleUpdateColor,FontLoader } =
-      useFabricObject();
+    const {
+      createTextBox,
+      onTextBoxEdited,
+      onObjectModified,
+      displayFabricItems,
+      isEditing,
+      onObjectCreated,
+      nextColor,
+      handleUpdateColor,
+      FontLoader,
+    } = useFabricObject();
     nextColor.value = strokeColor.value;
 
-	const generateLineId = () => {
-		return 'line-'+Math.floor(Math.random()*10000)
-	}
-	const lineId: Ref<string> = ref(generateLineId())
+    const generateLineId = () => {
+      return "line-" + Math.floor(Math.random() * 10000);
+    };
+    const lineId: Ref<string> = ref(generateLineId());
 
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
-	  if(currentItem){
-		let width ='100%'
-		if(currentItem.image.metaData && currentItem.image.metaData.rotate && (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate)=== 90)){
-			//if img is rotated, width equal to height of the whiteboard
-			width = '435px';
-		}
-		styles.value = {
-			width,
-			transform:`scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${currentItem.image.metaData?.rotate ?? 0}deg)`,
-		}
-	  }
+      if (currentItem) {
+        let width = "100%";
+        if (
+          currentItem.image.metaData &&
+          currentItem.image.metaData.rotate &&
+          (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate) === 90)
+        ) {
+          //if img is rotated, width equal to height of the whiteboard
+          width = "435px";
+        }
+        styles.value = {
+          width,
+          transform: `scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${
+            currentItem.image.metaData?.rotate ?? 0
+          }deg)`,
+        };
+      }
       if (currentItem && prevItem) {
-		
-        if (currentItem.id !== prevItem.id) {			
+        if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
         }
       }
@@ -170,31 +183,31 @@ export default defineComponent({
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
-    const prevTargetsList:Ref<any[]> = ref([])
-	const processTargetsList =  async () => {
-        if (targetsList.value?.length) {
-          targetsList.value.forEach((obj: any) => {
-            processAnnotationLesson(props.image, canvas, false, obj);
+    const prevTargetsList: Ref<any[]> = ref([]);
+    const processTargetsList = async () => {
+      if (targetsList.value?.length) {
+        targetsList.value.forEach((obj: any) => {
+          processAnnotationLesson(props.image, canvas, false, obj);
+        });
+        const objShow = targetsList.value.filter((obj: any) => obj.visible === true);
+        disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
+        if (objShow.length === targetsNum.value) {
+          await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+            userId: isTeacher.value.id,
+            visible: true,
           });
-          const objShow = targetsList.value.filter((obj: any) => obj.visible === true);
-          disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
-          if (objShow.length === targetsNum.value) {
-            await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-              userId: isTeacher.value.id,
-              visible: true,
-            });
-          }
-          const objHide = targetsList.value.filter((obj: any) => obj.visible === false);
-          disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
-          if (objHide.length === targetsNum.value) {
-            await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-              userId: isTeacher.value.id,
-              visible: false,
-            });
-          }
+        }
+        const objHide = targetsList.value.filter((obj: any) => obj.visible === false);
+        disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
+        if (objHide.length === targetsNum.value) {
+          await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+            userId: isTeacher.value.id,
+            visible: false,
+          });
         }
       }
-    watch(targetsList,processTargetsList,{ deep: true });
+    };
+    watch(targetsList, processTargetsList, { deep: true });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       await store.dispatch("teacherRoom/setMode", {
@@ -233,9 +246,9 @@ export default defineComponent({
             obj.set("visible", false);
           });
         canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-		if(shouldResetClickedTool){
-        	await clickedTool(Tools.Pen);
-		}
+        if (shouldResetClickedTool) {
+          await clickedTool(Tools.Pen);
+        }
       } else {
         canvas.remove(...canvas.getObjects("path"));
         canvas.remove(...canvas.getObjects("textbox"));
@@ -255,80 +268,76 @@ export default defineComponent({
       //   processAnnotationLesson(props.image, canvas, true, null);
       // }
     });
-	const imageUrl = computed(() => {
-		const image = new Image();
-		image.onload = imgLoad;
-		image.src = props.image ? props.image.url : {};
-		return image.src;
-	  });
-    const cursorPosition = async (e: any , isDone = false ) => {
-		const rect = document.getElementById("canvas-container");
-        if (!rect) return;
-        const rectBounding = rect.getBoundingClientRect();
-        let x = e.clientX - rectBounding.left;
-        let y = e.clientY - rectBounding.top;
-		const windowWidth = window.innerWidth;
-		const scaleRatio = 0.68;
-		const scaleBreakpoint = 1600;
+    const imageUrl = computed(() => {
+      const image = new Image();
+      image.onload = imgLoad;
+      image.src = props.image ? props.image.url : {};
+      return image.src;
+    });
+    const cursorPosition = async (e: any, isDone = false) => {
+      const rect = document.getElementById("canvas-container");
+      if (!rect) return;
+      const rectBounding = rect.getBoundingClientRect();
+      let x = e.clientX - rectBounding.left;
+      let y = e.clientY - rectBounding.top;
+      const windowWidth = window.innerWidth;
+      const scaleRatio = 0.68;
+      const scaleBreakpoint = 1600;
 
-		// when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
-		// so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
-		if (windowWidth <= scaleBreakpoint) {
-			x = x / scaleRatio;
-			y = y / scaleRatio;
-		}
+      // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
+      // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
+      if (windowWidth <= scaleBreakpoint) {
+        x = x / scaleRatio;
+        y = y / scaleRatio;
+      }
       if (modeAnnotation.value === Mode.Cursor) {
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
         });
-		return;
+        return;
       }
-	  if(toolSelected.value === Tools.Laser && isDrawing.value){
-		const _point = { 
-			x: Math.floor(x),
-			y: Math.floor(y),
-		}
-		if(!prevPoint.value){
-			prevPoint.value = _point;
-		}
-		else{
-			const absX = Math.abs(_point.x - prevPoint.value.x)
-			const absY = Math.abs(_point.y - prevPoint.value.y)
-		if((absX > 8 || absY > 8) || isDone)
-		{
-			prevPoint.value = _point;
-			if(isMouseOut.value && isMouseOver.value){
-				lineId.value = generateLineId()
-				await store.dispatch("teacherRoom/setLaserPath", {
-					data:{
-						id:lineId.value,
-						points:_point,
-						strokeColor:strokeColor.value,
-						strokeWidth:strokeWidth.value
-					},
-					isDone
-				});
-				isMouseOver.value = false;
-				isMouseOut.value = false;
-				prevPoint.value = undefined
-			}
-			else{
-				await store.dispatch("teacherRoom/setLaserPath", {
-					data:{
-						id:lineId.value,
-						points:_point,
-						strokeColor:strokeColor.value,
-						strokeWidth:strokeWidth.value
-					},
-					isDone
-				});
-			}
-			return;
-		}
-		}
-	  }
-	  
+      if (toolSelected.value === Tools.Laser && isDrawing.value) {
+        const _point = {
+          x: Math.floor(x),
+          y: Math.floor(y),
+        };
+        if (!prevPoint.value) {
+          prevPoint.value = _point;
+        } else {
+          const absX = Math.abs(_point.x - prevPoint.value.x);
+          const absY = Math.abs(_point.y - prevPoint.value.y);
+          if (absX > 8 || absY > 8 || isDone) {
+            prevPoint.value = _point;
+            if (isMouseOut.value && isMouseOver.value) {
+              lineId.value = generateLineId();
+              await store.dispatch("teacherRoom/setLaserPath", {
+                data: {
+                  id: lineId.value,
+                  points: _point,
+                  strokeColor: strokeColor.value,
+                  strokeWidth: strokeWidth.value,
+                },
+                isDone,
+              });
+              isMouseOver.value = false;
+              isMouseOut.value = false;
+              prevPoint.value = undefined;
+            } else {
+              await store.dispatch("teacherRoom/setLaserPath", {
+                data: {
+                  id: lineId.value,
+                  points: _point,
+                  strokeColor: strokeColor.value,
+                  strokeWidth: strokeWidth.value,
+                },
+                isDone,
+              });
+            }
+            return;
+          }
+        }
+      }
     };
     const objectsCanvas = async () => {
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
@@ -340,7 +349,6 @@ export default defineComponent({
       }
       if (toolSelected.value === Tools.Laser) {
         // await store.dispatch("teacherRoom/setLaserPath", {point,isDone});
-
       }
     };
     const laserDraw = () => {
@@ -355,15 +363,15 @@ export default defineComponent({
       });
     };
     const listenToMouseUp = () => {
-      canvas.on("mouse:up", async (event:any) => {
+      canvas.on("mouse:up", async (event: any) => {
         if (toolSelected.value === "pen") {
           canvas.renderAll();
           await objectsCanvas();
         }
         if (toolSelected.value === Tools.Laser) {
-		  cursorPosition(event.e,true)
-		  isDrawing.value = false;
-		  prevPoint.value = undefined;
+          cursorPosition(event.e, true);
+          isDrawing.value = false;
+          prevPoint.value = undefined;
           canvas.renderAll();
           laserDraw();
         }
@@ -379,20 +387,20 @@ export default defineComponent({
         }
       });
     };
-	const listenToMouseOut = () => {
-		canvas.on("mouse:out", async (event:any) => {
-			if(isDrawing.value){
-				isMouseOut.value = true;
-			}
-		});
-	  };
-	  const listenToMouseOver = () => {
-		canvas.on("mouse:over", async (event:any) => {
-			if(isDrawing.value){
-				isMouseOver.value = true;
-			}
-		});
-	  };
+    const listenToMouseOut = () => {
+      canvas.on("mouse:out", async (event: any) => {
+        if (isDrawing.value) {
+          isMouseOut.value = true;
+        }
+      });
+    };
+    const listenToMouseOver = () => {
+      canvas.on("mouse:over", async (event: any) => {
+        if (isDrawing.value) {
+          isMouseOver.value = true;
+        }
+      });
+    };
     const listenCreatedPath = () => {
       canvas.on("path:created", (obj: any) => {
         obj.path.id = isTeacher.value.id;
@@ -437,14 +445,14 @@ export default defineComponent({
             if (!isEditing.value) {
               createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
             } else {
-              isEditing.value = false;	
+              isEditing.value = false;
             }
             break;
           }
-		  case Tools.Laser : {
-			  isDrawing.value = true;
-			  break;
-		  }
+          case Tools.Laser: {
+            isDrawing.value = true;
+            break;
+          }
           default:
             break;
         }
@@ -460,8 +468,8 @@ export default defineComponent({
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
       listenToMouseUp();
-	  listenToMouseOut();
-	  listenToMouseOver();
+      listenToMouseOut();
+      listenToMouseOver();
       listenCreatedPath();
       listenSelfTeacher();
       onObjectModified(canvas);
@@ -470,17 +478,16 @@ export default defineComponent({
       onObjectCreated(canvas);
     };
     const boardSetup = async () => {
-      const canvasEl = document.getElementById("canvasDesignate");
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
       canvas.selectionFullyContained = false;
-	 try{
-		await FontLoader.load()
-		await processCanvasWhiteboard();
-	 }catch(error){
-		Logger.log(error)
-	 }
+      try {
+        await FontLoader.load();
+        await processCanvasWhiteboard();
+      } catch (error) {
+        Logger.log(error);
+      }
       listenToCanvasEvents();
     };
     const objectCanvasProcess = () => {
@@ -598,8 +605,8 @@ export default defineComponent({
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
-    //   await clickedTool(Tools.Clear);
-	  await store.dispatch("teacherRoom/setClearBrush", {});
+      //   await clickedTool(Tools.Clear);
+      await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
     };
@@ -806,25 +813,24 @@ export default defineComponent({
         activeFabricObject.exitEditing();
         canvas.discardActiveObject();
         canvas.renderAll();
-      } 
+      }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
         // render objects again before into mode 1-1
         renderStudentsShapes();
-		await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
+        await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
         // remove and render objects again of teacher, set object can move
         setTimeout(() => {
           renderSelfStrokes();
-          renderSelfShapes();	 
-		  processTargetsList()
+          renderSelfShapes();
+          processTargetsList();
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();
+      } else {
+        prevTargetsList.value = [...targetsList.value];
       }
-	  else{
-		prevTargetsList.value = [...targetsList.value]
-	  }
     });
     //get fabric items from vuex and display to whiteboard
     const fabricItems = computed(() => {
