@@ -95,9 +95,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
   async leaveRoom({ state, dispatch, rootGetters }, _payload: any) {
-	const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
-	if(checkMessageTimer)
-    	clearInterval(checkMessageTimer);
+    const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
+    if (checkMessageTimer) {
+      clearInterval(checkMessageTimer);
+    }
     dispatch("setCheckMessageVersionTimer", -1, { root: true });
     return state.manager?.close();
   },
@@ -139,11 +140,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
       microphone: microphoneStatus,
       classId: state.info.id,
       teacherId: state.user?.id,
-	  idOne: state.idOne,
-	  reJoin: _payload ? _payload.reJoin: false
+      idOne: state.idOne,
+      reJoin: _payload ? _payload.reJoin : false,
     });
-	if(_payload && _payload.reJoin)
-		return;
+    if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;
     let time = 0;
     setInterval(() => {
@@ -251,6 +251,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
         root: true,
       });
       await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes, { root: true });
+
+      if (roomInfo.oneAndOneDto) {
+        store.commit("lesson/setCurrentExposureItemMedia", {
+          id: roomInfo.oneAndOneDto?.itemContentSelected,
+        });
+        commit("teacherRoom/setWhiteboard", roomInfo.oneAndOneDto.isShowWhiteBoard, { root: true });
+      } else {
+        commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
+      }
+
       if (roomInfo.studentOneToOne) {
         await dispatch(
           "teacherRoom/setStudentOneId",
@@ -262,7 +272,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
       } else {
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
-      commit("teacherRoom/setWhiteboard", roomInfo.isShowWhiteBoard, { root: true });
     } catch (err) {
       if (!rootState.teacherRoom.isDisconnected) {
         await router.push(Paths.Home);

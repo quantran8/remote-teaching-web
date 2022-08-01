@@ -305,7 +305,7 @@ export class AgoraClient implements AgoraClientSDK {
           Logger.info("AGORA_SET_DEVICE_ERROR", error);
         }
       }
-      this.cameraTrack.play(this.user.username, { mirror: true });
+      this.cameraTrack.play(this.user.username, { mirror: false });
       this.cameraError = null;
       this.setupHotPluggingDevice("camera");
     } catch (err) {
@@ -584,7 +584,7 @@ export class AgoraClient implements AgoraClientSDK {
     if (!user || !user.hasVideo || !this.client) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
-      remoteTrack.play(userId, {mirror: true});
+      remoteTrack.play(userId, {mirror: false});
       Logger.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {

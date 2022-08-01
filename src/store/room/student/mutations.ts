@@ -218,16 +218,27 @@ const mutations: MutationTree<StudentRoomState> = {
     state.showWhiteBoard = payload;
   },
   setDrawLaser(state: StudentRoomState, payload: any) {
-    state.laserPath = {
-		...payload,
-		points:payload.isDone ? [] :[...state.laserPath.points,payload.points]
-	};
+	if(payload.isDone){
+		state.laserPath.isDone = payload.isDone;
+		state.laserPath.lines = []
+	}
+	else{
+		const index = state.laserPath.lines.findIndex(item => item.id === payload.data.id)
+		state.laserPath.isDone = payload.isDone;
+		if(!state.laserPath.lines.length || index <0){
+			state.laserPath.lines.push({...payload.data,points:[payload.data.points]})
+		}
+		else if(index >= 0){
+			state.laserPath.lines[index] = {
+				...state.laserPath.lines[index],
+				points:[...state.laserPath.lines[index].points,payload.data.points]
+			}
+		}
+	}
   },
   clearLaserPen(state: StudentRoomState, p: "") {
     state.laserPath = {
-		points :[],
-		strokeColor:'black',
-		strokeWidth:2,
+		lines:[],
 		isDone:false
 	}
   },
