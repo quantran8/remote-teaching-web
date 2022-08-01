@@ -45,8 +45,8 @@ const getters: GetterTree<AppState, any> = {
     return state.teacherMessageVersion;
   },
   checkMessageVersionTimer(state: AppState): number {
-	return state.checkMessageVersionTimer;
-  }
+    return state.checkMessageVersionTimer;
+  },
 };
 
 export default getters;

@@ -21,7 +21,7 @@ export const addShape = () => {
     }
   };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftXY = 30 + strokeWidth.value
+	const initTopLeftXY = 30 + strokeWidth.value;
 	const circle = new fabric.Circle({
       left: initTopLeftXY,
       top: initTopLeftXY,
@@ -39,7 +39,7 @@ export const addShape = () => {
     await teacherAddShapes(canvas);
   };
   const addSquare = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftXY = 25 + strokeWidth.value
+	const initTopLeftXY = 25 + strokeWidth.value;
 	const square = new fabric.Rect({
       left: initTopLeftXY,
       top: initTopLeftXY,

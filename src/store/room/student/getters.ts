@@ -99,12 +99,12 @@ const getters: GetterTree<StudentRoomState, any> = {
   videosFeedVisible(state: StudentRoomState): boolean {
     return state.videosFeedVisible;
   },
-  user(state: StudentRoomState) : UserModel | undefined {
-	return state.user;
+  user(state: StudentRoomState): UserModel | undefined {
+    return state.user;
   },
   browserFingerPrint(state: StudentRoomState): string {
-	return state.browserFingerPrinting;
-  }
+    return state.browserFingerPrinting;
+  },
 };
 
 export default getters;

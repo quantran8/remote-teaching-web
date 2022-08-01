@@ -92,9 +92,9 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     });
   }
   generateOneToOneToken(roomId?: string, studentId?: string):  Promise<GenerateTokenResponse> {
-	let api = `zoom/generate-one-to-one-token?roomId=${roomId}`
+	let api = `zoom/generate-one-to-one-token?roomId=${roomId}`;
 	if(studentId){
-		api += `&studentId=${studentId}`
+		api += `&studentId=${studentId}`;
 	}
 	return this.get(`${api}&`);
   }

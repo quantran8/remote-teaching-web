@@ -13,10 +13,10 @@ import { annotationCurriculumStudent } from "@/components/common/annotation-view
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
 import { debounce } from "lodash";
 
-const DEFAULT_STYLE ={
-	width:'100%',
-	transform:'scale(1,1) rotate(0deg)',
-}
+const DEFAULT_STYLE = {
+  width: "100%",
+  transform: "scale(1,1) rotate(0deg)",
+};
 
 export default defineComponent({
   props: ["image"],
@@ -91,31 +91,36 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
     const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
-	const styles = ref(DEFAULT_STYLE)
+    const styles = ref(DEFAULT_STYLE);
 
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
     watch(currentExposureItemMedia, async (currentItem, prevItem) => {
-	  if(currentItem){
-		let width = '100%';
-		if(currentItem.image.metaData && currentItem.image.metaData.rotate && (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate)=== 90)){
-			width = containerRef.value?.offsetHeight+'px'
-		}
-		styles.value = {
-			width,
-			transform:`scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${currentItem.image.metaData?.rotate ?? 0}deg)`,
-		}
-	  }
+      if (currentItem) {
+        let width = "100%";
+        if (
+          currentItem.image.metaData &&
+          currentItem.image.metaData.rotate &&
+          (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate) === 90)
+        ) {
+          width = containerRef.value?.offsetHeight + "px";
+        }
+        styles.value = {
+          width,
+          transform: `scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${
+            currentItem.image.metaData?.rotate ?? 0
+          }deg)`,
+        };
+      }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.remove(...canvas.getObjects());
           await store.dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
-		  if(prevTargetsList.value.length && !studentOneAndOneId.value){
-			await store.dispatch("lesson/setTargetsVisibleListJoinedAction",prevTargetsList.value , { root: true });
-			prevTargetsList.value = []
-		  }
-		  else{
-			await store.dispatch("lesson/setTargetsVisibleListJoinedAction",[] , { root: true });
-		  }
+          if (prevTargetsList.value.length && !studentOneAndOneId.value) {
+            await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
+            prevTargetsList.value = [];
+          } else {
+            await store.dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
+          }
         }
       }
     });
@@ -183,9 +188,13 @@ export default defineComponent({
       await nextTick();
       renderTeacherStrokes();
     });
-    watch(laserPath, () => {
-      laserPen(laserPath, canvas, oneOneStatus, studentOneAndOneId, student);
-    },{deep:true});
+    watch(
+      laserPath,
+      () => {
+        laserPen(laserPath, canvas, oneOneStatus, studentOneAndOneId, student);
+      },
+      { deep: true },
+    );
     const studentSharingShapes = () => {
       if (studentShapes.value && studentShapes.value.length) {
         canvas.remove(
@@ -298,11 +307,11 @@ export default defineComponent({
         listenSelfStudent();
       }
     };
-    watch(studentOneAndOneId, async() => {
+    watch(studentOneAndOneId, async () => {
       if (studentOneAndOneId.value) {
         oneOneIdNear.value = studentOneAndOneId.value;
         oneOneStatus.value = true;
-		prevTargetsList.value = [...targetsList.value]
+        prevTargetsList.value = [...targetsList.value];
         processCanvasWhiteboard();
         if (studentOneAndOneId.value !== student.value.id) {
           // disable shapes of student not 1-1
@@ -320,7 +329,7 @@ export default defineComponent({
             });
         }
       } else {
-		await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
+        await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
         oneOneStatus.value = false;
         if (student.value.id === oneOneIdNear.value) {
           canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
@@ -394,11 +403,10 @@ export default defineComponent({
       listenToCanvasEvents();
       resizeCanvas();
       processCanvasWhiteboard();
-	  
     };
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
-	const prevTargetsList:Ref<any[]> = ref([])
+    const prevTargetsList: Ref<any[]> = ref([]);
     const targetsListProcess = () => {
       if (targetsList.value.length) {
         targetsList.value.forEach((obj: any) => {
@@ -453,10 +461,10 @@ export default defineComponent({
         false,
         toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
       );
-	  styles.value = {
-		...styles.value,
-		width:outerCanvasContainer.offsetHeight+'px'
-	  }
+      styles.value = {
+        ...styles.value,
+        width: outerCanvasContainer.offsetHeight + "px",
+      };
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
@@ -572,7 +580,7 @@ export default defineComponent({
     });
     onMounted(() => {
       boardSetup();
-      window.addEventListener("resize",debounce(resizeCanvas, 300));
+      window.addEventListener("resize", debounce(resizeCanvas, 300));
     });
     onUnmounted(() => {
       window.removeEventListener("resize", debounce(resizeCanvas, 300));
@@ -603,7 +611,7 @@ export default defineComponent({
       showListColors,
       showListColorsPopover,
       hideListColors,
-	  styles
+      styles,
     };
   },
 });

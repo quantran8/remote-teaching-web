@@ -37,7 +37,7 @@ export interface AppState {
   platform: VCPlatform;
   singalrInited: boolean;
   teacherMessageVersion: number;
-  checkMessageVersionTimer : number;
+  checkMessageVersionTimer: number;
 }
 export interface ToastData {
   message: string;
@@ -48,7 +48,6 @@ export interface ToastData {
 
 const cameraDeviceId = localStorage.getItem(CAMERA_ID_KEY);
 const microphoneDeviceId = localStorage.getItem(MICROPHONE_ID_KEY);
-
 
 const state: AppState = {
   layout: "main",
@@ -66,7 +65,7 @@ const state: AppState = {
   platform: VCPlatform.Agora,
   singalrInited: false,
   teacherMessageVersion: 0,
-  checkMessageVersionTimer : -1,
+  checkMessageVersionTimer: -1,
 };
 
 export default state;
