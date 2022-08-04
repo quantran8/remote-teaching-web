@@ -311,7 +311,7 @@ export default defineComponent({
       if (studentOneAndOneId.value) {
         oneOneIdNear.value = studentOneAndOneId.value;
         oneOneStatus.value = true;
-        prevTargetsList.value = [...targetsList.value];
+		prevTargetsList.value = [...targetsList.value];
         processCanvasWhiteboard();
         if (studentOneAndOneId.value !== student.value.id) {
           // disable shapes of student not 1-1
@@ -422,6 +422,8 @@ export default defineComponent({
       },
       { deep: true },
     );
+	const isImgProcessing = computed(() => store.getters["annotation/isImgProcessing"]);
+
     const imgLoad = async (e: UIEvent) => {
       const img = e?.target as HTMLImageElement;
       if (img && img.naturalWidth && img.naturalHeight) {
@@ -437,8 +439,15 @@ export default defineComponent({
         true,
         toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
       );
-      if (!firstTimeLoadTargets.value) {
-        targetsListProcess();
+      if (!firstTimeLoadTargets.value && !isImgProcessing.value) {
+		const lessonAnnotation = canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson").map((item:any) => {
+			return {
+				userId:student.value.id,
+				tag:item.tag,
+				visible:item.stroke === "transparent" ? false : true
+			}
+		} )
+		await store.dispatch("lesson/setTargetsVisibleListJoinedAction", lessonAnnotation, { root: true });
         firstTimeLoadTargets.value = true;
       }
     };
@@ -452,19 +461,17 @@ export default defineComponent({
       scaleRatio.value = zoom;
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
-      canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-      processAnnotationLesson(
-        canvas,
-        props.image,
-        containerRef,
-        isShowWhiteBoard,
-        false,
-        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
-      );
-      styles.value = {
-        ...styles.value,
-        width: outerCanvasContainer.offsetHeight + "px",
-      };
+	  if(currentExposureItemMedia.value 
+		&& currentExposureItemMedia.value.image.metaData 
+		&& currentExposureItemMedia.value.image.metaData.rotate 
+		&& (Math.abs(currentExposureItemMedia.value.image.metaData.rotate) === 270 
+		|| Math.abs(currentExposureItemMedia.value.image.metaData.rotate)=== 90))
+		{
+		styles.value = {
+			...styles.value,
+			width:outerCanvasContainer.offsetHeight+'px'
+		  };
+	  }
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
