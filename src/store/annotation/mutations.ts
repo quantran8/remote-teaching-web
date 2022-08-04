@@ -168,6 +168,9 @@ const mutations: AnnotationMutation<AnnotationState> = {
     state.imgWidth = p.width;
     state.imgHeight = p.height;
   },
+  setImgProcessing(state: AnnotationState, p: boolean) {
+    state.isImgProcessing = p
+  },
 };
 
 export default mutations;
