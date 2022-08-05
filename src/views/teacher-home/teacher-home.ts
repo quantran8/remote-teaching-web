@@ -87,7 +87,7 @@ export default defineComponent({
           lesson: lesson,
           browserFingerprint: result.visitorId,
           unitId,
-		  videoPlatformProvider: VCPlatform.Agora
+          videoPlatformProvider: VCPlatform.Agora,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
