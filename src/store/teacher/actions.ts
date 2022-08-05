@@ -1,4 +1,4 @@
-import { store } from '@/store';
+import { store } from "@/store";
 import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { Logger } from "@/utils/logger";
@@ -17,7 +17,7 @@ const actions: ActionTree<TeacherState, any> = {
     try {
       const responseActive: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
       commit("setClassRoom", responseActive.data);
-	  await store.dispatch("setVideoCallPlatform", responseActive.data.videoPlatformProvider);
+      await store.dispatch("setVideoCallPlatform", responseActive.data.videoPlatformProvider);
     } catch (err) {
       // process with err
     }

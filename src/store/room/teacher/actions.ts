@@ -1,4 +1,3 @@
-import { VCPlatform } from "./../../app/state";
 import { AgoraEventHandler } from "@/agora";
 import { GLError, GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
@@ -161,71 +160,71 @@ const actions: ActionTree<TeacherRoomState, any> = {
       });
     }, 300000); // 300000 = 5 minutes
     //if (store.rootGetters["platform"] === VCPlatform.Agora) {
-      const agoraEventHandler: AgoraEventHandler = {
-        onUserPublished: (user, mediaType) => {
-          Logger.log("user-published", user.uid, mediaType);
-          dispatch("updateAudioAndVideoFeed", {});
-        },
-        onUserUnPublished: (user, mediaType) => {
-          Logger.log("user-unpublished", user.uid, mediaType);
-          dispatch("updateAudioAndVideoFeed", {});
-        },
-        onException: (payload: any) => {
-          Logger.log("agora-exception-event", payload);
-        },
-        onLocalNetworkUpdate(payload: NetworkQualityPayload) {
-          const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
-          if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
-            dispatch("setTeacherLowBandWidth", true);
-          }
-          if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint && state.isLowBandWidth) {
-            dispatch("setTeacherLowBandWidth", false);
-          }
-          const studentIdNetworkQuality = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
-          let hasChange = false;
-          const listStudentLowBandWidthState = [...state.listStudentLowBandWidth];
-          if (_.isEmpty(studentIdNetworkQuality)) return;
-          for (const studentId in studentIdNetworkQuality) {
-            const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
-            const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
-            if (uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) {
-              const studentIdExisting = listStudentLowBandWidthState.find((id) => studentId === id);
-              if (!studentIdExisting) {
-                hasChange = true;
-                listStudentLowBandWidthState.push(studentId);
-              }
-            }
-            if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint) {
-              const studentIdExistingIndex = listStudentLowBandWidthState.findIndex((id) => studentId === id);
-              if (studentIdExistingIndex > -1) {
-                hasChange = true;
-                listStudentLowBandWidthState.splice(studentIdExistingIndex, 1);
-              }
+    const agoraEventHandler: AgoraEventHandler = {
+      onUserPublished: (user, mediaType) => {
+        Logger.log("user-published", user.uid, mediaType);
+        dispatch("updateAudioAndVideoFeed", {});
+      },
+      onUserUnPublished: (user, mediaType) => {
+        Logger.log("user-unpublished", user.uid, mediaType);
+        dispatch("updateAudioAndVideoFeed", {});
+      },
+      onException: (payload: any) => {
+        Logger.log("agora-exception-event", payload);
+      },
+      onLocalNetworkUpdate(payload: NetworkQualityPayload) {
+        const { uplinkNetworkQuality, downlinkNetworkQuality } = payload;
+        if ((uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) && !state.isLowBandWidth) {
+          dispatch("setTeacherLowBandWidth", true);
+        }
+        if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint && state.isLowBandWidth) {
+          dispatch("setTeacherLowBandWidth", false);
+        }
+        const studentIdNetworkQuality = state.manager?.agoraClient?._client?.getRemoteNetworkQuality();
+        let hasChange = false;
+        const listStudentLowBandWidthState = [...state.listStudentLowBandWidth];
+        if (_.isEmpty(studentIdNetworkQuality)) return;
+        for (const studentId in studentIdNetworkQuality) {
+          const networkQuality: NetworkQualityPayload = studentIdNetworkQuality[studentId];
+          const { uplinkNetworkQuality, downlinkNetworkQuality } = networkQuality;
+          if (uplinkNetworkQuality >= lowBandWidthPoint || downlinkNetworkQuality >= lowBandWidthPoint) {
+            const studentIdExisting = listStudentLowBandWidthState.find((id) => studentId === id);
+            if (!studentIdExisting) {
+              hasChange = true;
+              listStudentLowBandWidthState.push(studentId);
             }
           }
-          if (hasChange) {
-            dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
+          if (uplinkNetworkQuality < lowBandWidthPoint && downlinkNetworkQuality < lowBandWidthPoint) {
+            const studentIdExistingIndex = listStudentLowBandWidthState.findIndex((id) => studentId === id);
+            if (studentIdExistingIndex > -1) {
+              hasChange = true;
+              listStudentLowBandWidthState.splice(studentIdExistingIndex, 1);
+            }
           }
-        },
-      };
-      state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
+        }
+        if (hasChange) {
+          dispatch("setListStudentLowBandWidth", listStudentLowBandWidthState);
+        }
+      },
+    };
+    state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
     //}
 
-	// var checkMessageTimer = setInterval(async () => {
-	// 	try {
-	// 	  if(state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
-	// 	  	await state.manager?.WSClient.sendCheckTeacherMessageVersion();
-	// 	}
-	// 	catch(err) {
-	// 	  //error here loss signalR network, for loss API connection
-	// 	  //disconnect now because window.offline event not work correctly sometimes
-	// 	  if(store.getters["isDisconnected"] == false) {
-	// 	  	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
-	// 	  	//dispatch("setOffline");
-	// 	  }
-	// 	}
-	//   }, 3000);
-	//   store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
+    // var checkMessageTimer = setInterval(async () => {
+    // 	try {
+    // 	  if(state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
+    // 	  	await state.manager?.WSClient.sendCheckTeacherMessageVersion();
+    // 	}
+    // 	catch(err) {
+    // 	  //error here loss signalR network, for loss API connection
+    // 	  //disconnect now because window.offline event not work correctly sometimes
+    // 	  if(store.getters["isDisconnected"] == false) {
+    // 	  	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
+    // 	  	//dispatch("setOffline");
+    // 	  }
+    // 	}
+    //   }, 3000);
+    //   store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
@@ -509,10 +508,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async generateOneToOneToken({ state }, payload: { classId: string }) {
     // try {
     //   const response = await RemoteTeachingService.generateOneToOneToken(payload.classId);
-	//   const zoom = state.manager?.zoomClient
+    //   const zoom = state.manager?.zoomClient
     //   if (zoom) {
     //     zoom.oneToOneToken = response.token;
-	// 	await zoom.teacherBreakoutRoom()
+    // 	await zoom.teacherBreakoutRoom()
     //   }
     // } catch (error) {
     //   Logger.log(error);

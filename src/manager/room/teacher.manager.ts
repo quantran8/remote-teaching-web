@@ -80,7 +80,7 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     //     await this.zoomClient.rerenderParticipantsVideo();
     //   }
     } catch (error) {
-		Logger.log("Rerender: ", error)
+		Logger.log("Rerender: ", error);
 	}
   }
 

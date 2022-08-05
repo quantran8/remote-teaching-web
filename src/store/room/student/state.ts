@@ -74,15 +74,15 @@ export interface StudentRoomState {
   speakingUsers: Array<string>;
   showWhiteBoard: boolean;
   laserPath: {
-	lines : Array<{
-		id:string;
-		points:Array<Pointer>;
-		strokeColor:string;
-		strokeWidth:number;
-	  }>;
-	isDone:boolean
-  }
- 
+    lines: Array<{
+      id: string;
+      points: Array<Pointer>;
+      strokeColor: string;
+      strokeWidth: number;
+    }>;
+    isDone: boolean;
+  };
+
   isDisconnected: boolean;
   isJoined: boolean;
   teacherIsDisconnected: boolean;
@@ -110,9 +110,9 @@ const state: StudentRoomState = {
   idOne: "",
   speakingUsers: [],
   showWhiteBoard: false,
-  laserPath:{
-	lines:[],
-	isDone:false
+  laserPath: {
+    lines: [],
+    isDone: false,
   },
 
   isDisconnected: !navigator.onLine,
@@ -121,7 +121,7 @@ const state: StudentRoomState = {
   avatarStudentOneToOne: "",
   apiStatus: null,
   videosFeedVisible: initialVideosFeedVisible,
-  browserFingerPrinting: ""
+  browserFingerPrinting: "",
 };
 
 export default state;

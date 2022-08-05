@@ -332,7 +332,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       isShowWhiteBoard: boolean;
       exposureSelected: string;
       itemContentSelected: string;
-	  messageVersion: number;
+      messageVersion: number;
     }) => {
       const roomManager = AppStore.getters["studentRoom/roomManager"];
       if (payload) {
@@ -353,7 +353,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }
-	  await dispatch("setTeacherMessageVersion", payload.messageVersion, { root: true });
+      await dispatch("setTeacherMessageVersion", payload.messageVersion, { root: true });
       await dispatch("updateAudioAndVideoFeed", {});
       if (payload.id) {
         // process in one one

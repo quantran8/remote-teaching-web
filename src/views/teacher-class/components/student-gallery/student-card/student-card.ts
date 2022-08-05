@@ -109,7 +109,7 @@ export default defineComponent({
     } = useElementBounding(parentCard);
 
     const maxScaleRatio = computed(() => {
-      return width.value ? parentWidth.value / width.value : 1
+      return width.value ? parentWidth.value / width.value : 1;
     });
     const actualScaleRatio = computed(() => {
       return Math.min(props.scaleOption || 1, maxScaleRatio.value);

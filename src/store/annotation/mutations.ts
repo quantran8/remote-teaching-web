@@ -164,7 +164,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setFabricsInOneMode(s: AnnotationState, p: FabricObject[]) {
     s.oneToOne.fabrics = p;
   },
-  setImgDimension(state: AnnotationState, p: { width?: number, height?: number }) {
+  setImgDimension(state: AnnotationState, p: { width?: number; height?: number }) {
     state.imgWidth = p.width;
     state.imgHeight = p.height;
   },

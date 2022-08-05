@@ -66,7 +66,7 @@ const mutations: MutationTree<StudentRoomState> = {
       status: room.teacher.connectionStatus,
       disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
-	state.teacherIsDisconnected = room.teacher.connectionStatus === InClassStatus.DEFAULT
+    state.teacherIsDisconnected = room.teacher.connectionStatus === InClassStatus.DEFAULT;
     state.students = [];
     for (const st of room.students) {
       const student = {
@@ -218,29 +218,27 @@ const mutations: MutationTree<StudentRoomState> = {
     state.showWhiteBoard = payload;
   },
   setDrawLaser(state: StudentRoomState, payload: any) {
-	if(payload.isDone){
-		state.laserPath.isDone = payload.isDone;
-		state.laserPath.lines = []
-	}
-	else{
-		const index = state.laserPath.lines.findIndex(item => item.id === payload.data.id)
-		state.laserPath.isDone = payload.isDone;
-		if(!state.laserPath.lines.length || index <0){
-			state.laserPath.lines.push({...payload.data,points:[payload.data.points]})
-		}
-		else if(index >= 0){
-			state.laserPath.lines[index] = {
-				...state.laserPath.lines[index],
-				points:[...state.laserPath.lines[index].points,payload.data.points]
-			}
-		}
-	}
+    if (payload.isDone) {
+      state.laserPath.isDone = payload.isDone;
+      state.laserPath.lines = [];
+    } else {
+      const index = state.laserPath.lines.findIndex((item) => item.id === payload.data.id);
+      state.laserPath.isDone = payload.isDone;
+      if (!state.laserPath.lines.length || index < 0) {
+        state.laserPath.lines.push({ ...payload.data, points: [payload.data.points] });
+      } else if (index >= 0) {
+        state.laserPath.lines[index] = {
+          ...state.laserPath.lines[index],
+          points: [...state.laserPath.lines[index].points, payload.data.points],
+        };
+      }
+    }
   },
   clearLaserPen(state: StudentRoomState, p: "") {
     state.laserPath = {
-		lines:[],
-		isDone:false
-	}
+      lines: [],
+      isDone: false,
+    };
   },
   setOnline(state: StudentRoomState) {
     state.isDisconnected = false;
@@ -311,7 +309,6 @@ const mutations: MutationTree<StudentRoomState> = {
       }
     }
   },
-  
 };
 
 export default mutations;
