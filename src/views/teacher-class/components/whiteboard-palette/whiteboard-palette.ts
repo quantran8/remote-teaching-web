@@ -69,6 +69,7 @@ export default defineComponent({
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
+    const firstTimeLoadOneToOneShapes: Ref<boolean> = ref(false);
 
     const isDrawing: Ref<boolean> = ref(false);
     const prevPoint: Ref<Pointer | undefined> = ref(undefined);
@@ -816,9 +817,9 @@ export default defineComponent({
       }
     });
 	watch(oneSelfShapes, async () => {
-      if (oneAndOne.value && !firstTimeLoadShapes.value && oneSelfShapes.value) {
+      if (!firstTimeLoadOneToOneShapes.value && oneAndOne.value && oneSelfShapes.value) {
         renderSelfShapes();
-        firstTimeLoadShapes.value = true;
+        firstTimeLoadOneToOneShapes.value = true;
       } else if (!oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
         canvas.remove(
           ...canvas
