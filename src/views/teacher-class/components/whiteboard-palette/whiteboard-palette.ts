@@ -52,6 +52,7 @@ export default defineComponent({
     const oneOneStudentStrokes = computed(() => store.getters["annotation/oneOneStudentStrokes"]);
     const oneStudentShape = computed(() => store.getters["annotation/oneStudentShape"]);
     const selfShapes = computed(() => store.getters["annotation/teacherShape"]);
+    const oneSelfShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
 
@@ -68,6 +69,7 @@ export default defineComponent({
     const firstLoadImage: Ref<boolean> = ref(false);
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
+    const firstTimeLoadOneToOneShapes: Ref<boolean> = ref(false);
 
     const isDrawing: Ref<boolean> = ref(false);
     const prevPoint: Ref<Pointer | undefined> = ref(undefined);
@@ -792,12 +794,33 @@ export default defineComponent({
         });
         listenSelfTeacher();
       }
+	  if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length > 0) {
+		oneSelfShapes.value.forEach((item: any) => {
+			if (item.userId === isTeacher.value.id) {
+			  brushstrokesRender(canvas, item, null, "self-shapes");
+			}
+		  });
+		listenSelfTeacher();
+	  }
     };
     watch(selfShapes, async () => {
       if (!firstTimeLoadShapes.value && selfShapes.value) {
         renderSelfShapes();
         firstTimeLoadShapes.value = true;
       } else if (selfShapes.value && selfShapes.value.length === 0) {
+        canvas.remove(
+          ...canvas
+            .getObjects()
+            .filter((obj: any) => obj.id === isTeacher.value.id)
+            .filter((obj: any) => obj.type !== "path"),
+        );
+      }
+    });
+	watch(oneSelfShapes, async () => {
+      if (!firstTimeLoadOneToOneShapes.value && oneAndOne.value && oneSelfShapes.value) {
+        renderSelfShapes();
+        firstTimeLoadOneToOneShapes.value = true;
+      } else if (!oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
