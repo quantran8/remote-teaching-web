@@ -60,12 +60,15 @@ export const annotationCurriculumStudent = () => {
     item: any,
     bindAll: boolean,
     event: any,
+	rotation?: number
   ) => {
     const xMetadata = propImage.metaData?.x;
     const yMetadata = propImage.metaData?.y;
     const imgWidth = getters["annotation/imgWidth"];
     const imgHeight = getters["annotation/imgHeight"];
-    const { imgLeftCrop, ratio } = ratioValue(propImage, imgWidth, imgHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
+	const ratioWidth = rotation && (rotation / 90) % 2  ? imgHeight : imgWidth
+	const ratioHeight = rotation && (rotation / 90) % 2  ? imgWidth : imgHeight
+    const { imgLeftCrop, ratio } = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xShape = ((item.x - xMetadata) * ratio + imgLeftCrop);
     const yShape = ((item.y - yMetadata) * ratio);
     // 0: rect, 1: circle
@@ -83,7 +86,6 @@ export const annotationCurriculumStudent = () => {
       id: "annotation-lesson",
       perPixelTargetFind: true,
     };
-
 
 	const imageRatio = Math.max(imgWidth / DefaultCanvasDimension.width, imgHeight / DefaultCanvasDimension.height);
 	const max = imgWidth / DefaultCanvasDimension.width === imageRatio ? "x" : "y";
@@ -134,7 +136,7 @@ export const annotationCurriculumStudent = () => {
     }
   };
   const processAnnotationLesson = (canvas: any, propImage: any, containerRef: any, isShowWhiteBoard: any, bindAll: boolean, event: any) => {
-    if (!canvas) return;
+	if (!canvas) return;
     if (!propImage) return;
     const outerCanvasContainer = containerRef.value;
     if (!outerCanvasContainer) return;
@@ -142,7 +144,7 @@ export const annotationCurriculumStudent = () => {
     if (annotations && annotations.length && !isShowWhiteBoard.value) {
 	  if(!isImgProcessing.value){
 		annotations.forEach((item: any) => {
-			addAnnotationLesson(canvas, propImage, item, bindAll, event);
+			addAnnotationLesson(canvas, propImage, item, bindAll, event, propImage.metaData?.rotate);
 		  });
 	  };
     } else {

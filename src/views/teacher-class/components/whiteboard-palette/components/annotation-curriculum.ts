@@ -48,12 +48,14 @@ export const annotationCurriculum = () => {
       }
     }
   };
-  const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any) => {
+  const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any, rotation?: number) => {
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
     const imgWidth = getters["annotation/imgWidth"];
     const imgHeight = getters["annotation/imgHeight"];
-    const { imgLeftCrop, ratio } = ratioValue(propImage, imgWidth, imgHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
+	const ratioWidth = rotation && (rotation / 90) % 2  ? imgHeight : imgWidth
+	const ratioHeight = rotation && (rotation / 90) % 2  ? imgWidth : imgHeight
+    const { imgLeftCrop, ratio } = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle
@@ -133,7 +135,7 @@ export const annotationCurriculum = () => {
     if (annotations && annotations.length) {
 	  if(!isImgProcessing.value){
 		annotations.forEach((item: any) => {
-			addAnnotationLesson(propImage, item, canvas, bindAll, event);
+			addAnnotationLesson(propImage, item, canvas, bindAll, event, propImage.metaData?.rotate);
 		  });
 	  }  
     } else {
