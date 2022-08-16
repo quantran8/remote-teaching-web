@@ -518,7 +518,7 @@ export default defineComponent({
         toolSelected.value = tool;
       } else {
         if (toolSelected.value === Tools.TextBox) {
-          clickedTool(Tools.Cursor);
+        //   clickedTool(Tools.Cursor);
           return;
         }
       }
@@ -607,13 +607,15 @@ export default defineComponent({
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
-      //   await clickedTool(Tools.Clear);
+	  canvas.remove(...canvas.getObjects("textbox"));
+	  //   await clickedTool(Tools.Clear);
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
     };
     const hideWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
+      canvas.remove(...canvas.getObjects("textbox"));
       // await clickedTool(Tools.Cursor);
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
