@@ -1,6 +1,6 @@
 import { computed, defineComponent, ref } from "vue";
 import { AppHeader, LanguagePicker, UserAvatar, BaseIcon, DrawerHelper, fmtMsg, DropdownItem } from "vue-glcommonui";
-import { DeviceTester } from "@/components/common";
+import { DeviceTester, ResourceMenu } from "@/components/common";
 import { Layout } from "@/locales/localeid";
 export default defineComponent({
   props: {
@@ -14,6 +14,7 @@ export default defineComponent({
     DrawerHelper,
     DeviceTester,
     DropdownItem,
+    ResourceMenu,
   },
   setup() {
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();

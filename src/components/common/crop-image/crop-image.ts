@@ -15,6 +15,7 @@ export default defineComponent({
     const croppedImageUrlRef = ref<string | undefined>();
 
     const isProcessing = ref<boolean>(false);
+	const cacheImage = ref<string>('');
 
     const currentCropData = computed(() => {
       return {
@@ -31,16 +32,20 @@ export default defineComponent({
     });
 
     const onImageLoad = (e: Event) => {
+	 if (cacheImage.value) {
+		dispatch("annotation/setImgProcessing", false);
+	 }
       emit("img-load", e);
     };
 
     const processImg = (withCropData: { url: any; metadata: any }) => {
       const { url, metadata } = withCropData;
+	  dispatch("annotation/setImgProcessing", true);
 
       // checking if exist in cache
-      const cacheImage = findCachedImage({ url, metadata });
-      if (cacheImage) {
-        complete(cacheImage);
+      cacheImage.value = findCachedImage({ url, metadata });
+      if (cacheImage.value) {
+        complete(cacheImage.value);
         return;
       }
       if (!imageRef.value) return;
@@ -56,6 +61,7 @@ export default defineComponent({
             // update the image only when matched between processing cropdata and current cropdata
             if (JSON.stringify(withCropData) === JSON.stringify(currentCropData.value)) {
               complete(base64String);
+			  dispatch("annotation/setImgProcessing", false);
             }
           }
         },
