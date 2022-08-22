@@ -55,6 +55,8 @@ export default defineComponent({
     const visible = ref(false);
     const isOpenMic = ref<boolean>(true);
     const isOpenCam = ref<boolean>(true);
+	const isTeacherVideoMirror = ref<boolean>(false);
+	const isStudentVideoMirror = ref<boolean>(false);
     const platform = computed(() => getters["platform"]);
     const localTracks = ref<any>(null);
     const listMics = ref<DeviceType[]>([]);
@@ -228,7 +230,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, { mirror: false });
+            await localTracks.value?.videoTrack.play(videoElementId, { mirror: isTeacherVideoMirror.value });
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -316,7 +318,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(currentCam.value?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, { mirror: false });
+            await localTracks.value?.videoTrack.play(videoElementId, { mirror: isTeacherVideoMirror.value });
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -404,7 +406,7 @@ export default defineComponent({
 
         if (currentCamValue) {
           if (isUsingAgora.value) {
-            await localTracks.value?.videoTrack.play(videoElementId, { mirror: false });
+            await localTracks.value?.videoTrack.play(videoElementId, { mirror: isTeacherVideoMirror.value });
             await localTracks.value?.videoTrack.setEnabled(true);
           } else {
             const thisCam = listCams.value.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || listCams.value[0];
@@ -445,6 +447,17 @@ export default defineComponent({
         }
       }
     });
+
+	watch(isTeacherVideoMirror, async (isTeacherVideoMirrorValue) => {
+    try {
+      if (isOpenCam.value) {
+        await localTracks.value?.videoTrack.stop();
+        await localTracks.value?.videoTrack.play(videoElementId, { mirror: isTeacherVideoMirrorValue });
+      }
+    } catch (error) {
+      Logger.log(error.message);
+    }
+  });
 
     //handle for microphone
     watch(isOpenMic, async (currentIsOpenMic) => {
@@ -552,6 +565,9 @@ export default defineComponent({
       isOpenMic.value = true;
       isOpenCam.value = true;
 
+	  isTeacherVideoMirror.value = false;
+	  isStudentVideoMirror.value = false;
+
       havePermissionCamera.value = true;
       havePermissionMicrophone.value = true;
 
@@ -625,7 +641,7 @@ export default defineComponent({
     const handleSubmit = () => {
       const unitId = props.unitInfo.find((unit: UnitAndLesson) => unit.unit === currentUnit.value).unitId;
       if (!unitId) return;
-      emit("on-join-session", { unitId, lesson: currentLesson.value, unit: currentUnit.value });
+      emit("on-join-session", { unitId, lesson: currentLesson.value, unit: currentUnit.value, isTeacherVideoMirror: isTeacherVideoMirror.value, isStudentVideoMirror: isStudentVideoMirror.value });
     };
     const handleCancel = () => {
       visible.value = false;
@@ -646,6 +662,9 @@ export default defineComponent({
     const CheckMic = computed(() => fmtMsg(DeviceTesterLocale.CheckMic));
     const SelectDevice = computed(() => fmtMsg(DeviceTesterLocale.SelectDevice));
     const CheckCam = computed(() => fmtMsg(DeviceTesterLocale.CheckCam));
+    const TeacherVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.TeacherVideoMirroring));
+    const StudentVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.StudentVideoMirroring));
+
     const Platform = computed(() => fmtMsg(DeviceTesterLocale.Platform));
     const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
     const ClassStatus = computed(() => fmtMsg(DeviceTesterLocale.ClassStatus));
@@ -685,6 +704,8 @@ export default defineComponent({
       CheckMic,
       SelectDevice,
       CheckCam,
+      TeacherVideoMirroring,
+      StudentVideoMirroring,
       Platform,
       CamOff,
       ClassStatus,
@@ -738,6 +759,8 @@ export default defineComponent({
       currentPlatform,
       listPlatform,
       isConfigTrackingDone,
+      isTeacherVideoMirror,
+      isStudentVideoMirror,
     };
   },
 });

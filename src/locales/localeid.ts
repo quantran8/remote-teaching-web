@@ -116,6 +116,8 @@ export class DeviceTesterLocale {
   static Platform = "device_tester.platform";
   static SelectDevice = "device_tester.select_device";
   static CheckCam = "device_tester.check_cam";
+  static TeacherVideoMirroring = "device_tester.teacher_video_mirroring";
+  static StudentVideoMirroring = "device_tester.student_video_mirroring";
   static CamOff = "device_tester.cam_off";
   static ClassStatus = "device_tester.class_status";
   static DefaultMessage1 = "device_tester.default_message_1";

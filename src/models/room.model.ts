@@ -132,7 +132,9 @@ export interface RoomModel {
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
   oneAndOneDto: any;
-  videoPlatformProvider: VCPlatform
+  videoPlatformProvider: VCPlatform;
+  isTeacherVideoMirror: boolean;
+  isStudentVideoMirror: boolean;
 }
 
 export interface RoomUsersModel {

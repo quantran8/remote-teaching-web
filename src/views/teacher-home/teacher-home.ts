@@ -73,7 +73,7 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
 
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number, isTeacherVideoMirror = false, isStudentVideoMirror = false) => {
       messageStartClass.value = "";
       try {
         const fp = await fpPromise;
@@ -88,6 +88,8 @@ export default defineComponent({
           browserFingerprint: result.visitorId,
           unitId,
           videoPlatformProvider: VCPlatform.Agora,
+          isTeacherVideoMirror,
+          isStudentVideoMirror,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
@@ -200,11 +202,19 @@ export default defineComponent({
       loadingInfo.value = false;
     };
 
-    const onStartClass = async (data: { unitId: number; lesson: number; unit: number }) => {
+    const onStartClass = async (data: { unitId: number; lesson: number; unit: number; isTeacherVideoMirror: boolean; isStudentVideoMirror: boolean }) => {
       popUpLoading.value = true;
       if (!(await joinTheCurrentSession(selectedGroupId.value))) {
         if (infoStart.value) {
-          await startClass(infoStart.value.teacherClass, selectedGroupId.value, data.unit, data.lesson, data.unitId);
+          await startClass(
+            infoStart.value.teacherClass,
+            selectedGroupId.value,
+            data.unit,
+            data.lesson,
+            data.unitId,
+            data.isTeacherVideoMirror,
+            data.isStudentVideoMirror,
+          );
         }
       }
       popUpLoading.value = false;
