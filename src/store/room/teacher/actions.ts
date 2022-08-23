@@ -161,6 +161,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       teacherId: state.user?.id,
       idOne: state.idOne,
       reJoin: _payload ? _payload.reJoin : false,
+      isMirror: state.info.isTeacherVideoMirror,
+      isRemoteMirror: state.info.isStudentVideoMirror,
     });
     if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;

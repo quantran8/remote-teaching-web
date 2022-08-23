@@ -41,6 +41,7 @@ export default defineComponent({
     "infoStart",
     "fromParentComponent",
     "getRoomInfoErrorByMsg",
+    "studentVideoMirror",
   ],
   emits: ["go-to-class", "on-join-session", "on-close-modal"],
   async created() {
@@ -55,6 +56,8 @@ export default defineComponent({
     const visible = ref(false);
     const isOpenMic = ref<boolean>(true);
     const isOpenCam = ref<boolean>(true);
+    const isTeacherVideoMirror = ref<boolean>(false);
+    const isStudentVideoMirror = ref<boolean>(!!props.studentVideoMirror);
     const platform = computed(() => getters["platform"]);
     const localTracks = ref<any>(null);
     const listMics = ref<DeviceType[]>([]);
@@ -91,6 +94,34 @@ export default defineComponent({
       { key: VCPlatform.Agora, name: VCPlatform[1] },
       { key: VCPlatform.Zoom, name: VCPlatform[2] },
     ];
+
+    watch(props, async () => {
+      isStudentVideoMirror.value = props.studentVideoMirror;
+    });
+
+    watch(isStudentVideoMirror, async () => {
+      if (!showTeacherFooter.value && isOpenCam.value) {
+        await localTracks.value?.videoTrack.stop();
+        await openCamera();
+      }
+    });
+
+    watch(isTeacherVideoMirror, async (isTeacherVideoMirrorValue) => {
+      try {
+        if (showTeacherFooter.value && isOpenCam.value) {
+          await localTracks.value?.videoTrack.stop();
+          await openCamera();
+        }
+      } catch (error) {
+        Logger.log(error.message);
+      }
+    });
+
+    const openCamera = async () => {
+      await localTracks.value?.videoTrack.play(videoElementId, {
+        mirror: showTeacherFooter.value ? isTeacherVideoMirror.value : isStudentVideoMirror.value,
+      });
+    };
 
     const setupAgora = async () => {
       let audioTrack = null;
@@ -228,7 +259,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, { mirror: false });
+            await openCamera();
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -316,7 +347,7 @@ export default defineComponent({
           listCamsId.value = cams.map((cam) => cam.deviceId);
           await localTracks.value.videoTrack.setDevice(currentCam.value?.deviceId);
           try {
-            await localTracks.value?.videoTrack.play(videoElementId, { mirror: false });
+            await openCamera();
             preventCloseModal.value = false;
           } catch (error) {
             preventCloseModal.value = false;
@@ -404,7 +435,7 @@ export default defineComponent({
 
         if (currentCamValue) {
           if (isUsingAgora.value) {
-            await localTracks.value?.videoTrack.play(videoElementId, { mirror: false });
+            await openCamera();
             await localTracks.value?.videoTrack.setEnabled(true);
           } else {
             const thisCam = listCams.value.find(({ deviceId }) => deviceId === currentCamValue.deviceId) || listCams.value[0];
@@ -486,6 +517,7 @@ export default defineComponent({
 
     const showModal = () => {
       visible.value = true;
+      isStudentVideoMirror.value = props.studentVideoMirror;
     };
 
     const handleMicroChange = async (micId: string) => {
@@ -551,6 +583,9 @@ export default defineComponent({
       currentCam.value = undefined;
       isOpenMic.value = true;
       isOpenCam.value = true;
+
+      isTeacherVideoMirror.value = false;
+      isStudentVideoMirror.value = false;
 
       havePermissionCamera.value = true;
       havePermissionMicrophone.value = true;
@@ -625,7 +660,13 @@ export default defineComponent({
     const handleSubmit = () => {
       const unitId = props.unitInfo.find((unit: UnitAndLesson) => unit.unit === currentUnit.value).unitId;
       if (!unitId) return;
-      emit("on-join-session", { unitId, lesson: currentLesson.value, unit: currentUnit.value });
+      emit("on-join-session", {
+        unitId,
+        lesson: currentLesson.value,
+        unit: currentUnit.value,
+        isTeacherVideoMirror: isTeacherVideoMirror.value,
+        isStudentVideoMirror: isStudentVideoMirror.value,
+      });
     };
     const handleCancel = () => {
       visible.value = false;
@@ -646,6 +687,9 @@ export default defineComponent({
     const CheckMic = computed(() => fmtMsg(DeviceTesterLocale.CheckMic));
     const SelectDevice = computed(() => fmtMsg(DeviceTesterLocale.SelectDevice));
     const CheckCam = computed(() => fmtMsg(DeviceTesterLocale.CheckCam));
+    const TeacherVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.TeacherVideoMirroring));
+    const StudentVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.StudentVideoMirroring));
+
     const Platform = computed(() => fmtMsg(DeviceTesterLocale.Platform));
     const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
     const ClassStatus = computed(() => fmtMsg(DeviceTesterLocale.ClassStatus));
@@ -668,6 +712,7 @@ export default defineComponent({
     const showTeacherFooter = computed(() => hasJoinAction.value && isTeacher.value && !props.fromParentComponent);
     const showParentFooter = computed(() => hasJoinAction.value && isParent.value && props.fromParentComponent);
 
+    const showMirrorSwitch = computed(() => isTeacher.value && !props.fromParentComponent);
     const notDisplaySpinner = computed(() => props.getRoomInfoError !== 0);
 
     watch(visible, (currentVisibleValue) => {
@@ -685,6 +730,8 @@ export default defineComponent({
       CheckMic,
       SelectDevice,
       CheckCam,
+      TeacherVideoMirroring,
+      StudentVideoMirroring,
       Platform,
       CamOff,
       ClassStatus,
@@ -738,6 +785,9 @@ export default defineComponent({
       currentPlatform,
       listPlatform,
       isConfigTrackingDone,
+      isTeacherVideoMirror,
+      isStudentVideoMirror,
+      showMirrorSwitch,
     };
   },
 });

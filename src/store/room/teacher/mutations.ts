@@ -98,6 +98,9 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
+	s.isTeacherVideoMirror = p.isTeacherVideoMirror;
+	s.isStudentVideoMirror = p.isStudentVideoMirror;
+
     s.classView = ClassViewFromValue(p.teachingMode);
     s.students = p.students.map((st, index) => {
       return {

@@ -274,6 +274,8 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
         idOne: state.idOne,
         reJoin: _payload ? _payload.reJoin : false,
+        isMirror: state.info.isStudentVideoMirror,
+        isRemoteMirror: state.info.isTeacherVideoMirror,
       });
     }
     if (_payload && _payload.reJoin) return;
