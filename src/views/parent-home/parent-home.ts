@@ -49,6 +49,7 @@ export default defineComponent({
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
+    const studentVideoMirror = ref(false);
     const listSessionInfo = ref([]);
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const classIsActive = ref(false);
@@ -72,6 +73,7 @@ export default defineComponent({
       const getRoomInfo = async () => {
         try {
           const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+    	  studentVideoMirror.value = !!roomResponse?.data?.isStudentVideoMirror;
           getRoomInfoError.value = "";
           getRoomInfoErrorByMsg.value = "";
           await store.dispatch("studentRoom/setOnline");
@@ -170,7 +172,6 @@ export default defineComponent({
       }
       return nativeName;
     };
-
     return {
       formatName,
       welcomeText,
@@ -205,6 +206,7 @@ export default defineComponent({
       getRoomInfoError,
       getRoomInfoErrorByMsg,
       onDevicesModalClose,
+      studentVideoMirror,
     };
   },
 });

@@ -64,7 +64,7 @@
         </div>
       </Row>
 
-      <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
+      <Row v-if="showMirrorSwitch" align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">
           <b>{{ TeacherVideoMirroring }}</b>
         </div>
@@ -75,7 +75,7 @@
         </div>
       </Row>
 
-      <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
+      <Row v-if="showMirrorSwitch" align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">
           <b>{{ StudentVideoMirroring }}</b>
         </div>

@@ -581,7 +581,12 @@ export class AgoraClient implements AgoraClientSDK {
     if (!user || !user.hasVideo || !this.client) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
-      remoteTrack.play(userId, { mirror: this.isRemoteMirror });
+	  if (this.options.user?.role !== "host") {
+	 	const isTeacher = store.getters["studentRoom/teacher"]?.id === user.uid;
+      	remoteTrack.play(userId, { mirror: isTeacher ? this.isRemoteMirror : this.isMirror });
+	  } else {
+      	remoteTrack.play(userId, { mirror: this.isRemoteMirror });
+	  }
       Logger.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {
