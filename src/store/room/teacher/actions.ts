@@ -110,6 +110,26 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.state.manager?.registerEventHandler(eventHandler);
     store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
     store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
+
+
+	// let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
+    // if (checkMessageTimer) {
+    //   clearInterval(checkMessageTimer);
+    // }
+    // checkMessageTimer = setInterval(async () => {
+    //   try {
+    //     if (store.state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
+    //       await store.state.manager?.WSClient.sendCheckTeacherMessageVersion();
+    //   } catch (err) {
+    //     //error here loss signalR network, for loss API connection
+    //     //disconnect now because window.offline event not work correctly sometimes
+    //     //if(store.getters["isDisconnected"] == false) {
+    //     //	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
+    //     //dispatch("setOffline");
+    //     //}
+    //   }
+    // }, 3000);
+    // store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
@@ -209,22 +229,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
     };
     state.manager?.registerVideoCallSDKEventHandler(agoraEventHandler);
     //}
-
-    // var checkMessageTimer = setInterval(async () => {
-    // 	try {
-    // 	  if(state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
-    // 	  	await state.manager?.WSClient.sendCheckTeacherMessageVersion();
-    // 	}
-    // 	catch(err) {
-    // 	  //error here loss signalR network, for loss API connection
-    // 	  //disconnect now because window.offline event not work correctly sometimes
-    // 	  if(store.getters["isDisconnected"] == false) {
-    // 	  	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
-    // 	  	//dispatch("setOffline");
-    // 	  }
-    // 	}
-    //   }, 3000);
-    //   store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });

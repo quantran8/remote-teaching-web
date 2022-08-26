@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import {getRadius, getScaleX, getScaleY, ratioValue, setStrokeColor} from "@/utils/utils";
+import {DefaultCanvasDimension, getRadius, getScaleX, getScaleY, ratioValue, setStrokeColor} from "@/utils/utils";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
@@ -7,6 +7,7 @@ export const annotationCurriculumStudent = () => {
   const { dispatch, getters } = useStore();
   const student = computed(() => getters["studentRoom/student"]);
   const targetsList = computed(() => getters["lesson/targetsAnnotationList"]);
+  const isImgProcessing = computed(() => getters["annotation/isImgProcessing"]);
   const toggleTargetStudent = (event: any, visible: boolean) => {
     dispatch("studentRoom/setTargetsVisibleListAction", {
       userId: student.value.id,
@@ -51,27 +52,27 @@ export const annotationCurriculumStudent = () => {
       } else if (event === "hide-all-targets") {
         setStrokeColor(canvas, tagObject, "transparent");
       }
-    }
+   }
   };
   const addAnnotationLesson = (
     canvas: any,
     propImage: any,
     item: any,
-    widthCanvas: number,
-    heightCanvas: number,
-    zoom: number,
     bindAll: boolean,
     event: any,
+	rotation?: number
   ) => {
     const xMetadata = propImage.metaData?.x;
     const yMetadata = propImage.metaData?.y;
     const imgWidth = getters["annotation/imgWidth"];
     const imgHeight = getters["annotation/imgHeight"];
-    const { imgLeftCrop, ratio } = ratioValue(propImage, imgWidth, imgHeight, widthCanvas, heightCanvas);
-    const xShape = ((item.x - xMetadata) * ratio + imgLeftCrop) / zoom;
-    const yShape = ((item.y - yMetadata) * ratio) / zoom;
+	const ratioWidth = rotation && (rotation / 90) % 2  ? imgHeight : imgWidth
+	const ratioHeight = rotation && (rotation / 90) % 2  ? imgWidth : imgHeight
+    const { imgLeftCrop, ratio } = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
+    const xShape = ((item.x - xMetadata) * ratio + imgLeftCrop);
+    const yShape = ((item.y - yMetadata) * ratio);
     // 0: rect, 1: circle
-    let rect, circle, points, tagObject;
+    let rect, circle,tagObject;
     const commonProps = {
       originX: "center",
       originY: "center",
@@ -85,15 +86,37 @@ export const annotationCurriculumStudent = () => {
       id: "annotation-lesson",
       perPixelTargetFind: true,
     };
+
+	const imageRatio = Math.max(imgWidth / DefaultCanvasDimension.width, imgHeight / DefaultCanvasDimension.height);
+	const max = imgWidth / DefaultCanvasDimension.width === imageRatio ? "x" : "y";
+	const renderWidth = imgWidth / imageRatio;
+	const renderHeight = imgHeight / imageRatio;
+
+	const clip = {
+		x: Math.round((DefaultCanvasDimension.width - renderWidth) / 2),
+		y: 0,
+		width: Math.round(renderWidth),
+		height: Math.round(renderHeight),
+		max,
+	};
+
+	const clipPath = new fabric.Rect({
+		width: clip.width,
+		height: clip.height,
+		top: clip.max === "x" ? clip.y - commonProps.top : -item.height * ratio,
+		left: clip.max === "y" ? clip.x - commonProps.left : -item.height * ratio,
+	});
+
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
-          width: (item.width / zoom) * ratio,
-          height: (item.height / zoom) * ratio,
+          width: item.width * ratio,
+          height: item.height * ratio,
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
         rect.rotate(item.rotate);
+		rect.clipPath = clipPath;
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, rect);
         break;
@@ -106,25 +129,24 @@ export const annotationCurriculumStudent = () => {
           ...commonProps,
         });
         circle.rotate(item.rotate);
+		circle.clipPath = clipPath;
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, circle);
         break;
     }
   };
   const processAnnotationLesson = (canvas: any, propImage: any, containerRef: any, isShowWhiteBoard: any, bindAll: boolean, event: any) => {
-    if (!canvas) return;
+	if (!canvas) return;
     if (!propImage) return;
     const outerCanvasContainer = containerRef.value;
     if (!outerCanvasContainer) return;
-    const ratio = canvas.getWidth() / canvas.getHeight();
-    const containerWidth = outerCanvasContainer.clientWidth;
-    const scale = containerWidth / canvas.getWidth();
-    const zoom = canvas.getZoom() * scale;
     const annotations = propImage.metaData?.annotations;
     if (annotations && annotations.length && !isShowWhiteBoard.value) {
-      annotations.forEach((item: any) => {
-        addAnnotationLesson(canvas, propImage, item, containerWidth, containerWidth / ratio, zoom, bindAll, event);
-      });
+	  if(!isImgProcessing.value){
+		annotations.forEach((item: any) => {
+			addAnnotationLesson(canvas, propImage, item, bindAll, event, propImage.metaData?.rotate);
+		  });
+	  };
     } else {
       canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
     }
