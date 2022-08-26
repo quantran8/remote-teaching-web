@@ -1,7 +1,6 @@
 <template>
   <AppHeader class="header" :title="title">
     <template #right>
-      <ResourceMenu />
       <LanguagePicker />
       <UserAvatar>
         <template #extraItems>

@@ -270,13 +270,3 @@ export class TeacherClassError {
   static PublishStreamAgoraServersError = "teacher_class_error.publish_stream_error";
   static MissingImportantClassMessages = "teacher_class_error.miss_messages";
 }
-
-export class ResourcesMenuLocale {
-  static ResourcesMenuSchoolPortal = "resources.menu.schoolportal";
-  static ResourcesMenuDigitalContent = "resources.menu.digitalcontent";
-  static ResourcesMenuReports = "resources.menu.reports";
-  static ResourcesMenuStudentREP = "resources.menu.studentrep";
-  static ResourcesMenuTeacherTraining = "resources.menu.teachertraining";
-  static ResourcesMenuLMS = "resources.menu.lms";
-  static ResourcesParentPortal = "resources.menu.parentportal";
-}
