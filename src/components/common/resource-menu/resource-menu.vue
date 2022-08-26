@@ -1,5 +1,5 @@
 <template>
-  <DropdownHelper v-if="displayedResources.length">
+  <DropdownHelper :submenu-width="240" v-if="displayedResources.length">
     <HeaderMenuItem
         :show-dropdown-trigger="true"
         title="Resources"
