@@ -35,6 +35,7 @@ export interface AnnotationState {
   lastFabricUpdated: null | LastFabricUpdated;
   imgWidth?: number;
   imgHeight?: number;
+  isImgProcessing?:boolean;
 }
 
 export interface LastFabricUpdated {

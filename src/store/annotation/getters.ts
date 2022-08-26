@@ -68,6 +68,9 @@ const getters: GetterTree<AnnotationState, any> = {
   imgHeight(state: AnnotationState): number {
     return state.imgHeight || parseInt(DEFAULT_RESOLUTION.split("X")[1]);
   },
+  isImgProcessing(state: AnnotationState): boolean {
+    return state.isImgProcessing ?? false;
+  },
 };
 
 export default getters;
