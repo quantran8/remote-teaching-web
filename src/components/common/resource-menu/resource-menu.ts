@@ -62,6 +62,7 @@ export default defineComponent({
             {
                 textLocaleId: ResourcesMenuLocale.ResourcesMenuStudentREP,
                 url: process.env.VUE_APP_URL_STUDENT_PORTAL,
+                action: ResourceAction.StudentPortal,
                 color: "#1890ff",
             },
             {
