@@ -33,6 +33,7 @@ import { FabricObject } from "@/ws";
 import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
 import { HubConnectionState } from "@microsoft/signalr";
+import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -111,8 +112,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
     store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
 
-
-	let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
+    let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
     if (checkMessageTimer) {
       clearInterval(checkMessageTimer);
     }
@@ -522,6 +522,18 @@ const actions: ActionTree<TeacherRoomState, any> = {
     // } catch (error) {
     //   Logger.log(error);
     // }
+  },
+  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number }) {
+    const data: UpdateLessonAndUnitModel = {
+      unit: p.unit,
+      lesson: p.lesson,
+      unitId: p.unitId,
+      sessionId: state.info?.id as string,
+    };
+    const roomInfo = await RemoteTeachingService.teacherUpdateLessonAndUnit(data);
+	commit("setRoomInfo", roomInfo);
+    await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+    state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
 };
 

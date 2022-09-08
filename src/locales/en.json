@@ -161,5 +161,8 @@
 	"resources.menu.studentrep": "Student REP",
 	"resources.menu.teachertraining": "Teacher Training",
 	"resources.menu.lms": "Teacher Training",
-	"resources.menu.parentportal": "Parent Portal"
+	"resources.menu.parentportal": "Parent Portal",
+
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.ok": "Ok"
 }

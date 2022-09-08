@@ -2,26 +2,33 @@
   <div class="lesson-container">
     <div ref="lessonContainerHeaderFixed">
       <div class="lesson-container__header">
-        <div class="lesson-container__header-title" :class="[isGalleryView && 'lesson-container__header-title--text-right', hasLongShortcutHeader && 'long-title']">
-        <span :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']">
-          <span>
-            <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-              {{ isGalleryView ? `${currentUnit}:` : `${unitText} ${currentUnit}` }}
-            </span>
-            <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-              {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
+        <div
+          class="lesson-container__header-title"
+          :class="[isGalleryView && 'lesson-container__header-title--text-right', hasLongShortcutHeader && 'long-title']"
+        >
+          <span :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']" @click="onClickUnit">
+            <span>
+              <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
+                {{ isGalleryView ? `${currentUnit}:` : `${unitText} ${currentUnit}` }}
+              </span>
+              <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
+                {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
+              </span>
             </span>
           </span>
-        </span>
         </div>
-        <span @click="backToGalleryMode" v-if="isOneOneMode === ''" :class="['lesson-container__header-back', hasLongShortcutHeader && isGalleryView && 'long-title']">
-        <span v-if="isGalleryView">&#8250;</span>
-        <span v-else>&#8249;</span>
-      </span>
+        <span
+          @click="backToGalleryMode"
+          v-if="isOneOneMode === ''"
+          :class="['lesson-container__header-back', hasLongShortcutHeader && isGalleryView && 'long-title']"
+        >
+          <span v-if="isGalleryView">&#8250;</span>
+          <span v-else>&#8249;</span>
+        </span>
         <span @click="showHideLessonOneOne(showHideLesson)" v-if="isOneOneMode !== '' && !isGalleryView" class="lesson-container__header-back">
-        <span v-if="!showHideLesson">&#8250;</span>
-        <span v-else>&#8249;</span>
-      </span>
+          <span v-if="!showHideLesson">&#8250;</span>
+          <span v-else>&#8249;</span>
+        </span>
       </div>
       <div :class="[isGalleryView && 'd-none']">
         <div class="lesson-container__component-header" v-if="isShowExposureDetail">
@@ -31,11 +38,11 @@
           <div class="exposure-title">{{ exposureTitle }}</div>
           <div class="exposure-info">
             <img
-                class="exposure-info__icon-info"
-                src="@/assets/images/info.png"
-                @mouseover="toggleInformationBox"
-                @mouseout="toggleInformationBox"
-                alt=""
+              class="exposure-info__icon-info"
+              src="@/assets/images/info.png"
+              @mouseover="toggleInformationBox"
+              @mouseout="toggleInformationBox"
+              alt=""
             />
             <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
               <div v-if="!hasZeroTeachingContent">
@@ -53,11 +60,11 @@
       </div>
     </div>
     <div
-        ref="lessonContainer"
-        id="lesson-container"
-        class="lesson-container__body nice-scroll"
-        :class="[isGalleryView && 'd-none']"
-        :style="{height: `calc(100% - ${lessonContainerHeaderFixedHeight}px)`}"
+      ref="lessonContainer"
+      id="lesson-container"
+      class="lesson-container__body nice-scroll"
+      :class="[isGalleryView && 'd-none']"
+      :style="{ height: `calc(100% - ${lessonContainerHeaderFixedHeight}px)` }"
     >
       <div class="lesson-container__body--info">
         <div class="progress">

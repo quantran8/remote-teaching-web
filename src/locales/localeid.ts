@@ -109,7 +109,10 @@ export class ParentStudentCardLocale {
   static ClassGroup = "parent_student_card.class_group";
   static StartTime = "parent_student_card.start_time";
 }
-
+export class ChangeLessonUnitLocale {
+  static SetLessonAndUnit = "change_lesson_unit.set_lesson_and_unit";
+  static Ok = "change_lesson_unit.ok";
+}
 export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";

@@ -20,6 +20,7 @@ import {
   DesignateTarget,
   TeacherPageHeader,
   WhiteboardPalette,
+  ChangeLessonUnit,
 } from "./components";
 import { ClassRoomStatus } from "@/models";
 export default defineComponent({
@@ -35,6 +36,7 @@ export default defineComponent({
     DesignateTarget,
     TeacherPageHeader,
     WhiteboardPalette,
+    ChangeLessonUnit,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -87,6 +89,7 @@ export default defineComponent({
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
     });
+    const changeLessonUnitRef = ref<InstanceType<typeof ChangeLessonUnit>>();
 
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
@@ -216,6 +219,10 @@ export default defineComponent({
       // does nothing, we only accept leave room;
     };
 
+	const showChangingLessonUnitModal = () => {
+		changeLessonUnitRef.value?.showModal()
+	}
+
     watch(error, async () => {
       if (error.value) {
         await router.push("/teacher");
@@ -314,6 +321,8 @@ export default defineComponent({
       markAsCompleteChanged,
       toggleLessonSidebar,
       showHideLesson,
+      changeLessonUnitRef,
+      showChangingLessonUnitModal,
     };
   },
 });

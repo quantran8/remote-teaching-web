@@ -6,6 +6,7 @@
         {{ markAsCompleteText }}
       </Checkbox>
     </Modal>
+    <ChangeLessonUnit ref="changeLessonUnitRef" />
     <prevent-esc-firefox />
     <teacher-page-header
       class="tc__header"
@@ -15,14 +16,8 @@
       @end="onClickEnd"
     ></teacher-page-header>
     <main class="tc__main">
-      <div
-          :class="[
-        'tc__sidebar',
-        isSidebarCollapsed && 'tc__sidebar--collapsed',
-        showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one',
-      ]"
-      >
-        <LessonPlan @open-gallery-mode="toggleView" @toggle-lesson-mode="toggleLessonSidebar" />
+      <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']">
+        <LessonPlan @open-gallery-mode="toggleView" @toggle-lesson-mode="toggleLessonSidebar" @open-changing-lesson-unit-modal="showChangingLessonUnitModal"/>
       </div>
       <div class="tc__content">
         <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
@@ -31,21 +26,21 @@
         <div class="tc__content__whiteboard-content">
           <div class="tc__content__teacher" :class="{ 'tc__content__teacher--gallery': isGalleryView }">
             <TeacherCard
-                v-if="teacher"
-                class="teacher-card"
-                :teacher="teacher"
-                :isGalleryView="isGalleryView"
-                @hide-all="onClickHideAll"
-                @mute-all="onClickMuteAll"
-                @show-all="onClickShowAll"
-                @unmute-all="onClickUnmuteAll"
-                @end="onClickEnd"
+              v-if="teacher"
+              class="teacher-card"
+              :teacher="teacher"
+              :isGalleryView="isGalleryView"
+              @hide-all="onClickHideAll"
+              @mute-all="onClickMuteAll"
+              @show-all="onClickShowAll"
+              @unmute-all="onClickUnmuteAll"
+              @end="onClickEnd"
             />
           </div>
           <WhiteboardPalette
-              v-show="!isBlackOutContent"
-              :isGalleryView="isGalleryView"
-              :image="isLessonPlan ? currentExposureItemMedia?.image : null"
+            v-show="!isBlackOutContent"
+            :isGalleryView="isGalleryView"
+            :image="isLessonPlan ? currentExposureItemMedia?.image : null"
           />
         </div>
         <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->

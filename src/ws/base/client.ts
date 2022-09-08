@@ -200,6 +200,8 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_UPDATE_STUDENT_PALETTE, handler.onTeacherToggleStudentPallete);
     // handlers.set(TeacherWSEvent.EVENT_TEACHER_ADD_SHAPE, handler.onTeacherAddShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
+
     // handlers.set(
     //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
     //   handler.onTeacherSendUnity
@@ -210,6 +212,9 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_UPDATE_ALL_SHAPES, handler.onToggleAllShapes);
     handlers.set(TeacherWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
+
+	handlers.set(TeacherWSEvent.TEACHER_UPDATE_SESSION_LESSON_AND_UNIT, handler.onTeacherUpdateSessionLessonAndUnit);
+
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         func(payload);

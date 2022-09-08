@@ -11,7 +11,7 @@ import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "vue-glcommonui";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
 import { Empty } from "ant-design-vue";
-import {useElementSize} from "@vueuse/core";
+import { useElementSize } from "@vueuse/core";
 
 export const exposureTypes = {
   TRANSITION_BLOCK: "TRANSITION_BLOCK",
@@ -23,7 +23,7 @@ export const exposureTypes = {
 
 export default defineComponent({
   components: { LessonActivity, ExposureDetail, Empty },
-  emits: ["open-gallery-mode", "toggle-lesson-mode"],
+  emits: ["open-gallery-mode", "toggle-lesson-mode", "open-changing-lesson-unit-modal"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
 
@@ -79,7 +79,7 @@ export default defineComponent({
 
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
-    watch(oneAndOneStatus, value => {
+    watch(oneAndOneStatus, (value) => {
       if (value === "" || value === null) {
         isOneOneMode.value = "";
       } else {
@@ -87,13 +87,25 @@ export default defineComponent({
       }
     });
 
+    watch(exposures, async (currentValue) => {
+      if (currentValue?.length) {
+        await onClickExposure(currentValue[0], true);
+      }
+    });
+
     const backToGalleryMode = () => {
       emit("open-gallery-mode");
     };
 
-    const onClickExposure = async (exposure: Exposure | null) => {
+    const onClickUnit = () => {
+      emit("open-changing-lesson-unit-modal");
+    };
+
+    const onClickExposure = async (exposure: Exposure | null, force = false) => {
       if (!exposure) return;
-      if (exposure.id === currentExposure.value?.id) return;
+      if (!force && exposure.id === currentExposure.value?.id) {
+        return;
+      }
       if (currentExposure.value && currentExposure.value.type === ExposureType.TRANSITION) {
         await dispatch("teacherRoom/endExposure", {
           id: currentExposure.value.id,
@@ -104,7 +116,7 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
       const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems].filter(
-        item => item.media[0]?.image?.url,
+        (item) => item.media[0]?.image?.url,
       )[0]?.id;
 
       await dispatch("teacherRoom/setMode", {
@@ -272,6 +284,7 @@ export default defineComponent({
       lessonContainerHeaderFixed,
       lessonContainerHeaderFixedHeight,
       hasLongShortcutHeader,
+      onClickUnit,
     };
   },
 });

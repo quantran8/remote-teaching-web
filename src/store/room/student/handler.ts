@@ -420,6 +420,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onToggleAllShapes: async (payload: any) => {
       await dispatch("lesson/setTargetsVisibleAllAction", payload, { root: true });
     },
+	onTeacherUpdateSessionLessonAndUnit: async () => {
+	  await dispatch("getClassRoomInfo");
+	},
     onRoomInfo: async (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {

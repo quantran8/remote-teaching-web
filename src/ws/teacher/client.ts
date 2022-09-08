@@ -15,6 +15,7 @@ export interface FabricObject {
   fabricId: string;
   fabricData: string;
 }
+
 export class TeacherWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.noStatus, isHideVideo = MediaStatus.noStatus) {
     const params: JoinRoomParams = { roomId: roomId, browserFingerPrinting: browserFingerPrinting };
@@ -178,6 +179,9 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.TOGGLE_SHAPE, payload);
   }
   sendCheckTeacherMessageVersion() {
-	return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
+    return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
+  }
+  sendRequestUpdateSessionAndUnit(payload: any) {
+    return this.send(WSCmd.UPDATE_SESSION_LESSON_AND_UNIT, {});
   }
 }
