@@ -421,6 +421,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("lesson/setTargetsVisibleAllAction", payload, { root: true });
     },
 	onTeacherUpdateSessionLessonAndUnit: async () => {
+	  commit({ type: "lesson/clearLessonData" }, { root: true });
 	  await dispatch("getClassRoomInfo");
 	},
     onRoomInfo: async (payload: RoomModel) => {

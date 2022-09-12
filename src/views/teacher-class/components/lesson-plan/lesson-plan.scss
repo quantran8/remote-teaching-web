@@ -18,6 +18,8 @@
     .lesson-container__header-title {
       padding: 10px 15px;
       font-size: 24px;
+	  cursor: pointer;
+
       &--text-right {
         margin-right: 20px;
         &.long-title {
@@ -25,7 +27,7 @@
         }
       }
       &--wrap {
-        border-bottom: 3px solid white;
+        // border-bottom: 3px solid white;
         display: inline-block;
         &.shortcut {
           margin-left: 230px;

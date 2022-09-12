@@ -107,6 +107,10 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   studentGetSessionById(sessionId: string): Promise<StudentGetRoomResponse> {
     return this.get(`rooms/${sessionId}`);
   }
+
+  teacherGetSessionById(sessionId: string): Promise<TeacherGetRoomResponse> {
+    return this.get(`rooms/${sessionId}`);
+  }
 }
 
 export const RemoteTeachingService = new GLRemoteTeachingService();

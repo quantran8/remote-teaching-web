@@ -310,7 +310,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       Logger.info("Toggle all targets");
     },
     onTeacherUpdateSessionLessonAndUnit: async (payload: any) => {
-	  Logger.info("Teacher update lesson and unit: ", payload);
+	  Logger.info("Teacher update lesson and unit");
     },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
