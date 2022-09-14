@@ -1,6 +1,6 @@
 import { TeacherHome } from "./../../locales/localeid";
-import { TeacherClassModel, UnitAndLesson, UnitAndLessonModel } from "@/models";
-import { AccessibleSchoolQueryParam, RemoteTeachingService, UnitAndLessonResponse } from "@/services";
+import { TeacherClassModel, UnitAndLesson } from "@/models";
+import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -15,6 +15,7 @@ import { JoinSessionModel } from "@/models/join-session.model";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
 import { MatIcon } from "vue-glcommonui";
+import { getListUnitByClassAndGroup } from "./lesson-helper";
 
 const fpPromise = FingerprintJS.load();
 
@@ -166,31 +167,7 @@ export default defineComponent({
     const getListLessonByUnit = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
         loadingInfo.value = true;
-        const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
-        const listUnit: UnitAndLesson[] = [];
-
-        if (response && response.success) {
-          response.data.map((res: UnitAndLessonModel) => {
-            let isUnitExist = false;
-            listUnit.map((singleUnit: UnitAndLesson) => {
-              if (res.unitId == singleUnit.unitId) {
-                isUnitExist = true;
-              }
-            });
-            if (!isUnitExist) {
-              listUnit.push({ unit: res.unit, sequence: [], unitId: res.unitId });
-            }
-          });
-          response.data.map((res: UnitAndLessonModel) => {
-            listUnit.map((singleUnit: UnitAndLesson, index) => {
-              if (res.unitId == singleUnit.unitId) {
-                listUnit[index].sequence.push(res.sequence);
-              }
-            });
-          });
-        }
-        listUnit.sort((a, b) => a.unit - b.unit);
-        unitInfo.value = listUnit;
+        unitInfo.value = await getListUnitByClassAndGroup(teacherClass.classId, groupId);
       } catch (err) {
         const message = err?.body?.message;
         if (message) {

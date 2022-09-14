@@ -309,6 +309,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onToggleAllShapes: (payload: any) => {
       Logger.info("Toggle all targets");
     },
+    onTeacherUpdateSessionLessonAndUnit: async (payload: any) => {
+	  Logger.info("Teacher update lesson and unit");
+    },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {

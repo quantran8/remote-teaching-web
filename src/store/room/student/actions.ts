@@ -23,6 +23,12 @@ import { TeacherClassError } from "@/locales/localeid";
 import { HubConnectionState } from "@microsoft/signalr";
 
 const actions: ActionTree<StudentRoomState, any> = {
+  async getClassRoomInfo({ commit, dispatch, state }) {
+	if (!state.info?.id) return
+	const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
+	commit("setRoomInfo", roomResponse.data);
+  	await dispatch("lesson/setInfo", roomResponse.data?.lessonPlan, { root: true });
+  },
   async initClassRoom(
     { commit, dispatch, state },
     payload: {

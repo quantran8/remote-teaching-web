@@ -3,8 +3,7 @@ import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 import { exposureTypes } from "../lesson-plan";
 import { Empty } from "ant-design-vue";
-import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
-import { ExposureType } from "@/store/lesson/state";
+import { Exposure } from "@/store/lesson/state";
 import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
 
@@ -32,9 +31,18 @@ export default defineComponent({
     const timeoutClickItem = 300; // 300ms
     const postClickTimer = ref<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+    watch(props, () => {
+      configLessonPlan(props.exposure);
+    });
+
     onMounted(() => {
-      let resultList = props.exposure.items;
-      if (props.exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
+      configLessonPlan(props.exposure);
+    });
+
+    const configLessonPlan = (exposure?: Exposure) => {
+      if (!exposure) return;
+      let resultList: any = exposure.items;
+      if (exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
         hasZeroTeachingContent.value = false;
       }
       switch (props.type) {
@@ -50,11 +58,11 @@ export default defineComponent({
           exposureTitle.value = relatedSlidesText.value;
           break;
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
-          resultList = props.exposure.teachingActivityBlockItems;
+          resultList = exposure.teachingActivityBlockItems;
           exposureTitle.value = activitySlidesText.value;
           break;
         case exposureTypes.CONTENT_BLOCK:
-          resultList = props.exposure.contentBlockItems;
+          resultList = exposure.contentBlockItems;
           exposureTitle.value = componentSlidesText.value;
           // thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
           break;
@@ -62,14 +70,14 @@ export default defineComponent({
           break;
       }
       listMedia.value = resultList
-        .filter((m: any) => m.media[0]?.image?.url)
-        .map((item: any) => {
+        ?.filter((m: any) => m.media[0]?.image?.url)
+        ?.map((item: any) => {
           if (!item.media[0]) return;
           item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
           return item.media;
         })
-        .flat(1);
-    });
+        ?.flat(1);
+    };
 
     const onClickBack = () => {
       emit("click-back");
