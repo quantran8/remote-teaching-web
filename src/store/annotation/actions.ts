@@ -119,6 +119,9 @@ const actions: ActionTree<AnnotationState, any> = {
   setImgDimension({ commit }, payload: { width?: number; height?: number }) {
     commit("setImgDimension", payload);
   },
+  setImgRenderSize({ commit }, payload: { width?: number; height?: number }) {
+    commit("setImgRenderSize", payload);
+  },
   setImgProcessing({ commit }, payload: boolean) {
     commit("setImgProcessing", payload);
   },

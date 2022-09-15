@@ -322,16 +322,13 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       dispatch("updateAudioAndVideoFeed", {});
     },
 	onTeacherZoomSlide: (p: any) => {
-		console.log(p)
-
+		//
 	},
 	onTeacherMoveZoomedSlide: (p: any) => {
-		console.log(p)
-
+		//
 	},
 	onTeacherResetZoom: (p: any) => {
-		console.log(p)
-
+		//
 	}
   };
   return handler;

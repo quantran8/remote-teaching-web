@@ -151,6 +151,11 @@ export interface LessonState {
   cropCache?: CropCache;
   targetsVisibleAll?: TargetsVisibleAll;
   targetsVisibleList: TargetsVisibleList[];
+  zoomRatio?: number;
+  imgCoords?:{
+	x: number;
+	y: number
+  } 
 }
 
 const state: LessonState = {

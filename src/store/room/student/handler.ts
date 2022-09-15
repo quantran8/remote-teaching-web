@@ -365,7 +365,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected,skipToSetCurrentExposureItemMedia:true }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await commit("updateIsPalette", {
           id: payload.student.id,
@@ -433,16 +433,16 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
     },
-	onTeacherZoomSlide: (p: any) => {
-		console.log(p)
+	onTeacherZoomSlide: async(p: number) => {
+		await dispatch("lesson/setZoomRatio", p, { root: true });
 	},
-	onTeacherMoveZoomedSlide: (p: any) => {
-		console.log(p)
+	onTeacherMoveZoomedSlide: async(p: {x: number, y: number}) => {
+		await dispatch("lesson/setImgCoords", p, { root: true });
 
 	},
-	onTeacherResetZoom: (p: any) => {
-		
-		console.log(p)
+	onTeacherResetZoom: async(p: any) => {
+		await dispatch("lesson/setZoomRatio", undefined, { root: true });
+
 	}
   };
   return handler;

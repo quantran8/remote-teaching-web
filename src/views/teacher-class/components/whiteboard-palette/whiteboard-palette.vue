@@ -36,15 +36,18 @@
             v-show="!isGalleryView"
 			 @img-load="imgLoad"
           /> 
-		  <!-- <img
-            id="annotation-img"
-			 :src="imageUrl"
-			 @img-load="imgLoad"/> -->
           <div ref="wrapCanvasRef" class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
-		  <Button class="btn-in" @click="zoomIn"> + </Button>
-		  <Button class="btn-out" @click="zoomOut"> - </Button>
+		  <div class="wrap-zoom-icon">
+			<div  @click="zoomIn"> 
+			<img class="zoom-icon" src="@/assets/icons/zoom-in.png" />
+		 </div>
+		  <div  @click="zoomOut">
+			<img  class="zoom-icon" src="@/assets/icons/zoom-out.png" />
+		</div>
+		  </div>
+		
         </div>
         <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>

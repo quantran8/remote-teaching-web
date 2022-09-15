@@ -190,7 +190,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestZoomSlide(payload: number) {
 	return this.invoke(WSCmd.TEACHER_ZOOM_SLIDE, payload);
   }
-  sendRequestMoveZoomedSlide(payload:{x:number, y: number}) {
+  sendRequestMoveZoomedSlide(payload:{x:number, y: number, viewPortX: number, viewPortY: number}) {
 	return this.invoke(WSCmd.TEACHER_MOVE_ZOOMED_SLIDE, payload);
   }
 

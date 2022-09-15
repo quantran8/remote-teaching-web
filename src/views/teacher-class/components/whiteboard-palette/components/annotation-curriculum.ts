@@ -8,6 +8,10 @@ export const annotationCurriculum = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["teacherRoom/teacher"]);
   const isImgProcessing = computed(() => getters["annotation/isImgProcessing"]);
+  const zoomRatio = computed(() => getters["lesson/zoomRatio"]);
+  const imgCoords = computed(() => getters["lesson/imgCoords"]);
+  const isShowWhiteBoard = computed(() => getters["teacherRoom/isShowWhiteBoard"]);
+
   const toggleTargetTeacher = (event: any, visible: boolean) => {
     dispatch("teacherRoom/setTargetsVisibleListAction", {
       userId: isTeacher.value.id,
@@ -143,7 +147,7 @@ export const annotationCurriculum = () => {
 
 	return all;
   };
-  const processLessonImage = (propImage: any, canvas: any,imgEl: any,) => {
+  const processLessonImage = (propImage: any, canvas: any,imgEl: any,point: any, firstLoad: any) => {
 	const imgWidth = getters["annotation/imgWidth"];
 	const imgHeight = getters["annotation/imgHeight"];
 	const annotation = propImage.image?.metaData?.annotations;
@@ -154,13 +158,14 @@ export const annotationCurriculum = () => {
 	  );
 	  const renderWidth = imgWidth / imageRatio;
 	  const renderHeight = imgHeight / imageRatio;
+	 dispatch("annotation/setImgRenderSize", { width: renderWidth, height: renderHeight });
+
 	if(!propImage.image?.url){
 		return;
 	}
 	if(canvasGroup){
 		canvas.remove(canvasGroup)
 	}
-
 	const clipPath = new fabric.Rect({
 		width:renderWidth,
 		height:renderHeight,
@@ -168,30 +173,28 @@ export const annotationCurriculum = () => {
 		top:0,
 		absolutePositioned: true ,
 	})
-	console.log(propImage.image.metaData)
 	const angle = propImage.image.metaData ?((propImage.image.metaData.width > 0 && propImage.image.metaData.height > 0) ? 0 : propImage.image.metaData.rotate) : 0
 	const Image = new fabric.Image(imgEl,{
 		id:'lesson-img',
-		clipPath,
 		originX:'center',
 		originY:'center',
 		angle,
-		left:DefaultCanvasDimension.width /2,
-		top:0,
 		selectable:true,
 		hasBorders:false,
-		hasControls:false
+		hasControls:false,
 
 	});
-	Image.scaleToWidth(DefaultCanvasDimension.width)
-	Image.scaleToHeight(DefaultCanvasDimension.height);
+	Image.scaleToWidth(renderWidth);
+	Image.scaleToHeight(renderHeight);
+	const left = imgCoords.value?.x ?? DefaultCanvasDimension.width /2;
+	const top = imgCoords.value?.y ?? renderHeight /2;
 	const Group = new fabric.Group([Image],{
 		id:'lesson-img',
 		clipPath,
 		originX:'center',
 		originY:'center',
-		left:DefaultCanvasDimension.width /2,
-		top:DefaultCanvasDimension.height / 2,
+		left,
+		top,
 		selectable:true,
 		hoverCursor: "pointer",
 		scaleX:propImage.image?.metaData?.scaleX ?? 1,
@@ -201,7 +204,7 @@ export const annotationCurriculum = () => {
 		layout: 'clip-path',
 		interactive: true,
 		subTargetCheck: true,
-		stroke:'black'
+		visible:!isShowWhiteBoard.value
 
 	});
 	if(annotation && annotation.length){
@@ -212,6 +215,11 @@ export const annotationCurriculum = () => {
 	}
 
 	canvas.add(Group);
+	canvas.sendToBack(Group);
+	if(zoomRatio.value > 1 && firstLoad){
+		canvas.zoomToPoint(point, zoomRatio.value);
+	}
+
 
 	return Group
   };

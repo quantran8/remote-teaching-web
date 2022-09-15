@@ -22,7 +22,6 @@
       />
 	 <img v-else-if="typeof imageUrl === 'string' && image" 
 		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" 
-		  :style="[{...styles}]" 
 		  />
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />

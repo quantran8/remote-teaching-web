@@ -168,6 +168,10 @@ const mutations: AnnotationMutation<AnnotationState> = {
     state.imgWidth = p.width;
     state.imgHeight = p.height;
   },
+  setImgRenderSize(state: AnnotationState, p: { width?: number; height?: number }) {
+    state.imgRenderWidth = p.width;
+    state.imgRenderHeight = p.height;
+  },
   setImgProcessing(state: AnnotationState, p: boolean) {
     state.isImgProcessing = p
   },

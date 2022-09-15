@@ -8,6 +8,12 @@ export const annotationCurriculumStudent = () => {
   const student = computed(() => getters["studentRoom/student"]);
   const targetsList = computed(() => getters["lesson/targetsAnnotationList"]);
   const isImgProcessing = computed(() => getters["annotation/isImgProcessing"]);
+  const studentOneAndOneId = computed(() => getters["studentRoom/getStudentModeOneId"]);
+  const isPaletteVisible = computed(
+	() => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
+  );
+  const zoomRatio = computed(() => getters["lesson/zoomRatio"]);
+  const imgCoords = computed(() => getters["lesson/imgCoords"]);
   const toggleTargetStudent = (event: any, visible: boolean) => {
     dispatch("studentRoom/setTargetsVisibleListAction", {
       userId: student.value.id,
@@ -45,9 +51,8 @@ export const annotationCurriculumStudent = () => {
       eventStudentClick(event, tagObject, canvas, item,group);
       eventTeacherClick(event, tagObject, canvas, item,group);
     } else if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
-    //   canvas.add(shape);
       const target = targetsList.value.find((a: any) => a.tag === tagObject.tag);
-      if (event === "show-all-targets" || (target && target.visible)) {
+      if (event === "show-all-targets" || event === 'show-all-targets-first-time' || (target && target.visible)) {
         setStrokeColor(canvas, tagObject, item.color,group);
       } else if (event === "hide-all-targets") {
         setStrokeColor(canvas, tagObject, "transparent",group);
@@ -80,6 +85,7 @@ export const annotationCurriculumStudent = () => {
       fill: "rgba(255,255,255,0.01)",
       left: xShape,
       top: yShape,
+	  angle:item.rotate,
       realFill: item.fill,
       realOpacity: item.opacity,
       stroke: "transparent",
@@ -116,9 +122,10 @@ export const annotationCurriculumStudent = () => {
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
-        rect.rotate(item.rotate);
-		// rect.clipPath = clipPath;
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
+		if(group && event === 'show-all-targets-first-time'){
+			group.addWithUpdate(rect)
+		}
         processShape(bindAll, event, tagObject, canvas, item, group);
         return rect;
       case (item.type = 1):
@@ -129,9 +136,10 @@ export const annotationCurriculumStudent = () => {
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
-        circle.rotate(item.rotate);
-		// circle.clipPath = clipPath;
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
+		if(group && event === 'show-all-targets-first-time'){
+			group.addWithUpdate(circle)
+		}
         processShape(bindAll, event, tagObject, canvas, item, group);
         return circle;
     }
@@ -164,10 +172,24 @@ export const annotationCurriculumStudent = () => {
 	return allShape;
   };
 
-  const processLessonImage = (propImage: any, canvas: any,imgEl: any, containerRef: any , isShowWhiteBoard: boolean, visible: boolean) => {
+  const processLessonImage = (
+	propImage: any, 
+	canvas: any,
+	imgEl: any, 
+	containerRef: any , 
+	isShowWhiteBoard: boolean, 
+	visible: boolean, 
+	point: any,
+	canvasZoomRatio: number,
+	firstLoad: boolean
+	) => {
+	if(!propImage?.url){
+		return;
+	}
+	const event = visible ? 'show-all-targets-first-time' : 'hide-all-targets'
 	const imgWidth = getters["annotation/imgWidth"];
 	const imgHeight = getters["annotation/imgHeight"];
-	const annotation = propImage.image?.metaData?.annotations;
+	const annotation = propImage?.metaData?.annotations;
 	const canvasGroup = canvas.getObjects().find((item:any) => item.id === 'lesson-img');
 	const imageRatio = Math.max(
 		imgWidth / DefaultCanvasDimension.width,
@@ -175,12 +197,10 @@ export const annotationCurriculumStudent = () => {
 	  );
 	  const renderWidth = imgWidth / imageRatio;
 	  const renderHeight = imgHeight / imageRatio;
-	if(!propImage.image?.url){
-		return;
+	   dispatch("annotation/setImgRenderSize", { width: renderWidth, height: renderHeight },);
+	  if(canvasGroup){
+		canvas.remove(canvasGroup)
 	}
-	// if(canvasGroup){
-	// 	canvas.remove(canvasGroup)
-	// }
 	const clipPath = new fabric.Rect({
 		width:renderWidth,
 		height:renderHeight,
@@ -188,59 +208,66 @@ export const annotationCurriculumStudent = () => {
 		top:0,
 		absolutePositioned: true ,
 	})
-	const angle = propImage.image.metaData ?((propImage.image.metaData.width > 0 && propImage.image.metaData.height > 0) ? 0 : propImage.image.metaData.rotate) : 0
+	const angle = propImage.metaData ?((propImage.metaData.width > 0 && propImage.metaData.height > 0) ? 0 : propImage.metaData.rotate) : 0
 	const Image = new fabric.Image(imgEl,{
 		id:'lesson-img',
 		clipPath,
 		originX:'center',
 		originY:'center',
 		angle,
-		left:DefaultCanvasDimension.width /2,
-		top:DefaultCanvasDimension.height /2,
 		selectable:true,
 		hasBorders:false,
 		hasControls:false
 
 	});
-	Image.scaleToWidth(DefaultCanvasDimension.width)
-	Image.scaleToHeight(DefaultCanvasDimension.height);
+	Image.scaleToWidth(renderWidth)
+	Image.scaleToHeight(renderHeight);
+	const left = imgCoords.value?.x ?? DefaultCanvasDimension.width /2;
+	const top = imgCoords.value?.y ?? renderHeight /2;
 	const Group = new fabric.Group([Image],{
 		id:'lesson-img',
 		clipPath,
 		originX:'center',
 		originY:'center',
-		left:DefaultCanvasDimension.width /2,
-		top:DefaultCanvasDimension.height /2,
-		selectable:true,
+		left,
+		top,
+		selectable:isPaletteVisible.value,
+		visible:true,
 		hoverCursor: "pointer",
-		scaleX:propImage.image?.metaData?.scaleX ?? 1,
-		scaleY:propImage.image?.metaData?.scaleY ?? 1,
+		scaleX:propImage?.metaData?.scaleX ?? 1,
+		scaleY:propImage?.metaData?.scaleY ?? 1,
 		hasBorders:false,
 		hasControls:false,
 		layout: 'clip-path',
 		interactive: true,
 		subTargetCheck: true,
-		// lockMovementX:true,
-		// lockMovementY:true
+		lockMovementX:true,
+		lockMovementY:true,
 
 	});
 	if(annotation && annotation.length){
 		const data =  processAnnotationLesson(
 			canvas,
-			propImage.image,
+			propImage,
 			containerRef,
 			isShowWhiteBoard,
 			true,
-			visible ? "show-all-targets" : "hide-all-targets",
+			event,
 			Group
 		  );
-		data?.forEach((item:any) => {
-			Group.addWithUpdate(item);
-		})
+		if(event === 'hide-all-targets'){
+			data?.forEach((item:any) => {
+				Group.addWithUpdate(item);
+			});
+		}
 	}
-	// console.log(canvasGroup)
-	// if(!canvasGroup)
-	canvas.add(Group);
+	if(!isImgProcessing.value){
+		canvas.add(Group);
+		canvas.sendToBack(Group);
+		if(zoomRatio.value > 1 && firstLoad){
+			canvas.zoomToPoint(point, canvasZoomRatio + (zoomRatio.value - 1)*canvasZoomRatio);
+		}
+	}
 
 
 

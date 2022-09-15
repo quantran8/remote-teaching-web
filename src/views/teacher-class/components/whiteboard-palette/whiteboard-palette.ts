@@ -78,6 +78,11 @@ export default defineComponent({
 
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
+	const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
+	const prevZoomRatio = ref(1);
+	const prevCoords = ref({x:0,y:0});
+
     const {
       createTextBox,
       onTextBoxEdited,
@@ -100,9 +105,6 @@ export default defineComponent({
 	let group: any;
 	let point:any;
 
-	const initWrapperGroup = () => {
-		point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height /2);
-	  }
 
 	const zoomIn = async() => {
 		if(!isLessonPlan.value){
@@ -110,6 +112,10 @@ export default defineComponent({
 		};
 		zoomRatio.value += 0.1;
 		canvas.zoomToPoint(point,zoomRatio.value);
+		canvas.forEachObject(function(o: any) {
+			o.setCoords();
+		  });
+		  canvas.calcOffset();
 		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
 
 	}
@@ -122,34 +128,26 @@ export default defineComponent({
 		if(canvas.getZoom() > 1)
 		{
 		zoomRatio.value -= 0.1;
+		if(zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)){
+			group.left = Math.floor(DefaultCanvasDimension.width / 2);
+			group.top = Math.floor(imgRenderHeight.value / 2);
+			group.setCoords();
+		}
 		canvas.zoomToPoint(point,zoomRatio.value);
 		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
-
 		}
 		 
 	}
-    watch(currentExposureItemMedia, (currentItem, prevItem) => {
+    watch(currentExposureItemMedia, async(currentItem, prevItem) => {
       if (currentItem) {
-        let width = "100%";
 		zoomRatio.value = 1;
-        if (
-          currentItem.image.metaData &&
-          currentItem.image.metaData.rotate &&
-          (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate) === 90)
-        ) {
-          //if img is rotated, width equal to height of the whiteboard
-          width = "435px";
-        }
-        styles.value = {
-          width,
-          transform: `scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${
-            currentItem.image.metaData?.rotate ?? 0
-          }deg)`,
-        };
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
-          canvas.remove(...canvas.getObjects());
+			canvas.zoomToPoint(point,1)
+            canvas.remove(...canvas.getObjects());
+			await store.dispatch("lesson/setImgCoords",undefined,{root:true});
+
         }
       }
     });
@@ -236,7 +234,7 @@ export default defineComponent({
         disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
         if (objHide.length === targetsNum.value) {
           await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-            userId: isTeacher.value.id,
+            userId: isTeacher.value?.id,
             visible: false,
           });
         }
@@ -295,6 +293,7 @@ export default defineComponent({
           });
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         // await clickedTool(Tools.Cursor);
+		canvas.renderAll()
       }
     };
     watch(isShowWhiteBoard, async () => {
@@ -304,8 +303,9 @@ export default defineComponent({
       } 
 	  else if(!isShowWhiteBoard.value && isLessonPlan.value && group){
         group.visible = true;
-		canvas.renderAll()
-	  }
+	  };
+	  canvas.renderAll()
+
     });
 
 	watch(isLessonPlan, () => {
@@ -324,8 +324,11 @@ export default defineComponent({
       const rect = document.getElementById("canvas-container");
       if (!rect) return;
       const rectBounding = rect.getBoundingClientRect();
-      let x = e.clientX - rectBounding.left;
-      let y = e.clientY - rectBounding.top;
+	  const canvasViewPortX = Math.abs(canvas.viewportTransform[4]);
+	  const canvasViewPortY = Math.abs(canvas.viewportTransform[5]);
+	  const zoom = canvas.getZoom();
+      let x = e.clientX - rectBounding.left 
+      let y = e.clientY - rectBounding.top
       const windowWidth = window.innerWidth;
       const scaleRatio = 0.68;
       const scaleBreakpoint = 1600;
@@ -346,7 +349,7 @@ export default defineComponent({
       if (toolSelected.value === Tools.Laser && isDrawing.value) {
         const _point = {
           x: Math.floor(x),
-          y: Math.floor(y),
+          y: Math.floor(y)
         };
         if (!prevPoint.value) {
           prevPoint.value = _point;
@@ -355,7 +358,7 @@ export default defineComponent({
           const absY = Math.abs(_point.y - prevPoint.value.y);
           if (absX > 8 || absY > 8 || isDone) {
             prevPoint.value = _point;
-            if (isMouseOut.value && isMouseOver.value) {
+            if (isMouseOut.value ) {
               lineId.value = generateLineId();
               await store.dispatch("teacherRoom/setLaserPath", {
                 data: {
@@ -410,7 +413,6 @@ export default defineComponent({
     };
 	const listenBeforeTransform = () => {
 		canvas.on('before:transform',(e:any) => {
-			console.log(e)
 			if(e.transform.target.id === 'lesson-img'){
 				const sel = new fabric.ActiveSelection(canvas.getObjects().filter((item:any) => item.id !== 'lesson-img' && item.id !== 'annotation-lesson'), {
 				  canvas: canvas,
@@ -544,7 +546,7 @@ export default defineComponent({
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
-	  initWrapperGroup();
+	  point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height /2);
       canvas.selectionFullyContained = false;
       try {
         await FontLoader.load();
@@ -690,13 +692,13 @@ export default defineComponent({
       } else {
         await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
       }
-      if (!firstLoadImage.value) {
+ 
+	  img.crossOrigin = 'Anonymous';
+	  group = processLessonImage(currentExposureItemMedia.value,canvas,img,point,!firstLoadImage.value);
+      objectTargetOnCanvas();
+	  if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
-	  img.crossOrigin = 'Anonymous';
-	  group = processLessonImage(currentExposureItemMedia.value,canvas,img);
-      objectTargetOnCanvas();
-	  console.log(canvas.getObjects())
       // showHideWhiteboard.value = isShowWhiteBoard.value;
       // if (isShowWhiteBoard.value) {
       //   canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -733,7 +735,7 @@ export default defineComponent({
       if (!firstTimeLoadStrokes.value && selfStrokes.value) {
         renderSelfStrokes();
         firstTimeLoadStrokes.value = true;
-      } else if (selfStrokes.value.length === 0) {
+      } else if (selfStrokes.value?.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
@@ -905,7 +907,7 @@ export default defineComponent({
       }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== 'lesson-img'));
         // render objects again before into mode 1-1
         renderStudentsShapes();
         await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
@@ -914,11 +916,20 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
           processTargetsList();
+		  group.left = prevCoords.value.x;
+		  group.top = prevCoords.value.y;
+		  canvas.zoomToPoint(point,prevZoomRatio.value);
+		  zoomRatio.value = prevZoomRatio.value;
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();
       } else {
         prevTargetsList.value = [...targetsList.value];
+		prevZoomRatio.value = canvas.getZoom();
+		prevCoords.value = {
+			x:group.left,
+			y:group.top
+		};
       }
     });
     //get fabric items from vuex and display to whiteboard

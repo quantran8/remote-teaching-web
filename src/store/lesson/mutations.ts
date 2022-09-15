@@ -57,7 +57,7 @@ const mutations: LessonMutation<LessonState> = {
       return exposure;
     });
   },
-  setCurrentExposure(s: LessonState, p: { id: string }) {
+  setCurrentExposure(s: LessonState, p: { id: string,skipToSetCurrentExposureItemMedia?:boolean }) {
     const totalExposures = s.exposures.length;
 
     s.exposures.forEach((e, i) => {
@@ -82,13 +82,15 @@ const mutations: LessonMutation<LessonState> = {
     });
 
     // set the first media item to currentExposureItemMedia
-    if (s.currentExposure && s.currentExposure.items.length > 0) {
-      s.currentExposureItemMedia = undefined;
-      const firstItem = s.currentExposure.items[0];
-      if (firstItem.media.length > 0) {
-        s.currentExposureItemMedia = firstItem.media[0];
-      }
-    }
+	if(!p.skipToSetCurrentExposureItemMedia){
+		if (s.currentExposure && s.currentExposure.items.length > 0) {
+			s.currentExposureItemMedia = undefined;
+			const firstItem = s.currentExposure.items[0];
+			if (firstItem.media.length > 0) {
+			  s.currentExposureItemMedia = firstItem.media[0];
+			}
+		  }
+	}
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
@@ -192,6 +194,12 @@ const mutations: LessonMutation<LessonState> = {
   setTargetsVisibleListJoined(s: LessonState, p: TargetsVisibleList[]) {
     s.targetsVisibleList = p;
   },
+  setZoomRatio(s: LessonState, p: number){
+	s.zoomRatio = p;
+  },
+  setImgCoords(s: LessonState, p:{x: number, y: number}| undefined){
+	s.imgCoords = p;
+  }
 };
 
 export default mutations;
