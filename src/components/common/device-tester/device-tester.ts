@@ -252,12 +252,17 @@ export default defineComponent({
       try {
         const cams = await AgoraRTC.getCameras();
         if (cams.length) {
-          currentCam.value = cams[0];
-          currentCamLabel.value = cams[0]?.label;
+          let camSelected = cams[0];
+          const localStorageCamId = localStorage.getItem('camId');
+          if(localStorageCamId){
+            camSelected = cams.find((device: any) => device.deviceId === localStorageCamId) ?? cams[0];
+          };
+          currentCam.value = camSelected;
+          currentCamLabel.value = camSelected?.label;
 
           listCams.value = cams;
           listCamsId.value = cams.map((cam) => cam.deviceId);
-          await localTracks.value.videoTrack.setDevice(cams[0]?.deviceId);
+          await localTracks.value.videoTrack.setDevice(camSelected?.deviceId);
           try {
             await openCamera();
             preventCloseModal.value = false;
@@ -275,12 +280,17 @@ export default defineComponent({
       try {
         const mics = await AgoraRTC.getMicrophones();
         if (mics.length) {
-          currentMic.value = mics[0];
-          currentMicLabel.value = mics[0]?.label;
+            let micSelected = mics[0] ;
+            const localStorageMicId = localStorage.getItem('micId');
+            if(localStorageMicId){
+              micSelected = mics.find((device: any) => device.deviceId === localStorageMicId) ?? mics[0];
+            };
+          currentMic.value = micSelected;
+          currentMicLabel.value = micSelected?.label;
 
           listMics.value = mics;
           listMicsId.value = mics.map((mic) => mic.deviceId);
-          await localTracks.value?.audioTrack.setDevice(mics[0]?.deviceId);
+          await localTracks.value?.audioTrack.setDevice(micSelected?.deviceId);
           if (!volumeAnimation.value) {
             volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
           }
@@ -526,6 +536,8 @@ export default defineComponent({
           await localTracks.value?.audioTrack.setDevice(micId);
         }
         currentMic.value = listMics.value.find((mic) => mic.deviceId === micId);
+        if(currentMic.value && currentMic.value.deviceId)
+        localStorage.setItem('micId',currentMic.value.deviceId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
@@ -537,6 +549,8 @@ export default defineComponent({
           await localTracks.value.videoTrack.setDevice(camId);
         }
         currentCam.value = listCams.value.find((cam) => cam.deviceId === camId);
+        if(currentCam.value && currentCam.value.deviceId)
+        localStorage.setItem('camId',currentCam.value.deviceId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
@@ -791,3 +805,4 @@ export default defineComponent({
     };
   },
 });
+
