@@ -52,7 +52,16 @@ export function ratioValue(propImage: any, widthImg: number, heightImg: number, 
   const wRatio = imgWidthCropFit / widthMetadata;
   const hRatio = imgHeightCropFit / heightMetadata;
   const ratio = Math.min(wRatio, hRatio);
-  return { imgLeftCrop, ratio };
+
+  const imageRatio = Math.max(
+	widthImg / DefaultCanvasDimension.width,
+	heightImg / DefaultCanvasDimension.height,
+  );
+  const max = widthImg / DefaultCanvasDimension.width === imageRatio ? 'x' : 'y';
+  const renderWidth = widthImg / imageRatio;
+  const renderHeight = heightImg / imageRatio;
+
+  return { imgLeftCrop, ratio, max, renderWidth,renderHeight };
 }
 
 export function starPolygonPoints(spikeCount: any, outerRadius: any, innerRadius: any) {
@@ -76,7 +85,25 @@ export function starPolygonPoints(spikeCount: any, outerRadius: any, innerRadius
   return points;
 }
 
-export function setStrokeColor(canvas: any, event: any, color: any) {
+export function setStrokeColor(canvas: any, event: any, color: any, group?: any) {
+  if(group){
+	group._objects.forEach((obj:any,index:number) => {
+		if(obj.id !== 'lesson-img'){
+			if (obj.tag === event.tag) {
+				group.item(index).set("stroke", color);
+				if (obj.realFill && obj.realOpacity) {
+				  if (color !== "transparent") {
+					group.item(index).set("fill", obj.realFill);
+					group.item(index).set("opacity", obj.realOpacity);
+				  } else {
+					group.item(index).set("fill", transparentColor);
+					group.item(index).set("opacity", 1);
+				  }
+				}
+			  }
+		}
+	})
+  }
   canvas.getObjects().forEach((obj: any) => {
     if (obj.tag === event.tag) {
       obj.set("stroke", color);

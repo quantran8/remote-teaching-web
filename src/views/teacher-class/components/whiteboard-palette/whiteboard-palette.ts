@@ -96,9 +96,42 @@ export default defineComponent({
     };
     const lineId: Ref<string> = ref(generateLineId());
 
+	const zoomRatio = ref(1.0);
+	let group: any;
+	let point:any;
+
+	const initWrapperGroup = () => {
+		point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height /2);
+	  }
+
+	const zoomIn = async() => {
+		if(!isLessonPlan.value){
+			return
+		};
+		zoomRatio.value += 0.1;
+		canvas.zoomToPoint(point,zoomRatio.value);
+		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
+
+	}
+
+	const zoomOut = async() => {
+		if(!isLessonPlan.value){
+			return;
+		}
+
+		if(canvas.getZoom() > 1)
+		{
+		zoomRatio.value -= 0.1;
+		canvas.zoomToPoint(point,zoomRatio.value);
+		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
+
+		}
+		 
+	}
     watch(currentExposureItemMedia, (currentItem, prevItem) => {
       if (currentItem) {
         let width = "100%";
+		zoomRatio.value = 1;
         if (
           currentItem.image.metaData &&
           currentItem.image.metaData.rotate &&
@@ -133,7 +166,7 @@ export default defineComponent({
       }
     });
     const { teacherAddShapes, addCircle, addSquare } = addShape();
-    const { processAnnotationLesson } = annotationCurriculum();
+    const { processAnnotationLesson ,processLessonImage} = annotationCurriculum();
     const targetsNum = computed(() => {
       return props.image?.metaData?.annotations?.length || 0;
     });
@@ -152,7 +185,7 @@ export default defineComponent({
     const showAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.ShowAllTargets));
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
     const showAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "show-all-targets");
+      processAnnotationLesson(props.image, canvas, true, "show-all-targets",group);
       disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
@@ -163,7 +196,7 @@ export default defineComponent({
     const hideAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.HideAllTargets));
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "hide-all-targets");
+      processAnnotationLesson(props.image, canvas, true, "hide-all-targets",group);
       disableHideAllTargetsBtn.value = true;
       disableShowAllTargetsBtn.value = false;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
@@ -189,7 +222,7 @@ export default defineComponent({
     const processTargetsList = async () => {
       if (targetsList.value?.length) {
         targetsList.value.forEach((obj: any) => {
-          processAnnotationLesson(props.image, canvas, false, obj);
+          processAnnotationLesson(props.image, canvas, false, obj,group);
         });
         const objShow = targetsList.value.filter((obj: any) => obj.visible === true);
         disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
@@ -266,10 +299,21 @@ export default defineComponent({
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard(false);
-      // if (!isShowWhiteBoard.value) {
-      //   processAnnotationLesson(props.image, canvas, true, null);
-      // }
+      if (isShowWhiteBoard.value && isLessonPlan.value) {
+        group.visible = false;
+      } 
+	  else if(!isShowWhiteBoard.value && isLessonPlan.value && group){
+        group.visible = true;
+		canvas.renderAll()
+	  }
     });
+
+	watch(isLessonPlan, () => {
+		if(!isLessonPlan.value){
+			canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "lesson-img" ));
+		}
+	})
+
     const imageUrl = computed(() => {
       const image = new Image();
       image.onload = imgLoad;
@@ -364,6 +408,19 @@ export default defineComponent({
         },
       });
     };
+	const listenBeforeTransform = () => {
+		canvas.on('before:transform',(e:any) => {
+			console.log(e)
+			if(e.transform.target.id === 'lesson-img'){
+				const sel = new fabric.ActiveSelection(canvas.getObjects().filter((item:any) => item.id !== 'lesson-img' && item.id !== 'annotation-lesson'), {
+				  canvas: canvas,
+				});
+				canvas.setActiveObject(sel);
+				canvas.discardActiveObject();
+				canvas.renderAll();
+			}
+		})
+	}
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async (event: any) => {
         if (toolSelected.value === "pen") {
@@ -413,7 +470,7 @@ export default defineComponent({
       canvas
         .getObjects()
         .filter((obj: any) => obj.type !== "path")
-        .filter((obj: any) => obj.id === isTeacher.value.id)
+        .filter((obj: any) => obj.id === isTeacher.value?.id)
         .forEach((item: any) => {
           item.selectable = true;
         });
@@ -436,11 +493,14 @@ export default defineComponent({
       });
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
-        processAnnotationLesson(props.image, canvas, false, event.target);
+		if(event.subTargets.length)
+        {
+			processAnnotationLesson(props.image, canvas, false, event.subTargets[0],group);
+		}
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (event.target && event.target.type !== "path") {
+			  if (event.target && (event.target.type !== "path" && event.target.type !== "group")) {
               isEditing.value = true;
               break;
             }
@@ -469,6 +529,7 @@ export default defineComponent({
     });
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
+	  listenBeforeTransform()
       listenToMouseUp();
       listenToMouseOut();
       listenToMouseOver();
@@ -483,6 +544,7 @@ export default defineComponent({
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
+	  initWrapperGroup();
       canvas.selectionFullyContained = false;
       try {
         await FontLoader.load();
@@ -494,7 +556,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId)) {
+        if ((obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId) &&  obj.type !== "group" )) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -574,7 +636,7 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson"));
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img" ));
           await store.dispatch("teacherRoom/setClearBrush", {});
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
@@ -631,8 +693,10 @@ export default defineComponent({
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
-      processAnnotationLesson(props.image, canvas, true, null);
+	  img.crossOrigin = 'Anonymous';
+	  group = processLessonImage(currentExposureItemMedia.value,canvas,img);
       objectTargetOnCanvas();
+	  console.log(canvas.getObjects())
       // showHideWhiteboard.value = isShowWhiteBoard.value;
       // if (isShowWhiteBoard.value) {
       //   canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -937,6 +1001,8 @@ export default defineComponent({
       hideAllTargetTextBtn,
       handleClickOutsideCanvas,
       wrapCanvasRef,
+	  zoomIn,
+	  zoomOut
     };
   },
 });

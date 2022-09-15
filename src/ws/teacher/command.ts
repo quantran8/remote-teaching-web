@@ -45,4 +45,6 @@ export enum TeacherWSCommand {
   UPDATE_SESSION_LESSON_AND_UNIT = "TeacherUpdateSessionLessonAndUnit",,
 
   TEACHER_RESET_ZOOM = "TeacherResetZoom",
+  TEACHER_ZOOM_SLIDE = "TeacherZoomSlide",
+  TEACHER_MOVE_ZOOMED_SLIDE = "TeacherMoveZoomedSlide",
 }

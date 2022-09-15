@@ -28,17 +28,23 @@
             :metadata="image.metaData"
             id="annotation-img"
             @img-load="imgLoad"
-          />
+          /> 
           <img
-            v-else-if="typeof imageUrl === 'string' && image"
+		     v-else-if="typeof imageUrl === 'string' && image"
             :src="imageUrl"
             id="annotation-img"
             v-show="!isGalleryView"
-            :style="[{ ...styles }]"
-          />
+			 @img-load="imgLoad"
+          /> 
+		  <!-- <img
+            id="annotation-img"
+			 :src="imageUrl"
+			 @img-load="imgLoad"/> -->
           <div ref="wrapCanvasRef" class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
+		  <Button class="btn-in" @click="zoomIn"> + </Button>
+		  <Button class="btn-out" @click="zoomOut"> - </Button>
         </div>
         <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>

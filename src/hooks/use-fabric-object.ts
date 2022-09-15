@@ -70,6 +70,10 @@ export const useFabricObject = () => {
   };
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
+	  if(options?.target?.type === 'group' && options.action === 'drag'){
+		console.log(options)
+		 dispatch("teacherRoom/setMoveZoomedSlide",{x:Math.floor(options.target.left) ?? 0, y: Math.floor(options.target.top) ?? 0});
+		}
       if (options?.target?.type === "textbox") {
 		if(!isChangeImage.value){
 			dispatch("teacherRoom/teacherModifyFabricObject", options?.target);

@@ -42,9 +42,16 @@ export default defineComponent({
     watch(isPointerMode, () => {
       return pointerStyle;
     });
-    const imageUrl = computed(() => {
-      return props.image ? props.image.url : {};
-    });
+    // const imageUrl = computed(() => {
+	  
+    //   return props.image ? props.image.url : {};
+    // });
+	const imageUrl = computed(() => {
+		const image = new Image();
+		image.onload = imgLoad;
+		image.src = props.image ? props.image.url : {};
+		return image.src;
+	  });
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
@@ -58,6 +65,8 @@ export default defineComponent({
     const oneTeacherShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const oneOneStatus = ref<boolean>(false);
     const oneOneIdNear = ref<string>("");
+
+	let group: any;
 
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
@@ -76,7 +85,7 @@ export default defineComponent({
       paletteShown,
       (currentValue) => {
         if (currentValue) {
-          cursorHand();
+        //   cursorHand();
         }
       },
       { immediate: true },
@@ -125,16 +134,22 @@ export default defineComponent({
       }
     });
     const { processPushShapes, addCircle, addSquare } = studentAddedShapes();
-    const { processAnnotationLesson } = annotationCurriculumStudent();
+    const { processAnnotationLesson, processLessonImage } = annotationCurriculumStudent();
     const processCanvasWhiteboard = () => {
       if (isShowWhiteBoard.value) {
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
-        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+		  canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson" && obj.id !== "lesson-img"));
+		  canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+		  if(group){
+			  group.visible = false;
+		  }
       } else {
-        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-        toolActive.value = "";
-        canvas.isDrawingMode = false;
-        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, null);
+		  canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+		  toolActive.value = "";
+		  canvas.isDrawingMode = false;
+		  processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, true, null,group);
+		  if(group && isLessonPlan.value){
+			  group.visible = true;
+		  }
       }
     };
     watch(isShowWhiteBoard, () => {
@@ -202,7 +217,7 @@ export default defineComponent({
             .getObjects()
             .filter((obj: any) => obj.id !== student.value.id)
             .filter((obj: any) => obj.id !== teacherForST.value.id)
-            .filter((obj: any) => obj.id !== "annotation-lesson")
+            .filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img")
             .filter((obj: any) => obj.type !== "path")
             .filter((obj: any) => !obj.objectId),
         );
@@ -218,7 +233,7 @@ export default defineComponent({
         canvas.remove(
           ...canvas
             .getObjects()
-            .filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson")
+            .filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson" && obj.id !== "lesson-img")
             .filter((obj: any) => !obj.objectId),
         );
       }
@@ -230,7 +245,7 @@ export default defineComponent({
         firstTimeVisit.value = true;
       } else if (studentShapes.value && studentShapes.value.length === 0) {
         canvas.remove(
-          ...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson"),
+          ...canvas.getObjects().filter((obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson" && obj.id !== "lesson-img"),
         );
       }
     });
@@ -269,7 +284,7 @@ export default defineComponent({
           objectCanvasProcess();
         }
       } else {
-        canvas.remove(...canvas.getObjects("path").filter((obj: any) => obj.tag === "student-other-strokes" || obj.tag === "self-strokes"));
+        canvas.remove(...canvas.getObjects("path").filter((obj: any) =>  obj.id !== "lesson-img" && (obj.tag === "student-other-strokes" || obj.tag === "self-strokes")));
       }
     };
     watch(studentStrokes, () => {
@@ -297,7 +312,7 @@ export default defineComponent({
           ...canvas
             .getObjects()
             .filter((obj: any) => obj.id === student.value.id)
-            .filter((obj: any) => obj.type !== "path"),
+            .filter((obj: any) => obj.type !== "path" && obj.type !== "group"),
         );
         studentShapes.value.forEach((item: any) => {
           if (item.userId === student.value.id) {
@@ -319,7 +334,7 @@ export default defineComponent({
           canvas.discardActiveObject();
           canvas
             .getObjects()
-            .filter((obj: any) => obj.type !== "path")
+            .filter((obj: any) => obj.type !== "path" && obj.type !== "group")
             .filter((obj: any) => obj.id !== studentOneAndOneId.value)
             .forEach((item: any) => {
               item.selectable = false;
@@ -332,7 +347,7 @@ export default defineComponent({
         await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
         oneOneStatus.value = false;
         if (student.value.id === oneOneIdNear.value) {
-          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== "lesson-img"));
           // render shapes objects again
           processCanvasWhiteboard();
           setTimeout(() => {
@@ -348,7 +363,9 @@ export default defineComponent({
     });
     const listenToMouseDown = () => {
       canvas.on("mouse:down", (event: any) => {
-        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, event.target);
+		console.log(event)
+		if(event.subTargets.length)
+        processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, event.subTargets[0],group);
       });
     };
     const listenToMouseUp = () => {
@@ -410,7 +427,7 @@ export default defineComponent({
     const targetsListProcess = () => {
       if (targetsList.value.length) {
         targetsList.value.forEach((obj: any) => {
-          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj);
+          processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj,group);
         });
       }
     };
@@ -424,21 +441,16 @@ export default defineComponent({
     );
 	const isImgProcessing = computed(() => store.getters["annotation/isImgProcessing"]);
 
-    const imgLoad = async (e: UIEvent) => {
+    const imgLoad = async (e: Event) => {
       const img = e?.target as HTMLImageElement;
       if (img && img.naturalWidth && img.naturalHeight) {
         await store.dispatch("annotation/setImgDimension", { width: img.naturalWidth, height: img.naturalHeight });
       } else {
         await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
       }
-      processAnnotationLesson(
-        canvas,
-        props.image,
-        containerRef,
-        isShowWhiteBoard,
-        true,
-        toggleTargets.value.visible ? "show-all-targets" : "hide-all-targets",
-      );
+	  img.crossOrigin = 'Anonymous';
+	  if(!isImgProcessing.value)
+	  group = processLessonImage(currentExposureItemMedia.value,canvas,img,containerRef,isShowWhiteBoard.value,toggleTargets.value.visible );
       if (!firstTimeLoadTargets.value && !isImgProcessing.value) {
 		const lessonAnnotation = canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson").map((item:any) => {
 			return {
@@ -553,7 +565,7 @@ export default defineComponent({
       async (value) => {
         const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
         if (!oneToOneUserId) {
-          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId));
+        //   await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId && obj.id !== "lesson-img"));
         }
         displayFabricItems(canvas, value);
       },

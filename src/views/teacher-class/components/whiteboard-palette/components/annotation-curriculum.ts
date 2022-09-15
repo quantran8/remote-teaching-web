@@ -15,47 +15,46 @@ export const annotationCurriculum = () => {
       visible: visible,
     });
   };
-  const eventSelfClick = (event: any, tagObject: any, canvas: any, item: any) => {
+  const eventSelfClick = (event: any, tagObject: any, canvas: any, item: any, group:any) => {
     if (event !== null && event.tag === tagObject.tag && event.id === "annotation-lesson") {
       if (event.stroke === "transparent") {
-        setStrokeColor(canvas, event, item.color);
+        setStrokeColor(canvas, event, item.color,group);
         toggleTargetTeacher(event, true);
       } else {
-        setStrokeColor(canvas, event, "transparent");
+        setStrokeColor(canvas, event, "transparent",group);
         toggleTargetTeacher(event, false);
       }
     }
   };
-  const eventStudentClick = (event: any, tagObject: any, canvas: any, item: any) => {
+  const eventStudentClick = (event: any, tagObject: any, canvas: any, item: any, group: any) => {
     if (event !== null && event.tag === tagObject.tag && event.visible && event.id !== "annotation-lesson") {
-      setStrokeColor(canvas, tagObject, item.color);
+      setStrokeColor(canvas, tagObject, item.color,group);
     }
     if (event !== null && event.tag === tagObject.tag && !event.visible && event.id !== "annotation-lesson") {
-      setStrokeColor(canvas, tagObject, "transparent");
+      setStrokeColor(canvas, tagObject, "transparent",group);
     }
   };
-  const processShape = (bindAll: any, event: any, tagObject: any, canvas: any, item: any, shape: any) => {
+  const processShape = (bindAll: any, event: any, tagObject: any, canvas: any, item: any, group: any) => {
     if (!bindAll) {
-      eventSelfClick(event, tagObject, canvas, item);
-      eventStudentClick(event, tagObject, canvas, item);
+      eventSelfClick(event, tagObject, canvas, item,group);
+      eventStudentClick(event, tagObject, canvas, item,group);
     } else {
       if (event === "show-all-targets") {
         toggleTargetTeacher(tagObject, true);
       } else if (event === "hide-all-targets") {
         toggleTargetTeacher(tagObject, false);
-      } else {
-        canvas.add(shape);
       }
     }
   };
-  const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any, rotation?: number) => {
+  const addAnnotationLesson = (propImage: any, item: any, canvas: any, bindAll: boolean, event: any,group: any) => {
     const xMetadata = propImage.metaData.x;
     const yMetadata = propImage.metaData.y;
-    const imgWidth = getters["annotation/imgWidth"];
-    const imgHeight = getters["annotation/imgHeight"];
+	const imgWidth = getters["annotation/imgWidth"];
+	const imgHeight = getters["annotation/imgHeight"];
+	const rotation = propImage.metaData?.rotate;
 	const ratioWidth = rotation && (rotation / 90) % 2  ? imgHeight : imgWidth
 	const ratioHeight = rotation && (rotation / 90) % 2  ? imgWidth : imgHeight
-    const { imgLeftCrop, ratio } = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
+    const { imgLeftCrop, ratio,max, renderWidth,renderHeight } = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle
@@ -73,15 +72,13 @@ export const annotationCurriculum = () => {
       strokeWidth: 5 * ratio,
       id: "annotation-lesson",
       perPixelTargetFind: true,
+	  selectable : false,
+	  hasControls : false,
+	  hasBorders : false,
+	  hoverCursor : "cursor",
+
     };
 
-	const imageRatio = Math.max(
-		imgWidth / DefaultCanvasDimension.width,
-		imgHeight / DefaultCanvasDimension.height,
-	  );
-	  const max = imgWidth / DefaultCanvasDimension.width === imageRatio ? 'x' : 'y';
-	  const renderWidth = imgWidth / imageRatio;
-	  const renderHeight = imgHeight / imageRatio;
 
 	  const clip = {
 		x: Math.round((DefaultCanvasDimension.width - renderWidth) / 2),
@@ -107,10 +104,10 @@ export const annotationCurriculum = () => {
           ...commonProps,
         });
         rect.rotate(item.rotate);
-		rect.clipPath = clipPath;
+		// rect.clipPath = clipPath;
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
-        processShape(bindAll, event, tagObject, canvas, item, rect);
-        break;
+        processShape(bindAll, event, tagObject, canvas, item, group);
+		return rect;
       }
       case (item.type = 1): {
         circle = new fabric.Circle({
@@ -121,36 +118,106 @@ export const annotationCurriculum = () => {
           ...commonProps,
         });
         circle.rotate(item.rotate);	
-		circle.clipPath = clipPath;
+		// circle.clipPath = clipPath;
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
-        processShape(bindAll, event, tagObject, canvas, item, circle);
-        break;
+        processShape(bindAll, event, tagObject, canvas, item, group);
+        return circle;
       }
     }
   };
-  const processAnnotationLesson = (propImage: any, canvas: any, bindAll: boolean, event: any) => {
+  const processAnnotationLesson = (propImage: any, canvas: any, bindAll: boolean, event: any, group: any) => {
     if (!canvas) return;
     if (!propImage) return;
+	const all:any = [];
     const annotations = propImage.metaData?.annotations;
     if (annotations && annotations.length) {
 	  if(!isImgProcessing.value){
 		annotations.forEach((item: any) => {
-			addAnnotationLesson(propImage, item, canvas, bindAll, event, propImage.metaData?.rotate);
+		  const shape = addAnnotationLesson(propImage, item, canvas, bindAll, event,group);
+		  all.push(shape)
 		  });
 	  }  
     } else {
       canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
     }
-    canvas.getObjects().forEach((obj: any) => {
-      if (obj.id === "annotation-lesson") {
-        obj.selectable = false;
-        obj.hasControls = false;
-        obj.hasBorders = false;
-        obj.hoverCursor = "cursor";
-      }
-    });
+
+	return all;
   };
+  const processLessonImage = (propImage: any, canvas: any,imgEl: any,) => {
+	const imgWidth = getters["annotation/imgWidth"];
+	const imgHeight = getters["annotation/imgHeight"];
+	const annotation = propImage.image?.metaData?.annotations;
+	const canvasGroup = canvas.getObjects().find((item:any) => item.id === 'lesson-img');
+	const imageRatio = Math.max(
+		imgWidth / DefaultCanvasDimension.width,
+		imgHeight / DefaultCanvasDimension.height,
+	  );
+	  const renderWidth = imgWidth / imageRatio;
+	  const renderHeight = imgHeight / imageRatio;
+	if(!propImage.image?.url){
+		return;
+	}
+	if(canvasGroup){
+		canvas.remove(canvasGroup)
+	}
+
+	const clipPath = new fabric.Rect({
+		width:renderWidth,
+		height:renderHeight,
+		left:(DefaultCanvasDimension.width - renderWidth) / 2,
+		top:0,
+		absolutePositioned: true ,
+	})
+	console.log(propImage.image.metaData)
+	const angle = propImage.image.metaData ?((propImage.image.metaData.width > 0 && propImage.image.metaData.height > 0) ? 0 : propImage.image.metaData.rotate) : 0
+	const Image = new fabric.Image(imgEl,{
+		id:'lesson-img',
+		clipPath,
+		originX:'center',
+		originY:'center',
+		angle,
+		left:DefaultCanvasDimension.width /2,
+		top:0,
+		selectable:true,
+		hasBorders:false,
+		hasControls:false
+
+	});
+	Image.scaleToWidth(DefaultCanvasDimension.width)
+	Image.scaleToHeight(DefaultCanvasDimension.height);
+	const Group = new fabric.Group([Image],{
+		id:'lesson-img',
+		clipPath,
+		originX:'center',
+		originY:'center',
+		left:DefaultCanvasDimension.width /2,
+		top:DefaultCanvasDimension.height / 2,
+		selectable:true,
+		hoverCursor: "pointer",
+		scaleX:propImage.image?.metaData?.scaleX ?? 1,
+		scaleY:propImage.image?.metaData?.scaleY ?? 1,
+		hasBorders:false,
+		hasControls:false,
+		layout: 'clip-path',
+		interactive: true,
+		subTargetCheck: true,
+		stroke:'black'
+
+	});
+	if(annotation && annotation.length){
+		const data =    processAnnotationLesson(propImage.image, canvas, true, null,Group);
+		data?.forEach((item:any) => {
+			Group.addWithUpdate(item);
+		})
+	}
+
+	canvas.add(Group);
+
+	return Group
+  };
+
   return {
     processAnnotationLesson,
+	processLessonImage,
   };
 };

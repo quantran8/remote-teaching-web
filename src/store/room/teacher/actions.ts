@@ -436,8 +436,17 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setClearBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
   },
-  async setResetZoom({ state }, payload: {}) {
+  async setResetZoom({ state }, payload: any) {
     await state.manager?.WSClient.sendRequestResetZoom(payload);
+  },
+  async setZoomSlide({ state }, payload: number) {
+	console.log(payload)
+    await state.manager?.WSClient.sendRequestZoomSlide(payload);
+  },
+  async setMoveZoomedSlide({ state }, payload: {x:number, y: number}) {
+	console.log(payload)
+
+    await state.manager?.WSClient.sendRequestMoveZoomedSlide(payload);
   },
   async setDeleteBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestDeleteBrush(payload);
