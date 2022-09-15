@@ -149,7 +149,14 @@ const getters: LessonGetters<LessonState, any> = {
   },
   imgCoords(s:LessonState){
 	return s.imgCoords;
+  },
+  previewObjects(s:LessonState){
+	return s.previewObjects;
+  },
+  isShowPreviewCanvas(s:LessonState){
+	return s.isShowPreviewCanvas;
   }
+  
 };
 
 export default getters;

@@ -49,4 +49,12 @@
     background-color: black;
     border: solid 1px white;
   }
+  .target-image {
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	z-index: 1;
+}
 }

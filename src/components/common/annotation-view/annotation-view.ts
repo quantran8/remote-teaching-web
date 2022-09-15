@@ -93,7 +93,7 @@ export default defineComponent({
 			return;
 		}
 		let zoom = 0;
-		if(!prevValue ){
+		if(!prevValue && currentValue){
 			zoom = currentValue - DEFAULT_CANVAS_ZOOM_RATIO;
 		}
 		if(currentValue && prevValue){

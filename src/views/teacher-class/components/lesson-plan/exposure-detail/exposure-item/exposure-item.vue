@@ -13,6 +13,7 @@
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
+			<img v-if="item.image.metaData && item.image.metaData.annotations.length" src="@/assets/icons/bullseye.png" class="target-image"/>
           <CropImage
             v-if="item.image.metaData && item.image.metaData.width > 0 && item.image.metaData.height > 0"
             :imageUrl="item.image.url"

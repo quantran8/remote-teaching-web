@@ -199,6 +199,12 @@ const mutations: LessonMutation<LessonState> = {
   },
   setImgCoords(s: LessonState, p:{x: number, y: number}| undefined){
 	s.imgCoords = p;
+  },
+  setLessonPreviewObjects (s: LessonState, p: string){
+	s.previewObjects = p;
+  },
+  setShowPreviewCanvas (s: LessonState, p: boolean){
+	s.isShowPreviewCanvas = p;
   }
 };
 

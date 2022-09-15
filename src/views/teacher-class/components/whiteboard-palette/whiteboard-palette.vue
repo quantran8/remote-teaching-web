@@ -54,6 +54,7 @@
     </div>
     <div v-if="!isGalleryView && image && image.metaData && !showHideWhiteboard" class="target-actions">
       <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+	  <Button  v-if="hasTargets" @click="showHidePreviewModal" :disabled="disablePreviewBtn">Preview</Button>
       <Space v-if="hasTargets">
         <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">{{ showAllTargetTextBtn }}</Button>
         <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">{{ hideAllTargetTextBtn }}</Button>

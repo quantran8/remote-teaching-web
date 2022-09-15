@@ -80,6 +80,7 @@ export default defineComponent({
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
 	const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
+	const isShowPreviewCanvas = computed(() => store.getters['lesson/isShowPreviewCanvas']);
 	const prevZoomRatio = ref(1);
 	const prevCoords = ref({x:0,y:0});
 
@@ -124,7 +125,6 @@ export default defineComponent({
 		if(!isLessonPlan.value){
 			return;
 		}
-
 		if(canvas.getZoom() > 1)
 		{
 		zoomRatio.value -= 0.1;
@@ -138,6 +138,31 @@ export default defineComponent({
 		}
 		 
 	}
+
+	const handleCloneCanvasObjects = () => {
+		 group.clone((cloned: any) => {
+			cloned.getObjects().forEach((obj: any) => {
+				if(obj.id !== 'lesson-img'){
+					obj.fill = obj.realFill ?? 'transparent';
+					obj.opacity = obj.realOpacity ?? 1;
+					obj.stroke = obj.color ?? 'black';
+				}
+			});
+
+			const objectToString = `{"objects":[${JSON.stringify(cloned)}], "background":"transparent"}`;
+			store.dispatch('lesson/setLessonPreviewObjects',objectToString,{root:true});
+
+		},['id','realFill','realOpacity','color'])
+	}
+
+	const showHidePreviewModal = async(isShowPreview = true) => {
+			await store.dispatch('lesson/setShowPreviewCanvas',isShowPreview,{root:true});
+	}
+
+	watch(isShowPreviewCanvas,(currentValue) => {
+		disablePreviewBtn.value = currentValue;
+	})
+
     watch(currentExposureItemMedia, async(currentItem, prevItem) => {
       if (currentItem) {
 		zoomRatio.value = 1;
@@ -147,6 +172,8 @@ export default defineComponent({
 			canvas.zoomToPoint(point,1)
             canvas.remove(...canvas.getObjects());
 			await store.dispatch("lesson/setImgCoords",undefined,{root:true});
+			showHidePreviewModal(false);
+			disablePreviewBtn.value =false;
 
         }
       }
@@ -182,10 +209,12 @@ export default defineComponent({
     });
     const showAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.ShowAllTargets));
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
+    const disablePreviewBtn: Ref<boolean> = ref(false);
     const showAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "show-all-targets",group);
       disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
+	  disablePreviewBtn.value = true;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: true,
@@ -197,6 +226,7 @@ export default defineComponent({
       processAnnotationLesson(props.image, canvas, true, "hide-all-targets",group);
       disableHideAllTargetsBtn.value = true;
       disableShowAllTargetsBtn.value = false;
+	  disablePreviewBtn.value = false;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: false,
@@ -694,7 +724,10 @@ export default defineComponent({
       }
  
 	  img.crossOrigin = 'Anonymous';
-	  group = processLessonImage(currentExposureItemMedia.value,canvas,img,point,!firstLoadImage.value);
+	  group = processLessonImage(currentExposureItemMedia.value,canvas,point,!firstLoadImage.value,img);
+	  if(currentExposureItemMedia.value.image.metaData && currentExposureItemMedia.value.image.metaData.annotations.length){
+		  handleCloneCanvasObjects();
+	  }
       objectTargetOnCanvas();
 	  if (!firstLoadImage.value) {
         firstLoadImage.value = true;
@@ -1013,7 +1046,9 @@ export default defineComponent({
       handleClickOutsideCanvas,
       wrapCanvasRef,
 	  zoomIn,
-	  zoomOut
+	  zoomOut,
+	  showHidePreviewModal,
+	  disablePreviewBtn
     };
   },
 });

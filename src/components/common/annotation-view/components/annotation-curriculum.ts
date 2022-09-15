@@ -94,26 +94,6 @@ export const annotationCurriculumStudent = () => {
       perPixelTargetFind: true,
     };
 
-	const imageRatio = Math.max(imgWidth / DefaultCanvasDimension.width, imgHeight / DefaultCanvasDimension.height);
-	const max = imgWidth / DefaultCanvasDimension.width === imageRatio ? "x" : "y";
-	const renderWidth = imgWidth / imageRatio;
-	const renderHeight = imgHeight / imageRatio;
-
-	const clip = {
-		x: Math.round((DefaultCanvasDimension.width - renderWidth) / 2),
-		y: 0,
-		width: Math.round(renderWidth),
-		height: Math.round(renderHeight),
-		max,
-	};
-
-	const clipPath = new fabric.Rect({
-		width: clip.width,
-		height: clip.height,
-		top: clip.max === "x" ? clip.y - commonProps.top : -item.height * ratio,
-		left: clip.max === "y" ? clip.x - commonProps.left : -item.height * ratio,
-	});
-
     switch (item.type) {
       case (item.type = 0):
         rect = new fabric.Rect({
@@ -232,7 +212,7 @@ export const annotationCurriculumStudent = () => {
 		left,
 		top,
 		selectable:isPaletteVisible.value,
-		visible:true,
+		visible:!isShowWhiteBoard,
 		hoverCursor: "pointer",
 		scaleX:propImage?.metaData?.scaleX ?? 1,
 		scaleY:propImage?.metaData?.scaleY ?? 1,

@@ -66,12 +66,14 @@ export const annotationCurriculum = () => {
     const commonProps = {
       originX: "center",
       originY: "center",
+	  angle:item.rotate,
       strokeUniform: true,
       fill: DEFAULT_FILL,
       left: xShape,
       top: yShape,
       realFill: item.fill,
       realOpacity: item.opacity,
+	  color:item.color,
       stroke: "transparent",
       strokeWidth: 5 * ratio,
       id: "annotation-lesson",
@@ -82,23 +84,6 @@ export const annotationCurriculum = () => {
 	  hoverCursor : "cursor",
 
     };
-
-
-	  const clip = {
-		x: Math.round((DefaultCanvasDimension.width - renderWidth) / 2),
-		y: 0,
-		width: Math.round(renderWidth),
-		height: Math.round(renderHeight),
-		max,
-	  };	
-
-	  const clipPath = new fabric.Rect({
-		width:clip.width,
-		height:clip.height,
-		top:clip.max === 'x' ? (clip.y - commonProps.top) : -item.height*ratio,
-		left:clip.max === 'y' ? (clip.x - commonProps.left) : -item.height*ratio,
-	  });
-
     switch (item.type) {
       case (item.type = 0): {
         rect = new fabric.Rect({
@@ -107,8 +92,6 @@ export const annotationCurriculum = () => {
           tag: "rect-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
-        rect.rotate(item.rotate);
-		// rect.clipPath = clipPath;
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, group);
 		return rect;
@@ -121,8 +104,6 @@ export const annotationCurriculum = () => {
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
-        circle.rotate(item.rotate);	
-		// circle.clipPath = clipPath;
         tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
         processShape(bindAll, event, tagObject, canvas, item, group);
         return circle;
@@ -147,11 +128,11 @@ export const annotationCurriculum = () => {
 
 	return all;
   };
-  const processLessonImage = (propImage: any, canvas: any,imgEl: any,point: any, firstLoad: any) => {
+  const processLessonImage = (propImage: any, canvas: any,point: any, firstLoad: any, imgEl: any) => {
 	const imgWidth = getters["annotation/imgWidth"];
 	const imgHeight = getters["annotation/imgHeight"];
 	const annotation = propImage.image?.metaData?.annotations;
-	const canvasGroup = canvas.getObjects().find((item:any) => item.id === 'lesson-img');
+	const canvasGroup = canvas.getObjects().find((item:any) => item?.id === 'lesson-img');
 	const imageRatio = Math.max(
 		imgWidth / DefaultCanvasDimension.width,
 		imgHeight / DefaultCanvasDimension.height,
