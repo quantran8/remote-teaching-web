@@ -147,6 +147,9 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearAllBrush(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_ALL_BRUSH_STROKES, {});
   }
+  sendRequestResetZoom(payload: any) {
+    return this.send(WSCmd.TEACHER_RESET_ZOOM, {});
+  }
   sendRequestDeleteBrush(payload: any) {
     return this.send(WSCmd.TEACHER_UNDO_BRUSH, {});
   }
