@@ -112,6 +112,7 @@ export class ParentStudentCardLocale {
 export class ChangeLessonUnitLocale {
   static SetLessonAndUnit = "change_lesson_unit.set_lesson_and_unit";
   static Ok = "change_lesson_unit.ok";
+  static MarkCurrentLessonCompleteForClass = "change_lesson_unit.mark_current_lesson_complete_for_class";
 }
 export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";

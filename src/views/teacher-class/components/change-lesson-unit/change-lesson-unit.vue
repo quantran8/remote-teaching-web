@@ -31,11 +31,17 @@
           </Space>
         </div>
       </Row>
+      <Row align="middle" class="change-lesson__mb--default">
+        <div class="ant-col-24 ant-col-sm-24">
+          <Checkbox v-model:checked="isComplete"><label>{{ MarkCurrentLessonCompleteForClass }} {{ classInfo?.className }}</label></Checkbox>
+        </div>
+      </Row>
+
       <Row type="flex" justify="end" class="change-lesson__mb--small">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button
-            :disabled="!currentLesson || !currentUnit || classInfo.lesson === currentLesson && classInfo.unit === currentUnit"
+            :disabled="!currentLesson || !currentUnit || (classInfo.lesson === currentLesson && classInfo.unit === currentUnit)"
             width="100px"
             @click="handleSubmit"
             type="primary"
@@ -44,9 +50,6 @@
             {{ Ok }}
           </Button>
         </Space>
-      </Row>
-      <Row type="flex" justify="center">
-        <span class="change-lesson__mess-teacher-error">{{ messageUpdateLessonAndUnit }}</span>
       </Row>
     </Modal>
   </div>

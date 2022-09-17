@@ -1,6 +1,6 @@
 import { defineComponent, computed, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { Modal, Switch, Select, Button, Skeleton, Divider, Row, Space, Spin, notification } from "ant-design-vue";
+import { Modal, Switch, Select, Button, Skeleton, Divider, Row, Space, Spin, Checkbox, notification } from "ant-design-vue";
 import { UnitAndLesson, MediaStatus, ClassRoomModel } from "@/models";
 import { fmtMsg } from "vue-glcommonui";
 import { DeviceTesterLocale, ChangeLessonUnitLocale, CommonLocale } from "@/locales/localeid";
@@ -18,6 +18,7 @@ export default defineComponent({
     Row,
     Space,
     Spin,
+    Checkbox,
   },
   emits: ["go-to-class", "on-join-session", "on-close-modal"],
   async created() {
@@ -34,11 +35,12 @@ export default defineComponent({
     const listLessonByUnit = ref();
     const preventCloseModal = ref(true);
     const loadingInfo = ref(false);
+    const isComplete = ref(false);
     const messageUpdateLessonAndUnit = ref("");
     const unitInfo = ref<UnitAndLesson[]>();
     const classInfo = computed<ClassRoomModel>(() => getters["teacherRoom/info"]?.classInfo);
-
-    const getListLessonByUnit = async () => {
+   
+	const getListLessonByUnit = async () => {
       if (!classInfo.value) return;
       try {
         loadingInfo.value = true;
@@ -113,7 +115,7 @@ export default defineComponent({
       loading.value = true;
       try {
         const unitId = unitInfo.value?.find((unit: UnitAndLesson) => unit.unit === currentUnit.value)?.unitId as number;
-        await dispatch("teacherRoom/setLessonAndUnit", { unit: currentUnit.value, lesson: currentLesson.value, unitId });
+        await dispatch("teacherRoom/setLessonAndUnit", { unit: currentUnit.value, lesson: currentLesson.value, unitId, isComplete: isComplete.value });
         loading.value = false;
         handleCancel();
       } catch (error) {
@@ -135,6 +137,7 @@ export default defineComponent({
     const Unit = computed(() => fmtMsg(DeviceTesterLocale.Unit));
     const Cancel = computed(() => fmtMsg(DeviceTesterLocale.Cancel));
     const Ok = computed(() => fmtMsg(ChangeLessonUnitLocale.Ok));
+    const MarkCurrentLessonCompleteForClass = computed(() => fmtMsg(ChangeLessonUnitLocale.MarkCurrentLessonCompleteForClass));
 
     return {
       SetLessonAndUnit,
@@ -143,6 +146,7 @@ export default defineComponent({
       Unit,
       Cancel,
       Ok,
+      MarkCurrentLessonCompleteForClass,
       visible,
       showModal,
       currentUnit,
@@ -157,6 +161,7 @@ export default defineComponent({
       messageUpdateLessonAndUnit,
       loading,
       classInfo,
+      isComplete,
     };
   },
 });

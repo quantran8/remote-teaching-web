@@ -523,11 +523,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
     //   Logger.log(error);
     // }
   },
-  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number }) {
+  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number; isComplete: number }) {
     if (!state.info?.id) {
       return;
     }
-    const contents = state.info?.lessonPlan?.contents;
 
     const data: UpdateLessonAndUnitModel = {
       unit: p.unit,
@@ -536,12 +535,14 @@ const actions: ActionTree<TeacherRoomState, any> = {
       sessionId: state.info?.id as string,
     };
 
-	
     const roomInfo = await RemoteTeachingService.teacherUpdateLessonAndUnit(data);
-	for (const content of contents ?? []) {
-		await dispatch("endExposure", { id: content.id });
-	}
-	commit({ type: "lesson/clearLessonData" }, { root: true });
+    if (p.isComplete) {
+      const contents = state.info?.lessonPlan?.contents;
+      for (const content of contents ?? []) {
+        await dispatch("endExposure", { id: content.id });
+      }
+    }
+    commit({ type: "lesson/clearLessonData" }, { root: true });
     await commit("setRoomInfo", roomInfo);
     await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
