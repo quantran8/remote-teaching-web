@@ -165,5 +165,8 @@
 
 	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
 	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
-	"change_lesson_unit.ok": "Ok"
+	"change_lesson_unit.ok": "Ok",
+
+	"help.menu.help":"Help",
+	"help.menu.contact":"Contact Us"
 }

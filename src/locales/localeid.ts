@@ -286,3 +286,8 @@ export class ResourcesMenuLocale {
   static ResourcesMenuLMS = "resources.menu.lms";
   static ResourcesParentPortal = "resources.menu.parentportal";
 }
+
+export class HelpMenuLocal {
+	static Help = "help.menu.help";
+	static Contact = "help.menu.contact";
+  }
