@@ -1,17 +1,28 @@
 <template>
-  <vue-final-modal v-model="visible" content-class="modal-content" :resize="true" :drag="true" :drag-selector="'.final-modal__header'" :click-to-close="false">
+  <vue-final-modal
+    v-model="visible"
+    content-class="modal-content"
+    :resize="true"
+    :drag="true"
+    :drag-selector="'.final-modal__header--layer'"
+    :click-to-close="false"
+    :min-width="150"
+    :min-height="150"
+  >
     <div class="final-modal">
       <div class="final-modal__header">
-        <div class="final-modal__header--title">{{ title }}</div>
-        <div class="final-modal__header--icon-wrap" @click="toggleModal">
-          <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
+        <div class="final-modal__header--layer">
+          <div class="final-modal__header--icon-wrap" @click="toggleModal">
+            <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
         </div>
+        <div class="final-modal__header--title">{{ title }}</div>
       </div>
       <div class="final-modal__content nice-scroll">
         <slot name="final-modal-content"></slot>
@@ -41,22 +52,32 @@
   height: 100%;
   overflow: hidden;
   &__header {
+    position: relative;
     &:hover {
       cursor: move;
     }
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
+    padding: 23px 16px;
     overflow: hidden;
     background: white;
+    display: flex;
+    align-items: center;
     &--title {
       font-weight: 600;
       font-size: 20px;
+      user-select: none;
     }
-    &--title {
-      font-weight: 600;
-      font-size: 20px;
+    &--layer {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+      z-index: 1;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 16px;
     }
     &--icon-wrap {
       width: 32px;
