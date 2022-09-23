@@ -19,6 +19,8 @@ export default defineComponent({
         nativeControlsForTouch: false,
         autoplay: true,
         controls: true,
+		loop:true,
+		muted:true,
         logo: { enabled: false },
         techOrder: [
           technologyType.azureHtml5JS,

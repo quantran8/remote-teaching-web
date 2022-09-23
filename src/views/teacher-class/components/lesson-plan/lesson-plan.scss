@@ -1,3 +1,5 @@
+@import "../../../../style/abstracts/variables";
+
 .lesson-container {
   height: 100%;
   //overflow: hidden;
@@ -106,7 +108,7 @@
 
     .activities {
       flex: 1;
-	  overscroll-behavior: contain;
+      overscroll-behavior: contain;
     }
   }
 
@@ -182,6 +184,24 @@
     }
     &-info {
       display: flex;
+    }
+  }
+  &__info-modal {
+	width: 100%;
+	height: 100%;
+    display: flex;
+    &--empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+      margin: 0 auto;
+      text-align: center;
+      padding-bottom: 10%;
+      width: 100%;
+      height: 100%;
     }
   }
 }
