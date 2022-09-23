@@ -192,6 +192,8 @@ export class TeacherClassLessonPlan {
   static RelatedSlides = "teacher_class_lesson_plan.related_slides";
   static ComponentSlides = "teacher_class_lesson_plan.component_slides";
   static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
+  static NoData = "no_data";
+  static TeachingNotes = "teaching_notes";
 }
 
 export class TeacherClassGallery {
