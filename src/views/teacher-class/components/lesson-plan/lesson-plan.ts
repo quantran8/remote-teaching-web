@@ -38,8 +38,6 @@ export default defineComponent({
     const lessonCompleteText = computed(() => fmtMsg(TeacherClassLessonPlan.LessonComplete));
     const noDataText = computed(() => fmtMsg(TeacherClassLessonPlan.NoData));
     const teachingNotesText = computed(() => fmtMsg(TeacherClassLessonPlan.TeachingNotes));
-
-
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(() => getters["lesson/activityStatistic"]);
     const currentExposure = computed(() => getters["lesson/currentExposure"]);
@@ -52,10 +50,8 @@ export default defineComponent({
     const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
     const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
-
     const nextCurrentExposure = computed(() => getters["lesson/nextExposure"]);
     const prevCurrentExposure = computed(() => getters["lesson/previousExposure"]);
-
     const canNext = computed(() => (nextExposureItemMedia.value || nextCurrentExposure.value ? true : false));
     const canPrev = computed(() => (prevExposureItemMedia.value || prevCurrentExposure ? true : false));
     const iconNext = computed(() => (canNext.value ? IconNext : IconNextDisable));
@@ -254,6 +250,12 @@ export default defineComponent({
 		anim.value?.stop();
 	  }
     });
+
+	watch(isShowExposureDetail, (currentValue: boolean) => {
+		if(!currentValue && infoModalShown.value) {
+			infoModalShown.value = false;
+		}
+	})
 
     return {
       isGalleryView,

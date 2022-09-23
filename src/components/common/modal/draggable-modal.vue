@@ -6,8 +6,10 @@
     :drag="true"
     :drag-selector="'.final-modal__header--layer'"
     :click-to-close="false"
-    :min-width="150"
-    :min-height="150"
+    :min-width="170"
+    :min-height="170"
+	:hide-overlay="true"
+	:prevent-click="true"
   >
     <div class="final-modal">
       <div class="final-modal__header">
