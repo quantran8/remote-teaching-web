@@ -1,36 +1,38 @@
 <template>
-  <vue-final-modal
-    v-model="visible"
-    content-class="modal-content"
-    :resize="true"
-    :drag="true"
-    :drag-selector="'.final-modal__header--layer'"
-    :click-to-close="false"
-    :min-width="170"
-    :min-height="170"
-	:hide-overlay="true"
-	:prevent-click="true"
-  >
-    <div class="final-modal">
-      <div class="final-modal__header">
-        <div class="final-modal__header--layer">
-          <div class="final-modal__header--icon-wrap" @click="toggleModal">
-            <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
+  <Teleport to="body">
+    <vue-final-modal
+      v-model="visible"
+      content-class="modal-content"
+      :resize="true"
+      :drag="true"
+      :drag-selector="'.final-modal__header--layer'"
+      :click-to-close="false"
+      :min-width="170"
+      :min-height="170"
+      :hide-overlay="true"
+      :prevent-click="true"
+    >
+      <div class="final-modal">
+        <div class="final-modal__header">
+          <div class="final-modal__header--layer">
+            <div class="final-modal__header--icon-wrap" @click="toggleModal">
+              <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </div>
           </div>
+          <div class="final-modal__header--title">{{ title }}</div>
         </div>
-        <div class="final-modal__header--title">{{ title }}</div>
+        <div class="final-modal__content nice-scroll">
+          <slot name="final-modal-content"></slot>
+        </div>
       </div>
-      <div class="final-modal__content nice-scroll">
-        <slot name="final-modal-content"></slot>
-      </div>
-    </div>
-  </vue-final-modal>
+    </vue-final-modal>
+  </Teleport>
 </template>
 <script lang="ts" src="./draggable-modal.ts"></script>
 <style lang="scss">
@@ -57,6 +59,13 @@
     position: relative;
     &:hover {
       cursor: move;
+      // prevent text selection when move the modal
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     padding: 23px 16px;
     overflow: hidden;
@@ -66,7 +75,7 @@
     &--title {
       font-weight: 600;
       font-size: 20px;
-      user-select: none;
+	  padding-right: 25px;
     }
     &--layer {
       top: 0;
