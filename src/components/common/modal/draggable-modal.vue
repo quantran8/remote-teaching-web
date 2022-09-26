@@ -27,7 +27,7 @@
           </div>
           <div class="final-modal__header--title">{{ title }}</div>
         </div>
-        <div class="final-modal__content nice-scroll">
+        <div class="final-modal__content final-modal-scroll">
           <slot name="final-modal-content"></slot>
         </div>
       </div>
@@ -75,7 +75,7 @@
     &--title {
       font-weight: 600;
       font-size: 20px;
-	  padding-right: 25px;
+      padding-right: 25px;
     }
     &--layer {
       top: 0;
