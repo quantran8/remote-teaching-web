@@ -9,6 +9,7 @@ import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
 import { ErrorCode } from "@/utils/utils";
 import { TeacherClass } from "./../../locales/localeid";
 import { UserRole } from "@/store/app/state";
+
 const fpPromise = FingerprintJS.load();
 import {
   TeacherCard,
