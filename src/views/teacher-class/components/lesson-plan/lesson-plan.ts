@@ -85,7 +85,6 @@ export default defineComponent({
       } else {
         isOneOneMode.value = value;
       }
-	  infoModalShown.value = false;
     });
 
     const toggleInfoModal = () => {
