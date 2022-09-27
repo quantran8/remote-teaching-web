@@ -36,9 +36,6 @@ export default defineComponent({
     const pageText = computed(() => fmtMsg(TeacherClassLessonPlan.Page));
     const transitionText = computed(() => fmtMsg(TeacherClassLessonPlan.Transition));
     const lessonCompleteText = computed(() => fmtMsg(TeacherClassLessonPlan.LessonComplete));
-    const noDataText = computed(() => fmtMsg(TeacherClassLessonPlan.NoData));
-    const teachingNotesText = computed(() => fmtMsg(TeacherClassLessonPlan.TeachingNotes));
-
 
     const exposures = computed(() => getters["lesson/exposures"]);
     const activityStatistic = computed(() => getters["lesson/activityStatistic"]);
@@ -296,8 +293,6 @@ export default defineComponent({
       toggleInfoModal,
       lottieOption,
       handleAnimation,
-	  noDataText,
-	  teachingNotesText
     };
   },
 });

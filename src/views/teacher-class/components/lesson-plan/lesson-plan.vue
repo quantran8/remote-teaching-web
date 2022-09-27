@@ -1,7 +1,7 @@
 <template>
   <div class="lesson-container">
     <div>
-      <DraggableModal :visible="infoModalShown" :toggleModal="toggleInfoModal" :title="teachingNotesText">
+      <DraggableModal :visible="infoModalShown" :toggleModal="toggleInfoModal" :title="'Teaching Notes'">
         <template #final-modal-content>
           <div class="lesson-container__info-modal">
             <div class="lesson-container__info-modal--content" v-if="isTransitionBlock">
@@ -11,7 +11,7 @@
               <div>
                 <Lottie :options="lottieOption" v-on:animCreated="handleAnimation" :height="200" :width="200" />
               </div>
-			  <div class="lesson-container__info-modal--empty__text">{{noDataText}}</div>
+			  <div class="lesson-container__info-modal--empty__text">No Data</div>
             </div>
           </div>
         </template>
