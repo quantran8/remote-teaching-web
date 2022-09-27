@@ -117,6 +117,30 @@
           </div>
         </div>
       </Row>
+	  <Row align="middle" class="device-tester__mb--small">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b> {{CheckSpeaker}} </b>
+        </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center" class="device-tester__check-mic-cam">
+            <Switch v-model:checked="isCheckSpeaker" />
+            <Select
+              :placeholder="SelectDevice"
+              style="width: 330px"
+              :disabled="!isCheckSpeaker"
+              v-model:value="currentSpeakerLabel"
+              ref="select"
+              @change="handleSpeakerChange"
+            >
+              <SelectOption v-for="deviceId in listSpeakersId" :key="deviceId" :value="deviceId">
+                {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }} 
+              </SelectOption>
+            </Select>
+			<img v-if="isPlayingSound" src ='@/assets/images/audio-wave.gif' class="sound-img"/>
+          </Space>
+        </div>
+      </Row>
+
 
       <!-- <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">

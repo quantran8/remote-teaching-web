@@ -9,6 +9,7 @@ import { fmtMsg } from "vue-glcommonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 import { VCPlatform } from "@/store/app/state";
+import { Howl , Howler} from "howler";
 
 interface DeviceType {
   deviceId: string;
@@ -90,6 +91,17 @@ export default defineComponent({
     const havePermissionMicrophone = ref(true);
     const devices = ref<MediaDeviceInfo[]>([]);
 
+	const listSpeakers =  ref<DeviceType[]>([]);
+	const listSpeakersId = ref<string[]>([]);
+	const currentSpeaker = ref<DeviceType>();
+    const currentSpeakerLabel = ref();
+	const isPlayingSound = ref(false);
+	const isCheckSpeaker = ref(false);
+	const connectTestSound = new Howl({
+		loop:true,
+		src: [require(`@/assets/audio/ConnectTestSound.mp3`)],
+	  });
+	Howler.volume(1);
     const listPlatform = [
       { key: VCPlatform.Agora, name: VCPlatform[1] },
       { key: VCPlatform.Zoom, name: VCPlatform[2] },
@@ -251,6 +263,13 @@ export default defineComponent({
     const setupDevice = async () => {
       try {
         const cams = await AgoraRTC.getCameras();
+        const speakers = await AgoraRTC.getPlaybackDevices();
+		if(speakers.length){
+			listSpeakers.value = speakers;
+			listSpeakersId.value = speakers.map(speaker => speaker.deviceId);
+			currentSpeaker.value = speakers[0];
+			currentSpeakerLabel.value = speakers[0].label;
+		}
         if (cams.length) {
           let camSelected = cams[0];
           const localStorageCamId = localStorage.getItem('camId');
@@ -517,6 +536,16 @@ export default defineComponent({
       }
     });
 
+	//handle for speaker
+	watch(isCheckSpeaker,() => {
+		if(isCheckSpeaker.value){
+			connectTestSound.play();
+		}else{
+			connectTestSound.stop();
+		}
+		isPlayingSound.value = connectTestSound.playing();
+	});
+	
     const setVolumeWave = () => {
       if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
@@ -556,8 +585,19 @@ export default defineComponent({
       }
     };
 
+	const handleSpeakerChange = (speakerId: string) => {
+		currentSpeaker.value = listSpeakers.value.find(speaker => speaker.deviceId === speakerId);
+		connectTestSound.stop();
+		connectTestSound.play();
+		isPlayingSound.value = connectTestSound.playing();
+	}
+
     const destroySDK = async (isAgora: boolean) => {
       isConfigTrackingDone.value = false;
+	  if(connectTestSound.playing()){
+		connectTestSound.stop();
+		isPlayingSound.value = false;
+	  }
 
       if (volumeAnimation.value) {
         cancelVolumeAnimation();
@@ -597,6 +637,10 @@ export default defineComponent({
       currentCam.value = undefined;
       isOpenMic.value = true;
       isOpenCam.value = true;
+
+	  currentSpeaker.value = undefined;
+	  isCheckSpeaker.value = false;
+	  isPlayingSound.value = false;
 
       isTeacherVideoMirror.value = false;
       isStudentVideoMirror.value = false;
@@ -703,6 +747,8 @@ export default defineComponent({
     const CheckCam = computed(() => fmtMsg(DeviceTesterLocale.CheckCam));
     const TeacherVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.TeacherVideoMirroring));
     const StudentVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.StudentVideoMirroring));
+    const CheckSpeaker = computed(() => fmtMsg(DeviceTesterLocale.CheckSpeaker));
+
 
     const Platform = computed(() => fmtMsg(DeviceTesterLocale.Platform));
     const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
@@ -802,6 +848,14 @@ export default defineComponent({
       isTeacherVideoMirror,
       isStudentVideoMirror,
       showMirrorSwitch,
+	  isCheckSpeaker,
+	  listSpeakers,
+	  listSpeakersId,
+	  currentSpeaker,
+	  currentSpeakerLabel,
+	  CheckSpeaker,
+	  isPlayingSound,
+	  handleSpeakerChange
     };
   },
 });

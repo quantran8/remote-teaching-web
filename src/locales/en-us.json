@@ -90,6 +90,7 @@
 	"device_tester.check_mic": "Check Microphone",
 	"device_tester.select_device": "No Device",
 	"device_tester.check_cam": "Check Camera",
+	"device_tester.check_speaker": "Check Speaker",
 	"device_tester.teacher_video_mirroring": "Teacher Video Mirroring",
 	"device_tester.student_video_mirroring": "Student Video Mirroring",
 	"device_tester.cam_off": "Your camera is turned off",
