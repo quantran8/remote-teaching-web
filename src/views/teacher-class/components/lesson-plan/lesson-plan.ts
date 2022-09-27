@@ -4,8 +4,10 @@ import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
 import { Exposure, ExposureStatus, ExposureType } from "@/store/lesson/state";
-import IconNext from "@/assets/images/arrow.png";
-import IconNextDisable from "@/assets/images/arrow-disable.png";
+import IconNext from "@/assets/images/arrow-forward.png";
+import IconNextDisable from "@/assets/images/arrow-disable-forward.png";
+import IconPrev from "@/assets/images/arrow-back.png";
+import IconPrevDisable from "@/assets/images/arrow-disable-back.png";
 import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "vue-glcommonui";
@@ -52,8 +54,9 @@ export default defineComponent({
     const prevCurrentExposure = computed(() => getters["lesson/previousExposure"]);
 
     const canNext = computed(() => (nextExposureItemMedia.value || nextCurrentExposure.value ? true : false));
-    const canPrev = computed(() => (prevExposureItemMedia.value || prevCurrentExposure ? true : false));
+    const canPrev = computed(() => (prevExposureItemMedia.value || prevCurrentExposure.value ? true : false));
     const iconNext = computed(() => (canNext.value ? IconNext : IconNextDisable));
+    const iconPrev = computed(() => (canPrev.value ? IconPrev : IconPrevDisable)); 
     const exposureTitle = computed(() => {
       const exposure = getters["lesson/currentExposure"];
       if (!exposure) {
@@ -263,7 +266,9 @@ export default defineComponent({
       onClickPrevNextMedia,
       nextExposureItemMedia,
       iconNext,
+	  iconPrev,
       NEXT_EXPOSURE,
+	  PREV_EXPOSURE,
       exposureTypes,
       currentLesson,
       currentUnit,
