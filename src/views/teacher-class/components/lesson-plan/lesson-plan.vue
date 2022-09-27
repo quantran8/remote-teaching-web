@@ -4,17 +4,14 @@
       <DraggableModal :visible="infoModalShown" :toggleModal="toggleInfoModal" :title="teachingNotesText">
         <template #final-modal-content>
           <div class="lesson-container__info-modal">
-            <ul class="lesson-container__info-modal--content" v-if="!hasZeroTeachingContent && currentExposure">
-              <li v-for="{ id, textContent } in currentExposure.teachingActivityBlockItems" :key="id" v-html="textContent" />
-            </ul>
-            <div class="lesson-container__info-modal--content" v-else-if="isTransitionBlock">
+            <div class="lesson-container__info-modal--content" v-if="isTransitionBlock">
               <div v-html="currentExposure.name" />
             </div>
             <div v-else class="lesson-container__info-modal--empty">
               <div>
                 <Lottie :options="lottieOption" v-on:animCreated="handleAnimation" :height="200" :width="200" />
               </div>
-              <div class="lesson-container__info-modal--empty__text">{{ noDataText }}</div>
+			  <div class="lesson-container__info-modal--empty__text">{{noDataText}}</div>
             </div>
           </div>
         </template>
@@ -57,7 +54,12 @@
           </BaseButton>
           <div class="exposure-title">{{ exposureTitle }}</div>
           <div class="exposure-info">
-            <img class="exposure-info__icon-info" src="@/assets/images/info.png" alt="" @click="toggleInfoModal" />
+            <img
+              class="exposure-info__icon-info"
+              src="@/assets/images/info.png"
+              alt=""
+              @click="toggleInfoModal"
+            />
           </div>
         </div>
       </div>
