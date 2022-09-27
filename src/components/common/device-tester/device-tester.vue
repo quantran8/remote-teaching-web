@@ -64,27 +64,6 @@
         </div>
       </Row>
 
-      <Row v-if="showMirrorSwitch" align="middle" class="device-tester__mb--small">
-        <div class="ant-col-24 ant-col-sm-6">
-          <b>{{ TeacherVideoMirroring }}</b>
-        </div>
-        <div class="ant-col-24 ant-col-sm-18">
-          <Space size="large" align="center" class="device-tester__check-mic-cam">
-            <Switch v-model:checked="isTeacherVideoMirror" />
-          </Space>
-        </div>
-      </Row>
-
-      <Row v-if="showMirrorSwitch" align="middle" class="device-tester__mb--small">
-        <div class="ant-col-24 ant-col-sm-6">
-          <b>{{ StudentVideoMirroring }}</b>
-        </div>
-        <div class="ant-col-24 ant-col-sm-18">
-          <Space size="large" align="center" class="device-tester__check-mic-cam">
-            <Switch v-model:checked="isStudentVideoMirror" />
-          </Space>
-        </div>
-      </Row>
 
       <Row align="middle" class="device-tester__mb--default">
         <p v-show="!havePermissionCamera">

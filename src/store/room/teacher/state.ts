@@ -57,8 +57,8 @@ const state: TeacherRoomState = {
   currentLesson: DEFAULT_LESSON,
   currentUnit: DEFAULT_LESSON,
   isShowWhiteboard: false,
-  isTeacherVideoMirror: false,
-  isStudentVideoMirror: false
+  isTeacherVideoMirror: true,
+  isStudentVideoMirror: true
 };
 
 export default state;

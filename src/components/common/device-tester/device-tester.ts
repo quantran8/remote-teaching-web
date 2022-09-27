@@ -57,8 +57,8 @@ export default defineComponent({
     const visible = ref(false);
     const isOpenMic = ref<boolean>(true);
     const isOpenCam = ref<boolean>(true);
-    const isTeacherVideoMirror = ref<boolean>(false);
-    const isStudentVideoMirror = ref<boolean>(!!props.studentVideoMirror);
+    const isTeacherVideoMirror = ref<boolean>(true);
+    const isStudentVideoMirror = ref<boolean>(true);
     const platform = computed(() => getters["platform"]);
     const localTracks = ref<any>(null);
     const listMics = ref<DeviceType[]>([]);
@@ -642,8 +642,8 @@ export default defineComponent({
 	  isCheckSpeaker.value = false;
 	  isPlayingSound.value = false;
 
-      isTeacherVideoMirror.value = false;
-      isStudentVideoMirror.value = false;
+      isTeacherVideoMirror.value = true;
+      isStudentVideoMirror.value = true;
 
       havePermissionCamera.value = true;
       havePermissionMicrophone.value = true;

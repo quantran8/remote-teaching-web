@@ -22,9 +22,9 @@ export default defineComponent({
   },
   emits: ["go-to-class", "on-join-session", "on-close-modal"],
   async created() {
-    const { dispatch } = useStore();
-    dispatch("setMuteAudio", { status: MediaStatus.mediaNotLocked });
-    dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
+	const { dispatch, state } = useStore();
+    dispatch("setMuteAudio", { status:state.app.isMuteAudio });
+    dispatch("setHideVideo", { status: state.app.isHideVideo });
   },
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
