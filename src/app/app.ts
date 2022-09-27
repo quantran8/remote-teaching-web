@@ -9,6 +9,7 @@ import { useDisconnection } from "@/hooks/use-disconnection";
 import { AppView, UserRole } from "@/store/app/state";
 import { LostNetwork } from "./../locales/localeid";
 import { Spin } from "ant-design-vue";
+
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
 
@@ -17,7 +18,7 @@ export default defineComponent({
     MainLayout,
     AppHeader,
     AppFooter,
-	Spin,
+	Spin
   },
   created() {
     AuthService.localSilentLogin();

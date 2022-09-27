@@ -20,7 +20,7 @@ import {
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
 import DisconnectIssuePage from "@/views/disconnect-issue/disconnect-issue.vue";
-import VueFinalModal from 'vue-final-modal'
+
 import NotFoundPage from "@/views/not-found/not-found.vue";
 
 import { store } from "./store";
@@ -52,7 +52,7 @@ app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
 app.component("MatIcon", MatIcon);
 app.use(store);
-app.use(VueFinalModal())
+
 //vue-glcommonui plugin
 app.use(GLPlugin, {
   i18nInstance: i18n,
