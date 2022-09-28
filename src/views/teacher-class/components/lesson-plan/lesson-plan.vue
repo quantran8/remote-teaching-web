@@ -7,12 +7,12 @@
           :class="[isGalleryView && 'lesson-container__header-title--text-right', hasLongShortcutHeader && 'long-title']"
         >
           <a :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']" @click="onClickUnit">
-            <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-              {{ isGalleryView ? `${currentUnit}:` : `${unitText} ${currentUnit}` }}
-            </span>
-            <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-              {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
-            </span>
+			<span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
+				{{ isGalleryView ? `${currentUnit}|` : `${unitText} ${currentUnit}` }}
+			</span>
+			<span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
+				{{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
+			</span>
           </a>
         </div>
         <span

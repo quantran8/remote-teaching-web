@@ -28,7 +28,9 @@
       }
       &--wrap {
         // border-bottom: 3px solid white;
-        display: inline-block;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
         &.shortcut {
           margin-left: 230px;
           border-bottom: 0px;
@@ -59,7 +61,7 @@
       font-weight: bold;
       text-decoration: none;
       position: absolute;
-      top: -8px;
+      top: -10px;
       right: 15px;
       cursor: pointer;
       &.long-title {
