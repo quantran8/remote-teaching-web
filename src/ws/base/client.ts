@@ -210,6 +210,9 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.TEACHER_CREATE_FABRIC_OBJECT, handler.onTeacherCreateFabricObject);
     handlers.set(TeacherWSEvent.TEACHER_MODIFY_FABRIC_OBJECT, handler.onTeacherModifyFabricObject);
     handlers.set(TeacherWSEvent.EVENT_UPDATE_ALL_SHAPES, handler.onToggleAllShapes);
+    handlers.set(TeacherWSEvent.TEACHER_RESET_ZOOM, handler.onTeacherResetZoom);
+    handlers.set(TeacherWSEvent.TEACHER_ZOOM_SLIDE, handler.onTeacherZoomSlide);
+    handlers.set(TeacherWSEvent.TEACHER_MOVE_ZOOMED_SLIDE, handler.onTeacherMoveZoomedSlide);
     handlers.set(TeacherWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
 

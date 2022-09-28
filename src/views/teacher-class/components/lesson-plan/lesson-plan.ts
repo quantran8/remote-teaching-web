@@ -123,6 +123,8 @@ export default defineComponent({
         mode: 1,
       });
       await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setResetZoom", {});
+
       await dispatch("teacherRoom/setCurrentExposureMediaItem", {
         id: firstItemMediaNewExposureId,
       });
@@ -140,6 +142,7 @@ export default defineComponent({
         mode: 0,
       });
       await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setResetZoom", {});
       await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
     };
 
@@ -153,6 +156,7 @@ export default defineComponent({
         targets: [],
       });
       await dispatch("teacherRoom/setClearBrush", {});
+      await dispatch("teacherRoom/setResetZoom", {});
       await dispatch("teacherRoom/setClearStickers", {});
       const scrollLimitPosition = Math.max(
         document.body.scrollHeight,

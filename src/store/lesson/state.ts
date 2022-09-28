@@ -151,6 +151,13 @@ export interface LessonState {
   cropCache?: CropCache;
   targetsVisibleAll?: TargetsVisibleAll;
   targetsVisibleList: TargetsVisibleList[];
+  zoomRatio?: number;
+  imgCoords?:{
+	x: number;
+	y: number
+  } 
+  previewObjects: string;
+  isShowPreviewCanvas: boolean;
 }
 
 const state: LessonState = {
@@ -168,6 +175,8 @@ const state: LessonState = {
   cropCache: { cacheValues: [] },
   targetsVisibleAll: { userId: "", visible: false },
   targetsVisibleList: [],
+	isShowPreviewCanvas:false,
+	previewObjects:''
 };
 
 export default state;

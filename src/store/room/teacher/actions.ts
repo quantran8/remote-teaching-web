@@ -249,6 +249,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+	  await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+	  await dispatch("lesson/setImgCoords",roomResponse.data.lessonPlan.position,{root:true});
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
         root: true,
       });
@@ -435,6 +437,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async setClearBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
+  },
+  async setResetZoom({ state }, payload: any) {
+    await state.manager?.WSClient.sendRequestResetZoom(payload);
+  },
+  async setZoomSlide({ state }, payload: number) {
+    await state.manager?.WSClient.sendRequestZoomSlide(payload);
+  },
+  async setMoveZoomedSlide({ state }, payload: {x:number, y: number,viewPortX: number, viewPortY: number}) {
+    await state.manager?.WSClient.sendRequestMoveZoomedSlide(payload);
   },
   async setDeleteBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestDeleteBrush(payload);

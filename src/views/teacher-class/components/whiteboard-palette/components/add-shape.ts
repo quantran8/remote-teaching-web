@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import { starPolygonPoints } from "@/utils/utils";
+import { DefaultCanvasDimension } from "vue-glcommonui";
 
 export const addShape = () => {
   const store = useStore();
@@ -21,10 +21,11 @@ export const addShape = () => {
     }
   };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftXY = 30 + strokeWidth.value;
+	const initTopLeftX = (0 + strokeWidth.value) + DefaultCanvasDimension.width / 2;
+	const initTopLeftY = (0 + strokeWidth.value) + DefaultCanvasDimension.height / 2;
 	const circle = new fabric.Circle({
-      left: initTopLeftXY,
-      top: initTopLeftXY,
+      left: initTopLeftX,
+      top: initTopLeftY,
       radius: 30,
       fill: "",
       stroke: strokeColor.value,
@@ -39,10 +40,11 @@ export const addShape = () => {
     await teacherAddShapes(canvas);
   };
   const addSquare = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftXY = 25 + strokeWidth.value;
+	const initTopLeftX = (0 + strokeWidth.value) + DefaultCanvasDimension.width / 2;
+	const initTopLeftY = (0 + strokeWidth.value) + DefaultCanvasDimension.height / 2;
 	const square = new fabric.Rect({
-      left: initTopLeftXY,
-      top: initTopLeftXY,
+      left: initTopLeftX,
+      top: initTopLeftY,
       width: 50,
       height: 50,
       fill: "",

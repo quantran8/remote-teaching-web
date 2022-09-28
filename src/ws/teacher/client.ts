@@ -147,6 +147,9 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearAllBrush(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_ALL_BRUSH_STROKES, {});
   }
+  sendRequestResetZoom(payload: any) {
+    return this.send(WSCmd.TEACHER_RESET_ZOOM, {payload});
+  }
   sendRequestDeleteBrush(payload: any) {
     return this.send(WSCmd.TEACHER_UNDO_BRUSH, {});
   }
@@ -184,4 +187,12 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestUpdateSessionAndUnit(payload: any) {
     return this.send(WSCmd.UPDATE_SESSION_LESSON_AND_UNIT, {});
   }
+  sendRequestZoomSlide(payload: number) {
+	return this.invoke(WSCmd.TEACHER_ZOOM_SLIDE, payload);
+  }
+  sendRequestMoveZoomedSlide(payload:{x:number, y: number, viewPortX: number, viewPortY: number}) {
+	return this.invoke(WSCmd.TEACHER_MOVE_ZOOMED_SLIDE, payload);
+  }
+
+
 }

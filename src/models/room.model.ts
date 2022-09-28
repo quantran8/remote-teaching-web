@@ -111,6 +111,11 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
+  ratio:number;
+  position:{
+	x:number;
+	y:number;
+  } | null | undefined;
 }
 export interface RoomModel {
   id: string;

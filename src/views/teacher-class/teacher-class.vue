@@ -7,6 +7,18 @@
       </Checkbox>
     </Modal>
     <ChangeLessonUnit ref="changeLessonUnitRef" />
+	<div v-show="isShowPreviewCanvas" class="tc__preview-wrapper">
+		<div class="preview-header">
+			<div class="close-container" @click="hidePreviewModal">
+				<img src="@/assets/icons/close.png" class="close-icon"/>
+			</div>
+		</div>
+		<div class="preview-body">
+
+			<canvas class="preview-canvas" id="previewCanvas" />
+  		</div>
+	</div>
+
     <prevent-esc-firefox />
     <teacher-page-header
       class="tc__header"

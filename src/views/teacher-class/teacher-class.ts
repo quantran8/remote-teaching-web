@@ -6,9 +6,11 @@ import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
-import { ErrorCode } from "@/utils/utils";
+import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
 import { TeacherClass } from "./../../locales/localeid";
 import { UserRole } from "@/store/app/state";
+import { fabric } from "fabric";
+
 
 const fpPromise = FingerprintJS.load();
 import {
@@ -111,6 +113,8 @@ export default defineComponent({
     });
 
     const modalVisible = ref(false);
+    const previewObjects= computed(() => getters['lesson/previewObjects']);
+    const isShowPreviewCanvas= computed(() => getters['lesson/isShowPreviewCanvas']);
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
 
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
@@ -132,6 +136,28 @@ export default defineComponent({
     //   return getters["teacherRoom/isGameView"];
     // });
     // Logger.log(isGameView.value, 'game view');
+
+	let previewCanvas: any
+
+	const previewSetup = () => {
+		previewCanvas = new fabric.Canvas("previewCanvas");
+		previewCanvas.setWidth(DefaultCanvasDimension.width);
+		previewCanvas.setHeight(DefaultCanvasDimension.height);
+	}
+	
+	const hidePreviewModal = async() => {
+		await dispatch('lesson/setShowPreviewCanvas',false,{root:true});
+	}
+
+	watch(previewObjects,(currentValue) => {
+		previewCanvas.remove(...previewCanvas.getObjects());
+		previewCanvas.loadFromJSON(currentValue,() =>{
+			const group = previewCanvas.getObjects().find((obj: any) => obj.type === 'group');
+			group.selectable = false;
+			group.hoverCursor ='pointer';
+			previewCanvas.renderAll();
+		});
+	},{deep:true})
 
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
@@ -278,6 +304,7 @@ export default defineComponent({
       dispatch("setUserRoleByView", payload);
     };
     onMounted(() => {
+	  previewSetup();
       updateUserRoleByView(UserRole.Teacher);
     });
     onUnmounted(() => {
@@ -323,6 +350,8 @@ export default defineComponent({
       showHideLesson,
       changeLessonUnitRef,
       showChangingLessonUnitModal,
+	  isShowPreviewCanvas,
+	  hidePreviewModal
     };
   },
 });

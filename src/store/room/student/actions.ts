@@ -67,6 +67,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
       });
+	  await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+	  await dispatch("lesson/setImgCoords",roomResponse.data.lessonPlan.position,{root:true});
+
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
         root: true,
       });

@@ -195,6 +195,18 @@ const actions: LessonActions<LessonState, any> = {
   setTargetsVisibleListJoinedAction(store: ActionContext<LessonState, any>, payload) {
     store.commit("setTargetsVisibleListJoined", payload);
   },
+  setZoomRatio(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setZoomRatio", payload);
+  },
+  setImgCoords(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setImgCoords", payload);
+  },
+  setLessonPreviewObjects (store: ActionContext<LessonState, any>, payload){
+	store.commit("setLessonPreviewObjects", payload);
+  },
+  setShowPreviewCanvas (store: ActionContext<LessonState, any>, payload){
+	store.commit("setShowPreviewCanvas", payload);
+  }
 };
 
 export default actions;
