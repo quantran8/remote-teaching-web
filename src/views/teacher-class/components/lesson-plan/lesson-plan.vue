@@ -38,8 +38,8 @@
             <img
               class="exposure-info__icon-info"
               src="@/assets/images/info.png"
-              @mouseover="toggleInformationBox"
-              @mouseout="toggleInformationBox"
+              @mouseover="toggleInformationBox(true)"
+              @mouseout="toggleInformationBox(false)"
               alt=""
             />
             <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
