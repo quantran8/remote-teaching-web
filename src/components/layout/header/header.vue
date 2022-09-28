@@ -3,6 +3,7 @@
     <template #right>
       <ResourceMenu />
       <LanguagePicker />
+	  <HelpMenu/>
       <UserAvatar>
         <template #extraItems>
           <DropdownItem :text="testConnectText" @click.prevent="onClickTestDevice" />

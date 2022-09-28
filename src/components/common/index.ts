@@ -8,5 +8,6 @@ import AnnotationView from "./annotation-view/annotation-view.vue";
 import DeviceTester from "./device-tester/device-tester.vue";
 import CropImage from "./crop-image/crop-image.vue";
 import ResourceMenu from "./resource-menu/resource-menu.vue";
+import HelpMenu from "./help-menu/help-menu.vue";
 
-export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, DeviceTester, CropImage, ResourceMenu };
+export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, DeviceTester, CropImage, ResourceMenu, HelpMenu };
