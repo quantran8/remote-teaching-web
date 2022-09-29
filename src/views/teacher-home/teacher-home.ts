@@ -74,7 +74,7 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
 
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number, isTeacherVideoMirror = false, isStudentVideoMirror = false) => {
+    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number, isTeacherVideoMirror = true, isStudentVideoMirror = true) => {
       messageStartClass.value = "";
       try {
         const fp = await fpPromise;

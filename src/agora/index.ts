@@ -93,8 +93,8 @@ export class AgoraClient implements AgoraClientSDK {
   }
   
   joined: boolean = false;
-  isMirror: boolean = false;
-  isRemoteMirror: boolean = false;
+  isMirror: boolean = true;
+  isRemoteMirror: boolean = true;
 
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
