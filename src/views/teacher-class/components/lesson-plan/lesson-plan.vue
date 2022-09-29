@@ -74,7 +74,10 @@
             <div>{{ itemText }} {{ activityStatistic }}</div>
             <div>{{ pageText }} {{ page }}</div>
           </div>
-          <img class="lesson-container__icon-next" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" alt="" />
+          <div class="lesson-container__icon">
+            <img class="lesson-container__icon-next margin-left" :src="iconPrev" @click="onClickPrevNextMedia(PREV_EXPOSURE)" alt="" />
+            <img class="lesson-container__icon-next margin-left" :src="iconNext" @click="onClickPrevNextMedia(NEXT_EXPOSURE)" alt="" />
+          </div>
         </div>
       </div>
       <div class="activities">
