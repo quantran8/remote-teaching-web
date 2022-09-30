@@ -233,8 +233,8 @@ export default defineComponent({
       showHideLesson.value = !value;
       emit("toggle-lesson-mode", showHideLesson.value);
     };
-    const toggleInformationBox = () => {
-      showInfo.value = !showInfo.value;
+    const toggleInformationBox = (isShown: boolean) => {
+      showInfo.value = isShown;
     };
 
     const lessonContainerHeaderFixed = ref<HTMLDivElement>();
