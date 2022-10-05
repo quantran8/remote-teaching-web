@@ -102,7 +102,7 @@ export default defineComponent({
     };
     const lineId: Ref<string> = ref(generateLineId());
 
-	const zoomRatio = ref(1.0);
+	const zoomRatio = ref(1);
 	let group: any;
 	let point:any;
 
@@ -111,6 +111,9 @@ export default defineComponent({
 		if(!isLessonPlan.value){
 			return
 		};
+		if(canvas.getZoom() !== zoomRatio.value){
+			zoomRatio.value = canvas.getZoom();
+		}
 		zoomRatio.value += 0.1;
 		canvas.zoomToPoint(point,zoomRatio.value);
 		canvas.forEachObject(function(o: any) {
@@ -127,14 +130,17 @@ export default defineComponent({
 		}
 		if(canvas.getZoom() > 1)
 		{
-		zoomRatio.value -= 0.1;
-		if(zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)){
-			group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
-			group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
-			group.setCoords();
-		}
-		canvas.zoomToPoint(point,zoomRatio.value);
-		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
+			if(canvas.getZoom() !== zoomRatio.value){
+				zoomRatio.value = canvas.getZoom();
+			}
+			zoomRatio.value -= 0.1;
+			if(zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)){
+				group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+				group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+				group.setCoords();
+			}
+			canvas.zoomToPoint(point,zoomRatio.value);
+			await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
 		}
 	}
 
@@ -380,7 +386,7 @@ export default defineComponent({
       let x = e.clientX - rectBounding.left 
       let y = e.clientY - rectBounding.top
       const windowWidth = window.innerWidth;
-      const scaleRatio = 0.68;
+      const scaleRatio = 0.66;
       const scaleBreakpoint = 1600;
 
       // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
