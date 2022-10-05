@@ -716,6 +716,7 @@ export default defineComponent({
     };
 
     const handleSubmit = () => {
+	  connectTestSound.stop();
       const unitId = props.unitInfo.find((unit: UnitAndLesson) => unit.unit === currentUnit.value).unitId;
       if (!unitId) return;
       emit("on-join-session", {
