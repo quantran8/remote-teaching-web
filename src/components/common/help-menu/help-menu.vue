@@ -2,8 +2,8 @@
   <DropdownHelper v-if="displayedHelpMenu.length">
     <HeaderMenuItem
         :show-dropdown-trigger="true"
-        title="About"
-        icon="info"
+        title="Help"
+        icon="help_center"
     />
     <template #popup>
       <DropdownItem

@@ -20,12 +20,12 @@ export default defineComponent({
     setup() {
         const displayedHelpMenu: HelpMenuItem[] = [
             {
-                textLocaleId: HelpMenuLocal.Help,
+                textLocaleId: HelpMenuLocal.Contact,
                 url: process.env.VUE_APP_HELP_URL,
                 color: "#5c2d91",
             },
             {
-                textLocaleId: HelpMenuLocal.Contact,
+                textLocaleId: HelpMenuLocal.Documentation,
                 url: 'https://help.grapeseed.com/gl/region-index.html',
                 color: "#5c2d91",
             },

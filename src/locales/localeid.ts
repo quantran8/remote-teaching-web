@@ -289,6 +289,6 @@ export class ResourcesMenuLocale {
 }
 
 export class HelpMenuLocal {
-	static Help = "help.menu.help";
 	static Contact = "help.menu.contact";
+	static Documentation = "help.menu.documentation";
   }

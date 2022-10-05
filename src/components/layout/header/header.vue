@@ -2,8 +2,8 @@
   <AppHeader class="header" :title="title">
     <template #right>
       <ResourceMenu />
-      <LanguagePicker />
 	  <HelpMenu/>
+      <LanguagePicker />
       <UserAvatar>
         <template #extraItems>
           <DropdownItem :text="testConnectText" @click.prevent="onClickTestDevice" />
