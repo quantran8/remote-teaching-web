@@ -116,7 +116,7 @@ export default defineComponent({
 		canvas.forEachObject(function(o: any) {
 			o.setCoords();
 		  });
-		  canvas.calcOffset();
+		canvas.calcOffset();
 		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
 
 	}
@@ -129,14 +129,13 @@ export default defineComponent({
 		{
 		zoomRatio.value -= 0.1;
 		if(zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)){
-			group.left = Math.floor(DefaultCanvasDimension.width / 2);
-			group.top = Math.floor(imgRenderHeight.value / 2);
+			group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+			group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
 			group.setCoords();
 		}
 		canvas.zoomToPoint(point,zoomRatio.value);
 		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
 		}
-		 
 	}
 
 	const handleCloneCanvasObjects = () => {
@@ -193,7 +192,22 @@ export default defineComponent({
     const { teacherAddShapes, addCircle, addSquare } = addShape();
     const { processAnnotationLesson ,processLessonImage} = annotationCurriculum();
     const targetsNum = computed(() => {
-      return props.image?.metaData?.annotations?.length || 0;
+		const uniqueAnnotations: any[] = []; 
+		props.image?.metaData?.annotations?.forEach((metaDataObj: any) => {
+		if(!uniqueAnnotations.some((_obj: any) => 
+		metaDataObj.color === _obj.color 
+		&& metaDataObj.height === _obj.height 
+		&& metaDataObj.width === _obj.width 
+		&& metaDataObj.opacity === _obj.opacity 
+		&& metaDataObj.rotate === _obj.rotate 
+		&& metaDataObj.type === _obj.type 
+		&& metaDataObj.x === _obj.x 
+		&& metaDataObj.y === _obj.y 
+		)){
+			uniqueAnnotations.push(metaDataObj);
+		}
+	});
+      return uniqueAnnotations.length;
     });
     const hasTargets = computed(() => {
       return !!props.image?.metaData.annotations && targetsNum.value;
@@ -1054,7 +1068,7 @@ export default defineComponent({
 	  zoomIn,
 	  zoomOut,
 	  showHidePreviewModal,
-	  disablePreviewBtn
-    };
+	  disablePreviewBtn    
+	};
   },
 });
