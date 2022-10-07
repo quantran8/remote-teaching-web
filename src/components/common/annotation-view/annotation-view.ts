@@ -100,8 +100,8 @@ export default defineComponent({
 			zoom = currentValue - prevValue;
 		}
 		if(currentValue === 1){
-			group.left = DefaultCanvasDimension.width / 2;
-			group.top = imgRenderHeight.value / 2;
+			group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+			group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
 		}
 		defaultZoomRatio.value += zoom;
 		canvas.zoomToPoint(point,canvas.getZoom() + zoom*scaleRatio.value);

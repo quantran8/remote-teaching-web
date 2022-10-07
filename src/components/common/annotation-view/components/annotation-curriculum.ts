@@ -131,14 +131,29 @@ export const annotationCurriculumStudent = () => {
     const outerCanvasContainer = containerRef.value;
     if (!outerCanvasContainer) return;
     const annotations = propImage.metaData?.annotations;
-    if (annotations && annotations.length && !isShowWhiteBoard.value) {
+	const uniqueAnnotations: any[] = []; 
+	annotations.forEach((metaDataObj: any) => {
+		if(!uniqueAnnotations.some((_obj: any) => 
+		metaDataObj.color === _obj.color 
+		&& metaDataObj.height === _obj.height 
+		&& metaDataObj.width === _obj.width 
+		&& metaDataObj.opacity === _obj.opacity 
+		&& metaDataObj.rotate === _obj.rotate 
+		&& metaDataObj.type === _obj.type 
+		&& metaDataObj.x === _obj.x 
+		&& metaDataObj.y === _obj.y 
+		)){
+			uniqueAnnotations.push(metaDataObj);
+		}
+	});
+    if (uniqueAnnotations && uniqueAnnotations.length && !isShowWhiteBoard.value) {
 	  if(!isImgProcessing.value){
-		annotations.forEach((item: any) => {
+		uniqueAnnotations.forEach((item: any) => {
 			const shape = addAnnotationLesson(canvas, propImage, item, bindAll, event, group);
 			allShape.push(shape);
 		  });
-	  };
-    } else {
+	  } 
+	}else {
       canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
     }
     canvas.getObjects().forEach((obj: any) => {
@@ -242,16 +257,18 @@ export const annotationCurriculumStudent = () => {
 		}
 	}
 	if(!isImgProcessing.value){
+		if(top !== Group.top){
+			Group.realTop = Group.top;
+		}
+		if(left !== Group.left){
+			Group.realLeft = Group.left;
+		}
 		canvas.add(Group);
 		canvas.sendToBack(Group);
 		if(zoomRatio.value > 1 && firstLoad){
 			canvas.zoomToPoint(point, canvasZoomRatio + (zoomRatio.value - 1)*canvasZoomRatio);
 		}
 	}
-
-
-
-
 	return Group
   };
   return {
