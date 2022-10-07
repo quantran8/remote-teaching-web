@@ -132,7 +132,7 @@ export const annotationCurriculumStudent = () => {
     if (!outerCanvasContainer) return;
     const annotations = propImage.metaData?.annotations;
 	const uniqueAnnotations: any[] = []; 
-	annotations.forEach((metaDataObj: any) => {
+	annotations?.forEach((metaDataObj: any) => {
 		if(!uniqueAnnotations.some((_obj: any) => 
 		metaDataObj.color === _obj.color 
 		&& metaDataObj.height === _obj.height 

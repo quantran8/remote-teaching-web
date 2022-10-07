@@ -669,6 +669,7 @@ export default defineComponent({
     });
 
     const goToClass = () => {
+	  connectTestSound.stop();
       emit("go-to-class");
     };
 
