@@ -81,8 +81,10 @@ export default defineComponent({
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
 	const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
 	const isShowPreviewCanvas = computed(() => store.getters['lesson/isShowPreviewCanvas']);
+	const sessionZoomRatio = computed(() => store.getters['lesson/zoomRatio']);
 	const prevZoomRatio = ref(1);
 	const prevCoords = ref({x:0,y:0});
+	const zoomPercentage = ref(100);
 
     const {
       createTextBox,
@@ -111,6 +113,9 @@ export default defineComponent({
 		if(!isLessonPlan.value){
 			return
 		};
+		if(zoomRatio.value > 4){
+			return;
+		}
 		if(canvas.getZoom() !== zoomRatio.value){
 			zoomRatio.value = canvas.getZoom();
 		}
@@ -120,6 +125,7 @@ export default defineComponent({
 			o.setCoords();
 		  });
 		canvas.calcOffset();
+		zoomPercentage.value =  Math.round(zoomRatio.value * 100);
 		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
 
 	}
@@ -139,6 +145,7 @@ export default defineComponent({
 				group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
 				group.setCoords();
 			}
+			zoomPercentage.value = Math.round(zoomRatio.value * 100);
 			canvas.zoomToPoint(point,zoomRatio.value);
 			await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
 		}
@@ -164,6 +171,10 @@ export default defineComponent({
 			await store.dispatch('lesson/setShowPreviewCanvas',isShowPreview,{root:true});
 	}
 
+	watch(sessionZoomRatio,(value) => {
+		zoomPercentage.value = Math.floor(value*100)
+	})
+
 	watch(isShowPreviewCanvas,(currentValue) => {
 		disablePreviewBtn.value = currentValue;
 	})
@@ -171,6 +182,7 @@ export default defineComponent({
     watch(currentExposureItemMedia, async(currentItem, prevItem) => {
       if (currentItem) {
 		zoomRatio.value = 1;
+		zoomPercentage.value = 100;
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -1074,7 +1086,8 @@ export default defineComponent({
 	  zoomIn,
 	  zoomOut,
 	  showHidePreviewModal,
-	  disablePreviewBtn    
-	};
+	  disablePreviewBtn,
+	  zoomPercentage
+    };
   },
 });
