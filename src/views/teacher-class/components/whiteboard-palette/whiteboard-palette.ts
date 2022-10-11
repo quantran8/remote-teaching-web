@@ -264,10 +264,10 @@ export default defineComponent({
 		disableHideAllTargetsBtn.value = true;
 		disableShowAllTargetsBtn.value = false;
 		disablePreviewBtn.value = false;
-      // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+		// await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: false,
-      // });
+		// });
 	  }
     };
     const objectTargetOnCanvas = () => {
@@ -762,7 +762,7 @@ export default defineComponent({
       }
  
 	  img.crossOrigin = 'Anonymous';
-	  group = processLessonImage(currentExposureItemMedia.value,canvas,point,!firstLoadImage.value,img);
+	  group = processLessonImage(currentExposureItemMedia.value,canvas,toggleTargets.value.visible,point,!firstLoadImage.value,img);
 	  if(currentExposureItemMedia.value.image.metaData && currentExposureItemMedia.value.image.metaData.annotations.length){
 		  handleCloneCanvasObjects();
 	  }

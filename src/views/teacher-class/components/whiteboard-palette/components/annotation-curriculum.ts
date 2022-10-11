@@ -7,6 +7,7 @@ const DEFAULT_FILL = "rgba(255,255,255,0.01)";
 export const annotationCurriculum = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["teacherRoom/teacher"]);
+  const targetsList = computed(() => getters["lesson/targetsAnnotationList"]);
   const isImgProcessing = computed(() => getters["annotation/isImgProcessing"]);
   const zoomRatio = computed(() => getters["lesson/zoomRatio"]);
   const imgCoords = computed(() => getters["lesson/imgCoords"]);
@@ -43,7 +44,9 @@ export const annotationCurriculum = () => {
       eventSelfClick(event, tagObject, canvas, item,group);
       eventStudentClick(event, tagObject, canvas, item,group);
     } else {
-      if (event === "show-all-targets") {
+      if (event == "show-all-targets-first-time") {
+        setStrokeColor(canvas, tagObject, item.color, group);
+      } else if (event === "show-all-targets") {
         toggleTargetTeacher(tagObject, true);
       } else if (event === "hide-all-targets") {
         toggleTargetTeacher(tagObject, false);
@@ -58,7 +61,7 @@ export const annotationCurriculum = () => {
 	const rotation = propImage.metaData?.rotate;
 	const ratioWidth = rotation && (rotation / 90) % 2  ? imgHeight : imgWidth
 	const ratioHeight = rotation && (rotation / 90) % 2  ? imgWidth : imgHeight
-    const { imgLeftCrop, ratio} = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
+    const { imgLeftCrop, ratio,max, renderWidth,renderHeight } = ratioValue(propImage, ratioWidth, ratioHeight, DefaultCanvasDimension.width, DefaultCanvasDimension.height);
     const xShape = (item.x - xMetadata) * ratio + imgLeftCrop;
     const yShape = (item.y - yMetadata) * ratio;
     // 0: rect, 1: circle
@@ -93,6 +96,9 @@ export const annotationCurriculum = () => {
           ...commonProps,
         });
         tagObject = { tag: "rect-" + Math.floor(item.x) + Math.floor(item.y) };
+        if (group && event === "show-all-targets-first-time") {
+          group.addWithUpdate(rect);
+        }
         processShape(bindAll, event, tagObject, canvas, item, group);
 		return rect;
       }
@@ -104,7 +110,10 @@ export const annotationCurriculum = () => {
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
-        tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y)};
+        tagObject = { tag: "circle-" + Math.floor(item.x) + Math.floor(item.y) };
+        if (group && event === "show-all-targets-first-time") {
+          group.addWithUpdate(circle);
+        }
         processShape(bindAll, event, tagObject, canvas, item, group);
         return circle;
       }
@@ -143,7 +152,8 @@ export const annotationCurriculum = () => {
 
 	return allShape;
   };
-  const processLessonImage = (propImage: any, canvas: any,point: any, firstLoad: any, imgEl: any) => {
+  const processLessonImage = (propImage: any, canvas: any,visible: boolean, point: any, firstLoad: any, imgEl: any) => {
+	const event = visible ? 'show-all-targets-first-time' : 'hide-all-targets' 
 	const imgWidth = getters["annotation/imgWidth"];
 	const imgHeight = getters["annotation/imgHeight"];
 	const annotation = propImage.image?.metaData?.annotations;
@@ -204,10 +214,12 @@ export const annotationCurriculum = () => {
 
 	});
 	if(annotation && annotation.length){
-		const data = processAnnotationLesson(propImage.image, canvas, true, null,Group);
-		data?.forEach((item:any) => {
-			Group.addWithUpdate(item);
-		})
+		const data = processAnnotationLesson(propImage.image, canvas, true, event,Group);
+		if (event === "hide-all-targets") {
+		  data?.forEach((item:any) => {
+		    Group.addWithUpdate(item);
+		  })
+		}
 	}
 	if(top !== Group.top){
 		Group.realTop = Group.top;
@@ -220,14 +232,12 @@ export const annotationCurriculum = () => {
 	if(zoomRatio.value > 1 && firstLoad){
 		canvas.zoomToPoint(point, zoomRatio.value);
 	}
-	console.log(Group.top,imgCoords.value)
 
-
-	return Group
+    return Group;
   };
 
   return {
     processAnnotationLesson,
-	processLessonImage,
+    processLessonImage,
   };
 };

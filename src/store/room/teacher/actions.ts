@@ -249,11 +249,19 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
-	  await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
-	  await dispatch("lesson/setImgCoords",roomResponse.data.lessonPlan.position,{root:true});
+      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+      await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
         root: true,
       });
+      await dispatch(
+        "lesson/setTargetsVisibleAllAction",
+        {
+          userId: roomResponse.data.teacher.id,
+          visible: roomResponse.data.annotation.drawing.isShowingAllShapes,
+        },
+        { root: true },
+      );
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
@@ -444,7 +452,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setZoomSlide({ state }, payload: number) {
     await state.manager?.WSClient.sendRequestZoomSlide(payload);
   },
-  async setMoveZoomedSlide({ state }, payload: {x:number, y: number,viewPortX: number, viewPortY: number}) {
+  async setMoveZoomedSlide({ state }, payload: { x: number; y: number; viewPortX: number; viewPortY: number }) {
     await state.manager?.WSClient.sendRequestMoveZoomedSlide(payload);
   },
   async setDeleteBrush({ state }, payload: {}) {
