@@ -40,12 +40,15 @@
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
 		  <div class="wrap-zoom-icon">
-			<div  @click="zoomIn"> 
-			<img class="zoom-icon" src="@/assets/icons/zoom-in.png" />
-		 </div>
-		  <div  @click="zoomOut">
-			<img  class="zoom-icon" src="@/assets/icons/zoom-out.png" />
-		</div>
+			<div class="zoom-icon-container">
+				<div  @click="zoomOut" class="zoom-container">
+					<img  class="zoom-icon" src="@/assets/icons/zoom-out.png" />
+				</div>
+				<div  @click="zoomIn" class="zoom-container"> 
+					<img class="zoom-icon" src="@/assets/icons/zoom-in.png" />
+				</div>
+			</div>
+		 	<span class="zoom-percentage">{{zoomPercentage}}%</span>
 		  </div>
 		
         </div>
