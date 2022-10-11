@@ -97,10 +97,10 @@ export const annotationCurriculum = () => {
 		return rect;
       }
       case (item.type = 1): {
-        circle = new fabric.Circle({
-          radius: getRadius(item.width * ratio, item.height * ratio),
-          scaleX: getScaleX(item.width * ratio, item.height * ratio),
-          scaleY: getScaleY(item.width * ratio, item.height * ratio),
+		circle = new fabric.Ellipse({
+			radius: getRadius(item.width * ratio, item.height * ratio),
+			rx: (item.width / 2) * ratio,
+			ry: (item.height / 2) * ratio,
           tag: "circle-" + Math.floor(item.x) + Math.floor(item.y),
           ...commonProps,
         });
@@ -116,7 +116,7 @@ export const annotationCurriculum = () => {
 	const allShape:any = [];
     const annotations = propImage.metaData?.annotations;
 	const uniqueAnnotations: any[] = []; 
-	annotations.forEach((metaDataObj: any) => {
+	annotations?.forEach((metaDataObj: any) => {
 		if(!uniqueAnnotations.some((_obj: any) => 
 		metaDataObj.color === _obj.color 
 		&& metaDataObj.height === _obj.height 
