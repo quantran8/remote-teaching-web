@@ -21,7 +21,7 @@ function loadLocaleMessages() {
 }
 
 function setLocaleMessages(locale: string, messages: any) {
-  GLGlobal.i18n.global.setLocaleMessage(locale, messages);
+  GLGlobal.i18n.global.mergeLocaleMessage(locale, messages);
 }
 
 export function loadAsyncLocale(locale: string = currentLocale) {
