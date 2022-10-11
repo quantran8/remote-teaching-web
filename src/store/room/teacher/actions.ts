@@ -534,7 +534,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     //   Logger.log(error);
     // }
   },
-  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number; isComplete: number }) {
+  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
     if (!state.info?.id) {
       return;
     }
@@ -544,10 +544,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
       lesson: p.lesson,
       unitId: p.unitId,
       sessionId: state.info?.id as string,
+      isCompleted: p.isCompleted,
     };
 
     const roomInfo = await RemoteTeachingService.teacherUpdateLessonAndUnit(data);
-    if (p.isComplete) {
+    if (p.isCompleted) {
       const contents = state.info?.lessonPlan?.contents;
       for (const content of contents ?? []) {
         await dispatch("endExposure", { id: content.id });

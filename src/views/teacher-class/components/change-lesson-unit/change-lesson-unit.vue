@@ -33,7 +33,7 @@
       </Row>
       <Row align="middle" class="change-lesson__mb--default">
         <div class="ant-col-24 ant-col-sm-24">
-          <Checkbox v-model:checked="isComplete"><label>{{ MarkCurrentLessonCompleteForClass }} {{ classInfo?.className }}</label></Checkbox>
+          <Checkbox v-model:checked="isCompleted"><label>{{ MarkCurrentLessonCompleteForClass }} {{ classInfo?.className }}</label></Checkbox>
         </div>
       </Row>
 
@@ -41,7 +41,7 @@
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
           <Button
-            :disabled="!currentLesson || !currentUnit || (classInfo.lesson === currentLesson && classInfo.unit === currentUnit)"
+            :disabled="!currentLesson || !currentUnit || (classInfo.lesson === currentLesson && classInfo.unit === currentUnit && !isCompleted)"
             width="100px"
             @click="handleSubmit"
             type="primary"
