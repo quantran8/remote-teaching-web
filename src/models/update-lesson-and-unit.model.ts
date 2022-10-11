@@ -3,4 +3,5 @@ export interface UpdateLessonAndUnitModel {
   unit: number;
   unitId: number;
   lesson: number;
+  isCompleted: boolean;
 }

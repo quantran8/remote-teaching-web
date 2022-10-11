@@ -35,7 +35,7 @@ export default defineComponent({
     const listLessonByUnit = ref();
     const preventCloseModal = ref(true);
     const loadingInfo = ref(false);
-    const isComplete = ref(false);
+    const isCompleted = ref(false);
     const messageUpdateLessonAndUnit = ref("");
     const unitInfo = ref<UnitAndLesson[]>();
     const classInfo = computed<ClassRoomModel>(() => getters["teacherRoom/info"]?.classInfo);
@@ -115,7 +115,7 @@ export default defineComponent({
       loading.value = true;
       try {
         const unitId = unitInfo.value?.find((unit: UnitAndLesson) => unit.unit === currentUnit.value)?.unitId as number;
-        await dispatch("teacherRoom/setLessonAndUnit", { unit: currentUnit.value, lesson: currentLesson.value, unitId, isComplete: isComplete.value });
+        await dispatch("teacherRoom/setLessonAndUnit", { unit: currentUnit.value, lesson: currentLesson.value, unitId, isCompleted: isCompleted.value });
         loading.value = false;
         handleCancel();
       } catch (error) {
@@ -161,7 +161,7 @@ export default defineComponent({
       messageUpdateLessonAndUnit,
       loading,
       classInfo,
-      isComplete,
+      isCompleted,
     };
   },
 });
