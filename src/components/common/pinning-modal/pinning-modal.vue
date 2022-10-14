@@ -2,7 +2,7 @@
   <Teleport to="body">
     <vue-final-modal
       v-model="showed"
-	  :classes="PINNING_MODAL_CONTAINER"
+      :classes="PINNING_MODAL_CONTAINER"
       :content-class="[MODAL_CONTENT, pressing && 'translating']"
       :resize="pined"
       :drag="pined"
@@ -26,7 +26,7 @@
 </template>
 <script lang="ts" src="./pinning-modal.ts"></script>
 <style lang="scss">
-.modal-content {
+.vfm-modal-content {
   box-sizing: border-box;
   position: absolute;
   border-radius: 0.25rem;
@@ -49,60 +49,59 @@
   &.translating {
     transform: translate(3px, 3px);
   }
-}
-
-.final-modal { 
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  max-height: 75vh;
-  &__content {
-    padding: 10px 20px;
+  .final-modal {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    &:hover {
-      // prevent text selection when move the modal
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-  }
-  &__close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0.5em;
-    cursor: pointer;
-    &--icon {
-      transition: all 0.2s;
+    max-height: 75vh;
+    &__content {
+      padding: 10px 20px;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
       &:hover {
-        box-shadow: 0 1rem 2rem rgba(black, 0.15);
-        transform: translateY(-1px);
-        .modal-content {
-          transform: scale(1.5);
+        // prevent text selection when move the modal
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    }
+    &__close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 0.5em;
+      cursor: pointer;
+      &--icon {
+        transition: all 0.2s;
+        &:hover {
+          box-shadow: 0 1rem 2rem rgba(black, 0.15);
+          transform: translateY(-1px);
+          .modal-content {
+            transform: scale(1.5);
+          }
+        }
+        &:active {
+          box-shadow: 0 0.5rem 1rem rgba(black, 0.15);
+          transform: translateY(0);
         }
       }
-      &:active {
-        box-shadow: 0 0.5rem 1rem rgba(black, 0.15);
-        transform: translateY(0);
-      }
     }
-  }
-  &.has-before {
-    &::before {
-      content: "";
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 5px;
-      border-style: solid;
-      border-color: transparent transparent rgba(255, 245, 135, 1) transparent;
+    &.has-before {
+      &::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent rgba(255, 245, 135, 1) transparent;
+      }
     }
   }
 }

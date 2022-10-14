@@ -2,7 +2,7 @@ import { defineComponent, ref, computed, watch, nextTick } from "vue";
 import { PushpinOutlined, CloseOutlined } from "@ant-design/icons-vue";
 import { PopupStatus } from "@/views/teacher-class/components/lesson-plan/lesson-plan";
 
-const MODAL_CONTENT = "modal-content";
+const MODAL_CONTENT = "vfm-modal-content"; //unique className
 export const PINNING_MODAL_CONTAINER = "pinning-modal-container";
 export default defineComponent({
   props: ["position", "onPinOrHide", "status"],

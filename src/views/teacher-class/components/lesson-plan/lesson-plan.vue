@@ -1,6 +1,5 @@
 <template>
   <div class="lesson-container">
-	{{isGalleryView}}
     <div>
       <PinningModal :status="infoPopupStatus" :position="teachingIconPosition" :onPinOrHide="handlePinOrHide">
         <template #final-modal-content>
