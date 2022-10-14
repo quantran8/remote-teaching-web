@@ -16,13 +16,14 @@ import {
   AnnotationView,
   DeviceTester,
   CropImage,
+  PinningModal
 } from "./components/common";
 import LoadingPage from "@/views/loading/loading.vue";
 import AccessDeniedPage from "@/views/access-denied/access-denied.vue";
 import DisconnectIssuePage from "@/views/disconnect-issue/disconnect-issue.vue";
 
 import NotFoundPage from "@/views/not-found/not-found.vue";
-
+import VueFinalModal from 'vue-final-modal'
 import { store } from "./store";
 import { ClickOutsideDirective } from "./directives";
 import { Paths } from "./utils/paths";
@@ -46,13 +47,14 @@ app.component("ContentView", ContentView);
 app.component("AnnotationView", AnnotationView);
 app.component("DesignateCircle", DesignateCircle);
 app.component("DeviceTester", DeviceTester);
+app.component("PinningModal", PinningModal);
 app.component("DesignateRectangle", DesignateRectangle);
 app.component("Lottie", Lottie);
 app.component("CropImage", CropImage);
 app.component("VueCropper", VueCropper);
 app.component("MatIcon", MatIcon);
 app.use(store);
-
+app.use(VueFinalModal())
 //vue-glcommonui plugin
 app.use(GLPlugin, {
   i18nInstance: i18n,
