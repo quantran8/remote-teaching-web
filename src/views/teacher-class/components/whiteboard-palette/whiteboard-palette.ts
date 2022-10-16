@@ -767,6 +767,9 @@ export default defineComponent({
 		  handleCloneCanvasObjects();
 	  }
       objectTargetOnCanvas();
+	  if (toggleTargets.value.visible) {
+		disableShowAllTargetsBtn.value = true;
+	  }
 	  if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
@@ -959,7 +962,7 @@ export default defineComponent({
       if (!firstTimeLoadOneToOneShapes.value && oneAndOne.value && oneSelfShapes.value) {
         renderSelfShapes();
         firstTimeLoadOneToOneShapes.value = true;
-      } else if (!oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
+      } else if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
