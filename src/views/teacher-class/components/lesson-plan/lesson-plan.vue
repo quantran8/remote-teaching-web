@@ -1,5 +1,23 @@
 <template>
   <div class="lesson-container">
+    <div>
+      <PinningModal :status="infoPopupStatus" :position="teachingIconPosition" :onPinOrHide="handlePinOrHide">
+        <template #final-modal-content>
+          <div v-if="currentExposure">
+            <div v-if="!hasZeroTeachingContent">
+              <div v-for="{ id, textContent } in currentExposure.teachingActivityBlockItems" :key="id" v-html="textContent" />
+            </div>
+            <div v-if="isTransitionBlock">
+              <div v-html="currentExposure.name" />
+            </div>
+            <div v-if="!isTransitionBlock && hasZeroTeachingContent" style="display: flex; flex-direction: column; align-items: center;">
+				<Empty imageStyle="max-height: 45px" :description="''" />
+				<div>{{noDataText}}</div>
+            </div>
+          </div>
+        </template>
+      </PinningModal>
+    </div>
     <div ref="lessonContainerHeaderFixed">
       <div class="lesson-container__header">
         <div
@@ -7,12 +25,12 @@
           :class="[isGalleryView && 'lesson-container__header-title--text-right', hasLongShortcutHeader && 'long-title']"
         >
           <a :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']" @click="onClickUnit">
-			<span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-				{{ isGalleryView ? `${currentUnit}|` : `${unitText} ${currentUnit}` }}
-			</span>
-			<span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-				{{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
-			</span>
+            <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
+              {{ isGalleryView ? `${currentUnit}|` : `${unitText} ${currentUnit}` }}
+            </span>
+            <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
+              {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
+            </span>
           </a>
         </div>
         <span
@@ -34,25 +52,8 @@
             <BaseIcon name="icon-back"></BaseIcon>
           </BaseButton>
           <div class="exposure-title">{{ exposureTitle }}</div>
-          <div class="exposure-info">
-            <img
-              class="exposure-info__icon-info"
-              src="@/assets/images/info.png"
-              @mouseover="toggleInformationBox(true)"
-              @mouseout="toggleInformationBox(false)"
-              alt=""
-            />
-            <div class="exposure-info__popup-text" :class="showInfo ? 'exposure-info__show' : ''">
-              <div v-if="!hasZeroTeachingContent">
-                <div v-for="{ id, textContent } in currentExposure.teachingActivityBlockItems" :key="id" v-html="textContent" />
-              </div>
-              <div v-if="isTransitionBlock">
-                <div v-html="currentExposure.name" />
-              </div>
-              <div v-if="!isTransitionBlock && hasZeroTeachingContent">
-                <Empty imageStyle="max-height: 40px" />
-              </div>
-            </div>
+          <div @mouseover="handleMouseOver" class="exposure-info" :class="[infoPopupStatus !== PopupStatus.Pinned && 'cursor-pointer']" id="lp-info">
+            <img ref="infoIconRef" class="exposure-info__icon-info" src="@/assets/images/info.png" alt="" />
           </div>
         </div>
       </div>

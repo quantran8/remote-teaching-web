@@ -6,8 +6,9 @@ import DesignateRectangle from "./designate-rectangle/designate-rectangle.vue";
 import ContentView from "./content-view/content-view.vue";
 import AnnotationView from "./annotation-view/annotation-view.vue";
 import DeviceTester from "./device-tester/device-tester.vue";
+import PinningModal from "./pinning-modal/pinning-modal.vue";
 import CropImage from "./crop-image/crop-image.vue";
 import ResourceMenu from "./resource-menu/resource-menu.vue";
 import HelpMenu from "./help-menu/help-menu.vue";
 
-export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, DeviceTester, CropImage, ResourceMenu, HelpMenu };
+export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, DeviceTester, CropImage, ResourceMenu, HelpMenu, PinningModal };

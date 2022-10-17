@@ -1,5 +1,6 @@
+import { debounce } from "lodash";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
-import { computed, defineComponent, ref, watch, onUnmounted, onMounted } from "vue";
+import { computed, defineComponent, ref, watch, onUnmounted, onMounted, reactive, nextTick } from "vue";
 import { useStore } from "vuex";
 import LessonActivity from "./lesson-activity/lesson-activity.vue";
 import ExposureDetail from "./exposure-detail/exposure-detail.vue";
@@ -12,8 +13,11 @@ import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
 import { fmtMsg } from "vue-glcommonui";
 import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
-import { Empty } from "ant-design-vue";
+import { Empty, Badge } from "ant-design-vue";
+import { PushpinOutlined, CloseOutlined } from "@ant-design/icons-vue";
 import { useElementSize } from "@vueuse/core";
+import { PinningModal } from "@/components/common";
+import { PINNING_MODAL_CONTAINER } from "@/components/common/pinning-modal/pinning-modal";
 
 export const exposureTypes = {
   TRANSITION_BLOCK: "TRANSITION_BLOCK",
@@ -23,8 +27,16 @@ export const exposureTypes = {
   TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
 };
 
+const INFO_BUTTON_ID = "lp-info";
+
+export enum PopupStatus {
+  Pinned = "Pinned",
+  Showed = "Showed",
+  Hided = "Hided",
+}
+
 export default defineComponent({
-  components: { LessonActivity, ExposureDetail, Empty },
+  components: { LessonActivity, ExposureDetail, Empty, Badge, PushpinOutlined, CloseOutlined },
   emits: ["open-gallery-mode", "toggle-lesson-mode", "open-changing-lesson-unit-modal"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -33,6 +45,7 @@ export default defineComponent({
     const lessonText = computed(() => fmtMsg(TeacherClassLessonPlan.Lesson));
     const remainingText = computed(() => fmtMsg(TeacherClassLessonPlan.Remaining));
     const itemText = computed(() => fmtMsg(TeacherClassLessonPlan.Item));
+    const noDataText = computed(() => fmtMsg(TeacherClassLessonPlan.NoData));
     const pageText = computed(() => fmtMsg(TeacherClassLessonPlan.Page));
     const transitionText = computed(() => fmtMsg(TeacherClassLessonPlan.Transition));
     const lessonCompleteText = computed(() => fmtMsg(TeacherClassLessonPlan.LessonComplete));
@@ -52,11 +65,12 @@ export default defineComponent({
 
     const nextCurrentExposure = computed(() => getters["lesson/nextExposure"]);
     const prevCurrentExposure = computed(() => getters["lesson/previousExposure"]);
-
+    const infoPopupStatus = ref<PopupStatus>(PopupStatus.Hided);
+    const infoIconRef = ref();
     const canNext = computed(() => (nextExposureItemMedia.value || nextCurrentExposure.value ? true : false));
     const canPrev = computed(() => (prevExposureItemMedia.value || prevCurrentExposure.value ? true : false));
     const iconNext = computed(() => (canNext.value ? IconNext : IconNextDisable));
-    const iconPrev = computed(() => (canPrev.value ? IconPrev : IconPrevDisable)); 
+    const iconPrev = computed(() => (canPrev.value ? IconPrev : IconPrevDisable));
     const exposureTitle = computed(() => {
       const exposure = getters["lesson/currentExposure"];
       if (!exposure) {
@@ -71,7 +85,7 @@ export default defineComponent({
           return `${exposure.name} (${secondsToTimeStr(getSeconds(exposure.duration))})`;
       }
     });
-
+    const teachingIconPosition = ref({ left: 0, top: 0 });
     const lessonContainer = ref();
     const scrollPosition = ref(0);
     const showInfo = ref(false);
@@ -88,6 +102,7 @@ export default defineComponent({
       } else {
         isOneOneMode.value = value;
       }
+      infoPopupStatus.value = PopupStatus.Hided;
     });
 
     watch(exposures, async (currentValue) => {
@@ -209,6 +224,12 @@ export default defineComponent({
       return exposure !== undefined;
     });
 
+    watch(isShowExposureDetail, (currentVal) => {
+      if (!currentVal) {
+        infoPopupStatus.value = PopupStatus.Hided;
+      }
+    });
+
     const isTransitionType = computed(() => {
       const exposure = getters["lesson/currentExposure"];
       return exposure.type === ExposureType.TRANSITION;
@@ -233,10 +254,6 @@ export default defineComponent({
       showHideLesson.value = !value;
       emit("toggle-lesson-mode", showHideLesson.value);
     };
-    const toggleInformationBox = (isShown: boolean) => {
-      showInfo.value = isShown;
-    };
-
     const lessonContainerHeaderFixed = ref<HTMLDivElement>();
     const { height: lessonContainerHeaderFixedHeight } = useElementSize(lessonContainerHeaderFixed);
 
@@ -244,6 +261,20 @@ export default defineComponent({
       return currentLesson.value >= 10 || currentUnit.value >= 10;
     });
 
+    const handleMouseMove = debounce((e: any) => {
+      if (infoPopupStatus.value === PopupStatus.Pinned) return;
+      const editableModalEl = document.querySelector<HTMLElement>(`.${PINNING_MODAL_CONTAINER}`)!;
+      const infoButtonEl = document.getElementById(INFO_BUTTON_ID);
+      if (!editableModalEl || !infoButtonEl) {
+        return (infoPopupStatus.value = PopupStatus.Hided);
+      }
+
+      const finalModalHovered = editableModalEl.matches(":hover");
+      const noteInfoTriggerHovered = infoButtonEl.matches(":hover");
+      if (!noteInfoTriggerHovered && !finalModalHovered) {
+        infoPopupStatus.value = PopupStatus.Hided;
+      }
+    }, 10);
     onMounted(() => {
       window.addEventListener("keydown", handleKeyDown);
     });
@@ -252,6 +283,31 @@ export default defineComponent({
       window.removeEventListener("keydown", handleKeyDown);
     });
 
+    const handleMouseOver = (event: any) => {
+      if (infoPopupStatus.value === PopupStatus.Pinned) return;
+      teachingIconPosition.value = {
+        left: infoIconRef.value.getBoundingClientRect().left,
+        top: infoIconRef.value.getBoundingClientRect().top,
+      };
+      infoPopupStatus.value = PopupStatus.Showed;
+    };
+
+    watch(infoPopupStatus, (currentVal) => {
+      if (currentVal === PopupStatus.Showed) {
+        window.addEventListener("mousemove", handleMouseMove);
+      }
+      if (currentVal === PopupStatus.Hided || currentVal === PopupStatus.Pinned) {
+        window.removeEventListener("mousemove", handleMouseMove);
+      }
+    });
+
+    const editableModalRef = ref<InstanceType<typeof PinningModal>>();
+
+    const handlePinOrHide = (status: PopupStatus) => {
+      infoPopupStatus.value = status;
+    };
+
+    const visible = computed(() => infoPopupStatus.value === PopupStatus.Showed);
     return {
       isGalleryView,
       exposures,
@@ -270,9 +326,9 @@ export default defineComponent({
       onClickPrevNextMedia,
       nextExposureItemMedia,
       iconNext,
-	  iconPrev,
+      iconPrev,
       NEXT_EXPOSURE,
-	  PREV_EXPOSURE,
+      PREV_EXPOSURE,
       exposureTypes,
       currentLesson,
       currentUnit,
@@ -287,13 +343,21 @@ export default defineComponent({
       showHideLesson,
       exposureTitle,
       showInfo,
-      toggleInformationBox,
       hasZeroTeachingContent,
       isTransitionBlock,
       lessonContainerHeaderFixed,
       lessonContainerHeaderFixedHeight,
       hasLongShortcutHeader,
       onClickUnit,
+      editableModalRef,
+      infoIconRef,
+      teachingIconPosition,
+      handleMouseOver,
+      visible,
+      handlePinOrHide,
+      infoPopupStatus,
+      PopupStatus,
+      noDataText,
     };
   },
 });

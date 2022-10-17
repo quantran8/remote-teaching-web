@@ -140,6 +140,7 @@
 	"teacher_class_lesson_plan.related_slides": "Related slides",
 	"teacher_class_lesson_plan.component_slides": "Component slides",
 	"teacher_class_lesson_plan.activity_slides": "Activity slides",
+	"teacher_class_lesson_plan.no_data": "No data",
 	"teacher_class.bear_action_none": "None",
 	"device_tester.platform": "Platform",
 	"teacher_class.student_has_joined_the_class": "{studentName} has joined the class.",
