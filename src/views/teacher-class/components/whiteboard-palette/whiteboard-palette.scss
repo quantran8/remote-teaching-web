@@ -211,3 +211,14 @@
 		opacity: 0.6;
 	}
 }
+
+.teacher-use-only-message {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: #a4141c;
+  font-size: 20px;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.68;
+}

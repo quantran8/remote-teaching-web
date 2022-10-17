@@ -38,6 +38,7 @@ export const useFabricObject = () => {
   const currentSelectionEnd = ref(-1);
   const currentSelectionStart = ref(-1);
   const isChangeImage= ref(false);
+  const isTeacherUseOnly = computed(() => getters["teacherRoom/isTeacherUseOnly"]);
 
   watch(currentExposureItemMedia, (currentItem, prevItem) => {
 	if (currentItem && prevItem) {
@@ -117,12 +118,12 @@ export const useFabricObject = () => {
 			viewPortX: Math.floor(viewPortX),
 			viewPortY: Math.floor(viewPortY)
 		}
-		if(canvas.getZoom() !== 1){
+		if(canvas.getZoom() !== 1 && !isTeacherUseOnly.value){
 			dispatch("teacherRoom/setMoveZoomedSlide",coords);
 		}
 		}
       if (options?.target?.type === "textbox") {
-		if(!isChangeImage.value){
+		if(!isChangeImage.value && !isTeacherUseOnly.value){
 			dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
 		}
         if (options?.target.text === "") {
@@ -193,7 +194,9 @@ export const useFabricObject = () => {
       options.target.prevTextValue = options.target.text;
       currentSelectionEnd.value = options.target.selectionEnd;
       currentSelectionStart.value = options.target.selectionEnd;
-      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      if (!isTeacherUseOnly.value) {
+          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      }
     });
   };
 
@@ -207,7 +210,9 @@ export const useFabricObject = () => {
 		textBox.enterEditing();
 		textBox.setSelectionStart(0);
 		textBox.setSelectionEnd(textBox.text.length);
-		dispatch("teacherRoom/teacherCreateFabricObject", textBox);
+        if (!isTeacherUseOnly.value) {
+            dispatch("teacherRoom/teacherCreateFabricObject", textBox);
+        }
 		return textBox;
   };
 
@@ -272,7 +277,9 @@ export const useFabricObject = () => {
       const hasSelected = selectedFabricObject.selectionEnd - selectedFabricObject.selectionStart > 0;
       if (hasSelected) {
         selectedFabricObject.setSelectionStyles({ fill: colorValue });
-        dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+        if (!isTeacherUseOnly.value) {
+            dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+        }
       }
       selectedFabricObject.set("cursorColor", colorValue);
       canvas.renderAll();

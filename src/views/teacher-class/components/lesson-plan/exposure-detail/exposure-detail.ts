@@ -74,6 +74,7 @@ export default defineComponent({
         ?.map((item: any) => {
           if (!item.media[0]) return;
           item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
+          item.media[0].teacherUseOnly = item.teacherUseOnly;
           return item.media;
         })
         ?.flat(1);

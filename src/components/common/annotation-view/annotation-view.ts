@@ -49,6 +49,9 @@ export default defineComponent({
     //   return props.image ? props.image.url : {};
     // });
 	const imageUrl = computed(() => {
+        if (!props.image) {
+            return null;
+        }
 		const image = new Image();
 		image.onload = imgLoad;
 		image.src = props.image ? props.image.url : {};

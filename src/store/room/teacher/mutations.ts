@@ -51,6 +51,7 @@ export interface TeacherRoomMutationInterface<S> {
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
   setWhiteboard(s: S, p: boolean): void;
+  setIsTeacherUseOnly(s: S, p: boolean): void;
 }
 
 export interface TeacherRoomMutation<S> extends MutationTree<S>, TeacherRoomMutationInterface<S> {}
@@ -329,6 +330,9 @@ const mutations: TeacherRoomMutation<State> = {
         isPalette: st.isPalette,
       };
     });
+  },
+  setIsTeacherUseOnly(state: TeacherRoomState, p) {
+    state.isTeacherUseOnly = p;
   },
 };
 

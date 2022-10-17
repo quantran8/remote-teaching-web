@@ -55,6 +55,7 @@ export default defineComponent({
     const oneSelfShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
+    const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
 
     let canvas: any;
     const tools = Tools;
@@ -126,7 +127,9 @@ export default defineComponent({
 		  });
 		canvas.calcOffset();
 		zoomPercentage.value =  Math.round(zoomRatio.value * 100);
-		await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
+        if (!isTeacherUseOnly.value) {
+            await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+        }
 
 	}
 
@@ -147,7 +150,9 @@ export default defineComponent({
 			}
 			zoomPercentage.value = Math.round(zoomRatio.value * 100);
 			canvas.zoomToPoint(point,zoomRatio.value);
-			await store.dispatch("teacherRoom/setZoomSlide",zoomRatio.value);
+            if (!isTeacherUseOnly.value) {
+                await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+            }
 		}
 	}
 
@@ -311,6 +316,9 @@ export default defineComponent({
     watch(targetsList, processTargetsList, { deep: true });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
+      if (isTeacherUseOnly.value) {
+          return;
+      }
       await store.dispatch("teacherRoom/setMode", {
         mode: modeAnnotation.value,
       });
@@ -382,6 +390,10 @@ export default defineComponent({
 		}
 	})
 
+      watch(() => (currentExposureItemMedia.value?.teacherUseOnly && !showHideWhiteboard.value), (val) => {
+          store.commit("teacherRoom/setIsTeacherUseOnly", !!val);
+      });
+
     const imageUrl = computed(() => {
       const image = new Image();
       image.onload = imgLoad;
@@ -389,6 +401,9 @@ export default defineComponent({
       return image.src;
     });
     const cursorPosition = async (e: any, isDone = false) => {
+        if (isTeacherUseOnly.value) {
+            return;
+        }
       const rect = document.getElementById("canvas-container");
       if (!rect) return;
       const rectBounding = rect.getBoundingClientRect();
@@ -407,7 +422,7 @@ export default defineComponent({
         x = x / scaleRatio;
         y = y / scaleRatio;
       }
-      if (modeAnnotation.value === Mode.Cursor) {
+      if (modeAnnotation.value === Mode.Cursor && !isTeacherUseOnly.value) {
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
@@ -457,6 +472,9 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
+        if (isTeacherUseOnly.value) {
+            return;
+        }
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
       const lastObject = teacherStrokes[teacherStrokes.length - 1];
       if (toolSelected.value === Tools.Pen) {
@@ -695,7 +713,9 @@ export default defineComponent({
               .filter((item: any) => item.id === isTeacher.value.id)
               .pop();
             canvas.remove(itemDelete);
-            await store.dispatch("teacherRoom/setDeleteBrush", {});
+            if (!isTeacherUseOnly.value) {
+                await store.dispatch("teacherRoom/setDeleteBrush", {});
+            }
             toolSelected.value = Tools.Pen;
             canvas.isDrawingMode = true;
           } else {
@@ -707,7 +727,9 @@ export default defineComponent({
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
           canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img" ));
-          await store.dispatch("teacherRoom/setClearBrush", {});
+            if (!isTeacherUseOnly.value) {
+                await store.dispatch("teacherRoom/setClearBrush", {});
+            }
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
           await setDrawMode();
@@ -1087,7 +1109,8 @@ export default defineComponent({
 	  zoomOut,
 	  showHidePreviewModal,
 	  disablePreviewBtn,
-	  zoomPercentage
+	  zoomPercentage,
+      isTeacherUseOnly,
     };
   },
 });
