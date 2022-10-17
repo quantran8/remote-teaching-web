@@ -1075,6 +1075,7 @@ export default defineComponent({
     });
 
     onClickOutside(wrapCanvasRef, handleClickOutsideCanvas);
+    const forTeacherUseOnlyText = computed(() => fmtMsg(TeacherClass.ForTeacherUseOnly));
     return {
       currentExposureItemMedia,
       clickedTool,
@@ -1111,6 +1112,7 @@ export default defineComponent({
 	  disablePreviewBtn,
 	  zoomPercentage,
       isTeacherUseOnly,
+      forTeacherUseOnlyText,
     };
   },
 });

@@ -142,6 +142,7 @@
 	"teacher_class.student_has_joined_the_class": "{studentName} vừa vào lớp.",
 	"teacher_class.student_has_left_the_class": "{studentName} vừa ra khỏi lớp.",
 	"teacher_class.student_has_lost_connection": "Có vẻ học sinh {studentName} đã có vấn đề về kết nối mạng nên đã bị out ra khỏi lớp.",
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
 	"teacher_calendar.back": "Về trước",
 	"teacher_class_error.connect_agora_servers_error": "Không thể kết nối với máy chủ Agora, vui lòng mở lại trang.",
 	"teacher_class_error.publish_stream_error": "Không thể truyền video và tiếng tới máy chủ Agora, vui lòng tải lại trang.",

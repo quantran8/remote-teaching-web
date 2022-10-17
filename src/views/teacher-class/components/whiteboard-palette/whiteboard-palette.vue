@@ -40,7 +40,7 @@
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
           <div class="teacher-use-only-message" v-if="isTeacherUseOnly">
-            *This slide is for teachers and not visible to students.
+            {{ forTeacherUseOnlyText }}
           </div>
 		  <div class="wrap-zoom-icon">
 			<div class="zoom-icon-container">

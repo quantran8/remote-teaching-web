@@ -233,6 +233,7 @@ export class TeacherClass {
   static StudentHasJoinedTheClass = "teacher_class.student_has_joined_the_class";
   static StudentHasLeftTheClass = "teacher_class.student_has_left_the_class";
   static StudentHasLostConnection = "teacher_class.student_has_lost_connection";
+  static ForTeacherUseOnly = "teacher_class.for_teacher_use_only";
 }
 
 export class BearAction {
