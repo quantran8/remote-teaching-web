@@ -215,10 +215,10 @@
 .teacher-use-only-message {
   position: absolute;
   top: 10px;
-  left: 15px;
+  left: 50%;
+  transform: translateX(-50%);
   color: #a4141c;
-  font-size: 20px;
+  font-size: 14px;
   z-index: 100;
   pointer-events: none;
-  opacity: 0.68;
 }
