@@ -311,6 +311,7 @@ export default defineComponent({
             visible: false,
           });
         }
+		if (targetsList.value[0].visible) disablePreviewBtn.value = true;
       }
     };
     watch(targetsList, processTargetsList, { deep: true });
@@ -791,6 +792,7 @@ export default defineComponent({
       objectTargetOnCanvas();
 	  if (toggleTargets.value.visible) {
 		disableShowAllTargetsBtn.value = true;
+		disablePreviewBtn.value = true;
 	  }
 	  if (!firstLoadImage.value) {
         firstLoadImage.value = true;
