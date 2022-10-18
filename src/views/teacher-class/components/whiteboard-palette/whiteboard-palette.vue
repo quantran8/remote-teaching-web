@@ -39,6 +39,9 @@
           <div ref="wrapCanvasRef" class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
+          <div class="teacher-use-only-message" v-if="isTeacherUseOnly">
+            {{ forTeacherUseOnlyText }}
+          </div>
 		  <div class="wrap-zoom-icon">
 			<div class="zoom-icon-container">
 				<div  @click="zoomOut" class="zoom-container">

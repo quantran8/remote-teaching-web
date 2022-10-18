@@ -33,6 +33,7 @@ export interface TeacherRoomState {
   isShowWhiteboard: boolean;
   isTeacherVideoMirror: boolean;
   isStudentVideoMirror: boolean;
+  isTeacherUseOnly: boolean;
 }
 
 const state: TeacherRoomState = {
@@ -58,7 +59,8 @@ const state: TeacherRoomState = {
   currentUnit: DEFAULT_LESSON,
   isShowWhiteboard: false,
   isTeacherVideoMirror: true,
-  isStudentVideoMirror: true
+  isStudentVideoMirror: true,
+  isTeacherUseOnly: false,
 };
 
 export default state;

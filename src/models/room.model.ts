@@ -10,6 +10,7 @@ export interface ExposureItemMediaModel {
   id: string;
   url: string;
   resolution: string;
+  teacherUseOnly: boolean;
 }
 export interface ExposureItemModel {
   id: string;

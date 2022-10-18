@@ -113,6 +113,9 @@ const getters: GetterTree<TeacherRoomState, any> = {
   isShowWhiteBoard(state: TeacherRoomState): boolean {
     return state.isShowWhiteboard;
   },
+  isTeacherUseOnly(state: TeacherRoomState): boolean {
+    return state.isTeacherUseOnly;
+  }
 };
 
 export default getters;

@@ -6,6 +6,7 @@ import { DefaultCanvasDimension } from "vue-glcommonui";
 export const addShape = () => {
   const store = useStore();
   const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
+  const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
 
   const teacherAddShapes = async (canvas: any) => {
     const shapes: Array<string> = [];
@@ -16,7 +17,7 @@ export const addShape = () => {
         shapes.push(JSON.stringify(obj));
       }
     });
-    if (shapes.length) {
+    if (shapes.length && !isTeacherUseOnly.value) {
       await store.dispatch("teacherRoom/setShapesForStudent", shapes);
     }
   };

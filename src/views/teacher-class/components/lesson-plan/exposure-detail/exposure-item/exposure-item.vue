@@ -29,7 +29,7 @@
 				 'width':(item.image.metaData &&item.image.metaData.rotate && (Math.abs(item.image.metaData.rotate) === 270 || Math.abs(item.image.metaData.rotate)=== 90)) ? '100px' : '100%'
 				}:'']" 
 		  />
-          <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
+          <div v-if="items.length > 1 || item.teacherUseOnly" :class="['item-tag', item.teacherUseOnly ? 'item-tag__teacher-use-only' : '']">{{ index + 1 }}</div>
         </Tooltip>
         <!-- <Tooltip v-else placement="topRight">
           <template #title>

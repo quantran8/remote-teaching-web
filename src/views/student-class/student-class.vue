@@ -19,7 +19,10 @@
           </div>
         </div>
         <div v-show="!teacherIsDisconnected">
-          <AnnotationView v-show="!isBlackOutContent && isLessonPlan" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
+          <AnnotationView
+              v-show="!isBlackOutContent && isLessonPlan"
+              :image="isLessonPlan && !currentExposureItemMedia?.teacherUseOnly ? currentExposureItemMedia?.image : null"
+          />
         </div>
         <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView

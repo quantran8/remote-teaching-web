@@ -49,6 +49,7 @@ const actions: LessonActions<LessonState, any> = {
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
+            teacherUseOnly: p.teacherUseOnly,
           };
         });
         return {
@@ -69,12 +70,14 @@ const actions: LessonActions<LessonState, any> = {
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
+            teacherUseOnly: p.teacherUseOnly,
           };
         });
         return {
           id: c.id,
           name: DEFAULT_CONTENT_BLOCK_ITEM_NAME,
           media: media,
+          teacherUseOnly: c.teacherUseOnly,
         };
       });
 

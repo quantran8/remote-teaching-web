@@ -143,6 +143,7 @@
 	"teacher_class.student_has_joined_the_class": "{studentName} присоединился(-ась) к классу.",
 	"teacher_class.student_has_left_the_class": "{studentName} покинул(-а) класс.",
 	"teacher_class.student_has_lost_connection": "Похоже, у {studentName} возникла проблема с подключением, из-за которой он(-а) покинул(-а) класс.",
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
 	"teacher_calendar.back": "Назад",
 	"teacher_class_error.connect_agora_servers_error": "Не удается подключиться к серверам Agora, попробуйте перезагрузить страницу.",
 	"teacher_class_error.publish_stream_error": "Не удается опубликовать видео- или аудиопотоки на серверах Agora, попробуйте перезагрузить страницу.",
