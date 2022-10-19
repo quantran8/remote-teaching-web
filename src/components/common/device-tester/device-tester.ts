@@ -263,10 +263,22 @@ export default defineComponent({
     const setupDevice = async () => {
       try {
         const cams = await AgoraRTC.getCameras();
-        const speakers = await AgoraRTC.getPlaybackDevices();
+        const speakersOrigin = await AgoraRTC.getPlaybackDevices();
+		const speakers:DeviceType[] = speakersOrigin.map((speaker)=>{
+		  if (speaker.deviceId === 'default'){
+			const defaultDevice = {
+			  deviceId: speaker.deviceId,
+			  groupId: speaker.groupId, 
+			  kind: speaker.kind, 
+			  label: 'Default Device'
+			}
+			return defaultDevice
+		  }
+		  return speaker
+		})
 		if(speakers.length){
 			listSpeakers.value = speakers;
-			listSpeakersId.value = speakers.map(speaker => speaker.deviceId);
+			listSpeakersId.value = speakers.map((speaker:any) => speaker.deviceId);
 			currentSpeaker.value = speakers[0];
 			currentSpeakerLabel.value = speakers[0].label;
 		}
