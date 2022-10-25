@@ -17,7 +17,7 @@
     position: relative;
     .lesson-container__header-title {
       padding: 10px 15px;
-      font-size: 1.25rem;
+      font-size: 20px;
 	  cursor: pointer;
 
       &--text-right {
@@ -36,7 +36,7 @@
           border-bottom: 0px;
         }
         &__lesson {
-          font-size: 1.25rem;
+          font-size: 20px;
           display: inline-block;
           &.shortcut.long-title {
             font-size: 22px;
@@ -44,10 +44,10 @@
         }
         &__unit {
           &.shortcut {
-            font-size: 1.25rem;
+            font-size: 20px;
             margin-right: 0px;
             &.long-title {
-              font-size: 1.25rem;
+              font-size: 20px;
             }
           }
           display: inline-block;

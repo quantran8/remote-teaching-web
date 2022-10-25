@@ -153,7 +153,7 @@ export const annotationCurriculum = () => {
 	return allShape;
   };
   const processLessonImage = (propImage: any, canvas: any,visible: boolean, point: any, firstLoad: any, imgEl: any) => {
-	const event = visible ? 'show-all-targets-first-time' : 'hide-all-targets' 
+	const event = visible ? 'show-all-targets-first-time' : 'hide-all-targets-first-time' 
 	const imgWidth = getters["annotation/imgWidth"];
 	const imgHeight = getters["annotation/imgHeight"];
 	const annotation = propImage.image?.metaData?.annotations;
@@ -215,7 +215,7 @@ export const annotationCurriculum = () => {
 	});
 	if(annotation && annotation.length){
 		const data = processAnnotationLesson(propImage.image, canvas, true, event,Group);
-		if (event === "hide-all-targets") {
+		if (event === "hide-all-targets-first-time") {
 		  data?.forEach((item:any) => {
 		    Group.addWithUpdate(item);
 		  })
