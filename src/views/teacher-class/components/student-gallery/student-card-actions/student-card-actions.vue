@@ -31,6 +31,18 @@
         <img :src="arrowIcon" style="width: 27px; border-radius: 50%" />
       </div>
     </span>
+
+    <span v-if="show" @click="captureImage" class="student-action__item"
+      :class="{ 'student-action__item--disable': !isOnePalette }">
+      <div class="student-action__btn">
+        <img :src="PhotoCamera" />
+      </div>
+    </span>
+    <span v-if="show"  class="student-action__item" >
+      <div class="student-action__btn">
+        <img :src="IconImage"  />
+      </div>
+    </span>
   </transition-group>
 </template>
 

@@ -34,6 +34,8 @@ import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
 import { HubConnectionState } from "@microsoft/signalr";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
+import { StudentStorageService } from '../../../services/storage/service';
+import { BlobTagItem } from "@/services/storage/interface";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -567,6 +569,33 @@ const actions: ActionTree<TeacherRoomState, any> = {
     await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
+  async sendRequestCaptureImage({ state }, payload: string) {
+    await state.manager?.WSClient.sendRequestCaptureImage(payload);
+  },
+  // async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
+  //   try{
+  //     const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
+  //     commit("setStudentsImageCaptured",result)
+  //   }
+  //   catch(error){
+  //     console.log(error)
+  //   }
+  // },
+  // async removeStudentImage({getters},p: string){
+  //   const auth = getters["auth/getLoginInfo"];
+  //   try {
+  //     await StudentStorageService.removeFile(auth.access_token,p);
+  //   }
+  //   catch (error) {
+  //     console.log(error)
+  //   }
+  // },
+  // async setRoomInfo({ commit }, p: TeacherGetRoomResponse){
+  //   commit("setRoomInfo",p);
+  // },
+  // setStudentsImageCaptured({commit},p: Array<BlobTagItem>){
+  // commit("setStudentsImageCaptured");
+  // }
 };
 
 export default actions;

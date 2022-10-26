@@ -10,6 +10,7 @@ export interface StudentState {
   status: InClassStatus;
   raisingHand: boolean;
   isPalette: boolean;
+  imageCapturedCount:number
 }
 
 export interface LessonInfo {

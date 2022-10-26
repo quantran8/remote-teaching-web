@@ -116,6 +116,8 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount
+
       };
     });
     s.localAudios = s.students.filter((ele) => p.studentsAudio.indexOf(ele.id) !== -1).map((el) => el.id);
@@ -328,11 +330,17 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount
+
       };
     });
   },
   setIsTeacherUseOnly(state: TeacherRoomState, p) {
     state.isTeacherUseOnly = p;
+  },
+  setStudentImageCapturedCount(s: TeacherRoomState,p: {id: string, imageCapturedCount: number}){
+    const student = s.students.find((st) => st.id === p.id);
+    if (student) student.imageCapturedCount = p.imageCapturedCount;
   },
 };
 

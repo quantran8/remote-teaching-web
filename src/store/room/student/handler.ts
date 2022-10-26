@@ -443,7 +443,16 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
 	onTeacherResetZoom: async(p: any) => {
 		await dispatch("lesson/setZoomRatio", undefined, { root: true });
 
-	}
+	},
+  onTeacherSendRequestCaptureImage: (p:string) => {
+    if(state.student?.id === p){
+      dispatch("studentRoom/setStudentImageCaptured", { id: p, capture: true }, { root: true });
+    }
+   
+  },
+  onStudentSendCapturedImageStatus: (p: any) => {
+    // console.log(p);
+  }
   };
   return handler;
 };

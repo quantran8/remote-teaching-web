@@ -20,11 +20,12 @@
         :metadata="image.metaData"
         @img-load="imgLoad"
       />
-	 <img v-else-if="typeof imageUrl === 'string' && image" 
+	    <img v-else-if="typeof imageUrl === 'string' && image" 
 		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" 
 		  />
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
+    <canvas width="720" height="480"  id="imgCanvas" style="display: none;" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
 	<!-- hide temporary with v-if=false -->

@@ -81,6 +81,7 @@ const mutations: MutationTree<StudentRoomState> = {
         index: state.students.length,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount
       };
       if (st.id === state.user?.id) {
         student.index = 999;
@@ -300,6 +301,7 @@ const mutations: MutationTree<StudentRoomState> = {
         index: state.students.length,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount
       };
       if (st.id === state.user?.id) {
         student.index = 999;
@@ -309,6 +311,9 @@ const mutations: MutationTree<StudentRoomState> = {
       }
     }
   },
+  setStudentImageCaptured(s: StudentRoomState, p: { id: string, capture: boolean }) {
+    s.startCaptureImage = p.capture
+  }
 };
 
 export default mutations;

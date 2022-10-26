@@ -329,7 +329,26 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
 	},
 	onTeacherResetZoom: (p: any) => {
 		//
-	}
+	},
+  onTeacherSendRequestCaptureImage: (p: string) => {
+//  
+},
+  onStudentSendCapturedImageStatus: (p:{studentId: string, fileName: string, isUploaded: boolean, imageCapturedCount: number, error: string}) => {
+    console.log(p);
+    if(p.isUploaded){
+      notification.success({
+        message:"capture image success",
+        duration:3
+      });
+      commit("setStudentImageCapturedCount",{id:p.studentId,imageCapturedCount:p.imageCapturedCount})
+    }
+    else{
+      notification.error({
+        message: "cant capture image ",
+        duration: 3
+      });
+    }
+  }
   };
   return handler;
 };

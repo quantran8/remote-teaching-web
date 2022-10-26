@@ -105,6 +105,9 @@ const getters: GetterTree<StudentRoomState, any> = {
   browserFingerPrint(state: StudentRoomState): string {
     return state.browserFingerPrinting;
   },
+  isCaptureImage(state: StudentRoomState) : boolean {
+    return state.startCaptureImage;
+  }
 };
 
 export default getters;
