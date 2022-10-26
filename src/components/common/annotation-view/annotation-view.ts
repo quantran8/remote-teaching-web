@@ -70,7 +70,12 @@ export default defineComponent({
     const oneTeacherShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const zoomRatio = computed(() => store.getters["lesson/zoomRatio"]);
     const imgCoords = computed(() => store.getters["lesson/imgCoords"]);
-	const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
+	  const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
+    const isCaptureImage = computed(() => store.getters["studentRoom/isCaptureImage"]);
+    const userInfo = computed(() => store.getters["auth/getLoginInfo"])
+    const classInfo = computed(() => store.getters["studentRoom/info"])
+    const children = computed(() => store.getters["parent/children"]);
+    const schoolId = computed(() => children.value.find((child: any) => child.id === student.value.id)?.schoolId)
 
     const oneOneStatus = ref<boolean>(false);
     const oneOneIdNear = ref<string>("");
@@ -120,6 +125,34 @@ export default defineComponent({
 		canvas?.renderAll();
 
 	})
+
+
+    watch(isCaptureImage, async(value) => {
+      if(value){
+        const captureCanvas = document.getElementById("imgCanvas") as HTMLCanvasElement;
+        const context = captureCanvas.getContext("2d");
+        const videoEl = document.getElementById(student.value.id)?.getElementsByTagName("video")[0];
+        context?.drawImage(videoEl as CanvasImageSource ,0,0,captureCanvas.width,captureCanvas.height);
+        const base64Url = captureCanvas.toDataURL('image/jpeg');
+        const res = await fetch(base64Url);
+        const buffer = await res.arrayBuffer();
+        const fileName = `student_${student.value.id}_${Math.floor(Math.random() * 10000)}.jpeg`;
+        const file = new File([buffer], fileName, { type: "image/jpeg" });
+        const formData = new FormData();
+        formData.append('File', file);
+        formData.append("SchoolId", schoolId.value);
+        formData.append('ClassId', classInfo.value.classInfo.classId);
+        formData.append('SessionId', classInfo.value.id);
+        formData.append('GroupId', classInfo.value.classInfo.groupId);
+        formData.append('StudentId', student.value.id);
+        await store.dispatch('studentRoom/setStudentImageCaptured', { id: student.value.id, capture: false })
+        await store.dispatch('studentRoom/uploadCapturedImage', { 
+          token: userInfo.value.access_token, 
+          formData,
+          fileName,
+        });
+      }
+    })
 
     watch(toolActive, () => {
       if (paletteShown.value) {

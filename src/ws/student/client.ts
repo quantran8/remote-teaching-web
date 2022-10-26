@@ -69,4 +69,7 @@ export class StudentWSClient extends GLSocketClient {
   sendCheckTeacherMessageVersion() {
     return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
   }
+  sendCapturedImageStatus(p:any){
+    return this.send(WSCmd.SEND_CAPTURE_IMAGE_STATUS,p)
+  }
 }

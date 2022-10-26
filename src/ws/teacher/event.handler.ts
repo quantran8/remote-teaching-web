@@ -44,4 +44,6 @@ export interface TeacherWSEventHandler {
   onTeacherResetZoom(payload: any): void;
 
   onTeacherUpdateSessionLessonAndUnit(payload: any): void;
-}
+  onTeacherSendRequestCaptureImage(payload: any): void;
+  onStudentSendCapturedImageStatus(payload: any): void;
+} 
