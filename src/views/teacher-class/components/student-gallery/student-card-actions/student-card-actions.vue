@@ -38,11 +38,12 @@
         <img :src="PhotoCamera" />
       </div>
     </span>
-    <span v-if="show"  class="student-action__item" >
+    <router-link :to = "`/teacher/image-view/${currentSchoolId}/${student.id}`" target="_blank" v-if="show"  class="student-action__item"
+      :class="{ 'student-action__item--disable': !isOnePalette }">
       <div class="student-action__btn">
         <img :src="IconImage"  />
       </div>
-    </span>
+    </router-link>
   </transition-group>
 </template>
 

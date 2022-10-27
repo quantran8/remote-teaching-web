@@ -342,6 +342,9 @@ const mutations: TeacherRoomMutation<State> = {
     const student = s.students.find((st) => st.id === p.id);
     if (student) student.imageCapturedCount = p.imageCapturedCount;
   },
+  setStudentsImageCaptured(s: TeacherRoomState,p){
+    s.studentsImageCaptured = p
+  }
 };
 
 export default mutations;

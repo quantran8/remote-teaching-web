@@ -3,6 +3,14 @@ import { RoomModel, CalendarSchedulesModel, TeacherClassCalendarModel, TeacherCl
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
 
+export interface StudentsGroup {
+  groupId: string;
+  groupName: string;
+  studentId: string;
+  studentName: string;
+  nativeName: string;
+
+}
 export interface TeacherState {
   info?: UserModel;
   schools: Array<ResourceModel>;
@@ -12,6 +20,8 @@ export interface TeacherState {
   acceptPolicy: boolean;
   calendarSchedules: Array<CalendarSchedulesModel>;
   classOnline: ClassRoomModel | undefined;
+  currentSchoolId: string;
+  currentGroupStudents: Array<StudentsGroup>
 }
 
 const state: TeacherState = {
@@ -23,6 +33,8 @@ const state: TeacherState = {
   calendarSchedules: [],
   classesSchedules: [],
   classOnline: undefined,
+  currentSchoolId:"",
+  currentGroupStudents:[]
 };
 
 export default state;

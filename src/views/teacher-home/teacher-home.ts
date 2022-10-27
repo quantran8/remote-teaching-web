@@ -73,6 +73,8 @@ export default defineComponent({
     const loadingInfo = ref(false);
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
+    const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
+
 
     const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number, isTeacherVideoMirror = true, isStudentVideoMirror = true) => {
       messageStartClass.value = "";
@@ -132,6 +134,7 @@ export default defineComponent({
         });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
+        await store.dispatch("teacher/setCurrentSchool",schoolId);
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
@@ -306,6 +309,7 @@ export default defineComponent({
       scheduleText,
       cancelText,
       submitText,
+      currentSchool
     };
   },
 });

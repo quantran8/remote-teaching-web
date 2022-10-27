@@ -5,8 +5,9 @@
 	  <HelpMenu/>
       <LanguagePicker />
       <UserAvatar>
-        <template #extraItems>
-          <DropdownItem :text="testConnectText" @click.prevent="onClickTestDevice" />
+		  <template #extraItems>
+			  <DropdownItem :text="testConnectText" @click.prevent="onClickTestDevice" />
+			  <DropdownItem text="Writer Review"  @click.prevent="onClickWriterReview"  />
         </template>
       </UserAvatar>
     </template>
