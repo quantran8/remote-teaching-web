@@ -52,6 +52,16 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/teacher/image-view/:schoolId?/:studentId?",
+    name: "TeacherImageView",
+    component: () => import("../views/teacher-image-view/teacher-image-view.vue"),
+    meta: {
+      layout: "main",
+      requiresAuth: true,
+      requireTeacher: true,
+    },
+  },
+  {
     path: "/teacher-calendars/:schoolId",
     name: "TeacherCalendar",
     component: () => import("../views/teacher-calendar/teacher-calendar.vue"),

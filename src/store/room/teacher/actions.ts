@@ -572,30 +572,29 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async sendRequestCaptureImage({ state }, payload: string) {
     await state.manager?.WSClient.sendRequestCaptureImage(payload);
   },
-  // async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
-  //   try{
-  //     const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
-  //     commit("setStudentsImageCaptured",result)
-  //   }
-  //   catch(error){
-  //     console.log(error)
-  //   }
-  // },
-  // async removeStudentImage({getters},p: string){
-  //   const auth = getters["auth/getLoginInfo"];
-  //   try {
-  //     await StudentStorageService.removeFile(auth.access_token,p);
-  //   }
-  //   catch (error) {
-  //     console.log(error)
-  //   }
-  // },
-  // async setRoomInfo({ commit }, p: TeacherGetRoomResponse){
-  //   commit("setRoomInfo",p);
-  // },
-  // setStudentsImageCaptured({commit},p: Array<BlobTagItem>){
-  // commit("setStudentsImageCaptured");
-  // }
+  async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
+    try{
+      const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
+      commit("setStudentsImageCaptured",result)
+    }
+    catch(error){
+      console.log(error)
+    }
+  },
+  async removeStudentImage({getters},p: {token: string, fileName: string}){
+    try {
+      await StudentStorageService.removeFile(p.token,p.fileName);
+    }
+    catch (error) {
+      console.log(error)
+    }
+  },
+  async setRoomInfo({ commit }, p: TeacherGetRoomResponse){
+    commit("setRoomInfo",p);
+  },
+  setStudentsImageCaptured({commit},p: Array<BlobTagItem>){
+  commit("setStudentsImageCaptured",p);
+  }
 };
 
 export default actions;

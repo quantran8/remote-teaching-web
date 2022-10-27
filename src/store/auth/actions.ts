@@ -7,7 +7,7 @@ const actions: ActionTree<AuthState, any> = {
     store.commit("setLoginInfo", payload.loginInfo);
   },
   signout(store, _) {
-    store.commit("setLoginInfo", null);
+    // store.commit("setLoginInfo", null);
   },
 };
 
