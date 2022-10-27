@@ -94,8 +94,15 @@ const actions: ActionTree<TeacherState, any> = {
     commit("setCurrentSchool",p);
   },
   async getClassInfo({commit,state},p :{classId: string, groupId: string, teacherId: string}){
-    	const result = await RemoteTeachingService.getClassSessionInfo(p.classId,p.groupId,p.teacherId)
-      commit("setCurrentGroupStudents", result.students)
+    	try{
+			const result = await RemoteTeachingService.getClassSessionInfo(p.classId,p.groupId,p.teacherId);
+      		if(result.students.length){
+				commit("setCurrentGroupStudents", result.students);
+			}
+		}
+		catch(error){
+			console.log(error)
+		}
   }
 };
 

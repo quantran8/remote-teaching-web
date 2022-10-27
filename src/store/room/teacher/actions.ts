@@ -36,6 +36,7 @@ import { HubConnectionState } from "@microsoft/signalr";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
 import { StudentStorageService } from '../../../services/storage/service';
 import { BlobTagItem } from "@/services/storage/interface";
+import { notification } from "ant-design-vue";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -575,7 +576,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
     try{
       const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
-      commit("setStudentsImageCaptured",result)
+	  if(result.length){
+		  commit("setStudentsImageCaptured",result.length);
+	  }
     }
     catch(error){
       console.log(error)
@@ -586,7 +589,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await StudentStorageService.removeFile(p.token,p.fileName);
     }
     catch (error) {
-      console.log(error)
+      console.log(error);
+	  notification.error({
+		message:error.error,
+		duration:3
+	  })
     }
   },
   async setRoomInfo({ commit }, p: TeacherGetRoomResponse){

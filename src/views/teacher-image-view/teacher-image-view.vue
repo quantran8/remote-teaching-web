@@ -1,19 +1,5 @@
 <template>
 	<div class="container">
-		<!-- <div v-if="isShowImageModal" style="position: absolute;z-index:10">
-			<div class="overlay"></div>
-			<Carousel ref="myCarousel" :items-to-show="1" snapAlign="center">
-				<Slide v-for="(item,index) in carouselDataSource" :key="index">
-					<img src="@/assets/images/trash.png" @click="() => deleteImage(index)" class="remove_icon">
-					<img :src="blobNameToUrl(item.blobName)" />
-				</Slide>
-				<template #addons>
-					<navigation />
-					<pagination />
-				</template>
-			</Carousel>
-		</div> -->
-		
 			<div class="filter_header">
 				<RadioGroup v-model:value="filterMode" @change="handleChangeRadioSelected">
 					<Radio :value="FilterMode.Student">By Student</Radio>
@@ -41,15 +27,14 @@
 				<div v-else class="filter_container session_filter">
 					<div class="select_item">
 						<span class="label">Date</span>
-						<img class="calendar_icon" src="@/assets/images/calendar.png" @click="showCalendar" />
-						<Input placeholder=" " v-model:value="filterOptions.date" style="height: 32px;"/>
-						<Calendar v-if="isShowCalendar" v-model:value="currentDate" :fullscreen="false" @panelChange="handleChangeDate"
-							@select="handleChangeDate" class="calendar"/>
+						<!-- <Input placeholder=" " v-model:value="currentDate" style="height: 32px;"/> -->
+						<DatePicker v-model:value="calendarValue" placeholder=" " @change="handleChangeDate"  class="calendar"/>
+						<img class="calendar_icon" src="@/assets/images/calendar.png" />
 					</div>
 
 					<div class="select_item">
 						<span class="label">School</span>
-						<Select class="select_box" label-in-value v-model:value="schoolOptions[0]" @change="handleChangeSchool"
+						<Select class="select_box" label-in-value v-model:value="schoolSelected" @change="handleChangeSchool"
 							:options="schoolOptions" />
 					</div>
 					<div class="select_item">
@@ -73,17 +58,28 @@
 					
 				
 			</div>
-			<Modal  v-model:visible="isShowImageModal" width="800px">
-				<Carousel ref="myCarousel" :items-to-show="1" snapAlign="center">
-					<Slide v-for="(item,index) in carouselDataSource" :key="index">
+			<Modal  v-model:visible="isShowImageModal" width="720px" footer title=" ">
+				<span v-if="!carouselDataSource.length" class="no_image_title">No images exist</span>
+				<Swiper
+				v-else 
+				:style="{
+				'--swiper-navigation-color': '#fff',
+				'--swiper-pagination-color': '#fff',
+				}"
+				:cssMode="true"
+				:navigation="true"
+				:pagination="{
+				clickable: true,
+				}"
+				:mousewheel="true"
+				:keyboard="true"
+				:modules="modules"
+				class="mySwiper">
+					<SwiperSlide v-for="(item,index) in carouselDataSource" :key="index">
 						<img src="@/assets/images/trash.png" @click="() => removeImage(item.blobName)" class="remove_icon">
 						<img :src="blobNameToUrl(item.blobName)" />
-					</Slide>
-					<template #addons>
-						<navigation />
-						<pagination />
-					</template>
-				</Carousel>
+					</SwiperSlide>
+				</Swiper>
 			</Modal>
 	</div>
 </template>

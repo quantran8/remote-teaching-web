@@ -19,9 +19,6 @@
       >
         <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
       </Select>
-	     <router-link :to = "`/teacher/image-view/${currentSchool}`" target="_blank" >
-        IMG VIEW
-      </router-link>
     </div>
     <hr class="mr-10 ml-10" />
     <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">

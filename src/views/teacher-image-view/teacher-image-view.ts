@@ -1,19 +1,27 @@
 import { computed, defineComponent, ref, onMounted, watch } from 'vue';
-import {Radio,Select, Button, Calendar, Input, Table, Modal } from "ant-design-vue";
+import {Radio,Select, Button, Calendar, Input, Table, Modal, DatePicker } from "ant-design-vue";
 import { useStore } from 'vuex';
-import moment, {Moment} from 'moment';
+import  {Moment} from 'moment';
 import { AccessibleSchoolQueryParam } from '@/services';
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { useRoute } from 'vue-router';
-import { StudentState } from '@/store/room/interface';
 import { RoomModel } from '@/models';
 import { FilterMode } from '@/utils/utils';
 import { BlobTagItem } from '@/services/storage/interface';
 import { StudentsGroup } from '@/store/teacher/state';
-import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
-import "vue3-carousel/dist/carousel.css";
-const fpPromise = FingerprintJS.load();
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination } from "swiper";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { RadioChangeEvent } from 'ant-design-vue/lib/radio';
 
+const fpPromise = FingerprintJS.load();
+interface Value {
+	value: string;
+	label: string;
+	key?: string
+}
 export default defineComponent({
 	components:{
 		Radio,
@@ -25,58 +33,34 @@ export default defineComponent({
 		Input,
 		Table,
 		Modal,
-		Carousel,
-		Slide,
-		Pagination,
-		Navigation
+		Swiper,
+		SwiperSlide,
+		DatePicker
 	},
 	setup(){
-		const settings = ref({
-			"dots": true,
-			"dotsClass": "slick-dots custom-dot-class",
-			"edgeFriction": 0.35,
-			"infinite": false,
-			"speed": 500,
-			"slidesToShow": 1,
-			"slidesToScroll": 1
-		})
+
 		const { getters, dispatch} = useStore();
 		const {schoolId,studentId} = useRoute().params;
-		console.log(schoolId,studentId)
 		const classesSchedules = computed(() => getters["teacher/classesSchedules"]);
 		const schools = computed(() => getters["teacher/schools"]);
 		const studentsGroup = computed<Array<StudentsGroup>>(() => getters["teacher/currentStudentsGroup"]);
-		const children = computed(() => getters["parent/children"]);
-		const students = computed<Array<StudentState>>(() => getters["teacherRoom/students"]);
 		const classInfo = computed<RoomModel>(() => getters["teacherRoom/info"]);
 		const userInfo = computed(() => getters["auth/getLoginInfo"]);
 		const studentsImageCaptured = computed<Array<BlobTagItem>>(() => getters["teacherRoom/studentsImageCaptured"]);
+		const visitorId = ref("");
 		const listDateByStudent = computed(() => {
 			const listDate: Array<string> = [];
-			studentsImageCaptured.value.forEach((item) => {
-				if(!listDate.includes(item.tags.dateTime)){
-					listDate.push(item.tags.dateTime)
-				}
-			});
+				studentsImageCaptured.value.forEach((item) => {
+					if(!listDate.includes(item.tags.dateTime)){
+						listDate.push(item.tags.dateTime)
+					}
+				});
 			return listDate;
 		});
-		const listStudentByGroup = computed(() => {
-			const listStudent: Array<string> = [];
-			studentsImageCaptured.value?.forEach(item => {
-				if (!listStudent.includes(item.tags.studentId)) {
-					listStudent.push(item.tags.studentId)
-				}
-			});
-			console.log(listStudent)
-			return listStudent;
-		});
-
-
 		const schoolOptions = computed(() => schools.value?.map((school: any) => ({value: school.id , label: school.name})) ?? []);
-		const classOptions = computed(() => classesSchedules.value?.map((c: any) => ({value: c.classId , label: c.className})) ?? []);
-		const studentOptions = computed(() => (studentsGroup.value?.map(student => ({value: student.studentId , label: student.nativeName})) ?? []));
-		const groupOptions = computed(() => (classesSchedules.value[0]?.groups.map((group: any) => ({value: group.groupId , label:group.groupName})) ?? []));
-
+		const classOptions = computed<Array<Value>>(() => classesSchedules.value?.map((c: any) => ({value: c.classId , label: c.className})) ?? []);
+		const studentOptions = computed<Array<Value>>(() => (studentsGroup.value?.map(student => ({value: student.studentId , label: student.nativeName})) ?? []));
+		const groupOptions = computed<Array<Value>>(() => (classesSchedules.value[0]?.groups.map((group: any) => ({value: group.groupId , label:`${group.groupName} ${filterMode.value === FilterMode.Student ? "" : '(' +classesSchedules.value[0]?.className +')' ?? ""}`})) ?? []));
 		const classSelected = computed(() => {
 			if(!classInfo.value){
 				return classOptions.value[0]
@@ -87,11 +71,42 @@ export default defineComponent({
 					label: classOptions.value.find((item: any) => item.value === filterOptions.value.class)?.label
 				}
 			}
-			return classInfo.value?.classInfo.classId ? classOptions.value.find((item: any) => item.value === classInfo.value?.classInfo.classId) : classOptions.value[0]
+			return classOptions.value[0];
 		});
-		const groupSelected = computed(() => classInfo.value?.classInfo.groupId ? groupOptions.value.find((item: any) => item.value === classInfo.value?.classInfo.groupId) : groupOptions.value[0]);
-		const studentSelected = computed(() => studentId ? studentOptions.value.find((item: any) => item.value === studentId) : studentOptions.value[0]);
-		const currentDate = ref<Moment>();
+		const schoolSelected = computed(() => {
+			if(!schoolId){
+				return {
+					value:schoolOptions.value[0]?.value
+				}
+			}
+			return {
+				value: schoolId
+			}
+		});
+		const groupSelected = computed(() => {
+			if(!classInfo.value){
+				return {
+					value:groupOptions.value[0]?.value
+				}
+			}
+			return {
+				value: groupOptions.value.find((item) => item.value === classInfo.value?.classInfo.groupId)?.value
+			}
+		});
+		const studentSelected = computed(() => {
+			if(!studentId){
+				return {
+					value:studentOptions.value[0]?.value
+				}
+			}
+			return {
+				value:studentOptions.value.find((item) => item.value === studentId)?.value
+			}
+
+		});
+		const modules = [Pagination,Navigation];
+		const currentDate = ref("");
+		const calendarValue = ref<Moment>();
 		const isShowCalendar = ref(false);
 		const isShowImageModal = ref(false);
 		const filterMode = ref(FilterMode.Session);
@@ -104,7 +119,6 @@ export default defineComponent({
 			date:"",
 		});
 		const carouselDataSource = ref<Array<BlobTagItem>>([]);
-		const r = ref<any>();
 		const columns = computed(() => [
 			{
 				title: filterMode.value === FilterMode.Student ? "Session" : "Student",
@@ -127,28 +141,30 @@ export default defineComponent({
 					count: studentsImageCaptured.value.filter(item => item.tags.dateTime === date).length
 				}));
 			}
-			if(!filterOptions.value.date){
-				return listStudentByGroup.value.map(studentId => ({
-					key: studentId,
-					student: studentsGroup.value.find(student => student.studentId === studentId)?.nativeName,
-					count: studentsImageCaptured.value.filter(item => item.tags.studentId === studentId).length
+			if(!currentDate.value){
+				return studentsGroup.value.map(student => ({
+					key: student.studentId,
+					student: student.nativeName,
+					count: studentsImageCaptured.value.filter(item => item.tags.studentId === student.studentId).length
 				}));
 			}
-			return listStudentByGroup.value.map(studentId => ({
-				key: studentId,
-				student: studentsGroup.value.find(student => student.studentId === studentId)?.nativeName,
-				count: studentsImageCaptured.value.filter(item => item.tags.studentId === studentId && item.tags.dateTime === filterOptions.value.date).length
+			return studentsGroup.value.map(student => ({
+				key: student.studentId,
+				student: student.nativeName,
+				count: studentsImageCaptured.value.filter(item => item.tags.studentId === student.studentId && item.tags.dateTime === currentDate.value).length
 			}));
 		}
 		)
 		
-		const handleChangeRadioSelected = async(e: any) => {
+		const handleChangeRadioSelected = async(e: RadioChangeEvent) => {
+			console.log(schoolOptions.value)
 			filterMode.value = e.target.value;
+			currentDate.value = "";
 			filterOptions.value = {
-				school:schoolOptions.value[0].value,
-				class:classOptions.value[0].value,
-				group:groupOptions.value[0].value,
-				student:studentOptions.value[0].value,
+				school:schoolOptions.value[0]?.value,
+				class:classOptions.value[0]?.value,
+				group:groupOptions.value[0]?.value,
+				student:studentOptions.value[0]?.value,
 				date:"",
 				filterMode:e.target.value
 			};
@@ -158,10 +174,10 @@ export default defineComponent({
 					teacherId: userInfo.value.profile.sub
 				});
 		}
-		const handleChangeClass = (value: any) => {
+		const handleChangeClass = (value: Value) => {
 			filterOptions.value = {...filterOptions.value, class:value.value};
 		}
-		const handleChangeGroup =  async(value: any) => {
+		const handleChangeGroup =  async(value: Value) => {
 			console.log(value.value);
 			if(filterMode.value === FilterMode.Student){
 				await dispatch('teacher/getClassInfo', {
@@ -172,35 +188,50 @@ export default defineComponent({
 			}
 			filterOptions.value = {...filterOptions.value, group:value.value};
 		}
-		const handleChangeStudent = async (value: any) => {
-			console.log(currentDate.value)
+		const handleChangeStudent = async (value: Value) => {
 			filterOptions.value = {...filterOptions.value, student:value.value};
 			}
-		const handleChangeSchool = async(value: any) => {
-			console.log(filterOptions.value);
-			await dispatch("teacher/loadAllClassesSchedules",value.value);
+		const handleChangeSchool = async(value: Value) => {
+			await dispatch("teacher/loadAllClassesSchedules", {
+				schoolId: value.value,
+				browserFingerPrinting: visitorId.value,
+			});
+			console.log(schoolSelected.value)
+			await dispatch('teacher/getClassInfo', {
+				classId: classOptions.value[0].value,
+				groupId: groupOptions.value[0]?.value,
+				teacherId: userInfo.value.profile.sub
+			});
 			filterOptions.value = {...filterOptions.value, group:value.value};
 		}
 		const handleChangeDate = (value: Moment) => {
-			// filterOptions.value = {...filterOptions.value, date:value.format("yyyy-MM-DD")};
+			if(!value){
+				return;
+			}
 			carouselDataSource.value = studentsImageCaptured.value.filter(item => 
-				item.tags.dateTime === filterOptions.value.date && 
+				item.tags.dateTime === value.format("yyyy-MM-DD") && 
 				item.tags.schoolId === filterOptions.value.school && 
 				item.tags.groupId === filterOptions.value.group);
-			// console.log(value.format("DD-MM-yyyy"));
+				isShowCalendar.value = false;
+				currentDate.value = value.format("yyyy-MM-DD");
 		}
-		const showCalendar = () => {
-			isShowCalendar.value = !isShowCalendar.value;
-		}
-		const myCarousel = ref<any>(null);
-
-		const handleShowImage = (record:any) => {
+		const handleShowImage = (value: Value) => {
 			isShowImageModal.value = !isShowImageModal.value;
-			carouselDataSource.value = studentsImageCaptured.value.filter(item => filterMode.value === FilterMode.Student ? item.tags.dateTime === record.key : item.tags.studentId === record.key);			
+			carouselDataSource.value = studentsImageCaptured.value.filter(item => {
+				if(filterMode.value === FilterMode.Student){
+					return item.tags.dateTime === value.value;
+				}
+				if(currentDate.value){
+					return item.tags.dateTime === currentDate.value&& 
+					item.tags.schoolId === filterOptions.value.school && 
+					item.tags.groupId === filterOptions.value.group
+				}
+				return item.tags.studentId === value.value
+			});			
 		}
-		const removeImage = async(imageName: any) => {
-			carouselDataSource.value.splice(imageName,1)
+		const removeImage = async(imageName: string) => {
 			const data = studentsImageCaptured.value.filter(item => item.blobName !== imageName);
+			carouselDataSource.value = carouselDataSource.value.filter(item => item.blobName !== imageName);
 			await dispatch("teacherRoom/setStudentsImageCaptured", data)
 			await dispatch('teacherRoom/removeStudentImage', {
 				token: userInfo.value.access_token,
@@ -239,13 +270,13 @@ export default defineComponent({
 		onMounted(async() => {
 			const fp = await fpPromise;
 			const result = await fp.get();
-			const visitorId = result.visitorId;
+			visitorId.value = result.visitorId;
 			await dispatch("teacher/loadAccessibleSchools", {
 				disabled: false,
 			} as AccessibleSchoolQueryParam);
 			await dispatch("teacher/loadAllClassesSchedules", {
 				schoolId: schoolId,
-				browserFingerPrinting: visitorId,
+				browserFingerPrinting: visitorId.value,
 			});
 			await dispatch('teacher/getClassInfo', {
 				classId: classSelected.value?.value,
@@ -255,18 +286,16 @@ export default defineComponent({
 			filterOptions.value = {
 				filterMode:filterMode.value,
 				school: schoolId as string ?? schoolOptions.value[0].value ,
-				class: classSelected.value?.value,
-				group: groupSelected.value?.value,
+				class: classSelected.value?.value ?? "",
+				group: groupSelected.value?.value ?? "",
 				student: studentSelected.value?.value ?? "",
 				date: ""
 			}
 
 		})
 		return{
-			myCarousel,
 			filterMode,
 			groupOptions,
-			children,
 			schools,
 			classesSchedules,
 			currentDate,
@@ -283,8 +312,9 @@ export default defineComponent({
 			studentSelected,
 			carouselDataSource,
 			FilterMode,
-			r,
-			settings,
+			modules,
+			calendarValue,
+			schoolSelected,
 			removeImage,
 			handleChangeDate,
 			handleChangeRadioSelected,
@@ -292,7 +322,6 @@ export default defineComponent({
 			handleChangeGroup,
 			handleChangeStudent,
 			handleChangeSchool,
-			showCalendar,
 			handleShowImage,
 			blobNameToUrl,
 			refreshListData
