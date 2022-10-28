@@ -25,12 +25,13 @@ export default defineComponent({
 	const route = useRoute();
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const testConnectText = computed(() => fmtMsg(Layout.TestConnect));
-	const currentSchoolId = computed(() => store.getters["teacher/currentSchoolId"])
+	const currentSchoolId = computed(() => store.getters["teacher/currentSchoolId"]);
+	const isShowWriterReview = computed(() => route.path === "/teacher");
     const onClickTestDevice = () => {
       deviceTesterRef.value?.showModal();
     };
 	const onClickWriterReview = () => {
-		if(route.path === "/teacher"){
+		if(isShowWriterReview.value){
 			router.push(`/teacher/image-view/${currentSchoolId.value}`)
 		}
 	}
@@ -39,6 +40,7 @@ export default defineComponent({
 	  onClickWriterReview,
       deviceTesterRef,
       testConnectText,
+	  isShowWriterReview
     };
   },
 });

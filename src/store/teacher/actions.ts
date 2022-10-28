@@ -101,6 +101,7 @@ const actions: ActionTree<TeacherState, any> = {
 			}
 		}
 		catch(error){
+			commit("setCurrentGroupStudents", []);
 			console.log(error)
 		}
   }

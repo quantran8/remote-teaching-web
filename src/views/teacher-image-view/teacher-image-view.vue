@@ -27,11 +27,9 @@
 				<div v-else class="filter_container session_filter">
 					<div class="select_item">
 						<span class="label">Date</span>
-						<!-- <Input placeholder=" " v-model:value="currentDate" style="height: 32px;"/> -->
 						<DatePicker v-model:value="calendarValue" placeholder=" " @change="handleChangeDate"  class="calendar"/>
 						<img class="calendar_icon" src="@/assets/images/calendar.png" />
 					</div>
-
 					<div class="select_item">
 						<span class="label">School</span>
 						<Select class="select_box" label-in-value v-model:value="schoolSelected" @change="handleChangeSchool"
@@ -59,7 +57,7 @@
 				
 			</div>
 			<Modal  v-model:visible="isShowImageModal" width="720px" footer title=" ">
-				<span v-if="!carouselDataSource.length" class="no_image_title">No images exist</span>
+				<div v-if="!carouselDataSource.length" class="no_image_title"><span>No images exist</span></div>
 				<Swiper
 				v-else 
 				:style="{
@@ -76,7 +74,14 @@
 				:modules="modules"
 				class="mySwiper">
 					<SwiperSlide v-for="(item,index) in carouselDataSource" :key="index">
-						<img src="@/assets/images/trash.png" @click="() => removeImage(item.blobName)" class="remove_icon">
+						<Popconfirm
+							title="Are you sure delete this image ?"
+							ok-text="Yes"
+							cancel-text="No"
+							@confirm="() => removeImage(item.blobName)"
+						>
+						<img src="@/assets/images/trash.png" class="remove_icon">
+						</Popconfirm>
 						<img :src="blobNameToUrl(item.blobName)" />
 					</SwiperSlide>
 				</Swiper>

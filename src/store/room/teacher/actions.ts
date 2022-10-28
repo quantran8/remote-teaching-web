@@ -577,7 +577,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     try{
       const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
 	  if(result.length){
-		  commit("setStudentsImageCaptured",result.length);
+		  commit("setStudentsImageCaptured",result);
 	  }
     }
     catch(error){
