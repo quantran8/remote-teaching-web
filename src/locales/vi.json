@@ -106,7 +106,6 @@
 	"layout.test_connect": "Cài đặt thiết bị",
 	"layout.sign_out": "Đăng xuất",
 	"layout.privacy_policy": "Chính sách bảo mật",
-	"layout.copy_right": "V8 | Bản quyền thuộc © {{year}} GrapeSEED Media Ltd",
 	"lost_network.student_message": "Rất tiếc! Có vẻ như bạn đã bị mất kết nối.",
 	"join_class_loading.message": "Kiểm tra tiết học...",
 	"teacher_class_lesson_plan.lesson_complete": "Hoàn thành giáo án",
@@ -137,13 +136,11 @@
 	"teacher_class_lesson_plan.related_slides": "Thẻ dạy kèm",
 	"teacher_class_lesson_plan.component_slides": "Thẻ tài liệu chính",
 	"teacher_class_lesson_plan.activity_slides": "Thẻ cho phần tương tác",
-	"teacher_class_lesson_plan.no_data": "No data",
 	"teacher_class.bear_action_none": "Không có",
 	"device_tester.platform": "Nền tảng",
 	"teacher_class.student_has_joined_the_class": "{studentName} vừa vào lớp.",
 	"teacher_class.student_has_left_the_class": "{studentName} vừa ra khỏi lớp.",
 	"teacher_class.student_has_lost_connection": "Có vẻ học sinh {studentName} đã có vấn đề về kết nối mạng nên đã bị out ra khỏi lớp.",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
 	"teacher_calendar.back": "Về trước",
 	"teacher_class_error.connect_agora_servers_error": "Không thể kết nối với máy chủ Agora, vui lòng mở lại trang.",
 	"teacher_class_error.publish_stream_error": "Không thể truyền video và tiếng tới máy chủ Agora, vui lòng tải lại trang.",
@@ -161,5 +158,7 @@
 	"resources.menu.studentrep": "Student REP",
 	"resources.menu.teachertraining": "Teacher Training",
 	"resources.menu.lms": "Teacher Training",
-	"resources.menu.parentportal": "Parent Portal"
+	"resources.menu.parentportal": "Parent Portal",
+	"teacher_class_lesson_plan.no_data": "No data",
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
 }

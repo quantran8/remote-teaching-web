@@ -90,9 +90,6 @@
 	"device_tester.check_mic": "Check Microphone",
 	"device_tester.select_device": "No Device",
 	"device_tester.check_cam": "Check Camera",
-	"device_tester.check_speaker": "Check Speaker",
-	"device_tester.teacher_video_mirroring": "Teacher Video Mirroring",
-	"device_tester.student_video_mirroring": "Student Video Mirroring",
 	"device_tester.cam_off": "Your camera is turned off",
 	"device_tester.class_status": "Class status",
 	"device_tester.default_message_1": "No class in progress. We will notify you once the class starts.",
@@ -109,7 +106,6 @@
 	"layout.test_connect": "Device Setup",
 	"layout.sign_out": "Sign Out",
 	"layout.privacy_policy": "Privacy Policy",
-	"layout.copy_right": "V8 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
 	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
@@ -140,13 +136,11 @@
 	"teacher_class_lesson_plan.related_slides": "Related slides",
 	"teacher_class_lesson_plan.component_slides": "Component slides",
 	"teacher_class_lesson_plan.activity_slides": "Activity slides",
-	"teacher_class_lesson_plan.no_data": "No data",
 	"teacher_class.bear_action_none": "None",
 	"device_tester.platform": "Platform",
 	"teacher_class.student_has_joined_the_class": "{studentName} has joined the class.",
 	"teacher_class.student_has_left_the_class": "{studentName} has left the class.",
 	"teacher_class.student_has_lost_connection": "It seems {studentName} had a connectivity issue that caused them to leave the class.",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
 	"teacher_calendar.back": "Back",
 	"teacher_class_error.connect_agora_servers_error": "Cannot connect to Agora servers, please try to reload the page.",
 	"teacher_class_error.publish_stream_error": "Cannot publish video or audio streams to Agora servers, please try to reload the page.",
@@ -165,11 +159,6 @@
 	"resources.menu.teachertraining": "Teacher Training",
 	"resources.menu.lms": "Teacher Training",
 	"resources.menu.parentportal": "Parent Portal",
-
-	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
-	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
-	"change_lesson_unit.ok": "Ok",
-
-	"help.menu.contact":"Contact",
-	"help.menu.documentation":"Documentation"
+	"teacher_class_lesson_plan.no_data": "No data",
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
 }
