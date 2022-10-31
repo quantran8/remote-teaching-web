@@ -414,9 +414,12 @@ export default defineComponent({
       let x = e.clientX - rectBounding.left 
       let y = e.clientY - rectBounding.top
       const windowWidth = window.innerWidth;
-      const scaleRatio = 0.66;
-      const scaleBreakpoint = 1600;
 
+      // default width = 717
+      // scaled width = 473.22
+      const scaleRatio = 0.66;
+
+      const scaleBreakpoint = 1600;
       // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
       // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
       if (windowWidth <= scaleBreakpoint) {

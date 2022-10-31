@@ -87,6 +87,27 @@ export const annotationCurriculum = () => {
 	  hoverCursor : "cursor",
 
     };
+
+	const imageRatio = Math.max(
+		imgWidth / DefaultCanvasDimension.width,
+		imgHeight / DefaultCanvasDimension.height,
+	  );
+	 
+	  const clip = {
+		x: Math.round((DefaultCanvasDimension.width - renderWidth) / 2),
+		y: 0,
+		width: Math.round(renderWidth),
+		height: Math.round(renderHeight),
+		max,
+	  };	
+
+	  const clipPath = new fabric.Rect({
+		width:clip.width,
+		height:clip.height,
+		top:clip.max === 'x' ? (clip.y - commonProps.top) : -item.height*ratio,
+		left:clip.max === 'y' ? (clip.x - commonProps.left) : -item.height*ratio,
+	  });
+
     switch (item.type) {
       case (item.type = 0): {
         rect = new fabric.Rect({
