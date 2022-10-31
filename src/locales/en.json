@@ -106,7 +106,6 @@
 	"layout.test_connect": "Device Setup",
 	"layout.sign_out": "Sign Out",
 	"layout.privacy_policy": "Privacy Policy",
-	"layout.copy_right": "V8 | Copyright © {{year}} GrapeSEED Media Ltd. All rights reserved",
 	"lost_network.student_message": "So Sorry! It seems you lost network connectivity.",
 	"join_class_loading.message": "Checking class session...",
 	"teacher_class_lesson_plan.lesson_complete": "Lesson Complete",
@@ -152,5 +151,14 @@
 	"accessinformation.line6": "~ The GrapeSEED Team",
 	"accessinformation.line5.part1": "If you believe this has already been setup and you’re on the page in error, or if you have any general questions about GrapeSEED Connect or where to find a GrapeSEED school in your country, please ",
 	"accessinformation.line5.part2": " through our website.",
-	"accessinformation.link": "Contact Us"
+	"accessinformation.link": "Contact Us",
+	"resources.menu.schoolportal": "School Portal",
+	"resources.menu.digitalcontent": "Digital Content",
+	"resources.menu.reports": "Reports",
+	"resources.menu.studentrep": "Student REP",
+	"resources.menu.teachertraining": "Teacher Training",
+	"resources.menu.lms": "Teacher Training",
+	"resources.menu.parentportal": "Parent Portal",
+	"teacher_class_lesson_plan.no_data": "No data",
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
 }

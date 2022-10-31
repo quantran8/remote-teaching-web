@@ -8,6 +8,7 @@ import { TeacherState } from "./state";
 const mutations: MutationTree<TeacherState> = {
   setSchools(state: TeacherState, payload: Array<ResourceModel>) {
     state.schools = payload;
+    state.currentSchoolId = payload[0].id;
   },
   setClasses(state: TeacherState, payload: Array<ClassModel>) {
     state.classes = payload;
@@ -126,6 +127,12 @@ const mutations: MutationTree<TeacherState> = {
         break;
     }
   },
+  setCurrentSchool(state: TeacherState, payload: string) {
+    state.currentSchoolId = payload;
+  },
+  setCurrentGroupStudents(state: TeacherState, payload: any){
+    state.currentGroupStudents = payload;
+  }
 };
 
 export default mutations;

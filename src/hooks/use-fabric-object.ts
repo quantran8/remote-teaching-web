@@ -4,6 +4,7 @@ import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
 import { ref, computed, watch } from "vue";
 import FontFaceObserver from "fontfaceobserver";
+import { DefaultCanvasDimension } from "vue-glcommonui";
 const FontDidactGothic = "Didact Gothic";
 const FontLoader = new FontFaceObserver(FontDidactGothic);
 
@@ -37,6 +38,7 @@ export const useFabricObject = () => {
   const currentSelectionEnd = ref(-1);
   const currentSelectionStart = ref(-1);
   const isChangeImage= ref(false);
+  const isTeacherUseOnly = computed(() => getters["teacherRoom/isTeacherUseOnly"]);
 
   watch(currentExposureItemMedia, (currentItem, prevItem) => {
 	if (currentItem && prevItem) {
@@ -70,8 +72,58 @@ export const useFabricObject = () => {
   };
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
+	  if(options?.target?.type === 'group' && options.action === 'drag'){
+		const {target} = options.transform;
+		const viewPortX = Math.abs(canvas.viewportTransform[4]);
+		const viewPortY = Math.abs(canvas.viewportTransform[5]);
+		const zoom = canvas.getZoom();
+		const clipPathLeft = DefaultCanvasDimension.width - target.width;
+		const clipPathTop = DefaultCanvasDimension.height - target.height;
+		  const originX = target.width / 2 ;
+		  const originY = target.height / 2 ;
+		  if(target.width*zoom < DefaultCanvasDimension.width){
+			  if(target.left !== DefaultCanvasDimension.width / 2){
+				  target.left = DefaultCanvasDimension.width / 2;
+			  }
+		  }
+		  else{
+			  if(((target.left - viewPortX/zoom) > originX)){
+				  target.left = originX + viewPortX/zoom ;
+			  }
+			  else{
+				  if((target.left + viewPortX/zoom) < originX + clipPathLeft ){
+					  target.left = (originX + clipPathLeft) - viewPortX/zoom ;
+					}
+			  }
+		  }
+		  if(target.height*zoom < DefaultCanvasDimension.height){
+			  if(target.top !== target.height / 2){
+				  target.top = target.height / 2 + viewPortY/zoom;
+			  }
+		  }
+		  else{
+			  if((target.top - viewPortY/zoom) > originY){
+				  target.top = originY + viewPortY/zoom ;
+			  }
+			  else{
+				  if((target.top + viewPortY/zoom) < originY){
+					  target.top = (originY + clipPathTop) - viewPortY/zoom ;
+				  }
+			  }
+		  }
+		  target.setCoords();
+		  const coords = {
+			x:Math.floor(target.left) ?? 0, 
+			y: Math.floor(target.top) ?? 0,
+			viewPortX: Math.floor(viewPortX),
+			viewPortY: Math.floor(viewPortY)
+		}
+		if(canvas.getZoom() !== 1 && !isTeacherUseOnly.value){
+			dispatch("teacherRoom/setMoveZoomedSlide",coords);
+		}
+		}
       if (options?.target?.type === "textbox") {
-		if(!isChangeImage.value){
+		if(!isChangeImage.value && !isTeacherUseOnly.value){
 			dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
 		}
         if (options?.target.text === "") {
@@ -142,7 +194,9 @@ export const useFabricObject = () => {
       options.target.prevTextValue = options.target.text;
       currentSelectionEnd.value = options.target.selectionEnd;
       currentSelectionStart.value = options.target.selectionEnd;
-      dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      if (!isTeacherUseOnly.value) {
+          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+      }
     });
   };
 
@@ -156,7 +210,9 @@ export const useFabricObject = () => {
 		textBox.enterEditing();
 		textBox.setSelectionStart(0);
 		textBox.setSelectionEnd(textBox.text.length);
-		dispatch("teacherRoom/teacherCreateFabricObject", textBox);
+        if (!isTeacherUseOnly.value) {
+            dispatch("teacherRoom/teacherCreateFabricObject", textBox);
+        }
 		return textBox;
   };
 
@@ -221,7 +277,9 @@ export const useFabricObject = () => {
       const hasSelected = selectedFabricObject.selectionEnd - selectedFabricObject.selectionStart > 0;
       if (hasSelected) {
         selectedFabricObject.setSelectionStyles({ fill: colorValue });
-        dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+        if (!isTeacherUseOnly.value) {
+            dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+        }
       }
       selectedFabricObject.set("cursorColor", colorValue);
       canvas.renderAll();

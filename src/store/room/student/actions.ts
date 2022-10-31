@@ -2,7 +2,7 @@ import { VCPlatform } from "./../../app/state";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, StudentService, InfoService } from "@/services";
+import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, StudentService, InfoService,StudentStorageService } from "@/services";
 import { ActionTree } from "vuex";
 import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
@@ -23,6 +23,12 @@ import { TeacherClassError } from "@/locales/localeid";
 import { HubConnectionState } from "@microsoft/signalr";
 
 const actions: ActionTree<StudentRoomState, any> = {
+  async getClassRoomInfo({ commit, dispatch, state }) {
+	if (!state.info?.id) return
+	const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
+	commit("setRoomInfo", roomResponse.data);
+  	await dispatch("lesson/setInfo", roomResponse.data?.lessonPlan, { root: true });
+  },
   async initClassRoom(
     { commit, dispatch, state },
     payload: {
@@ -61,6 +67,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
       });
+	  await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+	  await dispatch("lesson/setImgCoords",roomResponse.data.lessonPlan.position,{root:true});
+
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
         root: true,
       });
@@ -274,6 +283,8 @@ const actions: ActionTree<StudentRoomState, any> = {
         studentId: state.user?.id,
         idOne: state.idOne,
         reJoin: _payload ? _payload.reJoin : false,
+        isMirror: state.info.isStudentVideoMirror,
+        isRemoteMirror: state.info.isTeacherVideoMirror,
       });
     }
     if (_payload && _payload.reJoin) return;
@@ -537,6 +548,19 @@ const actions: ActionTree<StudentRoomState, any> = {
     //   Logger.log(error);
     // }
   },
+  setStudentImageCaptured({ commit }, p:{id: string, capture: boolean} ){
+    commit("setStudentImageCaptured",p);
+  },
+  async uploadCapturedImage({ state, getters }, p: { token: string, formData: FormData,fileName: string }){
+    try{
+      await StudentStorageService.uploadFile(p.token,p.formData);
+      state.manager?.WSClient.sendCapturedImageStatus({FileName:p.fileName,ImageCapturedCount:state.student? state.student.imageCapturedCount+1 : 1,IsUploaded:true, Error:""})
+    }
+    catch(error){
+      state.manager?.WSClient.sendCapturedImageStatus({ FileName: p.fileName, ImageCapturedCount: 2, IsUploaded: false, Error:"cant upload" })
+      console.log(error)
+    }
+  }
 };
 
 export default actions;

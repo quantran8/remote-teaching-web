@@ -10,5 +10,7 @@ export enum StudentWSCommand {
   STUDENT_LEAVE_CLASS = "StudentLeaveClass",
 
   TOGGLE_SHAPE = "ToggleShape",
-  CHECK_MESSAGE_VERSION = "StudentCheckMessageVersion"
+  CHECK_MESSAGE_VERSION = "StudentCheckMessageVersion",
+  SEND_CAPTURE_IMAGE_STATUS = 'SendCapturedImageStatus',
+
 }

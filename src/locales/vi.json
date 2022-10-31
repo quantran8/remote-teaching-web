@@ -106,7 +106,6 @@
 	"layout.test_connect": "Cài đặt thiết bị",
 	"layout.sign_out": "Đăng xuất",
 	"layout.privacy_policy": "Chính sách bảo mật",
-	"layout.copy_right": "V8 | Bản quyền thuộc © {{year}} GrapeSEED Media Ltd",
 	"lost_network.student_message": "Rất tiếc! Có vẻ như bạn đã bị mất kết nối.",
 	"join_class_loading.message": "Kiểm tra tiết học...",
 	"teacher_class_lesson_plan.lesson_complete": "Hoàn thành giáo án",
@@ -152,5 +151,14 @@
 	"accessinformation.line6": "~ The GrapeSEED Team",
 	"accessinformation.line5.part1": "If you believe this has already been setup and you’re on the page in error, or if you have any general questions about GrapeSEED Connect or where to find a GrapeSEED school in your country, please ",
 	"accessinformation.line5.part2": " through our website.",
-	"accessinformation.link": "Contact Us"
+	"accessinformation.link": "Contact Us",
+	"resources.menu.schoolportal": "School Portal",
+	"resources.menu.digitalcontent": "Digital Content",
+	"resources.menu.reports": "Reports",
+	"resources.menu.studentrep": "Student REP",
+	"resources.menu.teachertraining": "Teacher Training",
+	"resources.menu.lms": "Teacher Training",
+	"resources.menu.parentportal": "Parent Portal",
+	"teacher_class_lesson_plan.no_data": "No data",
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
 }

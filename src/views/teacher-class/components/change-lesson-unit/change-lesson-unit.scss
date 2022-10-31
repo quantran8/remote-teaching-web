@@ -1,0 +1,76 @@
+@import "../../../../style/abstracts/variables";
+
+.change-lesson {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  &__camera {
+    &--player {
+      margin: 0 auto;
+      height: 200px;
+      overflow: hidden;
+      @media (min-width: $large-lap) {
+        height: 250px;
+      }
+      &__icon {
+        width: 30px;
+        height: 30px;
+        margin-bottom: 10px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+      &__text {
+        color: white;
+      }
+      &.hided {
+        background-color: black;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+
+  &__check-mic-cam {
+    @media (max-width: $xs) {
+      flex-direction: column;
+      align-items: start;
+      .ant-switch {
+        margin: 10px 0;
+      }
+      .ant-select {
+        width: 100% !important;
+      }
+    }
+  }
+  &__mess-teacher-error {
+    color: red;
+  }
+  &__unit-lesson {
+    min-width: 100px;
+    @media (max-width: $xs) {
+      min-width: 75px;
+    }
+  }
+  &__mb {
+    &--default {
+      margin-bottom: 30px;
+      @media (max-width: $xs) {
+        margin-bottom: 20px;
+      }
+    }
+    &--small {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.alert-device-test {
+	color: #f34646;
+	cursor: default;
+}
+

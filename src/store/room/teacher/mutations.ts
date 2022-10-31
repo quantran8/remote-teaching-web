@@ -51,6 +51,7 @@ export interface TeacherRoomMutationInterface<S> {
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
   setWhiteboard(s: S, p: boolean): void;
+  setIsTeacherUseOnly(s: S, p: boolean): void;
 }
 
 export interface TeacherRoomMutation<S> extends MutationTree<S>, TeacherRoomMutationInterface<S> {}
@@ -98,6 +99,9 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
+	s.isTeacherVideoMirror = p.isTeacherVideoMirror;
+	s.isStudentVideoMirror = p.isStudentVideoMirror;
+
     s.classView = ClassViewFromValue(p.teachingMode);
     s.students = p.students.map((st, index) => {
       return {
@@ -112,6 +116,8 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount
+
       };
     });
     s.localAudios = s.students.filter((ele) => p.studentsAudio.indexOf(ele.id) !== -1).map((el) => el.id);
@@ -324,9 +330,21 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount
+
       };
     });
   },
+  setIsTeacherUseOnly(state: TeacherRoomState, p) {
+    state.isTeacherUseOnly = p;
+  },
+  setStudentImageCapturedCount(s: TeacherRoomState,p: {id: string, imageCapturedCount: number}){
+    const student = s.students.find((st) => st.id === p.id);
+    if (student) student.imageCapturedCount = p.imageCapturedCount;
+  },
+  setStudentsImageCaptured(s: TeacherRoomState,p){
+    s.studentsImageCaptured = p
+  }
 };
 
 export default mutations;

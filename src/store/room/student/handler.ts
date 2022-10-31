@@ -365,7 +365,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected,skipToSetCurrentExposureItemMedia:true }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await commit("updateIsPalette", {
           id: payload.student.id,
@@ -420,6 +420,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onToggleAllShapes: async (payload: any) => {
       await dispatch("lesson/setTargetsVisibleAllAction", payload, { root: true });
     },
+	onTeacherUpdateSessionLessonAndUnit: async () => {
+	  commit({ type: "lesson/clearLessonData" }, { root: true });
+	  await dispatch("getClassRoomInfo");
+	},
     onRoomInfo: async (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {
@@ -429,6 +433,26 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
     },
+	onTeacherZoomSlide: async(p: number) => {
+		await dispatch("lesson/setZoomRatio", p, { root: true });
+	},
+	onTeacherMoveZoomedSlide: async(p: {x: number, y: number}) => {
+		await dispatch("lesson/setImgCoords", p, { root: true });
+
+	},
+	onTeacherResetZoom: async(p: any) => {
+		await dispatch("lesson/setZoomRatio", undefined, { root: true });
+
+	},
+  onTeacherSendRequestCaptureImage: (p:string) => {
+    if(state.student?.id === p){
+      dispatch("studentRoom/setStudentImageCaptured", { id: p, capture: true }, { root: true });
+    }
+   
+  },
+  onStudentSendCapturedImageStatus: (p: any) => {
+    // console.log(p);
+  }
   };
   return handler;
 };

@@ -55,6 +55,7 @@ export default defineComponent({
     const oneSelfShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
+    const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
 
     let canvas: any;
     const tools = Tools;
@@ -78,6 +79,14 @@ export default defineComponent({
 
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
+	const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
+	const isShowPreviewCanvas = computed(() => store.getters['lesson/isShowPreviewCanvas']);
+	const sessionZoomRatio = computed(() => store.getters['lesson/zoomRatio']);
+	const prevZoomRatio = ref(1);
+	const prevCoords = ref({x:0,y:0});
+	const zoomPercentage = ref(100);
+
     const {
       createTextBox,
       onTextBoxEdited,
@@ -96,27 +105,98 @@ export default defineComponent({
     };
     const lineId: Ref<string> = ref(generateLineId());
 
-    watch(currentExposureItemMedia, (currentItem, prevItem) => {
-      if (currentItem) {
-        let width = "100%";
-        if (
-          currentItem.image.metaData &&
-          currentItem.image.metaData.rotate &&
-          (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate) === 90)
-        ) {
-          //if img is rotated, width equal to height of the whiteboard
-          width = "435px";
+	const zoomRatio = ref(1);
+	let group: any;
+	let point:any;
+
+
+	const zoomIn = async() => {
+		if(!isLessonPlan.value){
+			return
+		};
+		if(zoomRatio.value > 4){
+			return;
+		}
+		if(canvas.getZoom() !== zoomRatio.value){
+			zoomRatio.value = canvas.getZoom();
+		}
+		zoomRatio.value += 0.1;
+		canvas.zoomToPoint(point,zoomRatio.value);
+		canvas.forEachObject(function(o: any) {
+			o.setCoords();
+		  });
+		canvas.calcOffset();
+		zoomPercentage.value =  Math.round(zoomRatio.value * 100);
+        if (!isTeacherUseOnly.value) {
+            await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
         }
-        styles.value = {
-          width,
-          transform: `scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${
-            currentItem.image.metaData?.rotate ?? 0
-          }deg)`,
-        };
+
+	}
+
+	const zoomOut = async() => {
+		if(!isLessonPlan.value){
+			return;
+		}
+		if(canvas.getZoom() > 1)
+		{
+			if(canvas.getZoom() !== zoomRatio.value){
+				zoomRatio.value = canvas.getZoom();
+			}
+			zoomRatio.value -= 0.1;
+			if(zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)){
+				group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+				group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+				group.setCoords();
+			}
+			zoomPercentage.value = Math.round(zoomRatio.value * 100);
+			canvas.zoomToPoint(point,zoomRatio.value);
+            if (!isTeacherUseOnly.value) {
+                await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+            }
+		}
+	}
+
+	const handleCloneCanvasObjects = () => {
+		 group.clone((cloned: any) => {
+			cloned.getObjects().forEach((obj: any) => {
+				if(obj.id !== 'lesson-img'){
+					obj.fill = obj.realFill ?? 'transparent';
+					obj.opacity = obj.realOpacity ?? 1;
+					obj.stroke = obj.color ?? 'black';
+				}
+			});
+
+			const objectToString = `{"objects":[${JSON.stringify(cloned)}], "background":"transparent"}`;
+			store.dispatch('lesson/setLessonPreviewObjects',objectToString,{root:true});
+
+		},['id','realFill','realOpacity','color'])
+	}
+
+	const showHidePreviewModal = async(isShowPreview = true) => {
+			await store.dispatch('lesson/setShowPreviewCanvas',isShowPreview,{root:true});
+	}
+
+	watch(sessionZoomRatio,(value) => {
+		zoomPercentage.value = Math.floor(value*100)
+	})
+
+	watch(isShowPreviewCanvas,(currentValue) => {
+		disablePreviewBtn.value = currentValue;
+	})
+
+    watch(currentExposureItemMedia, async(currentItem, prevItem) => {
+      if (currentItem) {
+		zoomRatio.value = 1;
+		zoomPercentage.value = 100;
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
-          canvas.remove(...canvas.getObjects());
+			canvas.zoomToPoint(point,1)
+            canvas.remove(...canvas.getObjects());
+			await store.dispatch("lesson/setImgCoords",undefined,{root:true});
+			showHidePreviewModal(false);
+			disablePreviewBtn.value =false;
+
         }
       }
     });
@@ -133,9 +213,24 @@ export default defineComponent({
       }
     });
     const { teacherAddShapes, addCircle, addSquare } = addShape();
-    const { processAnnotationLesson } = annotationCurriculum();
+    const { processAnnotationLesson ,processLessonImage} = annotationCurriculum();
     const targetsNum = computed(() => {
-      return props.image?.metaData?.annotations?.length || 0;
+		const uniqueAnnotations: any[] = []; 
+		props.image?.metaData?.annotations?.forEach((metaDataObj: any) => {
+		if(!uniqueAnnotations.some((_obj: any) => 
+		metaDataObj.color === _obj.color 
+		&& metaDataObj.height === _obj.height 
+		&& metaDataObj.width === _obj.width 
+		&& metaDataObj.opacity === _obj.opacity 
+		&& metaDataObj.rotate === _obj.rotate 
+		&& metaDataObj.type === _obj.type 
+		&& metaDataObj.x === _obj.x 
+		&& metaDataObj.y === _obj.y 
+		)){
+			uniqueAnnotations.push(metaDataObj);
+		}
+	});
+      return uniqueAnnotations.length;
     });
     const hasTargets = computed(() => {
       return !!props.image?.metaData.annotations && targetsNum.value;
@@ -151,10 +246,12 @@ export default defineComponent({
     });
     const showAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.ShowAllTargets));
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
+    const disablePreviewBtn: Ref<boolean> = ref(false);
     const showAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "show-all-targets");
-      disableShowAllTargetsBtn.value = true;
+      processAnnotationLesson(props.image, canvas, true, "show-all-targets",group);
+	  disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
+	  disablePreviewBtn.value = true;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: true,
@@ -163,13 +260,20 @@ export default defineComponent({
     const hideAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.HideAllTargets));
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "hide-all-targets");
-      disableHideAllTargetsBtn.value = true;
-      disableShowAllTargetsBtn.value = false;
-      // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+      processAnnotationLesson(props.image, canvas, true, "hide-all-targets",group);
+	  if (isShowPreviewCanvas.value){
+		disableHideAllTargetsBtn.value = true;
+		disableShowAllTargetsBtn.value = false;
+		disablePreviewBtn.value = true;
+	  }else{
+		disableHideAllTargetsBtn.value = true;
+		disableShowAllTargetsBtn.value = false;
+		disablePreviewBtn.value = false;
+		// await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: false,
-      // });
+		// });
+	  }
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;
@@ -189,7 +293,7 @@ export default defineComponent({
     const processTargetsList = async () => {
       if (targetsList.value?.length) {
         targetsList.value.forEach((obj: any) => {
-          processAnnotationLesson(props.image, canvas, false, obj);
+          processAnnotationLesson(props.image, canvas, false, obj,group);
         });
         const objShow = targetsList.value.filter((obj: any) => obj.visible === true);
         disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
@@ -203,15 +307,19 @@ export default defineComponent({
         disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
         if (objHide.length === targetsNum.value) {
           await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-            userId: isTeacher.value.id,
+            userId: isTeacher.value?.id,
             visible: false,
           });
         }
+		if (targetsList.value[0].visible) disablePreviewBtn.value = true;
       }
     };
     watch(targetsList, processTargetsList, { deep: true });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
+      if (isTeacherUseOnly.value) {
+          return;
+      }
       await store.dispatch("teacherRoom/setMode", {
         mode: modeAnnotation.value,
       });
@@ -262,14 +370,31 @@ export default defineComponent({
           });
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         // await clickedTool(Tools.Cursor);
+		canvas.renderAll()
       }
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard(false);
-      // if (!isShowWhiteBoard.value) {
-      //   processAnnotationLesson(props.image, canvas, true, null);
-      // }
+      if (isShowWhiteBoard.value && isLessonPlan.value) {
+        group.visible = false;
+      } 
+	  else if(!isShowWhiteBoard.value && isLessonPlan.value && group){
+        group.visible = true;
+	  };
+	  canvas.renderAll()
+
     });
+
+	watch(isLessonPlan, () => {
+		if(!isLessonPlan.value){
+			canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "lesson-img" ));
+		}
+	})
+
+      watch(() => (currentExposureItemMedia.value?.teacherUseOnly && !showHideWhiteboard.value), (val) => {
+          store.commit("teacherRoom/setIsTeacherUseOnly", !!val);
+      });
+
     const imageUrl = computed(() => {
       const image = new Image();
       image.onload = imgLoad;
@@ -277,11 +402,17 @@ export default defineComponent({
       return image.src;
     });
     const cursorPosition = async (e: any, isDone = false) => {
+        if (isTeacherUseOnly.value) {
+            return;
+        }
       const rect = document.getElementById("canvas-container");
       if (!rect) return;
       const rectBounding = rect.getBoundingClientRect();
-      let x = e.clientX - rectBounding.left;
-      let y = e.clientY - rectBounding.top;
+	  const canvasViewPortX = Math.abs(canvas.viewportTransform[4]);
+	  const canvasViewPortY = Math.abs(canvas.viewportTransform[5]);
+	  const zoom = canvas.getZoom();
+      let x = e.clientX - rectBounding.left 
+      let y = e.clientY - rectBounding.top
       const windowWidth = window.innerWidth;
 
       // default width = 717
@@ -295,7 +426,7 @@ export default defineComponent({
         x = x / scaleRatio;
         y = y / scaleRatio;
       }
-      if (modeAnnotation.value === Mode.Cursor) {
+      if (modeAnnotation.value === Mode.Cursor && !isTeacherUseOnly.value) {
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
@@ -305,7 +436,7 @@ export default defineComponent({
       if (toolSelected.value === Tools.Laser && isDrawing.value) {
         const _point = {
           x: Math.floor(x),
-          y: Math.floor(y),
+          y: Math.floor(y)
         };
         if (!prevPoint.value) {
           prevPoint.value = _point;
@@ -314,7 +445,7 @@ export default defineComponent({
           const absY = Math.abs(_point.y - prevPoint.value.y);
           if (absX > 8 || absY > 8 || isDone) {
             prevPoint.value = _point;
-            if (isMouseOut.value && isMouseOver.value) {
+            if (isMouseOut.value ) {
               lineId.value = generateLineId();
               await store.dispatch("teacherRoom/setLaserPath", {
                 data: {
@@ -345,6 +476,9 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
+        if (isTeacherUseOnly.value) {
+            return;
+        }
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
       const lastObject = teacherStrokes[teacherStrokes.length - 1];
       if (toolSelected.value === Tools.Pen) {
@@ -367,6 +501,18 @@ export default defineComponent({
         },
       });
     };
+	const listenBeforeTransform = () => {
+		canvas.on('before:transform',(e:any) => {
+			if(e.transform.target.id === 'lesson-img'){
+				const sel = new fabric.ActiveSelection(canvas.getObjects().filter((item:any) => item.id !== 'lesson-img' && item.id !== 'annotation-lesson'), {
+				  canvas: canvas,
+				});
+				canvas.setActiveObject(sel);
+				canvas.discardActiveObject();
+				canvas.renderAll();
+			}
+		})
+	}
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async (event: any) => {
         if (toolSelected.value === "pen") {
@@ -416,7 +562,7 @@ export default defineComponent({
       canvas
         .getObjects()
         .filter((obj: any) => obj.type !== "path")
-        .filter((obj: any) => obj.id === isTeacher.value.id)
+        .filter((obj: any) => obj.id === isTeacher.value?.id)
         .forEach((item: any) => {
           item.selectable = true;
         });
@@ -439,11 +585,14 @@ export default defineComponent({
       });
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
-        processAnnotationLesson(props.image, canvas, false, event.target);
+		if(event.subTargets.length)
+        {
+			processAnnotationLesson(props.image, canvas, false, event.subTargets[0],group);
+		}
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (event.target && event.target.type !== "path") {
+			  if (event.target && (event.target.type !== "path" && event.target.type !== "group")) {
               isEditing.value = true;
               break;
             }
@@ -472,6 +621,7 @@ export default defineComponent({
     });
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
+	  listenBeforeTransform()
       listenToMouseUp();
       listenToMouseOut();
       listenToMouseOver();
@@ -486,6 +636,7 @@ export default defineComponent({
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
+	  point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height /2);
       canvas.selectionFullyContained = false;
       try {
         await FontLoader.load();
@@ -497,7 +648,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId)) {
+        if ((obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId) &&  obj.type !== "group" )) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -566,7 +717,9 @@ export default defineComponent({
               .filter((item: any) => item.id === isTeacher.value.id)
               .pop();
             canvas.remove(itemDelete);
-            await store.dispatch("teacherRoom/setDeleteBrush", {});
+            if (!isTeacherUseOnly.value) {
+                await store.dispatch("teacherRoom/setDeleteBrush", {});
+            }
             toolSelected.value = Tools.Pen;
             canvas.isDrawingMode = true;
           } else {
@@ -577,8 +730,10 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson"));
-          await store.dispatch("teacherRoom/setClearBrush", {});
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img" ));
+            if (!isTeacherUseOnly.value) {
+                await store.dispatch("teacherRoom/setClearBrush", {});
+            }
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
           await setDrawMode();
@@ -631,11 +786,20 @@ export default defineComponent({
       } else {
         await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
       }
-      if (!firstLoadImage.value) {
+ 
+	  img.crossOrigin = 'Anonymous';
+	  group = processLessonImage(currentExposureItemMedia.value,canvas,toggleTargets.value.visible,point,!firstLoadImage.value,img);
+	  if(currentExposureItemMedia.value.image.metaData && currentExposureItemMedia.value.image.metaData.annotations.length){
+		  handleCloneCanvasObjects();
+	  }
+      objectTargetOnCanvas();
+	  if (toggleTargets.value.visible) {
+		disableShowAllTargetsBtn.value = true;
+		disablePreviewBtn.value = true;
+	  }
+	  if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
-      processAnnotationLesson(props.image, canvas, true, null);
-      objectTargetOnCanvas();
       // showHideWhiteboard.value = isShowWhiteBoard.value;
       // if (isShowWhiteBoard.value) {
       //   canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -672,7 +836,7 @@ export default defineComponent({
       if (!firstTimeLoadStrokes.value && selfStrokes.value) {
         renderSelfStrokes();
         firstTimeLoadStrokes.value = true;
-      } else if (selfStrokes.value.length === 0) {
+      } else if (selfStrokes.value?.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
@@ -825,7 +989,7 @@ export default defineComponent({
       if (!firstTimeLoadOneToOneShapes.value && oneAndOne.value && oneSelfShapes.value) {
         renderSelfShapes();
         firstTimeLoadOneToOneShapes.value = true;
-      } else if (!oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
+      } else if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
@@ -844,7 +1008,7 @@ export default defineComponent({
       }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== 'lesson-img'));
         // render objects again before into mode 1-1
         renderStudentsShapes();
         await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
@@ -853,11 +1017,20 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
           processTargetsList();
+		  group.left = prevCoords.value.x;
+		  group.top = prevCoords.value.y;
+		  canvas.zoomToPoint(point,prevZoomRatio.value);
+		  zoomRatio.value = prevZoomRatio.value;
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();
       } else {
         prevTargetsList.value = [...targetsList.value];
+		prevZoomRatio.value = canvas.getZoom();
+		prevCoords.value = {
+			x:group.left,
+			y:group.top
+		};
       }
     });
     //get fabric items from vuex and display to whiteboard
@@ -910,6 +1083,7 @@ export default defineComponent({
     });
 
     onClickOutside(wrapCanvasRef, handleClickOutsideCanvas);
+    const forTeacherUseOnlyText = computed(() => fmtMsg(TeacherClass.ForTeacherUseOnly));
     return {
       currentExposureItemMedia,
       clickedTool,
@@ -940,6 +1114,13 @@ export default defineComponent({
       hideAllTargetTextBtn,
       handleClickOutsideCanvas,
       wrapCanvasRef,
+	  zoomIn,
+	  zoomOut,
+	  showHidePreviewModal,
+	  disablePreviewBtn,
+	  zoomPercentage,
+      isTeacherUseOnly,
+      forTeacherUseOnlyText,
     };
   },
 });

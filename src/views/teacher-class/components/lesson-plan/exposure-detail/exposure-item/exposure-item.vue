@@ -13,6 +13,7 @@
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
+			<img v-if="item.image.metaData && item.image.metaData.annotations.length" src="@/assets/icons/bullseye.png" class="target-image"/>
           <CropImage
             v-if="item.image.metaData && item.image.metaData.width > 0 && item.image.metaData.height > 0"
             :imageUrl="item.image.url"
@@ -28,7 +29,7 @@
 				 'width':(item.image.metaData &&item.image.metaData.rotate && (Math.abs(item.image.metaData.rotate) === 270 || Math.abs(item.image.metaData.rotate)=== 90)) ? '100px' : '100%'
 				}:'']" 
 		  />
-          <div v-if="items.length > 1" class="item-tag">{{ index + 1 }}</div>
+          <div v-if="items.length > 1 || item.teacherUseOnly" :class="['item-tag', item.teacherUseOnly ? 'item-tag__teacher-use-only' : '']">{{ index + 1 }}</div>
         </Tooltip>
         <!-- <Tooltip v-else placement="topRight">
           <template #title>

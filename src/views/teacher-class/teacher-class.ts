@@ -6,9 +6,11 @@ import { useStore } from "vuex";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
-import { ErrorCode } from "@/utils/utils";
+import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
 import { TeacherClass } from "./../../locales/localeid";
 import { UserRole } from "@/store/app/state";
+import { fabric } from "fabric";
+
 
 const fpPromise = FingerprintJS.load();
 import {
@@ -20,6 +22,7 @@ import {
   DesignateTarget,
   TeacherPageHeader,
   WhiteboardPalette,
+  ChangeLessonUnit,
 } from "./components";
 import { ClassRoomStatus } from "@/models";
 export default defineComponent({
@@ -35,6 +38,7 @@ export default defineComponent({
     DesignateTarget,
     TeacherPageHeader,
     WhiteboardPalette,
+    ChangeLessonUnit,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -87,6 +91,7 @@ export default defineComponent({
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
     });
+    const changeLessonUnitRef = ref<InstanceType<typeof ChangeLessonUnit>>();
 
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
@@ -108,6 +113,8 @@ export default defineComponent({
     });
 
     const modalVisible = ref(false);
+    const previewObjects= computed(() => getters['lesson/previewObjects']);
+    const isShowPreviewCanvas= computed(() => getters['lesson/isShowPreviewCanvas']);
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
 
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
@@ -129,6 +136,28 @@ export default defineComponent({
     //   return getters["teacherRoom/isGameView"];
     // });
     // Logger.log(isGameView.value, 'game view');
+
+	let previewCanvas: any
+
+	const previewSetup = () => {
+		previewCanvas = new fabric.Canvas("previewCanvas");
+		previewCanvas.setWidth(DefaultCanvasDimension.width);
+		previewCanvas.setHeight(DefaultCanvasDimension.height);
+	}
+	
+	const hidePreviewModal = async() => {
+		await dispatch('lesson/setShowPreviewCanvas',false,{root:true});
+	}
+
+	watch(previewObjects,(currentValue) => {
+		previewCanvas.remove(...previewCanvas.getObjects());
+		previewCanvas.loadFromJSON(currentValue,() =>{
+			const group = previewCanvas.getObjects().find((obj: any) => obj.type === 'group');
+			group.selectable = false;
+			group.hoverCursor ='pointer';
+			previewCanvas.renderAll();
+		});
+	},{deep:true})
 
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
@@ -216,6 +245,10 @@ export default defineComponent({
       // does nothing, we only accept leave room;
     };
 
+	const showChangingLessonUnitModal = () => {
+		changeLessonUnitRef.value?.showModal()
+	}
+
     watch(error, async () => {
       if (error.value) {
         await router.push("/teacher");
@@ -271,6 +304,7 @@ export default defineComponent({
       dispatch("setUserRoleByView", payload);
     };
     onMounted(() => {
+	  previewSetup();
       updateUserRoleByView(UserRole.Teacher);
     });
     onUnmounted(() => {
@@ -314,6 +348,10 @@ export default defineComponent({
       markAsCompleteChanged,
       toggleLessonSidebar,
       showHideLesson,
+      changeLessonUnitRef,
+      showChangingLessonUnitModal,
+	  isShowPreviewCanvas,
+	  hidePreviewModal
     };
   },
 });

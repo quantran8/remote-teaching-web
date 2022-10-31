@@ -17,7 +17,9 @@
     position: relative;
     .lesson-container__header-title {
       padding: 10px 15px;
-      font-size: 24px;
+      font-size: 20px;
+	  cursor: pointer;
+
       &--text-right {
         margin-right: 20px;
         &.long-title {
@@ -25,8 +27,10 @@
         }
       }
       &--wrap {
-        border-bottom: 3px solid white;
-        display: inline-block;
+        // border-bottom: 3px solid white;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
         &.shortcut {
           margin-left: 230px;
           border-bottom: 0px;
@@ -35,7 +39,7 @@
           font-size: 20px;
           display: inline-block;
           &.shortcut.long-title {
-            font-size: 16px;
+            font-size: 22px;
           }
         }
         &__unit {
@@ -43,7 +47,7 @@
             font-size: 20px;
             margin-right: 0px;
             &.long-title {
-              font-size: 16px;
+              font-size: 20px;
             }
           }
           display: inline-block;
@@ -57,8 +61,8 @@
       font-weight: bold;
       text-decoration: none;
       position: absolute;
-      top: -8px;
-      right: 15px;
+      top: -12px;
+      right: 4px;
       cursor: pointer;
       &.long-title {
         right: 4px;
@@ -126,8 +130,9 @@
     .exposure-info {
       display: flex;
       position: relative;
-      cursor: pointer;
-
+	  min-height: 50px;
+	  justify-content: center;
+	  align-items: center;
       &__popup-text::before {
         content: "";
         position: absolute;
@@ -183,5 +188,11 @@
     &-info {
       display: flex;
     }
+	.lesson-container__icon{
+		display: flex;
+	}
+	.margin-left{
+		margin-left: 0px;
+	}
   }
 }

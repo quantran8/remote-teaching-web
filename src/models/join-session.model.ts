@@ -9,4 +9,6 @@ export interface JoinSessionModel {
   browserFingerprint: string;
   unitId: number;
   videoPlatformProvider?: VCPlatform;
+  isTeacherVideoMirror: boolean;
+  isStudentVideoMirror: boolean;
 }

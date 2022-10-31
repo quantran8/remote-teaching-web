@@ -1,7 +1,7 @@
 import { RoomModel, CalendarSchedulesModel, ClassModelSchedules, TeacherClassCalendarModel, ClassRoomModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { GetterTree } from "vuex";
-import { TeacherState } from "./state";
+import { TeacherState, StudentsGroup } from './state';
 
 const getters: GetterTree<TeacherState, any> = {
   classes(state: TeacherState): Array<TeacherClassCalendarModel> {
@@ -25,6 +25,12 @@ const getters: GetterTree<TeacherState, any> = {
   getClassOnline(state: TeacherState): ClassRoomModel | undefined {
     return state.classOnline;
   },
+  currentSchoolId(state: TeacherState): string {
+    return state.currentSchoolId;
+  },
+  currentStudentsGroup(state: TeacherState): Array<StudentsGroup> {
+    return state.currentGroupStudents;
+  }
 };
 
 export default getters;

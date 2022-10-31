@@ -8,10 +8,14 @@ import IconPaletteOn from "@/assets/teacher-class/touch-on-small.svg";
 import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
 import IconExpand from "@/assets/teacher-class/expanded.png";
 import IconShrink from "@/assets/teacher-class/minimum.png";
+import IconImage from "@/assets/images/image.png";
+import PhotoCamera from "@/assets/images/photo-camera.png";
 import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
 import { MatIcon } from "vue-glcommonui";
+import { notification } from "ant-design-vue";
+
 
 export default defineComponent({
   components: {
@@ -33,6 +37,7 @@ export default defineComponent({
     const isRasingHand = ref(false);
     const isShowExpandIcon = computed(() => store.getters["teacherRoom/getStudentModeOneId"] !== props.student.id);
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+    const currentSchoolId = computed(() => store.getters["teacher/currentSchoolId"]);
     const isOnePalette = ref(false);
     const checkStudentPalette = () => {
       if (students.value.every((s) => !s.isPalette)) {
@@ -55,7 +60,7 @@ export default defineComponent({
         id: props.student.id,
         enable: !props.student.audioEnabled,
       });
-    };
+    }
 
     const toggleVideo = async () => {
       await store.dispatch("teacherRoom/setStudentVideo", {
@@ -91,6 +96,19 @@ export default defineComponent({
       }
       updateFocusStudent(props.student.id);
     };
+
+    const captureImage = async () => {
+      if(props.student.videoEnabled){
+        await store.dispatch("teacherRoom/sendRequestCaptureImage", props.student.id);
+      }
+      else{
+        notification.info({
+          message:"please enable student video",
+          duration:3
+        })
+      }
+    };
+
     return {
       isRasingHand,
       audioIcon,
@@ -107,6 +125,10 @@ export default defineComponent({
       handleExpand,
       isShowExpandIcon,
       isOnePalette,
+      captureImage,
+      IconImage,
+      PhotoCamera,
+      currentSchoolId
     };
   },
 });

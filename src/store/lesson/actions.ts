@@ -49,6 +49,7 @@ const actions: LessonActions<LessonState, any> = {
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
+            teacherUseOnly: p.teacherUseOnly,
           };
         });
         return {
@@ -69,12 +70,14 @@ const actions: LessonActions<LessonState, any> = {
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
+            teacherUseOnly: p.teacherUseOnly,
           };
         });
         return {
           id: c.id,
           name: DEFAULT_CONTENT_BLOCK_ITEM_NAME,
           media: media,
+          teacherUseOnly: c.teacherUseOnly,
         };
       });
 
@@ -195,6 +198,18 @@ const actions: LessonActions<LessonState, any> = {
   setTargetsVisibleListJoinedAction(store: ActionContext<LessonState, any>, payload) {
     store.commit("setTargetsVisibleListJoined", payload);
   },
+  setZoomRatio(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setZoomRatio", payload);
+  },
+  setImgCoords(store: ActionContext<LessonState, any>, payload) {
+    store.commit("setImgCoords", payload);
+  },
+  setLessonPreviewObjects (store: ActionContext<LessonState, any>, payload){
+	store.commit("setLessonPreviewObjects", payload);
+  },
+  setShowPreviewCanvas (store: ActionContext<LessonState, any>, payload){
+	store.commit("setShowPreviewCanvas", payload);
+  }
 };
 
 export default actions;

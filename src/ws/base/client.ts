@@ -159,6 +159,7 @@ export class GLSocketClient {
     handlers.set(StudentWSEvent.EVENT_STUDENT_UPDATE_SHAPE_LIST, handler.onStudentSetBrushstrokes);
     handlers.set(StudentWSEvent.EVENT_STUDENT_DRAWS_LINE, handler.onStudentDrawsLine);
     handlers.set(StudentWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
+    handlers.set(StudentWSEvent.STUDENT_SEND_CAPTURE_STATUS, handler.onStudentSendCapturedImageStatus);
     // handlers.set(
     //   StudentWSEvent.EVENT_STUDENT_SEND_UNITY,
     //   handler.onStudentSendUnity
@@ -200,6 +201,8 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_UPDATE_STUDENT_PALETTE, handler.onTeacherToggleStudentPallete);
     // handlers.set(TeacherWSEvent.EVENT_TEACHER_ADD_SHAPE, handler.onTeacherAddShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
+
     // handlers.set(
     //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
     //   handler.onTeacherSendUnity
@@ -208,8 +211,15 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.TEACHER_CREATE_FABRIC_OBJECT, handler.onTeacherCreateFabricObject);
     handlers.set(TeacherWSEvent.TEACHER_MODIFY_FABRIC_OBJECT, handler.onTeacherModifyFabricObject);
     handlers.set(TeacherWSEvent.EVENT_UPDATE_ALL_SHAPES, handler.onToggleAllShapes);
+    handlers.set(TeacherWSEvent.TEACHER_RESET_ZOOM, handler.onTeacherResetZoom);
+    handlers.set(TeacherWSEvent.TEACHER_ZOOM_SLIDE, handler.onTeacherZoomSlide);
+    handlers.set(TeacherWSEvent.TEACHER_MOVE_ZOOMED_SLIDE, handler.onTeacherMoveZoomedSlide);
     handlers.set(TeacherWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
+
+	handlers.set(TeacherWSEvent.TEACHER_UPDATE_SESSION_LESSON_AND_UNIT, handler.onTeacherUpdateSessionLessonAndUnit);
+	handlers.set(TeacherWSEvent.CAPTURE_IMAGE, handler.onTeacherSendRequestCaptureImage);
+
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         func(payload);

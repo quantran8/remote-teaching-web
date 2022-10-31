@@ -3,6 +3,7 @@ import { RemoteTeachingServiceInterface } from "@/services";
 import { GenerateTokenResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { store } from "@/store";
+import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute = { prefix: "remote/v1" };
 
@@ -91,12 +92,27 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
       sessionId: sessionId,
     });
   }
-  generateOneToOneToken(roomId?: string, studentId?: string):  Promise<GenerateTokenResponse> {
-	let api = `zoom/generate-one-to-one-token?roomId=${roomId}`;
-	if(studentId){
-		api += `&studentId=${studentId}`;
-	}
-	return this.get(`${api}&`);
+  generateOneToOneToken(roomId?: string, studentId?: string): Promise<GenerateTokenResponse> {
+    let api = `zoom/generate-one-to-one-token?roomId=${roomId}`;
+    if (studentId) {
+      api += `&studentId=${studentId}`;
+    }
+    return this.get(`${api}&`);
+  }
+
+  teacherUpdateLessonAndUnit(model: UpdateLessonAndUnitModel): Promise<any> {
+    return this.update("rooms/update-lesson-and-unit", model);
+  }
+
+  studentGetSessionById(sessionId: string): Promise<StudentGetRoomResponse> {
+    return this.get(`rooms/${sessionId}`);
+  }
+
+  teacherGetSessionById(sessionId: string): Promise<TeacherGetRoomResponse> {
+    return this.get(`rooms/${sessionId}`);
+  }
+  getClassSessionInfo(classId: string, groupId: string, teacherId: string) : Promise<any>{
+	return this.get(`rooms/${classId}/${groupId}/${teacherId}`);
   }
 }
 

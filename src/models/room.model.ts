@@ -10,6 +10,7 @@ export interface ExposureItemMediaModel {
   id: string;
   url: string;
   resolution: string;
+  teacherUseOnly: boolean;
 }
 export interface ExposureItemModel {
   id: string;
@@ -111,6 +112,11 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
+  ratio:number;
+  position:{
+	x:number;
+	y:number;
+  } | null | undefined;
 }
 export interface RoomModel {
   id: string;
@@ -132,7 +138,9 @@ export interface RoomModel {
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
   oneAndOneDto: any;
-  videoPlatformProvider: VCPlatform
+  videoPlatformProvider: VCPlatform;
+  isTeacherVideoMirror: boolean;
+  isStudentVideoMirror: boolean;
 }
 
 export interface RoomUsersModel {

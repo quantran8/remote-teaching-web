@@ -41,10 +41,12 @@ export interface AgoraEventHandler {
   onLocalNetworkUpdate(payload: any): void;
 }
 
-export interface JoinRoomOptions { 
-  camera?: boolean,
-  videoEncoderConfigurationPreset?: string,
-  microphone?: boolean 
+export interface JoinRoomOptions {
+  camera?: boolean;
+  isMirror?: boolean;
+  isRemoteMirror?: boolean;
+  videoEncoderConfigurationPreset?: string;
+  microphone?: boolean;
 }
 
 const LIMIT_COUNT = 10;
@@ -91,140 +93,136 @@ export class AgoraClient implements AgoraClientSDK {
   }
   
   joined: boolean = false;
+  isMirror: boolean = true;
+  isRemoteMirror: boolean = true;
+
   publishedVideo: boolean = false;
   publishedAudio: boolean = false;
 
   publishedVideosTimeout: any = {};
   publishedAudiosTimeout: any = {};
 
-  async joinRTCRoom(options: JoinRoomOptions | undefined, reInit: boolean, callbackWhenJoinFailed?: ()=>Promise<any>) {
+  async joinRTCRoom(options: JoinRoomOptions | undefined, reInit: boolean, callbackWhenJoinFailed?: () => Promise<any>) {
     if (this._client || this.joined) return;
-	if(reInit)
-		Logger.log("AGORA START REINIT");
-	else
-		Logger.log("AGORA START INIT");
-	
-	try {
-		this._client = this.agoraRTC.createClient(this.clientConfig);
-		this.client.on("user-published", (user, mediaType) => {
-		Logger.log("user-published", user.uid, mediaType);
-		if (mediaType === "video") {
-			if (this.publishedVideosTimeout[user.uid]) {
-			clearTimeout(this.publishedVideosTimeout[user.uid]);
-			}
-			this.publishedVideosTimeout[user.uid] = setTimeout(() => {
-			for (const [index, { userId }] of this.subscribedVideos.entries()) {
-				if (userId === user.uid) {
-				this.subscribedVideos.splice(index, 1);
-				}
-			}
-			Logger.log("video starting update ...");
-			if (this.options.user?.role === "host") {
-				store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-			} else {
-				store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
-			}
-			}, 500);
-		}
-		if (mediaType === "audio") {
-			if (this.publishedAudiosTimeout[user.uid]) {
-			clearTimeout(this.publishedAudiosTimeout[user.uid]);
-			}
-			this.publishedAudiosTimeout[user.uid] = setTimeout(() => {
-			for (const [index, { userId }] of this.subscribedAudios.entries()) {
-				if (userId === user.uid) {
-				this.subscribedAudios.splice(index, 1);
-				}
-			}
-			Logger.log("audio starting update ...");
-			if (this.options.user?.role === "host") {
-				store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-			} else {
-				store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
-			}
-			}, 500);
-		}
-		});
-		this.client.on("user-unpublished", (user, mediaType) => {
-		Logger.log("user-unpublished", user.uid, mediaType);
-		if (this.publishedVideosTimeout[user.uid]) {
-			clearTimeout(this.publishedVideosTimeout[user.uid]);
-		}
-		if (this.publishedAudiosTimeout[user.uid]) {
-			clearTimeout(this.publishedAudiosTimeout[user.uid]);
-		}
-		if (this.options.user?.role === "host") {
-			store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
-		} else {
-			store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
-		}
-		});
-		this.client.on("user-left", (user) => {
-		Logger.log("user-left", user.uid);
-		});
-		this.client.on("user-joined", (user) => {
-			Logger.log("user-joined", user.uid);
-		});
-		this.client?.enableAudioVolumeIndicator();
-		this.client.on("volume-indicator", (result: { level: number; uid: UID }[]) => {
-			if (this.options.user?.role === "host") {
-				store.dispatch("teacherRoom/setSpeakingUsers", result);
-			} else {
-				store.dispatch("studentRoom/setSpeakingUsers", result);
-			}
-		});
+    if (reInit) Logger.log("AGORA START REINIT");
+    else Logger.log("AGORA START INIT");
+    try {
+      this._client = this.agoraRTC.createClient(this.clientConfig);
+      this.isMirror = !!options?.isMirror;
+	  this.isRemoteMirror = !!options?.isRemoteMirror;
+      this.client.on("user-published", (user, mediaType) => {
+        Logger.log("user-published", user.uid, mediaType);
+        if (mediaType === "video") {
+          if (this.publishedVideosTimeout[user.uid]) {
+            clearTimeout(this.publishedVideosTimeout[user.uid]);
+          }
+          this.publishedVideosTimeout[user.uid] = setTimeout(() => {
+            for (const [index, { userId }] of this.subscribedVideos.entries()) {
+              if (userId === user.uid) {
+                this.subscribedVideos.splice(index, 1);
+              }
+            }
+            Logger.log("video starting update ...");
+            if (this.options.user?.role === "host") {
+              store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+            } else {
+              store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+            }
+          }, 500);
+        }
+        if (mediaType === "audio") {
+          if (this.publishedAudiosTimeout[user.uid]) {
+            clearTimeout(this.publishedAudiosTimeout[user.uid]);
+          }
+          this.publishedAudiosTimeout[user.uid] = setTimeout(() => {
+            for (const [index, { userId }] of this.subscribedAudios.entries()) {
+              if (userId === user.uid) {
+                this.subscribedAudios.splice(index, 1);
+              }
+            }
+            Logger.log("audio starting update ...");
+            if (this.options.user?.role === "host") {
+              store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+            } else {
+              store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+            }
+          }, 500);
+        }
+      });
+      this.client.on("user-unpublished", (user, mediaType) => {
+        Logger.log("user-unpublished", user.uid, mediaType);
+        if (this.publishedVideosTimeout[user.uid]) {
+          clearTimeout(this.publishedVideosTimeout[user.uid]);
+        }
+        if (this.publishedAudiosTimeout[user.uid]) {
+          clearTimeout(this.publishedAudiosTimeout[user.uid]);
+        }
+        if (this.options.user?.role === "host") {
+          store.dispatch("teacherRoom/updateAudioAndVideoFeed", {});
+        } else {
+          store.dispatch("studentRoom/updateAudioAndVideoFeed", {});
+        }
+      });
+      this.client.on("user-left", (user) => {
+        Logger.log("user-left", user.uid);
+      });
+      this.client.on("user-joined", (user) => {
+        Logger.log("user-joined", user.uid);
+      });
+      this.client?.enableAudioVolumeIndicator();
+      this.client.on("volume-indicator", (result: { level: number; uid: UID }[]) => {
+        if (this.options.user?.role === "host") {
+          store.dispatch("teacherRoom/setSpeakingUsers", result);
+        } else {
+          store.dispatch("studentRoom/setSpeakingUsers", result);
+        }
+      });
 
-		this.agoraRTC.setLogLevel(3);
-		
-		if(reInit)
-			Logger.log("AGORA END REINIT");
-		else
-			Logger.log("AGORA END INIT");
+      this.agoraRTC.setLogLevel(3);
 
-		try {
-			await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
-			this.joined = true;
-			Logger.log("AGORA CLIENT JOINED OK");
-		}
-		catch(error) {
-			Logger.log("AGORA_JOIN_ERROR", error);
-			//make one more try to join Agora before throwing alert!
-			setTimeout(async ()=> {
-				try {
-					await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
-					this.joined = true;
-					Logger.log("AGORA_JOIN_RETRY_OK");
-				}
-				catch(err) {
-					//reset everything here so when signalR reconnect, Agora client may be re-init
-					await this.reset();
-					notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
-					Logger.log("AGORA_JOIN_RETRY_FAILED");
-					if(this._callbackWhenJoinFailed) {
-						await this._callbackWhenJoinFailed();
-					}
-				}
-			}, 1000);
-		}
-		if(this.joined) {
-			await this._afterJoin(options);
-			Logger.log("AGORA CLIENT PUBLISHING AFTER JOINED OK");
-		}
-	}
-	catch(err) {
-		Logger.log("AGORA JOIN PROCESS ERROR", err);
-		//reset everything here so when signalR reconnect, Agora client may be re-init
-		await this.reset();
-		notification.error({message: fmtMsg(TeacherClassError.ConnectAgoraServersError)});
-		if(this._callbackWhenJoinFailed) {
-			await this._callbackWhenJoinFailed();
-		}
-	}
-	finally {
-		//make this option available for next retry the agora join process
-		this._joinRoomOptions = options;
-		this._callbackWhenJoinFailed = callbackWhenJoinFailed;
-	}
+      if (reInit) Logger.log("AGORA END REINIT");
+      else Logger.log("AGORA END INIT");
+
+      try {
+        await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
+        this.joined = true;
+        Logger.log("AGORA CLIENT JOINED OK");
+      } catch (error) {
+        Logger.log("AGORA_JOIN_ERROR", error);
+        //make one more try to join Agora before throwing alert!
+        setTimeout(async () => {
+          try {
+            await this.client.join(this.options.appId, this.user.channel, this.user.token, this.user.username);
+            this.joined = true;
+            Logger.log("AGORA_JOIN_RETRY_OK");
+          } catch (err) {
+            //reset everything here so when signalR reconnect, Agora client may be re-init
+            await this.reset();
+            notification.error({ message: fmtMsg(TeacherClassError.ConnectAgoraServersError) });
+            Logger.log("AGORA_JOIN_RETRY_FAILED");
+            if (this._callbackWhenJoinFailed) {
+              await this._callbackWhenJoinFailed();
+            }
+          }
+        }, 1000);
+      }
+      if (this.joined) {
+        await this._afterJoin(options);
+        Logger.log("AGORA CLIENT PUBLISHING AFTER JOINED OK");
+      }
+    } catch (err) {
+      Logger.log("AGORA JOIN PROCESS ERROR", err);
+      //reset everything here so when signalR reconnect, Agora client may be re-init
+      await this.reset();
+      notification.error({ message: fmtMsg(TeacherClassError.ConnectAgoraServersError) });
+      if (this._callbackWhenJoinFailed) {
+        await this._callbackWhenJoinFailed();
+      }
+    } finally {
+      //make this option available for next retry the agora join process
+      this._joinRoomOptions = options;
+      this._callbackWhenJoinFailed = callbackWhenJoinFailed;
+    }
   }
 
   private async _afterJoin(options: JoinRoomOptions | undefined): Promise<any> {
@@ -305,7 +303,7 @@ export class AgoraClient implements AgoraClientSDK {
           Logger.info("AGORA_SET_DEVICE_ERROR", error);
         }
       }
-      this.cameraTrack.play(this.user.username, { mirror: false });
+      this.cameraTrack.play(this.user.username, { mirror: this.isMirror });
       this.cameraError = null;
       this.setupHotPluggingDevice("camera");
     } catch (err) {
@@ -390,7 +388,7 @@ export class AgoraClient implements AgoraClientSDK {
   _publishedTrackIds: string[] = [];
   private async _publish(): Promise<any> {
     if (!this.joined || !this.client) return;
-	Logger.log("AGORA CLIENT STATUS: " + this.client.connectionState);
+    Logger.log("AGORA CLIENT STATUS: " + this.client.connectionState);
 	if(this.client.connectionState == "CONNECTED") {
 		await this._publishInternal();
 		Logger.log("PUBLISH streams OK");
@@ -419,7 +417,6 @@ export class AgoraClient implements AgoraClientSDK {
 			notification.error({message: fmtMsg(TeacherClassError.PublishStreamAgoraServersError)});
 		}
 	}
-    
   }
 
   async reset() {
@@ -584,7 +581,12 @@ export class AgoraClient implements AgoraClientSDK {
     if (!user || !user.hasVideo || !this.client) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
-      remoteTrack.play(userId, {mirror: false});
+	  if (this.options.user?.role !== "host") {
+	 	const isTeacher = store.getters["studentRoom/teacher"]?.id === user.uid;
+      	remoteTrack.play(userId, { mirror: isTeacher ? this.isRemoteMirror : this.isMirror });
+	  } else {
+      	remoteTrack.play(userId, { mirror: this.isRemoteMirror });
+	  }
       Logger.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {

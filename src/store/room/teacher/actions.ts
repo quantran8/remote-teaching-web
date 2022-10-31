@@ -33,6 +33,10 @@ import { FabricObject } from "@/ws";
 import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
 import { HubConnectionState } from "@microsoft/signalr";
+import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
+import { StudentStorageService } from '../../../services/storage/service';
+import { BlobTagItem } from "@/services/storage/interface";
+import { notification } from "ant-design-vue";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -111,25 +115,24 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
     store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
 
-
-	// let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
-    // if (checkMessageTimer) {
-    //   clearInterval(checkMessageTimer);
-    // }
-    // checkMessageTimer = setInterval(async () => {
-    //   try {
-    //     if (store.state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
-    //       await store.state.manager?.WSClient.sendCheckTeacherMessageVersion();
-    //   } catch (err) {
-    //     //error here loss signalR network, for loss API connection
-    //     //disconnect now because window.offline event not work correctly sometimes
-    //     //if(store.getters["isDisconnected"] == false) {
-    //     //	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
-    //     //dispatch("setOffline");
-    //     //}
-    //   }
-    // }, 3000);
-    // store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
+    let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
+    if (checkMessageTimer) {
+      clearInterval(checkMessageTimer);
+    }
+    checkMessageTimer = setInterval(async () => {
+      try {
+        if (store.state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
+          await store.state.manager?.WSClient.sendCheckTeacherMessageVersion();
+      } catch (err) {
+        //error here loss signalR network, for loss API connection
+        //disconnect now because window.offline event not work correctly sometimes
+        //if(store.getters["isDisconnected"] == false) {
+        //	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
+        //dispatch("setOffline");
+        //}
+      }
+    }, 3000);
+    store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
@@ -161,6 +164,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
       teacherId: state.user?.id,
       idOne: state.idOne,
       reJoin: _payload ? _payload.reJoin : false,
+      isMirror: state.info.isTeacherVideoMirror,
+      isRemoteMirror: state.info.isStudentVideoMirror,
     });
     if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;
@@ -247,9 +252,19 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+      await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
         root: true,
       });
+      await dispatch(
+        "lesson/setTargetsVisibleAllAction",
+        {
+          userId: roomResponse.data.teacher.id,
+          visible: roomResponse.data.annotation.drawing.isShowingAllShapes,
+        },
+        { root: true },
+      );
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
@@ -434,6 +449,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setClearBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
   },
+  async setResetZoom({ state }, payload: any) {
+    await state.manager?.WSClient.sendRequestResetZoom(payload);
+  },
+  async setZoomSlide({ state }, payload: number) {
+    await state.manager?.WSClient.sendRequestZoomSlide(payload);
+  },
+  async setMoveZoomedSlide({ state }, payload: { x: number; y: number; viewPortX: number; viewPortY: number }) {
+    await state.manager?.WSClient.sendRequestMoveZoomedSlide(payload);
+  },
   async setDeleteBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestDeleteBrush(payload);
   },
@@ -521,6 +545,63 @@ const actions: ActionTree<TeacherRoomState, any> = {
     //   Logger.log(error);
     // }
   },
+  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
+    if (!state.info?.id) {
+      return;
+    }
+
+    const data: UpdateLessonAndUnitModel = {
+      unit: p.unit,
+      lesson: p.lesson,
+      unitId: p.unitId,
+      sessionId: state.info?.id as string,
+      isCompleted: p.isCompleted,
+    };
+
+    const roomInfo = await RemoteTeachingService.teacherUpdateLessonAndUnit(data);
+    if (p.isCompleted) {
+      const contents = state.info?.lessonPlan?.contents;
+      for (const content of contents ?? []) {
+        await dispatch("endExposure", { id: content.id });
+      }
+    }
+    commit({ type: "lesson/clearLessonData" }, { root: true });
+    await commit("setRoomInfo", roomInfo);
+    await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+    await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
+  },
+  async sendRequestCaptureImage({ state }, payload: string) {
+    await state.manager?.WSClient.sendRequestCaptureImage(payload);
+  },
+  async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
+    try{
+      const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
+	  if(result.length){
+		  commit("setStudentsImageCaptured",result);
+	  }
+    }
+    catch(error){
+      console.log(error)
+    }
+  },
+  async removeStudentImage({getters},p: {token: string, fileName: string}){
+    try {
+      await StudentStorageService.removeFile(p.token,p.fileName);
+    }
+    catch (error) {
+      console.log(error);
+	  notification.error({
+		message:error.error,
+		duration:3
+	  })
+    }
+  },
+  async setRoomInfo({ commit }, p: TeacherGetRoomResponse){
+    commit("setRoomInfo",p);
+  },
+  setStudentsImageCaptured({commit},p: Array<BlobTagItem>){
+  commit("setStudentsImageCaptured",p);
+  }
 };
 
 export default actions;

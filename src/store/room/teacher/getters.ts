@@ -1,5 +1,6 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
+import { BlobTagItem } from "@/services/storage/interface";
 import { GetterTree } from "vuex";
 import { ClassView, InClassStatus, StudentState, TeacherState } from "../interface";
 import { ClassAction } from "../student/state";
@@ -113,6 +114,12 @@ const getters: GetterTree<TeacherRoomState, any> = {
   isShowWhiteBoard(state: TeacherRoomState): boolean {
     return state.isShowWhiteboard;
   },
+  isTeacherUseOnly(state: TeacherRoomState): boolean {
+    return state.isTeacherUseOnly;
+  },
+  studentsImageCaptured(state: TeacherRoomState): Array<BlobTagItem>{
+    return state.studentsImageCaptured;
+  }
 };
 
 export default getters;

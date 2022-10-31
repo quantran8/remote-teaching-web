@@ -34,7 +34,15 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   WSClient!: T;
   agoraEventHandler!: AgoraEventHandler;
 
-  abstract join(options: { classId: string; studentId?: string; teacherId?: string; camera?: boolean; microphone?: boolean }): Promise<any>;
+  abstract join(options: {
+    classId: string;
+    studentId?: string;
+    teacherId?: string;
+    camera?: boolean;
+    microphone?: boolean;
+    isMirror?: boolean;
+    isRemoteMirror?: boolean;
+  }): Promise<any>;
 
   registerEventHandler(eventHandler: WSEventHandler) {
     return this.WSClient.registerEventHandler(eventHandler);
@@ -54,7 +62,6 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 	  	return this.agoraClient.registerEventHandler(this.agoraEventHandler);
     //}
   }
-
 
   isJoinedRoom() {
     //if (store.getters.platform === VCPlatform.Agora) {

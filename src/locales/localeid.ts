@@ -109,13 +109,19 @@ export class ParentStudentCardLocale {
   static ClassGroup = "parent_student_card.class_group";
   static StartTime = "parent_student_card.start_time";
 }
-
+export class ChangeLessonUnitLocale {
+  static SetLessonAndUnit = "change_lesson_unit.set_lesson_and_unit";
+  static Ok = "change_lesson_unit.ok";
+  static MarkCurrentLessonCompleteForClass = "change_lesson_unit.mark_current_lesson_complete_for_class";
+}
 export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";
   static Platform = "device_tester.platform";
   static SelectDevice = "device_tester.select_device";
   static CheckCam = "device_tester.check_cam";
+  static TeacherVideoMirroring = "device_tester.teacher_video_mirroring";
+  static StudentVideoMirroring = "device_tester.student_video_mirroring";
   static CamOff = "device_tester.cam_off";
   static ClassStatus = "device_tester.class_status";
   static DefaultMessage1 = "device_tester.default_message_1";
@@ -128,6 +134,7 @@ export class DeviceTesterLocale {
   static JoinSession = "device_tester.join_session";
   static MessageWarningMic = "device_tester.message_warning_mic";
   static MessageWarningCamera = "device_tester.message_warning_camera";
+  static CheckSpeaker = "device_tester.check_speaker";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
@@ -192,6 +199,7 @@ export class TeacherClassLessonPlan {
   static RelatedSlides = "teacher_class_lesson_plan.related_slides";
   static ComponentSlides = "teacher_class_lesson_plan.component_slides";
   static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
+  static NoData = "teacher_class_lesson_plan.no_data";
 }
 
 export class TeacherClassGallery {
@@ -226,6 +234,7 @@ export class TeacherClass {
   static StudentHasJoinedTheClass = "teacher_class.student_has_joined_the_class";
   static StudentHasLeftTheClass = "teacher_class.student_has_left_the_class";
   static StudentHasLostConnection = "teacher_class.student_has_lost_connection";
+  static ForTeacherUseOnly = "teacher_class.for_teacher_use_only";
 }
 
 export class BearAction {
@@ -270,3 +279,18 @@ export class TeacherClassError {
   static PublishStreamAgoraServersError = "teacher_class_error.publish_stream_error";
   static MissingImportantClassMessages = "teacher_class_error.miss_messages";
 }
+
+export class ResourcesMenuLocale {
+  static ResourcesMenuSchoolPortal = "resources.menu.schoolportal";
+  static ResourcesMenuDigitalContent = "resources.menu.digitalcontent";
+  static ResourcesMenuReports = "resources.menu.reports";
+  static ResourcesMenuStudentREP = "resources.menu.studentrep";
+  static ResourcesMenuTeacherTraining = "resources.menu.teachertraining";
+  static ResourcesMenuLMS = "resources.menu.lms";
+  static ResourcesParentPortal = "resources.menu.parentportal";
+}
+
+export class HelpMenuLocal {
+	static Contact = "help.menu.contact";
+	static Documentation = "help.menu.documentation";
+  }

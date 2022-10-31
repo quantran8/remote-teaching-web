@@ -18,6 +18,9 @@
     -webkit-user-drag: none;
     width: 100%;
     height: 100%;
+	&__disable{
+		opacity: 0.5;
+	}
   }
   &__icon--hand {
     width: 88%;

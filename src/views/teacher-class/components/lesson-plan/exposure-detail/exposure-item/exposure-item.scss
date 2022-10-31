@@ -46,7 +46,20 @@
     width: 2rem;
     height: 2rem;
     border-radius: 1rem;
-    background-color: black;
     border: solid 1px white;
+    &__teacher-use-only {
+      background-color: #a4141c;
+    }
+    &:not(.item-tag__teacher-use-only) {
+      background-color: black;
+    }
   }
+  .target-image {
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	z-index: 1;
+}
 }

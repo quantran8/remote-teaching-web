@@ -28,23 +28,41 @@
             :metadata="image.metaData"
             id="annotation-img"
             @img-load="imgLoad"
-          />
+          /> 
           <img
-            v-else-if="typeof imageUrl === 'string' && image"
+		     v-else-if="typeof imageUrl === 'string' && image"
             :src="imageUrl"
             id="annotation-img"
             v-show="!isGalleryView"
-            :style="[{ ...styles }]"
-          />
+			 @img-load="imgLoad"
+          /> 
           <div ref="wrapCanvasRef" class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
+          <div class="teacher-use-only-message" v-if="isTeacherUseOnly">
+            {{ forTeacherUseOnlyText }}
+          </div>
+		  <div class="wrap-zoom-icon">
+			<div class="zoom-icon-container">
+				<div  @click="zoomOut" class="zoom-container">
+					<img  class="zoom-icon" src="@/assets/icons/zoom-out.png" />
+				</div>
+				<div  @click="zoomIn" class="zoom-container"> 
+					<img class="zoom-icon" src="@/assets/icons/zoom-in.png" />
+				</div>
+			</div>
+		 	<span class="zoom-percentage">{{zoomPercentage}}%</span>
+		  </div>
+		
         </div>
         <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>
     </div>
     <div v-if="!isGalleryView && image && image.metaData && !showHideWhiteboard" class="target-actions">
-      <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+      <Space>
+      	<span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+		  <Button  v-if="hasTargets" @click="showHidePreviewModal" :disabled="disablePreviewBtn">Preview</Button>
+      </Space>
       <Space v-if="hasTargets">
         <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">{{ showAllTargetTextBtn }}</Button>
         <Button @click="hideAllTargets" :disabled="disableHideAllTargetsBtn">{{ hideAllTargetTextBtn }}</Button>

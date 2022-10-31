@@ -309,6 +309,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onToggleAllShapes: (payload: any) => {
       Logger.info("Toggle all targets");
     },
+    onTeacherUpdateSessionLessonAndUnit: async (payload: any) => {
+	  Logger.info("Teacher update lesson and unit");
+    },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {
@@ -318,6 +321,34 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
     },
+	onTeacherZoomSlide: (p: any) => {
+		//
+	},
+	onTeacherMoveZoomedSlide: (p: any) => {
+		//
+	},
+	onTeacherResetZoom: (p: any) => {
+		//
+	},
+  onTeacherSendRequestCaptureImage: (p: string) => {
+//  
+},
+  onStudentSendCapturedImageStatus: (p:{studentId: string, fileName: string, isUploaded: boolean, imageCapturedCount: number, error: string}) => {
+    console.log(p);
+    if(p.isUploaded){
+      notification.success({
+        message:"capture image success",
+        duration:3
+      });
+      commit("setStudentImageCapturedCount",{id:p.studentId,imageCapturedCount:p.imageCapturedCount})
+    }
+    else{
+      notification.error({
+        message: "cant capture image ",
+        duration: 3
+      });
+    }
+  }
   };
   return handler;
 };
