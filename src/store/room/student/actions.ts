@@ -551,13 +551,13 @@ const actions: ActionTree<StudentRoomState, any> = {
   setStudentImageCaptured({ commit }, p:{id: string, capture: boolean} ){
     commit("setStudentImageCaptured",p);
   },
-  async uploadCapturedImage({ state, getters }, p: { token: string, formData: FormData,fileName: string }){
+  async uploadCapturedImage({ state,rootGetters }, p: { token: string, formData: FormData,fileName: string, studentId: string }){
     try{
       await StudentStorageService.uploadFile(p.token,p.formData);
-      state.manager?.WSClient.sendCapturedImageStatus({FileName:p.fileName,ImageCapturedCount:state.student? state.student.imageCapturedCount+1 : 1,IsUploaded:true, Error:""})
+      state.manager?.WSClient.sendCapturedImageStatus({StudentId:p.studentId ,FileName:p.fileName,ImageCapturedCount:state.student? state.student.imageCapturedCount+1 : 1,IsUploaded:true, Error:""})
     }
     catch(error){
-      state.manager?.WSClient.sendCapturedImageStatus({ FileName: p.fileName, ImageCapturedCount: 2, IsUploaded: false, Error:"cant upload" })
+      state.manager?.WSClient.sendCapturedImageStatus({StudentId:p.studentId , FileName: p.fileName, ImageCapturedCount: 2, IsUploaded: false, Error:"cant upload" })
       console.log(error)
     }
   }

@@ -13,6 +13,7 @@ import {
   UserMediaPayload,
   StudentBadgePayload,
   UserIdPayload,
+  StudentCaptureStatus,
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
@@ -344,6 +345,15 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setStudentsImageCaptured(s: TeacherRoomState,p){
     s.studentsImageCaptured = p
+  },
+  setStudentsCaptureDone(s :TeacherRoomState, p: StudentCaptureStatus){
+		s.studentCaptureAll.push(p);
+  },
+  clearStudentsCaptureDone(s: TeacherRoomState){
+    s.studentCaptureAll = [];
+  },
+  setCaptureAll(s : TeacherRoomState, p: boolean){
+    s.isCaptureAll = p;
   }
 };
 

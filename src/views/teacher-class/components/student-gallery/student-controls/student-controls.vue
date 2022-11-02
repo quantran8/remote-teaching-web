@@ -39,6 +39,14 @@
         </span>
       </div>
     </div>
+    <div class="button-group">
+      <div class="student-controls__button">
+        <span @click="onClickCaptureAll" class="student-controls__button--clickable">
+          <img class="camera-icon" :src="require(`@/assets/images/photo-camera.png`)" />
+          <span>{{ captureAllText }}</span>
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 

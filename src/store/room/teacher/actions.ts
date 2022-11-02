@@ -15,6 +15,7 @@ import {
   ValueOfClassView,
   WhiteboardPayload,
   NetworkQualityPayload,
+  StudentCaptureStatus,
 } from "../interface";
 import _ from "lodash";
 import { TeacherRoomState } from "./state";
@@ -570,7 +571,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
-  async sendRequestCaptureImage({ state }, payload: string) {
+  async sendRequestCaptureImage({ state }, payload: {isCaptureAll: boolean, studentId: string}) {
     await state.manager?.WSClient.sendRequestCaptureImage(payload);
   },
   async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
@@ -601,6 +602,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setStudentsImageCaptured({commit},p: Array<BlobTagItem>){
   commit("setStudentsImageCaptured",p);
+  },
+  setStudentsCaptureDone({commit},p: StudentCaptureStatus){
+	commit("setStudentsCaptureDone",p);
+	},
+  setCaptureAll({commit}, p: boolean){
+    commit("setCaptureAll",p);
+  },
+  clearStudentsCaptureDone({commit}){
+    commit("clearStudentsCaptureDone");
   }
 };
 

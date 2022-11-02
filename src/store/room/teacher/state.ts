@@ -4,7 +4,7 @@ import { RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { BlobTagItem } from "@/services/storage/interface";
-import { ClassView, StudentState, TeacherState } from "../interface";
+import { ClassView, StudentCaptureStatus, StudentState, TeacherState } from "../interface";
 import { ClassAction } from "../student/state";
 
 const DEFAULT_LESSON = 0;
@@ -36,6 +36,8 @@ export interface TeacherRoomState {
   isStudentVideoMirror: boolean;
   isTeacherUseOnly: boolean;
   studentsImageCaptured: Array<BlobTagItem>
+  isCaptureAll: boolean;
+  studentCaptureAll: Array<StudentCaptureStatus>
 }
 
 const state: TeacherRoomState = {
@@ -63,7 +65,9 @@ const state: TeacherRoomState = {
   isTeacherVideoMirror: true,
   isStudentVideoMirror: true,
   isTeacherUseOnly: false,
-  studentsImageCaptured:[]
+  studentsImageCaptured:[],
+  isCaptureAll:false,
+  studentCaptureAll: []
 };
 
 export default state;

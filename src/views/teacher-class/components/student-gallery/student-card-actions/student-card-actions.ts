@@ -99,7 +99,7 @@ export default defineComponent({
 
     const captureImage = async () => {
       if(props.student.videoEnabled){
-        await store.dispatch("teacherRoom/sendRequestCaptureImage", props.student.id);
+        await store.dispatch("teacherRoom/sendRequestCaptureImage", {isCaptureAll:false,studentId:props.student.id});
       }
       else{
         notification.info({

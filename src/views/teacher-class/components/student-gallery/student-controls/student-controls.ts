@@ -4,7 +4,7 @@ import { computed, defineComponent, inject } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
-  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all", "disable-all", "enable-all"],
+  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all", "disable-all", "enable-all","capture-all"],
 
   setup(props, { emit }) {
     const { getters } = useStore();
@@ -20,6 +20,7 @@ export default defineComponent({
     const disableAllText = computed(() => fmtMsg(TeacherClassGallery.DisableAll));
     const showAllText = computed(() => fmtMsg(TeacherClassGallery.ShowAll));
     const hideAllText = computed(() => fmtMsg(TeacherClassGallery.HideAll));
+    const captureAllText = computed(() => fmtMsg(TeacherClassGallery.CaptureAll));
 
     const onClickToggleVideo = () => {
       emit(isAllVideoHidden.value ? "show-all" : "hide-all");
@@ -38,6 +39,9 @@ export default defineComponent({
         emit("disable-all");
       }
     };
+    const onClickCaptureAll = () => {
+        emit("capture-all");
+    };
 
     const isSidebarCollapsed: any = inject("isSidebarCollapsed");
 
@@ -46,6 +50,7 @@ export default defineComponent({
       onClickStickerAll,
       onClickToggleVideo,
       onClickToggleAudio,
+      onClickCaptureAll,
       isAllVideoHidden,
       isAllAudioMuted,
       isAllPaletteHidden,
@@ -57,6 +62,7 @@ export default defineComponent({
       disableAllText,
       showAllText,
       hideAllText,
+      captureAllText
     };
   },
 });

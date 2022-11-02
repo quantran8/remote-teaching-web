@@ -73,9 +73,9 @@
 				:keyboard="true"
 				:modules="modules"
 				class="mySwiper">
-					<SwiperSlide v-for="(item,index) in carouselDataSource" :key="index">
+					<SwiperSlide v-for="(item,index) in carouselDataSource" :key="index" class="slide-wrapper">
 						<Popconfirm
-							title="Are you sure delete this image ?"
+							title="Do you want to delete this photo?"
 							ok-text="Yes"
 							cancel-text="No"
 							@confirm="() => removeImage(item.blobName)"

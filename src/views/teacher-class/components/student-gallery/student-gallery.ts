@@ -75,6 +75,10 @@ export default defineComponent({
     const onClickEnableAll = async () => {
       await dispatch("teacherRoom/enableAllStudents");
     };
+     const onClickCaptureAll = async () => {
+       await dispatch("teacherRoom/sendRequestCaptureImage", { isCaptureAll: true, studentId: "" });
+       await dispatch("teacherRoom/setCaptureAll", true);
+    };
 
     const previousExposure = computed(() => getters["lesson/previousExposure"]);
     const previousExposureMediaItem = computed(() => getters["lesson/previousExposureItemMedia"]);
@@ -106,6 +110,7 @@ export default defineComponent({
       onClickStickerAll,
       onClickDisableAll,
       onClickEnableAll,
+      onClickCaptureAll,
       timeCount,
       backToClass,
       returnText,
