@@ -82,6 +82,7 @@ export default defineComponent({
 
 	let group: any;
 	let point: any;
+	let captureCanvas: any;
 	const defaultZoomRatio = ref(1);
 	const prevZoomRatio = ref(1);
 	const prevCoords = ref({x:0,y:0});
@@ -129,7 +130,6 @@ export default defineComponent({
 
     watch(isCaptureImage, async(value) => {
       if(value){
-        const captureCanvas = document.getElementById("imgCanvas") as HTMLCanvasElement;
         const context = captureCanvas.getContext("2d");
         const videoEl = document.getElementById(student.value.id)?.getElementsByTagName("video")[0];
         context?.drawImage(videoEl as CanvasImageSource ,0,0,captureCanvas.width,captureCanvas.height);
@@ -150,6 +150,7 @@ export default defineComponent({
           token: userInfo.value.access_token, 
           formData,
           fileName,
+		      studentId: student.value.id
         });
       }
     })
@@ -679,6 +680,7 @@ export default defineComponent({
       }
     });
     onMounted(() => {
+	    captureCanvas = document.getElementById("imgCanvas") as HTMLCanvasElement;
       boardSetup();
       window.addEventListener("resize", debounce(resizeCanvas, 300));
     });

@@ -2,7 +2,7 @@ import { RoomModel, StudentModel, TeacherModel } from "@/models";
 import { ExposureStatus } from "@/store/lesson/state";
 import { WSEventHandler } from "@/ws";
 import { ActionContext } from "vuex";
-import { ClassViewFromValue, InClassStatus } from "../interface";
+import { ClassViewFromValue, InClassStatus, StudentCaptureStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
 import { UserShape } from "@/store/annotation/state";
@@ -333,21 +333,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
   onTeacherSendRequestCaptureImage: (p: string) => {
 //  
 },
-  onStudentSendCapturedImageStatus: (p:{studentId: string, fileName: string, isUploaded: boolean, imageCapturedCount: number, error: string}) => {
-    console.log(p);
-    if(p.isUploaded){
-      notification.success({
-        message:"capture image success",
-        duration:3
-      });
-      commit("setStudentImageCapturedCount",{id:p.studentId,imageCapturedCount:p.imageCapturedCount})
-    }
-    else{
-      notification.error({
-        message: "cant capture image ",
-        duration: 3
-      });
-    }
+  onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
+	commit("setStudentsCaptureDone",p)
   }
   };
   return handler;

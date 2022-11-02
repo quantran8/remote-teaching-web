@@ -2,7 +2,7 @@ import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { BlobTagItem } from "@/services/storage/interface";
 import { GetterTree } from "vuex";
-import { ClassView, InClassStatus, StudentState, TeacherState } from "../interface";
+import { ClassView, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "../interface";
 import { ClassAction } from "../student/state";
 import { TeacherRoomState } from "./state";
 
@@ -119,6 +119,12 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   studentsImageCaptured(state: TeacherRoomState): Array<BlobTagItem>{
     return state.studentsImageCaptured;
+  },
+  studentCaptureAll(state: TeacherRoomState):Array<StudentCaptureStatus>{
+	return state.studentCaptureAll;
+  },
+  isCaptureAll(state: TeacherRoomState) :boolean {
+    return state.isCaptureAll;
   }
 };
 

@@ -1,4 +1,4 @@
-import { ClassView, TeacherState } from "@/store/room/interface";
+import { ClassView, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
 import { Modal, notification, Checkbox } from "ant-design-vue";
 import { computed, ComputedRef, defineComponent, ref, watch, provide, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -84,7 +84,9 @@ export default defineComponent({
     const error = computed(() => getters["teacherRoom/error"]);
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
-    const students = computed(() => getters["teacherRoom/students"]);
+    const studentCaptureAll: ComputedRef<Array<StudentCaptureStatus>> = computed(() => getters["teacherRoom/studentCaptureAll"]);
+    const isCaptureAll = computed(() => getters["teacherRoom/isCaptureAll"]);
+    const students: ComputedRef<Array<StudentState>> = computed(() => getters["teacherRoom/students"]);
     const roomInfo = computed(() => {
       return getters["teacherRoom/info"];
     });
@@ -298,6 +300,54 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setAvatarAllStudent", { studentIds });
     });
+    watch(studentCaptureAll, async (value) => {
+      const onlineStudents = students.value.filter(st => st.status === 2);
+      if (isCaptureAll.value) {
+          if (!value.length || value.length !== onlineStudents.length){
+            return;
+          }
+          const studentsCaptureSuccess = value.filter(status => status.isUploaded);
+          const studentsCaptureFail = value.filter(status => !status.isUploaded);
+          if (studentsCaptureSuccess.length === onlineStudents.length) {
+            notification.success({
+              message: `capture success all student`
+            })
+          }
+          else {
+            notification.success({
+              message: `capture success ${studentsCaptureSuccess.length}/${onlineStudents.length} student`
+            })
+          }
+          if (studentsCaptureFail.length) {
+            const studentsName = studentsCaptureFail.map(item => {
+              return students.value.find(st => st.id === item.studentId)?.englishName
+            })
+            notification.error({
+              message: `cant capture image for ${studentsName.join(", ")}`
+            })
+          }
+          await dispatch("teacherRoom/setCaptureAll", false);
+          await dispatch("teacherRoom/clearStudentsCaptureDone",)
+
+      }
+      else {
+          if(!value.length){
+            return;
+          }
+          const studentName = students.value.find(item => item.id === studentCaptureAll.value[0].studentId)?.englishName;
+          if (studentCaptureAll.value[0].isUploaded) {
+            notification.success({
+              message: `capture success for ${studentName}`
+            })
+          }
+          else {
+            notification.error({
+              message: `cant capture image for ${studentName}`
+            })
+          }
+          await dispatch("teacherRoom/clearStudentsCaptureDone",)
+      }
+    }, { deep: true })
 
     provide("isSidebarCollapsed", isSidebarCollapsed);
     const updateUserRoleByView = (payload: UserRole) => {

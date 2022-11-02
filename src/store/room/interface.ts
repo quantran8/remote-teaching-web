@@ -124,3 +124,11 @@ export interface NetworkQualityPayload {
   uplinkNetworkQuality: number;
   downlinkNetworkQuality: number;
 }
+
+export interface StudentCaptureStatus {
+	studentId: string;
+	fileName: string;
+	imageCapturedCount: number;
+	isUploaded: boolean;
+	error: string;
+}

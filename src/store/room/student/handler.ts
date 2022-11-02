@@ -444,8 +444,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
 		await dispatch("lesson/setZoomRatio", undefined, { root: true });
 
 	},
-  onTeacherSendRequestCaptureImage: (p:string) => {
-    if(state.student?.id === p){
+  onTeacherSendRequestCaptureImage: (p:{isCaptureAll: boolean, studentId: string}) => {
+    if(state.student?.id === p.studentId || p.isCaptureAll){
       dispatch("studentRoom/setStudentImageCaptured", { id: p, capture: true }, { root: true });
     }
    

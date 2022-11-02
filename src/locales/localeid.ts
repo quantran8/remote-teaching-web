@@ -212,6 +212,7 @@ export class TeacherClassGallery {
   static ShowAll = "teacher_class_gallery.show_all";
   static HideAll = "teacher_class_gallery.hide_all";
   static NoStudentJoinClass = "teacher_class_gallery.no_student_join_class";
+  static CaptureAll = "teacher_class_gallery.capture_all";
 }
 
 export class TeacherHome {
