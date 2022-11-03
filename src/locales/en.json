@@ -162,5 +162,8 @@
 	"resources.menu.lms": "Teacher Training",
 	"resources.menu.parentportal": "Parent Portal",
 	"teacher_class_lesson_plan.no_data": "No data",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
+	"change_lesson_unit.ok": "Ok"
 }

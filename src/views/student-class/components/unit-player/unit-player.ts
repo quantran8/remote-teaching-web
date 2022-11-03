@@ -20,7 +20,7 @@ export default defineComponent({
         autoplay: true,
         controls: true,
 		loop:true,
-		muted:true,
+		muted:false,
         logo: { enabled: false },
         techOrder: [
           technologyType.azureHtml5JS,
