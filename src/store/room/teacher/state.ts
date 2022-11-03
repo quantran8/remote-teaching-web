@@ -35,7 +35,9 @@ export interface TeacherRoomState {
   isTeacherVideoMirror: boolean;
   isStudentVideoMirror: boolean;
   isTeacherUseOnly: boolean;
-  studentsImageCaptured: Array<BlobTagItem>
+  studentsImageCaptured: Array<BlobTagItem>;
+  mediaState: boolean;
+  currentTimeMedia: number;
   isCaptureAll: boolean;
   studentCaptureAll: Array<StudentCaptureStatus>
 }
@@ -67,7 +69,9 @@ const state: TeacherRoomState = {
   isTeacherUseOnly: false,
   studentsImageCaptured:[],
   isCaptureAll:false,
-  studentCaptureAll: []
+  studentCaptureAll: [],
+  mediaState: false,
+  currentTimeMedia: 0,
 };
 
 export default state;

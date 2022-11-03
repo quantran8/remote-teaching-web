@@ -218,6 +218,12 @@ const mutations: MutationTree<StudentRoomState> = {
   setWhiteboard(state: StudentRoomState, payload: any) {
     state.showWhiteBoard = payload;
   },
+  setMediaState(state: StudentRoomState, payload: any) {
+    state.mediaState = payload;
+  },
+  setCurrentTimeMedia(state: StudentRoomState, payload: any) {
+    state.currentTimeMedia = payload;
+  },
   setDrawLaser(state: StudentRoomState, payload: any) {
     if (payload.isDone) {
       state.laserPath.isDone = payload.isDone;

@@ -159,6 +159,7 @@
 	"resources.menu.teachertraining": "Багшийн сургалт",
 	"resources.menu.lms": "Багшийн сургалт",
 	"resources.menu.parentportal": "Эцэг эхийн портал",
+	"teacher_class_lesson_plan.alternate_media": "Alternate Media",
 	"teacher_class_lesson_plan.no_data": "No data",
 	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
 }

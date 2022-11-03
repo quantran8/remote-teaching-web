@@ -70,6 +70,7 @@ export interface Exposure {
   contentBlockItems: ExposureItem[];
   thumbnailURL?: string;
   contentRootType: ContentRootType;
+  alternateMediaBlockItems: ExposureItem[][];
 }
 
 export interface ExposureItem {
@@ -77,6 +78,8 @@ export interface ExposureItem {
   name: string;
   media: ExposureItemMedia[];
   textContent?: string;
+  isClicked?: boolean;
+  mediaTypeId?: number;
 }
 
 export interface ExposureItemMedia {

@@ -300,6 +300,12 @@ const mutations: TeacherRoomMutation<State> = {
   setWhiteboard(state: TeacherRoomState, p) {
     state.isShowWhiteboard = p;
   },
+  setMediaState(state: TeacherRoomState, p) {
+    state.mediaState = p;
+  },
+  setCurrentTimeMedia(state: TeacherRoomState, p){
+    state.currentTimeMedia = p;
+  },
   setAvatarAllStudent(state: TeacherRoomState, p: { id: string; avatar: string }[]) {
     state.students.forEach((student) => {
       const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;

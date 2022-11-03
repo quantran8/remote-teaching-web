@@ -113,6 +113,12 @@
             :exposure="currentExposure"
             @click-back="onClickCloseExposure"
           />
+		  <ExposureDetail
+            :type="exposureTypes.ALTERNATE_MEDIA_BLOCK"
+            v-if="isAlternateMediaType"
+            :exposure="currentExposure"
+            @click-back="onClickCloseExposure"
+          />
         </div>
         <div v-else>
           <LessonActivity

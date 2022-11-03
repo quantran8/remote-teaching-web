@@ -125,7 +125,13 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   isCaptureAll(state: TeacherRoomState) :boolean {
     return state.isCaptureAll;
-  }
+  },
+  getMediaState(state: TeacherRoomState): boolean {
+	return state.mediaState;
+  },
+  getCurrentTimeMedia(state: TeacherRoomState): number{
+    return state.currentTimeMedia;
+  },
 };
 
 export default getters;

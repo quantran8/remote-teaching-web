@@ -21,13 +21,15 @@ import { store } from "@/store";
 import { notification } from "ant-design-vue";
 import { TeacherClassError } from "@/locales/localeid";
 import { HubConnectionState } from "@microsoft/signalr";
+import { computed } from "vue";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async getClassRoomInfo({ commit, dispatch, state }) {
+	const token = computed(()=> store.getters["auth/getLoginInfo"]);
 	if (!state.info?.id) return
 	const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
 	commit("setRoomInfo", roomResponse.data);
-  	await dispatch("lesson/setInfo", roomResponse.data?.lessonPlan, { root: true });
+  	await dispatch("lesson/setInfo", {payload: roomResponse.data?.lessonPlan, token: token.value}, { root: true });
   },
   async initClassRoom(
     { commit, dispatch, state },
@@ -59,11 +61,12 @@ const actions: ActionTree<StudentRoomState, any> = {
           message: "",
         });
       }
+	  const token = computed(()=> store.getters["auth/getLoginInfo"]);
       commit("setRoomInfo", roomResponse.data);
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
+      await dispatch("lesson/setInfo", {payload: roomResponse.data.lessonPlan, token: token.value}, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
       });

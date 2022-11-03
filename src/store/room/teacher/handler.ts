@@ -283,6 +283,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
       commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
+	onTeacherSetMediaState: async (payload: any) => {
+	  commit("teacherRoom/setMediaState", payload, {root: true});
+	},
+	onTeacherSetCurrentTimeMedia: async (payload: any) => {
+	  commit("teacherRoom/setCurrentTimeMedia", payload, {root: true});
+	},
     onTeacherDrawLaser: (payload: any) => {
       //   Logger.log(payload);
     },

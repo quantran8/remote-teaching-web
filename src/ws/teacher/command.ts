@@ -47,5 +47,7 @@ export enum TeacherWSCommand {
   TEACHER_RESET_ZOOM = "TeacherResetZoom",
   TEACHER_ZOOM_SLIDE = "TeacherZoomSlide",
   TEACHER_MOVE_ZOOMED_SLIDE = "TeacherMoveZoomedSlide",
-  TEACHER_SEND_REQUEST_CAPTURE_IMAGE = "TeacherSendRequestCaptureImage"
+  TEACHER_SEND_REQUEST_CAPTURE_IMAGE = "TeacherSendRequestCaptureImage",
+  TEACHER_SET_MEDIA_STATE = "TeacherSetMediaState",
+  TEACHER_SET_CURRENT_TIME_MEDIA = "SetCurrentTimeMedia",
 }

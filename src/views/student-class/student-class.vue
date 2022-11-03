@@ -22,6 +22,7 @@
           <AnnotationView
               v-show="!isBlackOutContent && isLessonPlan"
               :image="isLessonPlan && !currentExposureItemMedia?.teacherUseOnly ? currentExposureItemMedia?.image : null"
+              :id="isLessonPlan && !currentExposureItemMedia?.teacherUseOnly ? currentExposureItemMedia?.id : null"
           />
         </div>
         <!-- <div v-show="isGameView" class="sc-unity">

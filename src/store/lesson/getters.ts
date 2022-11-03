@@ -155,8 +155,7 @@ const getters: LessonGetters<LessonState, any> = {
   },
   isShowPreviewCanvas(s:LessonState){
 	return s.isShowPreviewCanvas;
-  }
-  
+  },
 };
 
 export default getters;

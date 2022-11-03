@@ -12,6 +12,16 @@ export interface ExposureItemMediaModel {
   resolution: string;
   teacherUseOnly: boolean;
 }
+export interface AlternateItemMediaModel {
+  contentId: string;
+  id: string;
+  mediaSlotId: number;
+  mediaStatusId: number;
+  mediaTypeId: number;
+  page: Array<ExposureItemMediaModel>;
+  revision: number;
+  url: string;
+}
 export interface ExposureItemModel {
   id: string;
   unit: number;
@@ -53,6 +63,7 @@ export interface ExposureContentModel {
   page: Array<ExposureItemMediaModel>;
   thumbnailUrl: any;
   contentRootType: number;
+  media: Array<AlternateItemMediaModel>
 }
 export interface InteractiveModel {
   answerMode: number;

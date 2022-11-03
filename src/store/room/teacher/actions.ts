@@ -38,6 +38,7 @@ import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model"
 import { StudentStorageService } from '../../../services/storage/service';
 import { BlobTagItem } from "@/services/storage/interface";
 import { notification } from "ant-design-vue";
+import { computed } from "vue";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -249,10 +250,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
         });
         return;
       }
+	  const token = computed(()=> store.getters["auth/getLoginInfo"]);
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+      await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token.value}, { root: true });
       await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
@@ -483,6 +485,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setWhiteboard({ state }, payload: WhiteboardPayload) {
     state.manager?.WSClient.sendRequestSetWhiteboard(payload.isShowWhiteBoard);
   },
+  setMediaState({ state }, payload: any){
+	state.manager?.WSClient.sendRequestSetMediaState(payload);
+  },
+  setCurrentTimeMedia({ state }, payload: any){
+    state.manager?.WSClient.sendRequestSetCurrentTimeMedia(payload);
+  },
   setLaserPath({ state }, payload: string) {
     state.manager?.WSClient.sendRequestDrawLaser(payload);
   },
@@ -566,9 +574,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
         await dispatch("endExposure", { id: content.id });
       }
     }
+	const token = computed(()=> store.getters["auth/getLoginInfo"]);
     commit({ type: "lesson/clearLessonData" }, { root: true });
     await commit("setRoomInfo", roomInfo);
-    await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+    await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token.value}, { root: true });
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
   async sendRequestCaptureImage({ state }, payload: {isCaptureAll: boolean, studentId: string}) {

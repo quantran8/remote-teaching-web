@@ -27,6 +27,7 @@ export default defineComponent({
     const relatedSlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.RelatedSlides));
     const componentSlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.ComponentSlides));
     const activitySlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.ActivitySlides));
+	const alternateMediaText = computed(() => fmtMsg(TeacherClassLessonPlan.AlternateMedia));
 
     const timeoutClickItem = 300; // 300ms
     const postClickTimer = ref<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -66,10 +67,15 @@ export default defineComponent({
           exposureTitle.value = componentSlidesText.value;
           // thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
           break;
+		case exposureTypes.ALTERNATE_MEDIA_BLOCK:
+		  resultList = exposure.alternateMediaBlockItems;
+		  exposureTitle.value = alternateMediaText.value;
+		  break;
         default:
           break;
       }
-      listMedia.value = resultList
+      if (exposureTitle.value !== alternateMediaText.value){
+		listMedia.value = resultList
         ?.filter((m: any) => m.media[0]?.image?.url)
         ?.map((item: any) => {
           if (!item.media[0]) return;
@@ -78,6 +84,22 @@ export default defineComponent({
           return item.media;
         })
         ?.flat(1);
+	  }
+	  else {
+		listMedia.value = resultList.map((e:any) => {
+		  e = e
+		  ?.filter((m: any) => m.media[0]?.image?.url)
+          ?.map((item: any) => {
+            if (!item.media[0]) return;
+            item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
+            item.media[0].teacherUseOnly = item.teacherUseOnly;
+			item.media[0].mediaTypeId = item.mediaTypeId;
+            return item.media;
+          })
+          ?.flat(1);
+		  return e
+		})
+	  }
     };
 
     const onClickBack = () => {
@@ -96,6 +118,9 @@ export default defineComponent({
         await dispatch("teacherRoom/setCurrentExposureMediaItem", {
           id: item.id,
         });
+		await dispatch("lesson/setClickedExposureItem", {
+		  id: item.id,
+		});
         await dispatch("teacherRoom/setClearBrush", {});
         await dispatch("teacherRoom/setResetZoom", {});
 
@@ -112,6 +137,7 @@ export default defineComponent({
     const isTransitionBlock = computed(() => props.type === exposureTypes.TRANSITION_BLOCK);
     const isLpCompleteBlock = computed(() => props.type === exposureTypes.LP_COMPLETE_BLOCK);
     const isTeachingActivityBlock = computed(() => props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
+	const isAlternateMediaBlock = computed(()=> props.type === exposureTypes.ALTERNATE_MEDIA_BLOCK);
     // const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
     // const isShowInfoIcon = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
     // const isShowBackButton = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.LP_COMPLETE_BLOCK);
@@ -127,6 +153,7 @@ export default defineComponent({
       isVCPBlock,
       isTeachingActivityBlock,
       isLpCompleteBlock,
+	  isAlternateMediaBlock,
       exposureTitle,
       // thumbnailContentURL,
       // thumbnailURLDefault,
