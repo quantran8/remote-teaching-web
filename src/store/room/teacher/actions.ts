@@ -250,11 +250,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
         });
         return;
       }
-	  const token = computed(()=> store.getters["auth/getLoginInfo"]);
+	  const token = rootState.auth.loginInfo
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token.value}, { root: true });
+      await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token}, { root: true });
       await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
@@ -554,7 +554,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     //   Logger.log(error);
     // }
   },
-  async setLessonAndUnit({ commit, state, dispatch }, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
+  async setLessonAndUnit({ commit, state, dispatch, rootState}, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
     if (!state.info?.id) {
       return;
     }
@@ -574,10 +574,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
         await dispatch("endExposure", { id: content.id });
       }
     }
-	const token = computed(()=> store.getters["auth/getLoginInfo"]);
+	const token = rootState.auth.loginInfo
     commit({ type: "lesson/clearLessonData" }, { root: true });
     await commit("setRoomInfo", roomInfo);
-    await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token.value}, { root: true });
+    await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token}, { root: true });
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
   async sendRequestCaptureImage({ state }, payload: {isCaptureAll: boolean, studentId: string}) {

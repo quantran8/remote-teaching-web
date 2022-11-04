@@ -80,6 +80,7 @@ export interface ExposureItem {
   textContent?: string;
   isClicked?: boolean;
   mediaTypeId?: number;
+  teacherUseOnly?: boolean;
 }
 
 export interface ExposureItemMedia {
@@ -88,6 +89,7 @@ export interface ExposureItemMedia {
     url: string;
     width?: number;
     height?: number;
+	teacherUseOnly?: boolean;
   };
 }
 

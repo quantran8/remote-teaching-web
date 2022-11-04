@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
@@ -43,8 +43,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
-    const currentExposure: ComputedRef = computed(() => store.getters["lesson/currentExposure"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);

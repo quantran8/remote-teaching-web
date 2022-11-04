@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
@@ -32,7 +32,7 @@ export default defineComponent({
     let canvas: any;
     const containerRef = ref<HTMLDivElement>();
     const scaleRatio = ref(1);
-	const currentExposure: ComputedRef = computed(() => store.getters["lesson/currentExposure"]);
+	const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
     const isGalleryView = computed(() => store.getters["studentRoom/isGalleryView"]);
@@ -95,8 +95,6 @@ export default defineComponent({
 	const prevZoomRatio = ref(1);
 	const prevCoords = ref({x:0,y:0});
 	
-
-
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
@@ -703,7 +701,7 @@ export default defineComponent({
           break;
       }
     });
-	watch(mediaState, async() => {
+	watch(mediaState, () => {
 	  if (videoAnnotation.value){
 		mediaState.value === true ? videoAnnotation.value.play() : videoAnnotation.value.pause()  
 	  }
@@ -711,7 +709,7 @@ export default defineComponent({
 		mediaState.value === true ? audioAnnotation.value.play() : audioAnnotation.value.pause()
 	  }
 	}, { deep: true })
-	watch(currentTimeMedia, async() => {
+	watch(currentTimeMedia, () => {
 	  if (videoAnnotation.value && currentTimeMedia.value){
 	    videoAnnotation.value.currentTime = currentTimeMedia.value   
 	  }

@@ -1,5 +1,5 @@
 import { preloadImage } from "@/utils/preloadImage";
-import { LessonPlanModel } from "@/models";
+import { ExposureContentModel, ExposureItemMediaModel, ExposureItemModel, LessonPlanModel } from "@/models";
 import { ActionContext, ActionTree } from "vuex";
 import {LessonService} from "@/services/lesson/index";
 import {
@@ -12,7 +12,6 @@ import {
   ContentRootTypeFromValue,
   CropMetadata,
 } from "./state";
-
 
 interface LessonActionsInterface<S, R> {
   setInfo(store: ActionContext<S, R>, payload: any): any;
@@ -36,20 +35,20 @@ const DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME = "Alternate Media"
 interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S, R> {}
 
 const actions: LessonActions<LessonState, any> = {
-  async setInfo(store: ActionContext<LessonState, any>, payload: {payload:LessonPlanModel, token:any}) {
-    if (!payload.payload) return;
+  async setInfo(store: ActionContext<LessonState, any>, {payload, token}) {
+    if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
       await store.dispatch("loadContentSignature", {}, { root: true });
       signalture = store.rootGetters["contentSignature"];
     }
-    const exposures: Array<Exposure> = payload.payload.contents.map((e) => {
-      const items: Array<ExposureItem> = e.contents.map((c) => {
-        const media: Array<ExposureItemMedia> = c.page.map((p) => {
+    const exposures: Array<Exposure> = payload.contents.map((e: ExposureContentModel) => {
+      const items: Array<ExposureItem> = e.contents.map((c: ExposureItemModel) => {
+        const media: Array<ExposureItemMedia> = c.page.map((p: ExposureItemMediaModel) => {
           return {
             id: p.id,
             image: {
-              url: payload.payload.contentStorageUrl + p.url + signalture,
+              url: payload.contentStorageUrl + p.url + signalture,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
@@ -70,7 +69,7 @@ const actions: LessonActions<LessonState, any> = {
           return {
             id: p.id,
             image: {
-              url: payload.payload.contentStorageUrl + p.url + signalture,
+              url: payload.contentStorageUrl + p.url + signalture,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
@@ -86,68 +85,59 @@ const actions: LessonActions<LessonState, any> = {
         };
       });
 
-		const alternateMediaBlockItems: ExposureItem[][] = []
 	  //handle alternate media block
-	  	const newMedia = e.media ? e.media : []
-		newMedia.forEach(async (i:any) => {
-			let mediaUrl:any
-			const res = await fetch(`${process.env.VUE_APP_API_PREFIX}content/v1/resource/GetDownloadMediaUrl?mediaId=${i.id}`,{
+	  const alternateMediaBlockItems: ExposureItem[][] = []
+	  const handleAlternateMediaBlock = async() => {
+		const newMedia = e.media ? e.media : []
+		for (const i of newMedia ){
+		  let mediaUrl:any
+		  const res = await fetch(`${process.env.VUE_APP_API_PREFIX}content/v1/resource/GetDownloadMediaUrl?mediaId=${i.id}`,{
 			method: 'GET',
 			headers: {
-				'Authorization': `Bearer ${payload.token.access_token}`, 
+				'Authorization': `Bearer ${token.access_token}`, 
 			},
-	  		}).then((response) => response.json())
-			.then((data: any) => mediaUrl = data)
-		  let alternateMedia: Array<ExposureItemMedia> = [{
+		  }).then((response) => response.json())
+		  .then((data: any) => mediaUrl = data)
+		  const alternateMedia: Array<ExposureItemMedia> = [{
 			id: i.id,
-		  	image: {
+			image: {
 			  url: mediaUrl,
+			  teacherUseOnly: false,
 			},
 		  }]
-		  alternateMedia = alternateMedia.map(obj => {
-			return {
-			  ...obj,
-			  teacherUseOnly: false,
-			}
-		  })
-		  let alternateMediaItems: Array<ExposureItem> = [{
+		  const alternateMediaItems: Array<ExposureItem> = [{
 			id: i.id,
 			name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
 			media: alternateMedia,
 			mediaTypeId: i.mediaTypeId,
+			teacherUseOnly: false,
 		  }]
-		  alternateMediaItems = alternateMediaItems.map(obj => {
-			return {
-			  ...obj,
-			  teacherUseOnly: false,
-			}
-		  })
 		  const newImg = i.page ? i.page.map((p:any) => ({ ...p, page: [{ ...p }] })) : [];
 		  const alternateImgItems : Array<ExposureItem> = newImg.map((c:any) => {
-		  	const media: Array<ExposureItemMedia> = c.page.map((p:any) => {
-		  	  return {
-		  		id: p.id,
-		  		image: {
-		  			url: payload.payload.contentStorageUrl + p.url + signalture,
-		  			width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
-		  			height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
-		  		},
-		  		teacherUseOnly: p.teacherUseOnly,
-		  	  };
-		  	});
-		  	return {
-		  		id: c.id,
-		  		name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
-		  		media: media,
-		  		teacherUseOnly: c.teacherUseOnly,
-				mediaTypeId: undefined,
-		  	};
+			const media: Array<ExposureItemMedia> = c.page.map((p:any) => {
+			  return {
+			    id: p.id,
+			    image: {
+			      url: payload.contentStorageUrl + p.url + signalture,
+			      width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+			      height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
+			    },
+			    teacherUseOnly: p.teacherUseOnly,
+			  };
+			});
+			return {
+			  id: c.id,
+			  name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
+			  media: media,
+			  teacherUseOnly: c.teacherUseOnly,
+			  mediaTypeId: undefined,
+			};
 		  });
-
-		  	const item = alternateImgItems.concat(alternateMediaItems)
-		    alternateMediaBlockItems.push(item)
-		  
-		}) 
+		  const item = alternateImgItems.concat(alternateMediaItems)
+		  alternateMediaBlockItems.push(item)
+		}
+	  }
+	  handleAlternateMediaBlock()
       //handle teaching activity block
       const newContentExposureTeachingActivity = e.contentExposureTeachingActivity
         ? e.contentExposureTeachingActivity?.map((c) => ({
@@ -165,7 +155,7 @@ const actions: LessonActions<LessonState, any> = {
         : [];
       const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map((c) => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
-          const url = p.url ? payload.payload.contentStorageUrl + p.url + signalture : "";
+          const url = p.url ? payload.contentStorageUrl + p.url + signalture : "";
           return {
             id: p.id, // need to confirm is contentExposureId or teachingActivity.id
             image: {
@@ -192,7 +182,7 @@ const actions: LessonActions<LessonState, any> = {
         items: items,
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
-        thumbnailURL: e.thumbnailUrl ? payload.payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
+        thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
         contentRootType: ContentRootTypeFromValue(e.contentRootType),
 		alternateMediaBlockItems: alternateMediaBlockItems,
       };
@@ -210,17 +200,17 @@ const actions: LessonActions<LessonState, any> = {
       })
       .flat(2);
     preloadImage(listUrl, 5000);
-    store.commit("setIsBlackOut", { IsBlackOut: payload.payload.isBlackout });
+    store.commit("setIsBlackOut", { IsBlackOut: payload.isBlackout });
     store.commit("setExposures", { exposures: exposures });
-    store.commit("setCurrentExposure", { id: payload.payload.contentSelected });
-    const exposure = payload.payload.contents.find((e) => e.id === payload.payload.contentSelected);
+    store.commit("setCurrentExposure", { id: payload.contentSelected });
+    const exposure = payload.contents.find((e: ExposureContentModel) => e.id === payload.contentSelected);
     if (exposure && exposure.pageSelected) {
       store.commit("setCurrentExposureItemMedia", {
         id: exposure.pageSelected,
       });
     }
-    store.commit("setPlayedTime", { time: payload.payload.playedTime });
-    store.commit("setTotalTime", { time: payload.payload.totalTime });
+    store.commit("setPlayedTime", { time: payload.playedTime });
+    store.commit("setTotalTime", { time: payload.totalTime });
   },
   setExposures(
     store: ActionContext<LessonState, any>,

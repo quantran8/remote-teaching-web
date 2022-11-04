@@ -74,19 +74,13 @@
 			</Tooltip>
 	      </div>
 		    <div v-else-if="item.mediaTypeId === 1" class="media-wrapper">
-	
-				<img :src="IconPdf" class="media-icon"/>
-			  
+			  <img :src="IconPdf" class="media-icon"/>
 		    </div>
 		    <div v-else-if="item.mediaTypeId === 2" class="media-wrapper">
-			
-			    <img :src="IconAudio" class="media-icon"/>
-			 
+			  <img :src="IconAudio" class="media-icon"/>
 		    </div>
-		    <div v-else class="media-wrapper">
-			
-  			    <img :src="IconVideo" class="media-icon"/>
-			
+		    <div v-else class="media-wrapper">		
+  			  <img :src="IconVideo" class="media-icon"/>
 		    </div>
 	        <div v-if="items.length > 1 || item.teacherUseOnly" :class="['item-tag', item.teacherUseOnly ? 'item-tag__teacher-use-only' : '']">{{ index + 1 }}</div>
 	    </div>
