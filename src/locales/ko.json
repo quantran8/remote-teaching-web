@@ -80,6 +80,7 @@
 	"teacher_class_gallery.disable_all": "Disable All",
 	"teacher_class_gallery.show_all": "Show All",
 	"teacher_class_gallery.hide_all": "Hide All",
+	"teacher_class_gallery.capture_all": "Screen Capture",
 	"teacher_home.welcome": "환영합니다,",
 	"teacher_home.schedule": "일정표",
 	"teacher_home.cancel": "닫기",
@@ -100,6 +101,7 @@
 	"device_tester.unit": "Unit",
 	"device_tester.cancel": "닫기",
 	"device_tester.join_session": "수업 참가",
+	"device_tester.check_speaker": "Check Speaker",
 	"teacher_class_gallery.no_student_join_class": "수업에 참석한 학생이 존재하지 않습니다.",
 	"lost_network.message": "인터넷 연결이 불안정합니다. 설정을 확인해 주시기 바랍니다.",
 	"layout.edit_profile": "내 정보",
@@ -160,5 +162,8 @@
 	"resources.menu.lms": "교사 교육",
 	"resources.menu.parentportal": "학부모 사이트",
 	"teacher_class_lesson_plan.no_data": "No data",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
+	"change_lesson_unit.ok": "Ok"
 }

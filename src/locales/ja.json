@@ -80,6 +80,7 @@
 	"teacher_class_gallery.disable_all": "Disable All",
 	"teacher_class_gallery.show_all": "Show All",
 	"teacher_class_gallery.hide_all": "Hide All",
+	"teacher_class_gallery.capture_all": "Screen Capture",
 	"teacher_home.welcome": "ようこそ",
 	"teacher_home.schedule": "スケジュール",
 	"teacher_home.cancel": "Cancel",
@@ -100,6 +101,7 @@
 	"device_tester.unit": "Unit",
 	"device_tester.cancel": "Cancel",
 	"device_tester.join_session": "Join session",
+	"device_tester.check_speaker": "Check Speaker",
 	"teacher_class_gallery.no_student_join_class": "No student has joined the class yet",
 	"lost_network.message": "You have lost network connectivity. Please reconnect.",
 	"layout.edit_profile": "Edit Profile",
@@ -160,5 +162,8 @@
 	"resources.menu.lms": "Teacher Training",
 	"resources.menu.parentportal": "Parent Portal",
 	"teacher_class_lesson_plan.no_data": "No data",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
+	"change_lesson_unit.ok": "Ok"
 }
