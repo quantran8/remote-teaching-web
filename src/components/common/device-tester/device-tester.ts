@@ -10,6 +10,8 @@ import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 import { VCPlatform } from "@/store/app/state";
 import { Howl , Howler} from "howler";
+import IconSpeakerPlay from "@/assets/images/play-button.png"
+import IconSpeakerStop from "@/assets/images/stop-button.png"
 
 interface DeviceType {
   deviceId: string;
@@ -96,7 +98,14 @@ export default defineComponent({
 	const currentSpeaker = ref<DeviceType>();
     const currentSpeakerLabel = ref();
 	const isPlayingSound = ref(false);
-	const isCheckSpeaker = ref(false);
+	const isCheckSpeaker = ref(true);
+	const isPlaySpeaker = ref(false);
+    const speakerIcon = computed(() => (isPlaySpeaker.value ? IconSpeakerStop : IconSpeakerPlay));
+	const toggleSpeaker = () => {
+	  isPlaySpeaker.value = !isPlaySpeaker.value
+	  isPlaySpeaker.value ? connectTestSound.play() : connectTestSound.stop()  
+	  isPlayingSound.value = connectTestSound.playing();
+	}
 	const connectTestSound = new Howl({
 		loop:true,
 		src: [require(`@/assets/audio/ConnectTestSound.mp3`)],
@@ -602,6 +611,7 @@ export default defineComponent({
 		connectTestSound.stop();
 		connectTestSound.play();
 		isPlayingSound.value = connectTestSound.playing();
+		isPlaySpeaker.value = connectTestSound.playing();
 	}
 
     const destroySDK = async (isAgora: boolean) => {
@@ -651,7 +661,8 @@ export default defineComponent({
       isOpenCam.value = true;
 
 	  currentSpeaker.value = undefined;
-	  isCheckSpeaker.value = false;
+	  isCheckSpeaker.value = true;
+	  isPlaySpeaker.value = false;
 	  isPlayingSound.value = false;
 
       isTeacherVideoMirror.value = true;
@@ -869,7 +880,9 @@ export default defineComponent({
 	  currentSpeakerLabel,
 	  CheckSpeaker,
 	  isPlayingSound,
-	  handleSpeakerChange
+	  handleSpeakerChange,
+	  speakerIcon,
+	  toggleSpeaker,
     };
   },
 });

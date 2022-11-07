@@ -102,7 +102,9 @@
         </div>
         <div class="ant-col-24 ant-col-sm-18">
           <Space size="large" align="center" class="device-tester__check-mic-cam">
-            <Switch v-model:checked="isCheckSpeaker" />
+			<div class="device-tester__speaker--icon">
+              <img :src="speakerIcon" @click="toggleSpeaker" alt="" />
+            </div>
             <Select
               :placeholder="SelectDevice"
               style="width: 330px"
