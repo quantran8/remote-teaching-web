@@ -42,7 +42,8 @@ const actions: LessonActions<LessonState, any> = {
       await store.dispatch("loadContentSignature", {}, { root: true });
       signalture = store.rootGetters["contentSignature"];
     }
-    const exposures: Array<Exposure> = payload.contents.map((e: ExposureContentModel) => {
+	const exposures: Array<Exposure> = []
+	for (const e of payload.contents) {
       const items: Array<ExposureItem> = e.contents.map((c: ExposureItemModel) => {
         const media: Array<ExposureItemMedia> = c.page.map((p: ExposureItemMediaModel) => {
           return {
@@ -64,7 +65,7 @@ const actions: LessonActions<LessonState, any> = {
 
       //handle content block
       const newPage = e.page ? e.page.map((p:any) => ({ ...p, page: [{ ...p }] })) : [];
-      const contentBlockItems: Array<ExposureItem> = newPage.map((c) => {
+      const contentBlockItems: Array<ExposureItem> = newPage.map((c:any) => {
         const media: Array<ExposureItemMedia> = c.page.map((p:any) => {
           return {
             id: p.id,
@@ -90,14 +91,13 @@ const actions: LessonActions<LessonState, any> = {
 	  const handleAlternateMediaBlock = async() => {
 		const newMedia = e.media ? e.media : []
 		for (const i of newMedia ){
-		  let mediaUrl:any
 		  const res = await fetch(`${process.env.VUE_APP_API_PREFIX}content/v1/resource/GetDownloadMediaUrl?mediaId=${i.id}`,{
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token.access_token}`, 
 			},
-		  }).then((response) => response.json())
-		  .then((data: any) => mediaUrl = data)
+		  })
+		  const mediaUrl = await res.json();
 		  const alternateMedia: Array<ExposureItemMedia> = [{
 			id: i.id,
 			image: {
@@ -137,10 +137,10 @@ const actions: LessonActions<LessonState, any> = {
 		  alternateMediaBlockItems.push(item)
 		}
 	  }
-	  handleAlternateMediaBlock()
+	  await handleAlternateMediaBlock()
       //handle teaching activity block
       const newContentExposureTeachingActivity = e.contentExposureTeachingActivity
-        ? e.contentExposureTeachingActivity?.map((c) => ({
+        ? e.contentExposureTeachingActivity?.map((c:any) => ({
             ...c,
             page: [
               {
@@ -153,7 +153,7 @@ const actions: LessonActions<LessonState, any> = {
             ],
           }))
         : [];
-      const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map((c) => {
+      const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map((c:any) => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
           const url = p.url ? payload.contentStorageUrl + p.url + signalture : "";
           return {
@@ -173,7 +173,7 @@ const actions: LessonActions<LessonState, any> = {
           textContent: c?.teachingActivity?.text,
         };
       });
-      return {
+      const exposure =  {
         id: e.id,
         name: e.title,
         duration: e.maxDuration,
@@ -186,7 +186,8 @@ const actions: LessonActions<LessonState, any> = {
         contentRootType: ContentRootTypeFromValue(e.contentRootType),
 		alternateMediaBlockItems: alternateMediaBlockItems,
       };
-    });
+	  exposures.push(exposure)
+    };
 
     const listUrl = exposures
       .map((expo) => {
