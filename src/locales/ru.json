@@ -136,6 +136,7 @@
 	"teacher_class_lesson_plan.related_slides": "Связанные слайды",
 	"teacher_class_lesson_plan.component_slides": "Слайды компонентов",
 	"teacher_class_lesson_plan.activity_slides": "Слайды для заданий",
+	"teacher_class_lesson_plan.alternate_media": "Alternate Media",
 	"teacher_class.bear_action_none": "Нет",
 	"device_tester.platform": "Платформа",
 	"teacher_class.student_has_joined_the_class": "{studentName} присоединился(-ась) к классу.",
