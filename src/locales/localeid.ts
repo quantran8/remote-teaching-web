@@ -200,6 +200,7 @@ export class TeacherClassLessonPlan {
   static ComponentSlides = "teacher_class_lesson_plan.component_slides";
   static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
   static NoData = "teacher_class_lesson_plan.no_data";
+  static AlternateMedia = "teacher_class_lesson_plan.alternate_media";
 }
 
 export class TeacherClassGallery {

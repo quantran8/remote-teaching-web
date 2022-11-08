@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { gsap } from "gsap";
 import { fabric } from "fabric";
@@ -16,6 +16,7 @@ import { annotationCurriculum } from "@/views/teacher-class/components/whiteboar
 import { Button, Space } from "ant-design-vue";
 import { Pointer } from "@/store/annotation/state";
 import { Logger } from "@/utils/logger";
+import VuePdfEmbed from 'vue-pdf-embed'
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE = {
@@ -38,10 +39,12 @@ export default defineComponent({
     ToolsCanvas,
     Space,
     Button,
+	VuePdfEmbed,
   },
   setup(props) {
     const store = useStore();
-    const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
@@ -56,7 +59,7 @@ export default defineComponent({
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
-
+	
     let canvas: any;
     const tools = Tools;
     const wrapCanvasRef = ref<any>(null);
@@ -71,6 +74,8 @@ export default defineComponent({
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
     const firstTimeLoadOneToOneShapes: Ref<boolean> = ref(false);
+	const video = ref<HTMLVideoElement | null>(null)
+	const audio = ref<HTMLVideoElement | null>(null)
 
     const isDrawing: Ref<boolean> = ref(false);
     const prevPoint: Ref<Pointer | undefined> = ref(undefined);
@@ -401,6 +406,22 @@ export default defineComponent({
       image.src = props.image ? props.image.url : {};
       return image.src;
     });
+
+	const mediaTypeId = computed(() => {
+	  const newId = props.id
+	  let result = undefined
+	  const listMedia = currentExposure.value?.alternateMediaBlockItems
+	  if (listMedia){
+		listMedia.forEach((e:any)=>{
+		  e.forEach((item:any) => {
+		  	if (newId === item.id) {
+		  	result = item.mediaTypeId 
+		  	}
+		  })
+		})
+	  }
+	  return result
+	})
     const cursorPosition = async (e: any, isDone = false) => {
         if (isTeacherUseOnly.value) {
             return;
@@ -1060,6 +1081,40 @@ export default defineComponent({
       },
       { deep: true },
     );
+
+	watch(
+	  video, async() => {
+	  	if (video.value) {
+		  video.value.onplay = async() => {
+		    await store.dispatch("teacherRoom/setMediaState", true)
+	      }
+		  video.value.onpause = async() => {
+		    await store.dispatch("teacherRoom/setMediaState", false)
+	      }
+		  video.value.onseeked = async() => {
+		    await store.dispatch("teacherRoom/setCurrentTimeMedia", video.value?.currentTime)
+		  } 
+        }  
+	  },
+		{ deep: true },
+	  );
+	watch(
+	  audio, async() => {
+	  	if (audio.value) {
+	  	  audio.value.onplay = async() => {
+	  	  	await store.dispatch("teacherRoom/setMediaState", true)
+	  	  }
+	  	  audio.value.onpause = async() => {
+	  	  	await store.dispatch("teacherRoom/setMediaState", false)
+	  	  }
+		  audio.value.onseeked = async() => {
+			await store.dispatch("teacherRoom/setCurrentTimeMedia", audio.value?.currentTime)
+		  } 
+	  	}  
+	  },
+		{ deep: true },
+	);
+
     const warningMsg = computed(() => fmtMsg(WhiteBoard.TextBoxWarning));
     const warningMsgLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
@@ -1086,6 +1141,7 @@ export default defineComponent({
     const forTeacherUseOnlyText = computed(() => fmtMsg(TeacherClass.ForTeacherUseOnly));
     return {
       currentExposureItemMedia,
+	  mediaTypeId,
       clickedTool,
       cursorPosition,
       toolNames,
@@ -1121,6 +1177,8 @@ export default defineComponent({
 	  zoomPercentage,
       isTeacherUseOnly,
       forTeacherUseOnlyText,
+	  video,
+	  audio,
     };
   },
 });

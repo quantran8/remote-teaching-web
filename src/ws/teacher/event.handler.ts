@@ -46,4 +46,6 @@ export interface TeacherWSEventHandler {
   onTeacherUpdateSessionLessonAndUnit(payload: any): void;
   onTeacherSendRequestCaptureImage(payload: any): void;
   onStudentSendCapturedImageStatus(payload: any): void;
+  onTeacherSetMediaState(payload: any):void;
+  onTeacherSetCurrentTimeMedia(payload: any):void;
 } 

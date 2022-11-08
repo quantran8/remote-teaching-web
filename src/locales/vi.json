@@ -138,6 +138,7 @@
 	"teacher_class_lesson_plan.related_slides": "Thẻ dạy kèm",
 	"teacher_class_lesson_plan.component_slides": "Thẻ tài liệu chính",
 	"teacher_class_lesson_plan.activity_slides": "Thẻ cho phần tương tác",
+	"teacher_class_lesson_plan.alternate_media": "Alternate Media",
 	"teacher_class.bear_action_none": "Không có",
 	"device_tester.platform": "Nền tảng",
 	"teacher_class.student_has_joined_the_class": "{studentName} vừa vào lớp.",

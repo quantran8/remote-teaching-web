@@ -12,6 +12,7 @@ import { brushstrokesRender } from "@/components/common/annotation-view/componen
 import { annotationCurriculumStudent } from "@/components/common/annotation-view/components/annotation-curriculum";
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
 import { debounce } from "lodash";
+import VuePdfEmbed from 'vue-pdf-embed';
 
 const DEFAULT_STYLE = {
   width: "100%",
@@ -21,21 +22,25 @@ const DEFAULT_STYLE = {
 const DEFAULT_CANVAS_ZOOM_RATIO = 1;
 
 export default defineComponent({
-  props: ["image"],
+  props: ["image", "id"],
   components: {
     Popover,
+	VuePdfEmbed,
   },
   setup(props) {
     const store = useStore();
     let canvas: any;
     const containerRef = ref<HTMLDivElement>();
     const scaleRatio = ref(1);
+	const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
     const isGalleryView = computed(() => store.getters["studentRoom/isGalleryView"]);
     const isLessonPlan = computed(() => store.getters["studentRoom/isLessonPlan"]);
     const activeColor = ref("black");
     const toolActive = ref("move");
+	const videoAnnotation = ref<HTMLVideoElement | null>(null)
+	const audioAnnotation = ref<HTMLVideoElement | null>(null)
     const pointerStyle = computed(() => {
       const pointer: { x: number; y: number } = store.getters["annotation/pointer"];
       if (!pointer) return `display: none`;
@@ -76,6 +81,9 @@ export default defineComponent({
     const classInfo = computed(() => store.getters["studentRoom/info"])
     const children = computed(() => store.getters["parent/children"]);
     const schoolId = computed(() => children.value.find((child: any) => child.id === student.value.id)?.schoolId)
+	const mediaState = computed(() => store.getters["studentRoom/getMediaState"]);
+	const currentTimeMedia = computed(() => store.getters["studentRoom/getCurrentTimeMedia"]);
+
 
     const oneOneStatus = ref<boolean>(false);
     const oneOneIdNear = ref<string>("");
@@ -86,9 +94,7 @@ export default defineComponent({
 	const defaultZoomRatio = ref(1);
 	const prevZoomRatio = ref(1);
 	const prevCoords = ref({x:0,y:0});
-
-
-
+	
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
     );
@@ -96,6 +102,22 @@ export default defineComponent({
     const paletteShown = computed(
       () => (isLessonPlan.value && isPaletteVisible.value) || (isGalleryView.value && isShowWhiteBoard.value && isPaletteVisible.value),
     );
+
+	const mediaTypeId = computed(() => {
+	  const newId = props.id
+	  let result = undefined
+	  const listMedia = currentExposure.value?.alternateMediaBlockItems
+	  if (listMedia){
+	    listMedia.forEach((e:any)=>{
+	  	  e.forEach((item:any) => {
+	  		if (newId === item.id) {
+	  		  result = item.mediaTypeId 
+	  		}
+	  	  })
+	    })
+	  }
+	  return result
+	})
 
 	watch(zoomRatio,(currentValue,prevValue) => {	
 		if(!group){
@@ -679,6 +701,23 @@ export default defineComponent({
           break;
       }
     });
+	watch(mediaState, () => {
+	  if (videoAnnotation.value){
+		mediaState.value === true ? videoAnnotation.value.play() : videoAnnotation.value.pause()  
+	  }
+	  if (audioAnnotation.value){
+		mediaState.value === true ? audioAnnotation.value.play() : audioAnnotation.value.pause()
+	  }
+	}, { deep: true })
+	watch(currentTimeMedia, () => {
+	  if (videoAnnotation.value && currentTimeMedia.value){
+	    videoAnnotation.value.currentTime = currentTimeMedia.value   
+	  }
+	  if (audioAnnotation.value && currentTimeMedia.value){
+	    audioAnnotation.value.currentTime = currentTimeMedia.value  
+	  }
+	  }, { deep: true })
+
     onMounted(() => {
 	    captureCanvas = document.getElementById("imgCanvas") as HTMLCanvasElement;
       boardSetup();
@@ -692,6 +731,7 @@ export default defineComponent({
       containerRef,
       pointerStyle,
       imageUrl,
+	  mediaTypeId,
       isPointerMode,
       canvasRef,
       isShowWhiteBoard,
@@ -714,6 +754,8 @@ export default defineComponent({
       showListColorsPopover,
       hideListColors,
       styles,
+	  videoAnnotation,
+	  audioAnnotation,
     };
   },
 });

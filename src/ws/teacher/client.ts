@@ -165,6 +165,12 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestSetWhiteboard(isShowWhiteBoard: boolean) {
     return this.send(WSCmd.TEACHER_SET_WHITEBOARD, isShowWhiteBoard);
   }
+  sendRequestSetMediaState(payload: any){
+    return this.send(WSCmd.TEACHER_SET_MEDIA_STATE, payload);
+  }
+  sendRequestSetCurrentTimeMedia(payload: any){
+	return this.send(WSCmd.TEACHER_SET_CURRENT_TIME_MEDIA, payload);
+  }
   sendRequestDrawLaser(payload: any) {
     const data = JSON.stringify(payload);
     return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);

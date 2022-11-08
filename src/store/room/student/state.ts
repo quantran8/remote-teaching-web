@@ -91,6 +91,8 @@ export interface StudentRoomState {
   apiStatus: GLApiStatus | null;
   videosFeedVisible: boolean;
   browserFingerPrinting: string;
+  mediaState: boolean;
+  currentTimeMedia: number;
 }
 
 const initialVideosFeedVisible = isDesktopBrowser ? true : false;
@@ -124,6 +126,8 @@ const state: StudentRoomState = {
   apiStatus: null,
   videosFeedVisible: initialVideosFeedVisible,
   browserFingerPrinting: "",
+  mediaState: false,
+  currentTimeMedia: 0,
 };
 
 export default state;

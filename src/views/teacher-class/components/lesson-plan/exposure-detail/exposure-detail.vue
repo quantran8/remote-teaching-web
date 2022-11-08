@@ -7,6 +7,7 @@
       isVCPBlock && 'vcp-block',
       isTransitionBlock && 'transition-block',
       isLpCompleteBlock && 'lp-complete-block',
+	  isAlternateMediaBlock && 'alternate-media-block',
     ]"
   >
     <div class="header-container">
@@ -41,6 +42,7 @@
         :isTeachingBlock="isTeachingActivityBlock"
         :isContentBlock="isContentBlock"
         :items="listMedia"
+		:isAlternateMediaBlock="isAlternateMediaBlock"
         @on-click-item="onClickItem"
       />
     </div>

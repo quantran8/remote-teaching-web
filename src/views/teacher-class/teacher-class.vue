@@ -53,6 +53,7 @@
             v-show="!isBlackOutContent"
             :isGalleryView="isGalleryView"
             :image="isLessonPlan ? currentExposureItemMedia?.image : null"
+            :id="isLessonPlan ? currentExposureItemMedia?.id : null"
           />
         </div>
         <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->

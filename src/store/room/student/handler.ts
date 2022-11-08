@@ -382,6 +382,12 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherSetWhiteboard: async (payload: any) => {
       await commit("setWhiteboard", payload);
     },
+	onTeacherSetMediaState: async (payload: any) => {
+	  commit("setMediaState", payload)
+	},
+	onTeacherSetCurrentTimeMedia: async (payload: any) => {
+      commit("setCurrentTimeMedia", payload)
+	},
     onTeacherDrawLaser: async (payload: any) => {
       await commit("setDrawLaser", JSON.parse(payload));
     },
@@ -452,7 +458,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
   },
   onStudentSendCapturedImageStatus: (p: any) => {
     // console.log(p);
-  }
+  },
   };
   return handler;
 };
