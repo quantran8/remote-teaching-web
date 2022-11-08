@@ -1,7 +1,12 @@
 {
   "typescript.format.semicolons": "insert",
   "editor.useTabStops": true,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modifications",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
+  },
   "editor.insertSpaces": false,
   "editor.detectIndentation": false,
   "vetur.validation.template": false,
