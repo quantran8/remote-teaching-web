@@ -577,8 +577,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
     try{
       const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
+	  const data = result.sort((a,b) => a.tags.dateTime > b.tags.dateTime ? -1 : 1);
 	  if(result.length){
-		  commit("setStudentsImageCaptured",result);
+		  commit("setStudentsImageCaptured",data);
 	  }
     }
     catch(error){
