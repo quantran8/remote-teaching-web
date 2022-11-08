@@ -85,13 +85,13 @@ export default defineComponent({
 			}
 		});
 		const groupSelected = computed(() => {
-			if(!classInfo.value){
+			if (groupOptions.value.length !== 0){
 				return {
-					value:groupOptions.value[0]?.value
+					value: groupOptions.value[0]?.value
 				}
 			}
 			return {
-				value: filterOptions.value.group
+				value: ""
 			}
 		});
 		const studentSelected = computed(() => {
@@ -173,8 +173,8 @@ export default defineComponent({
 			filterMode.value = e.target.value;
 			currentDate.value = "";
 			await dispatch('teacher/getClassInfo', {
-				classId: classOptions.value[0].value,
-				groupId: groupOptions.value[0].value,
+				classId: classOptions.value[0]?.value,
+				groupId: groupOptions.value[0]?.value,
 				teacherId: userInfo.value.profile.sub
 			});
 			filterOptions.value = {
@@ -284,7 +284,7 @@ export default defineComponent({
 			});
 			await dispatch('teacher/getClassInfo', {
 				classId: classSelected.value?.value,
-				groupId:  studentId ? groupOptions.value.find((item) => item.value === classInfo.value.classInfo.groupId)?.value ?? "" : groupOptions.value[0].value,
+				groupId:  studentId ? groupOptions.value?.find((item) => item.value === classInfo.value?.classInfo.groupId)?.value ?? "" : groupOptions.value[0]?.value,
 				teacherId: userInfo.value.profile.sub
 			});
 			console.log(groupOptions.value)
@@ -292,7 +292,7 @@ export default defineComponent({
 				filterMode:filterMode.value,
 				school: schoolId as string ?? schoolOptions.value[0].value ,
 				class: classSelected.value?.value ?? "",
-				group:  studentId ? groupOptions.value.find((item) => item.value === classInfo.value.classInfo.groupId)?.value ?? "" : groupOptions.value[0].value,
+				group:  studentId ? groupOptions.value?.find((item) => item.value === classInfo.value?.classInfo.groupId)?.value ?? "" : groupOptions.value[0]?.value,
 				student: studentId ? studentId as string : studentOptions.value[0].value,
 				date: ""
 			};
