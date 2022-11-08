@@ -80,6 +80,7 @@
 	"teacher_class_gallery.disable_all": "Отключить доступ всем",
 	"teacher_class_gallery.show_all": "Показать всех",
 	"teacher_class_gallery.hide_all": "Скрыть всех",
+	"teacher_class_gallery.capture_all": "Screen Capture",
 	"teacher_home.welcome": "Добро пожаловать",
 	"teacher_home.schedule": "Расписание",
 	"teacher_home.cancel": "Отменить",
@@ -100,6 +101,7 @@
 	"device_tester.unit": "Юнит",
 	"device_tester.cancel": "Отменить",
 	"device_tester.join_session": "Присоединиться к сеансу",
+	"device_tester.check_speaker": "Check Speaker",
 	"teacher_class_gallery.no_student_join_class": "Ни один ученик еще не присоединился к уроку",
 	"lost_network.message": "Вы потеряли подключение к сети. Пожалуйста, переподключитесь.",
 	"layout.edit_profile": "Редактировать профиль",
@@ -160,5 +162,8 @@
 	"resources.menu.lms": "Профессиональное развитие",
 	"resources.menu.parentportal": "Портал для родителя",
 	"teacher_class_lesson_plan.no_data": "Нет данных",
-	"teacher_class.for_teacher_use_only": "*Этот слайд предназначен для учителей и не виден учащимся."
+	"teacher_class.for_teacher_use_only": "*Этот слайд предназначен для учителей и не виден учащимся.",
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
+	"change_lesson_unit.ok": "Ok"
 }

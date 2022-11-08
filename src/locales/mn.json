@@ -80,6 +80,7 @@
 	"teacher_class_gallery.disable_all": "Бүгдийг нь идэвхгүй болгох",
 	"teacher_class_gallery.show_all": "Бүгдийг нь харуулах",
 	"teacher_class_gallery.hide_all": "Бүгдийг нь нуух",
+	"teacher_class_gallery.capture_all": "Screen Capture",
 	"teacher_home.welcome": "Тавтай морил",
 	"teacher_home.schedule": "Хуваарь",
 	"teacher_home.cancel": "Цуцлах ",
@@ -100,6 +101,7 @@
 	"device_tester.unit": "Бүлэг сэдэв",
 	"device_tester.cancel": "Цуцлах",
 	"device_tester.join_session": "Орох",
+	"device_tester.check_speaker": "Check Speaker",
 	"teacher_class_gallery.no_student_join_class": "Одоогоор нэг ч сурагч ангид элсээгүй байна",
 	"lost_network.message": "Та сүлжээний холболтоо алдсан байна. Дахин холбогдоно уу.",
 	"layout.edit_profile": "Хувийн мэдээллээ өөрчлөх",
@@ -160,5 +162,8 @@
 	"resources.menu.lms": "Багшийн сургалт",
 	"resources.menu.parentportal": "Эцэг эхийн портал",
 	"teacher_class_lesson_plan.no_data": "No data",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
+	"change_lesson_unit.ok": "Ok"
 }

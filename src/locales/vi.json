@@ -80,6 +80,7 @@
 	"teacher_class_gallery.disable_all": "Đóng tất cả",
 	"teacher_class_gallery.show_all": "Hiển thị tất cả",
 	"teacher_class_gallery.hide_all": "Ẩn tất cả",
+	"teacher_class_gallery.capture_all": "Screen Capture",
 	"teacher_home.welcome": "Chào mừng",
 	"teacher_home.schedule": "Lịch học",
 	"teacher_home.cancel": "Hủy",
@@ -100,6 +101,7 @@
 	"device_tester.unit": "Unit",
 	"device_tester.cancel": "Hủy",
 	"device_tester.join_session": "Bắt đầu tiết học",
+	"device_tester.check_speaker": "Check Speaker",
 	"teacher_class_gallery.no_student_join_class": "Chưa có học sinh nào tham gia lớp học.",
 	"lost_network.message": "Bạn đã mất kết nối. Xin vui lòng kết nối lại.",
 	"layout.edit_profile": "Sửa thông tin",
@@ -160,5 +162,8 @@
 	"resources.menu.lms": "Teacher Training",
 	"resources.menu.parentportal": "Parent Portal",
 	"teacher_class_lesson_plan.no_data": "No data",
-	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students."
+	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
+	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
+	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
+	"change_lesson_unit.ok": "Ok"
 }
