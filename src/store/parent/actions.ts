@@ -4,8 +4,7 @@ import { ActionContext, ActionTree } from "vuex";
 import { ParentState } from "./state";
 
 const actions: ActionTree<ParentState, any> = {
-  async setInfo({ dispatch, commit }, payload: Parent) {
-    await dispatch("setAcceptPolicy");
+  async setInfo({ commit }, payload: Parent) {
     commit("setInfo", payload);
   },
   setSelectedChild({ commit }, payload: { childId: string }) {

@@ -9,6 +9,8 @@ import { useDisconnection } from "@/hooks/use-disconnection";
 import { AppView, UserRole } from "@/store/app/state";
 import { LostNetwork } from "./../locales/localeid";
 import { Spin } from "ant-design-vue";
+import { useRouter } from "vue-router";
+import { Paths } from "@/utils/paths";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
@@ -18,13 +20,14 @@ export default defineComponent({
     MainLayout,
     AppHeader,
     AppFooter,
-	Spin
+    Spin,
   },
   created() {
     AuthService.localSilentLogin();
   },
   setup() {
     const { getters, dispatch } = useStore();
+    const router = useRouter();
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
@@ -44,6 +47,7 @@ export default defineComponent({
         id: loginInfo.profile.sub,
         name: loginInfo.profile.name,
       });
+      await checkPolicy("parent");
       await dispatch("parent/loadChildren");
     };
 
@@ -54,6 +58,20 @@ export default defineComponent({
       if (isTeacher) await onTeacherSignedIn(loginInfo);
       if (isParent) await onParentSignedIn(loginInfo);
       await dispatch("loadContentSignature");
+    };
+
+    const checkPolicy = async (role: "parent" | "teacher"): Promise<void> => {
+      if (role === "parent") {
+        await dispatch("parent/setAcceptPolicy");
+        const policyAccepted = computed(() => getters["parent/acceptPolicy"]);
+        if (!policyAccepted.value && location.pathname !== Paths.Parent) {
+          if (location.pathname) {
+            router.push({ path: Paths.Parent, query: { target: location.pathname } });
+          } else {
+            router.push({ path: Paths.Parent });
+          }
+        }
+      }
     };
 
     watch(isSignedIn, async () => {
@@ -87,7 +105,7 @@ export default defineComponent({
     const userRole = computed(() => getters["userRole"]);
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isDisconnectedMode = computed<any>(() => teacherDisconnected.value && userRole.value !== UserRole.UnConfirm);
-	const isMaskGrandAccess = computed(() => getters["spin/getMaskGrandAccess"]);
+    const isMaskGrandAccess = computed(() => getters["spin/getMaskGrandAccess"]);
     return {
       siteTitle,
       appView,
@@ -98,7 +116,7 @@ export default defineComponent({
       messageText,
       isDisconnectedMode,
       isTeacher,
-	  isMaskGrandAccess
+      isMaskGrandAccess,
     };
   },
 });
