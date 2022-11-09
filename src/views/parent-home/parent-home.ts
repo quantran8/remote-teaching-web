@@ -12,6 +12,8 @@ import { AppView } from "@/store/app/state";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
 import { Logger } from "@/utils/logger";
+import { notification } from "ant-design-vue";
+import { queryStringToObject } from "@/utils/utils";
 
 const fpPromise = FingerprintJS.load();
 
@@ -73,11 +75,11 @@ export default defineComponent({
       const getRoomInfo = async () => {
         try {
           const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
-    	  studentVideoMirror.value = !!roomResponse?.data?.isStudentVideoMirror;
+          studentVideoMirror.value = !!roomResponse?.data?.isStudentVideoMirror;
           getRoomInfoError.value = "";
           getRoomInfoErrorByMsg.value = "";
           await store.dispatch("studentRoom/setOnline");
-		  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+          await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
 
           if (getRoomInfoTimeout.value) {
             clearTimeout(getRoomInfoTimeout.value);
@@ -132,8 +134,23 @@ export default defineComponent({
     };
     const submitPolicy = async () => {
       visible.value = false;
-      await RemoteTeachingService.submitPolicy("parent");
-      await store.dispatch("parent/setAcceptPolicy");
+      try {
+        await RemoteTeachingService.submitPolicy("parent");
+        await store.dispatch("parent/setAcceptPolicy");
+        const policyAccepted = computed(() => store.getters["parent/acceptPolicy"]);
+        if (policyAccepted.value) {
+          const queryStringObj = queryStringToObject();
+          if (queryStringObj?.target) {
+            router.push(queryStringObj.target);
+          }
+        } else {
+          store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+        }
+      } catch (error) {
+        notification.error({
+          message: error.message,
+        });
+      }
     };
     const cancelPolicy = async () => {
       visible.value = false;
