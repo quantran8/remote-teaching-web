@@ -33,25 +33,25 @@ export const useFabricObject = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["auth/isTeacher"]);
   const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
-  const oneToOneId = computed(() =>getters["teacherRoom/getStudentModeOneId"]);
+  const oneToOneId = computed(() => getters["teacherRoom/getStudentModeOneId"]);
   const nextColor = ref("");
   const currentSelectionEnd = ref(-1);
   const currentSelectionStart = ref(-1);
-  const isChangeImage= ref(false);
+  const isChangeImage = ref(false);
   const isTeacherUseOnly = computed(() => getters["teacherRoom/isTeacherUseOnly"]);
 
   watch(currentExposureItemMedia, (currentItem, prevItem) => {
-	if (currentItem && prevItem) {
-	  if (currentItem.id !== prevItem.id) {
-		isChangeImage.value =true;
-	  }
-	}
+    if (currentItem && prevItem) {
+      if (currentItem.id !== prevItem.id) {
+        isChangeImage.value = true;
+      }
+    }
   });
 
   watch(oneToOneId, (currentOneToOneId, prevOneToOneId) => {
-	if(currentOneToOneId !==prevOneToOneId && isChangeImage.value){
-		isChangeImage.value = false;
-	}
+    if (currentOneToOneId !== prevOneToOneId && isChangeImage.value) {
+      isChangeImage.value = false;
+    }
   });
 
   const isEditing = ref(false);
@@ -72,67 +72,65 @@ export const useFabricObject = () => {
   };
   const onObjectModified = (canvas: any) => {
     canvas.on("object:modified", (options: any) => {
-	  if(options?.target?.type === 'group' && options.action === 'drag'){
-		const {target} = options.transform;
-		const viewPortX = Math.abs(canvas.viewportTransform[4]);
-		const viewPortY = Math.abs(canvas.viewportTransform[5]);
-		const zoom = canvas.getZoom();
-		const clipPathLeft = DefaultCanvasDimension.width - target.width;
-		const clipPathTop = DefaultCanvasDimension.height - target.height;
-		  const originX = target.width / 2 ;
-		  const originY = target.height / 2 ;
-		  if(target.width*zoom < DefaultCanvasDimension.width){
-			  if(target.left !== DefaultCanvasDimension.width / 2){
-				  target.left = DefaultCanvasDimension.width / 2;
-			  }
-		  }
-		  else{
-			  if(((target.left - viewPortX/zoom) > originX)){
-				  target.left = originX + viewPortX/zoom ;
-			  }
-			  else{
-				  if((target.left + viewPortX/zoom) < originX + clipPathLeft ){
-					  target.left = (originX + clipPathLeft) - viewPortX/zoom ;
-					}
-			  }
-		  }
-		  if(target.height*zoom < DefaultCanvasDimension.height){
-			  if(target.top !== target.height / 2){
-				  target.top = target.height / 2 + viewPortY/zoom;
-			  }
-		  }
-		  else{
-			  if((target.top - viewPortY/zoom) > originY){
-				  target.top = originY + viewPortY/zoom ;
-			  }
-			  else{
-				  if((target.top + viewPortY/zoom) < originY){
-					  target.top = (originY + clipPathTop) - viewPortY/zoom ;
-				  }
-			  }
-		  }
-		  target.setCoords();
-		  const coords = {
-			x:Math.floor(target.left) ?? 0, 
-			y: Math.floor(target.top) ?? 0,
-			viewPortX: Math.floor(viewPortX),
-			viewPortY: Math.floor(viewPortY)
-		}
-		if(canvas.getZoom() !== 1 && !isTeacherUseOnly.value){
-			dispatch("teacherRoom/setMoveZoomedSlide",coords);
-		}
-		}
+      if (options?.target?.type === "group" && options.action === "drag") {
+        const { target } = options.transform;
+        const viewPortX = Math.abs(canvas.viewportTransform[4]);
+        const viewPortY = Math.abs(canvas.viewportTransform[5]);
+        const zoom = canvas.getZoom();
+        const clipPathLeft = DefaultCanvasDimension.width - target.width;
+        const clipPathTop = DefaultCanvasDimension.height - target.height;
+        const originX = target.width / 2;
+        const originY = target.height / 2;
+
+        if (target.width * zoom < DefaultCanvasDimension.width) {
+          if (target.left !== DefaultCanvasDimension.width / 2) {
+            target.left = DefaultCanvasDimension.width / 2;
+          }
+        } else {
+          if (target.left - viewPortX / zoom > originX) {
+            target.left = originX + viewPortX / zoom;
+          } else {
+            if (target.left + viewPortX / zoom < originX + clipPathLeft) {
+              target.left = originX + clipPathLeft - viewPortX / zoom;
+            }
+          }
+        }
+        if (target.height * zoom < DefaultCanvasDimension.height) {
+          if (target.top !== target.height / 2) {
+            target.top = target.height / 2 + viewPortY / zoom;
+          }
+        } else {
+          if (target.top - viewPortY / zoom > originY) {
+            target.top = originY + viewPortY / zoom;
+          } else {
+            if (target.top + viewPortY / zoom < originY) {
+              target.top = originY + clipPathTop - viewPortY / zoom;
+            }
+          }
+        }
+        target.setCoords();
+        const coords = {
+          x: Math.floor(target.left) ?? 0,
+          y: Math.floor(target.top) ?? 0,
+          viewPortX: Math.floor(viewPortX),
+          viewPortY: Math.floor(viewPortY),
+        };
+        if (canvas.getZoom() !== 1 && !isTeacherUseOnly.value) {
+          dispatch("teacherRoom/setMoveZoomedSlide", coords);
+          dispatch("lesson/setImgCoords", coords, { root: true });
+        }
+      }
       if (options?.target?.type === "textbox") {
-		if(!isChangeImage.value && !isTeacherUseOnly.value){
-			dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
-		}
+        if (!isChangeImage.value && !isTeacherUseOnly.value) {
+          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+        }
         if (options?.target.text === "") {
           canvas.remove(options.target);
         }
       }
-	  if(isChangeImage.value){
-		isChangeImage.value =false;
-	}
+      if (isChangeImage.value) {
+        isChangeImage.value = false;
+      }
     });
   };
   const onTextBoxEdited = (canvas: any) => {
@@ -195,25 +193,25 @@ export const useFabricObject = () => {
       currentSelectionEnd.value = options.target.selectionEnd;
       currentSelectionStart.value = options.target.selectionEnd;
       if (!isTeacherUseOnly.value) {
-          dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
+        dispatch("teacherRoom/teacherModifyFabricObject", options?.target);
       }
     });
   };
 
   const createTextBox = (canvas: any, coords: { top: number; left: number }) => {
-	const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
-		const randomId = randomUUID();
-		textBox.objectId = randomId;
-		textBox.prevTextValue = "";
-		canvas.add(textBox).setActiveObject(textBox);
-		textBox.textIsChanged = false;
-		textBox.enterEditing();
-		textBox.setSelectionStart(0);
-		textBox.setSelectionEnd(textBox.text.length);
-        if (!isTeacherUseOnly.value) {
-            dispatch("teacherRoom/teacherCreateFabricObject", textBox);
-        }
-		return textBox;
+    const textBox = new fabric.Textbox("", { ...defaultTextBoxProps, ...coords, fill: nextColor.value });
+    const randomId = randomUUID();
+    textBox.objectId = randomId;
+    textBox.prevTextValue = "";
+    canvas.add(textBox).setActiveObject(textBox);
+    textBox.textIsChanged = false;
+    textBox.enterEditing();
+    textBox.setSelectionStart(0);
+    textBox.setSelectionEnd(textBox.text.length);
+    if (!isTeacherUseOnly.value) {
+      dispatch("teacherRoom/teacherCreateFabricObject", textBox);
+    }
+    return textBox;
   };
 
   //display the fabric items get from getRoomInfo API which save in vuex store
@@ -278,7 +276,7 @@ export const useFabricObject = () => {
       if (hasSelected) {
         selectedFabricObject.setSelectionStyles({ fill: colorValue });
         if (!isTeacherUseOnly.value) {
-            dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
+          dispatch("teacherRoom/teacherModifyFabricObject", selectedFabricObject);
         }
       }
       selectedFabricObject.set("cursorColor", colorValue);
@@ -296,7 +294,7 @@ export const useFabricObject = () => {
     displayModifiedItem,
     isEditing,
     nextColor,
-	FontLoader,
+    FontLoader,
     handleUpdateColor,
   };
 };
