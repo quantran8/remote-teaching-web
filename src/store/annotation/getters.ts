@@ -77,6 +77,9 @@ const getters: GetterTree<AnnotationState, any> = {
   isImgProcessing(state: AnnotationState): boolean {
     return state.isImgProcessing ?? false;
   },
+  pencilPath(state: AnnotationState) {
+    return state.pencilPath;
+  }
 };
 
 export default getters;

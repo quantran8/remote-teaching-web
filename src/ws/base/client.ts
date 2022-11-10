@@ -203,7 +203,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_UPDATE_STUDENT_PALETTE, handler.onTeacherToggleStudentPallete);
     // handlers.set(TeacherWSEvent.EVENT_TEACHER_ADD_SHAPE, handler.onTeacherAddShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
-    handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_DRAW_PENCIL_PEN, handler.onTeacherDrawPencil);
 
     // handlers.set(
     //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,

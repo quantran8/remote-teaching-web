@@ -337,10 +337,13 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
 		//
 	},
   onTeacherSendRequestCaptureImage: (p: string) => {
-//  
-},
+    //  
+  },
   onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
-	commit("setStudentsCaptureDone",p)
+    commit("setStudentsCaptureDone", p)
+  },
+  onTeacherDrawPencil: (p: string) => {
+    // 
   }
   };
   return handler;

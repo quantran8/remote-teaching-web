@@ -35,9 +35,15 @@ export interface AnnotationState {
   lastFabricUpdated: null | LastFabricUpdated;
   imgWidth?: number;
   imgHeight?: number;
-  imgRenderWidth?:number;
-  imgRenderHeight?:number;
-  isImgProcessing?:boolean;
+  imgRenderWidth?: number;
+  imgRenderHeight?: number;
+  isImgProcessing?: boolean;
+  pencilPath: Array<{
+    id: string;
+    points: Array<Pointer>;
+    strokeColor: string;
+    strokeWidth: number;
+  }>
 }
 
 export interface LastFabricUpdated {
@@ -66,6 +72,7 @@ const state: AnnotationState = {
   },
   stickers: [],
   lastFabricUpdated: null,
+  pencilPath: []
 };
 
 export default state;

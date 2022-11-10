@@ -423,16 +423,13 @@ export default defineComponent({
 	  return result
 	})
     const cursorPosition = async (e: any, isDone = false) => {
-        if (isTeacherUseOnly.value) {
-            return;
-        }
+      if (isTeacherUseOnly.value) {
+        return;
+      }
       const rect = document.getElementById("canvas-container");
       if (!rect) return;
       const rectBounding = rect.getBoundingClientRect();
-	  const canvasViewPortX = Math.abs(canvas.viewportTransform[4]);
-	  const canvasViewPortY = Math.abs(canvas.viewportTransform[5]);
-	  const zoom = canvas.getZoom();
-      let x = e.clientX - rectBounding.left 
+      let x = e.clientX - rectBounding.left
       let y = e.clientY - rectBounding.top
       const windowWidth = window.innerWidth;
 
@@ -454,42 +451,65 @@ export default defineComponent({
         });
         return;
       }
-      if (toolSelected.value === Tools.Laser && isDrawing.value) {
+      if ((toolSelected.value === Tools.Laser || toolSelected.value === Tools.Pen) && isDrawing.value) {
         const _point = {
           x: Math.floor(x),
           y: Math.floor(y)
         };
         if (!prevPoint.value) {
           prevPoint.value = _point;
-        } else {
+        }
+        else {
           const absX = Math.abs(_point.x - prevPoint.value.x);
           const absY = Math.abs(_point.y - prevPoint.value.y);
           if (absX > 8 || absY > 8 || isDone) {
             prevPoint.value = _point;
-            if (isMouseOut.value ) {
+            if (isMouseOut.value) {
               lineId.value = generateLineId();
-              await store.dispatch("teacherRoom/setLaserPath", {
-                data: {
+              if (toolSelected.value === Tools.Laser) {
+                await store.dispatch("teacherRoom/setLaserPath", {
+                  data: {
+                    id: lineId.value,
+                    points: _point,
+                    strokeColor: strokeColor.value,
+                    strokeWidth: strokeWidth.value,
+                  },
+                  isDone,
+                });
+              }
+              else {
+                await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
-                },
-                isDone,
-              });
+                });
+              }
+
               isMouseOver.value = false;
               isMouseOut.value = false;
               prevPoint.value = undefined;
-            } else {
-              await store.dispatch("teacherRoom/setLaserPath", {
-                data: {
+            }
+            else {
+              if (toolSelected.value === Tools.Laser) {
+                await store.dispatch("teacherRoom/setLaserPath", {
+                  data: {
+                    id: lineId.value,
+                    points: _point,
+                    strokeColor: strokeColor.value,
+                    strokeWidth: strokeWidth.value,
+                  },
+                  isDone,
+                });
+              }
+              else {
+                await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
-                },
-                isDone,
-              });
+                });
+              }
             }
             return;
           }
@@ -536,7 +556,11 @@ export default defineComponent({
 	}
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async (event: any) => {
-        if (toolSelected.value === "pen") {
+        if (toolSelected.value === Tools.Pen) {
+          cursorPosition(event.e, true);
+          lineId.value = generateLineId();
+          isDrawing.value = false;
+          prevPoint.value = undefined;
           canvas.renderAll();
           await objectsCanvas();
         }
@@ -625,6 +649,10 @@ export default defineComponent({
             break;
           }
           case Tools.Laser: {
+            isDrawing.value = true;
+            break;
+          }
+          case Tools.Pen: {
             isDrawing.value = true;
             break;
           }
@@ -1170,11 +1198,11 @@ export default defineComponent({
       hideAllTargetTextBtn,
       handleClickOutsideCanvas,
       wrapCanvasRef,
-	  zoomIn,
-	  zoomOut,
-	  showHidePreviewModal,
-	  disablePreviewBtn,
-	  zoomPercentage,
+      zoomIn,
+      zoomOut,
+      showHidePreviewModal,
+      disablePreviewBtn,
+      zoomPercentage,
       isTeacherUseOnly,
       forTeacherUseOnlyText,
 	  video,

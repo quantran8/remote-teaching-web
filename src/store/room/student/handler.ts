@@ -296,6 +296,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setStudentDrawsLine", null, { root: true });
       await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
       await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+      await dispatch("annotation/clearPencilPath", null, { root: true });
       // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
       // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
     },
@@ -459,6 +460,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
   onStudentSendCapturedImageStatus: (p: any) => {
     // console.log(p);
   },
+  onTeacherDrawPencil: async(p: string) => {
+    await dispatch("annotation/setDrawPencil", p,{root:true});
+  }
   };
   return handler;
 };
