@@ -98,6 +98,7 @@ export default defineComponent({
 
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
+	const unitAndLesson = computed(() => ({unit:currentUnit.value,lesson:currentLesson.value}));
     watch(oneAndOneStatus, (value) => {
       if (value === "" || value === null) {
         isOneOneMode.value = "";
@@ -107,10 +108,10 @@ export default defineComponent({
       infoPopupStatus.value = PopupStatus.Hided;
     });
 
-    watch(exposures, async (currentValue) => {
-      if (currentValue?.length) {
-        await onClickExposure(currentValue[0], true);
-      }
+    watch(unitAndLesson, async () => {
+		if(exposures.value?.length){
+			await onClickExposure(exposures.value[0], true);
+		}
     });
 
     const backToGalleryMode = () => {

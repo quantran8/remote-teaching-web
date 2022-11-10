@@ -576,8 +576,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
 	const token = rootState.auth.loginInfo
     commit({ type: "lesson/clearLessonData" }, { root: true });
-    await commit("setRoomInfo", roomInfo);
     await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token}, { root: true });
+    commit("setRoomInfo", roomInfo);
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
   async sendRequestCaptureImage({ state }, payload: {isCaptureAll: boolean, studentId: string}) {
