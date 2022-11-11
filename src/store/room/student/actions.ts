@@ -377,6 +377,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
     if (checkMessageTimer) clearInterval(checkMessageTimer);
     dispatch("setCheckMessageVersionTimer", -1, { root: true });
+    dispatch("annotation/clearPencilPath", null, { root: true });
+    dispatch("annotation/addShape", null, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;

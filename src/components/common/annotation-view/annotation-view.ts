@@ -13,6 +13,7 @@ import { annotationCurriculumStudent } from "@/components/common/annotation-view
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
 import { debounce } from "lodash";
 import VuePdfEmbed from 'vue-pdf-embed';
+import { pencilPen } from './components/pencil-path';
 
 const DEFAULT_STYLE = {
   width: "100%",
@@ -65,6 +66,7 @@ export default defineComponent({
     const undoCanvas = computed(() => store.getters["annotation/undoShape"]);
     const canvasData = computed(() => store.getters["annotation/shapes"]);
     const laserPath = computed(() => store.getters["studentRoom/laserPath"]);
+    const pencilPath = computed(() => store.getters["annotation/pencilPath"]);
     const student = computed(() => store.getters["studentRoom/student"]);
     const studentOneAndOneId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
@@ -77,8 +79,8 @@ export default defineComponent({
     const imgCoords = computed(() => store.getters["lesson/imgCoords"]);
 	  const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
     const isCaptureImage = computed(() => store.getters["studentRoom/isCaptureImage"]);
-    const userInfo = computed(() => store.getters["auth/getLoginInfo"])
-    const classInfo = computed(() => store.getters["studentRoom/info"])
+    const userInfo = computed(() => store.getters["auth/getLoginInfo"]);
+    const classInfo = computed(() => store.getters["studentRoom/info"]);
     const children = computed(() => store.getters["parent/children"]);
     const schoolId = computed(() => children.value.find((child: any) => child.id === student.value.id)?.schoolId)
 	const mediaState = computed(() => store.getters["studentRoom/getMediaState"]);
@@ -86,7 +88,7 @@ export default defineComponent({
 
 
     const oneOneStatus = ref<boolean>(false);
-    const oneOneIdNear = ref<string>("");
+    const oneOneIdNear = ref<string>(studentOneAndOneId.value ?? "");
 
 	let group: any;
 	let point: any;
@@ -255,9 +257,6 @@ export default defineComponent({
         );
       }
     };
-    watch(undoCanvas, () => {
-      undoStrokeByTeacher();
-    });
     const undoStrokeByTeacherOneOne = () => {
       if (undoStrokeOneOne.value) {
         canvas.remove(
@@ -268,11 +267,6 @@ export default defineComponent({
         );
       }
     };
-    watch(undoStrokeOneOne, () => {
-      if (studentOneAndOneId.value === student.value.id) {
-        undoStrokeByTeacherOneOne();
-      }
-    });
     const renderStrokes = (data: any, oneId: any) => {
       data.forEach((s: any) => {
         const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
@@ -291,7 +285,9 @@ export default defineComponent({
     };
     watch(canvasData, async () => {
       await nextTick();
-      renderTeacherStrokes();
+      if (!pencilPath.value.length){
+        renderTeacherStrokes();
+      }
     });
     watch(
       laserPath,
@@ -374,7 +370,7 @@ export default defineComponent({
           objectCanvasProcess();
         }
       } else {
-        canvas.remove(...canvas.getObjects("path").filter((obj: any) =>  obj.id !== "lesson-img" && (obj.tag === "student-other-strokes" || obj.tag === "self-strokes")));
+        canvas.remove(...canvas.getObjects("path").filter((obj: any) => (obj.tag === "student-other-strokes" || obj.tag === "self-strokes")));
       }
     };
     watch(studentStrokes, () => {
@@ -386,7 +382,9 @@ export default defineComponent({
       }
     };
     watch(oneOneTeacherStrokes, () => {
-      renderOneTeacherStrokes();
+      if (!pencilPath.value.length){
+        renderOneTeacherStrokes();
+      }
     });
     const renderOneTeacherShapes = () => {
       if (oneTeacherShapes.value && oneTeacherShapes.value.length > 0 && studentOneAndOneId.value === student.value.id) {
@@ -416,12 +414,12 @@ export default defineComponent({
       if (studentOneAndOneId.value) {
         oneOneIdNear.value = studentOneAndOneId.value;
         oneOneStatus.value = true;
-		prevTargetsList.value = [...targetsList.value];
-		prevZoomRatio.value = canvas.getZoom();
-		prevCoords.value = {
-			x:group.left,
-			y:group.top
-		};
+        prevTargetsList.value = [...targetsList.value];
+        prevZoomRatio.value = canvas.getZoom();
+        prevCoords.value = {
+          x:group.left,
+          y:group.top
+        };
         processCanvasWhiteboard();
         if (studentOneAndOneId.value !== student.value.id) {
           // disable shapes of student not 1-1
@@ -442,20 +440,24 @@ export default defineComponent({
         await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
         oneOneStatus.value = false;
         if (student.value.id === oneOneIdNear.value) {
-			canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== "lesson-img"));
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== "lesson-img"));
+          if (!pencilPath.value.length) {
+            undoStrokeByTeacher();
+          }
 			// render shapes objects again
 		  processCanvasWhiteboard();
          setTimeout(() => {
-			 targetsListProcess()
-			 teacherSharingShapes(teacherShapes.value, null);
-			 studentSharingShapes();
-			 selfStudentShapes();
-			 group.left = prevCoords.value.x;
-			 group.top = prevCoords.value.y;
-			 canvas.zoomToPoint(point,prevZoomRatio.value);
+            targetsListProcess()
+            teacherSharingShapes(teacherShapes.value, null);
+            studentSharingShapes();
+            selfStudentShapes();
+            group.left = prevCoords.value.x;
+            group.top = prevCoords.value.y;
+            canvas.zoomToPoint(point,prevZoomRatio.value);
             oneOneIdNear.value = "";
           }, 800);
         }
+        await store.dispatch("annotation/clearPencilPath");
         // enable shapes of each students
         listenSelfStudent();
       }
@@ -718,6 +720,14 @@ export default defineComponent({
 	  }
 	  }, { deep: true })
 
+    watch(pencilPath,(value) => {
+      if(value.length){
+        pencilPen(pencilPath.value, canvas, studentOneAndOneId.value, student.value, scaleRatio.value);
+      }
+      else{
+        undoStrokeByTeacher();
+      }
+    },{deep:true})
     onMounted(() => {
 	    captureCanvas = document.getElementById("imgCanvas") as HTMLCanvasElement;
       boardSetup();

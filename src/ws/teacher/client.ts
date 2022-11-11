@@ -202,4 +202,7 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestCaptureImage(payload: {isCaptureAll: boolean, studentId: string}){
     return this.invoke(WSCmd.TEACHER_SEND_REQUEST_CAPTURE_IMAGE,payload);
   }
+  sendRequestDrawPencil(payload: any) {
+    return this.send(WSCmd.TEACHER_DRAW_PENCIL_PEN, JSON.stringify(payload));
+  }
 }
