@@ -86,8 +86,8 @@ const mutations: LessonMutation<LessonState> = {
 	if(!p.skipToSetCurrentExposureItemMedia){
 		if (s.currentExposure && s.currentExposure.items.length > 0) {
 			s.currentExposureItemMedia = undefined;
-			const firstItem = s.currentExposure.items[0];
-			if (firstItem.media.length > 0) {
+			const firstItem = s.currentExposure.items.find(item => item.media.length);
+			if (firstItem) {
 			  s.currentExposureItemMedia = firstItem.media[0];
 			}
 		  }
