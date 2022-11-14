@@ -1,4 +1,4 @@
-import { ClassView, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
+import { ClassView, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
 import { Modal, notification, Checkbox } from "ant-design-vue";
 import { computed, ComputedRef, defineComponent, ref, watch, provide, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -7,7 +7,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
 import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
-import { TeacherClass } from "./../../locales/localeid";
+import { CaptureNotification, TeacherClass } from "@/locales/localeid";
 import { UserRole } from "@/store/app/state";
 import { fabric } from "fabric";
 
@@ -25,6 +25,7 @@ import {
   ChangeLessonUnit,
 } from "./components";
 import { ClassRoomStatus } from "@/models";
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 export default defineComponent({
   components: {
     Modal,
@@ -301,51 +302,53 @@ export default defineComponent({
       await dispatch("teacherRoom/setAvatarAllStudent", { studentIds });
     });
     watch(studentCaptureAll, async (value) => {
-      const onlineStudents = students.value.filter(st => st.status === 2);
+      const studentsReachedMaxImage = value.filter(st => st.imageCapturedCount === SESSION_MAXIMUM_IMAGE);
+      const onlineStudents = students.value.filter(st => st.status === InClassStatus.JOINED && st.imageCapturedCount < SESSION_MAXIMUM_IMAGE);
+      const studentsToCaptureLength = onlineStudents.length + studentsReachedMaxImage.length;
       if (isCaptureAll.value) {
-          if (!value.length || value.length !== onlineStudents.length){
-            return;
-          }
-          const studentsCaptureSuccess = value.filter(status => status.isUploaded);
-          const studentsCaptureFail = value.filter(status => !status.isUploaded);
-          if (studentsCaptureSuccess.length === onlineStudents.length) {
-            notification.success({
-              message: `capture success all student`
-            })
-          }
-          else {
-            notification.success({
-              message: `capture success ${studentsCaptureSuccess.length}/${onlineStudents.length} student`
-            })
-          }
-          if (studentsCaptureFail.length) {
-            const studentsName = studentsCaptureFail.map(item => {
-              return students.value.find(st => st.id === item.studentId)?.englishName
-            })
-            notification.error({
-              message: `cant capture image for ${studentsName.join(", ")}`
-            })
-          }
-          await dispatch("teacherRoom/setCaptureAll", false);
-          await dispatch("teacherRoom/clearStudentsCaptureDone",)
+        if (!value.length || value.length !== studentsToCaptureLength) {
+          return;
+        }
+        const studentsCaptureSuccess = value.filter(status => status.isUploaded);
+        const studentsCaptureFail = value.filter(status => !status.isUploaded);
+        if (studentsCaptureSuccess.length === studentsToCaptureLength) {
+          notification.success({
+            message: fmtMsg(CaptureNotification.CaptureSuccessAll)
+          })
+        }
+        else {
+          notification.success({
+            message: fmtMsg(CaptureNotification.CaptureSuccessAmount, { studentsCaptureSuccess: studentsCaptureSuccess.length, studentsToCapture: studentsToCaptureLength })
+          })
+        }
+        if (studentsCaptureFail.length) {
+          const studentsName = studentsCaptureFail.map(item => {
+            return students.value.find(st => st.id === item.studentId)?.englishName
+          })
+          notification.error({
+            message: fmtMsg(CaptureNotification.CaptureErrorAmount,{studentsName: studentsName.join(", ")})
+          })
+        }
+        await dispatch("teacherRoom/setCaptureAll", false);
+        await dispatch("teacherRoom/clearStudentsCaptureDone",)
 
       }
       else {
-          if(!value.length){
-            return;
-          }
-          const studentName = students.value.find(item => item.id === studentCaptureAll.value[0].studentId)?.englishName;
-          if (studentCaptureAll.value[0].isUploaded) {
-            notification.success({
-              message: `capture success for ${studentName}`
-            })
-          }
-          else {
-            notification.error({
-              message: `cant capture image for ${studentName}`
-            })
-          }
-          await dispatch("teacherRoom/clearStudentsCaptureDone",)
+        if (!value.length) {
+          return;
+        }
+        const studentName = students.value.find(item => item.id === studentCaptureAll.value[0].studentId)?.englishName;
+        if (studentCaptureAll.value[0].isUploaded) {
+          notification.success({
+            message: fmtMsg(CaptureNotification.CaptureSuccessStudent, { studentName })
+          })
+        }
+        else {
+          notification.error({
+            message: fmtMsg(CaptureNotification.CaptureErrorStudent,{ studentName })
+          })
+        }
+        await dispatch("teacherRoom/clearStudentsCaptureDone",)
       }
     }, { deep: true })
 

@@ -336,15 +336,18 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
 	onTeacherResetZoom: (p: any) => {
 		//
 	},
-  onTeacherSendRequestCaptureImage: (p: string) => {
-    //  
-  },
-  onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
-    commit("setStudentsCaptureDone", p)
-  },
-  onTeacherDrawPencil: (p: string) => {
-    // 
-  }
+	onTeacherDrawPencil: (p: string) => {
+		// 
+	},
+	onTeacherSendRequestCaptureImage: (p: string) => {
+		//  
+	},
+	onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
+		commit("setStudentsCaptureDone",p)
+		if(p.isUploaded){
+			commit("setStudentImageCapturedCount",{id: p.studentId, imageCapturedCount: p.imageCapturedCount});
+		}
+	}
   };
   return handler;
 };
