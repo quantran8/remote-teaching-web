@@ -245,6 +245,7 @@ export default defineComponent({
 	  let isCompleted = false
 	  for (let i=0; i < currentExposure.contentBlockItems.length; i++) {
 		if (currentExposure.contentBlockItems[i].isClicked === false){
+		  isCompleted = false
 		  break
 		}
 		else isCompleted = true
