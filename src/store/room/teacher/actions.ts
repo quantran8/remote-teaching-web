@@ -35,7 +35,7 @@ import { UserRole } from "@/store/app/state";
 import { store } from "@/store";
 import { HubConnectionState } from "@microsoft/signalr";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
-import { StudentStorageService } from '../../../services/storage/service';
+import { StudentStorageService } from "../../../services/storage/service";
 import { BlobTagItem } from "@/services/storage/interface";
 import { notification } from "ant-design-vue";
 import { computed } from "vue";
@@ -250,11 +250,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
         });
         return;
       }
-	  const token = rootState.auth.loginInfo
+      const token = rootState.auth.loginInfo;
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token}, { root: true });
+      await dispatch("lesson/setInfo", { payload: roomInfo.lessonPlan, token: token }, { root: true });
       await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
@@ -485,10 +485,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setWhiteboard({ state }, payload: WhiteboardPayload) {
     state.manager?.WSClient.sendRequestSetWhiteboard(payload.isShowWhiteBoard);
   },
-  setMediaState({ state }, payload: any){
-	state.manager?.WSClient.sendRequestSetMediaState(payload);
+  setMediaState({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestSetMediaState(payload);
   },
-  setCurrentTimeMedia({ state }, payload: any){
+  setCurrentTimeMedia({ state }, payload: any) {
     state.manager?.WSClient.sendRequestSetCurrentTimeMedia(payload);
   },
   setLaserPath({ state }, payload: string) {
@@ -554,7 +554,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     //   Logger.log(error);
     // }
   },
-  async setLessonAndUnit({ commit, state, dispatch, rootState}, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
+  async setLessonAndUnit({ commit, state, dispatch, rootState }, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
     if (!state.info?.id) {
       return;
     }
@@ -574,52 +574,56 @@ const actions: ActionTree<TeacherRoomState, any> = {
         await dispatch("endExposure", { id: content.id });
       }
     }
-	const token = rootState.auth.loginInfo
+    const token = rootState.auth.loginInfo;
     commit({ type: "lesson/clearLessonData" }, { root: true });
-    await dispatch("lesson/setInfo", {payload: roomInfo.lessonPlan,token: token}, { root: true });
-    commit("setRoomInfo", roomInfo);
+    await commit("setRoomInfo", roomInfo);
+    await dispatch("lesson/setInfo", { payload: roomInfo.lessonPlan, token: token }, { root: true });
+    await dispatch("lesson/setZoomRatio", 1, { root: true });
+    await dispatch("lesson/setImgCoords", undefined, { root: true });
+
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
   },
-  async sendRequestCaptureImage({ state }, payload: {isCaptureAll: boolean, studentId: string}) {
+  async sendRequestCaptureImage({ state }, payload: { isCaptureAll: boolean; studentId: string }) {
     await state.manager?.WSClient.sendRequestCaptureImage(payload);
   },
-  async getStudentCapturedImages({getters,commit},p: {token: string,schoolId: string, classId: string, groupId: string, studentId: string, date: string,filterMode: number}){
-    try{
-      const result = await StudentStorageService.getFiles(p.token,p.schoolId,p.classId,p.groupId,p.studentId,p.date,p.filterMode);
-	  const data = result.sort((a,b) => a.tags.dateTime > b.tags.dateTime ? -1 : 1);
-	  if(result.length){
-		  commit("setStudentsImageCaptured",data);
-	  }
-    }
-    catch(error){
-      console.log(error)
-    }
-  },
-  async removeStudentImage({getters},p: {token: string, fileName: string}){
+  async getStudentCapturedImages(
+    { getters, commit },
+    p: { token: string; schoolId: string; classId: string; groupId: string; studentId: string; date: string; filterMode: number },
+  ) {
     try {
-      await StudentStorageService.removeFile(p.token,p.fileName);
-    }
-    catch (error) {
+      const result = await StudentStorageService.getFiles(p.token, p.schoolId, p.classId, p.groupId, p.studentId, p.date, p.filterMode);
+      const data = result.sort((a, b) => (a.tags.dateTime > b.tags.dateTime ? -1 : 1));
+      if (result.length) {
+        commit("setStudentsImageCaptured", data);
+      }
+    } catch (error) {
       console.log(error);
-	  notification.error({
-		message:error.error,
-		duration:3
-	  })
     }
   },
-  async setRoomInfo({ commit }, p: TeacherGetRoomResponse){
-    commit("setRoomInfo",p);
+  async removeStudentImage({ getters }, p: { token: string; fileName: string }) {
+    try {
+      await StudentStorageService.removeFile(p.token, p.fileName);
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: error.error,
+        duration: 3,
+      });
+    }
   },
-  setStudentsImageCaptured({commit},p: Array<BlobTagItem>){
-  commit("setStudentsImageCaptured",p);
+  async setRoomInfo({ commit }, p: TeacherGetRoomResponse) {
+    commit("setRoomInfo", p);
   },
-  setStudentsCaptureDone({commit},p: StudentCaptureStatus){
-	commit("setStudentsCaptureDone",p);
-	},
-  setCaptureAll({commit}, p: boolean){
-    commit("setCaptureAll",p);
+  setStudentsImageCaptured({ commit }, p: Array<BlobTagItem>) {
+    commit("setStudentsImageCaptured", p);
   },
-  clearStudentsCaptureDone({commit}){
+  setStudentsCaptureDone({ commit }, p: StudentCaptureStatus) {
+    commit("setStudentsCaptureDone", p);
+  },
+  setCaptureAll({ commit }, p: boolean) {
+    commit("setCaptureAll", p);
+  },
+  clearStudentsCaptureDone({ commit }) {
     commit("clearStudentsCaptureDone");
   },
   async setPencilPath({state}, p: any){
