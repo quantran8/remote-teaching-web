@@ -3,7 +3,7 @@ import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { Logger } from "@/utils/logger";
 import { ActionContext, ActionTree } from "vuex";
-import { TeacherState } from "./state";
+import { StudentsGroup, TeacherState } from "./state";
 
 const actions: ActionTree<TeacherState, any> = {
   async setInfo({ dispatch, commit }, payload: Parent) {
@@ -104,6 +104,9 @@ const actions: ActionTree<TeacherState, any> = {
 			commit("setCurrentGroupStudents", []);
 			console.log(error)
 		}
+  },
+  setCurrentGroupStudents({commit},p: Array<StudentsGroup>){
+	commit("setCurrentGroupStudents",p);
   }
 };
 

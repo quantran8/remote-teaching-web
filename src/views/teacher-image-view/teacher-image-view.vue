@@ -41,10 +41,10 @@
 							:options="groupOptions" />
 					</div>
 				</div>
-				<Button @click="refreshListData">Show</Button>
+				<Button @click="getStorageImages">Show</Button>
 			</div>
 			<div>
-				<Table :columns="columns" :data-source="dataSources">
+				<Table :columns="columns" :data-source="tableDataSources">
 					<template #count="{ record }">
 					<span style="text-decoration:underline;" @click="() => handleShowImage(record)">
 						<a>{{record.count}}</a>
