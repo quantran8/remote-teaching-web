@@ -25,8 +25,7 @@ export const exposureTypes = {
   VCP_BLOCK: "VPC_BLOCK",
   CONTENT_BLOCK: "CONTENT_BLOCK",
   TEACHING_ACTIVITY_BLOCK: "TEACHING_ACTIVITY_BLOCK",
-  ALTERNATE_MEDIA_BLOCK: "ALTERNATE_MEDIA_BLOCK"
-  
+  ALTERNATE_MEDIA_BLOCK: "ALTERNATE_MEDIA_BLOCK",
 };
 
 const INFO_BUTTON_ID = "lp-info";
@@ -98,7 +97,7 @@ export default defineComponent({
 
     const isOneOneMode = ref("");
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
-	const unitAndLesson = computed(() => ({unit:currentUnit.value,lesson:currentLesson.value}));
+    const unitAndLesson = computed(() => ({ unit: currentUnit.value, lesson: currentLesson.value }));
     watch(oneAndOneStatus, (value) => {
       if (value === "" || value === null) {
         isOneOneMode.value = "";
@@ -109,9 +108,9 @@ export default defineComponent({
     });
 
     watch(unitAndLesson, async () => {
-		if(exposures.value?.length){
-			await onClickExposure(exposures.value[0], true);
-		}
+      if (exposures.value?.length) {
+        await onClickExposure(exposures.value[0], true);
+      }
     });
 
     const backToGalleryMode = () => {
@@ -136,16 +135,19 @@ export default defineComponent({
         isBlackOut: exposure.type === ExposureType.TRANSITION,
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
-	  const listAlternate = [...exposure.alternateMediaBlockItems]
-	  const alternateMedia:Array<ExposureItem> = []
-	  listAlternate.forEach((items) => {
-	  items.forEach((item) => {
-		alternateMedia.push(item)
-	  })
-	})
-      const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems, ...alternateMedia].filter(
-        (item) => item.media[0]?.image?.url,
-      )[0]?.id;
+      const listAlternate = [...exposure.alternateMediaBlockItems];
+      const alternateMedia: Array<ExposureItem> = [];
+      listAlternate.forEach((items) => {
+        items.forEach((item) => {
+          alternateMedia.push(item);
+        });
+      });
+      const firstItemMediaNewExposureId = [
+        ...exposure.items,
+        ...exposure.contentBlockItems,
+        ...exposure.teachingActivityBlockItems,
+        ...alternateMedia,
+      ].filter((item) => item.media[0]?.image?.url)[0]?.id;
 
       await dispatch("teacherRoom/setMode", {
         mode: 1,
@@ -240,18 +242,17 @@ export default defineComponent({
       }
     });
 
-	const isAlternateMediaType = computed(() => {
-	  const currentExposure = getters["lesson/currentExposure"];
-	  let isCompleted = false
-	  for (let i=0; i < currentExposure.contentBlockItems.length; i++) {
-		if (currentExposure.contentBlockItems[i].isClicked === false){
-		  isCompleted = false
-		  break
-		}
-		else isCompleted = true
-	  }
-	  return isCompleted
-	});
+    const isAlternateMediaType = computed(() => {
+      const currentExposure = getters["lesson/currentExposure"];
+      let isCompleted = false;
+      for (let i = 0; i < currentExposure.contentBlockItems.length; i++) {
+        if (currentExposure.contentBlockItems[i].isClicked === false) {
+          isCompleted = false;
+          break;
+        } else isCompleted = true;
+      }
+      return isCompleted;
+    });
 
     const isTransitionType = computed(() => {
       const exposure = getters["lesson/currentExposure"];
@@ -340,7 +341,7 @@ export default defineComponent({
       remainingTime,
       isShowExposureDetail,
       isTransitionType,
-	  isAlternateMediaType,
+      isAlternateMediaType,
       isCompleteType,
       activityStatistic,
       onClickExposure,
