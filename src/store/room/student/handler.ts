@@ -427,6 +427,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherUpdateSessionLessonAndUnit: async () => {
       await dispatch("lesson/setZoomRatio", 1, { root: true });
+      await dispatch("lesson/setImgCoords", undefined, { root: true });
       commit({ type: "lesson/clearLessonData" }, { root: true });
       await dispatch("getClassRoomInfo");
     },
