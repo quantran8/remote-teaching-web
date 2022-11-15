@@ -114,6 +114,7 @@ export default defineComponent({
     const handleSubmit = async () => {
       loading.value = true;
       try {
+		await dispatch('lesson/setShowPreviewCanvas',false,{root:true});
         const unitId = unitInfo.value?.find((unit: UnitAndLesson) => unit.unit === currentUnit.value)?.unitId as number;
         await dispatch("teacherRoom/setLessonAndUnit", { unit: currentUnit.value, lesson: currentLesson.value, unitId, isCompleted: isCompleted.value });
         loading.value = false;
