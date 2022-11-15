@@ -244,14 +244,10 @@ export default defineComponent({
 
     const isAlternateMediaType = computed(() => {
       const currentExposure = getters["lesson/currentExposure"];
-      let isCompleted = false;
-      for (let i = 0; i < currentExposure.contentBlockItems.length; i++) {
-        if (currentExposure.contentBlockItems[i].isClicked === false) {
-          isCompleted = false;
-          break;
-        } else isCompleted = true;
-      }
-      return isCompleted;
+      const isNotCompleted = currentExposure.contentBlockItems.some((item: any) => {
+        return item.isClicked === false;
+      });
+      return !isNotCompleted;
     });
 
     const isTransitionType = computed(() => {
