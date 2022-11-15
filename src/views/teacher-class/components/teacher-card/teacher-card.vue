@@ -2,8 +2,8 @@
   <div :class="['tc-video', !isGalleryView && 'tc-video--small']">
     <figure class="tc-video__figure">
       <div v-if="isUsingAgora" v-show="teacher?.videoEnabled" class="tc-video__video" :id="teacher?.id" />
-     
-	  <div v-else class="tc-video__video" v-show="teacher?.videoEnabled">
+
+      <div v-else class="tc-video__video" v-show="teacher?.videoEnabled">
         <video v-if="isSupportedVideo" :id="teacher?.id + '__video'" />
         <canvas v-else :id="teacher?.id + '__video'" />
       </div>

@@ -22,8 +22,8 @@ export default defineComponent({
   },
   emits: ["go-to-class", "on-join-session", "on-close-modal"],
   async created() {
-	const { dispatch, state } = useStore();
-    dispatch("setMuteAudio", { status:state.app.isMuteAudio });
+    const { dispatch, state } = useStore();
+    dispatch("setMuteAudio", { status: state.app.isMuteAudio });
     dispatch("setHideVideo", { status: state.app.isHideVideo });
   },
   setup(props, { emit }) {
@@ -39,8 +39,8 @@ export default defineComponent({
     const messageUpdateLessonAndUnit = ref("");
     const unitInfo = ref<UnitAndLesson[]>();
     const classInfo = computed<ClassRoomModel>(() => getters["teacherRoom/info"]?.classInfo);
-   
-	const getListLessonByUnit = async () => {
+
+    const getListLessonByUnit = async () => {
       if (!classInfo.value) return;
       try {
         loadingInfo.value = true;
@@ -114,9 +114,14 @@ export default defineComponent({
     const handleSubmit = async () => {
       loading.value = true;
       try {
-		await dispatch('lesson/setShowPreviewCanvas',false,{root:true});
+        await dispatch("lesson/setShowPreviewCanvas", false, { root: true });
         const unitId = unitInfo.value?.find((unit: UnitAndLesson) => unit.unit === currentUnit.value)?.unitId as number;
-        await dispatch("teacherRoom/setLessonAndUnit", { unit: currentUnit.value, lesson: currentLesson.value, unitId, isCompleted: isCompleted.value });
+        await dispatch("teacherRoom/setLessonAndUnit", {
+          unit: currentUnit.value,
+          lesson: currentLesson.value,
+          unitId,
+          isCompleted: isCompleted.value,
+        });
         loading.value = false;
         handleCancel();
       } catch (error) {

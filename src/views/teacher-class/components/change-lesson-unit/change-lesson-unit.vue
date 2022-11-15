@@ -33,7 +33,9 @@
       </Row>
       <Row align="middle" class="change-lesson__mb--default">
         <div class="ant-col-24 ant-col-sm-24">
-          <Checkbox v-model:checked="isCompleted"><label>{{ MarkCurrentLessonCompleteForClass }} {{ classInfo?.className }}</label></Checkbox>
+          <Checkbox v-model:checked="isCompleted"
+            ><label>{{ MarkCurrentLessonCompleteForClass }} {{ classInfo?.className }}</label></Checkbox
+          >
         </div>
       </Row>
 

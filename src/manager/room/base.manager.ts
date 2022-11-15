@@ -1,4 +1,4 @@
-import { Logger } from '@/utils/logger';
+import { Logger } from "@/utils/logger";
 import { VCPlatform } from "@/store/app/state";
 //import { ZoomClient, ZoomClientOptions, ZoomEventHandler } from "./../../zoom";
 import { AgoraClient, AgoraClientOptions, AgoraEventHandler } from "@/agora";
@@ -49,23 +49,22 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
   }
   registerVideoCallSDKEventHandler(eventHandler: AgoraEventHandler) {
     //if (store.getters.platform === VCPlatform.Agora) {
-	  if(eventHandler) {
-		this.agoraEventHandler = eventHandler as AgoraEventHandler;
-        return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
-	  }
+    if (eventHandler) {
+      this.agoraEventHandler = eventHandler as AgoraEventHandler;
+      return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
+    }
     //}
   }
 
   reRegisterVideoCallSDKEventHandler() {
     //if (store.getters.platform === VCPlatform.Agora) {
-	  if(this.agoraEventHandler)
-	  	return this.agoraClient.registerEventHandler(this.agoraEventHandler);
+    if (this.agoraEventHandler) return this.agoraClient.registerEventHandler(this.agoraEventHandler);
     //}
   }
 
   isJoinedRoom() {
     //if (store.getters.platform === VCPlatform.Agora) {
-      this.agoraClient?.joined;
+    this.agoraClient?.joined;
     // } else {
     //   this.zoomClient?.joined;
     // }
@@ -73,7 +72,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 
   setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
     //if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.setCamera(options);
+    return this.agoraClient.setCamera(options);
     // } else {
     //   return this.zoomClient.setCamera(options);
     // }
@@ -81,7 +80,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 
   setMicrophone(options: { enable: boolean }) {
     //if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.setMicrophone(options);
+    return this.agoraClient.setMicrophone(options);
     // } else {
     //   return this.zoomClient.setMicrophone(options);
     // }
@@ -89,28 +88,28 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
 
   async updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
     //if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
     // } else {
     //   Logger.log("Update audio and video feed")
-	//   return this.zoomClient.rerenderParticipantsVideo()
-	// }
+    //   return this.zoomClient.rerenderParticipantsVideo()
+    // }
   }
 
   async studentOneAndOne(cameras: Array<string>, audios: Array<string>) {
     //if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
-    //} 
+    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+    //}
   }
 
   getBandwidth() {
     //if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.getBandwidth();
+    return this.agoraClient.getBandwidth();
     //}
   }
 
   async close() {
     //if (store.getters.platform === VCPlatform.Agora) {
-      return this.agoraClient.reset();
+    return this.agoraClient.reset();
     // } else {
     //   return this.zoomClient.reset();
     // }

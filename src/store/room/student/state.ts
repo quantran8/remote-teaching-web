@@ -82,7 +82,7 @@ export interface StudentRoomState {
     }>;
     isDone: boolean;
   };
-  startCaptureImage: boolean
+  startCaptureImage: boolean;
 
   isDisconnected: boolean;
   isJoined: boolean;
@@ -117,7 +117,7 @@ const state: StudentRoomState = {
     lines: [],
     isDone: false,
   },
-  startCaptureImage:false,
+  startCaptureImage: false,
 
   isDisconnected: !navigator.onLine,
   teacherIsDisconnected: false,

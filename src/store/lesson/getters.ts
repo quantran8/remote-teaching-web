@@ -144,17 +144,17 @@ const getters: LessonGetters<LessonState, any> = {
   targetsAnnotationList(s: LessonState) {
     return s.targetsVisibleList;
   },
-  zoomRatio(s:LessonState){
-	return s.zoomRatio;
+  zoomRatio(s: LessonState) {
+    return s.zoomRatio;
   },
-  imgCoords(s:LessonState){
-	return s.imgCoords;
+  imgCoords(s: LessonState) {
+    return s.imgCoords;
   },
-  previewObjects(s:LessonState){
-	return s.previewObjects;
+  previewObjects(s: LessonState) {
+    return s.previewObjects;
   },
-  isShowPreviewCanvas(s:LessonState){
-	return s.isShowPreviewCanvas;
+  isShowPreviewCanvas(s: LessonState) {
+    return s.isShowPreviewCanvas;
   },
 };
 

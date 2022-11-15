@@ -12,20 +12,31 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "@typescript-eslint/naming-convention": ["off"],
     "@typescript-eslint/no-use-before-define": ["off"],
-	"@typescript-eslint/no-explicit-any": ["off"],
+    "@typescript-eslint/no-explicit-any": ["warn"],
     "@typescript-eslint/no-empty-interface": [
       "error",
       {
         allowSingleExtends: false,
       },
     ],
-	"prettier/prettier": "off",
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
     "no-unused-vars": "off",
     "no-var": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "vue/multi-word-component-names": 0,
+    "vue/no-multi-spaces": [
+      "error",
+      {
+        ignoreProperties: false,
+      },
+    ],
+    "vue/require-explicit-emits": [
+      "error",
+      {
+        allowProps: false,
+      },
+    ],
   },
   overrides: [
     {

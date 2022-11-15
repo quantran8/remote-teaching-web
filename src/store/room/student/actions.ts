@@ -2,7 +2,14 @@ import { VCPlatform } from "./../../app/state";
 import { RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { RemoteTeachingService, StudentGetRoomResponse, TeacherGetRoomResponse, StudentService, InfoService,StudentStorageService } from "@/services";
+import {
+  RemoteTeachingService,
+  StudentGetRoomResponse,
+  TeacherGetRoomResponse,
+  StudentService,
+  InfoService,
+  StudentStorageService,
+} from "@/services";
 import { ActionTree } from "vuex";
 import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
@@ -24,15 +31,15 @@ import { HubConnectionState } from "@microsoft/signalr";
 import { computed } from "vue";
 
 const actions: ActionTree<StudentRoomState, any> = {
-  async getClassRoomInfo({ commit, dispatch, state, rootState}) {
-	const token = rootState.auth.loginInfo
-	if (!state.info?.id) return
-	const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
-	commit("setRoomInfo", roomResponse.data);
-  	await dispatch("lesson/setInfo", {payload: roomResponse.data?.lessonPlan, token: token}, { root: true });
+  async getClassRoomInfo({ commit, dispatch, state, rootState }) {
+    const token = rootState.auth.loginInfo;
+    if (!state.info?.id) return;
+    const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
+    commit("setRoomInfo", roomResponse.data);
+    await dispatch("lesson/setInfo", { payload: roomResponse.data?.lessonPlan, token: token }, { root: true });
   },
   async initClassRoom(
-    { commit, dispatch, state, rootState},
+    { commit, dispatch, state, rootState },
     payload: {
       classId: string;
       userId: string;
@@ -61,17 +68,17 @@ const actions: ActionTree<StudentRoomState, any> = {
           message: "",
         });
       }
-	  const token = rootState.auth.loginInfo
+      const token = rootState.auth.loginInfo;
       commit("setRoomInfo", roomResponse.data);
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", {payload: roomResponse.data.lessonPlan, token: token}, { root: true });
+      await dispatch("lesson/setInfo", { payload: roomResponse.data.lessonPlan, token: token }, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
       });
-	  await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
-	  await dispatch("lesson/setImgCoords",roomResponse.data.lessonPlan.position,{root:true});
+      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+      await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
 
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
         root: true,
@@ -553,21 +560,32 @@ const actions: ActionTree<StudentRoomState, any> = {
     //   Logger.log(error);
     // }
   },
-  setStudentImageCaptured({ commit }, p:{id: string, capture: boolean} ){
-    commit("setStudentImageCaptured",p);
+  setStudentImageCaptured({ commit }, p: { id: string; capture: boolean }) {
+    commit("setStudentImageCaptured", p);
   },
-  async uploadCapturedImage({ state,commit }, p: { token: string, formData: FormData,fileName: string, studentId: string }){
-    try{
-      await StudentStorageService.uploadFile(p.token,p.formData);
+  async uploadCapturedImage({ state, commit }, p: { token: string; formData: FormData; fileName: string; studentId: string }) {
+    try {
+      await StudentStorageService.uploadFile(p.token, p.formData);
       const count = state.student ? state.student.imageCapturedCount + 1 : 1;
-      commit("setStudentImageCapturedCount",count);
-      state.manager?.WSClient.sendCapturedImageStatus({StudentId:p.studentId ,FileName:p.fileName,ImageCapturedCount:count, IsUploaded:true, Error:""});
-    }
-    catch(error){
-      state.manager?.WSClient.sendCapturedImageStatus({StudentId:p.studentId , FileName:"", ImageCapturedCount: 0, IsUploaded: false, Error:error.message });
+      commit("setStudentImageCapturedCount", count);
+      state.manager?.WSClient.sendCapturedImageStatus({
+        StudentId: p.studentId,
+        FileName: p.fileName,
+        ImageCapturedCount: count,
+        IsUploaded: true,
+        Error: "",
+      });
+    } catch (error) {
+      state.manager?.WSClient.sendCapturedImageStatus({
+        StudentId: p.studentId,
+        FileName: "",
+        ImageCapturedCount: 0,
+        IsUploaded: false,
+        Error: error.message,
+      });
       Logger.log(error);
     }
-  }
+  },
 };
 
 export default actions;

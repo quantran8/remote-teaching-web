@@ -57,7 +57,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     if (!options.reJoin) {
       Logger.log("AGORA CLIENT INIT FIRST TIME");
       await this.agoraClient.joinRTCRoom(options, false, async () => await this.callBackWhenAgoraJoinFailed());
-	}
+    }
     // } else {
     //   if (options.idOne) {
     //     await store.dispatch("studentRoom/generateOneToOneToken", {
@@ -70,20 +70,20 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
   }
 
   async callBackWhenAgoraJoinFailed() {
-	//when Agora join failed, all Agora data has been reset
-	//check if SignalR connected
-	if(this.WSClient.hubConnection && this.WSClient.hubConnection.state === HubConnectionState.Connected ) {
-		Logger.log("AGORA CLIENT INIT OK BUT FAILED TO JOIN, REINIT NOW");
-		await this.agoraClient.joinRTCRoom(this.agoraClient.joinRoomOptions, true);
-		this.reRegisterVideoCallSDKEventHandler();
-	}
-	//if signalR not connected, when it reconnect or connect again it will init Agora again!
+    //when Agora join failed, all Agora data has been reset
+    //check if SignalR connected
+    if (this.WSClient.hubConnection && this.WSClient.hubConnection.state === HubConnectionState.Connected) {
+      Logger.log("AGORA CLIENT INIT OK BUT FAILED TO JOIN, REINIT NOW");
+      await this.agoraClient.joinRTCRoom(this.agoraClient.joinRoomOptions, true);
+      this.reRegisterVideoCallSDKEventHandler();
+    }
+    //if signalR not connected, when it reconnect or connect again it will init Agora again!
   }
 
   async close() {
     await this.WSClient.disconnect();
     //if (store.getters.platform === VCPlatform.Agora) {
-      await this.agoraClient?.reset();
+    await this.agoraClient?.reset();
     // } else {
     //   await this.zoomClient?.reset();
     // }

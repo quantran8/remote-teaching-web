@@ -10,7 +10,7 @@ export interface StudentState {
   status: InClassStatus;
   raisingHand: boolean;
   isPalette: boolean;
-  imageCapturedCount:number
+  imageCapturedCount: number;
 }
 
 export interface LessonInfo {
@@ -126,9 +126,9 @@ export interface NetworkQualityPayload {
 }
 
 export interface StudentCaptureStatus {
-	studentId: string;
-	fileName: string;
-	imageCapturedCount: number;
-	isUploaded: boolean;
-	error: string;
+  studentId: string;
+  fileName: string;
+  imageCapturedCount: number;
+  isUploaded: boolean;
+  error: string;
 }

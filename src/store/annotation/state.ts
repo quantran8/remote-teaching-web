@@ -43,7 +43,7 @@ export interface AnnotationState {
     points: Array<Pointer>;
     strokeColor: string;
     strokeWidth: number;
-  }>
+  }>;
 }
 
 export interface LastFabricUpdated {
@@ -72,7 +72,7 @@ const state: AnnotationState = {
   },
   stickers: [],
   lastFabricUpdated: null,
-  pencilPath: []
+  pencilPath: [],
 };
 
 export default state;

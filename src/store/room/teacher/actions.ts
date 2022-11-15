@@ -626,9 +626,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   clearStudentsCaptureDone({ commit }) {
     commit("clearStudentsCaptureDone");
   },
-  async setPencilPath({state}, p: any){
+  async setPencilPath({ state }, p: any) {
     await state.manager?.WSClient.sendRequestDrawPencil(p);
-  }
+  },
 };
 
 export default actions;

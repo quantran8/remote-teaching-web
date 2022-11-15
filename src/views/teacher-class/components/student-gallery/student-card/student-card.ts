@@ -1,4 +1,4 @@
-import { TeacherRoomManager } from '@/manager/room/teacher.manager';
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
@@ -9,7 +9,7 @@ import { debounce } from "lodash";
 import noAvatar from "@/assets/images/user-default-gray.png";
 import "animate.css";
 import { VCPlatform } from "@/store/app/state";
-import {useElementBounding} from "@vueuse/core";
+import { useElementBounding } from "@vueuse/core";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -37,7 +37,7 @@ export default defineComponent({
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
 
     const isMouseEntered = ref<boolean>(false);
     const isShow = computed(() => {
@@ -68,15 +68,15 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
-		
-		await store.dispatch("teacherRoom/sendOneAndOne", {
-		  status: true,
-	      id: props.student.id,
-		});
+
+        await store.dispatch("teacherRoom/sendOneAndOne", {
+          status: true,
+          id: props.student.id,
+        });
         // if (store.getters["platform"] === VCPlatform.Zoom) {
-		//   await store.dispatch("teacherRoom/generateOneToOneToken", {
-		// 	 classId: store.getters["teacherRoom/info"]?.id
-		//   });
+        //   await store.dispatch("teacherRoom/generateOneToOneToken", {
+        // 	 classId: store.getters["teacherRoom/info"]?.id
+        //   });
         // }
       }
     };
@@ -98,15 +98,8 @@ export default defineComponent({
 
     const studentRef = ref<any>(null);
     const parentCard = computed(() => studentRef.value?.parentElement);
-    const { width, height, top, bottom, left, right } =
-        useElementBounding(studentRef);
-    const {
-      width: parentWidth,
-      top: parentTop,
-      bottom: parentBottom,
-      left: parentLeft,
-      right: parentRight,
-    } = useElementBounding(parentCard);
+    const { width, height, top, bottom, left, right } = useElementBounding(studentRef);
+    const { width: parentWidth, top: parentTop, bottom: parentBottom, left: parentLeft, right: parentRight } = useElementBounding(parentCard);
 
     const maxScaleRatio = computed(() => {
       return width.value ? parentWidth.value / width.value : 1;

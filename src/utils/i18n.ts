@@ -1,7 +1,7 @@
 import { I18N_LOCALE } from "@/utils/constant";
 import { createI18n } from "vue-i18n";
-import {LocaleService} from "@/services/locales";
-import {GLGlobal} from "vue-glcommonui";
+import { LocaleService } from "@/services/locales";
+import { GLGlobal } from "vue-glcommonui";
 
 const fallbackLocale = process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en";
 const currentLocale = localStorage.getItem(I18N_LOCALE) || fallbackLocale;
@@ -25,11 +25,13 @@ function setLocaleMessages(locale: string, messages: any) {
 }
 
 export function loadAsyncLocale(locale: string = currentLocale) {
-  LocaleService.getLocaleJson(locale).then((res) => {
-    setLocaleMessages(locale, res);
-  }).catch(() => {
-    //
-  });
+  LocaleService.getLocaleJson(locale)
+    .then((res) => {
+      setLocaleMessages(locale, res);
+    })
+    .catch(() => {
+      //
+    });
 }
 
 export const persistLocale = (locale: string) => {

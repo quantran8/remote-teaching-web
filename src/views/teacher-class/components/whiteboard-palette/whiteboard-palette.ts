@@ -187,11 +187,11 @@ export default defineComponent({
     watch(sessionZoomRatio, (value) => {
       if (value == 1) {
         canvas.zoomToPoint(point, 1);
-		if ((group.left !== DefaultCanvasDimension.width / 2) || (group.top !== imgRenderHeight.value / 2)) {
-			group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
-			group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
-			group.setCoords();
-		}
+        if (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2) {
+          group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+          group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+          group.setCoords();
+        }
       }
       zoomPercentage.value = Math.floor(value * 100);
     });
@@ -443,8 +443,8 @@ export default defineComponent({
       const rect = document.getElementById("canvas-container");
       if (!rect) return;
       const rectBounding = rect.getBoundingClientRect();
-      let x = e.clientX - rectBounding.left
-      let y = e.clientY - rectBounding.top
+      let x = e.clientX - rectBounding.left;
+      let y = e.clientY - rectBounding.top;
       const windowWidth = window.innerWidth;
 
       // default width = 717
@@ -472,8 +472,7 @@ export default defineComponent({
         };
         if (!prevPoint.value) {
           prevPoint.value = _point;
-        }
-        else {
+        } else {
           const absX = Math.abs(_point.x - prevPoint.value.x);
           const absY = Math.abs(_point.y - prevPoint.value.y);
           if (absX > 8 || absY > 8 || isDone) {
@@ -490,8 +489,7 @@ export default defineComponent({
                   },
                   isDone,
                 });
-              }
-              else {
+              } else {
                 await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
@@ -503,8 +501,7 @@ export default defineComponent({
               isMouseOver.value = false;
               isMouseOut.value = false;
               prevPoint.value = undefined;
-            }
-            else {
+            } else {
               if (toolSelected.value === Tools.Laser) {
                 await store.dispatch("teacherRoom/setLaserPath", {
                   data: {
@@ -515,8 +512,7 @@ export default defineComponent({
                   },
                   isDone,
                 });
-              }
-              else {
+              } else {
                 await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
