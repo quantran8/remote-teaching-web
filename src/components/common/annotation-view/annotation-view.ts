@@ -14,6 +14,7 @@ import { laserPen } from "@/components/common/annotation-view/components/laser-p
 import { debounce } from "lodash";
 import VuePdfEmbed from 'vue-pdf-embed';
 import { pencilPen } from './components/pencil-path';
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 
 const DEFAULT_STYLE = {
   width: "100%",
@@ -153,6 +154,10 @@ export default defineComponent({
 
 
     watch(isCaptureImage, async(value) => {
+      if(student.value.imageCapturedCount >= SESSION_MAXIMUM_IMAGE){
+      await store.dispatch('studentRoom/setStudentImageCaptured', { id: student.value.id, capture: false });
+      return;
+      }
       if(value){
         const context = captureCanvas.getContext("2d");
         const videoEl = document.getElementById(student.value.id)?.getElementsByTagName("video")[0];

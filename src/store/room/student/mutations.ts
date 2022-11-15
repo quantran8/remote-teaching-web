@@ -319,6 +319,11 @@ const mutations: MutationTree<StudentRoomState> = {
   },
   setStudentImageCaptured(s: StudentRoomState, p: { id: string, capture: boolean }) {
     s.startCaptureImage = p.capture
+  },
+  setStudentImageCapturedCount(s: StudentRoomState, p: number){
+	if(s.student){
+		s.student.imageCapturedCount = p;
+	}
   }
 };
 

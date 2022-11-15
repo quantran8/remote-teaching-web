@@ -6,6 +6,10 @@ import StudentControls from "./student-controls/student-controls.vue";
 import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
 import moment from "moment";
+import { InClassStatus, StudentState } from '@/store/room/interface';
+import { notification } from 'ant-design-vue';
+import { CaptureNotification } from '@/locales/localeid';
+import { SESSION_MAXIMUM_IMAGE } from '@/utils/constant';
 
 const TIMESTAMP_ONEANDONE = "TIMESTAMP_ONEANDONE";
 
@@ -17,8 +21,9 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const oneAndOneStatus = computed(() => getters["teacherRoom/getStudentModeOneId"]);
+    const students = computed<Array<StudentState>>(() => getters["teacherRoom/students"]);
     const returnText = computed(() => fmtMsg(TeacherClassGallery.Return));
-
+    const enableAllStudentVideoText = computed(() => fmtMsg(CaptureNotification.EnableAllStudentVideo));
     const minute = ref(0);
     const second = ref(0);
     const timeCount = ref("");
@@ -76,6 +81,18 @@ export default defineComponent({
       await dispatch("teacherRoom/enableAllStudents");
     };
      const onClickCaptureAll = async () => {
+      if(students.value.some(st => !st.videoEnabled)){
+        notification.info({
+          message: enableAllStudentVideoText.value
+        })
+        return;
+      }
+      const studentsReachedMaximumImage = students.value.filter(st => st.status === InClassStatus.JOINED && st.imageCapturedCount >= SESSION_MAXIMUM_IMAGE)?.map(_st => _st.englishName);
+      if(studentsReachedMaximumImage.length){
+        notification.info({
+          message:fmtMsg(CaptureNotification.StudentsReachedMaximum,{studentsName:studentsReachedMaximumImage.join(", ")})
+        })
+      }
        await dispatch("teacherRoom/sendRequestCaptureImage", { isCaptureAll: true, studentId: "" });
        await dispatch("teacherRoom/setCaptureAll", true);
     };
