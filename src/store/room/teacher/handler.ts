@@ -283,12 +283,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
       commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
-	onTeacherSetMediaState: async (payload: any) => {
-	  commit("teacherRoom/setMediaState", payload, {root: true});
-	},
-	onTeacherSetCurrentTimeMedia: async (payload: any) => {
-	  commit("teacherRoom/setCurrentTimeMedia", payload, {root: true});
-	},
+    onTeacherSetMediaState: async (payload: any) => {
+      commit("teacherRoom/setMediaState", payload, { root: true });
+    },
+    onTeacherSetCurrentTimeMedia: async (payload: any) => {
+      commit("teacherRoom/setCurrentTimeMedia", payload, { root: true });
+    },
     onTeacherDrawLaser: (payload: any) => {
       //   Logger.log(payload);
     },
@@ -316,7 +316,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       Logger.info("Toggle all targets");
     },
     onTeacherUpdateSessionLessonAndUnit: async (payload: any) => {
-	  Logger.info("Teacher update lesson and unit");
+      Logger.info("Teacher update lesson and unit");
     },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
@@ -327,27 +327,27 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
     },
-	onTeacherZoomSlide: (p: any) => {
-		//
-	},
-	onTeacherMoveZoomedSlide: (p: any) => {
-		//
-	},
-	onTeacherResetZoom: (p: any) => {
-		//
-	},
-	onTeacherDrawPencil: (p: string) => {
-		// 
-	},
-	onTeacherSendRequestCaptureImage: (p: string) => {
-		//  
-	},
-	onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
-		commit("setStudentsCaptureDone",p)
-		if(p.isUploaded){
-			commit("setStudentImageCapturedCount",{id: p.studentId, imageCapturedCount: p.imageCapturedCount});
-		}
-	}
+    onTeacherZoomSlide: (p: any) => {
+      //
+    },
+    onTeacherMoveZoomedSlide: (p: any) => {
+      //
+    },
+    onTeacherResetZoom: (p: any) => {
+      //
+    },
+    onTeacherDrawPencil: (p: string) => {
+      //
+    },
+    onTeacherSendRequestCaptureImage: (p: string) => {
+      //
+    },
+    onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
+      commit("setStudentsCaptureDone", p);
+      if (p.isUploaded) {
+        commit("setStudentImageCapturedCount", { id: p.studentId, imageCapturedCount: p.imageCapturedCount });
+      }
+    },
   };
   return handler;
 };

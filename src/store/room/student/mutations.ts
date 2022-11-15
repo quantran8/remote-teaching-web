@@ -81,7 +81,7 @@ const mutations: MutationTree<StudentRoomState> = {
         index: state.students.length,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
-        imageCapturedCount: st.imageCapturedCount
+        imageCapturedCount: st.imageCapturedCount,
       };
       if (st.id === state.user?.id) {
         student.index = 999;
@@ -307,7 +307,7 @@ const mutations: MutationTree<StudentRoomState> = {
         index: state.students.length,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
-        imageCapturedCount: st.imageCapturedCount
+        imageCapturedCount: st.imageCapturedCount,
       };
       if (st.id === state.user?.id) {
         student.index = 999;
@@ -317,14 +317,14 @@ const mutations: MutationTree<StudentRoomState> = {
       }
     }
   },
-  setStudentImageCaptured(s: StudentRoomState, p: { id: string, capture: boolean }) {
-    s.startCaptureImage = p.capture
+  setStudentImageCaptured(s: StudentRoomState, p: { id: string; capture: boolean }) {
+    s.startCaptureImage = p.capture;
   },
-  setStudentImageCapturedCount(s: StudentRoomState, p: number){
-	if(s.student){
-		s.student.imageCapturedCount = p;
-	}
-  }
+  setStudentImageCapturedCount(s: StudentRoomState, p: number) {
+    if (s.student) {
+      s.student.imageCapturedCount = p;
+    }
+  },
 };
 
 export default mutations;

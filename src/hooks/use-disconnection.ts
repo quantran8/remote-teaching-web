@@ -86,11 +86,11 @@ export const useDisconnection = () => {
 
           reconnectIntervalId.value = setInterval(async () => {
             await teacherInitClass();
-            await dispatch("teacherRoom/joinRoom", {reJoin: true});
+            await dispatch("teacherRoom/joinRoom", { reJoin: true });
           }, RECONNECT_TIMING);
           //TEACHER::try re-init class the first time when signalR destroyed
           await teacherInitClass();
-          await dispatch("teacherRoom/joinRoom", {reJoin: true});
+          await dispatch("teacherRoom/joinRoom", { reJoin: true });
         }
         return;
       }
@@ -105,7 +105,7 @@ export const useDisconnection = () => {
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectSuccessSound.play();
         await teacherInitClass();
-        await dispatch("teacherRoom/joinRoom", {reJoin: true});
+        await dispatch("teacherRoom/joinRoom", { reJoin: true });
       }
     }
   });
@@ -128,12 +128,12 @@ export const useDisconnection = () => {
         //STUDENT::try re-init class after each 15 seconds
         reconnectIntervalId.value = setInterval(async () => {
           await studentInitClass();
-          await dispatch("studentRoom/joinRoom", {reJoined: true});
+          await dispatch("studentRoom/joinRoom", { reJoined: true });
         }, RECONNECT_TIMING);
         //STUDENT::try re-init class the first time when signalR destroyed
         setTimeout(async () => {
           await studentInitClass();
-          await dispatch("studentRoom/joinRoom", {reJoined: true});
+          await dispatch("studentRoom/joinRoom", { reJoined: true });
         }, RECONNECT_DELAY);
       }
       return;
@@ -144,7 +144,7 @@ export const useDisconnection = () => {
       //STUDENT::prevent call initClassRoom second time in the case just signalR destroyed
 
       await studentInitClass();
-      await dispatch("studentRoom/joinRoom", {reJoined: true});
+      await dispatch("studentRoom/joinRoom", { reJoined: true });
     }
   });
 

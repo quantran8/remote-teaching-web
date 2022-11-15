@@ -79,7 +79,7 @@ const getters: GetterTree<AnnotationState, any> = {
   },
   pencilPath(state: AnnotationState) {
     return state.pencilPath;
-  }
+  },
 };
 
 export default getters;

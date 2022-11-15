@@ -1,8 +1,8 @@
-import {AdminService} from "@/services";
+import { AdminService } from "@/services";
 class GLPermissionService extends AdminService {
-    getPermissionNames(roleIds: any) {
-        return this.get("permissions/names", roleIds);
-    }
+  getPermissionNames(roleIds: any) {
+    return this.get("permissions/names", roleIds);
+  }
 }
 
 export const PermissionService = new GLPermissionService();

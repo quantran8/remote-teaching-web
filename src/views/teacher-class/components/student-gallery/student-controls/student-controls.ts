@@ -4,7 +4,7 @@ import { computed, defineComponent, inject } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
-  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all", "disable-all", "enable-all","capture-all"],
+  emits: ["hide-all", "show-all", "mute-all", "unmute-all", "add-sticker-all", "disable-all", "enable-all", "capture-all"],
 
   setup(props, { emit }) {
     const { getters } = useStore();
@@ -40,7 +40,7 @@ export default defineComponent({
       }
     };
     const onClickCaptureAll = () => {
-        emit("capture-all");
+      emit("capture-all");
     };
 
     const isSidebarCollapsed: any = inject("isSidebarCollapsed");
@@ -62,7 +62,7 @@ export default defineComponent({
       disableAllText,
       showAllText,
       hideAllText,
-      captureAllText
+      captureAllText,
     };
   },
 });

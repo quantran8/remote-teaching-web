@@ -27,12 +27,12 @@ export default defineComponent({
     };
 
     const toggleAudio = async () => {
-	  if(!myTeacherDisconnected.value){
-		await store.dispatch("studentRoom/setStudentAudio", {
-			id: student.value.id,
-			enable: !student.value.audioEnabled,
-		  });
-	  }
+      if (!myTeacherDisconnected.value) {
+        await store.dispatch("studentRoom/setStudentAudio", {
+          id: student.value.id,
+          enable: !student.value.audioEnabled,
+        });
+      }
     };
 
     const toggleVideo = async () => {
@@ -55,7 +55,7 @@ export default defineComponent({
       IconVideoOn,
       IconVideoOff,
       isToggleTime,
-	  myTeacherDisconnected
+      myTeacherDisconnected,
     };
   },
 });

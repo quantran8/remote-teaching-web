@@ -11,4 +11,17 @@ import CropImage from "./crop-image/crop-image.vue";
 import ResourceMenu from "./resource-menu/resource-menu.vue";
 import HelpMenu from "./help-menu/help-menu.vue";
 
-export { LiveCircle, Toast, Notification, DesignateCircle, DesignateRectangle, ContentView, AnnotationView, DeviceTester, CropImage, ResourceMenu, HelpMenu, PinningModal };
+export {
+  LiveCircle,
+  Toast,
+  Notification,
+  DesignateCircle,
+  DesignateRectangle,
+  ContentView,
+  AnnotationView,
+  DeviceTester,
+  CropImage,
+  ResourceMenu,
+  HelpMenu,
+  PinningModal,
+};

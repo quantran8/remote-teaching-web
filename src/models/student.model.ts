@@ -18,7 +18,7 @@ export interface StudentModel extends UserModel {
   isRaisingHand: boolean;
   connectionStatus: number;
   isPalette: boolean;
-  imageCapturedCount:number
+  imageCapturedCount: number;
 }
 
 export interface StudentNextSessionModel {

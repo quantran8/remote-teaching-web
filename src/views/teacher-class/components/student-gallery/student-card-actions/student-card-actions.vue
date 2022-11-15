@@ -32,16 +32,20 @@
       </div>
     </span>
 
-    <span v-if="show" @click="captureImage" class="student-action__item"
-      :class="{ 'student-action__item--disable': !isOnePalette }">
+    <span v-if="show" @click="captureImage" class="student-action__item" :class="{ 'student-action__item--disable': !isOnePalette }">
       <div class="student-action__btn">
         <img :src="PhotoCamera" />
       </div>
     </span>
-    <router-link :to = "`/teacher/image-view/${currentSchoolId}/${student.id}`" target="_blank" v-if="show"  class="student-action__item"
-      :class="{ 'student-action__item--disable': !isOnePalette }">
+    <router-link
+      :to="`/teacher/image-view/${currentSchoolId}/${student.id}`"
+      target="_blank"
+      v-if="show"
+      class="student-action__item"
+      :class="{ 'student-action__item--disable': !isOnePalette }"
+    >
       <div class="student-action__btn">
-        <img :src="IconImage"  />
+        <img :src="IconImage" />
       </div>
     </router-link>
   </transition-group>

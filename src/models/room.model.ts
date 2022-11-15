@@ -63,7 +63,7 @@ export interface ExposureContentModel {
   page: Array<ExposureItemMediaModel>;
   thumbnailUrl: any;
   contentRootType: number;
-  media: Array<AlternateItemMediaModel>
+  media: Array<AlternateItemMediaModel>;
 }
 export interface InteractiveModel {
   answerMode: number;
@@ -123,11 +123,14 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
-  ratio:number;
-  position:{
-	x:number;
-	y:number;
-  } | null | undefined;
+  ratio: number;
+  position:
+    | {
+        x: number;
+        y: number;
+      }
+    | null
+    | undefined;
 }
 export interface RoomModel {
   id: string;
@@ -167,5 +170,5 @@ export interface UnitAndLessonModel {
 }
 
 export interface GenerateTokenModal {
-	token: string;
+  token: string;
 }

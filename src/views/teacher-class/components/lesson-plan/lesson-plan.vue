@@ -10,9 +10,9 @@
             <div v-if="isTransitionBlock">
               <div v-html="currentExposure.name" />
             </div>
-            <div v-if="!isTransitionBlock && hasZeroTeachingContent" style="display: flex; flex-direction: column; align-items: center;">
-				<Empty imageStyle="max-height: 45px" :description="''" />
-				<div>{{noDataText}}</div>
+            <div v-if="!isTransitionBlock && hasZeroTeachingContent" style="display: flex; flex-direction: column; align-items: center">
+              <Empty imageStyle="max-height: 45px" :description="''" />
+              <div>{{ noDataText }}</div>
             </div>
           </div>
         </template>
@@ -113,7 +113,7 @@
             :exposure="currentExposure"
             @click-back="onClickCloseExposure"
           />
-		  <ExposureDetail
+          <ExposureDetail
             :type="exposureTypes.ALTERNATE_MEDIA_BLOCK"
             v-if="isAlternateMediaType"
             :exposure="currentExposure"

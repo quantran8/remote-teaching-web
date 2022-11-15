@@ -39,7 +39,7 @@ export interface TeacherRoomState {
   mediaState: boolean;
   currentTimeMedia: number;
   isCaptureAll: boolean;
-  studentCaptureAll: Array<StudentCaptureStatus>
+  studentCaptureAll: Array<StudentCaptureStatus>;
 }
 
 const state: TeacherRoomState = {
@@ -67,8 +67,8 @@ const state: TeacherRoomState = {
   isTeacherVideoMirror: true,
   isStudentVideoMirror: true,
   isTeacherUseOnly: false,
-  studentsImageCaptured:[],
-  isCaptureAll:false,
+  studentsImageCaptured: [],
+  isCaptureAll: false,
   studentCaptureAll: [],
   mediaState: false,
   currentTimeMedia: 0,

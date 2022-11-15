@@ -89,7 +89,7 @@ export interface ExposureItemMedia {
     url: string;
     width?: number;
     height?: number;
-	teacherUseOnly?: boolean;
+    teacherUseOnly?: boolean;
   };
 }
 
@@ -157,10 +157,10 @@ export interface LessonState {
   targetsVisibleAll?: TargetsVisibleAll;
   targetsVisibleList: TargetsVisibleList[];
   zoomRatio?: number;
-  imgCoords?:{
-	x: number;
-	y: number
-  } 
+  imgCoords?: {
+    x: number;
+    y: number;
+  };
   previewObjects: string;
   isShowPreviewCanvas: boolean;
 }
@@ -180,8 +180,8 @@ const state: LessonState = {
   cropCache: { cacheValues: [] },
   targetsVisibleAll: { userId: "", visible: false },
   targetsVisibleList: [],
-	isShowPreviewCanvas:false,
-	previewObjects:''
+  isShowPreviewCanvas: false,
+  previewObjects: "",
 };
 
 export default state;

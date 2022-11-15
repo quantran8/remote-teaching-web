@@ -117,19 +117,19 @@ const getters: GetterTree<TeacherRoomState, any> = {
   isTeacherUseOnly(state: TeacherRoomState): boolean {
     return state.isTeacherUseOnly;
   },
-  studentsImageCaptured(state: TeacherRoomState): Array<BlobTagItem>{
+  studentsImageCaptured(state: TeacherRoomState): Array<BlobTagItem> {
     return state.studentsImageCaptured;
   },
-  studentCaptureAll(state: TeacherRoomState):Array<StudentCaptureStatus>{
-	return state.studentCaptureAll;
+  studentCaptureAll(state: TeacherRoomState): Array<StudentCaptureStatus> {
+    return state.studentCaptureAll;
   },
-  isCaptureAll(state: TeacherRoomState) :boolean {
+  isCaptureAll(state: TeacherRoomState): boolean {
     return state.isCaptureAll;
   },
   getMediaState(state: TeacherRoomState): boolean {
-	return state.mediaState;
+    return state.mediaState;
   },
-  getCurrentTimeMedia(state: TeacherRoomState): number{
+  getCurrentTimeMedia(state: TeacherRoomState): number {
     return state.currentTimeMedia;
   },
 };

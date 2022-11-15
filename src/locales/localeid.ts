@@ -293,19 +293,17 @@ export class ResourcesMenuLocale {
 }
 
 export class HelpMenuLocal {
-	static Contact = "help.menu.contact";
-	static Documentation = "help.menu.documentation";
-  }
+  static Contact = "help.menu.contact";
+  static Documentation = "help.menu.documentation";
+}
 export class CaptureNotification {
-  static CaptureSuccessStudent = "capture_status.capture_successfully_student"
-  static CaptureSuccessAll = "capture_status.capture_successfully_all"
-  static CaptureSuccessAmount = "capture_status.capture_successfully_amount"
-  static CaptureErrorStudent = "capture_status.capture_error_student"
-  static CaptureErrorAmount = "capture_status.capture_error_amount"
-  static ReachedMaximum = "capture_status.reached_maximum"
-  static StudentsReachedMaximum = "capture_status.students_reached_maximum"
-  static EnableStudentVideo = "capture_status.enable_student_video"
-  static EnableAllStudentVideo = "capture_status.enable_all_student_video"
-  
-
+  static CaptureSuccessStudent = "capture_status.capture_successfully_student";
+  static CaptureSuccessAll = "capture_status.capture_successfully_all";
+  static CaptureSuccessAmount = "capture_status.capture_successfully_amount";
+  static CaptureErrorStudent = "capture_status.capture_error_student";
+  static CaptureErrorAmount = "capture_status.capture_error_amount";
+  static ReachedMaximum = "capture_status.reached_maximum";
+  static StudentsReachedMaximum = "capture_status.students_reached_maximum";
+  static EnableStudentVideo = "capture_status.enable_student_video";
+  static EnableAllStudentVideo = "capture_status.enable_all_student_video";
 }
