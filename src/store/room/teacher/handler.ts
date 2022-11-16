@@ -1,13 +1,13 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { UserShape } from "@/store/annotation/state";
 import { ExposureStatus } from "@/store/lesson/state";
+import { Logger } from "@/utils/logger";
 import { WSEventHandler } from "@/ws";
+import { notification } from "ant-design-vue";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, InClassStatus, StudentCaptureStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { UserShape } from "@/store/annotation/state";
-import { notification } from "ant-design-vue";
-import { Logger } from "@/utils/logger";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -24,10 +24,22 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
       });
-      commit("updateIsPalette", {
-        id: payload.id,
-        isPalette: payload.isPalette,
-      });
+      const isMarkedStudent = state.students.find((student) => student.isPalette === true);
+      if (isMarkedStudent) {
+        await dispatch(
+          "teacherRoom/toggleAnnotation",
+          {
+            studentId: payload.id,
+            isEnable: false,
+          },
+          { root: true },
+        );
+      } else {
+        commit("updateIsPalette", {
+          id: payload.id,
+          isPalette: payload.isPalette,
+        });
+      }
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
