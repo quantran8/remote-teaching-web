@@ -296,6 +296,9 @@ export class HelpMenuLocal {
   static Contact = "help.menu.contact";
   static Documentation = "help.menu.documentation";
 }
+export class WriterReview {
+  static Title = "writer_review.title";
+}
 export class CaptureNotification {
   static CaptureSuccessStudent = "capture_status.capture_successfully_student";
   static CaptureSuccessAll = "capture_status.capture_successfully_all";
