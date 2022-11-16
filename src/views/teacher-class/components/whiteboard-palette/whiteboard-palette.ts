@@ -4,6 +4,7 @@ import { useFabricObject } from "@/hooks/use-fabric-object";
 import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { Pointer } from "@/store/annotation/state";
 import { ClassView } from "@/store/room/interface";
+import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
 import { DefaultCanvasDimension, Mode, Tools } from "@/utils/utils";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
@@ -120,7 +121,7 @@ export default defineComponent({
       if (!isLessonPlan.value) {
         return;
       }
-      if (zoomRatio.value > 4) {
+      if (zoomRatio.value > MAX_ZOOM_RATIO) {
         return;
       }
       if (canvas.getZoom() !== zoomRatio.value) {
@@ -143,12 +144,15 @@ export default defineComponent({
       if (!isLessonPlan.value) {
         return;
       }
-      if (canvas.getZoom() > 1) {
+      if (canvas.getZoom() > MIN_ZOOM_RATIO) {
         if (canvas.getZoom() !== zoomRatio.value) {
           zoomRatio.value = canvas.getZoom();
         }
         zoomRatio.value -= 0.1;
-        if (zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)) {
+        if (zoomRatio.value < MIN_ZOOM_RATIO) {
+          zoomRatio.value = MIN_ZOOM_RATIO;
+        }
+        if (zoomRatio.value === MIN_ZOOM_RATIO && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)) {
           group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
           group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
           group.setCoords();
@@ -670,6 +674,22 @@ export default defineComponent({
           }
           default:
             break;
+        }
+      });
+      // handle mouse wheel
+      canvas.on("mouse:wheel", async (opt: any) => {
+        const delta = opt.e.deltaY;
+        let zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > MAX_ZOOM_RATIO) zoom = MAX_ZOOM_RATIO;
+        if (zoom < MIN_ZOOM_RATIO) zoom = MIN_ZOOM_RATIO;
+        canvas.zoomToPoint(point, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        zoomRatio.value = zoom;
+        if (!isTeacherUseOnly.value) {
+          await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+          await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
         }
       });
     };
