@@ -180,6 +180,7 @@
 	"writer_review.ok": "Ok",
 	"writer_review.cancel": "Cancel",
 	"writer_review.no_image_exist": "No images exist",
+	"writer_review.title":"Writer Review",
 	"capture_status.capture_successfully_student": "Capture successfully for {studentName}",
 	"capture_status.capture_successfully_all": "Capture successfully all student available",
 	"capture_status.capture_successfully_amount": "Capture success {studentsCaptureSuccess}/{studentsToCapture} student",
