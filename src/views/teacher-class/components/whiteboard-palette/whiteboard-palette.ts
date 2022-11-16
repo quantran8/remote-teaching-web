@@ -1,22 +1,22 @@
-import { computed, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
-import { useStore } from "vuex";
-import { gsap } from "gsap";
-import { fabric } from "fabric";
-import { Tools, Mode, DefaultCanvasDimension } from "@/utils/utils";
-import { onClickOutside } from "@vueuse/core";
-import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
-import { ClassView } from "@/store/room/interface";
-import { useFabricObject } from "@/hooks/use-fabric-object";
-import { FabricObject } from "@/ws";
-import { fmtMsg } from "vue-glcommonui";
-import { TeacherClass, WhiteBoard } from "@/locales/localeid";
-import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
-import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
-import { Button, Space } from "ant-design-vue";
+import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { Pointer } from "@/store/annotation/state";
+import { ClassView } from "@/store/room/interface";
 import { Logger } from "@/utils/logger";
+import { DefaultCanvasDimension, Mode, Tools } from "@/utils/utils";
+import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
+import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
+import { FabricObject } from "@/ws";
+import { onClickOutside } from "@vueuse/core";
+import { Button, Space } from "ant-design-vue";
+import { fabric } from "fabric";
+import { gsap } from "gsap";
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import VuePdfEmbed from "vue-pdf-embed";
+import { useStore } from "vuex";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE = {
@@ -187,7 +187,7 @@ export default defineComponent({
     watch(sessionZoomRatio, (value) => {
       if (value == 1) {
         canvas.zoomToPoint(point, 1);
-        if (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2) {
+        if ((group?.left !== DefaultCanvasDimension.width / 2 || group?.top !== imgRenderHeight.value / 2) && group?.left && group?.top) {
           group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
           group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
           group.setCoords();
@@ -1089,8 +1089,8 @@ export default defineComponent({
         prevTargetsList.value = [...targetsList.value];
         prevZoomRatio.value = canvas.getZoom();
         prevCoords.value = {
-          x: group.left,
-          y: group.top,
+          x: group?.left,
+          y: group?.top,
         };
       }
     });
