@@ -1,14 +1,14 @@
-import { Logger } from "./../../../../../utils/logger";
-import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
+import { store } from "@/store";
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref, provide, watch } from "vue";
+import { Logger } from "@/utils/logger";
+import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
+import { useElementSize } from "@vueuse/core";
+import { computed, ComputedRef, defineComponent, provide, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
-import { store } from "@/store";
-import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
-import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { useElementSize } from "@vueuse/core";
 
 export default defineComponent({
   components: {
@@ -39,6 +39,16 @@ export default defineComponent({
   },
   methods: {
     async onWindowResize() {
+      if (this.focusedStudent) {
+        const studentId = this.focusedStudent;
+        this.focusedStudent = "";
+        if (this.expandTimeOut) {
+          clearTimeout(this.expandTimeOut);
+        }
+        this.expandTimeOut = setTimeout(() => {
+          this.focusedStudent = studentId;
+        }, 500);
+      }
       const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
       if (this.timer) {
         clearTimeout(this.timer);
@@ -78,12 +88,14 @@ export default defineComponent({
     const totalOnlineStudents = computed(() => {
       return students.value.filter((s) => s.status === InClassStatus.JOINED).length;
     });
+    const expandTimeOut = ref<any>();
 
     const studentLayout = computed(() => {
       if (totalOnlineStudents.value <= 2 || (totalOnlineStudents.value <= 6 && studentGalleryWidth.value < breakpoints)) return "student-layout-1";
       if (totalOnlineStudents.value <= 6 || (totalOnlineStudents.value > 6 && studentGalleryWidth.value < breakpoints)) return "student-layout-2";
       return "student-layout-3";
     });
+    const isGalleryView = computed(() => store.getters["teacherRoom/isGalleryView"]);
 
     const scaleVideoOption = computed(() => {
       if (totalOnlineStudents.value <= 3) return 1.6;
@@ -108,7 +120,15 @@ export default defineComponent({
       }
       focusedStudent.value = "";
     };
-
+    watch(isGalleryView, () => {
+      if (focusedStudent.value) {
+        const studentId = focusedStudent.value;
+        focusedStudent.value = "";
+        setTimeout(() => {
+          focusedStudent.value = studentId;
+        }, 300);
+      }
+    });
     provide("updateFocusStudent", updateFocusStudent);
     return {
       students,
@@ -121,6 +141,7 @@ export default defineComponent({
       maximumGroup,
       studentLayout,
       studentGallery,
+      expandTimeOut,
     };
   },
 });
