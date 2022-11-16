@@ -113,7 +113,7 @@ export default defineComponent({
     const wrapperWidth = computed(() => {
       // if in one-to-one mode, or the card has room to expand, keep the width as is
 
-      if (isOneToOneStudent.value || maxScaleRatio.value >= 1.15) {
+      if (isOneToOneStudent.value || maxScaleRatio.value >= 1.1) {
         return "100%";
       }
       // otherwise, make the width 80% (so it can expand)
