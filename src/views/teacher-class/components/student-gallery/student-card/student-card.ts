@@ -1,15 +1,12 @@
-import { TeacherRoomManager } from "@/manager/room/teacher.manager";
+import noAvatar from "@/assets/images/user-default-gray.png";
+import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
+import { useElementBounding } from "@vueuse/core";
+import "animate.css";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
-import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
-import { debounce } from "lodash";
-import noAvatar from "@/assets/images/user-default-gray.png";
-import "animate.css";
-import { VCPlatform } from "@/store/app/state";
-import { useElementBounding } from "@vueuse/core";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -102,13 +99,20 @@ export default defineComponent({
     const { width: parentWidth, top: parentTop, bottom: parentBottom, left: parentLeft, right: parentRight } = useElementBounding(parentCard);
 
     const maxScaleRatio = computed(() => {
-      return width.value ? parentWidth.value / width.value : 1;
+      const parent = document.querySelector(".tc__gallery") as HTMLElement | null;
+      const child = document.querySelector(".student-gallery") as HTMLElement | null;
+      let scrollbarWidth = 0;
+      if (parent && child) {
+        scrollbarWidth = parent?.offsetWidth - child?.offsetWidth;
+      }
+      return width.value ? (parentWidth.value + scrollbarWidth) / width.value : 1;
     });
     const actualScaleRatio = computed(() => {
       return Math.min(props.scaleOption || 1, maxScaleRatio.value);
     });
     const wrapperWidth = computed(() => {
       // if in one-to-one mode, or the card has room to expand, keep the width as is
+
       if (isOneToOneStudent.value || maxScaleRatio.value >= 1.1) {
         return "100%";
       }
