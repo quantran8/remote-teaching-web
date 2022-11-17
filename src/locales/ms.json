@@ -142,6 +142,7 @@
 	"teacher_class.student_has_left_the_class": "{studentName}已离开课堂。",
 	"teacher_class.student_has_lost_connection": "{studentName}似乎遇到网络连接问题，导致离开了课堂。",
 	"teacher_calendar.back": "返回",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "无法连接Agora服务器，请尝试重新加载页面。",
 	"teacher_class_error.publish_stream_error": "无法将视频或音频流发布到Agora服务器，请尝试重新加载页面。",
 	"accessinformation.line1": "GrapeSEED Connect 访问信息",

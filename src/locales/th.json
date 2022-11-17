@@ -142,6 +142,7 @@
 	"teacher_class.student_has_left_the_class": "{studentName} has left the class.",
 	"teacher_class.student_has_lost_connection": "It seems {studentName} had a connectivity issue that caused them to leave the class.",
 	"teacher_calendar.back": "กลับคืน",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "Cannot connect to Agora servers, please try to reload the page.",
 	"teacher_class_error.publish_stream_error": "Cannot publish video or audio streams to Agora servers, please try to reload the page.",
 	"accessinformation.line1": "GrapeSEED Connect Access Information",

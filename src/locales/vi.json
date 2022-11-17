@@ -142,6 +142,7 @@
 	"teacher_class.student_has_left_the_class": "{studentName} vừa ra khỏi lớp.",
 	"teacher_class.student_has_lost_connection": "Có vẻ học sinh {studentName} đã có vấn đề về kết nối mạng nên đã bị out ra khỏi lớp.",
 	"teacher_calendar.back": "Về trước",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "Không thể kết nối với máy chủ Agora, vui lòng mở lại trang.",
 	"teacher_class_error.publish_stream_error": "Không thể truyền video và tiếng tới máy chủ Agora, vui lòng tải lại trang.",
 	"accessinformation.line1": "Thông tin truy cập GrapeSEED Connect",
