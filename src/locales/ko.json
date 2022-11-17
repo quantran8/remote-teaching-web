@@ -142,6 +142,7 @@
 	"teacher_class.student_has_left_the_class": "{studentName}님이 수업을 종료하였습니다.",
 	"teacher_class.student_has_lost_connection": "It seems {studentName} had a connectivity issue that caused them to leave the class.",
 	"teacher_calendar.back": "나가기",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "아고라 서버에 접속할 수 없습니다. 페이지를 다시 접속해 주시기 바랍니다. ",
 	"teacher_class_error.publish_stream_error": "아고라 서버에 영상 또는 음원 스트림을 연결할 수 없습니다. 페이지를 다시 접속해 주시기 바랍니다.",
 	"accessinformation.line1": "GrapeSEED Connect 이용 안내",

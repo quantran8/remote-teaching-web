@@ -172,6 +172,7 @@ export class TeacherCalendarLocale {
   static School = "teacher_calendar.school";
   static All = "teacher_calendar.all";
   static Back = "teacher_calendar.back";
+  static ScheduleNewRemoteSession = "teacher_calendar.schedule_new_remote_session";
 }
 
 export class TeacherClassDesignate {

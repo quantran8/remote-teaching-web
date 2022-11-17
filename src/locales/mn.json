@@ -142,6 +142,7 @@
 	"teacher_class.student_has_left_the_class": "{studentName} ангиас гарлаа. ",
 	"teacher_class.student_has_lost_connection": "{studentName}-д холболтын асуудал гарсан тул ангиас гарсан бололтой.",
 	"teacher_calendar.back": "Буцах",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "Agora серверүүдтэй холбогдож чадахгүй байна, хуудсыг дахин ачаалж үзнэ үү.",
 	"teacher_class_error.publish_stream_error": "Agora серверт видео болон аудио урсгалыг нийтлэх боломжгүй тул хуудсыг дахин ачаалж үзнэ үү.",
 	"accessinformation.line1": "GrapeSEED Connect хандалтын мэдээлэл",

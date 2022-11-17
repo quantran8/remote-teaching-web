@@ -142,6 +142,7 @@
 	"teacher_class.student_has_left_the_class": "{studentName} покинул(-а) класс.",
 	"teacher_class.student_has_lost_connection": "Похоже, у {studentName} возникла проблема с подключением, из-за которой он(-а) покинул(-а) класс.",
 	"teacher_calendar.back": "Назад",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "Не удается подключиться к серверам Agora, попробуйте перезагрузить страницу.",
 	"teacher_class_error.publish_stream_error": "Не удается опубликовать видео- или аудиопотоки на серверах Agora, попробуйте перезагрузить страницу.",
 	"accessinformation.line1": "Информация о доступе к ГрейпСИД Коннект",
