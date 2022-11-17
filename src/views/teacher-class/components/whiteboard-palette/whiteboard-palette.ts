@@ -255,12 +255,12 @@ export default defineComponent({
       return uniqueAnnotations.length;
     });
     const hasTargets = computed(() => {
-      return !!props.image?.metaData.annotations && targetsNum.value;
+      return !!props.image?.metaData?.annotations && targetsNum.value;
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
     const targetText = computed(() => {
-      if (props.image?.metaData.annotations.length == 1) {
+      if (props.image?.metaData?.annotations?.length == 1) {
         return targetTextLocalize.value;
       } else {
         return targetsTextLocalize.value;
@@ -870,7 +870,7 @@ export default defineComponent({
 
       img.crossOrigin = "Anonymous";
       group = processLessonImage(currentExposureItemMedia.value, canvas, toggleTargets.value.visible, point, !firstLoadImage.value, img);
-      if (currentExposureItemMedia.value.image.metaData && currentExposureItemMedia.value.image.metaData.annotations.length) {
+      if (currentExposureItemMedia.value.image?.metaData?.annotations?.length) {
         handleCloneCanvasObjects();
       }
       objectTargetOnCanvas();
