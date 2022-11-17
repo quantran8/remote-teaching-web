@@ -1,8 +1,8 @@
+import { FilterMode } from "@/utils/utils";
 import { BlobInfo, BlobTagItem } from "./interface";
-import { FilterMode } from "../../utils/utils";
 
 class StorageService {
-  private baseURL = `${process.env.VUE_APP_API_GETWAY}/remote/v1/storage`;
+  private baseURL = `${process.env.VUE_APP_API_PREFIX}remote/v1/storage`;
   async uploadFile(token: string, formData: FormData): Promise<BlobInfo> {
     const result = await fetch(this.baseURL, {
       method: "POST",
