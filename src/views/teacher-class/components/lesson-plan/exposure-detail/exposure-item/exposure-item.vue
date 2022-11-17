@@ -13,26 +13,24 @@
           <template v-if="isTeaching" #title>
             <span v-html="item?.teachingContent"></span>
           </template>
-          <img v-if="item.image.metaData && item.image.metaData.annotations.length" src="@/assets/icons/bullseye.png" class="target-image" />
+          <img v-if="item?.image?.metaData?.annotations?.length" src="@/assets/icons/bullseye.png" class="target-image" />
           <CropImage
-            v-if="item.image.metaData && item.image.metaData.width > 0 && item.image.metaData.height > 0"
-            :imageUrl="item.image.url"
-            :metadata="item.image.metaData"
+            v-if="item?.image?.metaData?.width > 0 && item.image.metaData.height > 0"
+            :imageUrl="item?.image?.url"
+            :metadata="item?.image?.metaData"
             class="media-image"
           />
           <img
             v-else
             class="media-image"
-            :src="item.image.url"
+            :src="item?.image?.url"
             :style="[
-              item.image.metaData
+              item?.image?.metaData
                 ? {
                     transform: `scale(${item.image.metaData.scaleX},${item.image.metaData.scaleY}) rotate(${item.image.metaData.rotate}deg)`,
                     // if img is rotated, width equal to height of the parent div
                     width:
-                      item.image.metaData &&
-                      item.image.metaData.rotate &&
-                      (Math.abs(item.image.metaData.rotate) === 270 || Math.abs(item.image.metaData.rotate) === 90)
+                      item.image.metaData.rotate && (Math.abs(item.image.metaData.rotate) === 270 || Math.abs(item.image.metaData.rotate) === 90)
                         ? '100px'
                         : '100%',
                   }
