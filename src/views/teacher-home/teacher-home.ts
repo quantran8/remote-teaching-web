@@ -75,8 +75,15 @@ export default defineComponent({
     const selectedGroupId = ref();
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
 
-
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number, isTeacherVideoMirror = true, isStudentVideoMirror = true) => {
+    const startClass = async (
+      teacherClass: TeacherClassModel,
+      groupId: string,
+      unit: number,
+      lesson: number,
+      unitId: number,
+      isTeacherVideoMirror = true,
+      isStudentVideoMirror = true,
+    ) => {
       messageStartClass.value = "";
       try {
         const fp = await fpPromise;
@@ -134,7 +141,7 @@ export default defineComponent({
         });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
-        await store.dispatch("teacher/setCurrentSchool",schoolId);
+        await store.dispatch("teacher/setCurrentSchool", schoolId);
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
@@ -182,7 +189,13 @@ export default defineComponent({
       loadingInfo.value = false;
     };
 
-    const onStartClass = async (data: { unitId: number; lesson: number; unit: number; isTeacherVideoMirror: boolean; isStudentVideoMirror: boolean }) => {
+    const onStartClass = async (data: {
+      unitId: number;
+      lesson: number;
+      unit: number;
+      isTeacherVideoMirror: boolean;
+      isStudentVideoMirror: boolean;
+    }) => {
       popUpLoading.value = true;
       if (!(await joinTheCurrentSession(selectedGroupId.value))) {
         if (infoStart.value) {
@@ -309,7 +322,7 @@ export default defineComponent({
       scheduleText,
       cancelText,
       submitText,
-      currentSchool
+      currentSchool,
     };
   },
 });

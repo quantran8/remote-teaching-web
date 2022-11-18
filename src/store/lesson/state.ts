@@ -70,6 +70,7 @@ export interface Exposure {
   contentBlockItems: ExposureItem[];
   thumbnailURL?: string;
   contentRootType: ContentRootType;
+  alternateMediaBlockItems: ExposureItem[][];
 }
 
 export interface ExposureItem {
@@ -77,6 +78,9 @@ export interface ExposureItem {
   name: string;
   media: ExposureItemMedia[];
   textContent?: string;
+  isClicked?: boolean;
+  mediaTypeId?: number;
+  teacherUseOnly?: boolean;
 }
 
 export interface ExposureItemMedia {
@@ -85,6 +89,7 @@ export interface ExposureItemMedia {
     url: string;
     width?: number;
     height?: number;
+    teacherUseOnly?: boolean;
   };
 }
 
@@ -152,10 +157,10 @@ export interface LessonState {
   targetsVisibleAll?: TargetsVisibleAll;
   targetsVisibleList: TargetsVisibleList[];
   zoomRatio?: number;
-  imgCoords?:{
-	x: number;
-	y: number
-  } 
+  imgCoords?: {
+    x: number;
+    y: number;
+  };
   previewObjects: string;
   isShowPreviewCanvas: boolean;
 }
@@ -175,8 +180,8 @@ const state: LessonState = {
   cropCache: { cacheValues: [] },
   targetsVisibleAll: { userId: "", visible: false },
   targetsVisibleList: [],
-	isShowPreviewCanvas:false,
-	previewObjects:''
+  isShowPreviewCanvas: false,
+  previewObjects: "",
 };
 
 export default state;

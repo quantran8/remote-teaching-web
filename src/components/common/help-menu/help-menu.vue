@@ -1,18 +1,14 @@
 <template>
   <DropdownHelper v-if="displayedHelpMenu.length">
-    <HeaderMenuItem
-        :show-dropdown-trigger="true"
-        title="Help"
-        icon="help_center"
-    />
+    <HeaderMenuItem :show-dropdown-trigger="true" title="Help" icon="help_center" />
     <template #popup>
       <DropdownItem
-          v-for="(item, index) in displayedHelpMenu"
-          :key="index"
-          :text="fmtMsg(item.textLocaleId)"
-          :url="item.url"
-          :is-external-url="true"
-          :style="{color: item.color}"
+        v-for="(item, index) in displayedHelpMenu"
+        :key="index"
+        :text="fmtMsg(item.textLocaleId)"
+        :url="item.url"
+        :is-external-url="true"
+        :style="{ color: item.color }"
       />
     </template>
   </DropdownHelper>

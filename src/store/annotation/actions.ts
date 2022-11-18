@@ -125,5 +125,11 @@ const actions: ActionTree<AnnotationState, any> = {
   setImgProcessing({ commit }, payload: boolean) {
     commit("setImgProcessing", payload);
   },
+  setDrawPencil({ commit }, payload: string) {
+    commit("setDrawPencil", JSON.parse(payload));
+  },
+  clearPencilPath({ commit }) {
+    commit("clearPencilPath");
+  },
 };
 export default actions;

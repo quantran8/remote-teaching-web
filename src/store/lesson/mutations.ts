@@ -1,5 +1,15 @@
 import { MutationTree } from "vuex";
-import { Exposure, ExposureStatus, ExposureType, LessonState, ExposureItemMedia, CropMetadata, TargetsVisibleAll, TargetsVisibleList } from "./state";
+import {
+  Exposure,
+  ExposureStatus,
+  ExposureType,
+  LessonState,
+  ExposureItemMedia,
+  CropMetadata,
+  TargetsVisibleAll,
+  TargetsVisibleList,
+  ExposureItem,
+} from "./state";
 import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
 
@@ -13,6 +23,7 @@ interface LessonMutationInterface<S> {
   setPlayedTime(s: S, payload: { time: string }): void;
   endCurrentContent(s: S, payload: any): void;
   setTargetsVisibleAll(s: S, payload: TargetsVisibleAll): void;
+  setClickedExposureItem(s: S, p: { id: string }): void;
 }
 
 interface LessonMutation<S> extends MutationTree<S>, LessonMutationInterface<S> {}
@@ -57,7 +68,7 @@ const mutations: LessonMutation<LessonState> = {
       return exposure;
     });
   },
-  setCurrentExposure(s: LessonState, p: { id: string,skipToSetCurrentExposureItemMedia?:boolean }) {
+  setCurrentExposure(s: LessonState, p: { id: string; skipToSetCurrentExposureItemMedia?: boolean }) {
     const totalExposures = s.exposures.length;
 
     s.exposures.forEach((e, i) => {
@@ -82,19 +93,27 @@ const mutations: LessonMutation<LessonState> = {
     });
 
     // set the first media item to currentExposureItemMedia
-	if(!p.skipToSetCurrentExposureItemMedia){
-		if (s.currentExposure && s.currentExposure.items.length > 0) {
-			s.currentExposureItemMedia = undefined;
-			const firstItem = s.currentExposure.items[0];
-			if (firstItem.media.length > 0) {
-			  s.currentExposureItemMedia = firstItem.media[0];
-			}
-		  }
-	}
+    if (!p.skipToSetCurrentExposureItemMedia) {
+      if (s.currentExposure && s.currentExposure.items.length > 0) {
+        s.currentExposureItemMedia = undefined;
+        const firstItem = s.currentExposure.items.find((item) => item.media.length);
+        if (firstItem) {
+          s.currentExposureItemMedia = firstItem.media[0];
+        }
+      }
+    }
+  },
+  setClickedExposureItem(s: LessonState, p: { id: string }) {
+    s.currentExposure?.contentBlockItems.map((item) => (item.id === p.id ? (item.isClicked = true) : item));
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
-    const combinedItems = [...s.currentExposure.items, ...s.currentExposure.contentBlockItems, ...s.currentExposure.teachingActivityBlockItems];
+    const combinedItems = [
+      ...s.currentExposure.items,
+      ...s.currentExposure.contentBlockItems,
+      ...s.currentExposure.teachingActivityBlockItems,
+      ...s.currentExposure.alternateMediaBlockItems.flat(),
+    ];
     for (const item of combinedItems) {
       const matchItemMedia = item.media.find((m) => m.id === p.id);
       if (matchItemMedia) {
@@ -194,18 +213,18 @@ const mutations: LessonMutation<LessonState> = {
   setTargetsVisibleListJoined(s: LessonState, p: TargetsVisibleList[]) {
     s.targetsVisibleList = p;
   },
-  setZoomRatio(s: LessonState, p: number){
-	s.zoomRatio = p;
+  setZoomRatio(s: LessonState, p: number) {
+    s.zoomRatio = p;
   },
-  setImgCoords(s: LessonState, p:{x: number, y: number}| undefined){
-	s.imgCoords = p;
+  setImgCoords(s: LessonState, p: { x: number; y: number } | undefined) {
+    s.imgCoords = p;
   },
-  setLessonPreviewObjects (s: LessonState, p: string){
-	s.previewObjects = p;
+  setLessonPreviewObjects(s: LessonState, p: string) {
+    s.previewObjects = p;
   },
-  setShowPreviewCanvas (s: LessonState, p: boolean){
-	s.isShowPreviewCanvas = p;
-  }
+  setShowPreviewCanvas(s: LessonState, p: boolean) {
+    s.isShowPreviewCanvas = p;
+  },
 };
 
 export default mutations;

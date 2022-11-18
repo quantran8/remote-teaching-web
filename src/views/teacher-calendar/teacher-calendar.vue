@@ -100,7 +100,7 @@
         <PlusCircleOutlined class="add-icon" v-if="canShowCreate(value)" @click="canCreate(value) && scheduleAction('Create', value)" />
       </template>
     </Calendar>
-    <Modal :visible="visible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+    <Modal :visible="visible" :title="scheduleNewRemoteSessionText" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container" v-if="isCreate">
         <span class="modal-title-select">{{ classText }}</span>
         <Select :value="selectedClassIdModal" class="modal-size-group ant-custom-calendar" @change="handleChangeClassModal">
@@ -151,7 +151,7 @@
         </div>
       </div>
     </Modal>
-    <Modal :visible="recurringVisible" title="Schedule New Remote Session" :closable="false" :centered="true" :maskClosable="false" :footer="null">
+    <Modal :visible="recurringVisible" :title="scheduleNewRemoteSessionText" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container">
         <span class="modal-title-select">{{ groupText }}</span>
         <Select :value="selectedGroupIdModal" class="modal-size-group ant-custom-calendar" @change="handleChangeGroupModal" disabled>

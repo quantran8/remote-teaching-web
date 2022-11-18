@@ -1,15 +1,12 @@
-import { TeacherRoomManager } from '@/manager/room/teacher.manager';
+import noAvatar from "@/assets/images/user-default-gray.png";
+import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, defineComponent, ref, watch, onMounted, onUnmounted } from "vue";
+import { useElementBounding } from "@vueuse/core";
+import "animate.css";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
-import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
-import { debounce } from "lodash";
-import noAvatar from "@/assets/images/user-default-gray.png";
-import "animate.css";
-import { VCPlatform } from "@/store/app/state";
-import {useElementBounding} from "@vueuse/core";
 
 export enum InteractiveStatus {
   DEFAULT = 0,
@@ -37,7 +34,7 @@ export default defineComponent({
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = true;// computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
 
     const isMouseEntered = ref<boolean>(false);
     const isShow = computed(() => {
@@ -68,15 +65,15 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
-		
-		await store.dispatch("teacherRoom/sendOneAndOne", {
-		  status: true,
-	      id: props.student.id,
-		});
+
+        await store.dispatch("teacherRoom/sendOneAndOne", {
+          status: true,
+          id: props.student.id,
+        });
         // if (store.getters["platform"] === VCPlatform.Zoom) {
-		//   await store.dispatch("teacherRoom/generateOneToOneToken", {
-		// 	 classId: store.getters["teacherRoom/info"]?.id
-		//   });
+        //   await store.dispatch("teacherRoom/generateOneToOneToken", {
+        // 	 classId: store.getters["teacherRoom/info"]?.id
+        //   });
         // }
       }
     };
@@ -98,24 +95,24 @@ export default defineComponent({
 
     const studentRef = ref<any>(null);
     const parentCard = computed(() => studentRef.value?.parentElement);
-    const { width, height, top, bottom, left, right } =
-        useElementBounding(studentRef);
-    const {
-      width: parentWidth,
-      top: parentTop,
-      bottom: parentBottom,
-      left: parentLeft,
-      right: parentRight,
-    } = useElementBounding(parentCard);
+    const { width, height, top, bottom, left, right } = useElementBounding(studentRef);
+    const { width: parentWidth, top: parentTop, bottom: parentBottom, left: parentLeft, right: parentRight } = useElementBounding(parentCard);
 
     const maxScaleRatio = computed(() => {
-      return width.value ? parentWidth.value / width.value : 1;
+      const parent = document.querySelector(".tc__gallery") as HTMLElement | null;
+      const child = document.querySelector(".student-gallery") as HTMLElement | null;
+      let scrollbarWidth = 0;
+      if (parent && child) {
+        scrollbarWidth = parent?.offsetWidth - child?.offsetWidth;
+      }
+      return width.value ? (parentWidth.value + scrollbarWidth) / width.value : 1;
     });
     const actualScaleRatio = computed(() => {
       return Math.min(props.scaleOption || 1, maxScaleRatio.value);
     });
     const wrapperWidth = computed(() => {
       // if in one-to-one mode, or the card has room to expand, keep the width as is
+
       if (isOneToOneStudent.value || maxScaleRatio.value >= 1.1) {
         return "100%";
       }

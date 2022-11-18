@@ -7,17 +7,16 @@
       </Checkbox>
     </Modal>
     <ChangeLessonUnit ref="changeLessonUnitRef" />
-	<div v-show="isShowPreviewCanvas" class="tc__preview-wrapper">
-		<div class="preview-header">
-			<div class="close-container" @click="hidePreviewModal">
-				<img src="@/assets/icons/close.png" class="close-icon"/>
-			</div>
-		</div>
-		<div class="preview-body">
-
-			<canvas class="preview-canvas" id="previewCanvas" />
-  		</div>
-	</div>
+    <div v-show="isShowPreviewCanvas" class="tc__preview-wrapper">
+      <div class="preview-header">
+        <div class="close-container" @click="hidePreviewModal">
+          <img src="@/assets/icons/close.png" class="close-icon" />
+        </div>
+      </div>
+      <div class="preview-body">
+        <canvas class="preview-canvas" id="previewCanvas" />
+      </div>
+    </div>
 
     <prevent-esc-firefox />
     <teacher-page-header
@@ -29,7 +28,11 @@
     ></teacher-page-header>
     <main class="tc__main">
       <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']">
-        <LessonPlan @open-gallery-mode="toggleView" @toggle-lesson-mode="toggleLessonSidebar" @open-changing-lesson-unit-modal="showChangingLessonUnitModal"/>
+        <LessonPlan
+          @open-gallery-mode="toggleView"
+          @toggle-lesson-mode="toggleLessonSidebar"
+          @open-changing-lesson-unit-modal="showChangingLessonUnitModal"
+        />
       </div>
       <div class="tc__content">
         <!--      <div v-if="!isGalleryView" class="tc__content__activity-content">-->
@@ -53,6 +56,7 @@
             v-show="!isBlackOutContent"
             :isGalleryView="isGalleryView"
             :image="isLessonPlan ? currentExposureItemMedia?.image : null"
+            :id="isLessonPlan ? currentExposureItemMedia?.id : null"
           />
         </div>
         <!--      <div v-if="!isGalleryView && isGameView" class="unityWrapper">-->

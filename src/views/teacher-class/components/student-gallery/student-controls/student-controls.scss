@@ -70,6 +70,14 @@
         position: relative;
         top: 3px;
       }
+      .camera-icon{
+        @media (min-width: $large-lap) {
+            height: 35px;
+          }
+        
+          height: 25px;
+          position: relative;
+      }
     }
     &--disable {
       opacity: 0.5;

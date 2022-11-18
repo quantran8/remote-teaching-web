@@ -9,7 +9,6 @@ export interface StudentsGroup {
   studentId: string;
   studentName: string;
   nativeName: string;
-
 }
 export interface TeacherState {
   info?: UserModel;
@@ -21,7 +20,7 @@ export interface TeacherState {
   calendarSchedules: Array<CalendarSchedulesModel>;
   classOnline: ClassRoomModel | undefined;
   currentSchoolId: string;
-  currentGroupStudents: Array<StudentsGroup>
+  currentGroupStudents: Array<StudentsGroup>;
 }
 
 const state: TeacherState = {
@@ -33,8 +32,8 @@ const state: TeacherState = {
   calendarSchedules: [],
   classesSchedules: [],
   classOnline: undefined,
-  currentSchoolId:"",
-  currentGroupStudents:[]
+  currentSchoolId: "",
+  currentGroupStudents: [],
 };
 
 export default state;

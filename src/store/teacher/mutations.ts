@@ -130,9 +130,9 @@ const mutations: MutationTree<TeacherState> = {
   setCurrentSchool(state: TeacherState, payload: string) {
     state.currentSchoolId = payload;
   },
-  setCurrentGroupStudents(state: TeacherState, payload: any){
+  setCurrentGroupStudents(state: TeacherState, payload: any) {
     state.currentGroupStudents = payload;
-  }
+  },
 };
 
 export default mutations;

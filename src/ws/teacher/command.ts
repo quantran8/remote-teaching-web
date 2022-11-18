@@ -36,6 +36,7 @@ export enum TeacherWSCommand {
   TEACHER_SET_ONE_TO_ONE = "TeacherSetOneToOne",
   TEACHER_SET_WHITEBOARD = "TeacherSetWhiteBoard",
   TEACHER_DRAW_LASER_PEN = "TeacherDrawLaserPen",
+  TEACHER_DRAW_PENCIL_PEN = "TeacherDrawPencilPen",
   TEACHER_CREATE_FABRIC_OBJECT = "TeacherCreateFabricObject",
   TEACHER_MODIFY_FABRIC_OBJECT = "TeacherModifyFabricObject",
 
@@ -47,5 +48,7 @@ export enum TeacherWSCommand {
   TEACHER_RESET_ZOOM = "TeacherResetZoom",
   TEACHER_ZOOM_SLIDE = "TeacherZoomSlide",
   TEACHER_MOVE_ZOOMED_SLIDE = "TeacherMoveZoomedSlide",
-  TEACHER_SEND_REQUEST_CAPTURE_IMAGE = "TeacherSendRequestCaptureImage"
+  TEACHER_SEND_REQUEST_CAPTURE_IMAGE = "TeacherSendRequestCaptureImage",
+  TEACHER_SET_MEDIA_STATE = "TeacherSetMediaState",
+  TEACHER_SET_CURRENT_TIME_MEDIA = "SetCurrentTimeMedia",
 }

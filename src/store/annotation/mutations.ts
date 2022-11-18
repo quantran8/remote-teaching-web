@@ -173,7 +173,26 @@ const mutations: AnnotationMutation<AnnotationState> = {
     state.imgRenderHeight = p.height;
   },
   setImgProcessing(state: AnnotationState, p: boolean) {
-    state.isImgProcessing = p
+    state.isImgProcessing = p;
+  },
+  setDrawPencil(state: AnnotationState, payload: any) {
+    const index = state.pencilPath.findIndex((item) => item.id === payload.id);
+    if (!state.pencilPath.length || index < 0) {
+      state.pencilPath.push({
+        ...payload,
+        points: [payload.points],
+        strokeColor: payload.strokeColor,
+        strokeWidth: payload.strokeWidth,
+      });
+    } else if (index >= 0) {
+      state.pencilPath[index] = {
+        ...state.pencilPath[index],
+        points: [...state.pencilPath[index].points, payload.points],
+      };
+    }
+  },
+  clearPencilPath(state: AnnotationState) {
+    state.pencilPath = [];
   },
 };
 

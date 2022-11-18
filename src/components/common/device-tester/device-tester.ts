@@ -9,7 +9,9 @@ import { fmtMsg } from "vue-glcommonui";
 import { DeviceTesterLocale } from "@/locales/localeid";
 import { Logger } from "@/utils/logger";
 import { VCPlatform } from "@/store/app/state";
-import { Howl , Howler} from "howler";
+import { Howl, Howler } from "howler";
+import IconSpeakerPlay from "@/assets/images/play-button.png";
+import IconSpeakerStop from "@/assets/images/stop-button.png";
 
 interface DeviceType {
   deviceId: string;
@@ -91,17 +93,24 @@ export default defineComponent({
     const havePermissionMicrophone = ref(true);
     const devices = ref<MediaDeviceInfo[]>([]);
 
-	const listSpeakers =  ref<DeviceType[]>([]);
-	const listSpeakersId = ref<string[]>([]);
-	const currentSpeaker = ref<DeviceType>();
+    const listSpeakers = ref<DeviceType[]>([]);
+    const listSpeakersId = ref<string[]>([]);
+    const currentSpeaker = ref<DeviceType>();
     const currentSpeakerLabel = ref();
-	const isPlayingSound = ref(false);
-	const isCheckSpeaker = ref(false);
-	const connectTestSound = new Howl({
-		loop:true,
-		src: [require(`@/assets/audio/ConnectTestSound.mp3`)],
-	  });
-	Howler.volume(1);
+    const isPlayingSound = ref(false);
+    const isCheckSpeaker = ref(true);
+    const isPlaySpeaker = ref(false);
+    const speakerIcon = computed(() => (isPlaySpeaker.value ? IconSpeakerStop : IconSpeakerPlay));
+    const toggleSpeaker = () => {
+      isPlaySpeaker.value = !isPlaySpeaker.value;
+      isPlaySpeaker.value ? connectTestSound.play() : connectTestSound.stop();
+      isPlayingSound.value = connectTestSound.playing();
+    };
+    const connectTestSound = new Howl({
+      loop: true,
+      src: [require(`@/assets/audio/ConnectTestSound.mp3`)],
+    });
+    Howler.volume(1);
     const listPlatform = [
       { key: VCPlatform.Agora, name: VCPlatform[1] },
       { key: VCPlatform.Zoom, name: VCPlatform[2] },
@@ -264,30 +273,30 @@ export default defineComponent({
       try {
         const cams = await AgoraRTC.getCameras();
         const speakersOrigin = await AgoraRTC.getPlaybackDevices();
-		const speakers:DeviceType[] = speakersOrigin.map((speaker)=>{
-		  if (speaker.deviceId === 'default'){
-			const defaultDevice = {
-			  deviceId: speaker.deviceId,
-			  groupId: speaker.groupId, 
-			  kind: speaker.kind, 
-			  label: 'Default Device'
-			}
-			return defaultDevice
-		  }
-		  return speaker
-		})
-		if(speakers.length){
-			listSpeakers.value = speakers;
-			listSpeakersId.value = speakers.map((speaker:any) => speaker.deviceId);
-			currentSpeaker.value = speakers[0];
-			currentSpeakerLabel.value = speakers[0].label;
-		}
+        const speakers: DeviceType[] = speakersOrigin.map((speaker) => {
+          if (speaker.deviceId === "default") {
+            const defaultDevice = {
+              deviceId: speaker.deviceId,
+              groupId: speaker.groupId,
+              kind: speaker.kind,
+              label: "Default Device",
+            };
+            return defaultDevice;
+          }
+          return speaker;
+        });
+        if (speakers.length) {
+          listSpeakers.value = speakers;
+          listSpeakersId.value = speakers.map((speaker: any) => speaker.deviceId);
+          currentSpeaker.value = speakers[0];
+          currentSpeakerLabel.value = speakers[0].label;
+        }
         if (cams.length) {
           let camSelected = cams[0];
-          const localStorageCamId = localStorage.getItem('camId');
-          if(localStorageCamId){
+          const localStorageCamId = localStorage.getItem("camId");
+          if (localStorageCamId) {
             camSelected = cams.find((device: any) => device.deviceId === localStorageCamId) ?? cams[0];
-          };
+          }
           currentCam.value = camSelected;
           currentCamLabel.value = camSelected?.label;
 
@@ -311,11 +320,11 @@ export default defineComponent({
       try {
         const mics = await AgoraRTC.getMicrophones();
         if (mics.length) {
-            let micSelected = mics[0] ;
-            const localStorageMicId = localStorage.getItem('micId');
-            if(localStorageMicId){
-              micSelected = mics.find((device: any) => device.deviceId === localStorageMicId) ?? mics[0];
-            };
+          let micSelected = mics[0];
+          const localStorageMicId = localStorage.getItem("micId");
+          if (localStorageMicId) {
+            micSelected = mics.find((device: any) => device.deviceId === localStorageMicId) ?? mics[0];
+          }
           currentMic.value = micSelected;
           currentMicLabel.value = micSelected?.label;
 
@@ -548,16 +557,16 @@ export default defineComponent({
       }
     });
 
-	//handle for speaker
-	watch(isCheckSpeaker,() => {
-		if(isCheckSpeaker.value){
-			connectTestSound.play();
-		}else{
-			connectTestSound.stop();
-		}
-		isPlayingSound.value = connectTestSound.playing();
-	});
-	
+    //handle for speaker
+    watch(isCheckSpeaker, () => {
+      if (isCheckSpeaker.value) {
+        connectTestSound.play();
+      } else {
+        connectTestSound.stop();
+      }
+      isPlayingSound.value = connectTestSound.playing();
+    });
+
     const setVolumeWave = () => {
       if (!localTracks.value) return;
       volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
@@ -577,8 +586,7 @@ export default defineComponent({
           await localTracks.value?.audioTrack.setDevice(micId);
         }
         currentMic.value = listMics.value.find((mic) => mic.deviceId === micId);
-        if(currentMic.value && currentMic.value.deviceId)
-        localStorage.setItem('micId',currentMic.value.deviceId);
+        if (currentMic.value && currentMic.value.deviceId) localStorage.setItem("micId", currentMic.value.deviceId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
@@ -590,26 +598,26 @@ export default defineComponent({
           await localTracks.value.videoTrack.setDevice(camId);
         }
         currentCam.value = listCams.value.find((cam) => cam.deviceId === camId);
-        if(currentCam.value && currentCam.value.deviceId)
-        localStorage.setItem('camId',currentCam.value.deviceId);
+        if (currentCam.value && currentCam.value.deviceId) localStorage.setItem("camId", currentCam.value.deviceId);
       } catch (error) {
         Logger.log("Error => ", error);
       }
     };
 
-	const handleSpeakerChange = (speakerId: string) => {
-		currentSpeaker.value = listSpeakers.value.find(speaker => speaker.deviceId === speakerId);
-		connectTestSound.stop();
-		connectTestSound.play();
-		isPlayingSound.value = connectTestSound.playing();
-	}
+    const handleSpeakerChange = (speakerId: string) => {
+      currentSpeaker.value = listSpeakers.value.find((speaker) => speaker.deviceId === speakerId);
+      connectTestSound.stop();
+      connectTestSound.play();
+      isPlayingSound.value = connectTestSound.playing();
+      isPlaySpeaker.value = connectTestSound.playing();
+    };
 
     const destroySDK = async (isAgora: boolean) => {
       isConfigTrackingDone.value = false;
-	  if(connectTestSound.playing()){
-		connectTestSound.stop();
-		isPlayingSound.value = false;
-	  }
+      if (connectTestSound.playing()) {
+        connectTestSound.stop();
+        isPlayingSound.value = false;
+      }
 
       if (volumeAnimation.value) {
         cancelVolumeAnimation();
@@ -650,9 +658,10 @@ export default defineComponent({
       isOpenMic.value = true;
       isOpenCam.value = true;
 
-	  currentSpeaker.value = undefined;
-	  isCheckSpeaker.value = false;
-	  isPlayingSound.value = false;
+      currentSpeaker.value = undefined;
+      isCheckSpeaker.value = true;
+      isPlaySpeaker.value = false;
+      isPlayingSound.value = false;
 
       isTeacherVideoMirror.value = true;
       isStudentVideoMirror.value = true;
@@ -681,7 +690,7 @@ export default defineComponent({
     });
 
     const goToClass = () => {
-	  connectTestSound.stop();
+      connectTestSound.stop();
       emit("go-to-class");
     };
 
@@ -729,7 +738,7 @@ export default defineComponent({
     };
 
     const handleSubmit = () => {
-	  connectTestSound.stop();
+      connectTestSound.stop();
       const unitId = props.unitInfo.find((unit: UnitAndLesson) => unit.unit === currentUnit.value).unitId;
       if (!unitId) return;
       emit("on-join-session", {
@@ -762,7 +771,6 @@ export default defineComponent({
     const TeacherVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.TeacherVideoMirroring));
     const StudentVideoMirroring = computed(() => fmtMsg(DeviceTesterLocale.StudentVideoMirroring));
     const CheckSpeaker = computed(() => fmtMsg(DeviceTesterLocale.CheckSpeaker));
-
 
     const Platform = computed(() => fmtMsg(DeviceTesterLocale.Platform));
     const CamOff = computed(() => fmtMsg(DeviceTesterLocale.CamOff));
@@ -862,15 +870,16 @@ export default defineComponent({
       isTeacherVideoMirror,
       isStudentVideoMirror,
       showMirrorSwitch,
-	  isCheckSpeaker,
-	  listSpeakers,
-	  listSpeakersId,
-	  currentSpeaker,
-	  currentSpeakerLabel,
-	  CheckSpeaker,
-	  isPlayingSound,
-	  handleSpeakerChange
+      isCheckSpeaker,
+      listSpeakers,
+      listSpeakersId,
+      currentSpeaker,
+      currentSpeakerLabel,
+      CheckSpeaker,
+      isPlayingSound,
+      handleSpeakerChange,
+      speakerIcon,
+      toggleSpeaker,
     };
   },
 });
-

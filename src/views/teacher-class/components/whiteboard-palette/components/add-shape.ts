@@ -22,9 +22,9 @@ export const addShape = () => {
     }
   };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftX = (0 + strokeWidth.value) + DefaultCanvasDimension.width / 2;
-	const initTopLeftY = (0 + strokeWidth.value) + DefaultCanvasDimension.height / 2;
-	const circle = new fabric.Circle({
+    const initTopLeftX = 0 + strokeWidth.value + DefaultCanvasDimension.width / 2;
+    const initTopLeftY = 0 + strokeWidth.value + DefaultCanvasDimension.height / 2;
+    const circle = new fabric.Circle({
       left: initTopLeftX,
       top: initTopLeftY,
       radius: 30,
@@ -33,17 +33,17 @@ export const addShape = () => {
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
-	  originX: "center",
-	  originY: "center",
+      originX: "center",
+      originY: "center",
     });
     canvas.add(circle);
     canvas.setActiveObject(circle);
     await teacherAddShapes(canvas);
   };
   const addSquare = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftX = (0 + strokeWidth.value) + DefaultCanvasDimension.width / 2;
-	const initTopLeftY = (0 + strokeWidth.value) + DefaultCanvasDimension.height / 2;
-	const square = new fabric.Rect({
+    const initTopLeftX = 0 + strokeWidth.value + DefaultCanvasDimension.width / 2;
+    const initTopLeftY = 0 + strokeWidth.value + DefaultCanvasDimension.height / 2;
+    const square = new fabric.Rect({
       left: initTopLeftX,
       top: initTopLeftY,
       width: 50,
@@ -53,8 +53,8 @@ export const addShape = () => {
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
-	  originX: "center",
-	  originY: "center",
+      originX: "center",
+      originY: "center",
     });
     canvas.add(square);
     canvas.setActiveObject(square);

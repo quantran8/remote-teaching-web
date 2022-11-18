@@ -18,7 +18,7 @@ export default defineComponent({
     const isRaisingHand = ref(false);
     const store = useStore();
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
-    const isUsingAgora = true;// computed(() => store.getters["platform"] === VCPlatform.Agora);
+    const isUsingAgora = true; // computed(() => store.getters["platform"] === VCPlatform.Agora);
 
     watch(props, () => {
       if (props.raisedHand) {

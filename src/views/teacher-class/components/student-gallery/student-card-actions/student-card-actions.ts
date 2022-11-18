@@ -13,9 +13,10 @@ import PhotoCamera from "@/assets/images/photo-camera.png";
 import { useStore } from "vuex";
 import { StudentState } from "@/store/room/interface";
 import { gsap } from "gsap";
-import { MatIcon } from "vue-glcommonui";
+import { MatIcon, fmtMsg } from "vue-glcommonui";
 import { notification } from "ant-design-vue";
-
+import { CaptureNotification } from "@/locales/localeid";
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 
 export default defineComponent({
   components: {
@@ -39,6 +40,8 @@ export default defineComponent({
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
     const currentSchoolId = computed(() => store.getters["teacher/currentSchoolId"]);
     const isOnePalette = ref(false);
+    const enableVideoText = computed(() => fmtMsg(CaptureNotification.EnableStudentVideo, { studentName: props.student.englishName }));
+    const reachedMaximumText = computed(() => fmtMsg(CaptureNotification.ReachedMaximum, { studentName: props.student.englishName }));
     const checkStudentPalette = () => {
       if (students.value.every((s) => !s.isPalette)) {
         isOnePalette.value = true;
@@ -60,7 +63,7 @@ export default defineComponent({
         id: props.student.id,
         enable: !props.student.audioEnabled,
       });
-    }
+    };
 
     const toggleVideo = async () => {
       await store.dispatch("teacherRoom/setStudentVideo", {
@@ -98,15 +101,21 @@ export default defineComponent({
     };
 
     const captureImage = async () => {
-      if(props.student.videoEnabled){
-        await store.dispatch("teacherRoom/sendRequestCaptureImage", props.student.id);
-      }
-      else{
+      if (!props.student.videoEnabled) {
         notification.info({
-          message:"please enable student video",
-          duration:3
-        })
+          message: enableVideoText.value,
+          duration: 3,
+        });
+        return;
       }
+      if (props.student.imageCapturedCount >= SESSION_MAXIMUM_IMAGE) {
+        notification.info({
+          message: reachedMaximumText.value,
+          duration: 3,
+        });
+        return;
+      }
+      await store.dispatch("teacherRoom/sendRequestCaptureImage", { isCaptureAll: false, studentId: props.student.id });
     };
 
     return {
@@ -128,7 +137,7 @@ export default defineComponent({
       captureImage,
       IconImage,
       PhotoCamera,
-      currentSchoolId
+      currentSchoolId,
     };
   },
 });

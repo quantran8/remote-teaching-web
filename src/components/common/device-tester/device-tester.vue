@@ -64,7 +64,6 @@
         </div>
       </Row>
 
-
       <Row align="middle" class="device-tester__mb--default">
         <p v-show="!havePermissionCamera">
           <span class="alert-device-test">{{ warningMsgCamera }}</span>
@@ -96,13 +95,15 @@
           </div>
         </div>
       </Row>
-	  <Row align="middle" class="device-tester__mb--small">
+      <Row align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">
-          <b> {{CheckSpeaker}} </b>
+          <b> {{ CheckSpeaker }} </b>
         </div>
         <div class="ant-col-24 ant-col-sm-18">
           <Space size="large" align="center" class="device-tester__check-mic-cam">
-            <Switch v-model:checked="isCheckSpeaker" />
+            <div class="device-tester__speaker--icon">
+              <img :src="speakerIcon" @click="toggleSpeaker" alt="" />
+            </div>
             <Select
               :placeholder="SelectDevice"
               style="width: 330px"
@@ -112,14 +113,13 @@
               @change="handleSpeakerChange"
             >
               <SelectOption v-for="deviceId in listSpeakersId" :key="deviceId" :value="deviceId">
-                {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }} 
+                {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
-			<img v-if="isPlayingSound" src ='@/assets/images/audio-wave.gif' class="sound-img"/>
+            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />
           </Space>
         </div>
       </Row>
-
 
       <!-- <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">

@@ -13,6 +13,7 @@ import {
   UserMediaPayload,
   StudentBadgePayload,
   UserIdPayload,
+  StudentCaptureStatus,
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
@@ -99,8 +100,8 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
-	s.isTeacherVideoMirror = p.isTeacherVideoMirror;
-	s.isStudentVideoMirror = p.isStudentVideoMirror;
+    s.isTeacherVideoMirror = p.isTeacherVideoMirror;
+    s.isStudentVideoMirror = p.isStudentVideoMirror;
 
     s.classView = ClassViewFromValue(p.teachingMode);
     s.students = p.students.map((st, index) => {
@@ -116,8 +117,7 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
-        imageCapturedCount: st.imageCapturedCount
-
+        imageCapturedCount: st.imageCapturedCount,
       };
     });
     s.localAudios = s.students.filter((ele) => p.studentsAudio.indexOf(ele.id) !== -1).map((el) => el.id);
@@ -299,6 +299,12 @@ const mutations: TeacherRoomMutation<State> = {
   setWhiteboard(state: TeacherRoomState, p) {
     state.isShowWhiteboard = p;
   },
+  setMediaState(state: TeacherRoomState, p) {
+    state.mediaState = p;
+  },
+  setCurrentTimeMedia(state: TeacherRoomState, p) {
+    state.currentTimeMedia = p;
+  },
   setAvatarAllStudent(state: TeacherRoomState, p: { id: string; avatar: string }[]) {
     state.students.forEach((student) => {
       const avatar = p.find((studentAvatar: any) => studentAvatar.id == student.id)?.avatar;
@@ -330,21 +336,29 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
-        imageCapturedCount: st.imageCapturedCount
-
+        imageCapturedCount: st.imageCapturedCount,
       };
     });
   },
   setIsTeacherUseOnly(state: TeacherRoomState, p) {
     state.isTeacherUseOnly = p;
   },
-  setStudentImageCapturedCount(s: TeacherRoomState,p: {id: string, imageCapturedCount: number}){
+  setStudentImageCapturedCount(s: TeacherRoomState, p: { id: string; imageCapturedCount: number }) {
     const student = s.students.find((st) => st.id === p.id);
     if (student) student.imageCapturedCount = p.imageCapturedCount;
   },
-  setStudentsImageCaptured(s: TeacherRoomState,p){
-    s.studentsImageCaptured = p
-  }
+  setStudentsImageCaptured(s: TeacherRoomState, p) {
+    s.studentsImageCaptured = p;
+  },
+  setStudentsCaptureDone(s: TeacherRoomState, p: StudentCaptureStatus) {
+    s.studentCaptureAll.push(p);
+  },
+  clearStudentsCaptureDone(s: TeacherRoomState) {
+    s.studentCaptureAll = [];
+  },
+  setCaptureAll(s: TeacherRoomState, p: boolean) {
+    s.isCaptureAll = p;
+  },
 };
 
 export default mutations;

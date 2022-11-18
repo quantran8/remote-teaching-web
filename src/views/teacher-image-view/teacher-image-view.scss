@@ -9,15 +9,17 @@
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
+			padding-bottom: 32px;
 		.filter_container {
 				display: flex;
 				flex-direction: row;
 				justify-content: space-between;
-				width: 80%;
+				flex: 1;
 				.select_item {
+					flex: 1;
 					display: flex;
 					flex-direction: row;
-					justify-content: space-between;
+					margin-right: 30px;
 					.calendar_icon{
 						width: 32px;
 						height: 32px;
@@ -25,28 +27,18 @@
 						cursor: pointer;
 					}
 					.calendar{
-						// position: absolute;
-						// z-index: 1000;
-						// left: 18%;
+						width: 80%;
 					}		
 					.label {
 						margin-right: 50px
 					}
 		
 					.select_box {
-						min-width: 300px;
+						flex: 1;
 					}
 				}
 			}
 	}
-	.overlay{
-		background-color: rgb(0, 0, 0,);
-		opacity: 0.3;
-		width: 100%;
-		height: 100%;
-		position: absolute;
-	}
-
 }
 .remove_icon {
 	position: absolute;
@@ -56,4 +48,8 @@
 }
 .no_image_title{
 	text-align: center;
+}
+.slide-wrapper{
+	display: flex;
+	justify-content: center;
 }

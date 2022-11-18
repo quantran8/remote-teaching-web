@@ -22,46 +22,56 @@
         </div>
         <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
         <div id="canvas-container" @mousemove="cursorPosition">
-			<CropImage
-            v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
-            :imageUrl="image.url"
-            :metadata="image.metaData"
-            id="annotation-img"
-            @img-load="imgLoad"
-          /> 
-          <img
-		     v-else-if="typeof imageUrl === 'string' && image"
-            :src="imageUrl"
-            id="annotation-img"
-            v-show="!isGalleryView"
-			 @img-load="imgLoad"
-          /> 
+          <div v-if="mediaTypeId === undefined">
+            <CropImage
+              v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
+              :imageUrl="image.url"
+              :metadata="image.metaData"
+              id="annotation-img"
+              @img-load="imgLoad"
+            />
+            <img v-else-if="typeof imageUrl === 'string' && image" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @img-load="imgLoad" />
+          </div>
+          <div v-else-if="mediaTypeId === 1 && image && typeof image.url === 'string'" class="pdf-content">
+            <vue-pdf-embed :source="image.url" class="pdf-config" />
+          </div>
+          <div v-else-if="mediaTypeId === 2 && image && typeof image.url === 'string'" class="audio-content">
+            <audio ref="audio" controls class="audio-config">
+              <source :src="image.url" type="audio/mp3" />
+              Your browser does not support the audio tag.
+            </audio>
+          </div>
+          <div v-else-if="mediaTypeId === 3 && image && typeof image.url === 'string'" class="video-content">
+            <video ref="video" controls class="video-config">
+              <source :src="image.url" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
           <div ref="wrapCanvasRef" class="wrap-canvas">
             <canvas class="canvas-designate" id="canvasDesignate" />
           </div>
           <div class="teacher-use-only-message" v-if="isTeacherUseOnly">
             {{ forTeacherUseOnlyText }}
           </div>
-		  <div class="wrap-zoom-icon">
-			<div class="zoom-icon-container">
-				<div  @click="zoomOut" class="zoom-container">
-					<img  class="zoom-icon" src="@/assets/icons/zoom-out.png" />
-				</div>
-				<div  @click="zoomIn" class="zoom-container"> 
-					<img class="zoom-icon" src="@/assets/icons/zoom-in.png" />
-				</div>
-			</div>
-		 	<span class="zoom-percentage">{{zoomPercentage}}%</span>
-		  </div>
-		
+          <div class="wrap-zoom-icon">
+            <div class="zoom-icon-container">
+              <div @click="zoomOut" class="zoom-container">
+                <img class="zoom-icon" src="@/assets/icons/zoom-out.png" />
+              </div>
+              <div @click="zoomIn" class="zoom-container">
+                <img class="zoom-icon" src="@/assets/icons/zoom-in.png" />
+              </div>
+            </div>
+            <span class="zoom-percentage">{{ zoomPercentage }}%</span>
+          </div>
         </div>
         <div v-if="showHideWhiteboard" class="whiteboard__space-bottom" />
       </div>
     </div>
     <div v-if="!isGalleryView && image && image.metaData && !showHideWhiteboard" class="target-actions">
       <Space>
-      	<span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
-		  <Button  v-if="hasTargets" @click="showHidePreviewModal" :disabled="disablePreviewBtn">Preview</Button>
+        <span v-if="hasTargets">{{ targetText }} {{ targetsNum }}</span>
+        <Button v-if="hasTargets" @click="showHidePreviewModal" :disabled="disablePreviewBtn">Preview</Button>
       </Space>
       <Space v-if="hasTargets">
         <Button @click="showAllTargets" :disabled="disableShowAllTargetsBtn">{{ showAllTargetTextBtn }}</Button>

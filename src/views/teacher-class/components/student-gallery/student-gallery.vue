@@ -20,6 +20,7 @@
       @disable-all="onClickDisableAll"
       @enable-all="onClickEnableAll"
       @add-sticker-all="onClickStickerAll"
+      @capture-all="onClickCaptureAll"
     />
     <div class="student-all-container">
       <StudentAll />

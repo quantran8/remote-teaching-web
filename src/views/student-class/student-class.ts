@@ -307,10 +307,10 @@ export default defineComponent({
       isSecondPhase.value = false;
     };
     watch(myTeacherDisconnected, async (isDisconnected, prevIsDisconnected) => {
-	  await store.dispatch("studentRoom/setStudentAudio", {
-			id: student.value.id,
-			enable: false,
-			});
+      await store.dispatch("studentRoom/setStudentAudio", {
+        id: student.value.id,
+        enable: false,
+      });
       if (prevIsDisconnected !== isDisconnected && !isDisconnected) {
         handleMyTeacherReconnect();
         return;

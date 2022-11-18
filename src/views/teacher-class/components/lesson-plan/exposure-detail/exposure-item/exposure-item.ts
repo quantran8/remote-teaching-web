@@ -1,6 +1,9 @@
 import { computed, defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { Tooltip, Empty } from "ant-design-vue";
+import IconAudio from "@/assets/teacher-class/sound.png";
+import IconVideo from "@/assets/teacher-class/video.png";
+import IconPdf from "@/assets/teacher-class/pdf.png";
 
 export default defineComponent({
   emits: ["on-click-item"],
@@ -8,6 +11,7 @@ export default defineComponent({
     items: Array,
     isContentBlock: Boolean,
     isTeachingBlock: Boolean,
+    isAlternateMediaBlock: Boolean,
   },
   components: {
     Tooltip,
@@ -27,13 +31,18 @@ export default defineComponent({
     };
     const isContent = computed(() => props.isContentBlock);
     const isTeaching = computed(() => props.isTeachingBlock);
+    const isAlternateMedia = computed(() => props.isAlternateMediaBlock);
     const hasZeroImage = computed(() => !props.items?.length);
     return {
       onClickItem,
       currentExposureItemMedia,
       isContent,
       isTeaching,
+      isAlternateMedia,
       hasZeroImage,
+      IconAudio,
+      IconVideo,
+      IconPdf,
     };
   },
 });

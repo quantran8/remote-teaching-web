@@ -42,8 +42,11 @@ export interface TeacherWSEventHandler {
   onTeacherZoomSlide(payload: any): void;
   onTeacherMoveZoomedSlide(payload: any): void;
   onTeacherResetZoom(payload: any): void;
+  onTeacherDrawPencil(payload: any): void;
 
   onTeacherUpdateSessionLessonAndUnit(payload: any): void;
   onTeacherSendRequestCaptureImage(payload: any): void;
   onStudentSendCapturedImageStatus(payload: any): void;
+  onTeacherSetMediaState(payload: any):void;
+  onTeacherSetCurrentTimeMedia(payload: any):void;
 } 

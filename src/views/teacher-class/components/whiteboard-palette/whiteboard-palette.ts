@@ -1,21 +1,23 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
-import { useStore } from "vuex";
-import { gsap } from "gsap";
-import { fabric } from "fabric";
-import { Tools, Mode, DefaultCanvasDimension } from "@/utils/utils";
-import { onClickOutside } from "@vueuse/core";
-import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
-import { ClassView } from "@/store/room/interface";
-import { useFabricObject } from "@/hooks/use-fabric-object";
-import { FabricObject } from "@/ws";
-import { fmtMsg } from "vue-glcommonui";
-import { TeacherClass, WhiteBoard } from "@/locales/localeid";
-import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
-import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
-import { Button, Space } from "ant-design-vue";
+import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { Pointer } from "@/store/annotation/state";
+import { ClassView } from "@/store/room/interface";
+import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
+import { DefaultCanvasDimension, Mode, Tools } from "@/utils/utils";
+import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
+import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
+import { FabricObject } from "@/ws";
+import { onClickOutside } from "@vueuse/core";
+import { Button, Space } from "ant-design-vue";
+import { fabric } from "fabric";
+import { gsap } from "gsap";
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
+import VuePdfEmbed from "vue-pdf-embed";
+import { useStore } from "vuex";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE = {
@@ -38,10 +40,12 @@ export default defineComponent({
     ToolsCanvas,
     Space,
     Button,
+    VuePdfEmbed,
   },
   setup(props) {
     const store = useStore();
-    const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
@@ -71,6 +75,8 @@ export default defineComponent({
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
     const firstTimeLoadOneToOneShapes: Ref<boolean> = ref(false);
+    const video = ref<HTMLVideoElement | null>(null);
+    const audio = ref<HTMLVideoElement | null>(null);
 
     const isDrawing: Ref<boolean> = ref(false);
     const prevPoint: Ref<Pointer | undefined> = ref(undefined);
@@ -80,12 +86,14 @@ export default defineComponent({
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
     const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
-	const imgRenderHeight = computed(() =>store.getters["annotation/imgRenderHeight"]);
-	const isShowPreviewCanvas = computed(() => store.getters['lesson/isShowPreviewCanvas']);
-	const sessionZoomRatio = computed(() => store.getters['lesson/zoomRatio']);
-	const prevZoomRatio = ref(1);
-	const prevCoords = ref({x:0,y:0});
-	const zoomPercentage = ref(100);
+    const imgRenderHeight = computed(() => store.getters["annotation/imgRenderHeight"]);
+    const isShowPreviewCanvas = computed(() => store.getters["lesson/isShowPreviewCanvas"]);
+    const sessionZoomRatio = computed(() => store.getters["lesson/zoomRatio"]);
+    const sessionImgCoords = computed(() => store.getters["lesson/imgCoords"]);
+
+    const prevZoomRatio = ref(1);
+    const prevCoords = ref({ x: 0, y: 0 });
+    const zoomPercentage = ref(100);
 
     const {
       createTextBox,
@@ -105,98 +113,109 @@ export default defineComponent({
     };
     const lineId: Ref<string> = ref(generateLineId());
 
-	const zoomRatio = ref(1);
-	let group: any;
-	let point:any;
+    const zoomRatio = ref(1);
+    let group: any;
+    let point: any;
 
+    const zoomIn = async () => {
+      if (!isLessonPlan.value) {
+        return;
+      }
+      if (zoomRatio.value > MAX_ZOOM_RATIO) {
+        return;
+      }
+      if (canvas.getZoom() !== zoomRatio.value) {
+        zoomRatio.value = canvas.getZoom();
+      }
+      zoomRatio.value += 0.1;
+      canvas.zoomToPoint(point, zoomRatio.value);
+      canvas.forEachObject(function (o: any) {
+        o.setCoords();
+      });
+      canvas.calcOffset();
+      zoomPercentage.value = Math.round(zoomRatio.value * 100);
+      if (!isTeacherUseOnly.value) {
+        await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+        await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
+      }
+    };
 
-	const zoomIn = async() => {
-		if(!isLessonPlan.value){
-			return
-		};
-		if(zoomRatio.value > 4){
-			return;
-		}
-		if(canvas.getZoom() !== zoomRatio.value){
-			zoomRatio.value = canvas.getZoom();
-		}
-		zoomRatio.value += 0.1;
-		canvas.zoomToPoint(point,zoomRatio.value);
-		canvas.forEachObject(function(o: any) {
-			o.setCoords();
-		  });
-		canvas.calcOffset();
-		zoomPercentage.value =  Math.round(zoomRatio.value * 100);
-        if (!isTeacherUseOnly.value) {
-            await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+    const zoomOut = async () => {
+      if (!isLessonPlan.value) {
+        return;
+      }
+      if (canvas.getZoom() > MIN_ZOOM_RATIO) {
+        if (canvas.getZoom() !== zoomRatio.value) {
+          zoomRatio.value = canvas.getZoom();
         }
+        zoomRatio.value -= 0.1;
+        if (zoomRatio.value < MIN_ZOOM_RATIO) {
+          zoomRatio.value = MIN_ZOOM_RATIO;
+        }
+        if (zoomRatio.value === MIN_ZOOM_RATIO && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)) {
+          group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+          group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+          group.setCoords();
+        }
+        zoomPercentage.value = Math.round(zoomRatio.value * 100);
+        canvas.zoomToPoint(point, zoomRatio.value);
+        if (!isTeacherUseOnly.value) {
+          await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+          await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
+        }
+      }
+    };
 
-	}
-
-	const zoomOut = async() => {
-		if(!isLessonPlan.value){
-			return;
-		}
-		if(canvas.getZoom() > 1)
-		{
-			if(canvas.getZoom() !== zoomRatio.value){
-				zoomRatio.value = canvas.getZoom();
-			}
-			zoomRatio.value -= 0.1;
-			if(zoomRatio.value === 1 && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)){
-				group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
-				group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
-				group.setCoords();
-			}
-			zoomPercentage.value = Math.round(zoomRatio.value * 100);
-			canvas.zoomToPoint(point,zoomRatio.value);
-            if (!isTeacherUseOnly.value) {
-                await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+    const handleCloneCanvasObjects = () => {
+      group.clone(
+        (cloned: any) => {
+          cloned.getObjects().forEach((obj: any) => {
+            if (obj.id !== "lesson-img") {
+              obj.fill = obj.realFill ?? "transparent";
+              obj.opacity = obj.realOpacity ?? 1;
+              obj.stroke = obj.color ?? "black";
             }
-		}
-	}
+          });
 
-	const handleCloneCanvasObjects = () => {
-		 group.clone((cloned: any) => {
-			cloned.getObjects().forEach((obj: any) => {
-				if(obj.id !== 'lesson-img'){
-					obj.fill = obj.realFill ?? 'transparent';
-					obj.opacity = obj.realOpacity ?? 1;
-					obj.stroke = obj.color ?? 'black';
-				}
-			});
+          const objectToString = `{"objects":[${JSON.stringify(cloned)}], "background":"transparent"}`;
+          store.dispatch("lesson/setLessonPreviewObjects", objectToString, { root: true });
+        },
+        ["id", "realFill", "realOpacity", "color"],
+      );
+    };
 
-			const objectToString = `{"objects":[${JSON.stringify(cloned)}], "background":"transparent"}`;
-			store.dispatch('lesson/setLessonPreviewObjects',objectToString,{root:true});
+    const showHidePreviewModal = async (isShowPreview = true) => {
+      await store.dispatch("lesson/setShowPreviewCanvas", isShowPreview, { root: true });
+    };
 
-		},['id','realFill','realOpacity','color'])
-	}
+    watch(sessionZoomRatio, (value) => {
+      if (value == 1) {
+        canvas.zoomToPoint(point, 1);
+        if ((group?.left !== DefaultCanvasDimension.width / 2 || group?.top !== imgRenderHeight.value / 2) && group?.left && group?.top) {
+          group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+          group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+          group.setCoords();
+        }
+      }
+      zoomPercentage.value = Math.floor(value * 100);
+    });
 
-	const showHidePreviewModal = async(isShowPreview = true) => {
-			await store.dispatch('lesson/setShowPreviewCanvas',isShowPreview,{root:true});
-	}
+    watch(isShowPreviewCanvas, (currentValue) => {
+      disablePreviewBtn.value = currentValue;
+    });
 
-	watch(sessionZoomRatio,(value) => {
-		zoomPercentage.value = Math.floor(value*100)
-	})
-
-	watch(isShowPreviewCanvas,(currentValue) => {
-		disablePreviewBtn.value = currentValue;
-	})
-
-    watch(currentExposureItemMedia, async(currentItem, prevItem) => {
+    watch(currentExposureItemMedia, async (currentItem, prevItem) => {
       if (currentItem) {
-		zoomRatio.value = 1;
-		zoomPercentage.value = 100;
+        zoomRatio.value = 1;
+        zoomPercentage.value = 100;
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
-			canvas.zoomToPoint(point,1)
-            canvas.remove(...canvas.getObjects());
-			await store.dispatch("lesson/setImgCoords",undefined,{root:true});
-			showHidePreviewModal(false);
-			disablePreviewBtn.value =false;
-
+          canvas.zoomToPoint(point, 1);
+          canvas.remove(...canvas.getObjects());
+          await store.dispatch("lesson/setImgCoords", undefined, { root: true });
+          showHidePreviewModal(false);
+          disablePreviewBtn.value = false;
         }
       }
     });
@@ -213,32 +232,35 @@ export default defineComponent({
       }
     });
     const { teacherAddShapes, addCircle, addSquare } = addShape();
-    const { processAnnotationLesson ,processLessonImage} = annotationCurriculum();
+    const { processAnnotationLesson, processLessonImage } = annotationCurriculum();
     const targetsNum = computed(() => {
-		const uniqueAnnotations: any[] = []; 
-		props.image?.metaData?.annotations?.forEach((metaDataObj: any) => {
-		if(!uniqueAnnotations.some((_obj: any) => 
-		metaDataObj.color === _obj.color 
-		&& metaDataObj.height === _obj.height 
-		&& metaDataObj.width === _obj.width 
-		&& metaDataObj.opacity === _obj.opacity 
-		&& metaDataObj.rotate === _obj.rotate 
-		&& metaDataObj.type === _obj.type 
-		&& metaDataObj.x === _obj.x 
-		&& metaDataObj.y === _obj.y 
-		)){
-			uniqueAnnotations.push(metaDataObj);
-		}
-	});
+      const uniqueAnnotations: any[] = [];
+      props.image?.metaData?.annotations?.forEach((metaDataObj: any) => {
+        if (
+          !uniqueAnnotations.some(
+            (_obj: any) =>
+              metaDataObj.color === _obj.color &&
+              metaDataObj.height === _obj.height &&
+              metaDataObj.width === _obj.width &&
+              metaDataObj.opacity === _obj.opacity &&
+              metaDataObj.rotate === _obj.rotate &&
+              metaDataObj.type === _obj.type &&
+              metaDataObj.x === _obj.x &&
+              metaDataObj.y === _obj.y,
+          )
+        ) {
+          uniqueAnnotations.push(metaDataObj);
+        }
+      });
       return uniqueAnnotations.length;
     });
     const hasTargets = computed(() => {
-      return !!props.image?.metaData.annotations && targetsNum.value;
+      return !!props.image?.metaData?.annotations && targetsNum.value;
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
     const targetText = computed(() => {
-      if (props.image?.metaData.annotations.length == 1) {
+      if (props.image?.metaData?.annotations?.length == 1) {
         return targetTextLocalize.value;
       } else {
         return targetsTextLocalize.value;
@@ -248,10 +270,10 @@ export default defineComponent({
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
     const disablePreviewBtn: Ref<boolean> = ref(false);
     const showAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "show-all-targets",group);
-	  disableShowAllTargetsBtn.value = true;
+      processAnnotationLesson(props.image, canvas, true, "show-all-targets", group);
+      disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
-	  disablePreviewBtn.value = true;
+      disablePreviewBtn.value = true;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: true,
@@ -260,20 +282,20 @@ export default defineComponent({
     const hideAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.HideAllTargets));
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "hide-all-targets",group);
-	  if (isShowPreviewCanvas.value){
-		disableHideAllTargetsBtn.value = true;
-		disableShowAllTargetsBtn.value = false;
-		disablePreviewBtn.value = true;
-	  }else{
-		disableHideAllTargetsBtn.value = true;
-		disableShowAllTargetsBtn.value = false;
-		disablePreviewBtn.value = false;
-		// await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-      //   userId: isTeacher.value.id,
-      //   visible: false,
-		// });
-	  }
+      processAnnotationLesson(props.image, canvas, true, "hide-all-targets", group);
+      if (isShowPreviewCanvas.value) {
+        disableHideAllTargetsBtn.value = true;
+        disableShowAllTargetsBtn.value = false;
+        disablePreviewBtn.value = true;
+      } else {
+        disableHideAllTargetsBtn.value = true;
+        disableShowAllTargetsBtn.value = false;
+        disablePreviewBtn.value = false;
+        // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+        //   userId: isTeacher.value.id,
+        //   visible: false,
+        // });
+      }
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;
@@ -293,7 +315,7 @@ export default defineComponent({
     const processTargetsList = async () => {
       if (targetsList.value?.length) {
         targetsList.value.forEach((obj: any) => {
-          processAnnotationLesson(props.image, canvas, false, obj,group);
+          processAnnotationLesson(props.image, canvas, false, obj, group);
         });
         const objShow = targetsList.value.filter((obj: any) => obj.visible === true);
         disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
@@ -311,14 +333,14 @@ export default defineComponent({
             visible: false,
           });
         }
-		if (targetsList.value[0].visible) disablePreviewBtn.value = true;
+        if (targetsList.value[0].visible) disablePreviewBtn.value = true;
       }
     };
     watch(targetsList, processTargetsList, { deep: true });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
       if (isTeacherUseOnly.value) {
-          return;
+        return;
       }
       await store.dispatch("teacherRoom/setMode", {
         mode: modeAnnotation.value,
@@ -370,30 +392,31 @@ export default defineComponent({
           });
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         // await clickedTool(Tools.Cursor);
-		canvas.renderAll()
+        canvas.renderAll();
       }
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard(false);
       if (isShowWhiteBoard.value && isLessonPlan.value) {
         group.visible = false;
-      } 
-	  else if(!isShowWhiteBoard.value && isLessonPlan.value && group){
+      } else if (!isShowWhiteBoard.value && isLessonPlan.value && group) {
         group.visible = true;
-	  };
-	  canvas.renderAll()
-
+      }
+      canvas.renderAll();
     });
 
-	watch(isLessonPlan, () => {
-		if(!isLessonPlan.value){
-			canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "lesson-img" ));
-		}
-	})
+    watch(isLessonPlan, () => {
+      if (!isLessonPlan.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "lesson-img"));
+      }
+    });
 
-      watch(() => (currentExposureItemMedia.value?.teacherUseOnly && !showHideWhiteboard.value), (val) => {
-          store.commit("teacherRoom/setIsTeacherUseOnly", !!val);
-      });
+    watch(
+      () => currentExposureItemMedia.value?.teacherUseOnly && !showHideWhiteboard.value,
+      (val) => {
+        store.commit("teacherRoom/setIsTeacherUseOnly", !!val);
+      },
+    );
 
     const imageUrl = computed(() => {
       const image = new Image();
@@ -401,18 +424,31 @@ export default defineComponent({
       image.src = props.image ? props.image.url : {};
       return image.src;
     });
+
+    const mediaTypeId = computed(() => {
+      const newId = props.id;
+      let result = undefined;
+      const listMedia = currentExposure.value?.alternateMediaBlockItems;
+      if (listMedia) {
+        listMedia.forEach((e: any) => {
+          e.forEach((item: any) => {
+            if (newId === item.id) {
+              result = item.mediaTypeId;
+            }
+          });
+        });
+      }
+      return result;
+    });
     const cursorPosition = async (e: any, isDone = false) => {
-        if (isTeacherUseOnly.value) {
-            return;
-        }
+      if (isTeacherUseOnly.value) {
+        return;
+      }
       const rect = document.getElementById("canvas-container");
       if (!rect) return;
       const rectBounding = rect.getBoundingClientRect();
-	  const canvasViewPortX = Math.abs(canvas.viewportTransform[4]);
-	  const canvasViewPortY = Math.abs(canvas.viewportTransform[5]);
-	  const zoom = canvas.getZoom();
-      let x = e.clientX - rectBounding.left 
-      let y = e.clientY - rectBounding.top
+      let x = e.clientX - rectBounding.left;
+      let y = e.clientY - rectBounding.top;
       const windowWidth = window.innerWidth;
 
       // default width = 717
@@ -433,10 +469,10 @@ export default defineComponent({
         });
         return;
       }
-      if (toolSelected.value === Tools.Laser && isDrawing.value) {
+      if ((toolSelected.value === Tools.Laser || toolSelected.value === Tools.Pen) && isDrawing.value) {
         const _point = {
           x: Math.floor(x),
-          y: Math.floor(y)
+          y: Math.floor(y),
         };
         if (!prevPoint.value) {
           prevPoint.value = _point;
@@ -445,30 +481,49 @@ export default defineComponent({
           const absY = Math.abs(_point.y - prevPoint.value.y);
           if (absX > 8 || absY > 8 || isDone) {
             prevPoint.value = _point;
-            if (isMouseOut.value ) {
+            if (isMouseOut.value) {
               lineId.value = generateLineId();
-              await store.dispatch("teacherRoom/setLaserPath", {
-                data: {
+              if (toolSelected.value === Tools.Laser) {
+                await store.dispatch("teacherRoom/setLaserPath", {
+                  data: {
+                    id: lineId.value,
+                    points: _point,
+                    strokeColor: strokeColor.value,
+                    strokeWidth: strokeWidth.value,
+                  },
+                  isDone,
+                });
+              } else {
+                await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
-                },
-                isDone,
-              });
+                });
+              }
+
               isMouseOver.value = false;
               isMouseOut.value = false;
               prevPoint.value = undefined;
             } else {
-              await store.dispatch("teacherRoom/setLaserPath", {
-                data: {
+              if (toolSelected.value === Tools.Laser) {
+                await store.dispatch("teacherRoom/setLaserPath", {
+                  data: {
+                    id: lineId.value,
+                    points: _point,
+                    strokeColor: strokeColor.value,
+                    strokeWidth: strokeWidth.value,
+                  },
+                  isDone,
+                });
+              } else {
+                await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
-                },
-                isDone,
-              });
+                });
+              }
             }
             return;
           }
@@ -476,9 +531,9 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
-        if (isTeacherUseOnly.value) {
-            return;
-        }
+      if (isTeacherUseOnly.value) {
+        return;
+      }
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
       const lastObject = teacherStrokes[teacherStrokes.length - 1];
       if (toolSelected.value === Tools.Pen) {
@@ -501,21 +556,28 @@ export default defineComponent({
         },
       });
     };
-	const listenBeforeTransform = () => {
-		canvas.on('before:transform',(e:any) => {
-			if(e.transform.target.id === 'lesson-img'){
-				const sel = new fabric.ActiveSelection(canvas.getObjects().filter((item:any) => item.id !== 'lesson-img' && item.id !== 'annotation-lesson'), {
-				  canvas: canvas,
-				});
-				canvas.setActiveObject(sel);
-				canvas.discardActiveObject();
-				canvas.renderAll();
-			}
-		})
-	}
+    const listenBeforeTransform = () => {
+      canvas.on("before:transform", (e: any) => {
+        if (e.transform.target.id === "lesson-img") {
+          const sel = new fabric.ActiveSelection(
+            canvas.getObjects().filter((item: any) => item.id !== "lesson-img" && item.id !== "annotation-lesson"),
+            {
+              canvas: canvas,
+            },
+          );
+          canvas.setActiveObject(sel);
+          canvas.discardActiveObject();
+          canvas.renderAll();
+        }
+      });
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async (event: any) => {
-        if (toolSelected.value === "pen") {
+        if (toolSelected.value === Tools.Pen) {
+          cursorPosition(event.e, true);
+          lineId.value = generateLineId();
+          isDrawing.value = false;
+          prevPoint.value = undefined;
           canvas.renderAll();
           await objectsCanvas();
         }
@@ -585,14 +647,13 @@ export default defineComponent({
       });
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
-		if(event.subTargets.length)
-        {
-			processAnnotationLesson(props.image, canvas, false, event.subTargets[0],group);
-		}
+        if (event.subTargets.length) {
+          processAnnotationLesson(props.image, canvas, false, event.subTargets[0], group);
+        }
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-			  if (event.target && (event.target.type !== "path" && event.target.type !== "group")) {
+            if (event.target && event.target.type !== "path" && event.target.type !== "group") {
               isEditing.value = true;
               break;
             }
@@ -607,8 +668,28 @@ export default defineComponent({
             isDrawing.value = true;
             break;
           }
+          case Tools.Pen: {
+            isDrawing.value = true;
+            break;
+          }
           default:
             break;
+        }
+      });
+      // handle mouse wheel
+      canvas.on("mouse:wheel", async (opt: any) => {
+        const delta = opt.e.deltaY;
+        let zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > MAX_ZOOM_RATIO) zoom = MAX_ZOOM_RATIO;
+        if (zoom < MIN_ZOOM_RATIO) zoom = MIN_ZOOM_RATIO;
+        canvas.zoomToPoint(point, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        zoomRatio.value = zoom;
+        if (!isTeacherUseOnly.value) {
+          await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+          await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
         }
       });
     };
@@ -621,7 +702,7 @@ export default defineComponent({
     });
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
-	  listenBeforeTransform()
+      listenBeforeTransform();
       listenToMouseUp();
       listenToMouseOut();
       listenToMouseOver();
@@ -636,7 +717,7 @@ export default defineComponent({
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
-	  point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height /2);
+      point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height / 2);
       canvas.selectionFullyContained = false;
       try {
         await FontLoader.load();
@@ -648,7 +729,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if ((obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId) &&  obj.type !== "group" )) {
+        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId && obj.type !== "group")) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -672,7 +753,7 @@ export default defineComponent({
         toolSelected.value = tool;
       } else {
         if (toolSelected.value === Tools.TextBox) {
-        //   clickedTool(Tools.Cursor);
+          //   clickedTool(Tools.Cursor);
           return;
         }
       }
@@ -718,7 +799,7 @@ export default defineComponent({
               .pop();
             canvas.remove(itemDelete);
             if (!isTeacherUseOnly.value) {
-                await store.dispatch("teacherRoom/setDeleteBrush", {});
+              await store.dispatch("teacherRoom/setDeleteBrush", {});
             }
             toolSelected.value = Tools.Pen;
             canvas.isDrawingMode = true;
@@ -730,10 +811,10 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img" ));
-            if (!isTeacherUseOnly.value) {
-                await store.dispatch("teacherRoom/setClearBrush", {});
-            }
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img"));
+          if (!isTeacherUseOnly.value) {
+            await store.dispatch("teacherRoom/setClearBrush", {});
+          }
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
           await setDrawMode();
@@ -765,8 +846,8 @@ export default defineComponent({
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
-	  canvas.remove(...canvas.getObjects("textbox"));
-	  //   await clickedTool(Tools.Clear);
+      canvas.remove(...canvas.getObjects("textbox"));
+      //   await clickedTool(Tools.Clear);
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
@@ -786,18 +867,18 @@ export default defineComponent({
       } else {
         await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
       }
- 
-	  img.crossOrigin = 'Anonymous';
-	  group = processLessonImage(currentExposureItemMedia.value,canvas,toggleTargets.value.visible,point,!firstLoadImage.value,img);
-	  if(currentExposureItemMedia.value.image.metaData && currentExposureItemMedia.value.image.metaData.annotations.length){
-		  handleCloneCanvasObjects();
-	  }
+
+      img.crossOrigin = "Anonymous";
+      group = processLessonImage(currentExposureItemMedia.value, canvas, toggleTargets.value.visible, point, !firstLoadImage.value, img);
+      if (currentExposureItemMedia.value.image?.metaData?.annotations?.length) {
+        handleCloneCanvasObjects();
+      }
       objectTargetOnCanvas();
-	  if (toggleTargets.value.visible) {
-		disableShowAllTargetsBtn.value = true;
-		disablePreviewBtn.value = true;
-	  }
-	  if (!firstLoadImage.value) {
+      if (toggleTargets.value.visible) {
+        disableShowAllTargetsBtn.value = true;
+        disablePreviewBtn.value = true;
+      }
+      if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
       // showHideWhiteboard.value = isShowWhiteBoard.value;
@@ -963,14 +1044,14 @@ export default defineComponent({
         });
         listenSelfTeacher();
       }
-	  if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length > 0) {
-		oneSelfShapes.value.forEach((item: any) => {
-			if (item.userId === isTeacher.value.id) {
-			  brushstrokesRender(canvas, item, null, "self-shapes");
-			}
-		  });
-		listenSelfTeacher();
-	  }
+      if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length > 0) {
+        oneSelfShapes.value.forEach((item: any) => {
+          if (item.userId === isTeacher.value.id) {
+            brushstrokesRender(canvas, item, null, "self-shapes");
+          }
+        });
+        listenSelfTeacher();
+      }
     };
     watch(selfShapes, async () => {
       if (!firstTimeLoadShapes.value && selfShapes.value) {
@@ -985,7 +1066,7 @@ export default defineComponent({
         );
       }
     });
-	watch(oneSelfShapes, async () => {
+    watch(oneSelfShapes, async () => {
       if (!firstTimeLoadOneToOneShapes.value && oneAndOne.value && oneSelfShapes.value) {
         renderSelfShapes();
         firstTimeLoadOneToOneShapes.value = true;
@@ -1008,7 +1089,7 @@ export default defineComponent({
       }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== 'lesson-img'));
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== "lesson-img"));
         // render objects again before into mode 1-1
         renderStudentsShapes();
         await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
@@ -1017,20 +1098,20 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
           processTargetsList();
-		  group.left = prevCoords.value.x;
-		  group.top = prevCoords.value.y;
-		  canvas.zoomToPoint(point,prevZoomRatio.value);
-		  zoomRatio.value = prevZoomRatio.value;
+          group.left = prevCoords.value.x;
+          group.top = prevCoords.value.y;
+          canvas.zoomToPoint(point, prevZoomRatio.value);
+          zoomRatio.value = prevZoomRatio.value;
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();
       } else {
         prevTargetsList.value = [...targetsList.value];
-		prevZoomRatio.value = canvas.getZoom();
-		prevCoords.value = {
-			x:group.left,
-			y:group.top
-		};
+        prevZoomRatio.value = canvas.getZoom();
+        prevCoords.value = {
+          x: group?.left,
+          y: group?.top,
+        };
       }
     });
     //get fabric items from vuex and display to whiteboard
@@ -1060,6 +1141,42 @@ export default defineComponent({
       },
       { deep: true },
     );
+
+    watch(
+      video,
+      async () => {
+        if (video.value) {
+          video.value.onplay = async () => {
+            await store.dispatch("teacherRoom/setMediaState", true);
+          };
+          video.value.onpause = async () => {
+            await store.dispatch("teacherRoom/setMediaState", false);
+          };
+          video.value.onseeked = async () => {
+            await store.dispatch("teacherRoom/setCurrentTimeMedia", video.value?.currentTime);
+          };
+        }
+      },
+      { deep: true },
+    );
+    watch(
+      audio,
+      async () => {
+        if (audio.value) {
+          audio.value.onplay = async () => {
+            await store.dispatch("teacherRoom/setMediaState", true);
+          };
+          audio.value.onpause = async () => {
+            await store.dispatch("teacherRoom/setMediaState", false);
+          };
+          audio.value.onseeked = async () => {
+            await store.dispatch("teacherRoom/setCurrentTimeMedia", audio.value?.currentTime);
+          };
+        }
+      },
+      { deep: true },
+    );
+
     const warningMsg = computed(() => fmtMsg(WhiteBoard.TextBoxWarning));
     const warningMsgLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
@@ -1086,6 +1203,7 @@ export default defineComponent({
     const forTeacherUseOnlyText = computed(() => fmtMsg(TeacherClass.ForTeacherUseOnly));
     return {
       currentExposureItemMedia,
+      mediaTypeId,
       clickedTool,
       cursorPosition,
       toolNames,
@@ -1114,13 +1232,15 @@ export default defineComponent({
       hideAllTargetTextBtn,
       handleClickOutsideCanvas,
       wrapCanvasRef,
-	  zoomIn,
-	  zoomOut,
-	  showHidePreviewModal,
-	  disablePreviewBtn,
-	  zoomPercentage,
+      zoomIn,
+      zoomOut,
+      showHidePreviewModal,
+      disablePreviewBtn,
+      zoomPercentage,
       isTeacherUseOnly,
       forTeacherUseOnlyText,
+      video,
+      audio,
     };
   },
 });

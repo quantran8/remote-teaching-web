@@ -1,25 +1,23 @@
-import { store as AppStore } from "@/store";
-import { ClassRoomStatus, StudentModel, TeacherModel, RoomModel } from "@/models";
-import { GLErrorCode } from "@/models/error.model";
-import { Target } from "@/store/interactive/state";
-import { ExposureStatus } from "@/store/lesson/state";
-import { FabricObject, WSEventHandler } from "@/ws";
-import { ActionContext } from "vuex";
-import { ClassViewFromValue, InClassStatus } from "../interface";
-import { ClassActionFromValue, StudentRoomState } from "./state";
-import { Pointer, UserShape } from "@/store/annotation/state";
-import * as medal from "@/assets/lotties/medal.json";
 import * as cameraOff from "@/assets/icons/camera_off.png";
 import * as cameraOn from "@/assets/icons/camera_on.png";
 import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
-import { reactive } from "vue";
-import { notification } from "ant-design-vue";
-import { fmtMsg } from "vue-glcommonui";
+import * as medal from "@/assets/lotties/medal.json";
 import { StoreLocale } from "@/locales/localeid";
+import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
+import { GLErrorCode } from "@/models/error.model";
+import { store as AppStore } from "@/store";
+import { Pointer, UserShape } from "@/store/annotation/state";
+import { Target } from "@/store/interactive/state";
+import { ExposureStatus } from "@/store/lesson/state";
 import { Logger } from "@/utils/logger";
-import _ from "lodash";
-import { VCPlatform } from "@/store/app/state";
+import { FabricObject, WSEventHandler } from "@/ws";
+import { notification } from "ant-design-vue";
+import { reactive } from "vue";
+import { fmtMsg } from "vue-glcommonui";
+import { ActionContext } from "vuex";
+import { ClassViewFromValue, InClassStatus } from "../interface";
+import { ClassActionFromValue, StudentRoomState } from "./state";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
   const { commit, dispatch, state, getters } = store;
@@ -296,6 +294,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setStudentDrawsLine", null, { root: true });
       await dispatch("annotation/setClearOneTeacherDrawsStrokes", null, { root: true });
       await dispatch("annotation/setClearOneStudentDrawsLine", null, { root: true });
+      await dispatch("annotation/clearPencilPath", null, { root: true });
       // await dispatch("annotation/setClearOneStudentAddShape", null, { root: true });
       // await dispatch("annotation/setClearOneTeacherAddShape", null, { root: true });
     },
@@ -365,7 +364,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected,skipToSetCurrentExposureItemMedia:true }, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected, skipToSetCurrentExposureItemMedia: true }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await commit("updateIsPalette", {
           id: payload.student.id,
@@ -381,6 +380,12 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherSetWhiteboard: async (payload: any) => {
       await commit("setWhiteboard", payload);
+    },
+    onTeacherSetMediaState: async (payload: any) => {
+      commit("setMediaState", payload);
+    },
+    onTeacherSetCurrentTimeMedia: async (payload: any) => {
+      commit("setCurrentTimeMedia", payload);
     },
     onTeacherDrawLaser: async (payload: any) => {
       await commit("setDrawLaser", JSON.parse(payload));
@@ -420,10 +425,12 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onToggleAllShapes: async (payload: any) => {
       await dispatch("lesson/setTargetsVisibleAllAction", payload, { root: true });
     },
-	onTeacherUpdateSessionLessonAndUnit: async () => {
-	  commit({ type: "lesson/clearLessonData" }, { root: true });
-	  await dispatch("getClassRoomInfo");
-	},
+    onTeacherUpdateSessionLessonAndUnit: async () => {
+      await dispatch("lesson/setZoomRatio", 1, { root: true });
+      await dispatch("lesson/setImgCoords", undefined, { root: true });
+      commit({ type: "lesson/clearLessonData" }, { root: true });
+      await dispatch("getClassRoomInfo");
+    },
     onRoomInfo: async (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {
@@ -433,26 +440,26 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
     },
-	onTeacherZoomSlide: async(p: number) => {
-		await dispatch("lesson/setZoomRatio", p, { root: true });
-	},
-	onTeacherMoveZoomedSlide: async(p: {x: number, y: number}) => {
-		await dispatch("lesson/setImgCoords", p, { root: true });
-
-	},
-	onTeacherResetZoom: async(p: any) => {
-		await dispatch("lesson/setZoomRatio", undefined, { root: true });
-
-	},
-  onTeacherSendRequestCaptureImage: (p:string) => {
-    if(state.student?.id === p){
-      dispatch("studentRoom/setStudentImageCaptured", { id: p, capture: true }, { root: true });
-    }
-   
-  },
-  onStudentSendCapturedImageStatus: (p: any) => {
-    // console.log(p);
-  }
+    onTeacherZoomSlide: async (p: number) => {
+      await dispatch("lesson/setZoomRatio", p, { root: true });
+    },
+    onTeacherMoveZoomedSlide: async (p: { x: number; y: number }) => {
+      await dispatch("lesson/setImgCoords", p, { root: true });
+    },
+    onTeacherResetZoom: async (p: any) => {
+      await dispatch("lesson/setZoomRatio", undefined, { root: true });
+    },
+    onTeacherSendRequestCaptureImage: (p: { isCaptureAll: boolean; studentId: string }) => {
+      if (state.student?.id === p.studentId || p.isCaptureAll) {
+        dispatch("studentRoom/setStudentImageCaptured", { id: p, capture: true }, { root: true });
+      }
+    },
+    onStudentSendCapturedImageStatus: (p: any) => {
+      // console.log(p);
+    },
+    onTeacherDrawPencil: async (p: string) => {
+      await dispatch("annotation/setDrawPencil", p, { root: true });
+    },
   };
   return handler;
 };

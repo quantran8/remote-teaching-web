@@ -1,13 +1,13 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { UserShape } from "@/store/annotation/state";
 import { ExposureStatus } from "@/store/lesson/state";
+import { Logger } from "@/utils/logger";
 import { WSEventHandler } from "@/ws";
+import { notification } from "ant-design-vue";
 import { ActionContext } from "vuex";
-import { ClassViewFromValue, InClassStatus } from "../interface";
+import { ClassViewFromValue, InClassStatus, StudentCaptureStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { UserShape } from "@/store/annotation/state";
-import { notification } from "ant-design-vue";
-import { Logger } from "@/utils/logger";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -24,10 +24,22 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
       });
-      commit("updateIsPalette", {
-        id: payload.id,
-        isPalette: payload.isPalette,
-      });
+      const isMarkedStudent = state.students.find((student) => student.isPalette === true);
+      if (isMarkedStudent) {
+        await dispatch(
+          "teacherRoom/toggleAnnotation",
+          {
+            studentId: payload.id,
+            isEnable: false,
+          },
+          { root: true },
+        );
+      } else {
+        commit("updateIsPalette", {
+          id: payload.id,
+          isPalette: payload.isPalette,
+        });
+      }
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
@@ -283,6 +295,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
       commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
+    onTeacherSetMediaState: async (payload: any) => {
+      commit("teacherRoom/setMediaState", payload, { root: true });
+    },
+    onTeacherSetCurrentTimeMedia: async (payload: any) => {
+      commit("teacherRoom/setCurrentTimeMedia", payload, { root: true });
+    },
     onTeacherDrawLaser: (payload: any) => {
       //   Logger.log(payload);
     },
@@ -310,7 +328,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       Logger.info("Toggle all targets");
     },
     onTeacherUpdateSessionLessonAndUnit: async (payload: any) => {
-	  Logger.info("Teacher update lesson and unit");
+      Logger.info("Teacher update lesson and unit");
     },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
@@ -321,34 +339,27 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
     },
-	onTeacherZoomSlide: (p: any) => {
-		//
-	},
-	onTeacherMoveZoomedSlide: (p: any) => {
-		//
-	},
-	onTeacherResetZoom: (p: any) => {
-		//
-	},
-  onTeacherSendRequestCaptureImage: (p: string) => {
-//  
-},
-  onStudentSendCapturedImageStatus: (p:{studentId: string, fileName: string, isUploaded: boolean, imageCapturedCount: number, error: string}) => {
-    console.log(p);
-    if(p.isUploaded){
-      notification.success({
-        message:"capture image success",
-        duration:3
-      });
-      commit("setStudentImageCapturedCount",{id:p.studentId,imageCapturedCount:p.imageCapturedCount})
-    }
-    else{
-      notification.error({
-        message: "cant capture image ",
-        duration: 3
-      });
-    }
-  }
+    onTeacherZoomSlide: (p: any) => {
+      //
+    },
+    onTeacherMoveZoomedSlide: (p: any) => {
+      //
+    },
+    onTeacherResetZoom: (p: any) => {
+      //
+    },
+    onTeacherDrawPencil: (p: string) => {
+      //
+    },
+    onTeacherSendRequestCaptureImage: (p: string) => {
+      //
+    },
+    onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
+      commit("setStudentsCaptureDone", p);
+      if (p.isUploaded) {
+        commit("setStudentImageCapturedCount", { id: p.studentId, imageCapturedCount: p.imageCapturedCount });
+      }
+    },
   };
   return handler;
 };

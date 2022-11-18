@@ -15,7 +15,7 @@ export default defineComponent({
       const el = document.querySelector<HTMLElement>(`.${MODAL_CONTENT}`)!;
       if (currentVal) {
         await nextTick();
-		// edit modal style below rather than use builtin vue-final-modal "styles" prop to avoid remove resize and drag func.
+        // edit modal style below rather than use builtin vue-final-modal "styles" prop to avoid remove resize and drag func.
         el.style.maxHeight = `80vh`;
         el.style.maxWidth = `90vw`;
         el.style.width = `300px`;

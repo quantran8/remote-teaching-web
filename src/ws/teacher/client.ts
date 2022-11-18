@@ -165,6 +165,12 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestSetWhiteboard(isShowWhiteBoard: boolean) {
     return this.send(WSCmd.TEACHER_SET_WHITEBOARD, isShowWhiteBoard);
   }
+  sendRequestSetMediaState(payload: any){
+    return this.send(WSCmd.TEACHER_SET_MEDIA_STATE, payload);
+  }
+  sendRequestSetCurrentTimeMedia(payload: any){
+	return this.send(WSCmd.TEACHER_SET_CURRENT_TIME_MEDIA, payload);
+  }
   sendRequestDrawLaser(payload: any) {
     const data = JSON.stringify(payload);
     return this.send(WSCmd.TEACHER_DRAW_LASER_PEN, data);
@@ -193,7 +199,10 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestMoveZoomedSlide(payload:{x:number, y: number, viewPortX: number, viewPortY: number}) {
 	return this.invoke(WSCmd.TEACHER_MOVE_ZOOMED_SLIDE, payload);
   }
-  sendRequestCaptureImage(payload: string){
+  sendRequestCaptureImage(payload: {isCaptureAll: boolean, studentId: string}){
     return this.invoke(WSCmd.TEACHER_SEND_REQUEST_CAPTURE_IMAGE,payload);
+  }
+  sendRequestDrawPencil(payload: any) {
+    return this.send(WSCmd.TEACHER_DRAW_PENCIL_PEN, JSON.stringify(payload));
   }
 }

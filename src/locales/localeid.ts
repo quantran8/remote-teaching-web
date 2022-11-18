@@ -172,6 +172,7 @@ export class TeacherCalendarLocale {
   static School = "teacher_calendar.school";
   static All = "teacher_calendar.all";
   static Back = "teacher_calendar.back";
+  static ScheduleNewRemoteSession = "teacher_calendar.schedule_new_remote_session";
 }
 
 export class TeacherClassDesignate {
@@ -200,6 +201,7 @@ export class TeacherClassLessonPlan {
   static ComponentSlides = "teacher_class_lesson_plan.component_slides";
   static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
   static NoData = "teacher_class_lesson_plan.no_data";
+  static AlternateMedia = "teacher_class_lesson_plan.alternate_media";
 }
 
 export class TeacherClassGallery {
@@ -212,6 +214,7 @@ export class TeacherClassGallery {
   static ShowAll = "teacher_class_gallery.show_all";
   static HideAll = "teacher_class_gallery.hide_all";
   static NoStudentJoinClass = "teacher_class_gallery.no_student_join_class";
+  static CaptureAll = "teacher_class_gallery.capture_all";
 }
 
 export class TeacherHome {
@@ -291,6 +294,20 @@ export class ResourcesMenuLocale {
 }
 
 export class HelpMenuLocal {
-	static Contact = "help.menu.contact";
-	static Documentation = "help.menu.documentation";
-  }
+  static Contact = "help.menu.contact";
+  static Documentation = "help.menu.documentation";
+}
+export class WriterReview {
+  static Title = "writer_review.title";
+}
+export class CaptureNotification {
+  static CaptureSuccessStudent = "capture_status.capture_successfully_student";
+  static CaptureSuccessAll = "capture_status.capture_successfully_all";
+  static CaptureSuccessAmount = "capture_status.capture_successfully_amount";
+  static CaptureErrorStudent = "capture_status.capture_error_student";
+  static CaptureErrorAmount = "capture_status.capture_error_amount";
+  static ReachedMaximum = "capture_status.reached_maximum";
+  static StudentsReachedMaximum = "capture_status.students_reached_maximum";
+  static EnableStudentVideo = "capture_status.enable_student_video";
+  static EnableAllStudentVideo = "capture_status.enable_all_student_video";
+}

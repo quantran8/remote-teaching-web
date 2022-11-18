@@ -82,7 +82,7 @@ export interface StudentRoomState {
     }>;
     isDone: boolean;
   };
-  startCaptureImage: boolean
+  startCaptureImage: boolean;
 
   isDisconnected: boolean;
   isJoined: boolean;
@@ -91,6 +91,8 @@ export interface StudentRoomState {
   apiStatus: GLApiStatus | null;
   videosFeedVisible: boolean;
   browserFingerPrinting: string;
+  mediaState: boolean;
+  currentTimeMedia: number;
 }
 
 const initialVideosFeedVisible = isDesktopBrowser ? true : false;
@@ -115,7 +117,7 @@ const state: StudentRoomState = {
     lines: [],
     isDone: false,
   },
-  startCaptureImage:false,
+  startCaptureImage: false,
 
   isDisconnected: !navigator.onLine,
   teacherIsDisconnected: false,
@@ -124,6 +126,8 @@ const state: StudentRoomState = {
   apiStatus: null,
   videosFeedVisible: initialVideosFeedVisible,
   browserFingerPrinting: "",
+  mediaState: false,
+  currentTimeMedia: 0,
 };
 
 export default state;
