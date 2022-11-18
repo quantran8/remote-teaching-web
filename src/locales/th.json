@@ -142,7 +142,6 @@
 	"teacher_class.student_has_left_the_class": "{studentName} has left the class.",
 	"teacher_class.student_has_lost_connection": "It seems {studentName} had a connectivity issue that caused them to leave the class.",
 	"teacher_calendar.back": "กลับคืน",
-	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"teacher_class_error.connect_agora_servers_error": "Cannot connect to Agora servers, please try to reload the page.",
 	"teacher_class_error.publish_stream_error": "Cannot publish video or audio streams to Agora servers, please try to reload the page.",
 	"accessinformation.line1": "GrapeSEED Connect Access Information",
@@ -181,14 +180,15 @@
 	"writer_review.ok": "Ok",
 	"writer_review.cancel": "Cancel",
 	"writer_review.no_image_exist": "No images exist",
-	"writer_review.title":"Writer Review",
 	"capture_status.capture_successfully_student": "Capture successfully for {studentName}",
-	"capture_status.capture_successfully_all": "Capture successfully all student available",
+	"capture_status.capture_successfully_all": "Capture successfully for all students available",
 	"capture_status.capture_successfully_amount": "Capture success {studentsCaptureSuccess}/{studentsToCapture} student",
 	"capture_status.capture_error_student": "Cant capture image for {studentName}",
 	"capture_status.capture_error_amount": "Cant capture image for {studentsName}",
 	"capture_status.enable_student_video": "Please enable {studentName} video",
 	"capture_status.enable_all_student_video": "Please enable all student video",
 	"capture_status.reached_maximum": "{studentName} has reached the maximum number of photos",
-	"capture_status.students_reached_maximum": "{studentsName} have reached the maximum number of photos"
+	"capture_status.students_reached_maximum": "{studentsName} have reached the maximum number of photos",
+	"writer_review.title": "Writer Review",
+	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session"
 }
