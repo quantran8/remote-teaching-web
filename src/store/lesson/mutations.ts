@@ -1,17 +1,7 @@
-import { MutationTree } from "vuex";
-import {
-  Exposure,
-  ExposureStatus,
-  ExposureType,
-  LessonState,
-  ExposureItemMedia,
-  CropMetadata,
-  TargetsVisibleAll,
-  TargetsVisibleList,
-  ExposureItem,
-} from "./state";
-import MediaItemTransition from "@/assets/images/transition.png";
 import MediaItemLpComplete from "@/assets/images/lp-complete.png";
+import MediaItemTransition from "@/assets/images/transition.png";
+import { MutationTree } from "vuex";
+import { CropMetadata, Exposure, ExposureItemMedia, ExposureStatus, ExposureType, LessonState, TargetsVisibleAll, TargetsVisibleList } from "./state";
 
 interface LessonMutationInterface<S> {
   setIsBlackOut(s: S, p: { IsBlackOut: boolean }): void;
@@ -94,9 +84,19 @@ const mutations: LessonMutation<LessonState> = {
 
     // set the first media item to currentExposureItemMedia
     if (!p.skipToSetCurrentExposureItemMedia) {
-      if (s.currentExposure && s.currentExposure.items.length > 0) {
+      if (
+        s.currentExposure &&
+        (s.currentExposure.items.length > 0 ||
+          s.currentExposure.contentBlockItems.length > 0 ||
+          s.currentExposure.teachingActivityBlockItems.length > 0)
+      ) {
+        const firstItemMediaList = [
+          ...s.currentExposure.items,
+          ...s.currentExposure.contentBlockItems,
+          ...s.currentExposure.teachingActivityBlockItems,
+        ];
         s.currentExposureItemMedia = undefined;
-        const firstItem = s.currentExposure.items.find((item) => item.media.length);
+        const firstItem = firstItemMediaList.find((item) => item.media.length);
         if (firstItem) {
           s.currentExposureItemMedia = firstItem.media[0];
         }

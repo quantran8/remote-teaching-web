@@ -1,23 +1,23 @@
-import { debounce } from "lodash";
-import { TeacherClassLessonPlan } from "@/locales/localeid";
-import { computed, defineComponent, ref, watch, onUnmounted, onMounted, reactive, nextTick } from "vue";
-import { useStore } from "vuex";
-import LessonActivity from "./lesson-activity/lesson-activity.vue";
-import ExposureDetail from "./exposure-detail/exposure-detail.vue";
-import { Exposure, ExposureItem, ExposureStatus, ExposureType } from "@/store/lesson/state";
-import IconNext from "@/assets/images/arrow-forward.png";
-import IconNextDisable from "@/assets/images/arrow-disable-forward.png";
 import IconPrev from "@/assets/images/arrow-back.png";
 import IconPrevDisable from "@/assets/images/arrow-disable-back.png";
-import { ClassView } from "@/store/room/interface";
-import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
-import { fmtMsg } from "vue-glcommonui";
-import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
-import { Empty, Badge } from "ant-design-vue";
-import { PushpinOutlined, CloseOutlined } from "@ant-design/icons-vue";
-import { useElementSize } from "@vueuse/core";
+import IconNextDisable from "@/assets/images/arrow-disable-forward.png";
+import IconNext from "@/assets/images/arrow-forward.png";
 import { PinningModal } from "@/components/common";
 import { PINNING_MODAL_CONTAINER } from "@/components/common/pinning-modal/pinning-modal";
+import { TeacherClassLessonPlan } from "@/locales/localeid";
+import { Exposure, ExposureType } from "@/store/lesson/state";
+import { ClassView } from "@/store/room/interface";
+import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
+import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
+import { CloseOutlined, PushpinOutlined } from "@ant-design/icons-vue";
+import { useElementSize } from "@vueuse/core";
+import { Badge, Empty } from "ant-design-vue";
+import { debounce } from "lodash";
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
+import { useStore } from "vuex";
+import ExposureDetail from "./exposure-detail/exposure-detail.vue";
+import LessonActivity from "./lesson-activity/lesson-activity.vue";
 
 export const exposureTypes = {
   TRANSITION_BLOCK: "TRANSITION_BLOCK",
@@ -135,19 +135,9 @@ export default defineComponent({
         isBlackOut: exposure.type === ExposureType.TRANSITION,
       });
       await dispatch("teacherRoom/setCurrentExposure", { id: exposure.id });
-      const listAlternate = [...exposure.alternateMediaBlockItems];
-      const alternateMedia: Array<ExposureItem> = [];
-      listAlternate.forEach((items) => {
-        items.forEach((item) => {
-          alternateMedia.push(item);
-        });
-      });
-      const firstItemMediaNewExposureId = [
-        ...exposure.items,
-        ...exposure.contentBlockItems,
-        ...exposure.teachingActivityBlockItems,
-        ...alternateMedia,
-      ].filter((item) => item.media[0]?.image?.url)[0]?.id;
+      const firstItemMediaNewExposureId = [...exposure.items, ...exposure.contentBlockItems, ...exposure.teachingActivityBlockItems].filter(
+        (item) => item.media[0]?.image?.url,
+      )[0]?.id;
 
       await dispatch("teacherRoom/setMode", {
         mode: 1,
