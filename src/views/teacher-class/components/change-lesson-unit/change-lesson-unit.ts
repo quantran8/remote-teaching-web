@@ -1,10 +1,10 @@
-import { defineComponent, computed, ref, watch } from "vue";
-import { useStore } from "vuex";
-import { Modal, Switch, Select, Button, Skeleton, Divider, Row, Space, Spin, Checkbox, notification } from "ant-design-vue";
-import { UnitAndLesson, MediaStatus, ClassRoomModel } from "@/models";
-import { fmtMsg } from "vue-glcommonui";
-import { DeviceTesterLocale, ChangeLessonUnitLocale, CommonLocale } from "@/locales/localeid";
+import { ChangeLessonUnitLocale, DeviceTesterLocale } from "@/locales/localeid";
+import { ClassRoomModel, UnitAndLesson } from "@/models";
 import { getListUnitByClassAndGroup } from "@/views/teacher-home/lesson-helper";
+import { Button, Checkbox, Divider, Modal, notification, Row, Select, Skeleton, Space, Spin, Switch } from "ant-design-vue";
+import { computed, defineComponent, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
@@ -123,6 +123,7 @@ export default defineComponent({
           isCompleted: isCompleted.value,
         });
         loading.value = false;
+        isCompleted.value = false;
         handleCancel();
       } catch (error) {
         const message = error?.body?.message;
