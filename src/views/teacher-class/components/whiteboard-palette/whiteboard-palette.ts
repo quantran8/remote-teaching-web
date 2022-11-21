@@ -273,7 +273,6 @@ export default defineComponent({
       processAnnotationLesson(props.image, canvas, true, "show-all-targets", group);
       disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
-      disablePreviewBtn.value = true;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
       //   userId: isTeacher.value.id,
       //   visible: true,
@@ -286,11 +285,9 @@ export default defineComponent({
       if (isShowPreviewCanvas.value) {
         disableHideAllTargetsBtn.value = true;
         disableShowAllTargetsBtn.value = false;
-        disablePreviewBtn.value = true;
       } else {
         disableHideAllTargetsBtn.value = true;
         disableShowAllTargetsBtn.value = false;
-        disablePreviewBtn.value = false;
         // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
         //   userId: isTeacher.value.id,
         //   visible: false,
@@ -333,7 +330,6 @@ export default defineComponent({
             visible: false,
           });
         }
-        if (targetsList.value[0].visible) disablePreviewBtn.value = true;
       }
     };
     watch(targetsList, processTargetsList, { deep: true });
