@@ -53,9 +53,10 @@
       <Swiper
         v-else
         :style="{
-          '--swiper-navigation-color': '#fff',
+          '--swiper-navigation-color': '#c4c4c4',
           '--swiper-pagination-color': '#fff',
         }"
+        :spaceBetween="30"
         :cssMode="true"
         :navigation="true"
         :pagination="{
