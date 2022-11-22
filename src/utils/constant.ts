@@ -9,6 +9,7 @@ export const PREV_EXPOSURE = 2;
 export const SESSION_MAXIMUM_IMAGE = 10;
 export const MAX_ZOOM_RATIO = 4;
 export const MIN_ZOOM_RATIO = 1;
+export const IMAGE_QUALITY = 1.0;
 
 const genLocalStorageKey = (key: string) => `__RT_${key}__`;
 
