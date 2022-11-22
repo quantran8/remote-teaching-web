@@ -1,20 +1,20 @@
-import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
-import { useStore } from "vuex";
-import { gsap } from "gsap";
-import { fabric } from "fabric";
-import { DefaultCanvasDimension } from "@/utils/utils";
-import { TeacherModel } from "@/models";
-import { useFabricObject } from "@/hooks/use-fabric-object";
-import { LastFabricUpdated } from "@/store/annotation/state";
-import { Popover } from "ant-design-vue";
 import { studentAddedShapes } from "@/components/common/annotation-view/components/add-shapes";
-import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculumStudent } from "@/components/common/annotation-view/components/annotation-curriculum";
+import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { TeacherModel } from "@/models";
+import { LastFabricUpdated } from "@/store/annotation/state";
+import { IMAGE_QUALITY, SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { DefaultCanvasDimension, SmoothingQuality } from "@/utils/utils";
+import { Popover } from "ant-design-vue";
+import { fabric } from "fabric";
+import { gsap } from "gsap";
 import { debounce } from "lodash";
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
+import { useStore } from "vuex";
 import { pencilPen } from "./components/pencil-path";
-import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 
 const DEFAULT_STYLE = {
   width: "100%",
@@ -158,8 +158,10 @@ export default defineComponent({
       if (value) {
         const context = captureCanvas.getContext("2d");
         const videoEl = document.getElementById(student.value.id)?.getElementsByTagName("video")[0];
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = SmoothingQuality.High;
         context?.drawImage(videoEl as CanvasImageSource, 0, 0, captureCanvas.width, captureCanvas.height);
-        const base64Url = captureCanvas.toDataURL("image/jpeg");
+        const base64Url = captureCanvas.toDataURL("image/jpeg", IMAGE_QUALITY);
         const res = await fetch(base64Url);
         const buffer = await res.arrayBuffer();
         const fileName = `student_${student.value.id}_${Math.floor(Math.random() * 10000)}.jpeg`;
