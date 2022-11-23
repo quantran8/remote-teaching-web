@@ -102,6 +102,9 @@
         <div class="ant-col-24 ant-col-sm-18">
           <Space size="large" align="center" class="device-tester__check-mic-cam">
             <div class="device-tester__speaker--icon">
+              <audio loop id="audio" style="display: none">
+                <source src="@/assets/audio/ConnectTestSound.mp3" type="audio/mp3" />
+              </audio>
               <img :src="speakerIcon" @click="toggleSpeaker" alt="" />
             </div>
             <Select
