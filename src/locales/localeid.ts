@@ -135,6 +135,7 @@ export class DeviceTesterLocale {
   static MessageWarningMic = "device_tester.message_warning_mic";
   static MessageWarningCamera = "device_tester.message_warning_camera";
   static CheckSpeaker = "device_tester.check_speaker";
+  static MessageWarningSpeaker = "device_tester.message_warning_speaker";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
