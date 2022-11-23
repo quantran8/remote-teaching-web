@@ -1,19 +1,18 @@
-import { ParentHomeLocale } from "./../../locales/localeid";
+import { DeviceTester } from "@/components/common";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
+import { ClassRoomStatus } from "@/models";
 import { ChildModel, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import { AppView } from "@/store/app/state";
+import { Logger } from "@/utils/logger";
+import { queryStringToObject } from "@/utils/utils";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Button, Checkbox, Modal, notification, Row } from "ant-design-vue";
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { ParentHomeLocale } from "./../../locales/localeid";
 import StudentCard from "./components/student-card/student-card.vue";
-import { Modal, Checkbox, Button, Row } from "ant-design-vue";
-import { fmtMsg } from "vue-glcommonui";
-import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AppView } from "@/store/app/state";
-import { DeviceTester } from "@/components/common";
-import { ClassRoomStatus } from "@/models";
-import { Logger } from "@/utils/logger";
-import { notification } from "ant-design-vue";
-import { queryStringToObject } from "@/utils/utils";
 
 const fpPromise = FingerprintJS.load();
 
@@ -128,6 +127,9 @@ export default defineComponent({
       if (children.value) {
         await getNextSessionInfo();
       }
+    });
+    onMounted(async () => {
+      await store.dispatch("parent/loadChildren");
     });
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
