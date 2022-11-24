@@ -237,7 +237,8 @@ export default defineComponent({
       const isNotCompleted = currentExposure.contentBlockItems.some((item: any) => {
         return item.isClicked === false;
       });
-      return !isNotCompleted;
+      //   return !isNotCompleted;
+      return false;
     });
 
     const isTransitionType = computed(() => {
