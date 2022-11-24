@@ -116,9 +116,12 @@
                 {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
-            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />
+            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />	
           </Space>
         </div>
+		<p v-show="!havePermissionMicrophone">
+          <span class="alert-device-test">{{ warningMsgSpeaker }}</span>
+        </p>
       </Row>
 
       <!-- <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
