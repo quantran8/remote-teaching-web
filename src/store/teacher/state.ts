@@ -1,7 +1,7 @@
-import { ClassRoomModel } from "./../../models/room.model";
-import { RoomModel, CalendarSchedulesModel, TeacherClassCalendarModel, TeacherClassModel } from "@/models";
+import { CalendarSchedulesModel, RoomModel, TeacherClassCalendarModel, TeacherClassModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
+import { ClassRoomModel } from "./../../models/room.model";
 
 export interface StudentsGroup {
   groupId: string;
@@ -21,6 +21,7 @@ export interface TeacherState {
   classOnline: ClassRoomModel | undefined;
   currentSchoolId: string;
   currentGroupStudents: Array<StudentsGroup>;
+  classesSchedulesBySchools: Array<TeacherClassModel>;
 }
 
 const state: TeacherState = {
@@ -34,6 +35,7 @@ const state: TeacherState = {
   classOnline: undefined,
   currentSchoolId: "",
   currentGroupStudents: [],
+  classesSchedulesBySchools: [],
 };
 
 export default state;
