@@ -1,20 +1,22 @@
-import { computed, defineComponent, ref, onMounted, watch } from "vue";
-import { Radio, Select, Button, Calendar, Input, Table, Modal, DatePicker, Popconfirm } from "ant-design-vue";
-import { useStore } from "vuex";
-import { Moment } from "moment";
+import { WriterReview } from "@/locales/localeid";
+import { RoomModel, TeacherClassModel } from "@/models";
 import { AccessibleSchoolQueryParam } from "@/services";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { useRoute } from "vue-router";
-import { RoomModel } from "@/models";
-import { FilterMode } from "@/utils/utils";
 import { BlobTagItem } from "@/services/storage/interface";
 import { StudentsGroup } from "@/store/teacher/state";
-import { Swiper, SwiperSlide } from "swiper/vue";
+import { FilterMode } from "@/utils/utils";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Button, Calendar, DatePicker, Input, Modal, notification, Popconfirm, Radio, Select, Table } from "ant-design-vue";
+import { RadioChangeEvent } from "ant-design-vue/lib/radio";
+import { Moment } from "moment";
 import { Navigation, Pagination } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { RadioChangeEvent } from "ant-design-vue/lib/radio";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
+import { fmtMsg } from "vue-glcommonui";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 
 const fpPromise = FingerprintJS.load();
 interface Value {
@@ -41,17 +43,30 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const { schoolId, studentId } = useRoute().params;
-    const classesSchedules = computed(() => getters["teacher/classesSchedules"]);
+    const noClassOrGroupText = computed(() => fmtMsg(WriterReview.NoClassOrGroup));
+    const noStudentText = computed(() => fmtMsg(WriterReview.NoStudent));
+    const classesSchedules = computed<Array<TeacherClassModel>>(() => getters["teacher/classesSchedules"]);
+    const classesSchedulesBySchools = computed<Array<TeacherClassModel>>(() => getters["teacher/classesSchedulesBySchools"]);
     const schools = computed(() => getters["teacher/schools"]);
     const studentsGroup = computed<Array<StudentsGroup>>(() => getters["teacher/currentStudentsGroup"]);
     const classInfo = computed<RoomModel>(() => getters["teacherRoom/info"]);
     const userInfo = computed(() => getters["auth/getLoginInfo"]);
     const studentsImageCaptured = computed<Array<BlobTagItem>>(() => getters["teacherRoom/studentsImageCaptured"]);
     const visitorId = ref("");
+    const sessionFilter = ref({
+      schoolId: "",
+      classId: "",
+      groupId: "",
+    });
+    const studentFilter = ref({
+      classId: "",
+      groupId: "",
+      studentId: "",
+    });
     const listDateByStudent = computed(() => {
       const listDate: Array<string> = [];
       studentsImageCaptured.value
-        .filter((blob) => blob.tags.studentId === filterOptions.value.student)
+        .filter((blob) => blob.tags.studentId === studentSelected.value.value)
         ?.forEach((item) => {
           if (!listDate.includes(item.tags.dateTime)) {
             listDate.push(item.tags.dateTime);
@@ -59,25 +74,59 @@ export default defineComponent({
         });
       return listDate;
     });
-    const schoolOptions = computed(() => schools.value?.map((school: any) => ({ value: school.id, label: school.name })) ?? []);
-    const classOptions = computed<Array<Value>>(() => classesSchedules.value?.map((c: any) => ({ value: c.classId, label: c.className })) ?? []);
-    const studentOptions = computed<Array<Value>>(
-      () => studentsGroup.value?.map((student) => ({ value: student.studentId, label: student.nativeName })) ?? [],
-    );
+    const schoolOptions = computed<Array<Value>>(() => schools.value?.map((school: any) => ({ value: school.id, label: school.name })) ?? []);
+    const classOptions = computed<Array<Value>>(() => {
+      if (filterMode.value === FilterMode.Student) {
+        return classesSchedulesBySchools.value?.map((c: any) => ({ value: c.classId, label: c.className })) ?? [];
+      }
+      return classesSchedules.value?.map((c: any) => ({ value: c.classId, label: c.className })) ?? [];
+    });
+    const studentOptions = computed<Array<Value>>(() => {
+      return studentsGroup.value?.map((student) => ({ value: student.studentId, label: student.studentName })) ?? [];
+    });
     const groupOptions = computed<Array<Value>>(() => {
-      return (
-        classesSchedules.value
-          .find((c: any) => c.classId === classSelected.value.value)
-          ?.groups.map((group: any) => ({
+      if (filterMode.value === FilterMode.Student) {
+        return (
+          classesSchedulesBySchools.value
+            .find((c) => c.classId === classSelected.value.value)
+            ?.groups.map((group) => ({
+              value: group.groupId,
+              label: `${group.groupName} ${
+                filterMode.value === FilterMode.Student ? "" : "(" + classesSchedulesBySchools.value[0]?.className + ")" ?? ""
+              }`,
+            })) ?? []
+        );
+      }
+      const groups: any[] = [];
+      classesSchedules.value.forEach((c) => {
+        c.groups.forEach((group) => {
+          groups.push({
             value: group.groupId,
-            label: `${group.groupName} ${filterMode.value === FilterMode.Student ? "" : "(" + classesSchedules.value[0]?.className + ")" ?? ""}`,
-          })) ?? []
-      );
+            label: `${group.groupName} ${"(" + c.className + ")" ?? ""}`,
+          });
+        });
+      });
+      return groups;
     });
     const classSelected = computed(() => {
-      if (filterOptions.value.class) {
+      if (filterMode.value === FilterMode.Student) {
+        if (studentFilter.value.classId) {
+          return {
+            value: studentFilter.value.classId,
+          };
+        }
+        if (classOptions.value.length) {
+          return {
+            value: classOptions.value[0].value,
+          };
+        }
         return {
-          value: filterOptions.value.class,
+          value: "",
+        };
+      }
+      if (sessionFilter.value.classId) {
+        return {
+          value: sessionFilter.value.classId,
         };
       }
       if (classOptions.value.length) {
@@ -90,9 +139,9 @@ export default defineComponent({
       };
     });
     const schoolSelected = computed(() => {
-      if (filterOptions.value.school) {
+      if (sessionFilter.value.schoolId) {
         return {
-          value: filterOptions.value.school,
+          value: sessionFilter.value.schoolId,
         };
       }
       if (schoolOptions.value.length) {
@@ -105,9 +154,19 @@ export default defineComponent({
       };
     });
     const groupSelected = computed(() => {
-      if (filterOptions.value.group) {
+      if (filterMode.value === FilterMode.Student) {
+        if (studentFilter.value.groupId) {
+          return {
+            value: studentFilter.value.groupId,
+          };
+        }
         return {
-          value: filterOptions.value.group,
+          value: groupOptions.value[0]?.value,
+        };
+      }
+      if (sessionFilter.value.groupId) {
+        return {
+          value: sessionFilter.value.groupId,
         };
       }
       if (groupOptions.value.length) {
@@ -120,19 +179,38 @@ export default defineComponent({
       };
     });
     const studentSelected = computed(() => {
-      if (filterOptions.value.student) {
+      if (filterMode.value === FilterMode.Student) {
+        if (studentFilter.value.studentId) {
+          return {
+            value: studentFilter.value.studentId,
+          };
+        }
+        if (studentOptions.value.length) {
+          return {
+            value: studentOptions.value[0].value,
+          };
+        }
         return {
-          value: filterOptions.value.student,
-        };
-      }
-      if (studentOptions.value.length) {
-        return {
-          value: studentOptions.value[0]?.value,
+          value: "",
         };
       }
       return {
         value: "",
       };
+    });
+    const studentCount = computed(() => {
+      if (filterMode.value === FilterMode.Session) {
+        return (
+          classesSchedules.value
+            .find((c) => c.classId === classSelected.value.value)
+            ?.groups.find((group) => group.groupId === groupSelected.value.value)?.studentCount ?? 0
+        );
+      }
+      return (
+        classesSchedulesBySchools.value
+          .find((c) => c.classId === classSelected.value.value)
+          ?.groups.find((group) => group.groupId === groupSelected.value.value)?.studentCount ?? 0
+      );
     });
     const modules = [Pagination, Navigation];
     const currentDate = ref("");
@@ -167,7 +245,7 @@ export default defineComponent({
         return listDateByStudent.value.map((date: string) => ({
           key: date,
           session: date,
-          count: studentsImageCaptured.value.filter((item) => item.tags.dateTime === date && item.tags.studentId === filterOptions.value.student)
+          count: studentsImageCaptured.value.filter((item) => item.tags.dateTime === date && item.tags.studentId === studentSelected.value.value)
             .length,
         }));
       }
@@ -176,89 +254,118 @@ export default defineComponent({
         student: student.nativeName,
         count: currentDate.value
           ? studentsImageCaptured.value.filter((item) => item.tags.studentId === student.studentId && item.tags.dateTime === currentDate.value).length
-          : 0,
+          : studentsImageCaptured.value.filter((item) => item.tags.studentId === student.studentId).length,
       }));
     });
     const getStorageImages = async () => {
       await dispatch("teacherRoom/getStudentCapturedImages", {
         token: userInfo.value.access_token,
-        schoolId: filterOptions.value.school,
-        sessionId: filterOptions.value.school,
-        classId: filterOptions.value.class,
-        groupId: filterOptions.value.group,
-        studentId: filterOptions.value.student,
-        date: filterOptions.value.date,
+        schoolId: schoolSelected.value.value,
+        classId: classSelected.value.value,
+        groupId: groupSelected.value.value,
+        studentId: studentSelected.value.value,
+        date: "",
         filterMode: filterMode.value,
       });
     };
 
     const handleChangeRadioSelected = async (e: RadioChangeEvent) => {
+      await dispatch("teacher/setCurrentGroupStudents", []);
       filterMode.value = e.target.value;
-      filterOptions.value.filterMode = filterMode.value;
-      if (classSelected.value.value && groupSelected.value.value) {
+      if (studentCount.value) {
         await dispatch("teacher/getClassInfo", {
           classId: classSelected.value.value,
           groupId: groupSelected.value.value,
           teacherId: userInfo.value.profile.sub,
         });
         await getStorageImages();
+        return;
       }
+      cleanUpStudentsGroupAndNotify(filterMode.value === FilterMode.Session ? noClassOrGroupText.value : noStudentText.value);
     };
     const handleChangeClass = async (value: Value) => {
-      filterOptions.value.class = value.value;
-      filterOptions.value.group = classesSchedules.value.find((c: any) => c.classId === classSelected.value.value)?.groups[0].groupId;
-      if (filterOptions.value.group) {
+      studentFilter.value.classId = value.value;
+      studentFilter.value.groupId = groupOptions.value.length ? groupOptions.value[0].value : "";
+      if (studentCount.value) {
         await dispatch("teacher/getClassInfo", {
           classId: value.value,
-          groupId: filterOptions.value.group,
+          groupId: groupSelected.value.value,
           teacherId: userInfo.value.profile.sub,
         });
+        studentFilter.value.studentId = studentOptions.value[0].value;
         filterOptions.value.student = studentOptions.value[0]?.value ?? "";
-        if (filterOptions.value.student) {
-          await getStorageImages();
-        }
+        await getStorageImages();
+      } else {
+        studentFilter.value.groupId = "";
+        studentFilter.value.studentId = "";
+        cleanUpStudentsGroupAndNotify(noStudentText.value);
       }
     };
     const handleChangeGroup = async (value: Value) => {
-      await dispatch("teacher/getClassInfo", {
-        classId: filterOptions.value.class,
-        groupId: value.value,
-        teacherId: userInfo.value.profile.sub,
-      });
-      filterOptions.value.group = value.value;
-      filterOptions.value.student = studentOptions.value[0]?.value ?? "";
-      if (filterOptions.value.student) {
-        await getStorageImages();
+      if (filterMode.value === FilterMode.Student) {
+        studentFilter.value.groupId = value.value;
+        if (studentCount.value) {
+          await dispatch("teacher/getClassInfo", {
+            classId: studentFilter.value.classId,
+            groupId: value.value,
+            teacherId: userInfo.value.profile.sub,
+          });
+          studentFilter.value.studentId = studentOptions.value.length ? studentOptions.value[0].value : "";
+          await getStorageImages();
+          return;
+        }
+        cleanUpStudentsGroupAndNotify(noStudentText.value);
+        studentFilter.value.studentId = "";
+      } else {
+        sessionFilter.value.classId =
+          classesSchedules.value.find((c) => {
+            return c.groups.find((group) => group.groupId === value.value) ? c : undefined;
+          })?.classId ?? "";
+        sessionFilter.value.groupId = value.value;
+        if (studentCount.value) {
+          await dispatch("teacher/getClassInfo", {
+            classId: sessionFilter.value.classId,
+            groupId: value.value,
+            teacherId: userInfo.value.profile.sub,
+          });
+          await getStorageImages();
+          return;
+        }
+        cleanUpStudentsGroupAndNotify(noStudentText.value);
       }
     };
     const handleChangeStudent = async (value: Value) => {
-      filterOptions.value.student = value.value;
+      studentFilter.value.studentId = value.value;
       await getStorageImages();
     };
     const handleChangeSchool = async (value: Value) => {
-      filterOptions.value.school = value.value;
       await dispatch("teacher/loadAllClassesSchedules", {
         schoolId: value.value,
         browserFingerPrinting: visitorId.value,
       });
+      sessionFilter.value.schoolId = value.value;
+      sessionFilter.value.classId = classOptions.value[0]?.value;
+      sessionFilter.value.groupId = groupOptions.value[0]?.value;
       if (classOptions.value.length && groupOptions.value.length) {
-        await dispatch("teacher/getClassInfo", {
-          classId: classOptions.value[0]?.value,
-          groupId: groupOptions.value[0]?.value,
-          teacherId: userInfo.value.profile.sub,
-        });
-        filterOptions.value.class = classOptions.value[0]?.value;
-        filterOptions.value.group = groupOptions.value[0]?.value;
-        await getStorageImages();
+        if (studentCount.value) {
+          await dispatch("teacher/getClassInfo", {
+            classId: classOptions.value[0]?.value,
+            groupId: groupOptions.value[0]?.value,
+            teacherId: userInfo.value.profile.sub,
+          });
+          await getStorageImages();
+        } else {
+          await cleanUpStudentsGroupAndNotify(noStudentText.value);
+        }
       } else {
-        filterOptions.value.class = "";
-        filterOptions.value.student = "";
-        filterOptions.value.group = "";
-        await dispatch("teacher/setCurrentGroupStudents", []);
+        sessionFilter.value.classId = "";
+        sessionFilter.value.groupId = "";
+        await cleanUpStudentsGroupAndNotify(noClassOrGroupText.value);
       }
     };
     const handleChangeDate = (value: Moment) => {
       if (!value) {
+        currentDate.value = "";
         return;
       }
       isShowCalendar.value = false;
@@ -273,12 +380,14 @@ export default defineComponent({
         if (currentDate.value) {
           return (
             item.tags.dateTime === currentDate.value &&
-            item.tags.schoolId === filterOptions.value.school &&
-            item.tags.groupId === filterOptions.value.group &&
+            item.tags.schoolId === schoolSelected.value.value &&
+            item.tags.groupId === groupSelected.value.value &&
             item.tags.studentId === value.key
           );
         }
-        return;
+        return (
+          item.tags.schoolId === schoolSelected.value.value && item.tags.groupId === groupSelected.value.value && item.tags.studentId === value.key
+        );
       });
     };
     const removeImage = async (imageName: string) => {
@@ -293,6 +402,12 @@ export default defineComponent({
     const blobNameToUrl = (blobName: string) => {
       return process.env.VUE_APP_STORAGE_URL + blobName;
     };
+    const cleanUpStudentsGroupAndNotify = async (message: string) => {
+      await dispatch("teacher/setCurrentGroupStudents", []);
+      notification.error({
+        message,
+      });
+    };
 
     onMounted(async () => {
       const fp = await fpPromise;
@@ -301,37 +416,43 @@ export default defineComponent({
       await dispatch("teacher/loadAccessibleSchools", {
         disabled: false,
       } as AccessibleSchoolQueryParam);
+      await dispatch("teacher/setClassesSchedulesBySchools", null);
+      const classId = classesSchedulesBySchools.value.find((c) => c.schoolId === schoolId)?.classId;
+      if (classId) {
+        studentFilter.value.classId = classId;
+      } else {
+        studentFilter.value.classId = classOptions.value.length ? classOptions.value[0].value : "";
+      }
+      sessionFilter.value.schoolId = schoolId as string;
       await dispatch("teacher/loadAllClassesSchedules", {
         schoolId: schoolId,
         browserFingerPrinting: visitorId.value,
       });
-      await dispatch("teacher/getClassInfo", {
-        classId: classSelected.value?.value,
-        groupId: studentId
-          ? groupOptions.value?.find((item) => item.value === classInfo.value?.classInfo.groupId)?.value ?? ""
-          : groupOptions.value[0]?.value,
-        teacherId: userInfo.value.profile.sub,
-      });
-      filterOptions.value = {
-        filterMode: filterMode.value,
-        school: (schoolId as string) ?? schoolOptions.value[0].value,
-        class: classSelected.value?.value ?? "",
-        group: studentId
-          ? groupOptions.value?.find((item) => item.value === classInfo.value?.classInfo.groupId)?.value ?? ""
-          : groupOptions.value[0]?.value,
-        student: studentId ? (studentId as string) : studentOptions.value[0]?.value,
-        date: "",
-      };
-      await getStorageImages();
+      if (studentId) {
+        studentFilter.value.studentId = studentId as string;
+        studentFilter.value.groupId = classInfo.value.classInfo.groupId;
+      }
+      if (studentCount.value) {
+        await dispatch("teacher/getClassInfo", {
+          classId: classSelected.value?.value,
+          groupId: studentId
+            ? groupOptions.value?.find((item) => item.value === classInfo.value?.classInfo.groupId)?.value ?? ""
+            : groupOptions.value[0]?.value,
+          teacherId: userInfo.value.profile.sub,
+        });
+        await getStorageImages();
+      } else {
+        cleanUpStudentsGroupAndNotify(noStudentText.value);
+      }
     });
     return {
       filterMode,
-      groupOptions,
       schools,
       classesSchedules,
       currentDate,
-      classOptions,
       schoolOptions,
+      classOptions,
+      groupOptions,
       studentOptions,
       isShowCalendar,
       columns,

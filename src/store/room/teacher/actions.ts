@@ -595,8 +595,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
   ) {
     try {
       const result = await StudentStorageService.getFiles(p.token, p.schoolId, p.classId, p.groupId, p.studentId, p.date, p.filterMode);
-      const data = result.sort((a, b) => (a.tags.dateTime > b.tags.dateTime ? -1 : 1));
       if (result.length) {
+        const data = result.sort((a, b) => (a.tags.dateTime > b.tags.dateTime ? -1 : 1));
         commit("setStudentsImageCaptured", data);
       }
     } catch (error) {

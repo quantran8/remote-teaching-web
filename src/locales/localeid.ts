@@ -300,6 +300,8 @@ export class HelpMenuLocal {
 }
 export class WriterReview {
   static Title = "writer_review.title";
+  static NoClassOrGroup = "writer_review.no_class_or_group";
+  static NoStudent = "writer_review.no_student";
 }
 export class CaptureNotification {
   static CaptureSuccessStudent = "capture_status.capture_successfully_student";
