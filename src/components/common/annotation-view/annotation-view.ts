@@ -256,8 +256,8 @@ export default defineComponent({
         canvas.remove(
           ...canvas
             .getObjects()
-            .filter((obj: any) => obj.type === "path")
-            .filter((obj: any) => obj.id === teacherForST.value.id),
+            .filter((obj: any) => obj.type === "path" || obj.type === "polyline")
+            .filter((obj: any) => obj.id === teacherForST.value?.id || obj.id === "pencil"),
         );
       }
     };

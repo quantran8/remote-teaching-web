@@ -791,10 +791,10 @@ export default defineComponent({
           if (canvas.getObjects("path").length) {
             const itemDelete = canvas
               .getObjects("path")
-              .filter((item: any) => item.id === isTeacher.value.id)
+              .filter((item: any) => item.id === isTeacher.value.id || item.isOneToOne === oneAndOne.value)
               .pop();
             canvas.remove(itemDelete);
-            if (!isTeacherUseOnly.value) {
+            if (!isTeacherUseOnly.value && itemDelete) {
               await store.dispatch("teacherRoom/setDeleteBrush", {});
             }
             toolSelected.value = Tools.Pen;
@@ -987,6 +987,7 @@ export default defineComponent({
     };
     const renderOneTeacherStrokes = () => {
       if (oneOneTeacherStrokes.value && oneOneTeacherStrokes.value.length > 0) {
+        canvas.remove(...canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id));
         oneOneTeacherStrokes.value.forEach((s: any) => {
           const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
             item.isOneToOne = oneAndOne.value;
