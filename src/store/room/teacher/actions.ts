@@ -381,6 +381,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("disableAllStudents", {});
     state.manager?.WSClient.sendRequestDisableAllAnnotation(true);
   },
+  disableAllStudentsPalette({ commit, state }) {
+    commit("disableAllStudentsPalette", {});
+    state.manager?.WSClient.sendRequestResetPaletteAllStudent(true);
+  },
+
   enableAllStudents({ state, commit }) {
     commit("enableAllStudents", {});
     state.manager?.WSClient.sendRequestDisableAllAnnotation(false);

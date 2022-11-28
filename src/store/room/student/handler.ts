@@ -460,6 +460,9 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherDrawPencil: async (p: string) => {
       await dispatch("annotation/setDrawPencil", p, { root: true });
     },
+    onTeacherResetPaletteAllStudent: (p: boolean) => {
+      commit("disableAllAnnotationStatus", p, { root: false });
+    },
   };
   return handler;
 };
