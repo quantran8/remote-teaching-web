@@ -102,10 +102,14 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
     s.drawing.brushstrokes.pop();
+    s.pencilPath.pop();
+    s.pencilPath = [...s.pencilPath];
     s.drawing.brushstrokes = [...s.drawing.brushstrokes];
   },
   setDeleteBrushOneOne(s: AnnotationState, p: {}) {
     s.oneToOne.brushstrokes.pop();
+    s.pencilPath.pop();
+    s.pencilPath = [...s.pencilPath];
     s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes];
   },
   setStickers(s: AnnotationState, p: { stickers: Array<Sticker> }) {
