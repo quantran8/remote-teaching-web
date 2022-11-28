@@ -24,22 +24,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         id: payload.id,
         isRaisingHand: payload.isRaisingHand,
       });
-      const isMarkedStudent = state.students.find((student) => student.isPalette === true);
-      if (isMarkedStudent) {
-        await dispatch(
-          "teacherRoom/toggleAnnotation",
-          {
-            studentId: payload.id,
-            isEnable: false,
-          },
-          { root: true },
-        );
-      } else {
-        commit("updateIsPalette", {
-          id: payload.id,
-          isPalette: payload.isPalette,
-        });
-      }
+      commit("updateIsPalette", {
+        id: payload.id,
+        isPalette: payload.isPalette,
+      });
       await dispatch("updateAudioAndVideoFeed", {});
     },
     onStudentStreamConnect: (payload: any) => {
@@ -359,6 +347,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       if (p.isUploaded) {
         commit("setStudentImageCapturedCount", { id: p.studentId, imageCapturedCount: p.imageCapturedCount });
       }
+    },
+    onTeacherResetPaletteAllStudent: (p: boolean) => {
+      commit("disableAllAnnotationStatus", p, { root: true });
     },
   };
   return handler;
