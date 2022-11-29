@@ -388,6 +388,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     dispatch("setCheckMessageVersionTimer", -1, { root: true });
     dispatch("annotation/clearPencilPath", null, { root: true });
     dispatch("annotation/addShape", null, { root: true });
+    dispatch("lesson/setZoomRatio", undefined, { root: true });
+    dispatch("lesson/setImgCoords", undefined, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;

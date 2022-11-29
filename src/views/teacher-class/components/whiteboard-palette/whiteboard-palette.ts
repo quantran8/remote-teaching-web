@@ -94,6 +94,7 @@ export default defineComponent({
     const prevZoomRatio = ref(1);
     const prevCoords = ref({ x: 0, y: 0 });
     const zoomPercentage = ref(100);
+    const prevLineId = ref("");
 
     const {
       createTextBox,
@@ -191,13 +192,18 @@ export default defineComponent({
     watch(sessionZoomRatio, (value) => {
       if (value == 1) {
         canvas.zoomToPoint(point, 1);
-        if ((group?.left !== DefaultCanvasDimension.width / 2 || group?.top !== imgRenderHeight.value / 2) && group?.left && group?.top) {
-          group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
-          group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
-          group.setCoords();
+        if (isLessonPlan.value && group) {
+          if ((group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2) && group.left && group.top) {
+            group.left = group.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+            group.top = group.realTop ?? Math.floor(imgRenderHeight.value / 2);
+            group.setCoords();
+          }
         }
       }
-      zoomPercentage.value = Math.floor(value * 100);
+      if (canvas && point && sessionZoomRatio.value && canvas.getZoom() !== sessionZoomRatio.value) {
+        canvas.zoomToPoint(point, sessionZoomRatio.value);
+      }
+      zoomPercentage.value = Math.floor(value.toFixed(2) * 100);
     });
 
     watch(isShowPreviewCanvas, (currentValue) => {
@@ -495,6 +501,8 @@ export default defineComponent({
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
+                  lineIdRelated: prevLineId.value,
+                  isDone,
                 });
               }
 
@@ -518,6 +526,8 @@ export default defineComponent({
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
+                  lineIdRelated: "",
+                  isDone,
                 });
               }
             }
@@ -574,6 +584,7 @@ export default defineComponent({
           lineId.value = generateLineId();
           isDrawing.value = false;
           prevPoint.value = undefined;
+          prevLineId.value = "";
           canvas.renderAll();
           await objectsCanvas();
         }
@@ -665,6 +676,7 @@ export default defineComponent({
             break;
           }
           case Tools.Pen: {
+            prevLineId.value = lineId.value;
             isDrawing.value = true;
             break;
           }
@@ -1095,10 +1107,13 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
           processTargetsList();
-          group.left = prevCoords.value.x;
-          group.top = prevCoords.value.y;
+          if (isLessonPlan.value && group) {
+            group.left = prevCoords.value.x;
+            group.top = prevCoords.value.y;
+          }
           canvas.zoomToPoint(point, prevZoomRatio.value);
           zoomRatio.value = prevZoomRatio.value;
+          store.dispatch("lesson/setZoomRatio", prevZoomRatio.value);
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();

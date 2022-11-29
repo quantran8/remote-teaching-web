@@ -43,6 +43,9 @@ export interface AnnotationState {
     points: Array<Pointer>;
     strokeColor: string;
     strokeWidth: number;
+    isDone: boolean;
+    ratio: number;
+    lineIdRelated: string;
   }>;
 }
 
