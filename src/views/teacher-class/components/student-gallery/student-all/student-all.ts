@@ -108,6 +108,7 @@ export default defineComponent({
       }
       focusedStudent.value = "";
     };
+
     provide("updateFocusStudent", updateFocusStudent);
     return {
       students,
