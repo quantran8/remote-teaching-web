@@ -120,25 +120,29 @@ export default defineComponent({
       return focusedStudent.value ? "100%" : "80%";
     });
     const translateX = computed(() => {
-      const scaledWidth = width.value * actualScaleRatio.value;
-      const difference = (scaledWidth - width.value) / 2;
+      const { width, left, right } = studentRef.value?.getBoundingClientRect();
+      const { left: parentLeft, right: parentRight } = parentCard.value?.getBoundingClientRect();
+      const scaledWidth = width * actualScaleRatio.value;
+      const difference = (scaledWidth - width) / 2;
       const translateValue = Math.round(difference / actualScaleRatio.value);
-      if (left.value === parentLeft.value) {
+      if (left === parentLeft) {
         return translateValue;
       }
-      if (right.value === parentRight.value) {
+      if (right === parentRight) {
         return -translateValue;
       }
       return 0;
     });
     const translateY = computed(() => {
-      const scaledHeight = height.value * actualScaleRatio.value;
-      const difference = (scaledHeight - height.value) / 2;
+      const { height, top, bottom } = studentRef.value?.getBoundingClientRect();
+      const { top: parentTop, bottom: parentBottom } = parentCard.value?.getBoundingClientRect();
+      const scaledHeight = height * actualScaleRatio.value;
+      const difference = (scaledHeight - height) / 2;
       const translateValue = Math.round(difference / actualScaleRatio.value);
-      if (top.value === parentTop.value) {
+      if (top === parentTop) {
         return translateValue;
       }
-      if (bottom.value === parentBottom.value) {
+      if (bottom === parentBottom) {
         return -translateValue;
       }
       return 0;
