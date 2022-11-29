@@ -349,7 +349,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       }
     },
     onTeacherResetPaletteAllStudent: (p: boolean) => {
-      commit("disableAllAnnotationStatus", p, { root: true });
+      commit("teacherRoom/disableAllAnnotationStatus", p, { root: true });
     },
   };
   return handler;
