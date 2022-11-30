@@ -125,8 +125,8 @@ const actions: ActionTree<AnnotationState, any> = {
   setImgProcessing({ commit }, payload: boolean) {
     commit("setImgProcessing", payload);
   },
-  setDrawPencil({ commit }, payload: string) {
-    commit("setDrawPencil", JSON.parse(payload));
+  setDrawPencil({ commit, rootState }, payload: string) {
+    commit("setDrawPencil", { ...JSON.parse(payload), ratio: rootState.lesson.zoomRatio });
   },
   clearPencilPath({ commit }) {
     commit("clearPencilPath");
