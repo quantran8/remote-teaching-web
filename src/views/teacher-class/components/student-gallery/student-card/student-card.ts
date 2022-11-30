@@ -120,30 +120,39 @@ export default defineComponent({
       return focusedStudent.value ? "100%" : "80%";
     });
     const translateX = computed(() => {
-      const { width, left, right } = studentRef.value?.getBoundingClientRect();
-      const { left: parentLeft, right: parentRight } = parentCard.value?.getBoundingClientRect();
-      const scaledWidth = width * actualScaleRatio.value;
-      const difference = (scaledWidth - width) / 2;
-      const translateValue = Math.round(difference / actualScaleRatio.value);
-      if (left === parentLeft) {
-        return translateValue;
-      }
-      if (right === parentRight) {
-        return -translateValue;
+      const studentRefXAxis = studentRef.value ? studentRef.value.getBoundingClientRect() : undefined;
+      const parentCardXAxis = parentCard.value ? parentCard.value.getBoundingClientRect() : undefined;
+      if (studentRefXAxis && parentCardXAxis) {
+        const { width, left, right } = studentRefXAxis;
+        const { left: parentLeft, right: parentRight } = parentCardXAxis;
+        const scaledWidth = width * actualScaleRatio.value;
+        const difference = (scaledWidth - width) / 2;
+        const translateValue = Math.round(difference / actualScaleRatio.value);
+        if (left === parentLeft) {
+          return translateValue;
+        }
+        if (right === parentRight) {
+          return -translateValue;
+        }
       }
       return 0;
     });
     const translateY = computed(() => {
-      const { height, top, bottom } = studentRef.value?.getBoundingClientRect();
-      const { top: parentTop, bottom: parentBottom } = parentCard.value?.getBoundingClientRect();
-      const scaledHeight = height * actualScaleRatio.value;
-      const difference = (scaledHeight - height) / 2;
-      const translateValue = Math.round(difference / actualScaleRatio.value);
-      if (top === parentTop) {
-        return translateValue;
-      }
-      if (bottom === parentBottom) {
-        return -translateValue;
+      const studentRefYAxis = studentRef.value ? studentRef.value.getBoundingClientRect() : undefined;
+      const parentCardYAxis = parentCard.value ? parentCard.value.getBoundingClientRect() : undefined;
+
+      if (studentRefYAxis && parentCardYAxis) {
+        const { height, top, bottom } = studentRefYAxis;
+        const { top: parentTop, bottom: parentBottom } = parentCardYAxis;
+        const scaledHeight = height * actualScaleRatio.value;
+        const difference = (scaledHeight - height) / 2;
+        const translateValue = Math.round(difference / actualScaleRatio.value);
+        if (top === parentTop) {
+          return translateValue;
+        }
+        if (bottom === parentBottom) {
+          return -translateValue;
+        }
       }
       return 0;
     });
