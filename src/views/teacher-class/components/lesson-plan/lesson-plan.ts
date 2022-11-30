@@ -5,6 +5,7 @@ import IconNext from "@/assets/images/arrow-forward.png";
 import { PinningModal } from "@/components/common";
 import { PINNING_MODAL_CONTAINER } from "@/components/common/pinning-modal/pinning-modal";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { Exposure, ExposureType } from "@/store/lesson/state";
 import { ClassView } from "@/store/room/interface";
 import { NEXT_EXPOSURE, PREV_EXPOSURE } from "@/utils/constant";
@@ -63,7 +64,9 @@ export default defineComponent({
     const nextExposureItemMedia = computed(() => getters["lesson/nextExposureItemMedia"]);
     const prevExposureItemMedia = computed(() => getters["lesson/prevExposureItemMedia"]);
     const page = computed(() => getters["lesson/getPage"]);
-
+    const roomManagerConnected = computed(() => {
+      return (getters["teacherRoom/roomManager"] as TeacherRoomManager)?.WSClient?.isConnected;
+    });
     const nextCurrentExposure = computed(() => getters["lesson/nextExposure"]);
     const prevCurrentExposure = computed(() => getters["lesson/previousExposure"]);
     const infoPopupStatus = ref<PopupStatus>(PopupStatus.Hided);
@@ -370,6 +373,7 @@ export default defineComponent({
       infoPopupStatus,
       PopupStatus,
       noDataText,
+      roomManagerConnected,
     };
   },
 });
