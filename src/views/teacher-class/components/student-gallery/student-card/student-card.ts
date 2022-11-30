@@ -120,26 +120,39 @@ export default defineComponent({
       return focusedStudent.value ? "100%" : "80%";
     });
     const translateX = computed(() => {
-      const scaledWidth = width.value * actualScaleRatio.value;
-      const difference = (scaledWidth - width.value) / 2;
-      const translateValue = Math.round(difference / actualScaleRatio.value);
-      if (left.value === parentLeft.value) {
-        return translateValue;
-      }
-      if (right.value === parentRight.value) {
-        return -translateValue;
+      const studentRefXAxis = studentRef.value ? studentRef.value.getBoundingClientRect() : undefined;
+      const parentCardXAxis = parentCard.value ? parentCard.value.getBoundingClientRect() : undefined;
+      if (studentRefXAxis && parentCardXAxis) {
+        const { width, left, right } = studentRefXAxis;
+        const { left: parentLeft, right: parentRight } = parentCardXAxis;
+        const scaledWidth = width * actualScaleRatio.value;
+        const difference = (scaledWidth - width) / 2;
+        const translateValue = Math.round(difference / actualScaleRatio.value);
+        if (left === parentLeft) {
+          return translateValue;
+        }
+        if (right === parentRight) {
+          return -translateValue;
+        }
       }
       return 0;
     });
     const translateY = computed(() => {
-      const scaledHeight = height.value * actualScaleRatio.value;
-      const difference = (scaledHeight - height.value) / 2;
-      const translateValue = Math.round(difference / actualScaleRatio.value);
-      if (top.value === parentTop.value) {
-        return translateValue;
-      }
-      if (bottom.value === parentBottom.value) {
-        return -translateValue;
+      const studentRefYAxis = studentRef.value ? studentRef.value.getBoundingClientRect() : undefined;
+      const parentCardYAxis = parentCard.value ? parentCard.value.getBoundingClientRect() : undefined;
+
+      if (studentRefYAxis && parentCardYAxis) {
+        const { height, top, bottom } = studentRefYAxis;
+        const { top: parentTop, bottom: parentBottom } = parentCardYAxis;
+        const scaledHeight = height * actualScaleRatio.value;
+        const difference = (scaledHeight - height) / 2;
+        const translateValue = Math.round(difference / actualScaleRatio.value);
+        if (top === parentTop) {
+          return translateValue;
+        }
+        if (bottom === parentBottom) {
+          return -translateValue;
+        }
       }
       return 0;
     });
