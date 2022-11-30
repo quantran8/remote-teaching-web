@@ -1,16 +1,14 @@
-import { useStore } from "vuex";
-import { AuthService, RoleName, fmtMsg } from "vue-glcommonui";
-import { LoginInfo } from "vue-glcommonui";
-import { computed, defineComponent, watch } from "vue";
-import { MainLayout } from "vue-glcommonui";
-import { AppHeader, AppFooter } from "../components/layout";
-import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
+import { CommonLocale } from "@/locales/localeid";
 import { AppView, UserRole } from "@/store/app/state";
-import { LostNetwork } from "./../locales/localeid";
-import { Spin } from "ant-design-vue";
-import { useRouter } from "vue-router";
 import { Paths } from "@/utils/paths";
+import { Spin } from "ant-design-vue";
+import { computed, defineComponent, watch } from "vue";
+import { AuthService, fmtMsg, LoginInfo, MainLayout, RoleName } from "vue-glcommonui";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { AppFooter, AppHeader } from "../components/layout";
+import { LostNetwork } from "./../locales/localeid";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
@@ -47,8 +45,6 @@ export default defineComponent({
         id: loginInfo.profile.sub,
         name: loginInfo.profile.name,
       });
-      await checkPolicy("parent");
-      await dispatch("parent/loadChildren");
     };
 
     const onUserSignedIn = async () => {
@@ -56,20 +52,18 @@ export default defineComponent({
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
       if (isTeacher) await onTeacherSignedIn(loginInfo);
-      if (isParent) await onParentSignedIn(loginInfo);
+      if (isParent) {
+        await onParentSignedIn(loginInfo);
+        checkPolicy("parent");
+      }
       await dispatch("loadContentSignature");
     };
 
     const checkPolicy = async (role: "parent" | "teacher"): Promise<void> => {
       if (role === "parent") {
-        await dispatch("parent/setAcceptPolicy");
-        const policyAccepted = computed(() => getters["parent/acceptPolicy"]);
-        if (!policyAccepted.value && location.pathname !== Paths.Parent) {
-          if (location.pathname) {
-            router.push({ path: Paths.Parent, query: { target: location.pathname } });
-          } else {
-            router.push({ path: Paths.Parent });
-          }
+        const policyAccepted = getters["parent/acceptPolicy"];
+        if (!policyAccepted && location.pathname && location.pathname.includes("student")) {
+          router.push({ path: Paths.Parent, query: { target: location.pathname } });
         }
       }
     };

@@ -1,5 +1,5 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
-import { ClassModel, RoomModel, StudentModel, RoomUsersModel } from "@/models";
+import { ClassModel, RoomModel, RoomUsersModel, StudentModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -185,6 +185,9 @@ const mutations: MutationTree<StudentRoomState> = {
   disableAllStudents(state: StudentRoomState) {
     state.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = false));
   },
+  disableAllStudentsPalette(state: StudentRoomState) {
+    state.students.forEach((student) => (student.isPalette = false));
+  },
   enableAllStudents(state: StudentRoomState) {
     state.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = true));
   },
@@ -195,6 +198,10 @@ const mutations: MutationTree<StudentRoomState> = {
   disableAnnotationStatus(state: StudentRoomState, p: any) {
     state.student ? (state.student.isPalette = !p) : null;
     state.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = !p));
+  },
+  disableAllAnnotationStatus(state: StudentRoomState, p: any) {
+    state.student ? (state.student.isPalette = !p) : null;
+    state.students.forEach((student) => (student.isPalette = !p));
   },
   setClassAction(state: StudentRoomState, payload: { action: ClassAction }) {
     state.classAction = payload.action;

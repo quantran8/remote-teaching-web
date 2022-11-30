@@ -1,20 +1,20 @@
-import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
-import { useStore } from "vuex";
-import { gsap } from "gsap";
-import { fabric } from "fabric";
-import { DefaultCanvasDimension } from "@/utils/utils";
-import { TeacherModel } from "@/models";
-import { useFabricObject } from "@/hooks/use-fabric-object";
-import { LastFabricUpdated } from "@/store/annotation/state";
-import { Popover } from "ant-design-vue";
 import { studentAddedShapes } from "@/components/common/annotation-view/components/add-shapes";
-import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { annotationCurriculumStudent } from "@/components/common/annotation-view/components/annotation-curriculum";
+import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { TeacherModel } from "@/models";
+import { LastFabricUpdated } from "@/store/annotation/state";
+import { IMAGE_QUALITY, SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { DefaultCanvasDimension, SmoothingQuality } from "@/utils/utils";
+import { Popover } from "ant-design-vue";
+import { fabric } from "fabric";
+import { gsap } from "gsap";
 import { debounce } from "lodash";
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
+import { useStore } from "vuex";
 import { pencilPen } from "./components/pencil-path";
-import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 
 const DEFAULT_STYLE = {
   width: "100%",
@@ -96,6 +96,7 @@ export default defineComponent({
     const defaultZoomRatio = ref(1);
     const prevZoomRatio = ref(1);
     const prevCoords = ref({ x: 0, y: 0 });
+    const prevZoomRatioByTeacher = ref(1);
 
     const isPaletteVisible = computed(
       () => (student.value?.isPalette && !studentOneAndOneId.value) || (student.value?.isPalette && student.value?.id == studentOneAndOneId.value),
@@ -121,24 +122,27 @@ export default defineComponent({
       return result;
     });
 
-    watch(zoomRatio, (currentValue, prevValue) => {
-      if (!group) {
-        return;
-      }
-      let zoom = 0;
-      if (!prevValue && currentValue) {
-        zoom = currentValue - DEFAULT_CANVAS_ZOOM_RATIO;
-      }
-      if (currentValue && prevValue) {
-        zoom = currentValue - prevValue;
-      }
-      if (currentValue === 1) {
-        group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
-        group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
-      }
-      defaultZoomRatio.value += zoom;
-      canvas.zoomToPoint(point, canvas.getZoom() + zoom * scaleRatio.value);
-    });
+    watch(
+      zoomRatio,
+      (currentValue, prevValue) => {
+        let zoom = 0;
+        if (!prevValue && currentValue) {
+          zoom = currentValue - DEFAULT_CANVAS_ZOOM_RATIO;
+        }
+        if (currentValue && prevValue) {
+          zoom = currentValue - prevValue;
+        }
+        if (isLessonPlan.value && group && currentValue === 1) {
+          group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+          group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+        }
+        defaultZoomRatio.value += zoom;
+        if (canvas && point) {
+          canvas.zoomToPoint(point, canvas.getZoom() + zoom * scaleRatio.value);
+        }
+      },
+      { immediate: true },
+    );
     watch(imgCoords, (currentValue) => {
       if (!group) {
         return;
@@ -158,8 +162,10 @@ export default defineComponent({
       if (value) {
         const context = captureCanvas.getContext("2d");
         const videoEl = document.getElementById(student.value.id)?.getElementsByTagName("video")[0];
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = SmoothingQuality.High;
         context?.drawImage(videoEl as CanvasImageSource, 0, 0, captureCanvas.width, captureCanvas.height);
-        const base64Url = captureCanvas.toDataURL("image/jpeg");
+        const base64Url = captureCanvas.toDataURL("image/jpeg", IMAGE_QUALITY);
         const res = await fetch(base64Url);
         const buffer = await res.arrayBuffer();
         const fileName = `student_${student.value.id}_${Math.floor(Math.random() * 10000)}.jpeg`;
@@ -254,8 +260,8 @@ export default defineComponent({
         canvas.remove(
           ...canvas
             .getObjects()
-            .filter((obj: any) => obj.type === "path")
-            .filter((obj: any) => obj.id === teacherForST.value.id),
+            .filter((obj: any) => obj.type === "path" || obj.type === "polyline")
+            .filter((obj: any) => obj.id === teacherForST.value?.id || obj.id === "pencil"),
         );
       }
     };
@@ -391,7 +397,10 @@ export default defineComponent({
     };
     watch(oneOneTeacherStrokes, () => {
       if (!pencilPath.value.length) {
-        renderOneTeacherStrokes();
+        if (studentOneAndOneId.value === student.value.id) {
+          undoStrokeByTeacherOneOne();
+          renderOneTeacherStrokes();
+        }
       }
     });
     const renderOneTeacherShapes = () => {
@@ -424,10 +433,13 @@ export default defineComponent({
         oneOneStatus.value = true;
         prevTargetsList.value = [...targetsList.value];
         prevZoomRatio.value = canvas.getZoom();
-        prevCoords.value = {
-          x: group.left,
-          y: group.top,
-        };
+        prevZoomRatioByTeacher.value = zoomRatio.value;
+        if (isLessonPlan.value && group) {
+          prevCoords.value = {
+            x: group.left,
+            y: group.top,
+          };
+        }
         processCanvasWhiteboard();
         if (studentOneAndOneId.value !== student.value.id) {
           // disable shapes of student not 1-1
@@ -459,11 +471,15 @@ export default defineComponent({
             teacherSharingShapes(teacherShapes.value, null);
             studentSharingShapes();
             selfStudentShapes();
-            group.left = prevCoords.value.x;
-            group.top = prevCoords.value.y;
+            if (isLessonPlan.value && group) {
+              group.left = prevCoords.value.x;
+              group.top = prevCoords.value.y;
+            }
+            defaultZoomRatio.value = prevZoomRatio.value;
             canvas.zoomToPoint(point, prevZoomRatio.value);
             oneOneIdNear.value = "";
           }, 800);
+          await store.dispatch("lesson/setZoomRatio", prevZoomRatioByTeacher.value, { root: true });
         }
         await store.dispatch("annotation/clearPencilPath");
         // enable shapes of each students
@@ -738,7 +754,7 @@ export default defineComponent({
       pencilPath,
       (value) => {
         if (value.length) {
-          pencilPen(pencilPath.value, canvas, studentOneAndOneId.value, student.value, scaleRatio.value);
+          pencilPen(pencilPath.value, canvas, studentOneAndOneId.value, student.value, scaleRatio.value, zoomRatio.value);
         } else {
           undoStrokeByTeacher();
         }

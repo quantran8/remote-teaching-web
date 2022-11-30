@@ -102,6 +102,9 @@
         <div class="ant-col-24 ant-col-sm-18">
           <Space size="large" align="center" class="device-tester__check-mic-cam">
             <div class="device-tester__speaker--icon">
+              <audio loop id="audio" style="display: none">
+                <source src="@/assets/audio/ConnectTestSound.mp3" type="audio/mp3" />
+              </audio>
               <img :src="speakerIcon" @click="toggleSpeaker" alt="" />
             </div>
             <Select
@@ -116,9 +119,12 @@
                 {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
               </SelectOption>
             </Select>
-            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />
+            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />	
           </Space>
         </div>
+		<p v-show="!havePermissionMicrophone">
+          <span class="alert-device-test">{{ warningMsgSpeaker }}</span>
+        </p>
       </Row>
 
       <!-- <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">

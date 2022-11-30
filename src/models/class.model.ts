@@ -24,6 +24,7 @@ export interface ClassModel {
   remoteClassGroups: GroupModel[];
 }
 export interface ClassModelSchedules {
+  schoolId?: string;
   classId: string;
   className: string;
   campusName: string;

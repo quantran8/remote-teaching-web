@@ -1,34 +1,30 @@
-import { VCPlatform } from "./../../app/state";
-import { RoomModel } from "@/models";
+import { ErrorLocale, TeacherClassError } from "@/locales/localeid";
+import { MediaStatus, RoomModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
+import router from "@/router";
 import {
-  RemoteTeachingService,
-  StudentGetRoomResponse,
-  TeacherGetRoomResponse,
-  StudentService,
-  InfoService,
-  StudentStorageService,
+	InfoService,
+	RemoteTeachingService,
+	StudentGetRoomResponse,
+	StudentService,
+	StudentStorageService,
+	TeacherGetRoomResponse
 } from "@/services";
+import { store } from "@/store";
+import { UserRole } from "@/store/app/state";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import { Logger } from "@/utils/logger";
+import { Paths } from "@/utils/paths";
+import { isMobileBrowser } from "@/utils/utils";
+import { HubConnectionState } from "@microsoft/signalr";
+import { UID } from "agora-rtc-sdk-ng";
+import { notification } from "ant-design-vue";
+import { ErrorCode, fmtMsg } from "vue-glcommonui";
 import { ActionTree } from "vuex";
 import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
-import { UID } from "agora-rtc-sdk-ng";
-import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { ErrorCode, fmtMsg } from "vue-glcommonui";
-import router from "@/router";
-import { Paths } from "@/utils/paths";
-import { ErrorLocale } from "@/locales/localeid";
-import { MediaStatus } from "@/models";
-import { Logger } from "@/utils/logger";
-import { isMobileBrowser } from "@/utils/utils";
-import { UserRole } from "@/store/app/state";
-import { store } from "@/store";
-import { notification } from "ant-design-vue";
-import { TeacherClassError } from "@/locales/localeid";
-import { HubConnectionState } from "@microsoft/signalr";
-import { computed } from "vue";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async getClassRoomInfo({ commit, dispatch, state, rootState }) {
@@ -299,14 +295,17 @@ const actions: ActionTree<StudentRoomState, any> = {
     }
     if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;
-    let time = 0;
-    setInterval(() => {
+
+    const intervalLogBandwidth = (window as any)["intervalLogBandwidth"];
+    if (intervalLogBandwidth) {
+      clearInterval(intervalLogBandwidth);
+    }
+    const interval = setInterval(() => {
       state.manager?.getBandwidth()?.then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
-        time += 1;
-        if (currentBandwidth && time % 10 === 0 && state.user && state.user.id) {
+        if (currentBandwidth && state.user && state.user.id) {
           //mean 5 minutes
           Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putStudentBandwidth(state.user.id, currentBandwidth.toFixed(2));
@@ -314,6 +313,9 @@ const actions: ActionTree<StudentRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
+
+    (window as any)["intervalLogBandwidth"] = interval;
+
     //if (store.getters.platform === VCPlatform.Agora) {
     state.manager?.agoraClient?.registerEventHandler({
       onUserPublished: (user, mediaType) => {
@@ -386,6 +388,8 @@ const actions: ActionTree<StudentRoomState, any> = {
     dispatch("setCheckMessageVersionTimer", -1, { root: true });
     dispatch("annotation/clearPencilPath", null, { root: true });
     dispatch("annotation/addShape", null, { root: true });
+    dispatch("lesson/setZoomRatio", undefined, { root: true });
+    dispatch("lesson/setImgCoords", undefined, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;

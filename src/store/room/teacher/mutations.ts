@@ -1,19 +1,19 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassModel, RoomModel, StudentModel, RoomUsersModel } from "@/models";
+import { ClassModel, RoomModel, RoomUsersModel, StudentModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
 import {
   ClassView,
   ClassViewFromValue,
-  InClassStatus,
-  DeviceMediaPayload,
-  DefaultPayload,
   ClassViewPayload,
-  UserMediaPayload,
+  DefaultPayload,
+  DeviceMediaPayload,
+  InClassStatus,
   StudentBadgePayload,
-  UserIdPayload,
   StudentCaptureStatus,
+  UserIdPayload,
+  UserMediaPayload,
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
@@ -183,6 +183,9 @@ const mutations: TeacherRoomMutation<State> = {
   disableAllStudents(s: State, _): void {
     s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = false));
   },
+  disableAllStudentsPalette(s: State, _): void {
+    s.students.forEach((student) => (student.isPalette = false));
+  },
   enableAllStudents(s: State, _): void {
     s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = true));
   },
@@ -283,6 +286,9 @@ const mutations: TeacherRoomMutation<State> = {
   },
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
     s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = !p));
+  },
+  disableAllAnnotationStatus(s: TeacherRoomState, p: any) {
+    s.students.forEach((student) => (student.isPalette = !p));
   },
   setOnline(state: TeacherRoomState) {
     state.isDisconnected = false;

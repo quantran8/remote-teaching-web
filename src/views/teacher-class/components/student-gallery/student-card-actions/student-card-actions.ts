@@ -1,22 +1,22 @@
-import { defineComponent } from "@vue/runtime-core";
-import { computed, ref, watch, inject, ComputedRef } from "vue";
-import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
-import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
-import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
-import IconAudioOff from "@/assets/teacher-class/audio-off-small.svg";
-import IconPaletteOn from "@/assets/teacher-class/touch-on-small.svg";
-import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
-import IconExpand from "@/assets/teacher-class/expanded.png";
-import IconShrink from "@/assets/teacher-class/minimum.png";
 import IconImage from "@/assets/images/image.png";
 import PhotoCamera from "@/assets/images/photo-camera.png";
-import { useStore } from "vuex";
-import { StudentState } from "@/store/room/interface";
-import { gsap } from "gsap";
-import { MatIcon, fmtMsg } from "vue-glcommonui";
-import { notification } from "ant-design-vue";
+import IconAudioOff from "@/assets/teacher-class/audio-off-small.svg";
+import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
+import IconExpand from "@/assets/teacher-class/expanded.png";
+import IconShrink from "@/assets/teacher-class/minimum.png";
+import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
+import IconPaletteOn from "@/assets/teacher-class/touch-on-small.svg";
+import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
+import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
 import { CaptureNotification } from "@/locales/localeid";
+import { StudentState } from "@/store/room/interface";
 import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { defineComponent } from "@vue/runtime-core";
+import { notification } from "ant-design-vue";
+import { gsap } from "gsap";
+import { computed, ComputedRef, inject, ref, watch } from "vue";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
@@ -73,6 +73,9 @@ export default defineComponent({
     };
     const toggleAnnotation = async () => {
       if (isOnePalette.value) {
+        if (!props.student.isPalette === true) {
+          await store.dispatch("teacherRoom/disableAllStudentsPalette");
+        }
         await store.dispatch("teacherRoom/toggleAnnotation", {
           studentId: props.student.id,
           isEnable: !props.student.isPalette,

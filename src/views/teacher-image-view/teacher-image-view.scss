@@ -53,3 +53,22 @@
 	display: flex;
 	justify-content: center;
 }
+.custom_arrow{
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1;
+	cursor: pointer;
+	opacity: 0.4;
+	&:hover{
+		opacity: 1;
+	}
+}
+.next{
+	right: 0;
+}
+.prev{
+	left: 0;
+}

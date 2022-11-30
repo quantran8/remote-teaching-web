@@ -213,7 +213,7 @@ const mutations: LessonMutation<LessonState> = {
   setTargetsVisibleListJoined(s: LessonState, p: TargetsVisibleList[]) {
     s.targetsVisibleList = p;
   },
-  setZoomRatio(s: LessonState, p: number) {
+  setZoomRatio(s: LessonState, p: number | undefined) {
     s.zoomRatio = p;
   },
   setImgCoords(s: LessonState, p: { x: number; y: number } | undefined) {

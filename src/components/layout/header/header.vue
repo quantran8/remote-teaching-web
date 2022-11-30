@@ -7,7 +7,7 @@
 		<UserAvatar>
 		  <template #extraItems>
 			<DropdownItem :text="testConnectText" @click.prevent="onClickTestDevice" />
-			<DropdownItem v-if="isShowWriterReview" :text="writerReviewText" @click.prevent="onClickWriterReview" />
+			<!-- <DropdownItem v-if="isShowWriterReview" :text="writerReviewText" @click.prevent="onClickWriterReview" /> -->
 		  </template>
 		</UserAvatar>
 	  </template>

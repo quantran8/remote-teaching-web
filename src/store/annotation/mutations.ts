@@ -102,10 +102,26 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
     s.drawing.brushstrokes.pop();
+    const itemRemove = s.pencilPath.pop();
+    if (itemRemove?.lineIdRelated) {
+      s.pencilPath = s.pencilPath
+        .filter((item) => item.lineIdRelated !== itemRemove?.lineIdRelated)
+        .filter((item) => item.id !== itemRemove?.lineIdRelated);
+    } else {
+      s.pencilPath = [...s.pencilPath];
+    }
     s.drawing.brushstrokes = [...s.drawing.brushstrokes];
   },
   setDeleteBrushOneOne(s: AnnotationState, p: {}) {
     s.oneToOne.brushstrokes.pop();
+    const itemRemove = s.pencilPath.pop();
+    if (itemRemove?.lineIdRelated) {
+      s.pencilPath = s.pencilPath
+        .filter((item) => item.lineIdRelated !== itemRemove?.lineIdRelated)
+        .filter((item) => item.id !== itemRemove?.lineIdRelated);
+    } else {
+      s.pencilPath = [...s.pencilPath];
+    }
     s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes];
   },
   setStickers(s: AnnotationState, p: { stickers: Array<Sticker> }) {
@@ -178,16 +194,23 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setDrawPencil(state: AnnotationState, payload: any) {
     const index = state.pencilPath.findIndex((item) => item.id === payload.id);
     if (!state.pencilPath.length || index < 0) {
+      if (state.pencilPath.length && !state.pencilPath[state.pencilPath.length - 1].isDone) {
+        state.pencilPath[state.pencilPath.length - 1].isDone = true;
+      }
       state.pencilPath.push({
         ...payload,
         points: [payload.points],
         strokeColor: payload.strokeColor,
         strokeWidth: payload.strokeWidth,
+        isDone: payload.isDone,
+        ratio: payload.ratio,
+        lineIdRelated: payload.lineIdRelated,
       });
     } else if (index >= 0) {
       state.pencilPath[index] = {
         ...state.pencilPath[index],
         points: [...state.pencilPath[index].points, payload.points],
+        isDone: payload.isDone,
       };
     }
   },

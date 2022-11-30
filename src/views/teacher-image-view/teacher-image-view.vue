@@ -48,23 +48,26 @@
       </Table>
     </div>
     <div></div>
-    <Modal v-model:visible="isShowImageModal" width="720px" footer title=" ">
+    <Modal v-model:visible="isShowImageModal" width="900px" footer title=" ">
       <div v-if="!carouselDataSource.length" class="no_image_title"><span>No images exist</span></div>
       <Swiper
-        v-else
+	  v-else
         :style="{
-          '--swiper-navigation-color': '#c4c4c4',
           '--swiper-pagination-color': '#fff',
         }"
         :spaceBetween="30"
         :cssMode="true"
-        :navigation="true"
+        :navigation="{
+			nextEl: '.next',
+			prevEl: '.prev'
+		}"
         :pagination="{
           clickable: true,
         }"
         :mousewheel="true"
         :keyboard="true"
         :modules="modules"
+		:centeredSlides="true"
         class="mySwiper"
       >
         <SwiperSlide v-for="(item, index) in carouselDataSource" :key="index" class="slide-wrapper">
@@ -73,6 +76,8 @@
           </Popconfirm>
           <img :src="blobNameToUrl(item.blobName)" />
         </SwiperSlide>
+		<img src="@/assets/icons/arrow_right.png" class="next custom_arrow"/>
+		<img src="@/assets/icons/arrow_left.png" class="prev custom_arrow"/>
       </Swiper>
     </Modal>
   </div>

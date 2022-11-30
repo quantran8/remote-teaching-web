@@ -24,24 +24,36 @@
           class="lesson-container__header-title"
           :class="[isGalleryView && 'lesson-container__header-title--text-right', hasLongShortcutHeader && 'long-title']"
         >
-          <a :class="['lesson-container__header-title--wrap', isGalleryView && 'shortcut']" @click="onClickUnit">
-            <span :class="['lesson-container__header-title--wrap__unit', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-              {{ isGalleryView ? `${currentUnit}|` : `${unitText} ${currentUnit}` }}
+          <a v-if="!isGalleryView" :class="['lesson-container__header-title--wrap']" @click="onClickUnit">
+            <span :class="['lesson-container__header-title--wrap__unit', hasLongShortcutHeader && 'long-title']">
+              {{ `${unitText} ${currentUnit}` }}
             </span>
-            <span :class="['lesson-container__header-title--wrap__lesson', isGalleryView && 'shortcut', hasLongShortcutHeader && 'long-title']">
-              {{ isGalleryView ? currentLesson : `(${lessonText}: ${currentLesson})` }}
+            <span :class="['lesson-container__header-title--wrap__lesson', hasLongShortcutHeader && 'long-title']">
+              {{ `(${lessonText}: ${currentLesson})` }}
             </span>
           </a>
+          <div v-else class="lesson-container__header-title--wrap shortcut">
+            <span class="lesson-container__header-title--wrap__unit shortcut">
+              {{ `${currentUnit}|` }}
+            </span>
+            <span class="lesson-container__header-title--wrap__lesson shortcut">
+              {{ currentLesson }}
+            </span>
+          </div>
         </div>
         <span
-          @click="backToGalleryMode"
+          @click="roomManagerConnected && backToGalleryMode()"
           v-if="isOneOneMode === ''"
-          :class="['lesson-container__header-back', hasLongShortcutHeader && isGalleryView && 'long-title']"
+          :class="['lesson-container__header-back', hasLongShortcutHeader && isGalleryView && 'long-title', roomManagerConnected && 'cursor-pointer']"
         >
           <span v-if="isGalleryView">&#8250;</span>
           <span v-else>&#8249;</span>
         </span>
-        <span @click="showHideLessonOneOne(showHideLesson)" v-if="isOneOneMode !== '' && !isGalleryView" class="lesson-container__header-back">
+        <span
+          @click="roomManagerConnected && showHideLessonOneOne(showHideLesson)"
+          v-if="isOneOneMode !== '' && !isGalleryView"
+          :class="['lesson-container__header-back', roomManagerConnected && 'cursor-pointer']"
+        >
           <span v-if="!showHideLesson">&#8250;</span>
           <span v-else>&#8249;</span>
         </span>

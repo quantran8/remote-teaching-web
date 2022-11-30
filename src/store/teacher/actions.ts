@@ -1,6 +1,6 @@
-import { store } from "@/store";
 import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
+import { store } from "@/store";
 import { Logger } from "@/utils/logger";
 import { ActionContext, ActionTree } from "vuex";
 import { StudentsGroup, TeacherState } from "./state";
@@ -105,6 +105,15 @@ const actions: ActionTree<TeacherState, any> = {
   },
   setCurrentGroupStudents({ commit }, p: Array<StudentsGroup>) {
     commit("setCurrentGroupStudents", p);
+  },
+  async setClassesSchedulesBySchools({ commit, state }) {
+    for (const school of state.schools) {
+      const response = await TeacherService.getAllClassesSchedule(school.id);
+      response.forEach((item) => {
+        item.schoolId = school.id;
+      });
+      commit("setClassesSchedulesBySchools", response);
+    }
   },
 };
 

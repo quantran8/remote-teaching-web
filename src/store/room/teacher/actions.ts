@@ -1,44 +1,42 @@
 import { AgoraEventHandler } from "@/agora";
-import { GLError, GLErrorCode } from "@/models/error.model";
-import { UserModel } from "@/models/user.model";
-import { InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
-import { ActionTree } from "vuex";
-import {
-  ClassViewPayload,
-  DefaultPayload,
-  DeviceMediaPayload,
-  InClassStatus,
-  InitClassRoomPayload,
-  StudentBadgePayload,
-  UserIdPayload,
-  UserMediaPayload,
-  ValueOfClassView,
-  WhiteboardPayload,
-  NetworkQualityPayload,
-  StudentCaptureStatus,
-} from "../interface";
-import _ from "lodash";
-import { TeacherRoomState } from "./state";
-import { useTeacherRoomWSHandler } from "./handler";
-import { RoomModel } from "@/models";
-import { Sticker } from "@/store/annotation/state";
-import { UID } from "agora-rtc-sdk-ng";
-import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { Paths } from "@/utils/paths";
-import router from "@/router";
-import { fmtMsg } from "vue-glcommonui";
 import { ErrorLocale } from "@/locales/localeid";
-import { MediaStatus } from "@/models";
-import { Logger } from "@/utils/logger";
-import { FabricObject } from "@/ws";
-import { UserRole } from "@/store/app/state";
-import { store } from "@/store";
-import { HubConnectionState } from "@microsoft/signalr";
+import { MediaStatus, RoomModel } from "@/models";
+import { GLError, GLErrorCode } from "@/models/error.model";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
-import { StudentStorageService } from "../../../services/storage/service";
+import { UserModel } from "@/models/user.model";
+import router from "@/router";
+import { InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
 import { BlobTagItem } from "@/services/storage/interface";
+import { store } from "@/store";
+import { Sticker } from "@/store/annotation/state";
+import { UserRole } from "@/store/app/state";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import { Logger } from "@/utils/logger";
+import { Paths } from "@/utils/paths";
+import { FabricObject } from "@/ws";
+import { HubConnectionState } from "@microsoft/signalr";
+import { UID } from "agora-rtc-sdk-ng";
 import { notification } from "ant-design-vue";
-import { computed } from "vue";
+import _ from "lodash";
+import { fmtMsg } from "vue-glcommonui";
+import { ActionTree } from "vuex";
+import { StudentStorageService } from "../../../services/storage/service";
+import {
+	ClassViewPayload,
+	DefaultPayload,
+	DeviceMediaPayload,
+	InClassStatus,
+	InitClassRoomPayload,
+	NetworkQualityPayload,
+	StudentBadgePayload,
+	StudentCaptureStatus,
+	UserIdPayload,
+	UserMediaPayload,
+	ValueOfClassView,
+	WhiteboardPayload
+} from "../interface";
+import { useTeacherRoomWSHandler } from "./handler";
+import { TeacherRoomState } from "./state";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -171,14 +169,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
     });
     if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;
-    let time = 0;
-    setInterval(() => {
+    const intervalLogBandwidth = (window as any)["intervalLogBandwidth"];
+    if (intervalLogBandwidth) {
+      clearInterval(intervalLogBandwidth);
+    }
+    const interval = setInterval(() => {
       state.manager?.getBandwidth()?.then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
-        time += 1;
-        if (currentBandwidth && time % 10 === 0) {
+        if (currentBandwidth) {
           //mean 5 minutes
           Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putTeacherBandwidth(currentBandwidth.toFixed(2));
@@ -186,6 +186,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
+
+    (window as any)["intervalLogBandwidth"] = interval;
+
     //if (store.rootGetters["platform"] === VCPlatform.Agora) {
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (user, mediaType) => {
@@ -378,6 +381,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("disableAllStudents", {});
     state.manager?.WSClient.sendRequestDisableAllAnnotation(true);
   },
+  disableAllStudentsPalette({ commit, state }) {
+    commit("disableAllStudentsPalette", {});
+    state.manager?.WSClient.sendRequestResetPaletteAllStudent(true);
+  },
+
   enableAllStudents({ state, commit }) {
     commit("enableAllStudents", {});
     state.manager?.WSClient.sendRequestDisableAllAnnotation(false);
@@ -592,8 +600,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
   ) {
     try {
       const result = await StudentStorageService.getFiles(p.token, p.schoolId, p.classId, p.groupId, p.studentId, p.date, p.filterMode);
-      const data = result.sort((a, b) => (a.tags.dateTime > b.tags.dateTime ? -1 : 1));
       if (result.length) {
+        const data = result.sort((a, b) => (a.tags.dateTime > b.tags.dateTime ? -1 : 1));
         commit("setStudentsImageCaptured", data);
       }
     } catch (error) {

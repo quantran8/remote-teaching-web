@@ -1,13 +1,13 @@
-import { GLGlobal } from "vue-glcommonui";
+import { ClassRoomStatus, SignalRStatus } from "@/models";
+import { store } from "@/store";
+import { Logger } from "@/utils/logger";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
+import { GLGlobal } from "vue-glcommonui";
 import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
-import { store } from "@/store";
-import { ClassRoomStatus, SignalRStatus } from "@/models";
-import { Logger } from "@/utils/logger";
 export interface GLSocketOptions {
   url: string;
-  reConnectedCallback: ()=>Promise<any>;
+  reConnectedCallback: () => Promise<any>;
 }
 
 const DEFAULT_RECONNECT_TIMING = 5000;
@@ -47,12 +47,12 @@ export class GLSocketClient {
       .configureLogging(LogLevel.Debug)
       .build();
     //this._hubConnection.serverTimeoutInMilliseconds = 8000;
-	//this._hubConnection.keepAliveIntervalInMilliseconds = 4000;
+    //this._hubConnection.keepAliveIntervalInMilliseconds = 4000;
     this._hubConnection.onclose(this.onClosed);
     // this._hubConnection
     this._hubConnection.onreconnected(async (id: any) => {
       store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
-	  await this._options?.reConnectedCallback();
+      await this._options?.reConnectedCallback();
     });
     const currentClassRoomStatus = store.getters["classRoomStatus"];
     const currentSignalRStatus = store.getters["signalRStatus"];
@@ -74,10 +74,10 @@ export class GLSocketClient {
   }
   async disconnect(): Promise<void> {
     if (!this.isConnected) return;
-	const keys = Object.keys(this._listener);
-	keys.forEach((key) => {
-	  this.hubConnection.off(key);
-	});
+    const keys = Object.keys(this._listener);
+    keys.forEach((key) => {
+      this.hubConnection.off(key);
+    });
     return this._hubConnection?.stop();
   }
   async connect(): Promise<any> {
@@ -97,10 +97,10 @@ export class GLSocketClient {
         store.dispatch("setSignalRStatus", { status: SignalRStatus.NoStatus });
       }
       this._isConnected = true;
-	  store.dispatch("setSingalrInited", true);
-	  await this._options?.reConnectedCallback();
+      store.dispatch("setSingalrInited", true);
+      await this._options?.reConnectedCallback();
     } catch (error) {
-	  Logger.error(error);
+      Logger.error(error);
       this._isConnected = false;
     }
   }
@@ -116,11 +116,9 @@ export class GLSocketClient {
       this._isConnected = false;
       await this.connect();
     }
-	if (this.hubConnection.state === HubConnectionState.Connected) {
-		return this.hubConnection.send(command, payload);
-	}
-    else 
-		return Promise.resolve();
+    if (this.hubConnection.state === HubConnectionState.Connected) {
+      return this.hubConnection.send(command, payload);
+    } else return Promise.resolve();
   }
 
   async invoke(command: string, payload: any): Promise<any> {
@@ -139,10 +137,10 @@ export class GLSocketClient {
   }
 
   registerEventHandler(handler: WSEventHandler) {
-	const keys = Object.keys(this._listener);
-	keys.forEach((key) => {
-	  this.hubConnection.off(key);
-	});
+    const keys = Object.keys(this._listener);
+    keys.forEach((key) => {
+      this.hubConnection.off(key);
+    });
 
     const handlers: Map<WSEvent, Function> = new Map<WSEvent, Function>();
     handlers.set(StudentWSEvent.JOIN_CLASS, handler.onStudentJoinClass);
@@ -200,6 +198,7 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_TEACHER_SET_CURRENT_TIME_MEDIA, handler.onTeacherSetCurrentTimeMedia);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_DRAW_LASER_PEN, handler.onTeacherDrawLaser);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_DISABLE_PALETTE_ALL_STUDENT, handler.onTeacherDisableAllStudentPallete);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_RESET_PALETTE_ALL_STUDENT, handler.onTeacherResetPaletteAllStudent);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_UPDATE_STUDENT_PALETTE, handler.onTeacherToggleStudentPallete);
     // handlers.set(TeacherWSEvent.EVENT_TEACHER_ADD_SHAPE, handler.onTeacherAddShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
@@ -219,8 +218,8 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
 
-	handlers.set(TeacherWSEvent.TEACHER_UPDATE_SESSION_LESSON_AND_UNIT, handler.onTeacherUpdateSessionLessonAndUnit);
-	handlers.set(TeacherWSEvent.CAPTURE_IMAGE, handler.onTeacherSendRequestCaptureImage);
+    handlers.set(TeacherWSEvent.TEACHER_UPDATE_SESSION_LESSON_AND_UNIT, handler.onTeacherUpdateSessionLessonAndUnit);
+    handlers.set(TeacherWSEvent.CAPTURE_IMAGE, handler.onTeacherSendRequestCaptureImage);
 
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {

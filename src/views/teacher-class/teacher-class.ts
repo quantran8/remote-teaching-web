@@ -1,30 +1,30 @@
+import { CaptureNotification, TeacherClass } from "@/locales/localeid";
+import { ClassRoomStatus } from "@/models";
+import { UserRole } from "@/store/app/state";
 import { ClassView, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
-import { Modal, notification, Checkbox } from "ant-design-vue";
-import { computed, ComputedRef, defineComponent, ref, watch, provide, onMounted, onUnmounted } from "vue";
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Checkbox, Modal, notification } from "ant-design-vue";
+import { fabric } from "fabric";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { fmtMsg, LoginInfo, RoleName } from "vue-glcommonui";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
-import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
-import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
-import { CaptureNotification, TeacherClass } from "@/locales/localeid";
-import { UserRole } from "@/store/app/state";
-import { fabric } from "fabric";
-
-const fpPromise = FingerprintJS.load();
 import {
-  TeacherCard,
-  LessonPlan,
   ActivityContent,
-  StudentGallery,
-  GlobalAudioBar,
+  ChangeLessonUnit,
   DesignateTarget,
+  GlobalAudioBar,
+  LessonPlan,
+  StudentGallery,
+  TeacherCard,
   TeacherPageHeader,
   WhiteboardPalette,
-  ChangeLessonUnit,
 } from "./components";
-import { ClassRoomStatus } from "@/models";
-import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+
+const fpPromise = FingerprintJS.load();
 export default defineComponent({
   components: {
     Modal,
@@ -171,10 +171,8 @@ export default defineComponent({
 
     const toggleView = async () => {
       if (isGalleryView.value) {
-        isSidebarCollapsed.value = false;
         await setClassView(ClassView.LESSON_PLAN);
       } else {
-        isSidebarCollapsed.value = true;
         await setClassView(ClassView.GALLERY);
       }
       await dispatch("teacherRoom/setClearBrush", {});

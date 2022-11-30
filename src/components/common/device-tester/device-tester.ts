@@ -1,17 +1,17 @@
-import { defineComponent, computed, ref, watch, onUnmounted } from "vue";
-import AgoraRTC from "agora-rtc-sdk-ng";
 import ZoomVideo, { LocalAudioTrack, LocalVideoTrack } from "@zoom/videosdk";
+import AgoraRTC from "agora-rtc-sdk-ng";
+import { computed, defineComponent, onUnmounted, ref, watch } from "vue";
 
-import { useStore } from "vuex";
-import { Modal, Switch, Progress, Select, Button, Skeleton, Divider, Row, Space, Spin } from "ant-design-vue";
-import { UnitAndLesson, MediaStatus } from "@/models";
-import { fmtMsg } from "vue-glcommonui";
-import { DeviceTesterLocale } from "@/locales/localeid";
-import { Logger } from "@/utils/logger";
-import { VCPlatform } from "@/store/app/state";
-import { Howl, Howler } from "howler";
 import IconSpeakerPlay from "@/assets/images/play-button.png";
 import IconSpeakerStop from "@/assets/images/stop-button.png";
+import { DeviceTesterLocale } from "@/locales/localeid";
+import { MediaStatus, UnitAndLesson } from "@/models";
+import { VCPlatform } from "@/store/app/state";
+import { Logger } from "@/utils/logger";
+import { Button, Divider, Modal, Progress, Row, Select, Skeleton, Space, Spin, Switch } from "ant-design-vue";
+import { Howl, Howler } from "howler";
+import { fmtMsg } from "vue-glcommonui";
+import { useStore } from "vuex";
 
 interface DeviceType {
   deviceId: string;
@@ -92,7 +92,7 @@ export default defineComponent({
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
     const devices = ref<MediaDeviceInfo[]>([]);
-
+    const audio = ref<any>(null);
     const listSpeakers = ref<DeviceType[]>([]);
     const listSpeakersId = ref<string[]>([]);
     const currentSpeaker = ref<DeviceType>();
@@ -101,10 +101,20 @@ export default defineComponent({
     const isCheckSpeaker = ref(true);
     const isPlaySpeaker = ref(false);
     const speakerIcon = computed(() => (isPlaySpeaker.value ? IconSpeakerStop : IconSpeakerPlay));
-    const toggleSpeaker = () => {
+    const toggleSpeaker = async () => {
+      if (!listSpeakers.value.length || !currentSpeaker.value) {
+        return;
+      }
+      audio.value = document.getElementById("audio");
       isPlaySpeaker.value = !isPlaySpeaker.value;
-      isPlaySpeaker.value ? connectTestSound.play() : connectTestSound.stop();
-      isPlayingSound.value = connectTestSound.playing();
+      if (isPlaySpeaker.value && audio.value) {
+        await audio.value.setSinkId(currentSpeaker.value?.deviceId);
+        audio.value.play();
+      } else {
+        audio.value.pause();
+        audio.value.currentTime = 0;
+      }
+      isPlayingSound.value = !audio.value.paused;
     };
     const connectTestSound = new Howl({
       loop: true,
@@ -272,25 +282,6 @@ export default defineComponent({
     const setupDevice = async () => {
       try {
         const cams = await AgoraRTC.getCameras();
-        const speakersOrigin = await AgoraRTC.getPlaybackDevices();
-        const speakers: DeviceType[] = speakersOrigin.map((speaker) => {
-          if (speaker.deviceId === "default") {
-            const defaultDevice = {
-              deviceId: speaker.deviceId,
-              groupId: speaker.groupId,
-              kind: speaker.kind,
-              label: "Default Device",
-            };
-            return defaultDevice;
-          }
-          return speaker;
-        });
-        if (speakers.length) {
-          listSpeakers.value = speakers;
-          listSpeakersId.value = speakers.map((speaker: any) => speaker.deviceId);
-          currentSpeaker.value = speakers[0];
-          currentSpeakerLabel.value = speakers[0].label;
-        }
         if (cams.length) {
           let camSelected = cams[0];
           const localStorageCamId = localStorage.getItem("camId");
@@ -338,6 +329,29 @@ export default defineComponent({
       } catch (error) {
         Logger.log("setupMic error => ", error);
         agoraMicError.value = true;
+      }
+      try {
+        const speakersOrigin = await AgoraRTC.getPlaybackDevices();
+        const speakers: DeviceType[] = speakersOrigin.map((speaker) => {
+          if (speaker.deviceId === "default") {
+            const defaultDevice = {
+              deviceId: speaker.deviceId,
+              groupId: speaker.groupId,
+              kind: speaker.kind,
+              label: "Default Device",
+            };
+            return defaultDevice;
+          }
+          return speaker;
+        });
+        if (speakers.length) {
+          listSpeakers.value = speakers;
+          listSpeakersId.value = speakers.map((speaker: any) => speaker.deviceId);
+          currentSpeaker.value = speakers[0];
+          currentSpeakerLabel.value = speakers[0].label;
+        }
+      } catch (error) {
+        Logger.log(error.message);
       }
     };
 
@@ -559,12 +573,15 @@ export default defineComponent({
 
     //handle for speaker
     watch(isCheckSpeaker, () => {
-      if (isCheckSpeaker.value) {
-        connectTestSound.play();
-      } else {
-        connectTestSound.stop();
+      if (audio.value) {
+        if (isCheckSpeaker.value) {
+          audio.value.play();
+        } else {
+          audio.value.pause();
+          audio.value.currentTime = 0;
+        }
+        isPlayingSound.value = !audio.value.paused;
       }
-      isPlayingSound.value = connectTestSound.playing();
     });
 
     const setVolumeWave = () => {
@@ -604,18 +621,27 @@ export default defineComponent({
       }
     };
 
-    const handleSpeakerChange = (speakerId: string) => {
+    const handleSpeakerChange = async (speakerId: string) => {
+      audio.value = document.getElementById("audio");
       currentSpeaker.value = listSpeakers.value.find((speaker) => speaker.deviceId === speakerId);
-      connectTestSound.stop();
-      connectTestSound.play();
-      isPlayingSound.value = connectTestSound.playing();
-      isPlaySpeaker.value = connectTestSound.playing();
+      if (audio.value) {
+        await audio.value.setSinkId(currentSpeaker.value?.deviceId);
+        audio.value.pause();
+        audio.value.currentTime = 0;
+        audio.value.play();
+      } else {
+        audio.value.pause();
+        audio.value.currentTime = 0;
+      }
+      isPlayingSound.value = !audio.value.paused;
+      isPlaySpeaker.value = !audio.value.paused;
     };
 
     const destroySDK = async (isAgora: boolean) => {
       isConfigTrackingDone.value = false;
-      if (connectTestSound.playing()) {
-        connectTestSound.stop();
+      if (audio.value && !audio.value.paused) {
+        audio.value.pause();
+        audio.value.currentTime = 0;
         isPlayingSound.value = false;
       }
 
@@ -690,7 +716,10 @@ export default defineComponent({
     });
 
     const goToClass = () => {
-      connectTestSound.stop();
+      if (audio.value) {
+        audio.value.pause();
+        audio.value.currentTime = 0;
+      }
       emit("go-to-class");
     };
 
@@ -738,7 +767,10 @@ export default defineComponent({
     };
 
     const handleSubmit = () => {
-      connectTestSound.stop();
+      if (audio.value) {
+        audio.value.pause();
+        audio.value.currentTime = 0;
+      }
       const unitId = props.unitInfo.find((unit: UnitAndLesson) => unit.unit === currentUnit.value).unitId;
       if (!unitId) return;
       emit("on-join-session", {
@@ -785,6 +817,7 @@ export default defineComponent({
     const JoinSession = computed(() => fmtMsg(DeviceTesterLocale.JoinSession));
     const warningMsgMicrophone = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningMic));
     const warningMsgCamera = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningCamera));
+    const warningMsgSpeaker = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningSpeaker));
 
     onUnmounted(() => {
       AgoraRTC.onMicrophoneChanged = undefined;
@@ -880,6 +913,7 @@ export default defineComponent({
       handleSpeakerChange,
       speakerIcon,
       toggleSpeaker,
+      warningMsgSpeaker,
     };
   },
 });
