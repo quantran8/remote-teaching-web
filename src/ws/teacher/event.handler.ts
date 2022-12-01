@@ -50,4 +50,6 @@ export interface TeacherWSEventHandler {
   onTeacherSetMediaState(payload: any): void;
   onTeacherSetCurrentTimeMedia(payload: any): void;
   onTeacherResetPaletteAllStudent(payload: any): void;
+  onTeacherDeleteFabric(payload: any): void;
+  onTeacherDeleteShape(payload: any): void;
 } 

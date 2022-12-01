@@ -637,6 +637,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setPencilPath({ state }, p: any) {
     await state.manager?.WSClient.sendRequestDrawPencil(p);
   },
+  async setDeleteShape({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteShape(payload);
+  },
+  async setDeleteFabric({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteFabric(payload);
+  },
 };
 
 export default actions;

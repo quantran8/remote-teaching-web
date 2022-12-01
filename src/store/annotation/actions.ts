@@ -107,7 +107,7 @@ const actions: ActionTree<AnnotationState, any> = {
   setClearOneStudentDrawsLine({ commit }, p: {}) {
     commit("setClearOneStudentDrawsLine", p);
   },
-  setLastFabricUpdated({ commit }, p: LastFabricUpdated) {
+  setLastFabricUpdated({ commit }, p: LastFabricUpdated | null) {
     commit("setLastFabricUpdated", p);
   },
   setFabricsInDrawing({ commit }, p: FabricObject[]) {
@@ -130,6 +130,28 @@ const actions: ActionTree<AnnotationState, any> = {
   },
   clearPencilPath({ commit }) {
     commit("clearPencilPath");
+  },
+  setFabricObjects({ commit, rootGetters }, payload: FabricObject) {
+    if (rootGetters["studentRoom/getStudentModeOneId"] || rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setOneToOneFabricObjects", payload);
+    } else {
+      commit("setFabricObjects", payload);
+    }
+  },
+  setDeleteFabric({ commit, rootGetters }) {
+    if (rootGetters["studentRoom/getStudentModeOneId"] || rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setDeleteOneToOneFabric");
+    } else {
+      commit("setDeleteFabric");
+    }
+  },
+  setDeleteShape({ commit, rootGetters }) {
+    const teacher = rootGetters["studentRoom/teacher"];
+    if (rootGetters["studentRoom/getStudentModeOneId"] || rootGetters["teacherRoom/getStudentModeOneId"]) {
+      commit("setDeleteOneToOneShape", teacher.id);
+    } else {
+      commit("setDeleteShape", teacher.id);
+    }
   },
 };
 export default actions;

@@ -190,6 +190,8 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.EVENT_ANNOTATION_UPDATE_MODE, handler.onTeacherUpdateAnnotationMode);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_ADD_BRUSHSTROKE, handler.onTeacherAddBrush);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_BRUSHSTROKE, handler.onTeacherClearAllBrush);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_DELETE_FABRIC, handler.onTeacherDeleteFabric);
+    handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_DELETE_SHAPE, handler.onTeacherDeleteShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_DELETE_BRUSHSTROKE, handler.onTeacherDeleteBrush);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_STICKER, handler.onTeacherSetStickers);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_CLEAR_STICKER, handler.onTeacherClearStickers);

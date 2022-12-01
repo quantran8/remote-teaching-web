@@ -4,9 +4,9 @@ import { brushstrokesRender } from "@/components/common/annotation-view/componen
 import { laserPen } from "@/components/common/annotation-view/components/laser-path";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { TeacherModel } from "@/models";
-import { LastFabricUpdated } from "@/store/annotation/state";
+import { LastFabricUpdated, UserShape } from "@/store/annotation/state";
 import { IMAGE_QUALITY, SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
-import { DefaultCanvasDimension, SmoothingQuality } from "@/utils/utils";
+import { DefaultCanvasDimension, FabricObjectType, SmoothingQuality } from "@/utils/utils";
 import { Popover } from "ant-design-vue";
 import { fabric } from "fabric";
 import { gsap } from "gsap";
@@ -344,20 +344,25 @@ export default defineComponent({
           ...canvas
             .getObjects()
             .filter(
-              (obj: any) => obj.type !== "path" && obj.id !== teacherForST.value.id && obj.id !== "annotation-lesson" && obj.id !== "lesson-img",
+              (obj: any) =>
+                obj.type !== FabricObjectType.Path &&
+                obj.type !== FabricObjectType.Text &&
+                obj.id !== teacherForST.value.id &&
+                obj.id !== "annotation-lesson" &&
+                obj.id !== "lesson-img",
             ),
         );
       }
     });
-    const teacherSharingShapes = (dataShapes: any, studentOneId: any) => {
-      if (dataShapes) {
+    const teacherSharingShapes = (dataShapes: Array<UserShape>, studentOneId: string | null) => {
+      if (dataShapes && dataShapes.length) {
         canvas.remove(
           ...canvas
             .getObjects()
             .filter((obj: any) => obj.type !== "path")
             .filter((obj: any) => obj.id === teacherForST.value.id),
         );
-        dataShapes.forEach((item: any) => {
+        dataShapes.forEach((item) => {
           if (item.userId === teacherForST.value.id) {
             brushstrokesRender(canvas, item, studentOneId, "teacher-shapes");
           }
@@ -366,9 +371,13 @@ export default defineComponent({
         canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === teacherForST.value.id && obj.tag === "teacher-shapes"));
       }
     };
-    watch(teacherShapes, () => {
-      teacherSharingShapes(teacherShapes.value, null);
-    });
+    watch(
+      teacherShapes,
+      () => {
+        teacherSharingShapes(teacherShapes.value, null);
+      },
+      { deep: true },
+    );
     const studentSharingStrokes = () => {
       if (studentStrokes.value && studentStrokes.value.length > 0) {
         if (!studentOneAndOneId.value) {
@@ -404,13 +413,17 @@ export default defineComponent({
       }
     });
     const renderOneTeacherShapes = () => {
-      if (oneTeacherShapes.value && oneTeacherShapes.value.length > 0 && studentOneAndOneId.value === student.value.id) {
+      if (studentOneAndOneId.value === student.value.id) {
         teacherSharingShapes(oneTeacherShapes.value, studentOneAndOneId.value);
       }
     };
-    watch(oneTeacherShapes, () => {
-      renderOneTeacherShapes();
-    });
+    watch(
+      oneTeacherShapes,
+      () => {
+        renderOneTeacherShapes();
+      },
+      { deep: true },
+    );
     const selfStudentShapes = () => {
       if (studentShapes.value) {
         canvas.remove(
@@ -484,6 +497,7 @@ export default defineComponent({
         await store.dispatch("annotation/clearPencilPath");
         // enable shapes of each students
         listenSelfStudent();
+        displayFabricItems(canvas, fabricItems.value);
       }
     });
     const listenToMouseDown = () => {
@@ -691,11 +705,13 @@ export default defineComponent({
     watch(
       fabricItems,
       async (value) => {
-        const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
-        if (!oneToOneUserId) {
-          await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId && obj.id !== "lesson-img"));
+        if (!lastFabricUpdated.value) {
+          const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
+          if (!oneToOneUserId || oneToOneUserId === student.value.id) {
+            await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId && obj.id !== "lesson-img"));
+          }
+          displayFabricItems(canvas, value);
         }
-        displayFabricItems(canvas, value);
       },
       { deep: true },
     );
@@ -705,19 +721,25 @@ export default defineComponent({
       const currentObjects = canvas.getObjects();
       return currentObjects.find((obj: any) => obj.objectId === id);
     };
-    watch(lastFabricUpdated, (value: LastFabricUpdated) => {
+    watch(lastFabricUpdated, async (value: LastFabricUpdated) => {
+      if (!value) {
+        return;
+      }
       const { type, data } = value;
       switch (type) {
         case "create": {
           displayCreatedItem(canvas, data);
+          await store.dispatch("annotation/setFabricObjects", data);
           break;
         }
         case "modify": {
           const existingObject = getObjectFromId(data.fabricId);
           if (!existingObject) {
             displayCreatedItem(canvas, data);
+            await store.dispatch("annotation/setFabricObjects", data);
             break;
           }
+          await store.dispatch("annotation/setFabricObjects", data);
           displayModifiedItem(canvas, data, existingObject);
           break;
         }
