@@ -48,6 +48,7 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const teacherWhiteBoardStatus = computed(() => infoTeacher.value?.isShowWhiteBoard);
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
@@ -355,17 +356,15 @@ export default defineComponent({
       });
     };
     // watch whiteboard state to display
-    watch(infoTeacher, async () => {
-      if (infoTeacher.value) {
-        if (!canvas) return;
-        if (infoTeacher.value.isShowWhiteBoard) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-          await clickedTool(Tools.Pen);
-        } else {
-          canvas.remove(...canvas.getObjects("path"));
-          canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-          await clickedTool(Tools.Cursor);
-        }
+    watch(teacherWhiteBoardStatus, async (value) => {
+      if (!canvas) return;
+      if (value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Pen);
+      } else {
+        canvas.remove(...canvas.getObjects("path"));
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Cursor);
       }
     });
     const processCanvasWhiteboard = async (shouldResetClickedTool = true) => {

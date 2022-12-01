@@ -69,6 +69,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("annotation/setInfo", roomResponse.data.annotation, {
+        root: true,
+      });
       await dispatch("lesson/setInfo", { payload: roomResponse.data.lessonPlan, token: token }, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
@@ -77,9 +80,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
 
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
-        root: true,
-      });
-      await dispatch("annotation/setInfo", roomResponse.data.annotation, {
         root: true,
       });
       commit("setClassView", {
