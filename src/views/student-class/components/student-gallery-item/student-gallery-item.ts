@@ -1,9 +1,8 @@
-import { VCPlatform } from "@/store/app/state";
+import noAvatar from "@/assets/student-class/no-avatar.png";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
-import noAvatar from "@/assets/student-class/no-avatar.png";
 
 export default defineComponent({
   components: {},
@@ -19,12 +18,19 @@ export default defineComponent({
     const store = useStore();
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
     const isUsingAgora = true; // computed(() => store.getters["platform"] === VCPlatform.Agora);
+    const firstTimeVisit = ref(true);
 
     watch(props, () => {
       if (props.raisedHand) {
         isRaisingHand.value = true;
       } else {
         isRaisingHand.value = false;
+      }
+    });
+    watch(isNotJoinned, (value) => {
+      if (firstTimeVisit.value && !value) {
+        firstTimeVisit.value = false;
+        store.dispatch("studentRoom/getClassRoomInfo", null);
       }
     });
 
