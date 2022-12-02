@@ -99,13 +99,7 @@ export default defineComponent({
     const { width: parentWidth, top: parentTop, bottom: parentBottom, left: parentLeft, right: parentRight } = useElementBounding(parentCard);
 
     const maxScaleRatio = computed(() => {
-      const parent = document.querySelector(".tc__gallery") as HTMLElement | null;
-      const child = document.querySelector(".student-gallery") as HTMLElement | null;
-      let scrollbarWidth = 0;
-      if (parent && child) {
-        scrollbarWidth = parent?.offsetWidth - child?.offsetWidth;
-      }
-      return width.value ? (parentWidth.value + scrollbarWidth) / width.value : 1;
+      return width.value ? parentWidth.value / width.value : 1;
     });
     const actualScaleRatio = computed(() => {
       return Math.min(props.scaleOption || 1, maxScaleRatio.value);
