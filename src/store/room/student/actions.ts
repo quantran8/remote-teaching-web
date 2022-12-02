@@ -33,6 +33,20 @@ const actions: ActionTree<StudentRoomState, any> = {
     const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
     commit("setRoomInfo", roomResponse.data);
     await dispatch("lesson/setInfo", { payload: roomResponse.data?.lessonPlan, token: token }, { root: true });
+    await dispatch("annotation/setInfo", roomResponse.data.annotation, {
+      root: true,
+    });
+    commit("setClassView", {
+      classView: ClassViewFromValue(roomResponse.data.teachingMode),
+    });
+    commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
+    await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+    await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
+    await dispatch(
+      "lesson/setTargetsVisibleAllAction",
+      { user: "", visible: roomResponse.data.annotation.drawing.isShowingAllShapes },
+      { root: true },
+    );
   },
   async initClassRoom(
     { commit, dispatch, state, rootState },
@@ -69,6 +83,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("annotation/setInfo", roomResponse.data.annotation, {
+        root: true,
+      });
       await dispatch("lesson/setInfo", { payload: roomResponse.data.lessonPlan, token: token }, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
@@ -77,9 +94,6 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
 
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
-        root: true,
-      });
-      await dispatch("annotation/setInfo", roomResponse.data.annotation, {
         root: true,
       });
       commit("setClassView", {
@@ -390,6 +404,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     dispatch("annotation/addShape", null, { root: true });
     dispatch("lesson/setZoomRatio", undefined, { root: true });
     dispatch("lesson/setImgCoords", undefined, { root: true });
+	dispatch("annotation/setLastFabricUpdated", null, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;

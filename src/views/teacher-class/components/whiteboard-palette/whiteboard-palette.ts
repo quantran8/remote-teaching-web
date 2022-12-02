@@ -6,7 +6,7 @@ import { Pointer } from "@/store/annotation/state";
 import { ClassView } from "@/store/room/interface";
 import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
-import { DefaultCanvasDimension, Mode, Tools } from "@/utils/utils";
+import { DefaultCanvasDimension, FabricObjectType, Mode, Tools } from "@/utils/utils";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
 import { FabricObject } from "@/ws";
@@ -48,6 +48,7 @@ export default defineComponent({
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const teacherWhiteBoardStatus = computed(() => infoTeacher.value?.isShowWhiteBoard);
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
@@ -355,17 +356,15 @@ export default defineComponent({
       });
     };
     // watch whiteboard state to display
-    watch(infoTeacher, async () => {
-      if (infoTeacher.value) {
-        if (!canvas) return;
-        if (infoTeacher.value.isShowWhiteBoard) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-          await clickedTool(Tools.Pen);
-        } else {
-          canvas.remove(...canvas.getObjects("path"));
-          canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-          await clickedTool(Tools.Cursor);
-        }
+    watch(teacherWhiteBoardStatus, async (value) => {
+      if (!canvas) return;
+      if (value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Pen);
+      } else {
+        canvas.remove(...canvas.getObjects("path"));
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Cursor);
       }
     });
     const processCanvasWhiteboard = async (shouldResetClickedTool = true) => {
@@ -800,14 +799,23 @@ export default defineComponent({
           return;
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
-          if (canvas.getObjects("path").length) {
+          if (canvas.getObjects().length) {
             const itemDelete = canvas
-              .getObjects("path")
-              .filter((item: any) => item.id === isTeacher.value.id || item.isOneToOne === oneAndOne.value)
+              .getObjects()
+              .filter((obj: any) => obj.type !== FabricObjectType.Group)
               .pop();
             canvas.remove(itemDelete);
             if (!isTeacherUseOnly.value && itemDelete) {
-              await store.dispatch("teacherRoom/setDeleteBrush", {});
+              switch (itemDelete.type) {
+                case FabricObjectType.Path:
+                  await store.dispatch("teacherRoom/setDeleteBrush", {});
+                  break;
+                case FabricObjectType.Text:
+                  await store.dispatch("teacherRoom/setDeleteFabric", {});
+                  break;
+                default:
+                  await store.dispatch("teacherRoom/setDeleteShape", {});
+              }
             }
             toolSelected.value = Tools.Pen;
             canvas.isDrawingMode = true;

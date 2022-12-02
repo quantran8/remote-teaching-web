@@ -376,6 +376,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
         await dispatch("annotation/setFabricsInDrawing", payload.drawing.fabrics, { root: true });
+        await dispatch("annotation/setLastFabricUpdated", null, { root: true });
       }
     },
     onTeacherSetWhiteboard: async (payload: any) => {
@@ -462,6 +463,12 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherResetPaletteAllStudent: (p: boolean) => {
       commit("studentRoom/disableAllAnnotationStatus", p, { root: true });
+    },
+    onTeacherDeleteFabric: async (payload: any) => {
+      await dispatch("annotation/setDeleteFabric", {}, { root: true });
+    },
+    onTeacherDeleteShape: async (payload: any) => {
+      await dispatch("annotation/setDeleteShape", {}, { root: true });
     },
   };
   return handler;

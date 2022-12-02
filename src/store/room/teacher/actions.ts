@@ -257,6 +257,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("annotation/setInfo", roomInfo.annotation, {
+        root: true,
+      });
       await dispatch("lesson/setInfo", { payload: roomInfo.lessonPlan, token: token }, { root: true });
       await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
@@ -267,13 +270,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
         "lesson/setTargetsVisibleAllAction",
         {
           userId: roomResponse.data.teacher.id,
-          visible: roomResponse.data.annotation.drawing.isShowingAllShapes,
+          visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false,
         },
         { root: true },
       );
-      await dispatch("annotation/setInfo", roomInfo.annotation, {
-        root: true,
-      });
       await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes, { root: true });
 
       if (roomInfo.oneAndOneDto) {
@@ -636,6 +636,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async setPencilPath({ state }, p: any) {
     await state.manager?.WSClient.sendRequestDrawPencil(p);
+  },
+  async setDeleteShape({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteShape(payload);
+  },
+  async setDeleteFabric({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteFabric(payload);
   },
 };
 

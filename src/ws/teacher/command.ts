@@ -45,6 +45,8 @@ export enum TeacherWSCommand {
   TOGGLE_SHAPE = "ToggleShape",
   CHECK_MESSAGE_VERSION = "TeacherCheckMessageVersion",
   UPDATE_SESSION_LESSON_AND_UNIT = "TeacherUpdateSessionLessonAndUnit",
+  TEACHER_UNDO_FABRIC = "TeacherUndoFabrics",
+  TEACHER_UNDO_SHAPE = "TeacherUndoShapes",
 
   TEACHER_RESET_ZOOM = "TeacherResetZoom",
   TEACHER_ZOOM_SLIDE = "TeacherZoomSlide",
