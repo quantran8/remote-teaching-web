@@ -257,6 +257,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
+      await dispatch("annotation/setInfo", roomInfo.annotation, {
+        root: true,
+      });
       await dispatch("lesson/setInfo", { payload: roomInfo.lessonPlan, token: token }, { root: true });
       await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
@@ -271,9 +274,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
         },
         { root: true },
       );
-      await dispatch("annotation/setInfo", roomInfo.annotation, {
-        root: true,
-      });
       await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes, { root: true });
 
       if (roomInfo.oneAndOneDto) {
