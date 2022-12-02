@@ -390,6 +390,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     dispatch("annotation/addShape", null, { root: true });
     dispatch("lesson/setZoomRatio", undefined, { root: true });
     dispatch("lesson/setImgCoords", undefined, { root: true });
+	dispatch("annotation/setLastFabricUpdated", null, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;

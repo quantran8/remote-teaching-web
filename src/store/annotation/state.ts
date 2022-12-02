@@ -15,8 +15,8 @@ export interface Sticker {
   height: number;
 }
 export interface UserShape {
-  UserId: string;
-  brushstroke: Array<string>;
+  userId: string;
+  brushstrokes: Array<string>;
 }
 export interface Drawing {
   brushstrokes: Array<string>;

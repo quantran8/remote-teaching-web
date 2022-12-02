@@ -1,10 +1,10 @@
+import { Sticker } from "@/store/annotation/state";
+import { VCPlatform } from "@/store/app/state";
 import { Target } from "@/store/interactive/state";
+import { TargetsVisibleList } from "@/store/lesson/state";
+import { FabricObject } from "@/ws";
 import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
-import { Sticker } from "@/store/annotation/state";
-import { FabricObject } from "@/ws";
-import { TargetsVisibleList } from "@/store/lesson/state";
-import { VCPlatform } from "@/store/app/state";
 
 export interface ExposureItemMediaModel {
   id: string;
@@ -80,8 +80,8 @@ export interface PencilModel {
   color: string;
 }
 export interface UserShapeModel {
-  UserId: string;
-  brushstroke: Array<string>;
+  userId: string;
+  brushstrokes: Array<string>;
 }
 export interface DrawingModel {
   pencil: PencilModel | null;

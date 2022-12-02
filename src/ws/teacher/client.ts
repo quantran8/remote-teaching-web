@@ -208,4 +208,10 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestDrawPencil(payload: any) {
     return this.send(WSCmd.TEACHER_DRAW_PENCIL_PEN, JSON.stringify(payload));
   }
+  sendRequestDeleteFabric(payload: any) {
+    return this.send(WSCmd.TEACHER_UNDO_FABRIC, {});
+  }
+  sendRequestDeleteShape(payload: any) {
+    return this.send(WSCmd.TEACHER_UNDO_SHAPE, {});
+  }
 }
