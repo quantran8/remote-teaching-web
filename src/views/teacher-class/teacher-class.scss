@@ -74,6 +74,7 @@ $scale-ratio: 0.66;
     overflow-y: auto;
     flex: 1 1 0;
     padding: 12px 0;
+	scrollbar-gutter: stable;
   }
 
   &__preview-wrapper {
