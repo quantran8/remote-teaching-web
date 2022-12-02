@@ -270,7 +270,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         "lesson/setTargetsVisibleAllAction",
         {
           userId: roomResponse.data.teacher.id,
-          visible: roomResponse.data.annotation.drawing.isShowingAllShapes,
+          visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false,
         },
         { root: true },
       );
