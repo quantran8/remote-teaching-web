@@ -12,6 +12,7 @@ import { fabric } from "fabric";
 import { gsap } from "gsap";
 import { debounce } from "lodash";
 import { computed, defineComponent, nextTick, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { LoginInfo } from "vue-glcommonui";
 import VuePdfEmbed from "vue-pdf-embed";
 import { useStore } from "vuex";
 import { pencilPen } from "./components/pencil-path";
@@ -39,6 +40,9 @@ export default defineComponent({
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
     const isGalleryView = computed(() => store.getters["studentRoom/isGalleryView"]);
     const isLessonPlan = computed(() => store.getters["studentRoom/isLessonPlan"]);
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
     const activeColor = ref("black");
     const toolActive = ref("move");
     const videoAnnotation = ref<HTMLVideoElement | null>(null);
@@ -109,17 +113,20 @@ export default defineComponent({
     const mediaTypeId = computed(() => {
       const newId = props.id;
       let result = undefined;
-      const listMedia = currentExposure.value?.alternateMediaBlockItems;
+      const listMedia = currentExposure.value?.alternateMediaBlockItems.flat();
       if (listMedia) {
-        listMedia.forEach((e: any) => {
-          e.forEach((item: any) => {
-            if (newId === item.id) {
-              result = item.mediaTypeId;
-            }
-          });
+        const target = listMedia.find((item: any) => {
+          return newId === item.id;
         });
+        if (target) {
+          result = target.mediaTypeId;
+        }
       }
       return result;
+    });
+
+    const isValidUrl = computed(() => {
+      return currentExposureItemMedia.value.image.url !== "default" ? true : false;
     });
 
     watch(
@@ -209,8 +216,6 @@ export default defineComponent({
       }
     });
     const firstTimeVisit = ref(false);
-    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
-    const undoStrokeOneOne = computed(() => store.getters["annotation/undoStrokeOneOne"]);
     const styles = ref(DEFAULT_STYLE);
 
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
@@ -230,6 +235,11 @@ export default defineComponent({
             await store.dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
           }
         }
+      }
+    });
+    watch(mediaTypeId, () => {
+      if (mediaTypeId.value !== undefined && currentExposureItemMedia.value.image.url === "default") {
+        store.dispatch("lesson/getAlternateMediaUrl", { token: loginInfo.access_token, id: currentExposureItemMedia.value.id });
       }
     });
     const { processPushShapes, addCircle, addSquare } = studentAddedShapes();
@@ -821,6 +831,7 @@ export default defineComponent({
       styles,
       videoAnnotation,
       audioAnnotation,
+      isValidUrl,
     };
   },
 });

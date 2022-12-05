@@ -1,16 +1,16 @@
-import { preloadImage } from "@/utils/preloadImage";
 import { ExposureContentModel, ExposureItemMediaModel, ExposureItemModel, LessonPlanModel } from "@/models";
+import { LessonService } from "@/services";
+import { preloadImage } from "@/utils/preloadImage";
 import { ActionContext, ActionTree } from "vuex";
-import { LessonService } from "@/services/lesson/index";
 import {
+  ContentRootTypeFromValue,
+  CropMetadata,
   Exposure,
   ExposureItem,
   ExposureItemMedia,
   ExposureStatus,
   ExposureTypeFromValue,
   LessonState,
-  ContentRootTypeFromValue,
-  CropMetadata,
 } from "./state";
 
 interface LessonActionsInterface<S, R> {
@@ -35,7 +35,7 @@ const DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME = "Alternate Media";
 interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S, R> {}
 
 const actions: LessonActions<LessonState, any> = {
-  async setInfo(store: ActionContext<LessonState, any>, { payload, token }) {
+  async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
     if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
@@ -88,60 +88,51 @@ const actions: LessonActions<LessonState, any> = {
 
       //handle alternate media block
       const alternateMediaBlockItems: ExposureItem[][] = [];
-      const handleAlternateMediaBlock = async () => {
-        const newMedia = e.media ? e.media : [];
-        for (const i of newMedia) {
-          const res = await fetch(`${process.env.VUE_APP_API_PREFIX}content/v1/resource/GetDownloadMediaUrl?mediaId=${i.id}`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token.access_token}`,
+      const newMedia = e.media ? e.media : [];
+      for (const i of newMedia) {
+        const alternateMedia: Array<ExposureItemMedia> = [
+          {
+            id: i.id,
+            image: {
+              url: "default",
             },
-          });
-          const mediaUrl = await res.json();
-          const alternateMedia: Array<ExposureItemMedia> = [
-            {
-              id: i.id,
-              image: {
-                url: mediaUrl,
-                teacherUseOnly: false,
-              },
-            },
-          ];
-          const alternateMediaItems: Array<ExposureItem> = [
-            {
-              id: i.id,
-              name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
-              media: alternateMedia,
-              mediaTypeId: i.mediaTypeId,
-              teacherUseOnly: false,
-            },
-          ];
-          const newImg = i.page ? i.page.map((p: any) => ({ ...p, page: [{ ...p }] })) : [];
-          const alternateImgItems: Array<ExposureItem> = newImg.map((c: any) => {
-            const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
-              return {
-                id: p.id,
-                image: {
-                  url: payload.contentStorageUrl + p.url + signalture,
-                  width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
-                  height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
-                },
-                teacherUseOnly: p.teacherUseOnly,
-              };
-            });
+            teacherUseOnly: false,
+          },
+        ];
+        const alternateMediaItems: Array<ExposureItem> = [
+          {
+            id: i.id,
+            name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
+            media: alternateMedia,
+            mediaTypeId: i.mediaTypeId,
+            teacherUseOnly: false,
+          },
+        ];
+        const newImg = i.page ? i.page.map((p: any) => ({ ...p, page: [{ ...p }] })) : [];
+        const alternateImgItems: Array<ExposureItem> = newImg.map((c: any) => {
+          const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
             return {
-              id: c.id,
-              name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
-              media: media,
-              teacherUseOnly: c.teacherUseOnly,
-              mediaTypeId: undefined,
+              id: p.id,
+              image: {
+                url: payload.contentStorageUrl + p.url + signalture,
+                width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
+                height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
+              },
+              teacherUseOnly: p.teacherUseOnly,
             };
           });
-          const item = alternateImgItems.concat(alternateMediaItems);
-          alternateMediaBlockItems.push(item);
-        }
-      };
-      await handleAlternateMediaBlock();
+          return {
+            id: c.id,
+            name: DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME,
+            media: media,
+            teacherUseOnly: c.teacherUseOnly,
+            mediaTypeId: undefined,
+          };
+        });
+        const item = alternateImgItems.concat(alternateMediaItems);
+        alternateMediaBlockItems.push(item);
+      }
+
       //handle teaching activity block
       const newContentExposureTeachingActivity = e.contentExposureTeachingActivity
         ? e.contentExposureTeachingActivity?.map((c: any) => ({
@@ -275,6 +266,10 @@ const actions: LessonActions<LessonState, any> = {
   },
   setClickedExposureItem(store: ActionContext<LessonState, any>, payload) {
     store.commit("setClickedExposureItem", payload);
+  },
+  async getAlternateMediaUrl(store: ActionContext<LessonState, any>, payload: { token: string; id: string }) {
+    const res = await LessonService.getMediaUrl(payload.token, payload.id);
+    store.commit("setAlternateMediaUrl", { id: payload.id, url: res });
   },
 };
 

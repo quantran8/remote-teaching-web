@@ -32,16 +32,16 @@
             />
             <img v-else-if="typeof imageUrl === 'string' && image" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @img-load="imgLoad" />
           </div>
-          <div v-else-if="mediaTypeId === 1 && image && typeof image.url === 'string'" class="pdf-content">
+          <div v-else-if="mediaTypeId === 1 && image && typeof image.url === 'string' && isValidUrl" class="pdf-content">
             <vue-pdf-embed :source="image.url" class="pdf-config" />
           </div>
-          <div v-else-if="mediaTypeId === 2 && image && typeof image.url === 'string'" class="audio-content">
+          <div v-else-if="mediaTypeId === 2 && image && typeof image.url === 'string' && isValidUrl" class="audio-content">
             <audio ref="audio" controls class="audio-config">
               <source :src="image.url" type="audio/mp3" />
               Your browser does not support the audio tag.
             </audio>
           </div>
-          <div v-else-if="mediaTypeId === 3 && image && typeof image.url === 'string'" class="video-content">
+          <div v-else-if="mediaTypeId === 3 && image && typeof image.url === 'string' && isValidUrl" class="video-content">
             <video ref="video" controls class="video-config">
               <source :src="image.url" type="video/mp4" />
               Your browser does not support the video tag.

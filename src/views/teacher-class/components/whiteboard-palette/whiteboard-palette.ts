@@ -15,7 +15,7 @@ import { Button, Space } from "ant-design-vue";
 import { fabric } from "fabric";
 import { gsap } from "gsap";
 import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
-import { fmtMsg } from "vue-glcommonui";
+import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import VuePdfEmbed from "vue-pdf-embed";
 import { useStore } from "vuex";
 
@@ -61,6 +61,7 @@ export default defineComponent({
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
 
     let canvas: any;
     const tools = Tools;
@@ -186,6 +187,25 @@ export default defineComponent({
       );
     };
 
+    const mediaTypeId = computed(() => {
+      const newId = props.id;
+      let result = undefined;
+      const listMedia = currentExposure.value?.alternateMediaBlockItems.flat();
+      if (listMedia) {
+        const target = listMedia.find((item: any) => {
+          return newId === item.id;
+        });
+        if (target) {
+          result = target.mediaTypeId;
+        }
+      }
+      return result;
+    });
+
+    const isValidUrl = computed(() => {
+      return currentExposureItemMedia.value.image.url !== "default" ? true : false;
+    });
+
     const showHidePreviewModal = async (isShowPreview = true) => {
       await store.dispatch("lesson/setShowPreviewCanvas", isShowPreview, { root: true });
     };
@@ -224,6 +244,11 @@ export default defineComponent({
           showHidePreviewModal(false);
           disablePreviewBtn.value = false;
         }
+      }
+    });
+    watch(mediaTypeId, () => {
+      if (mediaTypeId.value !== undefined && currentExposureItemMedia.value.image.url === "default") {
+        store.dispatch("lesson/getAlternateMediaUrl", { token: loginInfo.access_token, id: currentExposureItemMedia.value.id });
       }
     });
     watch(teacherDisconnected, (currentValue) => {
@@ -398,7 +423,7 @@ export default defineComponent({
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard(false);
-      if (isShowWhiteBoard.value && isLessonPlan.value) {
+      if (isShowWhiteBoard.value && isLessonPlan.value && group) {
         group.visible = false;
       } else if (!isShowWhiteBoard.value && isLessonPlan.value && group) {
         group.visible = true;
@@ -426,21 +451,6 @@ export default defineComponent({
       return image.src;
     });
 
-    const mediaTypeId = computed(() => {
-      const newId = props.id;
-      let result = undefined;
-      const listMedia = currentExposure.value?.alternateMediaBlockItems;
-      if (listMedia) {
-        listMedia.forEach((e: any) => {
-          e.forEach((item: any) => {
-            if (newId === item.id) {
-              result = item.mediaTypeId;
-            }
-          });
-        });
-      }
-      return result;
-    });
     const cursorPosition = async (e: any, isDone = false) => {
       if (isTeacherUseOnly.value) {
         return;
@@ -1261,6 +1271,7 @@ export default defineComponent({
       forTeacherUseOnlyText,
       video,
       audio,
+      isValidUrl,
     };
   },
 });

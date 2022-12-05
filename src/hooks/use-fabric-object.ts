@@ -1,10 +1,10 @@
-import { fabric } from "fabric";
 import { randomUUID } from "@/utils/utils";
-import { useStore } from "vuex";
 import { FabricObject } from "@/ws";
-import { ref, computed, watch } from "vue";
+import { fabric } from "fabric";
 import FontFaceObserver from "fontfaceobserver";
+import { computed, ref, watch } from "vue";
 import { DefaultCanvasDimension } from "vue-glcommonui";
+import { useStore } from "vuex";
 const FontDidactGothic = "Didact Gothic";
 const FontLoader = new FontFaceObserver(FontDidactGothic);
 
@@ -219,18 +219,21 @@ export const useFabricObject = () => {
     for (const item of items) {
       const currentObjects = canvas.getObjects();
       const existing = currentObjects.find((obj: any) => obj.objectId === item.fabricId);
-      if (existing) return;
-      const fabricObject = deserializeFabricObject(item);
-      const { type } = fabricObject;
-      switch (type) {
-        case "textbox":
-          FontLoader.load().then(() => {
-            canvas.add(new fabric.Textbox("", fabricObject));
-          });
-          break;
-        default:
-          break;
+      if (existing) {
+        const fabricObject = deserializeFabricObject(item);
+        const { type } = fabricObject;
+        switch (type) {
+          case "textbox":
+            FontLoader.load().then(() => {
+              canvas.add(new fabric.Textbox("", fabricObject));
+            });
+            break;
+          default:
+            break;
+        }
+        return;
       }
+      displayCreatedItem(canvas, item);
     }
   };
 
