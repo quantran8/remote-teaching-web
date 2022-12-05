@@ -43,7 +43,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
     await dispatch(
       "lesson/setTargetsVisibleAllAction",
-      { user: "", visible: roomResponse.data.annotation.drawing.isShowingAllShapes },
+      { user: "", visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false },
       { root: true },
     );
   },
@@ -100,10 +100,10 @@ const actions: ActionTree<StudentRoomState, any> = {
       commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
       await dispatch(
         "lesson/setTargetsVisibleAllAction",
-        { user: "", visible: roomResponse.data.annotation.drawing.isShowingAllShapes },
+        { user: "", visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false },
         { root: true },
       );
-      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.drawing.visibleShapes, { root: true });
+      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes, { root: true });
       if (roomResponse.data.studentOneToOne) {
         await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
         if (payload.studentId === roomResponse.data.studentOneToOne) {

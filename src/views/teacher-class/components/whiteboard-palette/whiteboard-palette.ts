@@ -746,7 +746,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId && obj.type !== "group")) {
+        if (obj.type === "path" || (obj.id !== isTeacher.value?.id && !obj.objectId && obj.type !== "group")) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -957,7 +957,7 @@ export default defineComponent({
       if (studentShapes.value !== null && studentShapes.value !== undefined) {
         if (studentShapes.value.length > 0) {
           studentShapes.value.forEach((item: any) => {
-            if (item.userId !== isTeacher.value.id) {
+            if (item.userId !== isTeacher.value?.id) {
               canvas.remove(
                 ...canvas
                   .getObjects()
