@@ -104,6 +104,7 @@ const mutations: TeacherRoomMutation<State> = {
     s.isStudentVideoMirror = p.isStudentVideoMirror;
 
     s.classView = ClassViewFromValue(p.teachingMode);
+	console.log("p.students = ", p.students);
     s.students = p.students.map((st, index) => {
       return {
         id: st.id,

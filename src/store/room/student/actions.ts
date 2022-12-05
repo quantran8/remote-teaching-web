@@ -28,11 +28,10 @@ import { StudentRoomState } from "./state";
 
 const actions: ActionTree<StudentRoomState, any> = {
   async getClassRoomInfo({ commit, dispatch, state, rootState }) {
-    const token = rootState.auth.loginInfo;
     if (!state.info?.id) return;
     const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
     commit("setRoomInfo", roomResponse.data);
-    await dispatch("lesson/setInfo", { payload: roomResponse.data?.lessonPlan, token: token }, { root: true });
+    await dispatch("lesson/setInfo", roomResponse.data?.lessonPlan, { root: true });
     await dispatch("annotation/setInfo", roomResponse.data.annotation, {
       root: true,
     });
@@ -78,7 +77,7 @@ const actions: ActionTree<StudentRoomState, any> = {
           message: "",
         });
       }
-      const token = rootState.auth.loginInfo;
+
       commit("setRoomInfo", roomResponse.data);
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
@@ -86,7 +85,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("annotation/setInfo", roomResponse.data.annotation, {
         root: true,
       });
-      await dispatch("lesson/setInfo", { payload: roomResponse.data.lessonPlan, token: token }, { root: true });
+      await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
       });
@@ -404,7 +403,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     dispatch("annotation/addShape", null, { root: true });
     dispatch("lesson/setZoomRatio", undefined, { root: true });
     dispatch("lesson/setImgCoords", undefined, { root: true });
-	dispatch("annotation/setLastFabricUpdated", null, { root: true });
+    dispatch("annotation/setLastFabricUpdated", null, { root: true });
   },
   async loadRooms({ commit, dispatch, state }, _payload: any) {
     if (!state.user) return;

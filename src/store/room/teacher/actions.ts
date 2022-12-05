@@ -253,14 +253,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
         });
         return;
       }
-      const token = rootState.auth.loginInfo;
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
-      await dispatch("lesson/setInfo", { payload: roomInfo.lessonPlan, token: token }, { root: true });
+      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
       await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
@@ -582,10 +581,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
         await dispatch("endExposure", { id: content.id });
       }
     }
-    const token = rootState.auth.loginInfo;
     commit({ type: "lesson/clearLessonData" }, { root: true });
     await commit("setRoomInfo", roomInfo);
-    await dispatch("lesson/setInfo", { payload: roomInfo.lessonPlan, token: token }, { root: true });
+    await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
     await dispatch("lesson/setZoomRatio", 1, { root: true });
     await dispatch("lesson/setImgCoords", undefined, { root: true });
 
