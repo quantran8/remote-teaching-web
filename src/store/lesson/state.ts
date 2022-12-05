@@ -89,8 +89,8 @@ export interface ExposureItemMedia {
     url: string;
     width?: number;
     height?: number;
-    teacherUseOnly?: boolean;
   };
+  teacherUseOnly?: boolean;
 }
 
 export enum AnnotationTypes {

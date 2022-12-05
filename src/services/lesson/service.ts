@@ -5,8 +5,15 @@ class LessonServiceClass extends GLContentService implements LessonServiceInterf
   getLessonByUnit(unit: number): Promise<LessonModel[]> {
     return this.get(`versions/lessonPlane/${unit}`);
   }
-  getMediaUrl(mediaId: string): any {
-    return this.get(`resource/GetDownloadMediaUrl?mediaId=${mediaId}`);
+
+  async getMediaUrl(token: string, mediaId: string): Promise<string> {
+    const result = await fetch(`${process.env.VUE_APP_API_PREFIX}content/v1/resource/GetDownloadMediaUrl?mediaId=${mediaId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.json();
   }
 }
 

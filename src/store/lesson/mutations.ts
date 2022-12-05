@@ -225,6 +225,15 @@ const mutations: LessonMutation<LessonState> = {
   setShowPreviewCanvas(s: LessonState, p: boolean) {
     s.isShowPreviewCanvas = p;
   },
+  setAlternateMediaUrl(s: LessonState, p: { id: string; url: string }) {
+    if (s.currentExposure?.alternateMediaBlockItems) {
+      const alternateMedia = [...s.currentExposure?.alternateMediaBlockItems.flat()];
+      const result = alternateMedia.find((item) => {
+        return item.id === p.id;
+      });
+      if (result?.media[0]) result.media[0].image.url = p.url;
+    }
+  },
 };
 
 export default mutations;
