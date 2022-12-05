@@ -246,7 +246,6 @@ export default defineComponent({
         }
       }
     });
-
     watch(mediaTypeId, () => {
       if (mediaTypeId.value !== undefined && currentExposureItemMedia.value.image.url === "default") {
         store.dispatch("lesson/getAlternateMediaUrl", { token: loginInfo.access_token, id: currentExposureItemMedia.value.id });

@@ -77,7 +77,6 @@ const actions: ActionTree<StudentRoomState, any> = {
           message: "",
         });
       }
-
       commit("setRoomInfo", roomResponse.data);
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
