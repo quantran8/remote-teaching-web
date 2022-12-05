@@ -572,7 +572,7 @@ export default defineComponent({
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
     const prevTargetsList: Ref<any[]> = ref([]);
     const targetsListProcess = () => {
-      if (targetsList.value && targetsList.value.length) {
+      if (targetsList.value?.length) {
         targetsList.value.forEach((obj: any) => {
           processAnnotationLesson(canvas, props.image, containerRef, isShowWhiteBoard, false, obj, group);
         });
