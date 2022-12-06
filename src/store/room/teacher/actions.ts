@@ -260,7 +260,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
         root: true,
       });
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
-      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
+      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio ? roomResponse.data.lessonPlan.ratio : 1, { root: true });
       await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
         root: true,
