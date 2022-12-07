@@ -2,6 +2,9 @@
   margin-top: 40px;
 }
 
+.mt-20 {
+	margin-top: 20px;
+}
 .mr-10 {
   margin-right: 10px;
 }
@@ -33,8 +36,8 @@
 
 .teacher-title {
   display: flex;
-  justify-content: center;
-  flex-direction: row;
+justify-content: flex-start;
+	flex-direction: column;
 
   &__indicator-out {
     cursor: pointer;
@@ -61,8 +64,10 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 890px;
+max-width: 1200px;
   margin: auto;
+position: relative;
+	padding: 0 20px 0 20px;
 
   &__school-select {
     margin-bottom: 20px;
@@ -76,6 +81,12 @@
   &__classgroup {
     text-align: left;
   }
+}
+.menu-container {
+	display: flex;
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 .card-margin {
   margin: 20px;

@@ -7,6 +7,7 @@ import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { AppView, VCPlatform } from "@/store/app/state";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { Button, Checkbox, Empty, Modal, notification, Row, Select, Spin } from "ant-design-vue";
+import moment from "moment";
 import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { fmtMsg, LoginInfo, MatIcon } from "vue-glcommonui";
 import { useRouter } from "vue-router";
@@ -72,6 +73,8 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
+    // const moment = require("moment");
+    const now = moment().format("dddd, MMM Do, YYYY");
 
     const startClass = async (
       teacherClass: TeacherClassModel,
@@ -329,6 +332,7 @@ export default defineComponent({
       cancelText,
       submitText,
       currentSchool,
+      now,
     };
   },
 });

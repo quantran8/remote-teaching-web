@@ -1,7 +1,8 @@
 <template>
   <div class="teacher-page" v-if="policy">
-    <div class="teacher-title mt-40">
+    <div class="teacher-title mt-20">
       <h2>{{ welcomeText }} {{ username }}</h2>
+	  <h3>{{now}}</h3>
       <span class="teacher-title__indicator-out" v-if="classOnline" @click="onClickClass(classOnline, classOnline.groupId)">
         <span class="teacher-title__indicator-in"></span>
       </span>
@@ -20,10 +21,20 @@
         <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
       </Select>
     </div>
-    <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-      <span>{{ scheduleText }}</span>
-      <img class="calendar" src="@/assets/images/calendar.png" />
+    <!-- <hr class="mr-10 ml-10" /> -->
+    <div class="menu-container">
+    	<div class="home-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
+	      <span>{{ scheduleText }}</span>
+	      <img class="calendar" src="@/assets/images/calendar.png" />
+	    </div>
+		<div class="calendar-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
+	      <span>{{ scheduleText }}</span>
+	      <img class="calendar" src="@/assets/images/calendar.png" />
+	    </div>
+		<div class="gallery-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
+	      <span>{{ scheduleText }}</span>
+	      <img class="calendar" src="@/assets/images/calendar.png" />
+	    </div>
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-show="loadingInfo">
