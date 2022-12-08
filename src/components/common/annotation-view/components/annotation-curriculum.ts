@@ -1,7 +1,7 @@
+import { DefaultCanvasDimension, getRadius, ratioValue, setStrokeColor } from "@/utils/utils";
 import { fabric } from "fabric";
-import { DefaultCanvasDimension, getRadius, getScaleX, getScaleY, ratioValue, setStrokeColor } from "@/utils/utils";
-import { useStore } from "vuex";
 import { computed } from "vue";
+import { useStore } from "vuex";
 
 export const annotationCurriculumStudent = () => {
   const { dispatch, getters } = useStore();
@@ -217,8 +217,8 @@ export const annotationCurriculumStudent = () => {
     });
     Image.scaleToWidth(renderWidth);
     Image.scaleToHeight(renderHeight);
-    const left = imgCoords.value?.x ?? DefaultCanvasDimension.width / 2;
-    const top = imgCoords.value?.y ?? renderHeight / 2;
+    const left = DefaultCanvasDimension.width / 2;
+    const top = renderHeight / 2;
     const Group = new fabric.Group([Image], {
       id: "lesson-img",
       clipPath,
@@ -258,6 +258,14 @@ export const annotationCurriculumStudent = () => {
       canvas.sendToBack(Group);
       if (zoomRatio.value > 1 && firstLoad) {
         canvas.zoomToPoint(point, canvasZoomRatio + (zoomRatio.value - 1) * canvasZoomRatio);
+      }
+      if (imgCoords.value) {
+        if (imgCoords.value.x) {
+          Group.left = imgCoords.value.x;
+        }
+        if (imgCoords.value.y) {
+          Group.top = imgCoords.value.y;
+        }
       }
     }
     return Group;

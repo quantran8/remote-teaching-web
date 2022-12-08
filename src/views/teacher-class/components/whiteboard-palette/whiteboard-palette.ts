@@ -170,6 +170,9 @@ export default defineComponent({
     };
 
     const handleCloneCanvasObjects = () => {
+      if (!group) {
+        return;
+      }
       group.clone(
         (cloned: any) => {
           cloned.getObjects().forEach((obj: any) => {
@@ -314,17 +317,12 @@ export default defineComponent({
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "hide-all-targets", group);
-      if (isShowPreviewCanvas.value) {
-        disableHideAllTargetsBtn.value = true;
-        disableShowAllTargetsBtn.value = false;
-      } else {
-        disableHideAllTargetsBtn.value = true;
-        disableShowAllTargetsBtn.value = false;
-        // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-        //   userId: isTeacher.value.id,
-        //   visible: false,
-        // });
-      }
+      disableHideAllTargetsBtn.value = true;
+      disableShowAllTargetsBtn.value = false;
+      // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+      //   userId: isTeacher.value.id,
+      //   visible: false,
+      // });
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;
@@ -903,7 +901,6 @@ export default defineComponent({
       objectTargetOnCanvas();
       if (toggleTargets.value.visible) {
         disableShowAllTargetsBtn.value = true;
-        disablePreviewBtn.value = true;
       }
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
