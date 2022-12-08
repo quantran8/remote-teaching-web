@@ -260,6 +260,7 @@ export default defineComponent({
           group.visible = true;
         }
       }
+      canvas.remove(...canvas.getObjects("textbox"));
       canvas.renderAll();
     };
     watch(isShowWhiteBoard, () => {

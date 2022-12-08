@@ -871,6 +871,7 @@ export default defineComponent({
       canvas.freeDrawingBrush.width = value;
     };
     const showWhiteboard = async () => {
+      await clickedTool(Tools.Cursor);
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
       canvas.remove(...canvas.getObjects("textbox"));
       //   await clickedTool(Tools.Clear);
@@ -879,9 +880,9 @@ export default defineComponent({
       canvas.freeDrawingBrush.width = strokeWidth.value;
     };
     const hideWhiteboard = async () => {
+      await clickedTool(Tools.Cursor);
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       canvas.remove(...canvas.getObjects("textbox"));
-      // await clickedTool(Tools.Cursor);
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
