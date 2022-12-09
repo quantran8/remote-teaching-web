@@ -67,22 +67,7 @@ const mutations: MutationTree<StudentRoomState> = {
       disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
     state.teacherIsDisconnected = room.teacher.connectionStatus === InClassStatus.DEFAULT;
-    state.students = room.students.map((st, index) => {
-      return {
-        id: st.id,
-        name: st.name,
-        englishName: st.englishName,
-        avatar: "",
-        audioEnabled: !st.isMuteAudio,
-        videoEnabled: !st.isMuteVideo,
-        badge: st.badge,
-        status: st.connectionStatus,
-        index: index,
-        raisingHand: st.isRaisingHand,
-        isPalette: st.isPalette,
-        imageCapturedCount: st.imageCapturedCount,
-      };
-    });
+    state.students = [];
     for (const st of room.students) {
       const student = {
         id: st.id,
@@ -101,6 +86,8 @@ const mutations: MutationTree<StudentRoomState> = {
       if (st.id === state.user?.id) {
         student.index = 999;
         state.student = student;
+      } else {
+        state.students.push(student);
       }
     }
     state.info = room;
