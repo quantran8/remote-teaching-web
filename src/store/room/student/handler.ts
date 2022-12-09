@@ -288,6 +288,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       });
     },
     onTeacherClearAllBrush: async (payload: any) => {
+	  await dispatch("annotation/setLastFabricUpdated", null, { root: true });
       await dispatch("annotation/setStudentAddShape", { studentShapes: null }, { root: true });
       await dispatch("annotation/setClearBrush", {}, { root: true });
       await dispatch("annotation/setTeacherAddShape", { teacherShapes: null }, { root: true });
