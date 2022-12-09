@@ -1,7 +1,7 @@
-import { DefaultCanvasDimension, ratioValue, setStrokeColor, getRadius, getScaleX, getScaleY } from "@/utils/utils";
+import { DefaultCanvasDimension, getRadius, ratioValue, setStrokeColor } from "@/utils/utils";
 import { fabric } from "fabric";
-import { useStore } from "vuex";
 import { computed } from "vue";
+import { useStore } from "vuex";
 
 const DEFAULT_FILL = "rgba(255,255,255,0.01)";
 export const annotationCurriculum = () => {
@@ -218,8 +218,8 @@ export const annotationCurriculum = () => {
     });
     Image.scaleToWidth(renderWidth);
     Image.scaleToHeight(renderHeight);
-    const left = imgCoords.value?.x ?? DefaultCanvasDimension.width / 2;
-    const top = imgCoords.value?.y ?? renderHeight / 2;
+    const left = DefaultCanvasDimension.width / 2;
+    const top = renderHeight / 2;
     const Group = new fabric.Group([Image], {
       id: "lesson-img",
       clipPath,
@@ -246,16 +246,26 @@ export const annotationCurriculum = () => {
         });
       }
     }
-    if (top !== Group.top) {
-      Group.realTop = Group.top;
-    }
-    if (left !== Group.left) {
-      Group.realLeft = Group.left;
-    }
-    canvas.add(Group);
-    canvas.sendToBack(Group);
-    if (zoomRatio.value > 1 && firstLoad) {
-      canvas.zoomToPoint(point, zoomRatio.value);
+    if (!isImgProcessing.value) {
+      if (top !== Group.top) {
+        Group.realTop = Group.top;
+      }
+      if (left !== Group.left) {
+        Group.realLeft = Group.left;
+      }
+      canvas.add(Group);
+      canvas.sendToBack(Group);
+      if (zoomRatio.value > 1 && firstLoad) {
+        canvas.zoomToPoint(point, zoomRatio.value);
+      }
+      if (imgCoords.value) {
+        if (imgCoords.value.x) {
+          Group.left = imgCoords.value.x;
+        }
+        if (imgCoords.value.y) {
+          Group.top = imgCoords.value.y;
+        }
+      }
     }
 
     return Group;

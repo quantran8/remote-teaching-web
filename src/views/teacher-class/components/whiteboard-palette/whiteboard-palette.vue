@@ -27,6 +27,7 @@
               v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
               :imageUrl="image.url"
               :metadata="image.metaData"
+              :canvasImage="image"
               id="annotation-img"
               @img-load="imgLoad"
             />
