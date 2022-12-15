@@ -195,6 +195,6 @@
 	"device_tester.message_warning_speaker": "Unable to access your speaker, please check system settings or grant permission and reload page.",
 	"writer_review.no_class_or_group": "This school don't have any class or group",
 	"writer_review.no_student": "This group don't have any student",
-	"help.menu.contact":"Contact",
-	"help.menu.documentation":"Documentation"
+	"help.menu.contact": "Contact",
+	"help.menu.documentation": "Documentation"
 }
