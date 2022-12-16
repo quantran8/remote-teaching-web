@@ -116,7 +116,7 @@
 	"store.click_board_to_answer": "Пожалуйста, нажмите на доску, чтобы ответить.",
 	"teacher_class.leave_page": "Выйти из класса",
 	"teacher_class.mark_as_complete": "Отметить урок {lesson} в юните {unit} как завершенный для класса {classname}",
-	"teacher_class.leave_notice": "Это завершит сеанс и закроет удаленный класс для всех учащихся. Вы уверены, что хотите продолжить?",
+	"teacher_class.leave_notice": "Это действие завершит сеанс и закроет удаленный класс для всех учащихся. Вы уверены, что хотите продолжить?",
 	"common.class.actions": "Нет",
 	"whiteboard.textbox_warning": "Пожалуйста, вводите только буквы или основные знаки препинания.",
 	"device_tester.message_warning_mic": "Не удается получить доступ к микрофону. Пожалуйста, проверьте системные настройки или предоставьте разрешение и перезагрузите страницу.",
@@ -195,6 +195,6 @@
 	"device_tester.message_warning_speaker": "Unable to access your speaker, please check system settings or grant permission and reload page.",
 	"writer_review.no_class_or_group": "This school don't have any class or group",
 	"writer_review.no_student": "This group don't have any student",
-	"help.menu.contact":"Contact",
-	"help.menu.documentation":"Documentation"
+	"help.menu.contact": "Связаться",
+	"help.menu.documentation": "Документация"
 }

@@ -19,6 +19,7 @@
           v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
           :imageUrl="image.url"
           :metadata="image.metaData"
+          :canvasImage="image"
           @img-load="imgLoad"
         />
         <img v-else-if="typeof imageUrl === 'string' && image" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />

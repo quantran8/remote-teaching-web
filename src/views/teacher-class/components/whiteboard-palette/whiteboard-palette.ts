@@ -28,6 +28,7 @@ export enum Cursor {
   Default = "default",
   Text = "text",
 }
+const DIFF_BETWEEN_POINT = 4;
 
 export default defineComponent({
   props: {
@@ -97,6 +98,7 @@ export default defineComponent({
     const prevCoords = ref({ x: 0, y: 0 });
     const zoomPercentage = ref(100);
     const prevLineId = ref("");
+    const diff = ref(0);
 
     const {
       createTextBox,
@@ -170,6 +172,9 @@ export default defineComponent({
     };
 
     const handleCloneCanvasObjects = () => {
+      if (!group) {
+        return;
+      }
       group.clone(
         (cloned: any) => {
           cloned.getObjects().forEach((obj: any) => {
@@ -314,17 +319,12 @@ export default defineComponent({
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
       processAnnotationLesson(props.image, canvas, true, "hide-all-targets", group);
-      if (isShowPreviewCanvas.value) {
-        disableHideAllTargetsBtn.value = true;
-        disableShowAllTargetsBtn.value = false;
-      } else {
-        disableHideAllTargetsBtn.value = true;
-        disableShowAllTargetsBtn.value = false;
-        // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-        //   userId: isTeacher.value.id,
-        //   visible: false,
-        // });
-      }
+      disableHideAllTargetsBtn.value = true;
+      disableShowAllTargetsBtn.value = false;
+      // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+      //   userId: isTeacher.value.id,
+      //   visible: false,
+      // });
     };
     const objectTargetOnCanvas = () => {
       if (!canvas) return;
@@ -455,23 +455,14 @@ export default defineComponent({
       if (isTeacherUseOnly.value) {
         return;
       }
-      const rect = document.getElementById("canvas-container");
-      if (!rect) return;
-      const rectBounding = rect.getBoundingClientRect();
-      let x = e.clientX - rectBounding.left;
-      let y = e.clientY - rectBounding.top;
-      const windowWidth = window.innerWidth;
-
-      // default width = 717
-      // scaled width = 473.22
-      const scaleRatio = 0.66;
-
-      const scaleBreakpoint = 1600;
-      // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
-      // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
-      if (windowWidth <= scaleBreakpoint) {
-        x = x / scaleRatio;
-        y = y / scaleRatio;
+      let x = 0;
+      let y = 0;
+      if (e.pointer) {
+        x = e.pointer.x;
+        y = e.pointer.y;
+      } else if (prevPoint.value) {
+        x = prevPoint.value.x;
+        y = prevPoint.value.y;
       }
       if (modeAnnotation.value === Mode.Cursor && !isTeacherUseOnly.value) {
         await store.dispatch("teacherRoom/setPointer", {
@@ -488,9 +479,7 @@ export default defineComponent({
         if (!prevPoint.value) {
           prevPoint.value = _point;
         } else {
-          const absX = Math.abs(_point.x - prevPoint.value.x);
-          const absY = Math.abs(_point.y - prevPoint.value.y);
-          if (absX > 8 || absY > 8 || isDone) {
+          if (diff.value === DIFF_BETWEEN_POINT || !diff.value || isDone) {
             prevPoint.value = _point;
             if (isMouseOut.value) {
               lineId.value = generateLineId();
@@ -648,6 +637,11 @@ export default defineComponent({
     const listenMouseEvent = () => {
       //handle mouse:move
       canvas.on("mouse:move", (event: any) => {
+        diff.value += 1;
+        cursorPosition(event);
+        if (diff.value === DIFF_BETWEEN_POINT) {
+          diff.value = 0;
+        }
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
@@ -746,7 +740,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId && obj.type !== "group")) {
+        if (obj.type === "path" || (obj.id !== isTeacher.value?.id && !obj.objectId && obj.type !== "group")) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -881,7 +875,6 @@ export default defineComponent({
     const hideWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       canvas.remove(...canvas.getObjects("textbox"));
-      // await clickedTool(Tools.Cursor);
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
@@ -902,7 +895,6 @@ export default defineComponent({
       objectTargetOnCanvas();
       if (toggleTargets.value.visible) {
         disableShowAllTargetsBtn.value = true;
-        disablePreviewBtn.value = true;
       }
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
@@ -957,7 +949,7 @@ export default defineComponent({
       if (studentShapes.value !== null && studentShapes.value !== undefined) {
         if (studentShapes.value.length > 0) {
           studentShapes.value.forEach((item: any) => {
-            if (item.userId !== isTeacher.value.id) {
+            if (item.userId !== isTeacher.value?.id) {
               canvas.remove(
                 ...canvas
                   .getObjects()

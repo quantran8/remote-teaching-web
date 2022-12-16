@@ -21,12 +21,13 @@
           <div class="whiteboard__button-hide--icon"><img src="@/assets/icons/arrow-down-thick.svg" alt="" /></div>
         </div>
         <div v-if="!showHideWhiteboard" class="whiteboard__space-top" />
-        <div id="canvas-container" @mousemove="cursorPosition">
+        <div id="canvas-container">
           <div v-if="mediaTypeId === undefined">
             <CropImage
               v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
               :imageUrl="image.url"
               :metadata="image.metaData"
+              :canvasImage="image"
               id="annotation-img"
               @img-load="imgLoad"
             />
