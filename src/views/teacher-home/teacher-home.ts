@@ -1,6 +1,6 @@
 import { TeacherHome } from "./../../locales/localeid";
-import { TeacherClassModel, UnitAndLesson, UnitAndLessonModel } from "@/models";
-import { AccessibleSchoolQueryParam, RemoteTeachingService, UnitAndLessonResponse } from "@/services";
+import { TeacherClassModel, UnitAndLesson } from "@/models";
+import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -15,6 +15,7 @@ import { JoinSessionModel } from "@/models/join-session.model";
 import { DeviceTester } from "@/components/common";
 import { ClassRoomStatus } from "@/models";
 import { MatIcon } from "vue-glcommonui";
+import { getListUnitByClassAndGroup } from "./lesson-helper";
 
 const fpPromise = FingerprintJS.load();
 
@@ -72,8 +73,17 @@ export default defineComponent({
     const loadingInfo = ref(false);
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
+    const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
 
-    const startClass = async (teacherClass: TeacherClassModel, groupId: string, unit: number, lesson: number, unitId: number) => {
+    const startClass = async (
+      teacherClass: TeacherClassModel,
+      groupId: string,
+      unit: number,
+      lesson: number,
+      unitId: number,
+      isTeacherVideoMirror = true,
+      isStudentVideoMirror = true,
+    ) => {
       messageStartClass.value = "";
       try {
         const fp = await fpPromise;
@@ -88,6 +98,8 @@ export default defineComponent({
           browserFingerprint: result.visitorId,
           unitId,
           videoPlatformProvider: VCPlatform.Agora,
+          isTeacherVideoMirror,
+          isStudentVideoMirror,
         };
         const response = await RemoteTeachingService.teacherStartClassRoom(model);
         if (response && response.success) {
@@ -129,6 +141,7 @@ export default defineComponent({
         });
         filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
+        await store.dispatch("teacher/setCurrentSchool", schoolId);
       } catch (err) {
         // concurrent.value = true;
         // concurrentMess.value = err.body.message;
@@ -164,31 +177,7 @@ export default defineComponent({
     const getListLessonByUnit = async (teacherClass: TeacherClassModel, groupId: string) => {
       try {
         loadingInfo.value = true;
-        const response = await RemoteTeachingService.getListLessonByUnit(teacherClass.classId, groupId, -1);
-        const listUnit: UnitAndLesson[] = [];
-
-        if (response && response.success) {
-          response.data.map((res: UnitAndLessonModel) => {
-            let isUnitExist = false;
-            listUnit.map((singleUnit: UnitAndLesson) => {
-              if (res.unitId == singleUnit.unitId) {
-                isUnitExist = true;
-              }
-            });
-            if (!isUnitExist) {
-              listUnit.push({ unit: res.unit, sequence: [], unitId: res.unitId });
-            }
-          });
-          response.data.map((res: UnitAndLessonModel) => {
-            listUnit.map((singleUnit: UnitAndLesson, index) => {
-              if (res.unitId == singleUnit.unitId) {
-                listUnit[index].sequence.push(res.sequence);
-              }
-            });
-          });
-        }
-        listUnit.sort((a, b) => a.unit - b.unit);
-        unitInfo.value = listUnit;
+        unitInfo.value = await getListUnitByClassAndGroup(teacherClass.classId, groupId);
       } catch (err) {
         const message = err?.body?.message;
         if (message) {
@@ -200,11 +189,25 @@ export default defineComponent({
       loadingInfo.value = false;
     };
 
-    const onStartClass = async (data: { unitId: number; lesson: number; unit: number }) => {
+    const onStartClass = async (data: {
+      unitId: number;
+      lesson: number;
+      unit: number;
+      isTeacherVideoMirror: boolean;
+      isStudentVideoMirror: boolean;
+    }) => {
       popUpLoading.value = true;
       if (!(await joinTheCurrentSession(selectedGroupId.value))) {
         if (infoStart.value) {
-          await startClass(infoStart.value.teacherClass, selectedGroupId.value, data.unit, data.lesson, data.unitId);
+          await startClass(
+            infoStart.value.teacherClass,
+            selectedGroupId.value,
+            data.unit,
+            data.lesson,
+            data.unitId,
+            data.isTeacherVideoMirror,
+            data.isStudentVideoMirror,
+          );
         }
       }
       popUpLoading.value = false;
@@ -319,6 +322,7 @@ export default defineComponent({
       scheduleText,
       cancelText,
       submitText,
+      currentSchool,
     };
   },
 });

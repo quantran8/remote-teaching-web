@@ -1,17 +1,22 @@
-import { defineComponent } from "@vue/runtime-core";
-import { computed, ref, watch, inject, ComputedRef } from "vue";
-import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
-import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
-import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
+import IconImage from "@/assets/images/image.png";
+import PhotoCamera from "@/assets/images/photo-camera.png";
 import IconAudioOff from "@/assets/teacher-class/audio-off-small.svg";
-import IconPaletteOn from "@/assets/teacher-class/touch-on-small.svg";
-import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
+import IconAudioOn from "@/assets/teacher-class/audio-on-small.svg";
 import IconExpand from "@/assets/teacher-class/expanded.png";
 import IconShrink from "@/assets/teacher-class/minimum.png";
-import { useStore } from "vuex";
+import IconPaletteOff from "@/assets/teacher-class/touch-off-small.svg";
+import IconPaletteOn from "@/assets/teacher-class/touch-on-small.svg";
+import IconVideoOff from "@/assets/teacher-class/video-off-small.svg";
+import IconVideoOn from "@/assets/teacher-class/video-on-small.svg";
+import { CaptureNotification } from "@/locales/localeid";
 import { StudentState } from "@/store/room/interface";
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { defineComponent } from "@vue/runtime-core";
+import { notification } from "ant-design-vue";
 import { gsap } from "gsap";
-import { MatIcon } from "vue-glcommonui";
+import { computed, ComputedRef, inject, ref, watch } from "vue";
+import { fmtMsg, MatIcon } from "vue-glcommonui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
@@ -33,7 +38,10 @@ export default defineComponent({
     const isRasingHand = ref(false);
     const isShowExpandIcon = computed(() => store.getters["teacherRoom/getStudentModeOneId"] !== props.student.id);
     const students: ComputedRef<Array<StudentState>> = computed(() => store.getters["teacherRoom/students"]);
+    const currentSchoolId = computed(() => store.getters["teacher/currentSchoolId"]);
     const isOnePalette = ref(false);
+    const enableVideoText = computed(() => fmtMsg(CaptureNotification.EnableStudentVideo, { studentName: props.student.englishName }));
+    const reachedMaximumText = computed(() => fmtMsg(CaptureNotification.ReachedMaximum, { studentName: props.student.englishName }));
     const checkStudentPalette = () => {
       if (students.value.every((s) => !s.isPalette)) {
         isOnePalette.value = true;
@@ -65,6 +73,9 @@ export default defineComponent({
     };
     const toggleAnnotation = async () => {
       if (isOnePalette.value) {
+        if (!props.student.isPalette === true) {
+          await store.dispatch("teacherRoom/disableAllStudentsPalette");
+        }
         await store.dispatch("teacherRoom/toggleAnnotation", {
           studentId: props.student.id,
           isEnable: !props.student.isPalette,
@@ -91,6 +102,25 @@ export default defineComponent({
       }
       updateFocusStudent(props.student.id);
     };
+
+    const captureImage = async () => {
+      if (!props.student.videoEnabled) {
+        notification.info({
+          message: enableVideoText.value,
+          duration: 3,
+        });
+        return;
+      }
+      if (props.student.imageCapturedCount >= SESSION_MAXIMUM_IMAGE) {
+        notification.info({
+          message: reachedMaximumText.value,
+          duration: 3,
+        });
+        return;
+      }
+      await store.dispatch("teacherRoom/sendRequestCaptureImage", { isCaptureAll: false, studentId: props.student.id });
+    };
+
     return {
       isRasingHand,
       audioIcon,
@@ -107,6 +137,10 @@ export default defineComponent({
       handleExpand,
       isShowExpandIcon,
       isOnePalette,
+      captureImage,
+      IconImage,
+      PhotoCamera,
+      currentSchoolId,
     };
   },
 });

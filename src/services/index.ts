@@ -7,3 +7,5 @@ export * from "./remote";
 export * from "./lesson";
 export * from "./student";
 export * from "./info";
+export * from "./permissions";
+export * from "./storage";

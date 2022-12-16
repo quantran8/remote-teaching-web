@@ -1,0 +1,74 @@
+.container{
+	width: 100%;
+	height: 100%;
+	padding: 40px;
+	.filter_header{
+		margin-bottom: 30px;
+	}
+	.filter_wrapper{
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			padding-bottom: 32px;
+		.filter_container {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				flex: 1;
+				.select_item {
+					flex: 1;
+					display: flex;
+					flex-direction: row;
+					margin-right: 30px;
+					.calendar_icon{
+						width: 32px;
+						height: 32px;
+						margin-left: 10px;
+						cursor: pointer;
+					}
+					.calendar{
+						width: 80%;
+					}		
+					.label {
+						margin-right: 50px
+					}
+		
+					.select_box {
+						flex: 1;
+					}
+				}
+			}
+	}
+}
+.remove_icon {
+	position: absolute;
+	top: 15px;
+	right: 30px;
+	cursor: pointer;
+}
+.no_image_title{
+	text-align: center;
+}
+.slide-wrapper{
+	display: flex;
+	justify-content: center;
+}
+.custom_arrow{
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1;
+	cursor: pointer;
+	opacity: 0.4;
+	&:hover{
+		opacity: 1;
+	}
+}
+.next{
+	right: 0;
+}
+.prev{
+	left: 0;
+}

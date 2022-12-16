@@ -1,13 +1,13 @@
 import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { UserShape } from "@/store/annotation/state";
 import { ExposureStatus } from "@/store/lesson/state";
+import { Logger } from "@/utils/logger";
 import { WSEventHandler } from "@/ws";
+import { notification } from "ant-design-vue";
 import { ActionContext } from "vuex";
-import { ClassViewFromValue, InClassStatus } from "../interface";
+import { ClassViewFromValue, InClassStatus, StudentCaptureStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-import { UserShape } from "@/store/annotation/state";
-import { notification } from "ant-design-vue";
-import { Logger } from "@/utils/logger";
 
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
@@ -283,6 +283,12 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
       commit("teacherRoom/setWhiteboard", payload, { root: true });
     },
+    onTeacherSetMediaState: async (payload: any) => {
+      commit("teacherRoom/setMediaState", payload, { root: true });
+    },
+    onTeacherSetCurrentTimeMedia: async (payload: any) => {
+      commit("teacherRoom/setCurrentTimeMedia", payload, { root: true });
+    },
     onTeacherDrawLaser: (payload: any) => {
       //   Logger.log(payload);
     },
@@ -309,6 +315,9 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     onToggleAllShapes: (payload: any) => {
       Logger.info("Toggle all targets");
     },
+    onTeacherUpdateSessionLessonAndUnit: async (payload: any) => {
+      Logger.info("Teacher update lesson and unit");
+    },
     onRoomInfo: (payload: RoomModel) => {
       const { teacher, students } = payload;
       const users = {
@@ -317,6 +326,36 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       };
       commit("setRoomUsersInfo", users);
       dispatch("updateAudioAndVideoFeed", {});
+    },
+    onTeacherZoomSlide: (p: any) => {
+      //
+    },
+    onTeacherMoveZoomedSlide: (p: any) => {
+      //
+    },
+    onTeacherResetZoom: (p: any) => {
+      //
+    },
+    onTeacherDrawPencil: (p: string) => {
+      //
+    },
+    onTeacherSendRequestCaptureImage: (p: string) => {
+      //
+    },
+    onStudentSendCapturedImageStatus: (p: StudentCaptureStatus) => {
+      commit("setStudentsCaptureDone", p);
+      if (p.isUploaded) {
+        commit("setStudentImageCapturedCount", { id: p.studentId, imageCapturedCount: p.imageCapturedCount });
+      }
+    },
+    onTeacherResetPaletteAllStudent: (p: boolean) => {
+      commit("teacherRoom/disableAllAnnotationStatus", p, { root: true });
+    },
+    onTeacherDeleteFabric: async (payload: any) => {
+      //
+    },
+    onTeacherDeleteShape: async (payload: any) => {
+      //
     },
   };
   return handler;

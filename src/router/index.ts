@@ -51,6 +51,16 @@ const routes: Array<RouteRecordRaw> = [
       requireTeacher: true,
     },
   },
+  //   {
+  //     path: "/teacher/image-view/:schoolId?/:studentId?",
+  //     name: "TeacherImageView",
+  //     component: () => import("../views/teacher-image-view/teacher-image-view.vue"),
+  //     meta: {
+  //       layout: "main",
+  //       requiresAuth: true,
+  //       requireTeacher: true,
+  //     },
+  //   },
   {
     path: "/teacher-calendars/:schoolId",
     name: "TeacherCalendar",

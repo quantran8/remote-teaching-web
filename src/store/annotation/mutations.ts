@@ -102,10 +102,26 @@ const mutations: AnnotationMutation<AnnotationState> = {
   },
   setDeleteBrush(s: AnnotationState, p: {}) {
     s.drawing.brushstrokes.pop();
+    const itemRemove = s.pencilPath.pop();
+    if (itemRemove?.lineIdRelated) {
+      s.pencilPath = s.pencilPath
+        .filter((item) => item.lineIdRelated !== itemRemove?.lineIdRelated)
+        .filter((item) => item.id !== itemRemove?.lineIdRelated);
+    } else {
+      s.pencilPath = [...s.pencilPath];
+    }
     s.drawing.brushstrokes = [...s.drawing.brushstrokes];
   },
   setDeleteBrushOneOne(s: AnnotationState, p: {}) {
     s.oneToOne.brushstrokes.pop();
+    const itemRemove = s.pencilPath.pop();
+    if (itemRemove?.lineIdRelated) {
+      s.pencilPath = s.pencilPath
+        .filter((item) => item.lineIdRelated !== itemRemove?.lineIdRelated)
+        .filter((item) => item.id !== itemRemove?.lineIdRelated);
+    } else {
+      s.pencilPath = [...s.pencilPath];
+    }
     s.oneToOne.brushstrokes = [...s.oneToOne.brushstrokes];
   },
   setStickers(s: AnnotationState, p: { stickers: Array<Sticker> }) {
@@ -155,7 +171,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
   setClearOneStudentDrawsLine(s: AnnotationState, p: {}) {
     s.oneToOne.studentStrokes = [];
   },
-  setLastFabricUpdated(s: AnnotationState, p: LastFabricUpdated) {
+  setLastFabricUpdated(s: AnnotationState, p: LastFabricUpdated | null) {
     s.lastFabricUpdated = p;
   },
   setFabricsInDrawing(s: AnnotationState, p: FabricObject[]) {
@@ -168,8 +184,86 @@ const mutations: AnnotationMutation<AnnotationState> = {
     state.imgWidth = p.width;
     state.imgHeight = p.height;
   },
+  setImgRenderSize(state: AnnotationState, p: { width?: number; height?: number }) {
+    state.imgRenderWidth = p.width;
+    state.imgRenderHeight = p.height;
+  },
   setImgProcessing(state: AnnotationState, p: boolean) {
-    state.isImgProcessing = p
+    state.isImgProcessing = p;
+  },
+  setDrawPencil(state: AnnotationState, payload: any) {
+    const index = state.pencilPath.findIndex((item) => item.id === payload.id);
+    if (!state.pencilPath.length || index < 0) {
+      if (state.pencilPath.length && !state.pencilPath[state.pencilPath.length - 1].isDone) {
+        state.pencilPath[state.pencilPath.length - 1].isDone = true;
+      }
+      state.pencilPath.push({
+        ...payload,
+        points: [payload.points],
+        strokeColor: payload.strokeColor,
+        strokeWidth: payload.strokeWidth,
+        isDone: payload.isDone,
+        ratio: payload.ratio,
+        lineIdRelated: payload.lineIdRelated,
+      });
+    } else if (index >= 0) {
+      state.pencilPath[index] = {
+        ...state.pencilPath[index],
+        points: [...state.pencilPath[index].points, payload.points],
+        isDone: payload.isDone,
+      };
+    }
+  },
+  clearPencilPath(state: AnnotationState) {
+    state.pencilPath = [];
+  },
+  setFabricObjects(state: AnnotationState, payload: FabricObject) {
+    const existingObject = state.drawing.fabrics.find((item) => item.fabricId === payload.fabricId);
+    if (!state.drawing.fabrics.length || !existingObject) {
+      state.drawing.fabrics.push(payload);
+    } else {
+      if (existingObject) {
+        existingObject.fabricData = payload.fabricData;
+      }
+    }
+  },
+  setOneToOneFabricObjects(state: AnnotationState, payload: FabricObject) {
+    const existingObject = state.oneToOne.fabrics.find((item) => item.fabricId === payload.fabricId);
+    if (!state.oneToOne.fabrics.length || !existingObject) {
+      state.oneToOne.fabrics.push(payload);
+    } else {
+      if (existingObject) {
+        existingObject.fabricData = payload.fabricData;
+      }
+    }
+  },
+  setDeleteFabric(state: AnnotationState) {
+    state.drawing.fabrics.pop();
+    state.drawing.fabrics = [...state.drawing.fabrics];
+    state.lastFabricUpdated = null;
+  },
+  setDeleteOneToOneFabric(state: AnnotationState) {
+    state.oneToOne.fabrics.pop();
+    state.oneToOne.fabrics = [...state.oneToOne.fabrics];
+    state.lastFabricUpdated = null;
+  },
+  setDeleteShape(state: AnnotationState, payload: string) {
+    const userShapes = state.drawing.teacherShapes.filter((item) => item.userId === payload);
+    const lastItem = userShapes[userShapes.length - 1];
+    lastItem.brushstrokes.pop();
+    lastItem.brushstrokes = [...lastItem.brushstrokes];
+    if (!lastItem.brushstrokes.length) {
+      state.drawing.teacherShapes = state.drawing.teacherShapes.filter((item) => item.userId !== lastItem.userId);
+    }
+  },
+  setDeleteOneToOneShape(state: AnnotationState, payload: string) {
+    const userShapes = state.oneToOne.teacherShapes.filter((item) => item.userId === payload);
+    const lastItem = userShapes[userShapes.length - 1];
+    lastItem.brushstrokes.pop();
+    lastItem.brushstrokes = [...lastItem.brushstrokes];
+    if (!lastItem.brushstrokes.length) {
+      state.oneToOne.teacherShapes = state.oneToOne.teacherShapes.filter((item) => item.userId !== lastItem.userId);
+    }
   },
 };
 

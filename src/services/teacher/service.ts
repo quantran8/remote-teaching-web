@@ -1,7 +1,8 @@
+import { ClassModelSchedules } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { AdminService } from "../admin.service";
 import { TeacherServiceInterface } from "./interface";
-import { GetClassesModel, AccessibleSchoolQueryParam, ScheduleParam } from "./model";
+import { AccessibleSchoolQueryParam, GetClassesModel, ScheduleParam } from "./model";
 class GLTeacherService extends AdminService implements TeacherServiceInterface {
   getAccessibleSchools(params: AccessibleSchoolQueryParam): Promise<ResourceModel[]> {
     return this.get("schools/accessibleschools", params);
@@ -27,7 +28,7 @@ class GLTeacherService extends AdminService implements TeacherServiceInterface {
     const url = `resources/users/${teacherId}/landingresources/0?filterText=&disabled=false&sortBy=schoolName&schoolId=${schoolId}&isDescending=false&includeGroup=true&offset=0&limit=20`;
     return this.get(url);
   }
-  getAllClassesSchedule(schoolId: string): Promise<GetClassesModel> {
+  getAllClassesSchedule(schoolId: string): Promise<Array<ClassModelSchedules>> {
     const url = `schoolclass/${schoolId}`;
     return this.get(url);
   }

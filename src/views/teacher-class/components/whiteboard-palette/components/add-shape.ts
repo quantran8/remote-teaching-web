@@ -1,11 +1,12 @@
 import { fabric } from "fabric";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import { starPolygonPoints } from "@/utils/utils";
+import { DefaultCanvasDimension } from "vue-glcommonui";
 
 export const addShape = () => {
   const store = useStore();
   const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
+  const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
 
   const teacherAddShapes = async (canvas: any) => {
     const shapes: Array<string> = [];
@@ -16,33 +17,35 @@ export const addShape = () => {
         shapes.push(JSON.stringify(obj));
       }
     });
-    if (shapes.length) {
+    if (shapes.length && !isTeacherUseOnly.value) {
       await store.dispatch("teacherRoom/setShapesForStudent", shapes);
     }
   };
   const addCircle = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftXY = 30 + strokeWidth.value;
-	const circle = new fabric.Circle({
-      left: initTopLeftXY,
-      top: initTopLeftXY,
+    const initTopLeftX = 0 + strokeWidth.value + DefaultCanvasDimension.width / 2;
+    const initTopLeftY = 0 + strokeWidth.value + DefaultCanvasDimension.height / 2;
+    const circle = new fabric.Circle({
+      left: initTopLeftX,
+      top: initTopLeftY,
       radius: 30,
       fill: "",
       stroke: strokeColor.value,
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
-	  originX: "center",
-	  originY: "center",
+      originX: "center",
+      originY: "center",
     });
     canvas.add(circle);
     canvas.setActiveObject(circle);
     await teacherAddShapes(canvas);
   };
   const addSquare = async (canvas: any, strokeColor: any, strokeWidth: any, oneAndOne: any) => {
-	const initTopLeftXY = 25 + strokeWidth.value;
-	const square = new fabric.Rect({
-      left: initTopLeftXY,
-      top: initTopLeftXY,
+    const initTopLeftX = 0 + strokeWidth.value + DefaultCanvasDimension.width / 2;
+    const initTopLeftY = 0 + strokeWidth.value + DefaultCanvasDimension.height / 2;
+    const square = new fabric.Rect({
+      left: initTopLeftX,
+      top: initTopLeftY,
       width: 50,
       height: 50,
       fill: "",
@@ -50,8 +53,8 @@ export const addShape = () => {
       strokeWidth: strokeWidth.value,
       id: isTeacher.value.id,
       isOneToOne: oneAndOne.value || null,
-	  originX: "center",
-	  originY: "center",
+      originX: "center",
+      originY: "center",
     });
     canvas.add(square);
     canvas.setActiveObject(square);

@@ -1,21 +1,23 @@
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, watch, onUnmounted } from "vue";
-import { useStore } from "vuex";
-import { gsap } from "gsap";
-import { fabric } from "fabric";
-import { Tools, Mode, DefaultCanvasDimension } from "@/utils/utils";
-import { onClickOutside } from "@vueuse/core";
-import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
-import { ClassView } from "@/store/room/interface";
-import { useFabricObject } from "@/hooks/use-fabric-object";
-import { FabricObject } from "@/ws";
-import { fmtMsg } from "vue-glcommonui";
-import { TeacherClass, WhiteBoard } from "@/locales/localeid";
-import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
-import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
-import { Button, Space } from "ant-design-vue";
+import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
+import { useFabricObject } from "@/hooks/use-fabric-object";
+import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { Pointer } from "@/store/annotation/state";
+import { ClassView } from "@/store/room/interface";
+import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
+import { DefaultCanvasDimension, FabricObjectType, Mode, Tools } from "@/utils/utils";
+import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
+import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
+import { FabricObject } from "@/ws";
+import { onClickOutside } from "@vueuse/core";
+import { Button, Space } from "ant-design-vue";
+import { fabric } from "fabric";
+import { gsap } from "gsap";
+import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { fmtMsg, LoginInfo } from "vue-glcommonui";
+import VuePdfEmbed from "vue-pdf-embed";
+import { useStore } from "vuex";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE = {
@@ -26,6 +28,7 @@ export enum Cursor {
   Default = "default",
   Text = "text",
 }
+const DIFF_BETWEEN_POINT = 4;
 
 export default defineComponent({
   props: {
@@ -38,12 +41,15 @@ export default defineComponent({
     ToolsCanvas,
     Space,
     Button,
+    VuePdfEmbed,
   },
   setup(props) {
     const store = useStore();
-    const currentExposureItemMedia: ComputedRef = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
+    const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isLessonPlan = computed(() => store.getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const infoTeacher = computed(() => store.getters["teacherRoom/info"]);
+    const teacherWhiteBoardStatus = computed(() => infoTeacher.value?.isShowWhiteBoard);
     const isTeacher = computed(() => store.getters["teacherRoom/teacher"]);
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const studentShapes = computed(() => store.getters["annotation/studentShape"]);
@@ -55,6 +61,8 @@ export default defineComponent({
     const oneSelfShapes = computed(() => store.getters["annotation/oneTeacherShape"]);
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
+    const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
+    const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
 
     let canvas: any;
     const tools = Tools;
@@ -70,6 +78,8 @@ export default defineComponent({
     const firstTimeLoadStrokes: Ref<boolean> = ref(false);
     const firstTimeLoadShapes: Ref<boolean> = ref(false);
     const firstTimeLoadOneToOneShapes: Ref<boolean> = ref(false);
+    const video = ref<HTMLVideoElement | null>(null);
+    const audio = ref<HTMLVideoElement | null>(null);
 
     const isDrawing: Ref<boolean> = ref(false);
     const prevPoint: Ref<Pointer | undefined> = ref(undefined);
@@ -78,6 +88,18 @@ export default defineComponent({
 
     const studentDisconnected = computed<boolean>(() => store.getters["studentRoom/isDisconnected"]);
     const teacherDisconnected = computed<boolean>(() => store.getters["teacherRoom/isDisconnected"]);
+    const toggleTargets = computed(() => store.getters["lesson/showHideTargets"]);
+    const imgRenderHeight = computed(() => store.getters["annotation/imgRenderHeight"]);
+    const isShowPreviewCanvas = computed(() => store.getters["lesson/isShowPreviewCanvas"]);
+    const sessionZoomRatio = computed(() => store.getters["lesson/zoomRatio"]);
+    const sessionImgCoords = computed(() => store.getters["lesson/imgCoords"]);
+
+    const prevZoomRatio = ref(1);
+    const prevCoords = ref({ x: 0, y: 0 });
+    const zoomPercentage = ref(100);
+    const prevLineId = ref("");
+    const diff = ref(0);
+
     const {
       createTextBox,
       onTextBoxEdited,
@@ -96,28 +118,142 @@ export default defineComponent({
     };
     const lineId: Ref<string> = ref(generateLineId());
 
-    watch(currentExposureItemMedia, (currentItem, prevItem) => {
-      if (currentItem) {
-        let width = "100%";
-        if (
-          currentItem.image.metaData &&
-          currentItem.image.metaData.rotate &&
-          (Math.abs(currentItem.image.metaData.rotate) === 270 || Math.abs(currentItem.image.metaData.rotate) === 90)
-        ) {
-          //if img is rotated, width equal to height of the whiteboard
-          width = "435px";
+    const zoomRatio = ref(1);
+    let group: any;
+    let point: any;
+
+    const zoomIn = async () => {
+      if (!isLessonPlan.value) {
+        return;
+      }
+      if (zoomRatio.value > MAX_ZOOM_RATIO) {
+        return;
+      }
+      if (canvas.getZoom() !== zoomRatio.value) {
+        zoomRatio.value = canvas.getZoom();
+      }
+      zoomRatio.value += 0.1;
+      canvas.zoomToPoint(point, zoomRatio.value);
+      canvas.forEachObject(function (o: any) {
+        o.setCoords();
+      });
+      canvas.calcOffset();
+      zoomPercentage.value = Math.round(zoomRatio.value * 100);
+      if (!isTeacherUseOnly.value) {
+        await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+        await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
+      }
+    };
+
+    const zoomOut = async () => {
+      if (!isLessonPlan.value) {
+        return;
+      }
+      if (canvas.getZoom() > MIN_ZOOM_RATIO) {
+        if (canvas.getZoom() !== zoomRatio.value) {
+          zoomRatio.value = canvas.getZoom();
         }
-        styles.value = {
-          width,
-          transform: `scale(${currentItem.image.metaData?.scaleX ?? 1},${currentItem.image.metaData?.scaleY ?? 1}) rotate(${
-            currentItem.image.metaData?.rotate ?? 0
-          }deg)`,
-        };
+        zoomRatio.value -= 0.1;
+        if (zoomRatio.value < MIN_ZOOM_RATIO) {
+          zoomRatio.value = MIN_ZOOM_RATIO;
+        }
+        if (zoomRatio.value === MIN_ZOOM_RATIO && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)) {
+          group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+          group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
+          group.setCoords();
+        }
+        zoomPercentage.value = Math.round(zoomRatio.value * 100);
+        canvas.zoomToPoint(point, zoomRatio.value);
+        if (!isTeacherUseOnly.value) {
+          await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+          await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
+        }
+      }
+    };
+
+    const handleCloneCanvasObjects = () => {
+      if (!group) {
+        return;
+      }
+      group.clone(
+        (cloned: any) => {
+          cloned.getObjects().forEach((obj: any) => {
+            if (obj.id !== "lesson-img") {
+              obj.fill = obj.realFill ?? "transparent";
+              obj.opacity = obj.realOpacity ?? 1;
+              obj.stroke = obj.color ?? "black";
+            }
+          });
+
+          const objectToString = `{"objects":[${JSON.stringify(cloned)}], "background":"transparent"}`;
+          store.dispatch("lesson/setLessonPreviewObjects", objectToString, { root: true });
+        },
+        ["id", "realFill", "realOpacity", "color"],
+      );
+    };
+
+    const mediaTypeId = computed(() => {
+      const newId = props.id;
+      let result = undefined;
+      const listMedia = currentExposure.value?.alternateMediaBlockItems.flat();
+      if (listMedia) {
+        const target = listMedia.find((item: any) => {
+          return newId === item.id;
+        });
+        if (target) {
+          result = target.mediaTypeId;
+        }
+      }
+      return result;
+    });
+
+    const isValidUrl = computed(() => {
+      return currentExposureItemMedia.value.image.url !== "default" ? true : false;
+    });
+
+    const showHidePreviewModal = async (isShowPreview = true) => {
+      await store.dispatch("lesson/setShowPreviewCanvas", isShowPreview, { root: true });
+    };
+
+    watch(sessionZoomRatio, (value) => {
+      if (value == 1) {
+        canvas.zoomToPoint(point, 1);
+        if (isLessonPlan.value && group) {
+          if ((group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2) && group.left && group.top) {
+            group.left = group.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
+            group.top = group.realTop ?? Math.floor(imgRenderHeight.value / 2);
+            group.setCoords();
+          }
+        }
+      }
+      if (canvas && point && sessionZoomRatio.value && canvas.getZoom() !== sessionZoomRatio.value) {
+        canvas.zoomToPoint(point, sessionZoomRatio.value);
+      }
+      zoomPercentage.value = Math.floor(value.toFixed(2) * 100);
+    });
+
+    watch(isShowPreviewCanvas, (currentValue) => {
+      disablePreviewBtn.value = currentValue;
+    });
+
+    watch(currentExposureItemMedia, async (currentItem, prevItem) => {
+      if (currentItem) {
+        zoomRatio.value = 1;
+        zoomPercentage.value = 100;
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
+          canvas.zoomToPoint(point, 1);
           canvas.remove(...canvas.getObjects());
+          await store.dispatch("lesson/setImgCoords", undefined, { root: true });
+          showHidePreviewModal(false);
+          disablePreviewBtn.value = false;
         }
+      }
+    });
+    watch(mediaTypeId, () => {
+      if (mediaTypeId.value !== undefined && currentExposureItemMedia.value.image.url === "default") {
+        store.dispatch("lesson/getAlternateMediaUrl", { token: loginInfo.access_token, id: currentExposureItemMedia.value.id });
       }
     });
     watch(teacherDisconnected, (currentValue) => {
@@ -133,17 +269,35 @@ export default defineComponent({
       }
     });
     const { teacherAddShapes, addCircle, addSquare } = addShape();
-    const { processAnnotationLesson } = annotationCurriculum();
+    const { processAnnotationLesson, processLessonImage } = annotationCurriculum();
     const targetsNum = computed(() => {
-      return props.image?.metaData?.annotations?.length || 0;
+      const uniqueAnnotations: any[] = [];
+      props.image?.metaData?.annotations?.forEach((metaDataObj: any) => {
+        if (
+          !uniqueAnnotations.some(
+            (_obj: any) =>
+              metaDataObj.color === _obj.color &&
+              metaDataObj.height === _obj.height &&
+              metaDataObj.width === _obj.width &&
+              metaDataObj.opacity === _obj.opacity &&
+              metaDataObj.rotate === _obj.rotate &&
+              metaDataObj.type === _obj.type &&
+              metaDataObj.x === _obj.x &&
+              metaDataObj.y === _obj.y,
+          )
+        ) {
+          uniqueAnnotations.push(metaDataObj);
+        }
+      });
+      return uniqueAnnotations.length;
     });
     const hasTargets = computed(() => {
-      return !!props.image?.metaData.annotations && targetsNum.value;
+      return !!props.image?.metaData?.annotations && targetsNum.value;
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
     const targetText = computed(() => {
-      if (props.image?.metaData.annotations.length == 1) {
+      if (props.image?.metaData?.annotations?.length == 1) {
         return targetTextLocalize.value;
       } else {
         return targetsTextLocalize.value;
@@ -151,8 +305,9 @@ export default defineComponent({
     });
     const showAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.ShowAllTargets));
     const disableShowAllTargetsBtn: Ref<boolean> = ref(false);
+    const disablePreviewBtn: Ref<boolean> = ref(false);
     const showAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "show-all-targets");
+      processAnnotationLesson(props.image, canvas, true, "show-all-targets", group);
       disableShowAllTargetsBtn.value = true;
       disableHideAllTargetsBtn.value = false;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
@@ -163,7 +318,7 @@ export default defineComponent({
     const hideAllTargetTextBtn = computed(() => fmtMsg(TeacherClass.HideAllTargets));
     const disableHideAllTargetsBtn: Ref<boolean> = ref(true);
     const hideAllTargets = async () => {
-      processAnnotationLesson(props.image, canvas, true, "hide-all-targets");
+      processAnnotationLesson(props.image, canvas, true, "hide-all-targets", group);
       disableHideAllTargetsBtn.value = true;
       disableShowAllTargetsBtn.value = false;
       // await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
@@ -189,7 +344,7 @@ export default defineComponent({
     const processTargetsList = async () => {
       if (targetsList.value?.length) {
         targetsList.value.forEach((obj: any) => {
-          processAnnotationLesson(props.image, canvas, false, obj);
+          processAnnotationLesson(props.image, canvas, false, obj, group);
         });
         const objShow = targetsList.value.filter((obj: any) => obj.visible === true);
         disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
@@ -203,7 +358,7 @@ export default defineComponent({
         disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
         if (objHide.length === targetsNum.value) {
           await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-            userId: isTeacher.value.id,
+            userId: isTeacher.value?.id,
             visible: false,
           });
         }
@@ -212,6 +367,9 @@ export default defineComponent({
     watch(targetsList, processTargetsList, { deep: true });
     const setCursorMode = async () => {
       modeAnnotation.value = Mode.Cursor;
+      if (isTeacherUseOnly.value) {
+        return;
+      }
       await store.dispatch("teacherRoom/setMode", {
         mode: modeAnnotation.value,
       });
@@ -223,17 +381,15 @@ export default defineComponent({
       });
     };
     // watch whiteboard state to display
-    watch(infoTeacher, async () => {
-      if (infoTeacher.value) {
-        if (!canvas) return;
-        if (infoTeacher.value.isShowWhiteBoard) {
-          canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
-          await clickedTool(Tools.Pen);
-        } else {
-          canvas.remove(...canvas.getObjects("path"));
-          canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
-          await clickedTool(Tools.Cursor);
-        }
+    watch(teacherWhiteBoardStatus, async (value) => {
+      if (!canvas) return;
+      if (value) {
+        canvas.setBackgroundColor("white", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Pen);
+      } else {
+        canvas.remove(...canvas.getObjects("path"));
+        canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+        await clickedTool(Tools.Cursor);
       }
     });
     const processCanvasWhiteboard = async (shouldResetClickedTool = true) => {
@@ -262,47 +418,60 @@ export default defineComponent({
           });
         canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
         // await clickedTool(Tools.Cursor);
+        canvas.renderAll();
       }
     };
     watch(isShowWhiteBoard, async () => {
       await processCanvasWhiteboard(false);
-      // if (!isShowWhiteBoard.value) {
-      //   processAnnotationLesson(props.image, canvas, true, null);
-      // }
+      if (isShowWhiteBoard.value && isLessonPlan.value && group) {
+        group.visible = false;
+      } else if (!isShowWhiteBoard.value && isLessonPlan.value && group) {
+        group.visible = true;
+      }
+      canvas.renderAll();
     });
+
+    watch(isLessonPlan, () => {
+      if (!isLessonPlan.value) {
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "lesson-img"));
+      }
+    });
+
+    watch(
+      () => currentExposureItemMedia.value?.teacherUseOnly && !showHideWhiteboard.value,
+      (val) => {
+        store.commit("teacherRoom/setIsTeacherUseOnly", !!val);
+      },
+    );
+
     const imageUrl = computed(() => {
       const image = new Image();
       image.onload = imgLoad;
       image.src = props.image ? props.image.url : {};
       return image.src;
     });
+
     const cursorPosition = async (e: any, isDone = false) => {
-      const rect = document.getElementById("canvas-container");
-      if (!rect) return;
-      const rectBounding = rect.getBoundingClientRect();
-      let x = e.clientX - rectBounding.left;
-      let y = e.clientY - rectBounding.top;
-      const windowWidth = window.innerWidth;
-
-      // default width = 717
-      // scaled width = 473.22
-      const scaleRatio = 0.66;
-
-      const scaleBreakpoint = 1600;
-      // when windowWidth is equal or below scaleBreakpoints, the whiteboard would be scaled down by the scaleRatio
-      // so, we need to adjust the coordinates back to their original value (before scaled) for them to be displayed correctly on student's view
-      if (windowWidth <= scaleBreakpoint) {
-        x = x / scaleRatio;
-        y = y / scaleRatio;
+      if (isTeacherUseOnly.value) {
+        return;
       }
-      if (modeAnnotation.value === Mode.Cursor) {
+      let x = 0;
+      let y = 0;
+      if (e.pointer) {
+        x = e.pointer.x;
+        y = e.pointer.y;
+      } else if (prevPoint.value) {
+        x = prevPoint.value.x;
+        y = prevPoint.value.y;
+      }
+      if (modeAnnotation.value === Mode.Cursor && !isTeacherUseOnly.value) {
         await store.dispatch("teacherRoom/setPointer", {
           x: Math.floor(x),
           y: Math.floor(y),
         });
         return;
       }
-      if (toolSelected.value === Tools.Laser && isDrawing.value) {
+      if ((toolSelected.value === Tools.Laser || toolSelected.value === Tools.Pen) && isDrawing.value) {
         const _point = {
           x: Math.floor(x),
           y: Math.floor(y),
@@ -310,34 +479,55 @@ export default defineComponent({
         if (!prevPoint.value) {
           prevPoint.value = _point;
         } else {
-          const absX = Math.abs(_point.x - prevPoint.value.x);
-          const absY = Math.abs(_point.y - prevPoint.value.y);
-          if (absX > 8 || absY > 8 || isDone) {
+          if (diff.value === DIFF_BETWEEN_POINT || !diff.value || isDone) {
             prevPoint.value = _point;
-            if (isMouseOut.value && isMouseOver.value) {
+            if (isMouseOut.value) {
               lineId.value = generateLineId();
-              await store.dispatch("teacherRoom/setLaserPath", {
-                data: {
+              if (toolSelected.value === Tools.Laser) {
+                await store.dispatch("teacherRoom/setLaserPath", {
+                  data: {
+                    id: lineId.value,
+                    points: _point,
+                    strokeColor: strokeColor.value,
+                    strokeWidth: strokeWidth.value,
+                  },
+                  isDone,
+                });
+              } else {
+                await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
-                },
-                isDone,
-              });
+                  lineIdRelated: prevLineId.value,
+                  isDone,
+                });
+              }
+
               isMouseOver.value = false;
               isMouseOut.value = false;
               prevPoint.value = undefined;
             } else {
-              await store.dispatch("teacherRoom/setLaserPath", {
-                data: {
+              if (toolSelected.value === Tools.Laser) {
+                await store.dispatch("teacherRoom/setLaserPath", {
+                  data: {
+                    id: lineId.value,
+                    points: _point,
+                    strokeColor: strokeColor.value,
+                    strokeWidth: strokeWidth.value,
+                  },
+                  isDone,
+                });
+              } else {
+                await store.dispatch("teacherRoom/setPencilPath", {
                   id: lineId.value,
                   points: _point,
                   strokeColor: strokeColor.value,
                   strokeWidth: strokeWidth.value,
-                },
-                isDone,
-              });
+                  lineIdRelated: "",
+                  isDone,
+                });
+              }
             }
             return;
           }
@@ -345,6 +535,9 @@ export default defineComponent({
       }
     };
     const objectsCanvas = async () => {
+      if (isTeacherUseOnly.value) {
+        return;
+      }
       const teacherStrokes = canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id);
       const lastObject = teacherStrokes[teacherStrokes.length - 1];
       if (toolSelected.value === Tools.Pen) {
@@ -367,9 +560,29 @@ export default defineComponent({
         },
       });
     };
+    const listenBeforeTransform = () => {
+      canvas.on("before:transform", (e: any) => {
+        if (e.transform.target.id === "lesson-img") {
+          const sel = new fabric.ActiveSelection(
+            canvas.getObjects().filter((item: any) => item.id !== "lesson-img" && item.id !== "annotation-lesson"),
+            {
+              canvas: canvas,
+            },
+          );
+          canvas.setActiveObject(sel);
+          canvas.discardActiveObject();
+          canvas.renderAll();
+        }
+      });
+    };
     const listenToMouseUp = () => {
       canvas.on("mouse:up", async (event: any) => {
-        if (toolSelected.value === "pen") {
+        if (toolSelected.value === Tools.Pen) {
+          cursorPosition(event.e, true);
+          lineId.value = generateLineId();
+          isDrawing.value = false;
+          prevPoint.value = undefined;
+          prevLineId.value = "";
           canvas.renderAll();
           await objectsCanvas();
         }
@@ -416,7 +629,7 @@ export default defineComponent({
       canvas
         .getObjects()
         .filter((obj: any) => obj.type !== "path")
-        .filter((obj: any) => obj.id === isTeacher.value.id)
+        .filter((obj: any) => obj.id === isTeacher.value?.id)
         .forEach((item: any) => {
           item.selectable = true;
         });
@@ -424,6 +637,11 @@ export default defineComponent({
     const listenMouseEvent = () => {
       //handle mouse:move
       canvas.on("mouse:move", (event: any) => {
+        diff.value += 1;
+        cursorPosition(event);
+        if (diff.value === DIFF_BETWEEN_POINT) {
+          diff.value = 0;
+        }
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
@@ -439,11 +657,13 @@ export default defineComponent({
       });
       //handle mouse:down
       canvas.on("mouse:down", (event: any) => {
-        processAnnotationLesson(props.image, canvas, false, event.target);
+        if (event.subTargets.length) {
+          processAnnotationLesson(props.image, canvas, false, event.subTargets[0], group);
+        }
         switch (toolSelected.value) {
           //handle for TextBox
           case Tools.TextBox: {
-            if (event.target && event.target.type !== "path") {
+            if (event.target && event.target.type !== "path" && event.target.type !== "group") {
               isEditing.value = true;
               break;
             }
@@ -458,8 +678,29 @@ export default defineComponent({
             isDrawing.value = true;
             break;
           }
+          case Tools.Pen: {
+            prevLineId.value = lineId.value;
+            isDrawing.value = true;
+            break;
+          }
           default:
             break;
+        }
+      });
+      // handle mouse wheel
+      canvas.on("mouse:wheel", async (opt: any) => {
+        const delta = opt.e.deltaY;
+        let zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > MAX_ZOOM_RATIO) zoom = MAX_ZOOM_RATIO;
+        if (zoom < MIN_ZOOM_RATIO) zoom = MIN_ZOOM_RATIO;
+        canvas.zoomToPoint(point, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        zoomRatio.value = zoom;
+        if (!isTeacherUseOnly.value) {
+          await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
+          await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
         }
       });
     };
@@ -472,6 +713,7 @@ export default defineComponent({
     });
     // LISTENING TO CANVAS EVENTS
     const listenToCanvasEvents = () => {
+      listenBeforeTransform();
       listenToMouseUp();
       listenToMouseOut();
       listenToMouseOver();
@@ -486,6 +728,7 @@ export default defineComponent({
       canvas = new fabric.Canvas("canvasDesignate");
       canvas.setWidth(DefaultCanvasDimension.width);
       canvas.setHeight(DefaultCanvasDimension.height);
+      point = new fabric.Point(DefaultCanvasDimension.width / 2, DefaultCanvasDimension.height / 2);
       canvas.selectionFullyContained = false;
       try {
         await FontLoader.load();
@@ -497,7 +740,7 @@ export default defineComponent({
     };
     const objectCanvasProcess = () => {
       canvas.getObjects().forEach((obj: any) => {
-        if (obj.type === "path" || (obj.id !== isTeacher.value.id && !obj.objectId)) {
+        if (obj.type === "path" || (obj.id !== isTeacher.value?.id && !obj.objectId && obj.type !== "group")) {
           obj.selectable = false;
           obj.hasControls = false;
           obj.hasBorders = false;
@@ -521,7 +764,7 @@ export default defineComponent({
         toolSelected.value = tool;
       } else {
         if (toolSelected.value === Tools.TextBox) {
-        //   clickedTool(Tools.Cursor);
+          //   clickedTool(Tools.Cursor);
           return;
         }
       }
@@ -560,13 +803,24 @@ export default defineComponent({
           return;
         case Tools.Delete:
           toolSelected.value = Tools.Delete;
-          if (canvas.getObjects("path").length) {
+          if (canvas.getObjects().length) {
             const itemDelete = canvas
-              .getObjects("path")
-              .filter((item: any) => item.id === isTeacher.value.id)
+              .getObjects()
+              .filter((obj: any) => obj.type !== FabricObjectType.Group)
               .pop();
             canvas.remove(itemDelete);
-            await store.dispatch("teacherRoom/setDeleteBrush", {});
+            if (!isTeacherUseOnly.value && itemDelete) {
+              switch (itemDelete.type) {
+                case FabricObjectType.Path:
+                  await store.dispatch("teacherRoom/setDeleteBrush", {});
+                  break;
+                case FabricObjectType.Text:
+                  await store.dispatch("teacherRoom/setDeleteFabric", {});
+                  break;
+                default:
+                  await store.dispatch("teacherRoom/setDeleteShape", {});
+              }
+            }
             toolSelected.value = Tools.Pen;
             canvas.isDrawingMode = true;
           } else {
@@ -577,8 +831,10 @@ export default defineComponent({
           return;
         case Tools.Clear:
           toolSelected.value = Tools.Clear;
-          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson"));
-          await store.dispatch("teacherRoom/setClearBrush", {});
+          canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id !== "annotation-lesson" && obj.id !== "lesson-img"));
+          if (!isTeacherUseOnly.value) {
+            await store.dispatch("teacherRoom/setClearBrush", {});
+          }
           toolSelected.value = Tools.Pen;
           canvas.isDrawingMode = true;
           await setDrawMode();
@@ -610,8 +866,8 @@ export default defineComponent({
     };
     const showWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: true });
-	  canvas.remove(...canvas.getObjects("textbox"));
-	  //   await clickedTool(Tools.Clear);
+      canvas.remove(...canvas.getObjects("textbox"));
+      //   await clickedTool(Tools.Clear);
       await store.dispatch("teacherRoom/setClearBrush", {});
       canvas.freeDrawingBrush.color = strokeColor.value;
       canvas.freeDrawingBrush.width = strokeWidth.value;
@@ -619,7 +875,6 @@ export default defineComponent({
     const hideWhiteboard = async () => {
       await store.dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
       canvas.remove(...canvas.getObjects("textbox"));
-      // await clickedTool(Tools.Cursor);
       // canvas.remove(...canvas.getObjects());
       await store.dispatch("teacherRoom/setClearBrush", {});
     };
@@ -631,11 +886,19 @@ export default defineComponent({
       } else {
         await store.dispatch("annotation/setImgDimension", { width: undefined, height: undefined });
       }
+
+      img.crossOrigin = "Anonymous";
+      group = processLessonImage(currentExposureItemMedia.value, canvas, toggleTargets.value.visible, point, !firstLoadImage.value, img);
+      if (currentExposureItemMedia.value.image?.metaData?.annotations?.length) {
+        handleCloneCanvasObjects();
+      }
+      objectTargetOnCanvas();
+      if (toggleTargets.value.visible) {
+        disableShowAllTargetsBtn.value = true;
+      }
       if (!firstLoadImage.value) {
         firstLoadImage.value = true;
       }
-      processAnnotationLesson(props.image, canvas, true, null);
-      objectTargetOnCanvas();
       // showHideWhiteboard.value = isShowWhiteBoard.value;
       // if (isShowWhiteBoard.value) {
       //   canvas.remove(...canvas.getObjects().filter((obj: any) => obj.id === "annotation-lesson"));
@@ -672,7 +935,7 @@ export default defineComponent({
       if (!firstTimeLoadStrokes.value && selfStrokes.value) {
         renderSelfStrokes();
         firstTimeLoadStrokes.value = true;
-      } else if (selfStrokes.value.length === 0) {
+      } else if (selfStrokes.value?.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
@@ -686,7 +949,7 @@ export default defineComponent({
       if (studentShapes.value !== null && studentShapes.value !== undefined) {
         if (studentShapes.value.length > 0) {
           studentShapes.value.forEach((item: any) => {
-            if (item.userId !== isTeacher.value.id) {
+            if (item.userId !== isTeacher.value?.id) {
               canvas.remove(
                 ...canvas
                   .getObjects()
@@ -746,6 +1009,7 @@ export default defineComponent({
     };
     const renderOneTeacherStrokes = () => {
       if (oneOneTeacherStrokes.value && oneOneTeacherStrokes.value.length > 0) {
+        canvas.remove(...canvas.getObjects("path").filter((obj: any) => obj.id === isTeacher.value.id));
         oneOneTeacherStrokes.value.forEach((s: any) => {
           const path = new fabric.Path.fromObject(JSON.parse(s), (item: any) => {
             item.isOneToOne = oneAndOne.value;
@@ -799,14 +1063,14 @@ export default defineComponent({
         });
         listenSelfTeacher();
       }
-	  if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length > 0) {
-		oneSelfShapes.value.forEach((item: any) => {
-			if (item.userId === isTeacher.value.id) {
-			  brushstrokesRender(canvas, item, null, "self-shapes");
-			}
-		  });
-		listenSelfTeacher();
-	  }
+      if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length > 0) {
+        oneSelfShapes.value.forEach((item: any) => {
+          if (item.userId === isTeacher.value.id) {
+            brushstrokesRender(canvas, item, null, "self-shapes");
+          }
+        });
+        listenSelfTeacher();
+      }
     };
     watch(selfShapes, async () => {
       if (!firstTimeLoadShapes.value && selfShapes.value) {
@@ -821,11 +1085,11 @@ export default defineComponent({
         );
       }
     });
-	watch(oneSelfShapes, async () => {
+    watch(oneSelfShapes, async () => {
       if (!firstTimeLoadOneToOneShapes.value && oneAndOne.value && oneSelfShapes.value) {
         renderSelfShapes();
         firstTimeLoadOneToOneShapes.value = true;
-      } else if (!oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
+      } else if (oneAndOne.value && oneSelfShapes.value && oneSelfShapes.value.length === 0) {
         canvas.remove(
           ...canvas
             .getObjects()
@@ -844,7 +1108,7 @@ export default defineComponent({
       }
       if (!oneAndOne.value) {
         // remove all objects in mode 1-1
-        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null));
+        canvas.remove(...canvas.getObjects().filter((obj: any) => obj.isOneToOne !== null && obj.id !== "lesson-img"));
         // render objects again before into mode 1-1
         renderStudentsShapes();
         await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
@@ -853,11 +1117,23 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
           processTargetsList();
+          if (isLessonPlan.value && group) {
+            group.left = prevCoords.value.x;
+            group.top = prevCoords.value.y;
+          }
+          canvas.zoomToPoint(point, prevZoomRatio.value);
+          zoomRatio.value = prevZoomRatio.value;
+          store.dispatch("lesson/setZoomRatio", prevZoomRatio.value);
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();
       } else {
         prevTargetsList.value = [...targetsList.value];
+        prevZoomRatio.value = canvas.getZoom();
+        prevCoords.value = {
+          x: group?.left,
+          y: group?.top,
+        };
       }
     });
     //get fabric items from vuex and display to whiteboard
@@ -887,6 +1163,42 @@ export default defineComponent({
       },
       { deep: true },
     );
+
+    watch(
+      video,
+      async () => {
+        if (video.value) {
+          video.value.onplay = async () => {
+            await store.dispatch("teacherRoom/setMediaState", true);
+          };
+          video.value.onpause = async () => {
+            await store.dispatch("teacherRoom/setMediaState", false);
+          };
+          video.value.onseeked = async () => {
+            await store.dispatch("teacherRoom/setCurrentTimeMedia", video.value?.currentTime);
+          };
+        }
+      },
+      { deep: true },
+    );
+    watch(
+      audio,
+      async () => {
+        if (audio.value) {
+          audio.value.onplay = async () => {
+            await store.dispatch("teacherRoom/setMediaState", true);
+          };
+          audio.value.onpause = async () => {
+            await store.dispatch("teacherRoom/setMediaState", false);
+          };
+          audio.value.onseeked = async () => {
+            await store.dispatch("teacherRoom/setCurrentTimeMedia", audio.value?.currentTime);
+          };
+        }
+      },
+      { deep: true },
+    );
+
     const warningMsg = computed(() => fmtMsg(WhiteBoard.TextBoxWarning));
     const warningMsgLeave = async (element: HTMLElement, done: any) => {
       await gsap.to(element, { opacity: 0, onComplete: done, duration: 0.8 });
@@ -910,8 +1222,10 @@ export default defineComponent({
     });
 
     onClickOutside(wrapCanvasRef, handleClickOutsideCanvas);
+    const forTeacherUseOnlyText = computed(() => fmtMsg(TeacherClass.ForTeacherUseOnly));
     return {
       currentExposureItemMedia,
+      mediaTypeId,
       clickedTool,
       cursorPosition,
       toolNames,
@@ -940,6 +1254,16 @@ export default defineComponent({
       hideAllTargetTextBtn,
       handleClickOutsideCanvas,
       wrapCanvasRef,
+      zoomIn,
+      zoomOut,
+      showHidePreviewModal,
+      disablePreviewBtn,
+      zoomPercentage,
+      isTeacherUseOnly,
+      forTeacherUseOnlyText,
+      video,
+      audio,
+      isValidUrl,
     };
   },
 });

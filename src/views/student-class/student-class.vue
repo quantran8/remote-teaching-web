@@ -19,7 +19,11 @@
           </div>
         </div>
         <div v-show="!teacherIsDisconnected">
-          <AnnotationView v-show="!isBlackOutContent && isLessonPlan" :image="isLessonPlan ? currentExposureItemMedia?.image : null" />
+          <AnnotationView
+            v-show="!isBlackOutContent && isLessonPlan"
+            :image="isLessonPlan && !currentExposureItemMedia?.teacherUseOnly ? currentExposureItemMedia?.image : null"
+            :id="isLessonPlan && !currentExposureItemMedia?.teacherUseOnly ? currentExposureItemMedia?.id : null"
+          />
         </div>
         <!-- <div v-show="isGameView" class="sc-unity">
           <UnityView
@@ -65,12 +69,8 @@
           :id="teacher?.id"
         ></div>
         <div
-          :class="[
-            'sc-teacher__avatar-container',
-            'animate__animated',
-            'animate__zoomIn',
-          ]"
-		  v-if="!teacher?.videoEnabled && !showBearConfused && (!isOneToOne || (isOneToOne && studentIsOneToOne))"
+          :class="['sc-teacher__avatar-container', 'animate__animated', 'animate__zoomIn']"
+          v-if="!teacher?.videoEnabled && !showBearConfused && (!isOneToOne || (isOneToOne && studentIsOneToOne))"
         >
           <img class="sc-teacher__avatar" :src="avatarTeacher" />
         </div>

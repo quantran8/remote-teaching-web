@@ -1,15 +1,14 @@
-
-import { Logger } from "./../../../../../utils/logger";
-import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassGallery } from "@/locales/localeid";
+import { TeacherRoomManager } from "@/manager/room/teacher.manager";
+import { store } from "@/store";
 import { InClassStatus, StudentState } from "@/store/room/interface";
-import { computed, ComputedRef, defineComponent, ref, provide, watch } from "vue";
+import { Logger } from "@/utils/logger";
+import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
+import { useElementSize } from "@vueuse/core";
+import { computed, ComputedRef, defineComponent, provide, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
-import { store } from "@/store";
-import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
-import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import {useElementSize} from "@vueuse/core";
 
 export default defineComponent({
   components: {
@@ -81,16 +80,8 @@ export default defineComponent({
     });
 
     const studentLayout = computed(() => {
-      if (
-          totalOnlineStudents.value <= 2 ||
-          (totalOnlineStudents.value <= 6 && studentGalleryWidth.value < breakpoints)
-      )
-        return "student-layout-1";
-      if (
-          totalOnlineStudents.value <= 6 ||
-          (totalOnlineStudents.value > 6 && studentGalleryWidth.value < breakpoints)
-      )
-        return "student-layout-2";
+      if (totalOnlineStudents.value <= 2 || (totalOnlineStudents.value <= 6 && studentGalleryWidth.value < breakpoints)) return "student-layout-1";
+      if (totalOnlineStudents.value <= 6 || (totalOnlineStudents.value > 6 && studentGalleryWidth.value < breakpoints)) return "student-layout-2";
       return "student-layout-3";
     });
 
@@ -103,8 +94,8 @@ export default defineComponent({
     watch(
       students,
       () => {
-		const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
-		roomManager?.rerenderParticipantsVideo();
+        const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
+        roomManager?.rerenderParticipantsVideo();
       },
       {
         deep: true,

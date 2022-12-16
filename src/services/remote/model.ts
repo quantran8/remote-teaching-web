@@ -12,4 +12,4 @@ export type StudentGetRoomResponse = BaseResponse<RoomModel>;
 
 export type UnitAndLessonResponse = BaseResponse<UnitAndLessonModel[]>;
 
-export type GenerateTokenResponse = GenerateTokenModal
+export type GenerateTokenResponse = GenerateTokenModal;

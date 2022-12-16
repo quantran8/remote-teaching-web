@@ -1,18 +1,19 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassModel, RoomModel, StudentModel, RoomUsersModel } from "@/models";
+import { ClassModel, RoomModel, RoomUsersModel, StudentModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
 import {
   ClassView,
   ClassViewFromValue,
-  InClassStatus,
-  DeviceMediaPayload,
-  DefaultPayload,
   ClassViewPayload,
-  UserMediaPayload,
+  DefaultPayload,
+  DeviceMediaPayload,
+  InClassStatus,
   StudentBadgePayload,
+  StudentCaptureStatus,
   UserIdPayload,
+  UserMediaPayload,
 } from "../interface";
 import { ClassAction, ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
@@ -51,6 +52,7 @@ export interface TeacherRoomMutationInterface<S> {
   setLocalAudios(s: S, p: Array<string>): void;
   clearStudentAudio(s: S, p: DefaultPayload): void;
   setWhiteboard(s: S, p: boolean): void;
+  setIsTeacherUseOnly(s: S, p: boolean): void;
 }
 
 export interface TeacherRoomMutation<S> extends MutationTree<S>, TeacherRoomMutationInterface<S> {}
@@ -98,6 +100,9 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
+    s.isTeacherVideoMirror = p.isTeacherVideoMirror;
+    s.isStudentVideoMirror = p.isStudentVideoMirror;
+
     s.classView = ClassViewFromValue(p.teachingMode);
     s.students = p.students.map((st, index) => {
       return {
@@ -112,6 +117,7 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount,
       };
     });
     s.localAudios = s.students.filter((ele) => p.studentsAudio.indexOf(ele.id) !== -1).map((el) => el.id);
@@ -176,6 +182,9 @@ const mutations: TeacherRoomMutation<State> = {
   },
   disableAllStudents(s: State, _): void {
     s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = false));
+  },
+  disableAllStudentsPalette(s: State, _): void {
+    s.students.forEach((student) => (student.isPalette = false));
   },
   enableAllStudents(s: State, _): void {
     s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = true));
@@ -278,6 +287,9 @@ const mutations: TeacherRoomMutation<State> = {
   disableAnnotationStatus(s: TeacherRoomState, p: any) {
     s.students.filter((st) => st.status === InClassStatus.JOINED).forEach((student) => (student.isPalette = !p));
   },
+  disableAllAnnotationStatus(s: TeacherRoomState, p: any) {
+    s.students.forEach((student) => (student.isPalette = !p));
+  },
   setOnline(state: TeacherRoomState) {
     state.isDisconnected = false;
   },
@@ -292,6 +304,12 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setWhiteboard(state: TeacherRoomState, p) {
     state.isShowWhiteboard = p;
+  },
+  setMediaState(state: TeacherRoomState, p) {
+    state.mediaState = p;
+  },
+  setCurrentTimeMedia(state: TeacherRoomState, p) {
+    state.currentTimeMedia = p;
   },
   setAvatarAllStudent(state: TeacherRoomState, p: { id: string; avatar: string }[]) {
     state.students.forEach((student) => {
@@ -324,8 +342,28 @@ const mutations: TeacherRoomMutation<State> = {
         index: index,
         raisingHand: st.isRaisingHand,
         isPalette: st.isPalette,
+        imageCapturedCount: st.imageCapturedCount,
       };
     });
+  },
+  setIsTeacherUseOnly(state: TeacherRoomState, p) {
+    state.isTeacherUseOnly = p;
+  },
+  setStudentImageCapturedCount(s: TeacherRoomState, p: { id: string; imageCapturedCount: number }) {
+    const student = s.students.find((st) => st.id === p.id);
+    if (student) student.imageCapturedCount = p.imageCapturedCount;
+  },
+  setStudentsImageCaptured(s: TeacherRoomState, p) {
+    s.studentsImageCaptured = p;
+  },
+  setStudentsCaptureDone(s: TeacherRoomState, p: StudentCaptureStatus) {
+    s.studentCaptureAll.push(p);
+  },
+  clearStudentsCaptureDone(s: TeacherRoomState) {
+    s.studentCaptureAll = [];
+  },
+  setCaptureAll(s: TeacherRoomState, p: boolean) {
+    s.isCaptureAll = p;
   },
 };
 

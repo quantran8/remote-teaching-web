@@ -13,22 +13,38 @@
       <div class="cursor" v-if="(isPointerMode && !studentOneAndOneId) || (isPointerMode && student.id == studentOneAndOneId)" :style="pointerStyle">
         <img src="@/assets/icon-select.png" alt="" />
       </div>
-      <CropImage
-        id="annotation-img"
-        v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
-        :imageUrl="image.url"
-        :metadata="image.metaData"
-        @img-load="imgLoad"
-      />
-	 <img v-else-if="typeof imageUrl === 'string' && image" 
-		  :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" 
-		  :style="[{...styles}]" 
-		  />
+      <div v-if="mediaTypeId === undefined">
+        <CropImage
+          id="annotation-img"
+          v-if="!isGalleryView && image && image.metaData && image.metaData.width > 0 && image.metaData.height > 0"
+          :imageUrl="image.url"
+          :metadata="image.metaData"
+          :canvasImage="image"
+          @img-load="imgLoad"
+        />
+        <img v-else-if="typeof imageUrl === 'string' && image" :src="imageUrl" id="annotation-img" v-show="!isGalleryView" @load="imgLoad" />
+      </div>
+      <div v-else-if="mediaTypeId === 1 && isValidUrl" class="pdf-content">
+        <vue-pdf-embed :source="image.url" class="pdf-config" />
+      </div>
+      <div v-else-if="mediaTypeId === 2 && isValidUrl" class="audio-content">
+        <audio ref="audioAnnotation" controls class="audio-config">
+          <source :src="image.url" type="audio/mp3" />
+          Your browser does not support the audio tag.
+        </audio>
+      </div>
+      <div v-else-if="mediaTypeId === 3 && isValidUrl" class="video-content">
+        <video ref="videoAnnotation" controls class="video-config">
+          <source :src="image.url" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </div>
     <canvas class="annotation-view-container__canvas" id="canvasOnStudent" ref="canvasRef" />
+    <canvas width="720" height="480" id="imgCanvas" style="display: none" />
   </div>
   <transition @enter="actionEnter" @leave="actionLeave">
-	<!-- hide temporary with v-if=false -->
+    <!-- hide temporary with v-if=false -->
     <div class="palette-tool" v-if="false">
       <div
         v-for="{ name, action } in paletteTools"

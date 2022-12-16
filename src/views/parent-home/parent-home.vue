@@ -18,6 +18,7 @@
       :fromParentComponent="true"
       :getRoomInfoError="getRoomInfoError"
       :getRoomInfoErrorByMsg="getRoomInfoErrorByMsg"
+      :studentVideoMirror="studentVideoMirror"
       @go-to-class="goToClass"
       :classIsActive="classIsActive"
       ref="deviceTesterRef"

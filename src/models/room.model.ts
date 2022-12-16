@@ -1,15 +1,26 @@
+import { Sticker } from "@/store/annotation/state";
+import { VCPlatform } from "@/store/app/state";
 import { Target } from "@/store/interactive/state";
+import { TargetsVisibleList } from "@/store/lesson/state";
+import { FabricObject } from "@/ws";
 import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
-import { Sticker } from "@/store/annotation/state";
-import { FabricObject } from "@/ws";
-import { TargetsVisibleList } from "@/store/lesson/state";
-import { VCPlatform } from "@/store/app/state";
 
 export interface ExposureItemMediaModel {
   id: string;
   url: string;
   resolution: string;
+  teacherUseOnly: boolean;
+}
+export interface AlternateItemMediaModel {
+  contentId: string;
+  id: string;
+  mediaSlotId: number;
+  mediaStatusId: number;
+  mediaTypeId: number;
+  page: Array<ExposureItemMediaModel>;
+  revision: number;
+  url: string;
 }
 export interface ExposureItemModel {
   id: string;
@@ -52,6 +63,7 @@ export interface ExposureContentModel {
   page: Array<ExposureItemMediaModel>;
   thumbnailUrl: any;
   contentRootType: number;
+  media: Array<AlternateItemMediaModel>;
 }
 export interface InteractiveModel {
   answerMode: number;
@@ -68,8 +80,8 @@ export interface PencilModel {
   color: string;
 }
 export interface UserShapeModel {
-  UserId: string;
-  brushstroke: Array<string>;
+  userId: string;
+  brushstrokes: Array<string>;
 }
 export interface DrawingModel {
   pencil: PencilModel | null;
@@ -111,6 +123,14 @@ export interface LessonPlanModel {
   playedTime: string;
   lessonAction: number;
   interactive: InteractiveModel;
+  ratio: number;
+  position:
+    | {
+        x: number;
+        y: number;
+      }
+    | null
+    | undefined;
 }
 export interface RoomModel {
   id: string;
@@ -132,7 +152,9 @@ export interface RoomModel {
   isShowWhiteBoard: boolean;
   annotation: AnnotationModel;
   oneAndOneDto: any;
-  videoPlatformProvider: VCPlatform
+  videoPlatformProvider: VCPlatform;
+  isTeacherVideoMirror: boolean;
+  isStudentVideoMirror: boolean;
 }
 
 export interface RoomUsersModel {
@@ -148,5 +170,5 @@ export interface UnitAndLessonModel {
 }
 
 export interface GenerateTokenModal {
-	token: string;
+  token: string;
 }

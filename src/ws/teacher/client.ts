@@ -1,8 +1,8 @@
-import { Target } from "@/store/interactive/state";
+import { MediaStatus } from "@/models";
 import { Sticker } from "@/store/annotation/state";
+import { Target } from "@/store/interactive/state";
 import { GLSocketClient } from "../base";
 import { TeacherWSCommand as WSCmd } from "./command";
-import { MediaStatus } from "@/models";
 
 interface JoinRoomParams {
   roomId: string;
@@ -15,6 +15,7 @@ export interface FabricObject {
   fabricId: string;
   fabricData: string;
 }
+
 export class TeacherWSClient extends GLSocketClient {
   sendRequestJoinRoom(roomId: string, browserFingerPrinting: string, isMuteAudio = MediaStatus.noStatus, isHideVideo = MediaStatus.noStatus) {
     const params: JoinRoomParams = { roomId: roomId, browserFingerPrinting: browserFingerPrinting };
@@ -73,6 +74,9 @@ export class TeacherWSClient extends GLSocketClient {
   }
   sendRequestDisableAllAnnotation(showPalette: boolean) {
     return this.send(WSCmd.TOGGLE_STUDENTS_PALETTES, showPalette);
+  }
+  sendRequestResetPaletteAllStudent(showPalette: boolean) {
+    return this.send(WSCmd.RESET_PALETTE_ALL_STUDENT, showPalette);
   }
   sendRequestToggleAnnotation(StudentId: string, IsEnable: boolean) {
     return this.send(WSCmd.SET_STUDENT_PALETTE, {
@@ -146,6 +150,9 @@ export class TeacherWSClient extends GLSocketClient {
   sendRequestClearAllBrush(payload: any) {
     return this.send(WSCmd.TEACHER_CLEAR_ALL_BRUSH_STROKES, {});
   }
+  sendRequestResetZoom(payload: any) {
+    return this.send(WSCmd.TEACHER_RESET_ZOOM, { payload });
+  }
   sendRequestDeleteBrush(payload: any) {
     return this.send(WSCmd.TEACHER_UNDO_BRUSH, {});
   }
@@ -160,6 +167,12 @@ export class TeacherWSClient extends GLSocketClient {
   }
   sendRequestSetWhiteboard(isShowWhiteBoard: boolean) {
     return this.send(WSCmd.TEACHER_SET_WHITEBOARD, isShowWhiteBoard);
+  }
+  sendRequestSetMediaState(payload: any) {
+    return this.send(WSCmd.TEACHER_SET_MEDIA_STATE, payload);
+  }
+  sendRequestSetCurrentTimeMedia(payload: any) {
+    return this.send(WSCmd.TEACHER_SET_CURRENT_TIME_MEDIA, payload);
   }
   sendRequestDrawLaser(payload: any) {
     const data = JSON.stringify(payload);
@@ -178,6 +191,27 @@ export class TeacherWSClient extends GLSocketClient {
     return this.send(WSCmd.TOGGLE_SHAPE, payload);
   }
   sendCheckTeacherMessageVersion() {
-	return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
+    return this.invoke(WSCmd.CHECK_MESSAGE_VERSION, null);
+  }
+  sendRequestUpdateSessionAndUnit(payload: any) {
+    return this.send(WSCmd.UPDATE_SESSION_LESSON_AND_UNIT, {});
+  }
+  sendRequestZoomSlide(payload: number) {
+    return this.invoke(WSCmd.TEACHER_ZOOM_SLIDE, payload);
+  }
+  sendRequestMoveZoomedSlide(payload: { x: number; y: number; viewPortX: number; viewPortY: number }) {
+    return this.invoke(WSCmd.TEACHER_MOVE_ZOOMED_SLIDE, payload);
+  }
+  sendRequestCaptureImage(payload: { isCaptureAll: boolean; studentId: string }) {
+    return this.invoke(WSCmd.TEACHER_SEND_REQUEST_CAPTURE_IMAGE, payload);
+  }
+  sendRequestDrawPencil(payload: any) {
+    return this.send(WSCmd.TEACHER_DRAW_PENCIL_PEN, JSON.stringify(payload));
+  }
+  sendRequestDeleteFabric(payload: any) {
+    return this.send(WSCmd.TEACHER_UNDO_FABRIC, {});
+  }
+  sendRequestDeleteShape(payload: any) {
+    return this.send(WSCmd.TEACHER_UNDO_SHAPE, {});
   }
 }

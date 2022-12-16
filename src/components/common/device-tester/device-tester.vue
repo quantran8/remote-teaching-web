@@ -95,6 +95,37 @@
           </div>
         </div>
       </Row>
+      <Row align="middle" class="device-tester__mb--small">
+        <div class="ant-col-24 ant-col-sm-6">
+          <b> {{ CheckSpeaker }} </b>
+        </div>
+        <div class="ant-col-24 ant-col-sm-18">
+          <Space size="large" align="center" class="device-tester__check-mic-cam">
+            <div class="device-tester__speaker--icon">
+              <audio loop id="audio" style="display: none">
+                <source src="@/assets/audio/ConnectTestSound.mp3" type="audio/mp3" />
+              </audio>
+              <img :src="speakerIcon" @click="toggleSpeaker" alt="" />
+            </div>
+            <Select
+              :placeholder="SelectDevice"
+              style="width: 330px"
+              :disabled="!isCheckSpeaker"
+              v-model:value="currentSpeakerLabel"
+              ref="select"
+              @change="handleSpeakerChange"
+            >
+              <SelectOption v-for="deviceId in listSpeakersId" :key="deviceId" :value="deviceId">
+                {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
+              </SelectOption>
+            </Select>
+            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />	
+          </Space>
+        </div>
+		<p v-show="!havePermissionMicrophone">
+          <span class="alert-device-test">{{ warningMsgSpeaker }}</span>
+        </p>
+      </Row>
 
       <!-- <Row v-if="showTeacherFooter" align="middle" class="device-tester__mb--small">
         <div class="ant-col-24 ant-col-sm-6">
@@ -156,13 +187,7 @@
       <Row v-if="showParentFooter" type="flex" justify="end">
         <Space size="large" align="center">
           <Button width="100px" @click="handleCancel">{{ Cancel }}</Button>
-          <Button
-            :disabled="!classIsActive"
-            width="100px"
-            @click="goToClass"
-            type="primary"
-            :loading="loading"
-          >
+          <Button :disabled="!classIsActive" width="100px" @click="goToClass" type="primary" :loading="loading">
             {{ JoinNow }}
           </Button>
         </Space>

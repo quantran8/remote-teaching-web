@@ -11,7 +11,7 @@ export class Logger {
   };
   public static log(message?: any, ...optionalParams: any[]) {
     if (this.disable()) return;
-    console.log(message ? message : "", ...optionalParams);
+    // console.log(message ? message : "", ...optionalParams);
   }
   public static info(message?: any, ...optionalParams: any[]) {
     if (this.disable()) return;

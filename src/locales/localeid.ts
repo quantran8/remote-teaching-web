@@ -109,13 +109,19 @@ export class ParentStudentCardLocale {
   static ClassGroup = "parent_student_card.class_group";
   static StartTime = "parent_student_card.start_time";
 }
-
+export class ChangeLessonUnitLocale {
+  static SetLessonAndUnit = "change_lesson_unit.set_lesson_and_unit";
+  static Ok = "change_lesson_unit.ok";
+  static MarkCurrentLessonCompleteForClass = "change_lesson_unit.mark_current_lesson_complete_for_class";
+}
 export class DeviceTesterLocale {
   static SystemCheck = "device_tester.system_check";
   static CheckMic = "device_tester.check_mic";
   static Platform = "device_tester.platform";
   static SelectDevice = "device_tester.select_device";
   static CheckCam = "device_tester.check_cam";
+  static TeacherVideoMirroring = "device_tester.teacher_video_mirroring";
+  static StudentVideoMirroring = "device_tester.student_video_mirroring";
   static CamOff = "device_tester.cam_off";
   static ClassStatus = "device_tester.class_status";
   static DefaultMessage1 = "device_tester.default_message_1";
@@ -128,6 +134,8 @@ export class DeviceTesterLocale {
   static JoinSession = "device_tester.join_session";
   static MessageWarningMic = "device_tester.message_warning_mic";
   static MessageWarningCamera = "device_tester.message_warning_camera";
+  static CheckSpeaker = "device_tester.check_speaker";
+  static MessageWarningSpeaker = "device_tester.message_warning_speaker";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
@@ -165,6 +173,7 @@ export class TeacherCalendarLocale {
   static School = "teacher_calendar.school";
   static All = "teacher_calendar.all";
   static Back = "teacher_calendar.back";
+  static ScheduleNewRemoteSession = "teacher_calendar.schedule_new_remote_session";
 }
 
 export class TeacherClassDesignate {
@@ -192,6 +201,8 @@ export class TeacherClassLessonPlan {
   static RelatedSlides = "teacher_class_lesson_plan.related_slides";
   static ComponentSlides = "teacher_class_lesson_plan.component_slides";
   static ActivitySlides = "teacher_class_lesson_plan.activity_slides";
+  static NoData = "teacher_class_lesson_plan.no_data";
+  static AlternateMedia = "teacher_class_lesson_plan.alternate_media";
 }
 
 export class TeacherClassGallery {
@@ -204,6 +215,7 @@ export class TeacherClassGallery {
   static ShowAll = "teacher_class_gallery.show_all";
   static HideAll = "teacher_class_gallery.hide_all";
   static NoStudentJoinClass = "teacher_class_gallery.no_student_join_class";
+  static CaptureAll = "teacher_class_gallery.capture_all";
 }
 
 export class TeacherHome {
@@ -226,6 +238,7 @@ export class TeacherClass {
   static StudentHasJoinedTheClass = "teacher_class.student_has_joined_the_class";
   static StudentHasLeftTheClass = "teacher_class.student_has_left_the_class";
   static StudentHasLostConnection = "teacher_class.student_has_lost_connection";
+  static ForTeacherUseOnly = "teacher_class.for_teacher_use_only";
 }
 
 export class BearAction {
@@ -269,4 +282,35 @@ export class TeacherClassError {
   static ConnectAgoraServersError = "teacher_class_error.connect_agora_servers_error";
   static PublishStreamAgoraServersError = "teacher_class_error.publish_stream_error";
   static MissingImportantClassMessages = "teacher_class_error.miss_messages";
+}
+
+export class ResourcesMenuLocale {
+  static ResourcesMenuSchoolPortal = "resources.menu.schoolportal";
+  static ResourcesMenuDigitalContent = "resources.menu.digitalcontent";
+  static ResourcesMenuReports = "resources.menu.reports";
+  static ResourcesMenuStudentREP = "resources.menu.studentrep";
+  static ResourcesMenuTeacherTraining = "resources.menu.teachertraining";
+  static ResourcesMenuLMS = "resources.menu.lms";
+  static ResourcesParentPortal = "resources.menu.parentportal";
+}
+
+export class HelpMenuLocal {
+  static Contact = "help.menu.contact";
+  static Documentation = "help.menu.documentation";
+}
+export class WriterReview {
+  static Title = "writer_review.title";
+  static NoClassOrGroup = "writer_review.no_class_or_group";
+  static NoStudent = "writer_review.no_student";
+}
+export class CaptureNotification {
+  static CaptureSuccessStudent = "capture_status.capture_successfully_student";
+  static CaptureSuccessAll = "capture_status.capture_successfully_all";
+  static CaptureSuccessAmount = "capture_status.capture_successfully_amount";
+  static CaptureErrorStudent = "capture_status.capture_error_student";
+  static CaptureErrorAmount = "capture_status.capture_error_amount";
+  static ReachedMaximum = "capture_status.reached_maximum";
+  static StudentsReachedMaximum = "capture_status.students_reached_maximum";
+  static EnableStudentVideo = "capture_status.enable_student_video";
+  static EnableAllStudentVideo = "capture_status.enable_all_student_video";
 }

@@ -18,20 +18,19 @@
       <div class="student__figure" @mouseover="onMouseChange(true)">
         <div :class="student.raisingHand && 'student__is-question'">
           <div class="student__video" :class="[student.isPalette && 'student__is-palette']">
-
             <div
-                v-if="!isUsingAgora && isOneToOneStudent"
-                v-show="!isNotJoinned && isTurnOnCamera"
-                :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
+              v-if="!isUsingAgora && isOneToOneStudent"
+              v-show="!isNotJoinned && isTurnOnCamera"
+              :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
             >
               <canvas :id="student.id + '__sub'"></canvas>
             </div>
 
             <div
-                v-else
-                v-show="!isNotJoinned && isTurnOnCamera"
-                :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
-                :id="student.id"
+              v-else
+              v-show="!isNotJoinned && isTurnOnCamera"
+              :class="['student__video--sub', isSpeaking && 'student__is-speaking']"
+              :id="student.id"
             />
             <div v-if="isNotJoinned || !isTurnOnCamera" :class="[isSpeaking && 'student__is-speaking']" class="student__img">
               <img :class="['student-avatar', isOneToOneStudent && 'size-one-one']" alt="boys-avatar" :src="avatarStudent" />
@@ -40,23 +39,27 @@
         </div>
       </div>
       <img v-if="isLowBandWidth" :src="IconLowWifi" class="student--low-wifi" alt="Low bandwidth" />
-      <div class="student__info" @mouseover="onMouseChange(true)"
-           :style="{transform: focusedStudent && !isOneToOneStudent ? `scale(${1 / actualScaleRatio})` : ''}">
+      <div
+        class="student__info"
+        @mouseover="onMouseChange(true)"
+        :style="{ transform: focusedStudent && !isOneToOneStudent ? `scale(${1 / actualScaleRatio})` : '' }"
+      >
         <p
-            class="student__info--name"
-            :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned, ellipText: true }"
-            @click="onOneAndOne"
-            :title="student.englishName"
+          class="student__info--name"
+          :class="{ enable: !isNotJoinned, active: isMouseEntered && !isNotJoinned, ellipText: true }"
+          @click="onOneAndOne"
+          :title="student.englishName"
         >
           {{ student.englishName }}
         </p>
       </div>
 
-      <StudentCardActions v-if="!isNotJoinned"
-                          :student="student"
-                          :show="isMouseEntered"
-                          :focusedStudent="focusedStudent"
-                          :style="{transform: focusedStudent && !isOneToOneStudent ? `scale(${1 / actualScaleRatio})` : ''}"
+      <StudentCardActions
+        v-if="!isNotJoinned"
+        :student="student"
+        :show="isMouseEntered"
+        :focusedStudent="focusedStudent"
+        :style="{ transform: focusedStudent && !isOneToOneStudent ? `scale(${1 / actualScaleRatio})` : '' }"
       />
     </div>
   </div>

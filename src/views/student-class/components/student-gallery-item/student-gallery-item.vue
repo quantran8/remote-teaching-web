@@ -16,8 +16,8 @@
           :id="student.id"
           :title="student.englishName"
         >
-          <video v-if="isCurrent && !isUsingAgora && isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
-          <canvas v-if="isCurrent && !isUsingAgora && !isSupportedVideo" :id="student.id + '__video'" :title="student.englishName"/>
+          <video v-if="isCurrent && !isUsingAgora && isSupportedVideo" :id="student.id + '__video'" :title="student.englishName" />
+          <canvas v-if="isCurrent && !isUsingAgora && !isSupportedVideo" :id="student.id + '__video'" :title="student.englishName" />
         </div>
 
         <img

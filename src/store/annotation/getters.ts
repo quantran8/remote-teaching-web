@@ -68,8 +68,17 @@ const getters: GetterTree<AnnotationState, any> = {
   imgHeight(state: AnnotationState): number {
     return state.imgHeight || parseInt(DEFAULT_RESOLUTION.split("X")[1]);
   },
+  imgRenderWidth(state: AnnotationState): number {
+    return state.imgRenderWidth ?? 0;
+  },
+  imgRenderHeight(state: AnnotationState): number {
+    return state.imgRenderHeight ?? 0;
+  },
   isImgProcessing(state: AnnotationState): boolean {
     return state.isImgProcessing ?? false;
+  },
+  pencilPath(state: AnnotationState) {
+    return state.pencilPath;
   },
 };
 

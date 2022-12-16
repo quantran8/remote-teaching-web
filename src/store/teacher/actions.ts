@@ -1,9 +1,9 @@
-import { store } from "@/store";
 import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
+import { store } from "@/store";
 import { Logger } from "@/utils/logger";
 import { ActionContext, ActionTree } from "vuex";
-import { TeacherState } from "./state";
+import { StudentsGroup, TeacherState } from "./state";
 
 const actions: ActionTree<TeacherState, any> = {
   async setInfo({ dispatch, commit }, payload: Parent) {
@@ -35,6 +35,7 @@ const actions: ActionTree<TeacherState, any> = {
           commit("setClassRoom", responseActive.data);
           await store.dispatch("setVideoCallPlatform", responseActive.data.videoPlatformProvider);
           commit("setClassOnline", responseActive.data.classInfo);
+          dispatch("teacherRoom/setRoomInfo", responseActive.data, { root: true });
         } else {
           commit("setClassOnline", undefined);
         }
@@ -87,6 +88,32 @@ const actions: ActionTree<TeacherState, any> = {
   async setAcceptPolicy({ commit }) {
     const policyResponse: TeacherGetRoomResponse = await RemoteTeachingService.acceptPolicy("teacher");
     commit("setAcceptPolicy", policyResponse.data);
+  },
+  setCurrentSchool({ commit }, p: string) {
+    commit("setCurrentSchool", p);
+  },
+  async getClassInfo({ commit, state }, p: { classId: string; groupId: string; teacherId: string }) {
+    try {
+      const result = await RemoteTeachingService.getClassSessionInfo(p.classId, p.groupId, p.teacherId);
+      if (result.students.length) {
+        commit("setCurrentGroupStudents", result.students);
+      }
+    } catch (error) {
+      commit("setCurrentGroupStudents", []);
+      console.log(error);
+    }
+  },
+  setCurrentGroupStudents({ commit }, p: Array<StudentsGroup>) {
+    commit("setCurrentGroupStudents", p);
+  },
+  async setClassesSchedulesBySchools({ commit, state }) {
+    for (const school of state.schools) {
+      const response = await TeacherService.getAllClassesSchedule(school.id);
+      response.forEach((item) => {
+        item.schoolId = school.id;
+      });
+      commit("setClassesSchedulesBySchools", response);
+    }
   },
 };
 

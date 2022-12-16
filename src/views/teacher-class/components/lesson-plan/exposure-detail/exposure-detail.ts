@@ -3,8 +3,7 @@ import { useStore } from "vuex";
 import ExposureItem from "./exposure-item/exposure-item.vue";
 import { exposureTypes } from "../lesson-plan";
 import { Empty } from "ant-design-vue";
-import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
-import { ExposureType } from "@/store/lesson/state";
+import { Exposure } from "@/store/lesson/state";
 import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
 
@@ -28,13 +27,23 @@ export default defineComponent({
     const relatedSlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.RelatedSlides));
     const componentSlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.ComponentSlides));
     const activitySlidesText = computed(() => fmtMsg(TeacherClassLessonPlan.ActivitySlides));
+    const alternateMediaText = computed(() => fmtMsg(TeacherClassLessonPlan.AlternateMedia));
 
     const timeoutClickItem = 300; // 300ms
     const postClickTimer = ref<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+    watch(props, () => {
+      configLessonPlan(props.exposure);
+    });
+
     onMounted(() => {
-      let resultList = props.exposure.items;
-      if (props.exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
+      configLessonPlan(props.exposure);
+    });
+
+    const configLessonPlan = (exposure?: Exposure) => {
+      if (!exposure) return;
+      let resultList: any = exposure.items;
+      if (exposure?.teachingActivityBlockItems?.findIndex((teachingItem: any) => teachingItem.textContent) > -1) {
         hasZeroTeachingContent.value = false;
       }
       switch (props.type) {
@@ -50,26 +59,47 @@ export default defineComponent({
           exposureTitle.value = relatedSlidesText.value;
           break;
         case exposureTypes.TEACHING_ACTIVITY_BLOCK:
-          resultList = props.exposure.teachingActivityBlockItems;
+          resultList = exposure.teachingActivityBlockItems;
           exposureTitle.value = activitySlidesText.value;
           break;
         case exposureTypes.CONTENT_BLOCK:
-          resultList = props.exposure.contentBlockItems;
+          resultList = exposure.contentBlockItems;
           exposureTitle.value = componentSlidesText.value;
           // thumbnailURLDefault.value = resultList[0]?.media[0]?.image.url;
+          break;
+        case exposureTypes.ALTERNATE_MEDIA_BLOCK:
+          resultList = exposure.alternateMediaBlockItems;
+          exposureTitle.value = alternateMediaText.value;
           break;
         default:
           break;
       }
-      listMedia.value = resultList
-        .filter((m: any) => m.media[0]?.image?.url)
-        .map((item: any) => {
-          if (!item.media[0]) return;
-          item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
-          return item.media;
-        })
-        .flat(1);
-    });
+      if (exposureTitle.value !== alternateMediaText.value) {
+        listMedia.value = resultList
+          ?.filter((m: any) => m.media[0]?.image?.url)
+          ?.map((item: any) => {
+            if (!item.media[0]) return;
+            item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
+            item.media[0].teacherUseOnly = item.teacherUseOnly;
+            return item.media;
+          })
+          ?.flat(1);
+      } else {
+        listMedia.value = resultList.map((e: any) => {
+          e = e
+            ?.filter((m: any) => m.media[0]?.image?.url)
+            ?.map((item: any) => {
+              if (!item.media[0]) return;
+              item.media[0].teachingContent = props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK ? item.textContent : "";
+              item.media[0].teacherUseOnly = item.teacherUseOnly;
+              item.media[0].mediaTypeId = item.mediaTypeId;
+              return item.media;
+            })
+            ?.flat(1);
+          return e;
+        });
+      }
+    };
 
     const onClickBack = () => {
       emit("click-back");
@@ -87,7 +117,12 @@ export default defineComponent({
         await dispatch("teacherRoom/setCurrentExposureMediaItem", {
           id: item.id,
         });
+        await dispatch("lesson/setClickedExposureItem", {
+          id: item.id,
+        });
         await dispatch("teacherRoom/setClearBrush", {});
+        await dispatch("teacherRoom/setResetZoom", {});
+
         await dispatch("teacherRoom/setWhiteboard", { isShowWhiteBoard: false });
         await dispatch("lesson/setTargetsVisibleListJoinedAction", [], { root: true });
         await dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
@@ -101,6 +136,7 @@ export default defineComponent({
     const isTransitionBlock = computed(() => props.type === exposureTypes.TRANSITION_BLOCK);
     const isLpCompleteBlock = computed(() => props.type === exposureTypes.LP_COMPLETE_BLOCK);
     const isTeachingActivityBlock = computed(() => props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
+    const isAlternateMediaBlock = computed(() => props.type === exposureTypes.ALTERNATE_MEDIA_BLOCK);
     // const thumbnailContentURL = computed(() => props.exposure.thumbnailURL);
     // const isShowInfoIcon = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.TEACHING_ACTIVITY_BLOCK);
     // const isShowBackButton = computed(() => props.type === exposureTypes.TRANSITION_BLOCK || props.type === exposureTypes.LP_COMPLETE_BLOCK);
@@ -116,6 +152,7 @@ export default defineComponent({
       isVCPBlock,
       isTeachingActivityBlock,
       isLpCompleteBlock,
+      isAlternateMediaBlock,
       exposureTitle,
       // thumbnailContentURL,
       // thumbnailURLDefault,

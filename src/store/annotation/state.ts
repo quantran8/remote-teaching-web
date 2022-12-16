@@ -15,8 +15,8 @@ export interface Sticker {
   height: number;
 }
 export interface UserShape {
-  UserId: string;
-  brushstroke: Array<string>;
+  userId: string;
+  brushstrokes: Array<string>;
 }
 export interface Drawing {
   brushstrokes: Array<string>;
@@ -35,7 +35,18 @@ export interface AnnotationState {
   lastFabricUpdated: null | LastFabricUpdated;
   imgWidth?: number;
   imgHeight?: number;
-  isImgProcessing?:boolean;
+  imgRenderWidth?: number;
+  imgRenderHeight?: number;
+  isImgProcessing?: boolean;
+  pencilPath: Array<{
+    id: string;
+    points: Array<Pointer>;
+    strokeColor: string;
+    strokeWidth: number;
+    isDone: boolean;
+    ratio: number;
+    lineIdRelated: string;
+  }>;
 }
 
 export interface LastFabricUpdated {
@@ -64,6 +75,7 @@ const state: AnnotationState = {
   },
   stickers: [],
   lastFabricUpdated: null,
+  pencilPath: [],
 };
 
 export default state;

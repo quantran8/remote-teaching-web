@@ -6,4 +6,16 @@ import GlobalAudioBar from "./global-audio-bar/global-audio-bar.vue";
 import DesignateTarget from "./designate-target/designate-target.vue";
 import TeacherPageHeader from "./teacher-page-header/teacher-page-header.vue";
 import WhiteboardPalette from "./whiteboard-palette/whiteboard-palette.vue";
-export { TeacherCard, LessonPlan, ActivityContent, GlobalAudioBar, StudentGallery, DesignateTarget, TeacherPageHeader, WhiteboardPalette };
+import ChangeLessonUnit from "./change-lesson-unit/change-lesson-unit.vue";
+
+export {
+  TeacherCard,
+  LessonPlan,
+  ActivityContent,
+  GlobalAudioBar,
+  StudentGallery,
+  DesignateTarget,
+  TeacherPageHeader,
+  WhiteboardPalette,
+  ChangeLessonUnit,
+};

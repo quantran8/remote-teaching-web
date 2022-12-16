@@ -1,17 +1,18 @@
-import { ParentHomeLocale } from "./../../locales/localeid";
+import { DeviceTester } from "@/components/common";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
+import { ClassRoomStatus } from "@/models";
 import { ChildModel, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import { AppView } from "@/store/app/state";
+import { Logger } from "@/utils/logger";
+import { queryStringToObject } from "@/utils/utils";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Button, Checkbox, Modal, notification, Row } from "ant-design-vue";
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { ParentHomeLocale } from "./../../locales/localeid";
 import StudentCard from "./components/student-card/student-card.vue";
-import { Modal, Checkbox, Button, Row } from "ant-design-vue";
-import { fmtMsg } from "vue-glcommonui";
-import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AppView } from "@/store/app/state";
-import { DeviceTester } from "@/components/common";
-import { ClassRoomStatus } from "@/models";
-import { Logger } from "@/utils/logger";
 
 const fpPromise = FingerprintJS.load();
 
@@ -49,6 +50,7 @@ export default defineComponent({
     const policy = computed(() => store.getters["parent/acceptPolicy"]);
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
+    const studentVideoMirror = ref(false);
     const listSessionInfo = ref([]);
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const classIsActive = ref(false);
@@ -72,10 +74,11 @@ export default defineComponent({
       const getRoomInfo = async () => {
         try {
           const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
+          studentVideoMirror.value = !!roomResponse?.data?.isStudentVideoMirror;
           getRoomInfoError.value = "";
           getRoomInfoErrorByMsg.value = "";
           await store.dispatch("studentRoom/setOnline");
-		  await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+          await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
 
           if (getRoomInfoTimeout.value) {
             clearTimeout(getRoomInfoTimeout.value);
@@ -125,13 +128,31 @@ export default defineComponent({
         await getNextSessionInfo();
       }
     });
+    onMounted(async () => {
+      await store.dispatch("parent/loadChildren");
+    });
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
     const submitPolicy = async () => {
       visible.value = false;
-      await RemoteTeachingService.submitPolicy("parent");
-      await store.dispatch("parent/setAcceptPolicy");
+      try {
+        await RemoteTeachingService.submitPolicy("parent");
+        await store.dispatch("parent/setAcceptPolicy");
+        const policyAccepted = computed(() => store.getters["parent/acceptPolicy"]);
+        if (policyAccepted.value) {
+          const queryStringObj = queryStringToObject();
+          if (queryStringObj?.target) {
+            router.push(queryStringObj.target);
+          }
+        } else {
+          store.dispatch("setAppView", { appView: AppView.UnAuthorized });
+        }
+      } catch (error) {
+        notification.error({
+          message: error.message,
+        });
+      }
     };
     const cancelPolicy = async () => {
       visible.value = false;
@@ -170,7 +191,6 @@ export default defineComponent({
       }
       return nativeName;
     };
-
     return {
       formatName,
       welcomeText,
@@ -205,6 +225,7 @@ export default defineComponent({
       getRoomInfoError,
       getRoomInfoErrorByMsg,
       onDevicesModalClose,
+      studentVideoMirror,
     };
   },
 });

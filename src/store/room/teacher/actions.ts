@@ -1,38 +1,42 @@
 import { AgoraEventHandler } from "@/agora";
-import { GLError, GLErrorCode } from "@/models/error.model";
-import { UserModel } from "@/models/user.model";
-import { InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
-import { ActionTree } from "vuex";
-import {
-  ClassViewPayload,
-  DefaultPayload,
-  DeviceMediaPayload,
-  InClassStatus,
-  InitClassRoomPayload,
-  StudentBadgePayload,
-  UserIdPayload,
-  UserMediaPayload,
-  ValueOfClassView,
-  WhiteboardPayload,
-  NetworkQualityPayload,
-} from "../interface";
-import _ from "lodash";
-import { TeacherRoomState } from "./state";
-import { useTeacherRoomWSHandler } from "./handler";
-import { RoomModel } from "@/models";
-import { Sticker } from "@/store/annotation/state";
-import { UID } from "agora-rtc-sdk-ng";
-import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
-import { Paths } from "@/utils/paths";
-import router from "@/router";
-import { fmtMsg } from "vue-glcommonui";
 import { ErrorLocale } from "@/locales/localeid";
-import { MediaStatus } from "@/models";
-import { Logger } from "@/utils/logger";
-import { FabricObject } from "@/ws";
-import { UserRole } from "@/store/app/state";
+import { MediaStatus, RoomModel } from "@/models";
+import { GLError, GLErrorCode } from "@/models/error.model";
+import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
+import { UserModel } from "@/models/user.model";
+import router from "@/router";
+import { InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
+import { BlobTagItem } from "@/services/storage/interface";
 import { store } from "@/store";
+import { Sticker } from "@/store/annotation/state";
+import { UserRole } from "@/store/app/state";
+import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import { Logger } from "@/utils/logger";
+import { Paths } from "@/utils/paths";
+import { FabricObject } from "@/ws";
 import { HubConnectionState } from "@microsoft/signalr";
+import { UID } from "agora-rtc-sdk-ng";
+import { notification } from "ant-design-vue";
+import _ from "lodash";
+import { fmtMsg } from "vue-glcommonui";
+import { ActionTree } from "vuex";
+import { StudentStorageService } from "../../../services/storage/service";
+import {
+	ClassViewPayload,
+	DefaultPayload,
+	DeviceMediaPayload,
+	InClassStatus,
+	InitClassRoomPayload,
+	NetworkQualityPayload,
+	StudentBadgePayload,
+	StudentCaptureStatus,
+	UserIdPayload,
+	UserMediaPayload,
+	ValueOfClassView,
+	WhiteboardPayload
+} from "../interface";
+import { useTeacherRoomWSHandler } from "./handler";
+import { TeacherRoomState } from "./state";
 
 const networkQualityStats = {
   "0": 0, //The network quality is unknown.
@@ -111,25 +115,24 @@ const actions: ActionTree<TeacherRoomState, any> = {
     store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
     store.dispatch("setHideVideo", { status: MediaStatus.noStatus }, { root: true });
 
-
-	// let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
-    // if (checkMessageTimer) {
-    //   clearInterval(checkMessageTimer);
-    // }
-    // checkMessageTimer = setInterval(async () => {
-    //   try {
-    //     if (store.state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
-    //       await store.state.manager?.WSClient.sendCheckTeacherMessageVersion();
-    //   } catch (err) {
-    //     //error here loss signalR network, for loss API connection
-    //     //disconnect now because window.offline event not work correctly sometimes
-    //     //if(store.getters["isDisconnected"] == false) {
-    //     //	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
-    //     //dispatch("setOffline");
-    //     //}
-    //   }
-    // }, 3000);
-    // store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
+    let checkMessageTimer = store.rootGetters["checkMessageVersionTimer"];
+    if (checkMessageTimer) {
+      clearInterval(checkMessageTimer);
+    }
+    checkMessageTimer = setInterval(async () => {
+      try {
+        if (store.state.manager?.WSClient.hubConnection.state == HubConnectionState.Connected)
+          await store.state.manager?.WSClient.sendCheckTeacherMessageVersion();
+      } catch (err) {
+        //error here loss signalR network, for loss API connection
+        //disconnect now because window.offline event not work correctly sometimes
+        //if(store.getters["isDisconnected"] == false) {
+        //	console.log("PING FAILED- SHOULD DISCONNECT TEACHER");
+        //dispatch("setOffline");
+        //}
+      }
+    }, 3000);
+    store.dispatch("setCheckMessageVersionTimer", checkMessageTimer, { root: true });
   },
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
@@ -161,17 +164,21 @@ const actions: ActionTree<TeacherRoomState, any> = {
       teacherId: state.user?.id,
       idOne: state.idOne,
       reJoin: _payload ? _payload.reJoin : false,
+      isMirror: state.info.isTeacherVideoMirror,
+      isRemoteMirror: state.info.isStudentVideoMirror,
     });
     if (_payload && _payload.reJoin) return;
     let currentBandwidth = 0;
-    let time = 0;
-    setInterval(() => {
+    const intervalLogBandwidth = (window as any)["intervalLogBandwidth"];
+    if (intervalLogBandwidth) {
+      clearInterval(intervalLogBandwidth);
+    }
+    const interval = setInterval(() => {
       state.manager?.getBandwidth()?.then((speedMbps) => {
         if (speedMbps > 0) {
           currentBandwidth = speedMbps;
         }
-        time += 1;
-        if (currentBandwidth && time % 10 === 0) {
+        if (currentBandwidth) {
           //mean 5 minutes
           Logger.info("LOG BANDWIDTH", currentBandwidth.toFixed(2));
           RemoteTeachingService.putTeacherBandwidth(currentBandwidth.toFixed(2));
@@ -179,6 +186,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
         }
       });
     }, 300000); // 300000 = 5 minutes
+
+    (window as any)["intervalLogBandwidth"] = interval;
+
     //if (store.rootGetters["platform"] === VCPlatform.Agora) {
     const agoraEventHandler: AgoraEventHandler = {
       onUserPublished: (user, mediaType) => {
@@ -246,13 +256,23 @@ const actions: ActionTree<TeacherRoomState, any> = {
       commit("setRoomInfo", roomResponse.data);
       await store.dispatch("setVideoCallPlatform", roomInfo.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
-      await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
-        root: true,
-      });
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
+      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio ? roomResponse.data.lessonPlan.ratio : 1, { root: true });
+      await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
+      await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
+        root: true,
+      });
+      await dispatch(
+        "lesson/setTargetsVisibleAllAction",
+        {
+          userId: roomResponse.data.teacher.id,
+          visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false,
+        },
+        { root: true },
+      );
       await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes, { root: true });
 
       if (roomInfo.oneAndOneDto) {
@@ -360,6 +380,11 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit("disableAllStudents", {});
     state.manager?.WSClient.sendRequestDisableAllAnnotation(true);
   },
+  disableAllStudentsPalette({ commit, state }) {
+    commit("disableAllStudentsPalette", {});
+    state.manager?.WSClient.sendRequestResetPaletteAllStudent(true);
+  },
+
   enableAllStudents({ state, commit }) {
     commit("enableAllStudents", {});
     state.manager?.WSClient.sendRequestDisableAllAnnotation(false);
@@ -434,6 +459,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async setClearBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestClearAllBrush(payload);
   },
+  async setResetZoom({ state }, payload: any) {
+    await state.manager?.WSClient.sendRequestResetZoom(payload);
+  },
+  async setZoomSlide({ state }, payload: number) {
+    await state.manager?.WSClient.sendRequestZoomSlide(payload);
+  },
+  async setMoveZoomedSlide({ state }, payload: { x: number; y: number; viewPortX: number; viewPortY: number }) {
+    await state.manager?.WSClient.sendRequestMoveZoomedSlide(payload);
+  },
   async setDeleteBrush({ state }, payload: {}) {
     await state.manager?.WSClient.sendRequestDeleteBrush(payload);
   },
@@ -457,6 +491,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   setWhiteboard({ state }, payload: WhiteboardPayload) {
     state.manager?.WSClient.sendRequestSetWhiteboard(payload.isShowWhiteBoard);
+  },
+  setMediaState({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestSetMediaState(payload);
+  },
+  setCurrentTimeMedia({ state }, payload: any) {
+    state.manager?.WSClient.sendRequestSetCurrentTimeMedia(payload);
   },
   setLaserPath({ state }, payload: string) {
     state.manager?.WSClient.sendRequestDrawLaser(payload);
@@ -520,6 +560,86 @@ const actions: ActionTree<TeacherRoomState, any> = {
     // } catch (error) {
     //   Logger.log(error);
     // }
+  },
+  async setLessonAndUnit({ commit, state, dispatch, rootState }, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
+    if (!state.info?.id) {
+      return;
+    }
+
+    const data: UpdateLessonAndUnitModel = {
+      unit: p.unit,
+      lesson: p.lesson,
+      unitId: p.unitId,
+      sessionId: state.info?.id as string,
+      isCompleted: p.isCompleted,
+    };
+
+    const roomInfo = await RemoteTeachingService.teacherUpdateLessonAndUnit(data);
+    if (p.isCompleted) {
+      const contents = state.info?.lessonPlan?.contents;
+      for (const content of contents ?? []) {
+        await dispatch("endExposure", { id: content.id });
+      }
+    }
+    commit({ type: "lesson/clearLessonData" }, { root: true });
+    await commit("setRoomInfo", roomInfo);
+    await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+    await dispatch("lesson/setZoomRatio", 1, { root: true });
+    await dispatch("lesson/setImgCoords", undefined, { root: true });
+
+    await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});
+  },
+  async sendRequestCaptureImage({ state }, payload: { isCaptureAll: boolean; studentId: string }) {
+    await state.manager?.WSClient.sendRequestCaptureImage(payload);
+  },
+  async getStudentCapturedImages(
+    { getters, commit },
+    p: { token: string; schoolId: string; classId: string; groupId: string; studentId: string; date: string; filterMode: number },
+  ) {
+    try {
+      const result = await StudentStorageService.getFiles(p.token, p.schoolId, p.classId, p.groupId, p.studentId, p.date, p.filterMode);
+      if (result.length) {
+        const data = result.sort((a, b) => (a.tags.dateTime > b.tags.dateTime ? -1 : 1));
+        commit("setStudentsImageCaptured", data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  async removeStudentImage({ getters }, p: { token: string; fileName: string }) {
+    try {
+      await StudentStorageService.removeFile(p.token, p.fileName);
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: error.error,
+        duration: 3,
+      });
+    }
+  },
+  async setRoomInfo({ commit }, p: TeacherGetRoomResponse) {
+    commit("setRoomInfo", p);
+  },
+  setStudentsImageCaptured({ commit }, p: Array<BlobTagItem>) {
+    commit("setStudentsImageCaptured", p);
+  },
+  setStudentsCaptureDone({ commit }, p: StudentCaptureStatus) {
+    commit("setStudentsCaptureDone", p);
+  },
+  setCaptureAll({ commit }, p: boolean) {
+    commit("setCaptureAll", p);
+  },
+  clearStudentsCaptureDone({ commit }) {
+    commit("clearStudentsCaptureDone");
+  },
+  async setPencilPath({ state }, p: any) {
+    await state.manager?.WSClient.sendRequestDrawPencil(p);
+  },
+  async setDeleteShape({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteShape(payload);
+  },
+  async setDeleteFabric({ state }, payload: {}) {
+    await state.manager?.WSClient.sendRequestDeleteFabric(payload);
   },
 };
 

@@ -1,10 +1,10 @@
-import { computed, defineComponent, onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch } from "vue";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
+import { computed, defineComponent, onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch } from "vue";
 import { useStore } from "vuex";
 
 export default defineComponent({
-  props: ["imageUrl", "metadata"],
+  props: ["imageUrl", "metadata", "canvasImage"],
   emits: ["img-load"],
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
@@ -15,7 +15,7 @@ export default defineComponent({
     const croppedImageUrlRef = ref<string | undefined>();
 
     const isProcessing = ref<boolean>(false);
-	const cacheImage = ref<string>('');
+    const cacheImage = ref<string>("");
 
     const currentCropData = computed(() => {
       return {
@@ -32,15 +32,17 @@ export default defineComponent({
     });
 
     const onImageLoad = (e: Event) => {
-	 if (cacheImage.value) {
-		dispatch("annotation/setImgProcessing", false);
-	 }
+      if (cacheImage.value && props.canvasImage) {
+        dispatch("annotation/setImgProcessing", false);
+      }
       emit("img-load", e);
     };
 
     const processImg = (withCropData: { url: any; metadata: any }) => {
       const { url, metadata } = withCropData;
-	  dispatch("annotation/setImgProcessing", true);
+      if (props.canvasImage) {
+        dispatch("annotation/setImgProcessing", true);
+      }
 
       // checking if exist in cache
       cacheImage.value = findCachedImage({ url, metadata });
@@ -61,7 +63,6 @@ export default defineComponent({
             // update the image only when matched between processing cropdata and current cropdata
             if (JSON.stringify(withCropData) === JSON.stringify(currentCropData.value)) {
               complete(base64String);
-			  dispatch("annotation/setImgProcessing", false);
             }
           }
         },
@@ -84,6 +85,9 @@ export default defineComponent({
     };
 
     const complete = (base64String: string) => {
+      if (props.canvasImage) {
+        dispatch("annotation/setImgProcessing", false);
+      }
       // assign cropped base64 string as image
       croppedImageUrlRef.value = base64String;
       // complete cropping, then show the cropped image

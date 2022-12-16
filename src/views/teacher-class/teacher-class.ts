@@ -1,27 +1,30 @@
-import { ClassView, TeacherState } from "@/store/room/interface";
-import { Modal, notification, Checkbox } from "ant-design-vue";
-import { computed, ComputedRef, defineComponent, ref, watch, provide, onMounted, onUnmounted } from "vue";
+import { CaptureNotification, TeacherClass } from "@/locales/localeid";
+import { ClassRoomStatus } from "@/models";
+import { UserRole } from "@/store/app/state";
+import { ClassView, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Checkbox, Modal, notification } from "ant-design-vue";
+import { fabric } from "fabric";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { fmtMsg, LoginInfo, RoleName } from "vue-glcommonui";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
-import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
-import { ErrorCode } from "@/utils/utils";
-import { TeacherClass } from "./../../locales/localeid";
-import { UserRole } from "@/store/app/state";
-
-const fpPromise = FingerprintJS.load();
 import {
-  TeacherCard,
-  LessonPlan,
   ActivityContent,
-  StudentGallery,
-  GlobalAudioBar,
+  ChangeLessonUnit,
   DesignateTarget,
+  GlobalAudioBar,
+  LessonPlan,
+  StudentGallery,
+  TeacherCard,
   TeacherPageHeader,
   WhiteboardPalette,
 } from "./components";
-import { ClassRoomStatus } from "@/models";
+
+const fpPromise = FingerprintJS.load();
 export default defineComponent({
   components: {
     Modal,
@@ -35,6 +38,7 @@ export default defineComponent({
     DesignateTarget,
     TeacherPageHeader,
     WhiteboardPalette,
+    ChangeLessonUnit,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -80,13 +84,16 @@ export default defineComponent({
     const error = computed(() => getters["teacherRoom/error"]);
     const isLessonPlan = computed(() => getters["teacherRoom/classView"] === ClassView.LESSON_PLAN);
     const currentExposureItemMedia = computed(() => getters["lesson/currentExposureItemMedia"]);
-    const students = computed(() => getters["teacherRoom/students"]);
+    const studentCaptureAll: ComputedRef<Array<StudentCaptureStatus>> = computed(() => getters["teacherRoom/studentCaptureAll"]);
+    const isCaptureAll = computed(() => getters["teacherRoom/isCaptureAll"]);
+    const students: ComputedRef<Array<StudentState>> = computed(() => getters["teacherRoom/students"]);
     const roomInfo = computed(() => {
       return getters["teacherRoom/info"];
     });
     const currentView = computed(() => {
       return getters["teacherRoom/classView"];
     });
+    const changeLessonUnitRef = ref<InstanceType<typeof ChangeLessonUnit>>();
 
     const isGalleryView = computed(() => {
       return getters["teacherRoom/isGalleryView"];
@@ -108,6 +115,8 @@ export default defineComponent({
     });
 
     const modalVisible = ref(false);
+    const previewObjects = computed(() => getters["lesson/previewObjects"]);
+    const isShowPreviewCanvas = computed(() => getters["lesson/isShowPreviewCanvas"]);
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
 
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
@@ -130,16 +139,40 @@ export default defineComponent({
     // });
     // Logger.log(isGameView.value, 'game view');
 
+    let previewCanvas: any;
+
+    const previewSetup = () => {
+      previewCanvas = new fabric.Canvas("previewCanvas");
+      previewCanvas.setWidth(DefaultCanvasDimension.width);
+      previewCanvas.setHeight(DefaultCanvasDimension.height);
+    };
+
+    const hidePreviewModal = async () => {
+      await dispatch("lesson/setShowPreviewCanvas", false, { root: true });
+    };
+
+    watch(
+      previewObjects,
+      (currentValue) => {
+        previewCanvas.remove(...previewCanvas.getObjects());
+        previewCanvas.loadFromJSON(currentValue, () => {
+          const group = previewCanvas.getObjects().find((obj: any) => obj.type === "group");
+          group.selectable = false;
+          group.hoverCursor = "pointer";
+          previewCanvas.renderAll();
+        });
+      },
+      { deep: true },
+    );
+
     const setClassView = async (newView: ClassView) => {
       await dispatch("teacherRoom/setClassView", { classView: newView });
     };
 
     const toggleView = async () => {
       if (isGalleryView.value) {
-        isSidebarCollapsed.value = false;
         await setClassView(ClassView.LESSON_PLAN);
       } else {
-        isSidebarCollapsed.value = true;
         await setClassView(ClassView.GALLERY);
       }
       await dispatch("teacherRoom/setClearBrush", {});
@@ -216,6 +249,10 @@ export default defineComponent({
       // does nothing, we only accept leave room;
     };
 
+    const showChangingLessonUnitModal = () => {
+      changeLessonUnitRef.value?.showModal();
+    };
+
     watch(error, async () => {
       if (error.value) {
         await router.push("/teacher");
@@ -265,12 +302,66 @@ export default defineComponent({
       });
       await dispatch("teacherRoom/setAvatarAllStudent", { studentIds });
     });
+    watch(
+      studentCaptureAll,
+      async (value) => {
+        const studentsReachedMaxImage = value.filter((st) => st.imageCapturedCount === SESSION_MAXIMUM_IMAGE);
+        const onlineStudents = students.value.filter((st) => st.status === InClassStatus.JOINED && st.imageCapturedCount < SESSION_MAXIMUM_IMAGE);
+        const studentsToCaptureLength = onlineStudents.length + studentsReachedMaxImage.length;
+        if (isCaptureAll.value) {
+          if (!value.length || value.length !== studentsToCaptureLength) {
+            return;
+          }
+          const studentsCaptureSuccess = value.filter((status) => status.isUploaded);
+          const studentsCaptureFail = value.filter((status) => !status.isUploaded);
+          if (studentsCaptureSuccess.length === studentsToCaptureLength) {
+            notification.success({
+              message: fmtMsg(CaptureNotification.CaptureSuccessAll),
+            });
+          } else {
+            notification.success({
+              message: fmtMsg(CaptureNotification.CaptureSuccessAmount, {
+                studentsCaptureSuccess: studentsCaptureSuccess.length,
+                studentsToCapture: studentsToCaptureLength,
+              }),
+            });
+          }
+          if (studentsCaptureFail.length) {
+            const studentsName = studentsCaptureFail.map((item) => {
+              return students.value.find((st) => st.id === item.studentId)?.englishName;
+            });
+            notification.error({
+              message: fmtMsg(CaptureNotification.CaptureErrorAmount, { studentsName: studentsName.join(", ") }),
+            });
+          }
+          await dispatch("teacherRoom/setCaptureAll", false);
+          await dispatch("teacherRoom/clearStudentsCaptureDone");
+        } else {
+          if (!value.length) {
+            return;
+          }
+          const studentName = students.value.find((item) => item.id === studentCaptureAll.value[0].studentId)?.englishName;
+          if (studentCaptureAll.value[0].isUploaded) {
+            notification.success({
+              message: fmtMsg(CaptureNotification.CaptureSuccessStudent, { studentName }),
+            });
+          } else {
+            notification.error({
+              message: fmtMsg(CaptureNotification.CaptureErrorStudent, { studentName }),
+            });
+          }
+          await dispatch("teacherRoom/clearStudentsCaptureDone");
+        }
+      },
+      { deep: true },
+    );
 
     provide("isSidebarCollapsed", isSidebarCollapsed);
     const updateUserRoleByView = (payload: UserRole) => {
       dispatch("setUserRoleByView", payload);
     };
     onMounted(() => {
+      previewSetup();
       updateUserRoleByView(UserRole.Teacher);
     });
     onUnmounted(() => {
@@ -314,6 +405,10 @@ export default defineComponent({
       markAsCompleteChanged,
       toggleLessonSidebar,
       showHideLesson,
+      changeLessonUnitRef,
+      showChangingLessonUnitModal,
+      isShowPreviewCanvas,
+      hidePreviewModal,
     };
   },
 });

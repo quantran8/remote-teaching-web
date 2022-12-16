@@ -1,14 +1,14 @@
-import { useStore } from "vuex";
-import { AuthService, RoleName, fmtMsg } from "vue-glcommonui";
-import { LoginInfo } from "vue-glcommonui";
-import { computed, defineComponent, watch } from "vue";
-import { MainLayout } from "vue-glcommonui";
-import { AppHeader, AppFooter } from "../components/layout";
-import { CommonLocale } from "@/locales/localeid";
 import { useDisconnection } from "@/hooks/use-disconnection";
+import { CommonLocale } from "@/locales/localeid";
 import { AppView, UserRole } from "@/store/app/state";
-import { LostNetwork } from "./../locales/localeid";
+import { Paths } from "@/utils/paths";
 import { Spin } from "ant-design-vue";
+import { computed, defineComponent, watch } from "vue";
+import { AuthService, fmtMsg, LoginInfo, MainLayout, RoleName } from "vue-glcommonui";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { AppFooter, AppHeader } from "../components/layout";
+import { LostNetwork } from "./../locales/localeid";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
@@ -18,13 +18,14 @@ export default defineComponent({
     MainLayout,
     AppHeader,
     AppFooter,
-	Spin
+    Spin,
   },
   created() {
     AuthService.localSilentLogin();
   },
   setup() {
     const { getters, dispatch } = useStore();
+    const router = useRouter();
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
@@ -44,7 +45,6 @@ export default defineComponent({
         id: loginInfo.profile.sub,
         name: loginInfo.profile.name,
       });
-      await dispatch("parent/loadChildren");
     };
 
     const onUserSignedIn = async () => {
@@ -52,8 +52,20 @@ export default defineComponent({
       const isTeacher: boolean = getters["auth/isTeacher"];
       const isParent: boolean = getters["auth/isParent"];
       if (isTeacher) await onTeacherSignedIn(loginInfo);
-      if (isParent) await onParentSignedIn(loginInfo);
+      if (isParent) {
+        await onParentSignedIn(loginInfo);
+        checkPolicy("parent");
+      }
       await dispatch("loadContentSignature");
+    };
+
+    const checkPolicy = async (role: "parent" | "teacher"): Promise<void> => {
+      if (role === "parent") {
+        const policyAccepted = getters["parent/acceptPolicy"];
+        if (!policyAccepted && location.pathname && location.pathname.includes("student")) {
+          router.push({ path: Paths.Parent, query: { target: location.pathname } });
+        }
+      }
     };
 
     watch(isSignedIn, async () => {
@@ -87,7 +99,7 @@ export default defineComponent({
     const userRole = computed(() => getters["userRole"]);
     const isTeacher = computed(() => getters["auth/isTeacher"]);
     const isDisconnectedMode = computed<any>(() => teacherDisconnected.value && userRole.value !== UserRole.UnConfirm);
-	const isMaskGrandAccess = computed(() => getters["spin/getMaskGrandAccess"]);
+    const isMaskGrandAccess = computed(() => getters["spin/getMaskGrandAccess"]);
     return {
       siteTitle,
       appView,
@@ -98,7 +110,7 @@ export default defineComponent({
       messageText,
       isDisconnectedMode,
       isTeacher,
-	  isMaskGrandAccess
+      isMaskGrandAccess,
     };
   },
 });

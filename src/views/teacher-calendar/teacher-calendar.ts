@@ -4,7 +4,7 @@ import { PlusCircleOutlined } from "@ant-design/icons-vue";
 import moment, { Moment } from "moment";
 import { useStore } from "vuex";
 import { ClassModelSchedules } from "@/models";
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ScheduleParam } from "@/services";
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import IconWarning from "@/assets/calendar-warning.svg";
@@ -79,6 +79,7 @@ export default defineComponent({
     const schoolText = computed(() => fmtMsg(TeacherCalendarLocale.School));
     const allText = computed(() => fmtMsg(TeacherCalendarLocale.All));
     const backText = computed(() => fmtMsg(TeacherCalendarLocale.Back));
+    const scheduleNewRemoteSessionText = computed(() => fmtMsg(TeacherCalendarLocale.ScheduleNewRemoteSession));
 
     const getClassBySchoolId = async (schoolId: any) => {
       await store.dispatch("teacher/loadAllClassesSchedules", { schoolId: schoolId });
@@ -502,9 +503,17 @@ export default defineComponent({
       if (type == "Create") {
         updateListClassCreateNew(timeLong);
         await getDataModal(date);
-        selectedClassIdModal.value = listClassCreateNew.value[0]?.id;
-        await getGroupsModalByClass(listClassCreateNew.value[0]?.id);
-        selectedGroupIdModal.value = listGroupModal.value[0]?.id;
+        if (listClassCreateNew.value.length > 0 && listClassCreateNew.value.map((c) => c.id).includes(selectedClassId.value)) {
+          selectedClassIdModal.value = selectedClassId.value;
+        } else {
+          selectedClassIdModal.value = listClassCreateNew.value[0]?.id;
+        }
+        await getGroupsModalByClass(selectedClassIdModal.value);
+        if (listGroupModal.value.length > 0 && listGroupModal.value.map((g) => g.id).includes(selectedGroupId.value)) {
+          selectedGroupIdModal.value = selectedGroupId.value;
+        } else {
+          selectedGroupIdModal.value = listGroupModal.value[0]?.id;
+        }
         selectedStartDateModal.value = "00:00";
         selectedEndDateModal.value = "00:00";
         setSelectedStartDateModal();
@@ -773,6 +782,7 @@ export default defineComponent({
       schoolText,
       allText,
       backText,
+      scheduleNewRemoteSessionText,
       onClickBack,
     };
   },
