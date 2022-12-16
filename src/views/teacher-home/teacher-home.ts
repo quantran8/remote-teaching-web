@@ -8,7 +8,7 @@ import { AppView, VCPlatform } from "@/store/app/state";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { Button, Checkbox, Empty, Modal, notification, Row, Select, Spin } from "ant-design-vue";
 import moment from "moment";
-import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 import { fmtMsg, LoginInfo, MatIcon } from "vue-glcommonui";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -38,6 +38,7 @@ export default defineComponent({
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
+    const classesSchedulesAllSchool = computed(() => store.getters["teacher/classesSchedulesAllSchool"]);
     const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const username = computed(() => store.getters["auth/username"]);
     const filteredSchools = ref<ResourceModel[]>(schools.value);
@@ -118,9 +119,13 @@ export default defineComponent({
     };
 
     const onClickCalendar = async () => {
+      console.log("current SchoolId", currentSchoolId.value);
       await router.push(`/teacher-calendars/${currentSchoolId.value}`);
     };
 
+    const onClickHome = async () => {
+      await router.push("/");
+    };
     const getSchools = async () => {
       loading.value = true;
       await store.dispatch("teacher/loadAccessibleSchools", {
@@ -131,6 +136,7 @@ export default defineComponent({
     };
 
     const onSchoolChange = async (schoolId: string) => {
+      console.log("run in onSchoolChange");
       loading.value = true;
       const fp = await fpPromise;
       const result = await fp.get();
@@ -163,7 +169,12 @@ export default defineComponent({
       return false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string, schoolId: string) => {
+      console.log("groupId = ", groupId);
+      await onSchoolChange(schoolId);
+      infoStart.value = { teacherClass, groupId };
+      selectedGroupId.value = groupId;
+
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
@@ -251,14 +262,31 @@ export default defineComponent({
       }
     };
 
+    watch(
+      classesSchedulesAllSchool,
+      () => {
+        console.log("classesSchedulesAllSchool = ", classesSchedulesAllSchool.value);
+      },
+      { deep: true },
+    );
     onMounted(async () => {
       const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
       if (loginInfo && loginInfo.loggedin) {
         await getSchools();
         if (schools.value?.length) {
-          await onSchoolChange(schools.value[0].id);
-          if (schools.value.length === 1) {
-            disabled.value = true;
+          //   await onSchoolChange(schools.value[0].id);
+          //   if (schools.value.length === 1) {
+          //     disabled.value = true;
+          //   }
+          for (const school of schools.value) {
+            console.log("Run api get data");
+            if (classesSchedulesAllSchool.value) {
+              await store.dispatch("teacher/loadAllClassesSchedulesAllSchool", {
+                schoolId: school.id,
+              });
+            }
+
+            console.log("classesSchedulesAllSchool = ", classesSchedulesAllSchool.value);
           }
         }
       }
@@ -267,12 +295,13 @@ export default defineComponent({
     });
 
     onUnmounted(async () => {
+      await store.dispatch("teacher/clearAllClassesSchedulesAllSchool");
       window.removeEventListener("keyup", escapeEvent);
     });
 
     const hasClassesShowUp = () => {
       if (loading.value == false) {
-        return classesSchedules.value.length != 0;
+        return classesSchedulesAllSchool.value.length != 0;
       } else {
         return true;
       }
@@ -280,7 +309,7 @@ export default defineComponent({
 
     const hasClassesShowUpSchedule = () => {
       if (loading.value == false) {
-        return classesSchedules.value.length != 0;
+        return classesSchedulesAllSchool.value.length != 0;
       } else return loading.value != true;
     };
 
@@ -288,6 +317,7 @@ export default defineComponent({
       schools,
       //classes,
       classesSchedules,
+      classesSchedulesAllSchool,
       username,
       onClickClass,
       filterSchools,
@@ -306,6 +336,7 @@ export default defineComponent({
       policy,
       cancelPolicy,
       onClickCalendar,
+      onClickHome,
       policyTitle,
       policySubtitle,
       acceptPolicyText,

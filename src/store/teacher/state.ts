@@ -15,6 +15,7 @@ export interface TeacherState {
   schools: Array<ResourceModel>;
   classes: Array<TeacherClassCalendarModel>;
   classesSchedules: Array<TeacherClassModel>;
+  classesSchedulesAllSchool: Array<Array<TeacherClassModel>>;
   room?: RoomModel;
   acceptPolicy: boolean;
   calendarSchedules: Array<CalendarSchedulesModel>;
@@ -33,6 +34,7 @@ const state: TeacherState = {
   acceptPolicy: true,
   calendarSchedules: [],
   classesSchedules: [],
+  classesSchedulesAllSchool: [],
   classOnline: undefined,
   currentSchoolId: "",
   currentGroupStudents: [],

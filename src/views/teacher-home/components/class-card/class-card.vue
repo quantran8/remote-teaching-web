@@ -1,14 +1,27 @@
 <template>
   <div class="class-holder">
+    <div>
+      <h2>{{ school.name }}</h2>
+    </div>
+    <div>
+      <h3 class="campus">{{ description }}</h3>
+    </div>
     <div class="class">
       <BaseCard class="class__size">
-        <div class="m-10">
+        <div class="m-10 h-100">
           <div class="class__title">
             <h5 class="title">{{ title }}</h5>
-            <span class="description">{{ description }}</span>
+            <div class="class__content">
+              <span class="description mr-10">Unit: {{ unit }}</span>
+              <span class="description">Lesson: {{ lesson }}</span>
+            </div>
           </div>
         </div>
       </BaseCard>
+      <div class="icon-container">
+        <img class="gallery" src="@/assets/images/purple-gallery.png" />
+        <span class="title">Gallery</span>
+      </div>
     </div>
     <div class="class-group">
       <BaseCard :class="item.isHighLighted ? 'class-group__size hightlight' : 'class-group__size'" v-for="item in groups" v-bind:key="item">
@@ -23,7 +36,7 @@
               <Spin spin type="loading" />
             </span>
             <div v-else>
-              <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.groupId)" />
+              <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.groupId, school.id)" />
             </div>
           </div>
         </div>

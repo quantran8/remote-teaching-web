@@ -1,8 +1,9 @@
 import { TeacherHome } from "@/locales/localeid";
 import { GroupModelSchedules } from "@/models/group.model";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { ResourceModel } from "@/models/resource.model";
 import { Spin } from "ant-design-vue";
 import moment from "moment";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { fmtMsg } from "vue-glcommonui";
 
 export default defineComponent({
@@ -34,6 +35,18 @@ export default defineComponent({
     loadingStart: {
       type: Boolean,
       default: false,
+    },
+    school: {
+      type: Object as () => ResourceModel,
+      required: true,
+    },
+    unit: {
+      type: Number,
+      required: true,
+    },
+    lesson: {
+      type: Number,
+      required: true,
     },
   },
   components: {
@@ -128,9 +141,9 @@ export default defineComponent({
       }
     });
 
-    const clickToAccess = (groupId: string) => {
+    const clickToAccess = (groupId: string, schoolId: string) => {
       clickedGroup.value = groupId;
-      emit("click-to-access", groupId);
+      emit("click-to-access", groupId, schoolId);
     };
 
     return { groups, clickToAccess, clickedGroup, groupText, nextText };

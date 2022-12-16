@@ -22,6 +22,11 @@ const actions: ActionTree<TeacherState, any> = {
       // process with err
     }
   },
+
+  async loadAllClassesSchedulesAllSchool({ commit, dispatch }: ActionContext<TeacherState, any>, payload: { schoolId: string }) {
+    const response = await TeacherService.getAllClassesSchedule(payload.schoolId);
+    commit("setClassesSchedulesAllSchool", response);
+  },
   async loadAllClassesSchedules(
     { commit, dispatch }: ActionContext<TeacherState, any>,
     payload: { schoolId: string; browserFingerPrinting: string },
@@ -46,6 +51,9 @@ const actions: ActionTree<TeacherState, any> = {
   },
   async clearSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
     commit("clearCalendarSchedule");
+  },
+  async clearAllClassesSchedulesAllSchool({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
+    commit("clearAllClassesSchedulesAllSchool");
   },
   async loadSchedules(
     { commit, state }: ActionContext<TeacherState, any>,
