@@ -80,7 +80,7 @@
 	"teacher_class_gallery.disable_all": "Disable All",
 	"teacher_class_gallery.show_all": "Show All",
 	"teacher_class_gallery.hide_all": "Hide All",
-	"teacher_home.welcome": "환영합니다,",
+	"teacher_home.welcome": "환영합니다",
 	"teacher_home.schedule": "일정표",
 	"teacher_home.cancel": "닫기",
 	"teacher_home.submit": "제출",
@@ -161,7 +161,7 @@
 	"resources.menu.parentportal": "학부모 사이트",
 	"teacher_class_lesson_plan.no_data": "No data",
 	"teacher_class.for_teacher_use_only": "*This slide is for teachers and not visible to students.",
-	"device_tester.check_speaker": "Check speaker",
+	"device_tester.check_speaker": "스피커 장치",
 	"change_lesson_unit.set_lesson_and_unit": "Set Lesson and Unit",
 	"change_lesson_unit.mark_current_lesson_complete_for_class": "Mark current lesson complete for class",
 	"change_lesson_unit.ok": "Ok",
@@ -195,6 +195,6 @@
 	"device_tester.message_warning_speaker": "Unable to access your speaker, please check system settings or grant permission and reload page.",
 	"writer_review.no_class_or_group": "This school don't have any class or group",
 	"writer_review.no_student": "This group don't have any student",
-	"help.menu.contact":"Contact",
-	"help.menu.documentation":"Documentation"
+	"help.menu.contact": "문의하기",
+	"help.menu.documentation": "온라인 매뉴얼"
 }
