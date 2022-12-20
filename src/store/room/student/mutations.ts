@@ -241,11 +241,11 @@ const mutations: MutationTree<StudentRoomState> = {
       const index = state.laserPath.lines.findIndex((item) => item.id === payload.data.id);
       state.laserPath.isDone = payload.isDone;
       if (!state.laserPath.lines.length || index < 0) {
-        state.laserPath.lines.push({ ...payload.data, points: [payload.data.points] });
+        state.laserPath.lines.push({ ...payload.data, points: [...payload.data.pointsSkipped, payload.data.points] });
       } else if (index >= 0) {
         state.laserPath.lines[index] = {
           ...state.laserPath.lines[index],
-          points: [...state.laserPath.lines[index].points, payload.data.points],
+          points: [...state.laserPath.lines[index].points, ...payload.data.pointsSkipped, payload.data.points],
         };
       }
     }
