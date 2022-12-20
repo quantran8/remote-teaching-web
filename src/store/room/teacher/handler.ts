@@ -262,7 +262,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
       } else {
         await commit("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await commit("lesson/endCurrentContent", {}, { root: true });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected }, { root: true });
+        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected, skipToSetCurrentExposureItemMedia: true }, { root: true });
         await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await dispatch(
           "teacherRoom/toggleAnnotation",
