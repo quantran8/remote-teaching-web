@@ -28,7 +28,7 @@ export enum Cursor {
   Default = "default",
   Text = "text",
 }
-const DIFF_BETWEEN_POINT = 4;
+const DIFF_BETWEEN_POINT = 6;
 
 export default defineComponent({
   props: {
@@ -99,6 +99,7 @@ export default defineComponent({
     const zoomPercentage = ref(100);
     const prevLineId = ref("");
     const diff = ref(0);
+    const pointsSkipped = ref<Array<Pointer>>([]);
 
     const {
       createTextBox,
@@ -450,6 +451,11 @@ export default defineComponent({
       image.src = props.image ? props.image.url : {};
       return image.src;
     });
+    const handlePointsSkipped = (event: any) => {
+      if (isDrawing.value && event.pointer) {
+        pointsSkipped.value.push({ x: Math.floor(event.pointer.x), y: Math.floor(event.pointer.y) });
+      }
+    };
 
     const cursorPosition = async (e: any, isDone = false) => {
       if (isTeacherUseOnly.value) {
@@ -490,6 +496,7 @@ export default defineComponent({
                     points: _point,
                     strokeColor: strokeColor.value,
                     strokeWidth: strokeWidth.value,
+                    pointsSkipped: pointsSkipped.value,
                   },
                   isDone,
                 });
@@ -501,6 +508,7 @@ export default defineComponent({
                   strokeWidth: strokeWidth.value,
                   lineIdRelated: prevLineId.value,
                   isDone,
+                  pointsSkipped: pointsSkipped.value,
                 });
               }
 
@@ -515,6 +523,7 @@ export default defineComponent({
                     points: _point,
                     strokeColor: strokeColor.value,
                     strokeWidth: strokeWidth.value,
+                    pointsSkipped: pointsSkipped.value,
                   },
                   isDone,
                 });
@@ -526,6 +535,7 @@ export default defineComponent({
                   strokeWidth: strokeWidth.value,
                   lineIdRelated: "",
                   isDone,
+                  pointsSkipped: pointsSkipped.value,
                 });
               }
             }
@@ -638,9 +648,11 @@ export default defineComponent({
       //handle mouse:move
       canvas.on("mouse:move", (event: any) => {
         diff.value += 1;
+        handlePointsSkipped(event);
         cursorPosition(event);
         if (diff.value === DIFF_BETWEEN_POINT) {
           diff.value = 0;
+          pointsSkipped.value = [];
         }
         switch (toolSelected.value) {
           //handle for TextBox
@@ -750,6 +762,9 @@ export default defineComponent({
       });
     };
     const clickedTool = async (tool: string) => {
+      if (pointsSkipped.value.length) {
+        pointsSkipped.value = [];
+      }
       if (tool === Tools.StrokeColor) {
         objectCanvasProcess();
         return;

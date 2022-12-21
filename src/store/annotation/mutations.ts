@@ -199,7 +199,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
       }
       state.pencilPath.push({
         ...payload,
-        points: [payload.points],
+        points: [...payload.pointsSkipped, payload.points],
         strokeColor: payload.strokeColor,
         strokeWidth: payload.strokeWidth,
         isDone: payload.isDone,
@@ -209,7 +209,7 @@ const mutations: AnnotationMutation<AnnotationState> = {
     } else if (index >= 0) {
       state.pencilPath[index] = {
         ...state.pencilPath[index],
-        points: [...state.pencilPath[index].points, payload.points],
+        points: [...state.pencilPath[index].points, ...payload.pointsSkipped, payload.points],
         isDone: payload.isDone,
       };
     }
