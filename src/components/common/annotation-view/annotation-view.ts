@@ -218,7 +218,7 @@ export default defineComponent({
     const firstTimeVisit = ref(false);
     const styles = ref(DEFAULT_STYLE);
 
-    const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated } = useFabricObject();
+    const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated, FontLoader } = useFabricObject();
     watch(currentExposureItemMedia, async (currentItem, prevItem) => {
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
@@ -552,7 +552,7 @@ export default defineComponent({
       onObjectCreated(canvas);
     };
     const canvasRef = ref(null);
-    const boardSetup = () => {
+    const boardSetup = async () => {
       if (!canvasRef.value) return;
       const { width, height } = DefaultCanvasDimension;
       canvas = new fabric.Canvas(canvasRef.value, {
@@ -564,6 +564,7 @@ export default defineComponent({
         obj.selectable = false;
         obj.perPixelTargetFind = true;
       });
+      await FontLoader.load();
       listenToCanvasEvents();
       resizeCanvas();
       processCanvasWhiteboard();

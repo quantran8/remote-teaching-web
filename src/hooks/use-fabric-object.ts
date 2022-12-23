@@ -248,7 +248,9 @@ export const useFabricObject = () => {
         if (emptyTextBox) {
           canvas.remove(emptyTextBox);
         }
-        canvas.add(new fabric.Textbox("", fabricObject));
+        FontLoader.load().then(() => {
+          canvas.add(new fabric.Textbox("", fabricObject));
+        });
         break;
       }
       default:
