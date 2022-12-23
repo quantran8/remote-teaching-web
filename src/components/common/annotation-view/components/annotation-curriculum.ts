@@ -1,12 +1,13 @@
+import { TargetsVisibleList } from "@/store/lesson/state";
 import { DefaultCanvasDimension, getRadius, ratioValue, setStrokeColor } from "@/utils/utils";
 import { fabric } from "fabric";
-import { computed } from "vue";
+import { computed, ComputedRef } from "vue";
 import { useStore } from "vuex";
 
 export const annotationCurriculumStudent = () => {
   const { dispatch, getters } = useStore();
   const student = computed(() => getters["studentRoom/student"]);
-  const targetsList = computed(() => getters["lesson/targetsAnnotationList"]);
+  const targetsList: ComputedRef<TargetsVisibleList[]> = computed(() => getters["lesson/targetsAnnotationList"]);
   const isImgProcessing = computed(() => getters["annotation/isImgProcessing"]);
   const studentOneAndOneId = computed(() => getters["studentRoom/getStudentModeOneId"]);
   const isPaletteVisible = computed(
@@ -51,7 +52,7 @@ export const annotationCurriculumStudent = () => {
       eventStudentClick(event, tagObject, canvas, item, group);
       eventTeacherClick(event, tagObject, canvas, item, group);
     } else if (!canvas.getObjects().some((obj: any) => obj.tag === tagObject.tag)) {
-      const target = targetsList.value.find((a: any) => a.tag === tagObject.tag);
+      const target = targetsList.value.find((a) => a.tag === tagObject.tag);
       if (event === "show-all-targets" || event === "show-all-targets-first-time" || (target && target.visible)) {
         setStrokeColor(canvas, tagObject, item.color, group);
       } else if (event === "hide-all-targets") {
@@ -246,6 +247,11 @@ export const annotationCurriculumStudent = () => {
           Group.addWithUpdate(item);
         });
       }
+    }
+    if (targetsList.value?.length > 0) {
+      targetsList.value.forEach((obj) => {
+        processAnnotationLesson(canvas, propImage, containerRef, isShowWhiteBoard, false, obj, Group);
+      });
     }
     if (!isImgProcessing.value) {
       if (top !== Group.top) {
