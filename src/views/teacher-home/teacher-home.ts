@@ -1,20 +1,18 @@
-import { TeacherHome } from "./../../locales/localeid";
-import { TeacherClassModel, UnitAndLesson } from "@/models";
+import { DeviceTester } from "@/components/common";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
+import { ClassRoomStatus, TeacherClassModel, UnitAndLesson } from "@/models";
+import { JoinSessionModel } from "@/models/join-session.model";
+import { ResourceModel } from "@/models/resource.model";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
+import { AppView, VCPlatform } from "@/store/app/state";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Button, Checkbox, Empty, Modal, notification, Row, Select, Spin } from "ant-design-vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { fmtMsg, LoginInfo, MatIcon } from "vue-glcommonui";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { TeacherHome } from "./../../locales/localeid";
 import ClassCard from "./components/class-card/class-card.vue";
-import { ResourceModel } from "@/models/resource.model";
-import { Select, Spin, Modal, Checkbox, Button, Row, Empty, notification } from "ant-design-vue";
-import { fmtMsg, LoginInfo } from "vue-glcommonui";
-import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AppView, VCPlatform } from "@/store/app/state";
-import { JoinSessionModel } from "@/models/join-session.model";
-import { DeviceTester } from "@/components/common";
-import { ClassRoomStatus } from "@/models";
-import { MatIcon } from "vue-glcommonui";
 import { getListUnitByClassAndGroup } from "./lesson-helper";
 
 const fpPromise = FingerprintJS.load();
@@ -156,21 +154,29 @@ export default defineComponent({
 
     const joinTheCurrentSession = async (currentGroupId: string) => {
       if (classOnline.value && currentGroupId == classOnline.value.groupId) {
-        await router.push("/class/" + infoStart.value?.teacherClass.classId);
+        await router.push("/class/" + classOnline.value.classId);
         return true;
       }
       return false;
     };
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      infoStart.value = { teacherClass, groupId };
-      selectedGroupId.value = groupId;
-
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
-        await getListLessonByUnit(teacherClass, groupId);
-        // startPopupVisible.value = true;
-        deviceTesterRef.value?.showModal();
+        const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
+        const groupName = teacherClass.groups.find((group) => group.groupId === groupId)?.groupName;
+        router.push({
+          path: "/class-setup/teacher",
+          query: {
+            schoolName,
+            campusName: teacherClass.campusName,
+            classId: teacherClass.classId,
+            className: teacherClass.className,
+            groupId: groupId,
+            groupName,
+            studentId: "",
+          },
+        });
       }
     };
 

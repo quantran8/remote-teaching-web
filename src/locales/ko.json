@@ -196,5 +196,10 @@
 	"writer_review.no_class_or_group": "This school don't have any class or group",
 	"writer_review.no_student": "This group don't have any student",
 	"help.menu.contact": "문의하기",
-	"help.menu.documentation": "온라인 매뉴얼"
+	"help.menu.documentation": "온라인 매뉴얼",
+	"class_setup.members": "Members",
+	"class_setup.active_students": "Active students",
+	"class_setup.inactive_students": "Inactive",
+	"class_setup.remote_class_set_up": "Remote class set-up",
+	"class_setup.start_session": "Start Session"
 }

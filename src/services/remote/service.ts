@@ -1,9 +1,9 @@
-import { GLServiceBase } from "vue-glcommonui";
-import { RemoteTeachingServiceInterface } from "@/services";
-import { GenerateTokenResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 import { JoinSessionModel } from "@/models/join-session.model";
-import { store } from "@/store";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
+import { RemoteTeachingServiceInterface } from "@/services";
+import { store } from "@/store";
+import { GLServiceBase } from "vue-glcommonui";
+import { GenerateTokenResponse, NextSessionResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
   serviceRoute = { prefix: "remote/v1" };
 
@@ -55,7 +55,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
     return this.get(`lesson-plan/sequence/class/${classId}/group/${groupId}/unit/${unit}`);
   }
 
-  getStudentNextSession(listIds: string[]): Promise<any> {
+  getStudentNextSession(listIds: string[]): Promise<Array<NextSessionResponse>> {
     let studentId = "";
     listIds.map((id: string, index: number) => {
       if (index != 0) {
