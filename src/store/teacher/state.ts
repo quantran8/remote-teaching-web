@@ -15,7 +15,7 @@ export interface TeacherState {
   schools: Array<ResourceModel>;
   classes: Array<TeacherClassCalendarModel>;
   classesSchedules: Array<TeacherClassModel>;
-  classesSchedulesAllSchool: Array<Array<TeacherClassModel>>;
+  classesSchedulesAllSchool: Array<TeacherClassModel>;
   room?: RoomModel;
   acceptPolicy: boolean;
   calendarSchedules: Array<CalendarSchedulesModel>;

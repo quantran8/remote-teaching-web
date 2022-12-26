@@ -3,7 +3,7 @@
 }
 
 .m-20 {
-	margin: 20px;
+  margin: 20px;
 }
 .mr-10 {
   margin-right: 10px;
@@ -24,31 +24,31 @@
 
 .icon-container {
   display: flex;
-width: 120px;
+  width: 120px;
   align-items: center;
   cursor: pointer;
-background-color: #9f76cd;
-	color: #fff;
-	padding: 10px;
-	justify-content: center;
+  background-color: #9f76cd;
+  color: #fff;
+  padding: 10px;
+  justify-content: center;
 }
 
 .calendar-container {
-	margin: 0 5px;
+  margin: 0 5px;
 }
-.gallery-container{
+.gallery-container {
   cursor: not-allowed;
 }
 .calendar {
   width: 30px;
   height: 30px;
-margin-right: 10px;
+  margin-right: 10px;
 }
 
 .teacher-title {
   display: flex;
-justify-content: flex-start;
-	flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 
   &__indicator-out {
     cursor: pointer;
@@ -70,6 +70,9 @@ justify-content: flex-start;
     border-radius: 50%;
     display: inline-block;
   }
+  &__wrapper{
+	margin: 20px
+  }
 }
 .teacher-page {
   display: flex;
@@ -77,8 +80,8 @@ justify-content: flex-start;
   justify-content: center;
   max-width: 100%;
   position: relative;
-	//   margin: auto;
-	padding: 16px 60px;
+  //   margin: auto;
+  padding: 16px 60px;
 
   &__school-select {
     margin-bottom: 20px;
@@ -94,10 +97,10 @@ justify-content: flex-start;
   }
 }
 .menu-container {
-	display: flex;
-	position: absolute;
-	right: 0;
-	top: 0;
+  display: flex;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 .card-margin {
   margin: 20px;
@@ -109,7 +112,7 @@ justify-content: flex-start;
   flex-direction: column;
 }
 .date-time {
-	font-size: 20px;
+  font-size: 20px;
 }
 .loading {
   display: flex;
@@ -159,4 +162,16 @@ justify-content: flex-start;
   100% {
     opacity: 0.5;
   }
+}
+
+.school-name {
+  margin-left: 20px;
+}
+
+.campus {
+  margin-left: 40px;
+}
+
+.welcome-text{
+  font-size: 44px;
 }

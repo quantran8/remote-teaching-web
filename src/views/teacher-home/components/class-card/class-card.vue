@@ -1,11 +1,5 @@
 <template>
   <div class="class-holder">
-    <div>
-      <h2>{{ school.name }}</h2>
-    </div>
-    <div>
-      <h3 class="campus">{{ description }}</h3>
-    </div>
     <div class="class">
       <BaseCard class="class__size">
         <div class="m-10 h-100">
@@ -36,7 +30,7 @@
               <Spin spin type="loading" />
             </span>
             <div v-else>
-              <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.groupId, school.id)" />
+              <img class="class-group__play-icon" src="@/assets/images/play.png" @click="clickToAccess(item.groupId, schoolId)" />
             </div>
           </div>
         </div>

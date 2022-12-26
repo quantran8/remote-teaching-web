@@ -10,7 +10,7 @@ const getters: GetterTree<TeacherState, any> = {
   classesSchedules(state: TeacherState): Array<ClassModelSchedules> {
     return state.classesSchedules;
   },
-  classesSchedulesAllSchool(state: TeacherState): Array<Array<ClassModelSchedules>> {
+  classesSchedulesAllSchool(state: TeacherState): Array<ClassModelSchedules> {
     return state.classesSchedulesAllSchool;
   },
   schools(state: TeacherState): Array<ResourceModel> {

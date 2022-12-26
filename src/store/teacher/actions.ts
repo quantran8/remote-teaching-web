@@ -24,7 +24,7 @@ const actions: ActionTree<TeacherState, any> = {
   },
 
   async loadAllClassesSchedulesAllSchool({ commit, dispatch }: ActionContext<TeacherState, any>, payload: { schoolId: string }) {
-    const response = await TeacherService.getAllClassesSchedule(payload.schoolId);
+    const response = await TeacherService.getAllClassesOfAllSchools();
     commit("setClassesSchedulesAllSchool", response);
   },
   async loadAllClassesSchedules(

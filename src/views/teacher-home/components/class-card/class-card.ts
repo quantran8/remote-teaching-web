@@ -1,6 +1,5 @@
 import { TeacherHome } from "@/locales/localeid";
 import { GroupModelSchedules } from "@/models/group.model";
-import { ResourceModel } from "@/models/resource.model";
 import { Spin } from "ant-design-vue";
 import moment from "moment";
 import { computed, defineComponent, onMounted, ref } from "vue";
@@ -36,8 +35,12 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    school: {
-      type: Object as () => ResourceModel,
+    schoolId: {
+      type: String,
+      required: true,
+    },
+    schoolName: {
+      type: String,
       required: true,
     },
     unit: {

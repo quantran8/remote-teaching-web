@@ -8,7 +8,7 @@ import { AppView, VCPlatform } from "@/store/app/state";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { Button, Checkbox, Empty, Modal, notification, Row, Select, Spin } from "ant-design-vue";
 import moment from "moment";
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { fmtMsg, LoginInfo, MatIcon } from "vue-glcommonui";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -38,10 +38,8 @@ export default defineComponent({
     const schools = computed<ResourceModel[]>(() => store.getters["teacher/schools"]);
     //const classes = computed(() => store.getters["teacher/classes"]);
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
-    const classesSchedulesAllSchool = computed(() => store.getters["teacher/classesSchedulesAllSchool"]);
     const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const username = computed(() => store.getters["auth/username"]);
-    const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const popUpLoading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
@@ -76,6 +74,22 @@ export default defineComponent({
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
     // const moment = require("moment");
     const now = moment().format("dddd, MMM Do, YYYY");
+
+    const groupBy = (xs: any, key: any) => {
+      return xs.reduce(function (rv: any, x: any) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+      }, {});
+    };
+    const classesSchedulesAllSchool = computed(() => {
+      const inputArray = store.getters["teacher/classesSchedulesAllSchool"];
+      const newArray = groupBy(inputArray, "schoolId");
+      const result: any = [];
+      for (const key in newArray) {
+        result.push(newArray[key]);
+      }
+      return result;
+    });
 
     const startClass = async (
       teacherClass: TeacherClassModel,
@@ -119,7 +133,6 @@ export default defineComponent({
     };
 
     const onClickCalendar = async () => {
-      console.log("current SchoolId", currentSchoolId.value);
       await router.push(`/teacher-calendars/${currentSchoolId.value}`);
     };
 
@@ -131,12 +144,10 @@ export default defineComponent({
       await store.dispatch("teacher/loadAccessibleSchools", {
         disabled: false,
       } as AccessibleSchoolQueryParam);
-      filteredSchools.value = schools.value;
       loading.value = false;
     };
 
     const onSchoolChange = async (schoolId: string) => {
-      console.log("run in onSchoolChange");
       loading.value = true;
       const fp = await fpPromise;
       const result = await fp.get();
@@ -146,7 +157,6 @@ export default defineComponent({
           schoolId: schoolId,
           browserFingerPrinting: visitorId,
         });
-        filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
         await store.dispatch("teacher/setCurrentSchool", schoolId);
       } catch (err) {
@@ -170,11 +180,20 @@ export default defineComponent({
     };
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string, schoolId: string) => {
-      console.log("groupId = ", groupId);
       await onSchoolChange(schoolId);
       infoStart.value = { teacherClass, groupId };
       selectedGroupId.value = groupId;
+      messageStartClass.value = "";
+      if (!(await joinTheCurrentSession(groupId))) {
+        await getListLessonByUnit(teacherClass, groupId);
+        // startPopupVisible.value = true;
+        deviceTesterRef.value?.showModal();
+      }
+    };
 
+    const rejoinClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      infoStart.value = { teacherClass, groupId };
+      selectedGroupId.value = groupId;
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
@@ -237,8 +256,6 @@ export default defineComponent({
       startPopupVisible.value = false;
     };
 
-    const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
@@ -262,32 +279,13 @@ export default defineComponent({
       }
     };
 
-    watch(
-      classesSchedulesAllSchool,
-      () => {
-        console.log("classesSchedulesAllSchool = ", classesSchedulesAllSchool.value);
-      },
-      { deep: true },
-    );
     onMounted(async () => {
       const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
       if (loginInfo && loginInfo.loggedin) {
         await getSchools();
         if (schools.value?.length) {
-          //   await onSchoolChange(schools.value[0].id);
-          //   if (schools.value.length === 1) {
-          //     disabled.value = true;
-          //   }
-          for (const school of schools.value) {
-            console.log("Run api get data");
-            if (classesSchedulesAllSchool.value) {
-              await store.dispatch("teacher/loadAllClassesSchedulesAllSchool", {
-                schoolId: school.id,
-              });
-            }
-
-            console.log("classesSchedulesAllSchool = ", classesSchedulesAllSchool.value);
-          }
+          await onSchoolChange(schools.value[0].id);
+          await store.dispatch("teacher/loadAllClassesSchedulesAllSchool");
         }
       }
       await store.dispatch("teacher/clearSchedules");
@@ -320,11 +318,10 @@ export default defineComponent({
       classesSchedulesAllSchool,
       username,
       onClickClass,
-      filterSchools,
+      rejoinClass,
       onSchoolChange,
       loading,
       disabled,
-      filteredSchools,
       visible,
       submitPolicy,
       agreePolicy,

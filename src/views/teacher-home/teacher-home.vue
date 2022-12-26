@@ -1,27 +1,14 @@
 <template>
   <div class="teacher-page" v-if="policy">
-    <div class="teacher-title m-20">
-      <h1>{{ welcomeText }} {{ username }}</h1>
+    <div class="teacher-title__wrapper">
+      <div class="teacher-title">
+        <h1 class="welcome-text">{{ welcomeText }} {{ username }}</h1>
+        <span class="teacher-title__indicator-out" v-if="classOnline" @click="rejoinClass(classOnline, classOnline.groupId)">
+          <span class="teacher-title__indicator-in"></span>
+        </span>
+      </div>
       <span class="date-time">{{ now }}</span>
-      <span class="teacher-title__indicator-out" v-if="classOnline" @click="onClickClass(classOnline, classOnline.groupId)">
-        <span class="teacher-title__indicator-in"></span>
-      </span>
     </div>
-    <!-- <div class="teacher-page__school-select">
-	      <Select
-	        placeholder="School"
-	        showSearch
-	        optionLabelProp="children"
-	        :disabled="disabled"
-	        :loading="loading"
-	        :value="schools[0]?.id"
-	        :filterOption="filterSchools"
-	        @change="onSchoolChange"
-	      >
-	        <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
-	      </Select>
-	    </div> -->
-    <!-- <hr class="mr-10 ml-10" /> -->
     <div class="menu-container">
       <div class="icon-container" v-show="hasClassesShowUpSchedule()" @click="onClickHome">
         <img class="calendar" src="@/assets/images/teacher-pointing-blackboard.png" />
@@ -37,17 +24,21 @@
       </div>
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
-      <!-- <div class="loading" v-show="loadingInfo">
-	        <Spin class="ant-custom-home"></Spin>
-	      </div> -->
+      <div class="loading" v-show="loadingInfo">
+        <Spin class="ant-custom-home"></Spin>
+      </div>
       <div v-if="classesSchedulesAllSchool">
-		<div class="loading" v-if="loading">
-            <Spin tip="Loading..." class="ant-custom-home"></Spin>
+        <div class="loading" v-if="loading">
+          <Spin tip="Loading..." class="ant-custom-home"></Spin>
+        </div>
+        <div :key="item[0].classId" v-for="item in classesSchedulesAllSchool">
+          <div class="school-name">
+            <h2>{{ item[0].schoolName }}</h2>
           </div>
-        <div :key="item.classId" v-for="(item, index) in classesSchedulesAllSchool">
+          <h3 class="campus">{{ item[0].campusName }}</h3>
           <ClassCard
-            class="card-margin"
             v-for="cl in item"
+            class="card-margin"
             :key="cl.classId"
             :id="cl.classId"
             :title="cl.className"
@@ -55,8 +46,9 @@
             :remoteClassGroups="cl.groups"
             :active="cl.isActive"
             :isTeacher="cl.isTeacher"
+            :schoolName="cl.schoolName"
+            :schoolId="cl.schoolId"
             :loadingStart="loadingStartClass"
-            :school="schools[index]"
             :unit="cl.unit"
             :lesson="cl.lessonNumber"
             @click-to-access="(groupId, schoolId) => onClickClass(cl, groupId, schoolId)"
