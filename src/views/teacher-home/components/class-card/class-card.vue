@@ -6,15 +6,15 @@
           <div class="class__title">
             <h5 class="title">{{ title }}</h5>
             <div class="class__content">
-              <span class="description mr-10">Unit: {{ unit }}</span>
-              <span class="description">Lesson: {{ lesson }}</span>
+              <span class="description mr-10">{{ unitText }} {{ unit }}</span>
+              <span class="description">{{ lessonText }} {{ lesson }}</span>
             </div>
           </div>
         </div>
       </BaseCard>
       <div class="icon-container">
         <img class="gallery" src="@/assets/images/purple-gallery.png" />
-        <span class="title">Gallery</span>
+        <span class="title">{{ galleryText }}</span>
       </div>
     </div>
     <div class="class-group">
@@ -22,7 +22,7 @@
         <div class="group-content">
           <div class="m-10">
             <h2 class="title">{{ groupText }} - {{ item.groupName }}</h2>
-            <span class="description d-block">Members: {{ item.studentCount }}</span>
+            <span class="description d-block">{{ membersText }}{{ item.studentCount }}</span>
             <span class="description">{{ nextText }} {{ item.next }}</span>
           </div>
           <div class="icon-view" v-show="item.isCurrentDay && item.startClass">

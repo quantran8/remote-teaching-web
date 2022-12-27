@@ -2,7 +2,7 @@
   <div class="teacher-page" v-if="policy">
     <div class="teacher-title__wrapper">
       <div class="teacher-title">
-        <h1 class="welcome-text">{{ welcomeText }} {{ username }}</h1>
+        <h1 class="teacher-title__welcome">{{ welcomeText }} {{ username }}</h1>
         <span class="teacher-title__indicator-out" v-if="classOnline" @click="rejoinClass(classOnline, classOnline.groupId)">
           <span class="teacher-title__indicator-in"></span>
         </span>
@@ -12,7 +12,7 @@
     <div class="menu-container">
       <div class="icon-container" v-show="hasClassesShowUpSchedule()" @click="onClickHome">
         <img class="calendar" src="@/assets/images/teacher-pointing-blackboard.png" />
-        <span>Home</span>
+        <span>{{ homeText }}</span>
       </div>
       <div class="icon-container calendar-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
         <img class="calendar" src="@/assets/images/calendar11.png" />
@@ -20,7 +20,7 @@
       </div>
       <div class="icon-container gallery-container" v-show="hasClassesShowUpSchedule()">
         <img class="calendar" src="@/assets/images/gallery.png" />
-        <span>Gallery</span>
+        <span>{{ galleryText }}</span>
       </div>
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
@@ -44,14 +44,13 @@
             :title="cl.className"
             :description="cl.campusName"
             :remoteClassGroups="cl.groups"
-            :active="cl.isActive"
             :isTeacher="cl.isTeacher"
             :schoolName="cl.schoolName"
             :schoolId="cl.schoolId"
             :loadingStart="loadingStartClass"
             :unit="cl.unit"
             :lesson="cl.lessonNumber"
-            @click-to-access="(groupId, schoolId) => onClickClass(cl, groupId, schoolId)"
+            @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
           />
         </div>
       </div>

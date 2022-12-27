@@ -1,6 +1,6 @@
 import { DeviceTester } from "@/components/common";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
-import { ClassRoomStatus, TeacherClassModel, UnitAndLesson } from "@/models";
+import { ClassModelSchedules, ClassRoomStatus, TeacherClassModel, UnitAndLesson } from "@/models";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { ResourceModel } from "@/models/resource.model";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
@@ -62,6 +62,8 @@ export default defineComponent({
     const scheduleText = computed(() => fmtMsg(TeacherHome.Schedule));
     const cancelText = computed(() => fmtMsg(TeacherHome.Cancel));
     const submitText = computed(() => fmtMsg(TeacherHome.Submit));
+    const homeText = computed(() => fmtMsg(TeacherHome.Home));
+    const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
@@ -75,14 +77,17 @@ export default defineComponent({
     // const moment = require("moment");
     const now = moment().format("dddd, MMM Do, YYYY");
 
-    const groupBy = (xs: any, key: any) => {
-      return xs.reduce(function (rv: any, x: any) {
-        (rv[x[key]] = rv[x[key]] || []).push(x);
-        return rv;
-      }, {});
+    const groupBy = (xs: Array<ClassModelSchedules>, key: string) => {
+      if (xs.length > 0) {
+        return xs.reduce(function (rv: any, x: any) {
+          (rv[x[key]] = rv[x[key]] || []).push(x);
+          return rv;
+        }, {});
+      }
+      return [];
     };
-    const classesSchedulesAllSchool = computed(() => {
-      const inputArray = store.getters["teacher/classesSchedulesAllSchool"];
+    const classesSchedulesAllSchool = computed<Array<Array<ClassModelSchedules>>>(() => {
+      const inputArray: Array<ClassModelSchedules> = store.getters["teacher/classesSchedulesAllSchool"];
       const newArray = groupBy(inputArray, "schoolId");
       const result: any = [];
       for (const key in newArray) {
@@ -357,6 +362,8 @@ export default defineComponent({
       deviceTesterRef,
       welcomeText,
       scheduleText,
+      homeText,
+      galleryText,
       cancelText,
       submitText,
       currentSchool,

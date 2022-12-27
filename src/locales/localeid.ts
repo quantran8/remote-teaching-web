@@ -225,6 +225,8 @@ export class TeacherHome {
   static Submit = "teacher_home.submit";
   static Group = "teacher_home.group";
   static Next = "teacher_home.next";
+  static Home = "teacher_home.home";
+  static Gallery = "teacher_home.gallery";
 }
 
 export class TeacherClass {
@@ -320,4 +322,10 @@ export class ClassSetUp {
   static ActiveStudents = "class_setup.active_students";
   static InActiveStudents = "class_setup.inactive_students";
   static RemoteClassSetUp = "class_setup.remote_class_set_up";
+}
+
+export class ClassCard {
+  static Unit = "class_card.unit";
+  static Lesson = "class_card.lesson";
+  static Members = "class_card.members";
 }

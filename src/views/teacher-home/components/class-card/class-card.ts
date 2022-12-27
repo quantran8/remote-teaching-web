@@ -1,4 +1,4 @@
-import { TeacherHome } from "@/locales/localeid";
+import { ClassCard, TeacherHome } from "@/locales/localeid";
 import { GroupModelSchedules } from "@/models/group.model";
 import { Spin } from "ant-design-vue";
 import moment from "moment";
@@ -61,6 +61,10 @@ export default defineComponent({
     const clickedGroup = ref<string>("");
     const groupText = computed(() => fmtMsg(TeacherHome.Group));
     const nextText = computed(() => fmtMsg(TeacherHome.Next));
+    const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
+    const unitText = computed(() => fmtMsg(ClassCard.Unit));
+    const lessonText = computed(() => fmtMsg(ClassCard.Lesson));
+    const membersText = computed(() => fmtMsg(ClassCard.Members));
 
     const validatedGroupHighlighted = () => {
       let min = 999999;
@@ -149,6 +153,6 @@ export default defineComponent({
       emit("click-to-access", groupId, schoolId);
     };
 
-    return { groups, clickToAccess, clickedGroup, groupText, nextText };
+    return { groups, clickToAccess, clickedGroup, groupText, nextText, galleryText, unitText, lessonText, membersText };
   },
 });

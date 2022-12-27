@@ -34,6 +34,7 @@ export interface ClassModelSchedules {
   groups: GroupModelSchedules[];
   lessonNumber: number;
   unit: number;
+  schoolName: string;
 }
 
 export interface UnitAndLesson {

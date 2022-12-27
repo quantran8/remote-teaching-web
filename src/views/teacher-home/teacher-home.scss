@@ -73,6 +73,9 @@
   &__wrapper{
 	margin: 20px
   }
+  &__welcome{
+	font-size: 44px;
+  }
 }
 .teacher-page {
   display: flex;
@@ -170,8 +173,4 @@
 
 .campus {
   margin-left: 40px;
-}
-
-.welcome-text{
-  font-size: 44px;
 }
