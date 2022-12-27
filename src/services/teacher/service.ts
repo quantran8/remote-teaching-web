@@ -1,4 +1,4 @@
-import { ClassModelSchedules } from "@/models";
+import { ClassModelSchedules, StudentGroupModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { AdminService } from "../admin.service";
 import { TeacherServiceInterface } from "./interface";
@@ -30,6 +30,10 @@ class GLTeacherService extends AdminService implements TeacherServiceInterface {
   }
   getAllClassesSchedule(schoolId: string): Promise<Array<ClassModelSchedules>> {
     const url = `schoolclass/${schoolId}`;
+    return this.get(url);
+  }
+  getGroupStudents(classId: string, groupId: string): Promise<Array<StudentGroupModel>> {
+    const url = `${classId}/groups/${groupId}/students`;
     return this.get(url);
   }
 }

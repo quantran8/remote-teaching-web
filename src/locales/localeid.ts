@@ -314,3 +314,10 @@ export class CaptureNotification {
   static EnableStudentVideo = "capture_status.enable_student_video";
   static EnableAllStudentVideo = "capture_status.enable_all_student_video";
 }
+export class ClassSetUp {
+  static StartSession = "class_setup.start_session";
+  static Members = "class_setup.members";
+  static ActiveStudents = "class_setup.active_students";
+  static InActiveStudents = "class_setup.inactive_students";
+  static RemoteClassSetUp = "class_setup.remote_class_set_up";
+}

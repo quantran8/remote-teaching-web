@@ -32,3 +32,10 @@ export interface StudentNextSessionModel {
   sessionId: string;
   studentId: string;
 }
+
+export interface StudentGroupModel {
+  studentId: string;
+  studentName: string;
+  nativeName: string;
+  isActivated: boolean;
+}

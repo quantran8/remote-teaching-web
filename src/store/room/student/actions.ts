@@ -603,6 +603,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       Logger.log(error);
     }
   },
+  async setRoomInfo({ commit }, p: TeacherGetRoomResponse) {
+    commit("setRoomInfo", p);
+  },
 };
 
 export default actions;

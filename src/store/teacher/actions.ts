@@ -115,6 +115,10 @@ const actions: ActionTree<TeacherState, any> = {
       commit("setClassesSchedulesBySchools", response);
     }
   },
+  async getGroupStudents({ commit, state }, p: { classId: string; groupId: string }) {
+    const response = await TeacherService.getGroupStudents(p.classId, p.groupId);
+    commit("setClassSetUpStudents", response);
+  },
 };
 
 export default actions;

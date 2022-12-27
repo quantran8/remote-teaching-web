@@ -1,4 +1,4 @@
-import { CalendarSchedulesModel, ClassModel, ClassModelSchedules, ClassRoomModel, RoomModel } from "@/models";
+import { CalendarSchedulesModel, ClassModel, ClassModelSchedules, ClassRoomModel, RoomModel, StudentGroupModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
 import moment from "moment";
@@ -135,6 +135,9 @@ const mutations: MutationTree<TeacherState> = {
   },
   setClassesSchedulesBySchools(state: TeacherState, payload: Array<ClassModelSchedules>) {
     state.classesSchedulesBySchools = [...state.classesSchedulesBySchools, ...payload];
+  },
+  setClassSetUpStudents(state: TeacherState, payload: Array<StudentGroupModel>) {
+    state.classSetUpStudents = payload;
   },
 };
 

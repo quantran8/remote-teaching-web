@@ -5,6 +5,20 @@ export interface BaseResponse<T> {
   message?: string;
   data: T;
 }
+export interface NextSessionResponse {
+  classInfo: {
+    classId: string;
+    className: string;
+    groupId: string;
+    groupName: string;
+    lesson: number;
+    startTime: null | string;
+    unit: number;
+  };
+  nextTime: null | string;
+  sessionId: string | null;
+  studentId: string;
+}
 
 export type TeacherGetRoomResponse = BaseResponse<RoomModel>;
 
