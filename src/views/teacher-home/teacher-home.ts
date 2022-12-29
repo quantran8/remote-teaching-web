@@ -186,35 +186,46 @@ export default defineComponent({
 
     const onClickClass = async (teacherClass: TeacherClassModel, groupId: string, schoolId: string) => {
       await onSchoolChange(schoolId);
-      infoStart.value = { teacherClass, groupId };
-      selectedGroupId.value = groupId;
-      messageStartClass.value = "";
-      if (!(await joinTheCurrentSession(groupId))) {
-        await getListLessonByUnit(teacherClass, groupId);
-        // startPopupVisible.value = true;
-        deviceTesterRef.value?.showModal();
-      }
-    };
-
-    const rejoinClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      infoStart.value = { teacherClass, groupId };
-      selectedGroupId.value = groupId;
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
         const groupName = teacherClass.groups.find((group) => group.groupId === groupId)?.groupName;
-        router.push({
-          path: "/class-setup/teacher",
-          query: {
-            schoolName,
-            campusName: teacherClass.campusName,
-            classId: teacherClass.classId,
-            className: teacherClass.className,
-            groupId: groupId,
-            groupName,
-            studentId: "",
-          },
-        });
+        if (schoolName && groupName) {
+          router.push({
+            path: "/class-setup/teacher",
+            query: {
+              schoolName,
+              campusName: teacherClass.campusName,
+              classId: teacherClass.classId,
+              className: teacherClass.className,
+              groupId: groupId,
+              groupName,
+              studentId: "",
+            },
+          });
+        }
+      }
+    };
+
+    const rejoinClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      messageStartClass.value = "";
+      if (!(await joinTheCurrentSession(groupId))) {
+        const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
+        const groupName = teacherClass.groups.find((group) => group.groupId === groupId)?.groupName;
+        if (schoolName && groupName) {
+          router.push({
+            path: "/class-setup/teacher",
+            query: {
+              schoolName,
+              campusName: teacherClass.campusName,
+              classId: teacherClass.classId,
+              className: teacherClass.className,
+              groupId: groupId,
+              groupName,
+              studentId: "",
+            },
+          });
+        }
       }
     };
 
