@@ -124,9 +124,6 @@ export default defineComponent({
     let point: any;
 
     const zoomIn = async () => {
-      if (!isLessonPlan.value) {
-        return;
-      }
       if (zoomRatio.value > MAX_ZOOM_RATIO) {
         return;
       }
@@ -147,9 +144,6 @@ export default defineComponent({
     };
 
     const zoomOut = async () => {
-      if (!isLessonPlan.value) {
-        return;
-      }
       if (canvas.getZoom() > MIN_ZOOM_RATIO) {
         if (canvas.getZoom() !== zoomRatio.value) {
           zoomRatio.value = canvas.getZoom();
@@ -158,7 +152,12 @@ export default defineComponent({
         if (zoomRatio.value < MIN_ZOOM_RATIO) {
           zoomRatio.value = MIN_ZOOM_RATIO;
         }
-        if (zoomRatio.value === MIN_ZOOM_RATIO && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)) {
+        if (
+          isLessonPlan.value &&
+          group &&
+          zoomRatio.value === MIN_ZOOM_RATIO &&
+          (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)
+        ) {
           group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
           group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
           group.setCoords();
@@ -713,6 +712,8 @@ export default defineComponent({
         if (!isTeacherUseOnly.value) {
           await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
           await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
+        } else {
+          zoomPercentage.value = Math.round(zoomRatio.value * 100);
         }
       });
     };
