@@ -55,8 +55,9 @@
 				}
 				&__camera {
 				  &--player {
+					width: 100%;
 					margin: 0 auto;
-					height: 200px;
+					height: 300px;
 					overflow: hidden;
 					@media (min-width: $lap) {
 					  height: 350px;
@@ -117,15 +118,21 @@
 				&__unit-lesson {
 				  min-width: 50px;
 				}
-				&__mb {
-				  &--default {
-					margin-bottom: 30px;
-					@media (max-width: $xs) {
-					  margin-bottom: 20px;
-					}
-				  }
-				  &--small {
+				&__mt{
+					margin-top: 80px;
+				}
+				&__default {
+					width: 600px;
+					display: flex;
+					flex-direction: row;
 					margin-bottom: 10px;
+				  &--lt {
+					flex: 1;
+				  }
+				  &--rt {
+					flex: 2;
+					display: flex;
+					justify-content: flex-end;
 				  }
 				}
 				&-icon{
@@ -160,6 +167,11 @@
 			  
 			  }
 			  
+		}
+		.alert-device-test {
+			margin-bottom: 20px;
+			color: #f34646;
+			cursor: default;
 		}
 		  .sound-img{
 			  width: 40px;

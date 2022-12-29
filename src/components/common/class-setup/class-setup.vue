@@ -12,7 +12,7 @@
 				<p v-if="groupName" class="title_text">{{groupText}} {{groupName}}</p>
 			</div>
 			<div v-if="isTeacherSetup" class="class_info_unit-lesson">
-				<Row align="start" class="device-tester__mb--default">
+				<Row align="start">
 					<div class="ant-col-24 ant-col-sm-18">
 					<Space size="large" align="center">
 						<Space size="small" align="center">
@@ -55,15 +55,15 @@
 		</div>
 		<div class="device_setup">
 			<div class="device-tester">
-			<Row align="middle" class="device-tester__mb--small">
+			<Row align="middle" class="device-tester__default">
 				<p class="title_text">{{ RemoteSetUpText }}</p>
 			</Row>
-			<Row align="middle" class="device-tester__mb--small">
-				<div class="ant-col-24 ant-col-sm-6">
+			<Row align="middle" class="device-tester__default">
+				<div class="device-tester__default--lt">
 				<img src="@/assets/icons/speaker.png" class="device-tester-icon"/>
 				<span> {{ CheckSpeaker }} </span>
 				</div>
-				<div class="ant-col-24 ant-col-sm-18">
+				<div class="device-tester__default--rt">
 				<Space size="large" align="center" class="device-tester__check-mic-cam">
 					<div class="device-tester__speaker--icon">
 					<audio loop id="audio" style="display: none">
@@ -86,16 +86,18 @@
 					<img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />	
 				</Space>
 				</div>
+      		</Row>
+			  <Row align="middle" class="alert-device-test">
 				<p v-show="!havePermissionMicrophone">
-				<span class="alert-device-test">{{ warningMsgSpeaker }}</span>
+				<span>{{ warningMsgMicrophone }}</span>
 				</p>
       		</Row>
-			<Row align="middle" class="device-tester__mb--small">
-				<div class="ant-col-24 ant-col-sm-6">
+			<Row align="middle" class="device-tester__default">
+				<div class="device-tester__default--lt">
 				<img src="@/assets/icons/mic.png" class="device-tester-icon"/>
 				<span>{{ CheckMic }}</span>
 				</div>
-				<div class="ant-col-24 ant-col-sm-18">
+				<div class="device-tester__default--rt">
 				<Space size="large" align="center" class="device-tester__check-mic-cam">
 					<Switch v-model:checked="isOpenMic" />
 					<Select
@@ -114,20 +116,23 @@
 				</Space>
 				</div>
       		</Row>
-			<Row align="middle" class="device-tester__mb--default">
-				<div class="ant-col-24 ant-col-sm-16 ant-col-sm-offset-6" v-show="listMics.length > 0">
+			<Row align="middle" class="device-tester__default">
+				<div class="device-tester__default--lt" />
+				<div class="device-tester__default--rt" v-show="listMics.length > 0">
 				<Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" strokeColor="#5c2d91" :show-info="false" class="progress"/>
 				</div>
+      		</Row>
+			  <Row align="middle" class="alert-device-test">
 				<p v-show="!havePermissionMicrophone">
-				<span class="alert-device-test">{{ warningMsgMicrophone }}</span>
+				<span>{{ warningMsgMicrophone }}</span>
 				</p>
       		</Row>
-			<Row align="middle" class="device-tester__mb--small">
-				<div class="ant-col-24 ant-col-sm-6">
+			<Row align="middle" class="device-tester__default">
+				<div class="device-tester__default--lt">
 				<img src="@/assets/icons/videocam.png" class="device-tester-icon"/>
 				<span>{{ CheckCam }}</span>
 				</div>
-				<div class="ant-col-24 ant-col-sm-18">
+				<div class="device-tester__default--rt">
 				<Space size="large" align="center" class="device-tester__check-mic-cam">
 					<Switch v-model:checked="isOpenCam" />
 					<Select
@@ -145,13 +150,12 @@
 				</Space>
 				</div>
       		</Row>
-			<Row align="middle" class="device-tester__mb--default">
+			<Row align="middle" class="alert-device-test">
 				<p v-show="!havePermissionCamera">
-				<span class="alert-device-test">{{ warningMsgCamera }}</span>
+				<span>{{ warningMsgCamera }}</span>
 				</p>
 			</Row>
-			<Row align="middle" class="device-tester__mb--default">
-				<div class="ant-col-24 ant-col-sm-14">
+			<Row align="middle" class="device-tester__default">
 				<video
 					ref="playerRef"
 					:id="videoElementId"
@@ -174,10 +178,10 @@
 					{{ CamOff }}
 					</div>
 				</div>
-				</div>
-				<div class="ant-col-24 ant-col-sm-10"></div>
 			</Row>
-			<Row type="flex" justify="center" class="device-tester__mb--small">
+			<Row class="device-tester__default device-tester__mt">
+				<div class="device-tester__default--lt" />
+				<div class="device-tester__default--rt">
 				<Space size="large" align="center">
 				<span @click="handleCancel" class="device-tester__cancel">{{ Cancel }}</span>
 				<button @click="handleSubmit" :loading="loading" :class="`device-tester__join_session_btn ${isDisabledJoinBtn ? 'device-tester__join_session_btn_disable' : 'device-tester__join_session_btn_active'}` " :disabled="isDisabledJoinBtn">
@@ -185,6 +189,7 @@
 					<span>{{ isTeacherSetup ? StartSessionText : JoinSession }}</span>
 				</button>
 				</Space>
+				</div>
 			</Row>
 			<Row type="flex" justify="center">
 				<span class="device-tester__mess-teacher-error">{{ messageStartClass }}</span>
