@@ -1,51 +1,59 @@
 <template>
   <div class="teacher-page" v-if="policy">
-    <div class="teacher-title mt-40">
-      <h2>{{ welcomeText }} {{ username }}</h2>
-      <span class="teacher-title__indicator-out" v-if="classOnline" @click="onClickClass(classOnline, classOnline.groupId)">
-        <span class="teacher-title__indicator-in"></span>
-      </span>
+    <div class="teacher-title__wrapper">
+      <div class="teacher-title">
+        <h1 class="teacher-title__welcome">{{ welcomeText }} {{ username }}</h1>
+        <span class="teacher-title__indicator-out" v-if="classOnline" @click="rejoinClass(classOnline, classOnline.groupId)">
+          <span class="teacher-title__indicator-in"></span>
+        </span>
+      </div>
+      <span class="date-time">{{ now }}</span>
     </div>
-    <div class="teacher-page__school-select">
-      <Select
-        placeholder="School"
-        showSearch
-        optionLabelProp="children"
-        :disabled="disabled"
-        :loading="loading"
-        :value="schools[0]?.id"
-        :filterOption="filterSchools"
-        @change="onSchoolChange"
-      >
-        <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
-      </Select>
-    </div>
-    <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-      <span>{{ scheduleText }}</span>
-      <img class="calendar" src="@/assets/images/calendar.png" />
+    <div class="menu-container">
+      <div class="icon-container" v-show="hasClassesShowUpSchedule()" @click="onClickHome">
+        <img class="calendar" src="@/assets/images/teacher-pointing-blackboard.png" />
+        <span>{{ homeText }}</span>
+      </div>
+      <div class="icon-container calendar-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
+        <img class="calendar" src="@/assets/images/calendar11.png" />
+        <span>{{ scheduleText }}</span>
+      </div>
+      <div class="icon-container gallery-container" v-show="hasClassesShowUpSchedule()">
+        <img class="calendar" src="@/assets/images/gallery.png" />
+        <span>{{ galleryText }}</span>
+      </div>
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-show="loadingInfo">
         <Spin class="ant-custom-home"></Spin>
       </div>
-      <div class="loading" v-if="loading">
-        <Spin tip="Loading..." class="ant-custom-home"></Spin>
+      <div v-if="classesSchedulesAllSchool">
+        <div class="loading" v-if="loading">
+          <Spin tip="Loading..." class="ant-custom-home"></Spin>
+        </div>
+        <div :key="item[0].classId" v-for="item in classesSchedulesAllSchool">
+          <div class="school-name">
+            <h2>{{ item[0].schoolName }}</h2>
+          </div>
+          <h3 class="campus">{{ item[0].campusName }}</h3>
+          <ClassCard
+            v-for="cl in item"
+            class="card-margin"
+            :key="cl.classId"
+            :id="cl.classId"
+            :title="cl.className"
+            :description="cl.campusName"
+            :remoteClassGroups="cl.groups"
+            :isTeacher="cl.isTeacher"
+            :schoolName="cl.schoolName"
+            :schoolId="cl.schoolId"
+            :loadingStart="loadingStartClass"
+            :unit="cl.unit"
+            :lesson="cl.lessonNumber"
+            @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
+          />
+        </div>
       </div>
-      <ClassCard
-        v-else
-        class="card-margin"
-        v-for="cl in classesSchedules"
-        :key="cl.classId"
-        :id="cl.classId"
-        :title="cl.className"
-        :description="cl.campusName"
-        :remoteClassGroups="cl.groups"
-        :active="cl.isActive"
-        :isTeacher="cl.isTeacher"
-        :loadingStart="loadingStartClass"
-        @click-to-access="(groupId) => onClickClass(cl, groupId)"
-      />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
     <DeviceTester

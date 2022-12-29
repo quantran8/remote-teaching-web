@@ -2,6 +2,9 @@
   margin-top: 40px;
 }
 
+.m-20 {
+  margin: 20px;
+}
 .mr-10 {
   margin-right: 10px;
 }
@@ -19,22 +22,33 @@
   margin-left: auto;
 }
 
-.calendar-container {
+.icon-container {
   display: flex;
-  width: 100px;
+  width: 120px;
   align-items: center;
   cursor: pointer;
+  background-color: #9f76cd;
+  color: #fff;
+  padding: 10px;
+  justify-content: center;
 }
 
+.calendar-container {
+  margin: 0 5px;
+}
+.gallery-container {
+  cursor: not-allowed;
+}
 .calendar {
   width: 30px;
   height: 30px;
+  margin-right: 10px;
 }
 
 .teacher-title {
   display: flex;
-  justify-content: center;
-  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 
   &__indicator-out {
     cursor: pointer;
@@ -56,13 +70,21 @@
     border-radius: 50%;
     display: inline-block;
   }
+  &__wrapper{
+	margin: 20px
+  }
+  &__welcome{
+	font-size: 44px;
+  }
 }
 .teacher-page {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 890px;
-  margin: auto;
+  max-width: 100%;
+  position: relative;
+  //   margin: auto;
+  padding: 16px 60px;
 
   &__school-select {
     margin-bottom: 20px;
@@ -77,6 +99,12 @@
     text-align: left;
   }
 }
+.menu-container {
+  display: flex;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
 .card-margin {
   margin: 20px;
 }
@@ -86,7 +114,9 @@
   justify-content: center;
   flex-direction: column;
 }
-
+.date-time {
+  font-size: 20px;
+}
 .loading {
   display: flex;
   justify-content: center;
@@ -135,4 +165,12 @@
   100% {
     opacity: 0.5;
   }
+}
+
+.school-name {
+  margin-left: 20px;
+}
+
+.campus {
+  margin-left: 40px;
 }

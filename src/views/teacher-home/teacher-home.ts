@@ -1,12 +1,13 @@
 import { DeviceTester } from "@/components/common";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
-import { ClassRoomStatus, TeacherClassModel, UnitAndLesson } from "@/models";
+import { ClassModelSchedules, ClassRoomStatus, TeacherClassModel, UnitAndLesson } from "@/models";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { ResourceModel } from "@/models/resource.model";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
 import { AppView, VCPlatform } from "@/store/app/state";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { Button, Checkbox, Empty, Modal, notification, Row, Select, Spin } from "ant-design-vue";
+import moment from "moment";
 import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { fmtMsg, LoginInfo, MatIcon } from "vue-glcommonui";
 import { useRouter } from "vue-router";
@@ -39,7 +40,6 @@ export default defineComponent({
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
     const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const username = computed(() => store.getters["auth/username"]);
-    const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const popUpLoading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
@@ -62,6 +62,8 @@ export default defineComponent({
     const scheduleText = computed(() => fmtMsg(TeacherHome.Schedule));
     const cancelText = computed(() => fmtMsg(TeacherHome.Cancel));
     const submitText = computed(() => fmtMsg(TeacherHome.Submit));
+    const homeText = computed(() => fmtMsg(TeacherHome.Home));
+    const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
@@ -72,6 +74,27 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
+    // const moment = require("moment");
+    const now = moment().format("dddd, MMM Do, YYYY");
+
+    const groupBy = (xs: Array<ClassModelSchedules>, key: string) => {
+      if (xs.length > 0) {
+        return xs.reduce(function (rv: any, x: any) {
+          (rv[x[key]] = rv[x[key]] || []).push(x);
+          return rv;
+        }, {});
+      }
+      return [];
+    };
+    const classesSchedulesAllSchool = computed<Array<Array<ClassModelSchedules>>>(() => {
+      const inputArray: Array<ClassModelSchedules> = store.getters["teacher/classesSchedulesAllSchool"];
+      const newArray = groupBy(inputArray, "schoolId");
+      const result: any = [];
+      for (const key in newArray) {
+        result.push(newArray[key]);
+      }
+      return result;
+    });
 
     const startClass = async (
       teacherClass: TeacherClassModel,
@@ -118,12 +141,14 @@ export default defineComponent({
       await router.push(`/teacher-calendars/${currentSchoolId.value}`);
     };
 
+    const onClickHome = async () => {
+      await router.push("/");
+    };
     const getSchools = async () => {
       loading.value = true;
       await store.dispatch("teacher/loadAccessibleSchools", {
         disabled: false,
       } as AccessibleSchoolQueryParam);
-      filteredSchools.value = schools.value;
       loading.value = false;
     };
 
@@ -137,7 +162,6 @@ export default defineComponent({
           schoolId: schoolId,
           browserFingerPrinting: visitorId,
         });
-        filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
         await store.dispatch("teacher/setCurrentSchool", schoolId);
       } catch (err) {
@@ -160,7 +184,21 @@ export default defineComponent({
       return false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string, schoolId: string) => {
+      await onSchoolChange(schoolId);
+      infoStart.value = { teacherClass, groupId };
+      selectedGroupId.value = groupId;
+      messageStartClass.value = "";
+      if (!(await joinTheCurrentSession(groupId))) {
+        await getListLessonByUnit(teacherClass, groupId);
+        // startPopupVisible.value = true;
+        deviceTesterRef.value?.showModal();
+      }
+    };
+
+    const rejoinClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      infoStart.value = { teacherClass, groupId };
+      selectedGroupId.value = groupId;
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
         const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
@@ -223,8 +261,6 @@ export default defineComponent({
       startPopupVisible.value = false;
     };
 
-    const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
@@ -254,9 +290,7 @@ export default defineComponent({
         await getSchools();
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
-          if (schools.value.length === 1) {
-            disabled.value = true;
-          }
+          await store.dispatch("teacher/loadAllClassesSchedulesAllSchool");
         }
       }
       await store.dispatch("teacher/clearSchedules");
@@ -264,12 +298,13 @@ export default defineComponent({
     });
 
     onUnmounted(async () => {
+      await store.dispatch("teacher/clearAllClassesSchedulesAllSchool");
       window.removeEventListener("keyup", escapeEvent);
     });
 
     const hasClassesShowUp = () => {
       if (loading.value == false) {
-        return classesSchedules.value.length != 0;
+        return classesSchedulesAllSchool.value.length != 0;
       } else {
         return true;
       }
@@ -277,7 +312,7 @@ export default defineComponent({
 
     const hasClassesShowUpSchedule = () => {
       if (loading.value == false) {
-        return classesSchedules.value.length != 0;
+        return classesSchedulesAllSchool.value.length != 0;
       } else return loading.value != true;
     };
 
@@ -285,13 +320,13 @@ export default defineComponent({
       schools,
       //classes,
       classesSchedules,
+      classesSchedulesAllSchool,
       username,
       onClickClass,
-      filterSchools,
+      rejoinClass,
       onSchoolChange,
       loading,
       disabled,
-      filteredSchools,
       visible,
       submitPolicy,
       agreePolicy,
@@ -303,6 +338,7 @@ export default defineComponent({
       policy,
       cancelPolicy,
       onClickCalendar,
+      onClickHome,
       policyTitle,
       policySubtitle,
       acceptPolicyText,
@@ -326,9 +362,12 @@ export default defineComponent({
       deviceTesterRef,
       welcomeText,
       scheduleText,
+      homeText,
+      galleryText,
       cancelText,
       submitText,
       currentSchool,
+      now,
     };
   },
 });

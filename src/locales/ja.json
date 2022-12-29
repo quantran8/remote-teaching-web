@@ -201,5 +201,10 @@
 	"class_setup.active_students": "Active students",
 	"class_setup.inactive_students": "Inactive",
 	"class_setup.remote_class_set_up": "Remote class set-up",
-	"class_setup.start_session": "Start Session"
+	"class_setup.start_session": "Start Session",
+	"teacher_home.gallery": "Gallery",
+	"teacher_home.home": "Home",
+	"class_card.unit": "Unit: ",
+	"class_card.lesson": "Lesson: ",
+	"class_card.members": "Members: "
 }
