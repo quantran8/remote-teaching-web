@@ -24,11 +24,11 @@
 
 .icon-container {
   display: flex;
-  width: 120px;
+  height: 48px;
+  width: 140px;
   align-items: center;
   cursor: pointer;
-  background-color: #9f76cd;
-  color: #fff;
+  background-color: #c9aee7;
   padding: 10px;
   justify-content: center;
 }
@@ -40,9 +40,9 @@
   cursor: not-allowed;
 }
 .calendar {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+  margin-right: 4px;
 }
 
 .teacher-title {
@@ -73,9 +73,6 @@
   &__wrapper{
 	margin: 20px
   }
-  &__welcome{
-	font-size: 44px;
-  }
 }
 .teacher-page {
   display: flex;
@@ -84,7 +81,7 @@
   max-width: 100%;
   position: relative;
   //   margin: auto;
-  padding: 16px 60px;
+  padding: 16px 60px 0;
 
   &__school-select {
     margin-bottom: 20px;
@@ -105,14 +102,21 @@
   right: 0;
   top: 0;
 }
-.card-margin {
-  margin: 20px;
-}
 
 .group-class-container {
   display: flex;
   justify-content: center;
   flex-direction: column;
+}
+.group-class-wrapper{
+  width: 568px;
+  background-color: #e8e8e8;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  padding: 5px 0 10px;
+}
+.three-group{
+  width: 800px;
 }
 .date-time {
   font-size: 20px;

@@ -57,7 +57,7 @@ export default defineComponent({
   },
   emits: ["click-to-access"],
   setup: function (props, { emit }) {
-    const groups = ref();
+    const groups = ref<GroupModelSchedules[]>();
     const clickedGroup = ref<string>("");
     const groupText = computed(() => fmtMsg(TeacherHome.Group));
     const nextText = computed(() => fmtMsg(TeacherHome.Next));
@@ -111,6 +111,14 @@ export default defineComponent({
       }
     };
 
+    const handleDateTime = (e: string) => {
+      const index = e.search(" ");
+      const subText = e.slice(0, index);
+      const remainText = e.slice(index);
+      const date = moment(`${moment().format("YYYY")}/${subText}`);
+      return `${moment().format("YYYY")}/${subText} (${moment.weekdays(date.isoWeekday())}) |${remainText}`;
+    };
+
     onMounted(() => {
       if (props.remoteClassGroups) {
         validatedGroupHighlighted();
@@ -153,6 +161,6 @@ export default defineComponent({
       emit("click-to-access", groupId, schoolId);
     };
 
-    return { groups, clickToAccess, clickedGroup, groupText, nextText, galleryText, unitText, lessonText, membersText };
+    return { groups, clickToAccess, clickedGroup, groupText, nextText, galleryText, unitText, lessonText, membersText, handleDateTime };
   },
 });

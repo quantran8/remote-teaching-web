@@ -75,7 +75,7 @@ export default defineComponent({
     const selectedGroupId = ref();
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
     // const moment = require("moment");
-    const now = moment().format("dddd, MMM Do, YYYY");
+    const now = ref(`${moment().format("dddd, MMMM DD, yyyy")}`);
 
     const groupBy = (xs: Array<ClassModelSchedules>, key: string) => {
       if (xs.length > 0) {
@@ -94,6 +94,15 @@ export default defineComponent({
         result.push(newArray[key]);
       }
       return result;
+    });
+    const isThreeGroup = computed(() => {
+      const isThree = classesSchedulesAllSchool.value.some((i) => {
+        const result = i.some((e) => {
+          return e.groups.length > 2;
+        });
+        return result === true;
+      });
+      return isThree;
     });
 
     const startClass = async (
@@ -379,6 +388,7 @@ export default defineComponent({
       submitText,
       currentSchool,
       now,
+      isThreeGroup,
     };
   },
 });

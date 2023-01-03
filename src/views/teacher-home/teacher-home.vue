@@ -11,15 +11,15 @@
     </div>
     <div class="menu-container">
       <div class="icon-container" v-show="hasClassesShowUpSchedule()" @click="onClickHome">
-        <img class="calendar" src="@/assets/images/teacher-pointing-blackboard.png" />
+        <img class="calendar" src="@/assets/images/home-class.png" />
         <span>{{ homeText }}</span>
       </div>
       <div class="icon-container calendar-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-        <img class="calendar" src="@/assets/images/calendar11.png" />
+        <img class="calendar" src="@/assets/images/today-icon.png" />
         <span>{{ scheduleText }}</span>
       </div>
       <div class="icon-container gallery-container" v-show="hasClassesShowUpSchedule()">
-        <img class="calendar" src="@/assets/images/gallery.png" />
+        <img class="calendar" src="@/assets/images/image-icon.png" />
         <span>{{ galleryText }}</span>
       </div>
     </div>
@@ -32,26 +32,28 @@
           <Spin tip="Loading..." class="ant-custom-home"></Spin>
         </div>
         <div :key="item[0].classId" v-for="item in classesSchedulesAllSchool">
-          <div class="school-name">
-            <h2>{{ item[0].schoolName }}</h2>
+          <div :class="['group-class-wrapper', isThreeGroup && 'three-group']">
+            <div class="school-name">
+              <h2>{{ item[0].schoolName }}</h2>
+            </div>
+            <h3 class="campus">{{ item[0].campusName }}</h3>
+            <ClassCard
+              v-for="cl in item"
+              class="card-margin"
+              :key="cl.classId"
+              :id="cl.classId"
+              :title="cl.className"
+              :description="cl.campusName"
+              :remoteClassGroups="cl.groups"
+              :isTeacher="cl.isTeacher"
+              :schoolName="cl.schoolName"
+              :schoolId="cl.schoolId"
+              :loadingStart="loadingStartClass"
+              :unit="cl.unit"
+              :lesson="cl.lessonNumber"
+              @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
+            />
           </div>
-          <h3 class="campus">{{ item[0].campusName }}</h3>
-          <ClassCard
-            v-for="cl in item"
-            class="card-margin"
-            :key="cl.classId"
-            :id="cl.classId"
-            :title="cl.className"
-            :description="cl.campusName"
-            :remoteClassGroups="cl.groups"
-            :isTeacher="cl.isTeacher"
-            :schoolName="cl.schoolName"
-            :schoolId="cl.schoolId"
-            :loadingStart="loadingStartClass"
-            :unit="cl.unit"
-            :lesson="cl.lessonNumber"
-            @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
-          />
         </div>
       </div>
     </div>
