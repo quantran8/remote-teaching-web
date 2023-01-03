@@ -19,6 +19,10 @@
     box-shadow: none;
     border: 1px solid #cccc;
     cursor: default;
+    &.class-block {
+      border: none;
+      height: 50px;
+    }
   }
 
   .class__live-dot {
@@ -36,24 +40,26 @@
   }
   .class__content {
     display: flex;
-    margin: 10px 0;
   }
 
   &__title {
+    background-color: #e8e8e8;
     display: flex;
     flex-direction: column;
     height: 100%;
     justify-content: space-between;
+    &--name {
+      font-size: 18px;
+    }
   }
 
   .gallery {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
+    width: 48px;
+    height: 48px;
+    margin-right: 4px;
   }
 
   .icon-container {
-    margin-left: 16px;
     cursor: not-allowed;
   }
 }
@@ -64,8 +70,8 @@
   &__size {
     background-color: #e3d6f3;
     margin: 8px;
-    width: auto;
-    height: 100px;
+    min-width: 216px;
+    height: 110px;
     cursor: default;
     box-shadow: none !important;
     border: 1px solid #cccc !important;
@@ -114,11 +120,11 @@
   white-space: nowrap;
   color: $main-color;
   font-size: 17px;
+  margin-bottom: 0px;
 }
 .description {
   overflow: hidden;
   text-overflow: ellipsis;
-  color: gray;
   font-size: 12px;
 }
 
@@ -133,4 +139,8 @@
 }
 .h-100 {
   height: 100%;
+}
+
+.mb {
+  margin-bottom: 10px;
 }
