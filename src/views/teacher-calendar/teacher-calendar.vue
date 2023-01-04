@@ -1,36 +1,45 @@
 <template>
   <div class="calendar-page">
     <div class="calendar-title mt-20">
-      <h2>{{ titleText }}</h2>
+      <h2>{{ CurrentMonthText }}</h2>
     </div>
     <div class="control-container">
       <div class="select-container">
         <span class="title-select">{{ classText }}</span>
-        <Select :value="selectedClassId" class="size-select ant-custom-calendar" @change="handleChangeClass">
-          <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
-          <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.id">
-            {{ val.name }}
+        <Select :value="selectedClassName" class="size-select ant-custom-calendar" show-search @change="handleChangeClass">
+          <Option class="ant-custom-calendar" :value="All">{{ allText }}</Option>
+          <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.classId" :value="val.className">
+            {{ val.className }} ({{ val.schoolName }})
           </Option>
         </Select>
         <span class="title-select ml-20">{{ groupText }}</span>
-        <Select :value="selectedGroupId" :disabled="isDisableGroup" class="size-select ant-custom-calendar" @change="handleChangeGroup">
-          <Option class="ant-custom-calendar" value="all">{{ allText }}</Option>
-          <Option class="ant-custom-calendar" v-for="val in listGroupSelect" :key="val.id">
-            {{ val.name }}
+        <Select :value="selectedGroupName" class="size-select ant-custom-calendar" show-search @change="handleChangeGroup">
+          <Option class="ant-custom-calendar" :value="All">{{ allText }}</Option>
+          <Option class="ant-custom-calendar" v-for="val in listGroupSelect" :key="val.groupId" :value="val.groupName">
+            {{ val.groupName }}
           </Option>
         </Select>
       </div>
-      <BaseButton mode="clear" class="icon back-btn" @click="onClickBack">
-        <BaseIcon name="icon-back"></BaseIcon>
-        <span>{{ backText }}</span>
-      </BaseButton>
+	  <div style="display:flex">
+		<div>
+			<span class="title-select">{{ showWeekendsText }}</span>
+			<Switch v-model:checked="isShowWeekends"/>
+		</div>
+		<div>
+			<BaseButton mode="clear" class="icon back-btn" @click="onClickBack">
+				<BaseIcon name="icon-back"></BaseIcon>
+				<span>{{ backText }}</span>
+			</BaseButton>
+		</div>
+	  </div>
     </div>
     <div class="loading-center" v-if="loading">
       <Spin class="ant-custom-calendar"></Spin>
     </div>
-    <Calendar class="calendar" mode="month" @panelChange="onPanelChange">
+    <div class="calender__container">
+	<Calendar :class="['calendar', isShowWeekends && 'calendar__hide_weekends']" mode="month" v-model:value="value" @panelChange="onPanelChange" >
       <template #headerRender="{ value, onChange }">
-        <div style="padding: 10px; float: right; margin-bottom: 20px">
+        <div :class="['calendar__header', isShowWeekends && 'calendar__header--mr']">
           <Row type="flex">
             <a-col>
               <Select
@@ -67,22 +76,19 @@
           </Row>
         </div>
       </template>
-      <template #dateCellRender="{ current: value }">
-        <div @click="canCreate(value) && scheduleAction('Create', value)" :style="`min-width: 100%; min-height: 100%`">
+      <template #dateFullCellRender="{ current: value }">
+        <div @click="goToScheduleInfo(value)" class="calendar__cell">
+		  <span class="calendar__date">{{value.date()}}</span>
           <div
-            v-for="item in getListData(value)"
+            v-for="(item,index) of getListData(value)"
             :key="item.customizedScheduleId"
-            :style="`position: 'relative'; color: ${item.color}; font-weight: 500`"
+            :style="`position: 'relative'; font-weight: 500`"
+			class="session__container"
           >
-            <Tooltip placement="top">
-              <template #title>
-                <span>{{ warningOverlap }}</span>
-              </template>
-              <img class="warning-icon" :src="IconWarning" v-if="checkOverlapTime(value)" />
-            </Tooltip>
-            <a @click.stop.prevent="isUpdate(item) ? scheduleAction('Update', value, item) : scheduleAction('Other', value, item)">
+            <div v-if="index !== MAX_SCHEDULE_IN_DAY">
+            <div>
               <span class="session-info">
-                <span class="session-info__class-name">{{ item.className }}</span>
+				<span class="session-info__class-name">{{ item.className }}</span>
                 <span class="session-info__group">{{ `Group ${item.groupName}:` }}</span>
                 <span>
                   {{
@@ -92,14 +98,14 @@
                   }}
                 </span>
               </span>
-            </a>
-            <br />
-            <br />
+            </div>
+			</div>
+			<p v-if="index === MAX_SCHEDULE_IN_DAY">...</p>
           </div>
         </div>
-        <PlusCircleOutlined class="add-icon" v-if="canShowCreate(value)" @click="canCreate(value) && scheduleAction('Create', value)" />
-      </template>
+	</template>
     </Calendar>
+	</div>
     <Modal :visible="visible" :title="scheduleNewRemoteSessionText" :closable="false" :centered="true" :maskClosable="false" :footer="null">
       <div class="select-container" v-if="isCreate">
         <span class="modal-title-select">{{ classText }}</span>
@@ -135,7 +141,7 @@
           :disabledHours="getDisabledHoursEnd"
           :disabledMinutes="getDisabledMinutesEnd"
           @change="onChangeEndDateModal"
-          :value="moment(selectedEndDateModal, 'HH:mm')"
+          :value="moment(selectedEndDate, 'HH:mm')"
           format="HH:mm"
         />
       </div>
@@ -176,7 +182,7 @@
           popupClassName="ant-custom-calendar"
           v-if="disableTimePicker()"
           disabled
-          :value="moment(selectedEndDateModal, 'HH:mm')"
+          :value="moment(selectedEndDate, 'HH:mm')"
           format="HH:mm"
         />
       </div>

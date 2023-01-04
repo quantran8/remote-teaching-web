@@ -36,6 +36,18 @@ export interface ClassModelSchedules {
   unit: number;
   schoolName: string;
 }
+export interface ClassGroupModel {
+  startDate: string;
+  endDate: string;
+  schoolId: string;
+  schoolName: string;
+  classId: string;
+  className: string;
+  groups: Array<{
+    groupId: string;
+    groupName: string;
+  }>;
+}
 
 export interface UnitAndLesson {
   unit: number;

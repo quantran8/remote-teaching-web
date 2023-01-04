@@ -71,7 +71,7 @@ const routes: Array<RouteRecordRaw> = [
   //     },
   //   },
   {
-    path: "/teacher-calendars/:schoolId",
+    path: "/teacher-calendars",
     name: "TeacherCalendar",
     component: () => import("../views/teacher-calendar/teacher-calendar.vue"),
     meta: {
@@ -86,6 +86,15 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/teacher-class/teacher-class.vue"),
     meta: {
       layout: "full",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/teacher-schedule-info",
+    name: "TeacherScheduleInfo",
+    component: () => import("../views/teacher-calendar/components/schedule-info/schedule-info.vue"),
+    meta: {
+      layout: "main",
       requiresAuth: true,
     },
   },
