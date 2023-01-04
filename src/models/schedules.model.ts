@@ -12,6 +12,7 @@ export interface SchedulesModel {
   end: string;
   start: string;
   customizedScheduleId: string;
+  customizedScheduleType: string | null;
   timeId: string;
   isHistory: boolean;
 }

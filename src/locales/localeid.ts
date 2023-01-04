@@ -174,6 +174,7 @@ export class TeacherCalendarLocale {
   static All = "teacher_calendar.all";
   static Back = "teacher_calendar.back";
   static ScheduleNewRemoteSession = "teacher_calendar.schedule_new_remote_session";
+  static ShowWeekends = "teacher_calendar.show_weekends";
 }
 
 export class TeacherClassDesignate {
@@ -329,3 +330,14 @@ export class ClassCard {
   static Lesson = "class_card.lesson";
   static Members = "class_card.members";
 }
+export class ScheduleInfo {
+  static EnterTime = "schedule_info.enter_time";
+  static BottomNote = "schedule_info.bottom_note";
+  static NonRecurringNote = "schedule_info.non_recurring_note";
+  static AddSession = "schedule_info.add_session";
+  static Hour = "schedule_info.hour";
+  static Minute = "schedule_info.minute";
+  static NewSession = "schedule_info.new_session";
+  static Restore = "schedule_info.restore";
+}
+  

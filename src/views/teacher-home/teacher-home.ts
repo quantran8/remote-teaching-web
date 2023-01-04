@@ -147,7 +147,7 @@ export default defineComponent({
     };
 
     const onClickCalendar = async () => {
-      await router.push(`/teacher-calendars/${currentSchoolId.value}`);
+      await router.push("/teacher-calendars");
     };
 
     const onClickHome = async () => {

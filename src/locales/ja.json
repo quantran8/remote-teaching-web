@@ -190,6 +190,7 @@
 	"capture_status.reached_maximum": "{studentName} has reached the maximum number of photos",
 	"capture_status.students_reached_maximum": "{studentsName} have reached the maximum number of photos",
 	"writer_review.title": "Writer Review",
+	"teacher_calendar.show_weekends": "Show weekends",
 	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"writer_review.select_date": "Please select the date",
 	"device_tester.message_warning_speaker": "Unable to access your speaker, please check system settings or grant permission and reload page.",
@@ -206,5 +207,13 @@
 	"teacher_home.home": "Home",
 	"class_card.unit": "Unit: ",
 	"class_card.lesson": "Lesson: ",
-	"class_card.members": "Members: "
+	"class_card.members": "Members: ",
+	"schedule_info.enter_time": "Enter time",
+	"schedule_info.bottom_note": "Note: These are recurring schedules managed from the school",
+	"schedule_info.non_recurring_note": "Non-recurring meetings can be added and deleted from this page",
+	"schedule_info.add_session": "Add Session",
+	"schedule_info.hour": "Hour",
+	"schedule_info.minute": "Minute",
+	"schedule_info.new_session": "Schedule new remote session",
+	"schedule_info.restore": "Restore"
 }
