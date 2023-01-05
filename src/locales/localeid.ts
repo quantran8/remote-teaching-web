@@ -339,5 +339,7 @@ export class ScheduleInfo {
   static Minute = "schedule_info.minute";
   static NewSession = "schedule_info.new_session";
   static Restore = "schedule_info.restore";
+  static AM = "schedule_info.am";
+  static PM = "schedule_info.pm";
 }
   

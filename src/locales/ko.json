@@ -215,5 +215,7 @@
 	"schedule_info.hour": "Hour",
 	"schedule_info.minute": "Minute",
 	"schedule_info.new_session": "Schedule new remote session",
-	"schedule_info.restore": "Restore"
+	"schedule_info.restore": "Restore",
+	"schedule_info.am": "AM",
+	"schedule_info.pm": "PM"
 }
