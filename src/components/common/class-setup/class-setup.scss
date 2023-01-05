@@ -1,12 +1,6 @@
 @import "../../../style/abstracts/variables";
-
-.title_text{
-	font-size: 25px;
-	font-weight: 400;
-	margin-bottom: 0
-}
 .class_setup{
-	margin-top: 50px;
+	margin-top: 15px;
 	&_header{
 		margin-left: 50px;
 	}
@@ -30,6 +24,9 @@
 					overflow-y: scroll;
 					&_inactive{
 						opacity: 0.6;
+					}
+					&__name{
+						margin-bottom: 5px;
 					}
 				}
 				.student_status{
@@ -119,13 +116,16 @@
 				  min-width: 50px;
 				}
 				&__mt{
-					margin-top: 80px;
+					margin-top: 40px;
+				}
+				&__mb{
+					margin-bottom: 40px;
 				}
 				&__default {
 					width: 600px;
 					display: flex;
 					flex-direction: row;
-					margin-bottom: 10px;
+					padding: 5px;
 				  &--lt {
 					flex: 1;
 				  }
@@ -182,5 +182,22 @@
 }
 .ant-switch-checked {
 	background-color: $main-color;
+}
+
+.title_text{
+	font-weight: 400;
+	margin-bottom: 0;
+	&--md{
+		font-size: 20px;
+	}
+	&--lg{
+		font-size: 24px;
+	}
+}
+
+.flex__container{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 }
 
