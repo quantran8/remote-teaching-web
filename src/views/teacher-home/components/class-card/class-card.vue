@@ -12,10 +12,10 @@
           </div>
         </div>
       </BaseCard>
-      <div class="icon-container">
+      <!-- <div class="icon-container">
         <img class="gallery" src="@/assets/images/image-icon.png" />
         <span class="gallery__text">{{ galleryText }}</span>
-      </div>
+      </div> -->
     </div>
     <div class="class-group">
       <div v-if="groups">
