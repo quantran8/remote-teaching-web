@@ -1,10 +1,12 @@
 @import "./src/style/abstracts/variables";
-
 .schedule{
 	&__header{
-		margin-top: 20px;
-		font-size: 28px;
+		margin: 15px 0;
 		padding-left: 50px;
+		&__title{
+			font-size: 28px;
+			margin-bottom: 0;
+		}
 	}
 	&__info{
 	display: flex;
@@ -33,12 +35,13 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			padding: 15px 0;
+			padding-bottom: 40px;
 			&__item{
 				flex:1;
 				.class__title{
 					font-size: 20px;
 					font-weight: 600;
+					margin-bottom: 0;
 				}
 				&--skipped{
 					opacity: 0.5;
@@ -63,10 +66,9 @@
 						width: 80%;
 					}
 				}
-				.title__select{
-					margin-right: 10px;
-					flex: 1.5;
-				}
+			}
+			.select__time__container{
+				padding-left:20px;
 				.select__time{
 					display: flex;
 					align-items: center;
@@ -77,22 +79,15 @@
 						flex-direction: column;
 						margin-right: 10px;	
 						text-align: center;
-						@media(max-width: 1200px){
-							flex-direction: column;
-						}
 					}
 				}
-			}
-			.select__time__container{
 	
-				@media(max-width: 1200px){
-					display: flex;
-					flex-direction: column;
-				}
 			}
 		}
 	}
-
+	.title__select{
+		flex: 1.5;
+	}
 	.radio__button{
 		display: flex;
 		height: 30px;
@@ -101,8 +96,10 @@
 		margin: 5px;
 	}
 	&__title{
-		font-size: 20px;
-		font-weight: 300;
+		font-size: 18px;
+		font-weight: 400;
+		margin-bottom: 0;
+		line-height: 25px;
 	}
 	.btn__action{
 		background-color: $main-color;
@@ -110,15 +107,20 @@
 		border: none;
 		border-radius: 5px;
 		cursor: pointer;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		&__text{
+			font-size: 18px;
+		}
 		&--md{
 			width: 120px;
-			height: 40px;
-			line-height: 40px;
+			height: 50px;
 		}
 		&--lg{
 			width: 160px;
 			height: 50px;
-			line-height: 50px;
 		}
 		&--disable{
 			background-color: rgb(122, 116, 126);
@@ -136,7 +138,11 @@
 }
 .flex__container{
 	display: flex;
-	flex: 4;
+	flex-direction: row;
+	align-items: center;
+	justify-self: center;
+	flex: 10;
+	margin-bottom: 10px;
 }
 .ant-radio-button-wrapper-checked{
 	background-color: rgb(210,187,230);

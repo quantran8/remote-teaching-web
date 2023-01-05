@@ -3,15 +3,15 @@ import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 import { ClassGroupModel, ClassModelSchedules } from "@/models";
 import { ScheduleParam } from "@/services";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
-
 import { Button, Calendar, Col, Modal, Row, Select, Spin, Switch, TimePicker, Tooltip } from "ant-design-vue";
-
 import moment, { Moment } from "moment";
-import "moment/locale/en-gb";
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+moment.updateLocale("en-gb", {
+  weekdaysMin: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+});
 interface Group {
   groupId: string;
   groupName: string;
@@ -798,7 +798,7 @@ export default defineComponent({
       CurrentMonthText,
       MAX_SCHEDULE_IN_DAY,
       showWeekendsText,
-	  All
+      All,
     };
   },
 });

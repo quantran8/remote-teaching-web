@@ -67,6 +67,8 @@ export default defineComponent({
     const minuteText = computed(() => fmtMsg(ScheduleInfo.Minute));
     const newSessionText = computed(() => fmtMsg(ScheduleInfo.NewSession));
     const RestoreText = computed(() => fmtMsg(ScheduleInfo.Restore));
+    const AMText = computed(() => fmtMsg(ScheduleInfo.AM));
+    const PMText = computed(() => fmtMsg(ScheduleInfo.PM));
     const dateTime = ref(`${moment().format("dddd, MMMM DD, yyyy")}`);
 
     const handleChangeClass = (value: string) => {
@@ -249,6 +251,8 @@ export default defineComponent({
       minuteText,
       newSessionText,
       RestoreText,
+      AMText,
+      PMText,
       listGroupByClass,
       currentClass,
       classGroup,

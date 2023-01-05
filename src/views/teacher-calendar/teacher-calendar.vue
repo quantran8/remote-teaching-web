@@ -37,9 +37,9 @@
       <Spin class="ant-custom-calendar"></Spin>
     </div>
     <div class="calender__container">
-	<Calendar :class="['calendar', isShowWeekends && 'calendar__hide_weekends']" mode="month" v-model:value="value" @panelChange="onPanelChange" >
+	<Calendar :class="['calendar', !isShowWeekends && 'calendar__hide_weekends']" mode="month" v-model:value="value" @panelChange="onPanelChange" >
       <template #headerRender="{ value, onChange }">
-        <div :class="['calendar__header', isShowWeekends && 'calendar__header--mr']">
+        <div :class="['calendar__header', !isShowWeekends && 'calendar__header--mr']">
           <Row type="flex">
             <a-col>
               <Select
@@ -85,8 +85,7 @@
             :style="`position: 'relative'; font-weight: 500`"
 			class="session__container"
           >
-            <div v-if="index !== MAX_SCHEDULE_IN_DAY">
-            <div>
+            <div v-if="index !== MAX_SCHEDULE_IN_DAY" style="width:100%">
               <span class="session-info">
 				<span class="session-info__class-name">{{ item.className }}</span>
                 <span class="session-info__group">{{ `Group ${item.groupName}:` }}</span>
@@ -99,7 +98,6 @@
                 </span>
               </span>
             </div>
-			</div>
 			<p v-if="index === MAX_SCHEDULE_IN_DAY">...</p>
           </div>
         </div>
