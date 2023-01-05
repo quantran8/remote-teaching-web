@@ -20,18 +20,10 @@
           </Option>
         </Select>
       </div>
-	  <div style="display:flex">
-		<div>
-			<span class="title-select">{{ showWeekendsText }}</span>
-			<Switch v-model:checked="isShowWeekends"/>
-		</div>
-		<div>
-			<BaseButton mode="clear" class="icon back-btn" @click="onClickBack">
-				<BaseIcon name="icon-back"></BaseIcon>
-				<span>{{ backText }}</span>
-			</BaseButton>
-		</div>
-	  </div>
+	  <Row align="middle" type="flex" justify="center">
+		<span class="title-select">{{ showWeekendsText }}</span>
+		<Switch v-model:checked="isShowWeekends"/>
+	  </Row>
     </div>
     <div class="loading-center" v-if="loading">
       <Spin class="ant-custom-calendar"></Spin>
@@ -85,7 +77,7 @@
             :style="`position: 'relative'; font-weight: 500`"
 			class="session__container"
           >
-            <div v-if="index !== MAX_SCHEDULE_IN_DAY" style="width:100%">
+		  <div v-if="index !== MAX_SCHEDULE_IN_DAY" style="width:100%">
               <span class="session-info">
 				<span class="session-info__class-name">{{ item.className }}</span>
                 <span class="session-info__group">{{ `Group ${item.groupName}:` }}</span>
