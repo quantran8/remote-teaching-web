@@ -1,4 +1,5 @@
 import { DeviceTester, HelpMenu, ResourceMenu } from "@/components/common";
+import NavMenu from "@/components/common/nav-menu/nav-menu.vue";
 import { Layout, WriterReview } from "@/locales/localeid";
 import { store } from "@/store";
 import { computed, defineComponent, ref } from "vue";
@@ -19,6 +20,7 @@ export default defineComponent({
     DropdownItem,
     ResourceMenu,
     HelpMenu,
+    NavMenu,
   },
   setup() {
     const router = useRouter();
@@ -36,6 +38,12 @@ export default defineComponent({
         router.push(`/teacher/image-view/${currentSchoolId.value}`);
       }
     };
+    const isShowNavMenu = computed(() => {
+      if (route.path.includes("teacher") || route.path.includes("teacher-calendars")) {
+        return true;
+      }
+      return false;
+    });
     return {
       onClickTestDevice,
       onClickWriterReview,
@@ -43,6 +51,7 @@ export default defineComponent({
       testConnectText,
       isShowWriterReview,
       writerReviewText,
+      isShowNavMenu,
     };
   },
 });

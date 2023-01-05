@@ -9,20 +9,6 @@
       </div>
       <span class="date-time">{{ now }}</span>
     </div>
-    <div class="menu-container">
-      <div class="icon-container" v-show="hasClassesShowUpSchedule()" @click="onClickHome">
-        <img class="calendar" src="@/assets/images/home-class.png" />
-        <span>{{ homeText }}</span>
-      </div>
-      <div class="icon-container calendar-container" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-        <img class="calendar" src="@/assets/images/today-icon.png" />
-        <span>{{ scheduleText }}</span>
-      </div>
-      <div class="icon-container gallery-container" v-show="hasClassesShowUpSchedule()">
-        <img class="calendar" src="@/assets/images/image-icon.png" />
-        <span>{{ galleryText }}</span>
-      </div>
-    </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-show="loadingInfo">
         <Spin class="ant-custom-home"></Spin>

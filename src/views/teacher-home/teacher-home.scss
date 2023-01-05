@@ -22,29 +22,6 @@
   margin-left: auto;
 }
 
-.icon-container {
-  display: flex;
-  height: 48px;
-  width: 140px;
-  align-items: center;
-  cursor: pointer;
-  background-color: #c9aee7;
-  padding: 10px;
-  justify-content: center;
-}
-
-.calendar-container {
-  margin: 0 5px;
-}
-.gallery-container {
-  cursor: not-allowed;
-}
-.calendar {
-  width: 40px;
-  height: 40px;
-  margin-right: 4px;
-}
-
 .teacher-title {
   display: flex;
   justify-content: flex-start;
@@ -95,12 +72,6 @@
   &__classgroup {
     text-align: left;
   }
-}
-.menu-container {
-  display: flex;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 .group-class-container {
