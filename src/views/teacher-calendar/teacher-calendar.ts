@@ -92,7 +92,6 @@ export default defineComponent({
     const noteText = computed(() => fmtMsg(TeacherCalendarLocale.Note));
     const schoolText = computed(() => fmtMsg(TeacherCalendarLocale.School));
     const allText = computed(() => fmtMsg(TeacherCalendarLocale.All));
-    const backText = computed(() => fmtMsg(TeacherCalendarLocale.Back));
     const showWeekendsText = computed(() => fmtMsg(TeacherCalendarLocale.ShowWeekends));
     const scheduleNewRemoteSessionText = computed(() => fmtMsg(TeacherCalendarLocale.ScheduleNewRemoteSession));
     const listGroupSelect = computed<Array<Group>>(() => {
@@ -723,11 +722,6 @@ export default defineComponent({
 
     const router = useRouter();
 
-    const onClickBack = async () => {
-      await store.dispatch("teacher/clearClassesSchedulesBySchools", null);
-      router.push("/teacher");
-    };
-
     return {
       listClassSelect,
       listClassCreateNew,
@@ -788,11 +782,9 @@ export default defineComponent({
       noteText,
       schoolText,
       allText,
-      backText,
       scheduleNewRemoteSessionText,
       selectedClassName,
       selectedGroupName,
-      onClickBack,
       goToScheduleInfo,
       isShowWeekends,
       CurrentMonthText,
