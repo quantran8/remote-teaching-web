@@ -65,6 +65,7 @@ export default defineComponent({
     const homeText = computed(() => fmtMsg(TeacherHome.Home));
     const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
+    const classesSchedulesAllSchool = computed<ClassModelSchedules[]>(() => store.getters["teacher/classesSchedulesAllSchool"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
@@ -76,34 +77,40 @@ export default defineComponent({
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
     // const moment = require("moment");
     const now = ref(`${moment().format("dddd, MMMM DD, yyyy")}`);
-
-    const groupBy = (xs: Array<ClassModelSchedules>, key: string) => {
-      if (xs.length > 0) {
-        return xs.reduce(function (rv: any, x: any) {
-          (rv[x[key]] = rv[x[key]] || []).push(x);
-          return rv;
-        }, {});
-      }
-      return [];
-    };
-    const classesSchedulesAllSchool = computed<Array<Array<ClassModelSchedules>>>(() => {
-      const inputArray: Array<ClassModelSchedules> = store.getters["teacher/classesSchedulesAllSchool"];
-      const newArray = groupBy(inputArray, "schoolId");
-      const result: any = [];
-      for (const key in newArray) {
-        result.push(newArray[key]);
-      }
-      return result;
-    });
     const isThreeGroup = computed(() => {
-      const isThree = classesSchedulesAllSchool.value.some((i) => {
-        const result = i.some((e) => {
-          return e.groups.length > 2;
-        });
-        return result === true;
-      });
+      const isThree = classesSchedulesAllSchool.value.find((item) => item.groups.length > 2);
       return isThree;
     });
+    const schoolIds = computed(() => {
+      const schools: string[] = [];
+      classesSchedulesAllSchool.value.forEach((item) => {
+        if (item.schoolId && !schools.includes(item.schoolId)) {
+          schools.push(item.schoolId);
+        }
+      });
+      return schools;
+    });
+    const getCampusBySchoolId = (id: string) => {
+      const data = classesSchedulesAllSchool.value.filter((item) => item.schoolId === id);
+      const campus: string[] = [];
+      data.forEach((item) => {
+        if (!campus.includes(item.campusId)) {
+          campus.push(item.campusId);
+        }
+      });
+      return campus;
+    };
+    const getDataByCampus = (id: string) => {
+      return classesSchedulesAllSchool.value.filter((item) => item.campusId === id);
+    };
+    const getSchoolNameBySchoolId = (id: string) => {
+      const data = classesSchedulesAllSchool.value.find((item) => item.schoolId === id);
+      return data?.schoolName;
+    };
+    const getCampusNameByCampusId = (id: string) => {
+      const data = classesSchedulesAllSchool.value.find((item) => item.campusId === id);
+      return data?.campusName;
+    };
 
     const startClass = async (
       teacherClass: TeacherClassModel,
@@ -340,7 +347,6 @@ export default defineComponent({
       schools,
       //classes,
       classesSchedules,
-      classesSchedulesAllSchool,
       username,
       onClickClass,
       rejoinClass,
@@ -389,6 +395,11 @@ export default defineComponent({
       currentSchool,
       now,
       isThreeGroup,
+      schoolIds,
+      getCampusBySchoolId,
+      getDataByCampus,
+      getSchoolNameBySchoolId,
+      getCampusNameByCampusId,
     };
   },
 });

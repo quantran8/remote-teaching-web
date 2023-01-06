@@ -28,6 +28,7 @@ export interface ClassModelSchedules {
   classId: string;
   className: string;
   campusName: string;
+  campusId: string;
   isTeacher: boolean;
   startDate: string;
   endDate: string;
