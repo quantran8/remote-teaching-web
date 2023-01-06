@@ -191,7 +191,6 @@
 	"capture_status.students_reached_maximum": "{studentsName} достигли максимального количества фотографий",
 	"writer_review.title": "Writer Review",
 	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
-	"teacher_calendar.show_weekends": "Show weekends",
 	"writer_review.select_date": "Please select the date",
 	"device_tester.message_warning_speaker": "Unable to access your speaker, please check system settings or grant permission and reload page.",
 	"writer_review.no_class_or_group": "This school don't have any class or group",
@@ -208,6 +207,7 @@
 	"class_card.unit": "Unit: ",
 	"class_card.lesson": "Lesson: ",
 	"class_card.members": "Members: ",
+	"teacher_calendar.show_weekends": "Show weekends",
 	"schedule_info.enter_time": "Enter time",
 	"schedule_info.bottom_note": "Note: These are recurring schedules managed from the school",
 	"schedule_info.non_recurring_note": "Non-recurring meetings can be added and deleted from this page",
@@ -217,5 +217,6 @@
 	"schedule_info.new_session": "Schedule new remote session",
 	"schedule_info.restore": "Restore",
 	"schedule_info.am": "AM",
-	"schedule_info.pm": "PM"
+	"schedule_info.pm": "PM",
+	"device_tester.error_join_session": "This student is already logged into this class."
 }

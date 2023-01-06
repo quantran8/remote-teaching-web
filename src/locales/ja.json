@@ -5,7 +5,7 @@
 	"teacher.policy.text1": "The use of classroom video allows the GrapeSEED team to focus, refine and analyze the GrapeSEED curriculum in the context of a “real-life” setting.",
 	"teacher.policy.text2": "Through this observation, the curriculum and teaching methods are continually refined and improved upon to meet the expectations of the GrapeSEED students, their parents, school administrators and GrapeSEED teachers around the world.",
 	"teacher.policy.text3": "I hereby give to GrapeCity Inc., a Japanese corporation (the “Company”) permission to copyright and use video pictures of me for training purposes of teachers within the Company’s global network.",
-	"teacher.policy.text4": "I hereby release the Company from any claim arising in connection with the use of the photographic and video pictures, and I agree that the Company will own all rights to the photographic and video pictures under all applicable copyright laws, and hereby waive any right to royalties or other compensation arising from or related to the use of the photographic and video pictures.",
+	"teacher.policy.text4": "I hereby release the Company from any claim arising in connection with the use of the photographic and video pictures, and I agree that the the the Company will own all rights to the photographic and video pictures under all applicable copyright laws, and hereby waive any right to royalties or other compensation arising from or related to the use of the photographic and video pictures.",
 	"student.policy.text1": "The use of classroom video allows the GrapeSEED team to focus, refine and analyze the GrapeSEED curriculum in the context of a “real-life” setting.",
 	"student.policy.text2": "Through this observation, the curriculum and teaching methods are continually refined and improved upon to meet the expectations of the GrapeSEED students, their parents, school administrators and GrapeSEED teachers around the world.",
 	"student.policy.text3": "I hereby give to GrapeCity Inc., a Japanese corporation (the “Company”) permission to copyright and use video pictures of my child(ren) for training purposes of teachers within the Company’s global network.",
@@ -190,7 +190,6 @@
 	"capture_status.reached_maximum": "{studentName} has reached the maximum number of photos",
 	"capture_status.students_reached_maximum": "{studentsName} have reached the maximum number of photos",
 	"writer_review.title": "Writer Review",
-	"teacher_calendar.show_weekends": "Show weekends",
 	"teacher_calendar.schedule_new_remote_session": "Schedule New Remote Session",
 	"writer_review.select_date": "Please select the date",
 	"device_tester.message_warning_speaker": "Unable to access your speaker, please check system settings or grant permission and reload page.",
@@ -208,6 +207,7 @@
 	"class_card.unit": "Unit: ",
 	"class_card.lesson": "Lesson: ",
 	"class_card.members": "Members: ",
+	"teacher_calendar.show_weekends": "Show weekends",
 	"schedule_info.enter_time": "Enter time",
 	"schedule_info.bottom_note": "Note: These are recurring schedules managed from the school",
 	"schedule_info.non_recurring_note": "Non-recurring meetings can be added and deleted from this page",
@@ -217,5 +217,6 @@
 	"schedule_info.new_session": "Schedule new remote session",
 	"schedule_info.restore": "Restore",
 	"schedule_info.am": "AM",
-	"schedule_info.pm": "PM"
+	"schedule_info.pm": "PM",
+	"device_tester.error_join_session": "This student is already logged into this class."
 }
