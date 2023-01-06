@@ -136,6 +136,7 @@ export class DeviceTesterLocale {
   static MessageWarningCamera = "device_tester.message_warning_camera";
   static CheckSpeaker = "device_tester.check_speaker";
   static MessageWarningSpeaker = "device_tester.message_warning_speaker";
+  static MessageErrorJoinSession = "device_tester.error_join_session";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
@@ -342,4 +343,3 @@ export class ScheduleInfo {
   static AM = "schedule_info.am";
   static PM = "schedule_info.pm";
 }
-  

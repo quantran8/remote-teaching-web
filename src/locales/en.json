@@ -94,6 +94,7 @@
 	"device_tester.class_status": "Class status",
 	"device_tester.default_message_1": "No class in progress. We will notify you once the class starts.",
 	"device_tester.default_message_2": "Class in progress",
+	"device_tester.error_join_session": "This student is already logged into this class.",
 	"device_tester.join_now": "Join now",
 	"device_tester.lesson_unit": "Unit and Lesson",
 	"device_tester.lesson": "Lesson",
