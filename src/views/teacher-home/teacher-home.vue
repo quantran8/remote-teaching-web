@@ -13,32 +13,33 @@
       <div class="loading" v-show="loadingInfo">
         <Spin class="ant-custom-home"></Spin>
       </div>
-      <div v-if="classesSchedulesAllSchool">
+      <div v-if="schoolIds.length > 0">
         <div class="loading" v-if="loading">
           <Spin tip="Loading..." class="ant-custom-home"></Spin>
         </div>
-        <div :key="item[0].classId" v-for="item in classesSchedulesAllSchool">
+        <div v-for="schoolId in schoolIds" :key="schoolId">
           <div :class="['group-class-wrapper', isThreeGroup && 'three-group']">
-            <div class="school-name">
-              <h2>{{ item[0].schoolName }}</h2>
+            <h2 class="school-name">{{ getSchoolNameBySchoolId(schoolId) }}</h2>
+            <div v-for="campusId in getCampusBySchoolId(schoolId)" :key="campusId">
+              <h3 class="campus">{{ getCampusNameByCampusId(campusId) }}</h3>
+              <div v-for="cl in getDataByCampus(campusId)" :key="cl.classId">
+                <ClassCard
+                  class="card-margin"
+                  :key="cl.classId"
+                  :id="cl.classId"
+                  :title="cl.className"
+                  :description="cl.campusName"
+                  :remoteClassGroups="cl.groups"
+                  :isTeacher="cl.isTeacher"
+                  :schoolName="cl.schoolName"
+                  :schoolId="cl.schoolId"
+                  :loadingStart="loadingStartClass"
+                  :unit="cl.unit"
+                  :lesson="cl.lessonNumber"
+                  @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
+                />
+              </div>
             </div>
-            <h3 class="campus">{{ item[0].campusName }}</h3>
-            <ClassCard
-              v-for="cl in item"
-              class="card-margin"
-              :key="cl.classId"
-              :id="cl.classId"
-              :title="cl.className"
-              :description="cl.campusName"
-              :remoteClassGroups="cl.groups"
-              :isTeacher="cl.isTeacher"
-              :schoolName="cl.schoolName"
-              :schoolId="cl.schoolId"
-              :loadingStart="loadingStartClass"
-              :unit="cl.unit"
-              :lesson="cl.lessonNumber"
-              @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
-            />
           </div>
         </div>
       </div>
