@@ -1,8 +1,8 @@
-import { TeacherHome } from "@/locales/localeid";
+import { ClassCard, TeacherHome } from "@/locales/localeid";
 import { GroupModelSchedules } from "@/models/group.model";
-import { computed, defineComponent, onMounted, ref } from "vue";
 import { Spin } from "ant-design-vue";
 import moment from "moment";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { fmtMsg } from "vue-glcommonui";
 
 export default defineComponent({
@@ -35,16 +35,36 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    schoolId: {
+      type: String,
+      required: true,
+    },
+    schoolName: {
+      type: String,
+      required: true,
+    },
+    unit: {
+      type: Number,
+      required: true,
+    },
+    lesson: {
+      type: Number,
+      required: true,
+    },
   },
   components: {
     Spin,
   },
   emits: ["click-to-access"],
   setup: function (props, { emit }) {
-    const groups = ref();
+    const groups = ref<GroupModelSchedules[]>();
     const clickedGroup = ref<string>("");
     const groupText = computed(() => fmtMsg(TeacherHome.Group));
     const nextText = computed(() => fmtMsg(TeacherHome.Next));
+    const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
+    const unitText = computed(() => fmtMsg(ClassCard.Unit));
+    const lessonText = computed(() => fmtMsg(ClassCard.Lesson));
+    const membersText = computed(() => fmtMsg(ClassCard.Members));
 
     const validatedGroupHighlighted = () => {
       let min = 999999;
@@ -91,6 +111,14 @@ export default defineComponent({
       }
     };
 
+    const handleDateTime = (e: string) => {
+      const index = e.search(" ");
+      const subText = e.slice(0, index);
+      const remainText = e.slice(index);
+      const date = moment(`${moment().format("YYYY")}/${subText}`);
+      return `${moment().format("YYYY")}/${subText} (${moment.weekdays(date.isoWeekday())}) |${remainText}`;
+    };
+
     onMounted(() => {
       if (props.remoteClassGroups) {
         validatedGroupHighlighted();
@@ -128,11 +156,11 @@ export default defineComponent({
       }
     });
 
-    const clickToAccess = (groupId: string) => {
+    const clickToAccess = (groupId: string, schoolId: string) => {
       clickedGroup.value = groupId;
-      emit("click-to-access", groupId);
+      emit("click-to-access", groupId, schoolId);
     };
 
-    return { groups, clickToAccess, clickedGroup, groupText, nextText };
+    return { groups, clickToAccess, clickedGroup, groupText, nextText, galleryText, unitText, lessonText, membersText, handleDateTime };
   },
 });

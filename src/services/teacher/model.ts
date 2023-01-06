@@ -24,3 +24,7 @@ export interface ScheduleParam {
   type?: string;
   createdBy?: string;
 }
+export interface SkipScheduleResponse {
+  success: boolean;
+  scheduleId: string;
+}

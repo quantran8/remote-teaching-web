@@ -2,6 +2,7 @@ import { Parent } from "@/models";
 import { AccessibleSchoolQueryParam, RemoteTeachingService, ScheduleParam, TeacherGetRoomResponse, TeacherService } from "@/services";
 import { store } from "@/store";
 import { Logger } from "@/utils/logger";
+import { All } from "@/views/teacher-calendar/teacher-calendar";
 import { ActionContext, ActionTree } from "vuex";
 import { StudentsGroup, TeacherState } from "./state";
 
@@ -21,6 +22,11 @@ const actions: ActionTree<TeacherState, any> = {
     } catch (err) {
       // process with err
     }
+  },
+
+  async loadAllClassesSchedulesAllSchool({ commit, dispatch }: ActionContext<TeacherState, any>, payload: { schoolId: string }) {
+    const response = await TeacherService.getAllClassesOfAllSchools();
+    commit("setClassesSchedulesAllSchool", response);
   },
   async loadAllClassesSchedules(
     { commit, dispatch }: ActionContext<TeacherState, any>,
@@ -47,17 +53,30 @@ const actions: ActionTree<TeacherState, any> = {
   async clearSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
     commit("clearCalendarSchedule");
   },
+  async clearAllClassesSchedulesAllSchool({ commit, state }: ActionContext<TeacherState, any>, payload: {}) {
+    commit("clearAllClassesSchedulesAllSchool");
+  },
   async loadSchedules(
     { commit, state }: ActionContext<TeacherState, any>,
     payload: { schoolId: string; classId: string; groupId: string; startDate: string; endDate: string },
   ) {
     if (!state.info) return;
-    const response = await TeacherService.getScheduleCalendar(payload.schoolId, payload.classId, payload.groupId, payload.startDate, payload.endDate);
+    const response = await TeacherService.getScheduleCalendar(
+      payload.schoolId === All ? "" : payload.schoolId,
+      payload.classId,
+      payload.groupId,
+      payload.startDate,
+      payload.endDate,
+    );
+    commit("setCalendarSchedule", response);
+  },
+  async loadAllSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: { startDate: string }) {
+    const response = await TeacherService.getAllScheduleCalendar(payload.startDate);
     commit("setCalendarSchedule", response);
   },
   async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; customId: string; data: ScheduleParam }) {
     const response = await TeacherService.skipSchedule(payload.data);
-    if (response) commit("updateCalendarSchedule", payload);
+    if (response) commit("updateCalendarSchedule", { ...payload, scheduleId: response.scheduleId });
   },
   async createSchedule(
     { commit, state }: ActionContext<TeacherState, any>,
@@ -114,6 +133,17 @@ const actions: ActionTree<TeacherState, any> = {
       });
       commit("setClassesSchedulesBySchools", response);
     }
+  },
+  async getGroupStudents({ commit, state }, p: { classId: string; groupId: string }) {
+    const response = await TeacherService.getGroupStudents(p.classId, p.groupId);
+    commit("setClassSetUpStudents", response);
+  },
+  clearClassesSchedulesBySchools({ commit }) {
+    commit("clearClassesSchedulesBySchools");
+  },
+  async setClassGroup({ commit }) {
+    const response = await TeacherService.getClassGroup();
+    commit("setClassGroup", response);
   },
 };
 

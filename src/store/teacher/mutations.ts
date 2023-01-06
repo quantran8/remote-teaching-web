@@ -1,6 +1,7 @@
-import { CalendarSchedulesModel, ClassModel, ClassModelSchedules, ClassRoomModel, RoomModel } from "@/models";
+import { CalendarSchedulesModel, ClassGroupModel, ClassModel, ClassModelSchedules, ClassRoomModel, RoomModel, StudentGroupModel } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { UserModel } from "@/models/user.model";
+import { ScheduleType } from "@/utils/utils";
 import moment from "moment";
 import { MutationTree } from "vuex";
 import { TeacherState } from "./state";
@@ -16,8 +17,14 @@ const mutations: MutationTree<TeacherState> = {
   setClassesSchedules(state: TeacherState, payload: Array<ClassModelSchedules>) {
     state.classesSchedules = payload;
   },
+  setClassesSchedulesAllSchool(state: TeacherState, payload: Array<ClassModelSchedules>) {
+    state.classesSchedulesAllSchool = payload;
+  },
   clearCalendarSchedule(state: TeacherState, payload: any) {
     state.calendarSchedules = [];
+  },
+  clearAllClassesSchedulesAllSchool(state: TeacherState, payload: any) {
+    state.classesSchedulesAllSchool = [];
   },
   setCalendarSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
     if (payload) {
@@ -30,6 +37,20 @@ const mutations: MutationTree<TeacherState> = {
         });
         return calendarSchedule;
       });
+    }
+  },
+  setCalendarAllSchedule(state: TeacherState, payload: Array<CalendarSchedulesModel>) {
+    if (payload) {
+      const data = payload.map((calendarSchedule) => {
+        calendarSchedule.schedules.map((schedule) => {
+          if (schedule.customizedScheduleId == null) {
+            schedule.customizedScheduleId = "0000-" + Math.random().toString(36).substr(2, 9);
+          }
+          return schedule;
+        });
+        return calendarSchedule;
+      });
+      state.calendarSchedules = [...state.calendarSchedules, ...data];
     }
   },
   setClassRoom(state: TeacherState, payload: RoomModel) {
@@ -64,6 +85,7 @@ const mutations: MutationTree<TeacherState> = {
                 end: moment(payload.data.end).format("HH:mm:ss"),
                 start: moment(payload.data.start).format("HH:mm:ss"),
                 customizedScheduleId: payload.id,
+                customizedScheduleType: ScheduleType.Create,
                 timeId: payload.data.timeId,
                 isHistory: false,
               });
@@ -82,6 +104,7 @@ const mutations: MutationTree<TeacherState> = {
                 end: moment(payload.data.end).format("HH:mm:ss"),
                 start: moment(payload.data.start).format("HH:mm:ss"),
                 customizedScheduleId: payload.id,
+                customizedScheduleType: ScheduleType.Create,
                 timeId: payload.data.timeId,
                 isHistory: false,
               },
@@ -90,25 +113,40 @@ const mutations: MutationTree<TeacherState> = {
           state.calendarSchedules.sort((a, b) => moment(a.day).valueOf() - moment(b.day).valueOf());
         }
         break;
-      case "Skip":
-        state.calendarSchedules.map((dayCalendar) => {
-          if (dayCalendar.day == payload.day) {
-            dayCalendar.schedules = dayCalendar.schedules.filter((schedule) => {
-              return schedule.customizedScheduleId != payload.customId;
-            });
+      case "Skip": {
+        const dayCalendar = state.calendarSchedules.find((item) => item.day === payload.day);
+        if (dayCalendar) {
+          const schedule = dayCalendar.schedules.find((s) => s.customizedScheduleId === payload.customId);
+          if (schedule) {
+            schedule.customizedScheduleType = ScheduleType.Cancelled;
+            schedule.customizedScheduleId = payload.scheduleId;
           }
-          return dayCalendar;
-        });
+        }
         break;
+      }
       case "Delete":
-        state.calendarSchedules.map((dayCalendar) => {
-          if (dayCalendar.day == payload.day) {
-            dayCalendar.schedules = dayCalendar.schedules.filter((schedule) => {
-              return schedule.customizedScheduleId != payload.data.scheduleId;
-            });
+        if (!payload.data.customizedScheduleType || payload.data.customizedScheduleType === ScheduleType.Create) {
+          state.calendarSchedules.map((dayCalendar) => {
+            if (dayCalendar.day == payload.day) {
+              dayCalendar.schedules = dayCalendar.schedules.filter((schedule) => {
+                return schedule.customizedScheduleId != payload.data.scheduleId;
+              });
+            }
+            return dayCalendar;
+          });
+        } else {
+          if (payload.data.customizedScheduleType === ScheduleType.Cancelled) {
+            const dayCalendar = state.calendarSchedules.find((item) => item.day === payload.day);
+            if (dayCalendar) {
+              const schedule = dayCalendar.schedules.find((s) => s.customizedScheduleId === payload.data.scheduleId);
+              if (schedule) {
+                schedule.customizedScheduleId = "0000-" + Math.random().toString(36).substr(2, 9);
+                schedule.customizedScheduleType = null;
+              }
+            }
           }
-          return dayCalendar;
-        });
+        }
+
         break;
       case "Update":
         state.calendarSchedules.map((dayCalendar) => {
@@ -135,6 +173,15 @@ const mutations: MutationTree<TeacherState> = {
   },
   setClassesSchedulesBySchools(state: TeacherState, payload: Array<ClassModelSchedules>) {
     state.classesSchedulesBySchools = [...state.classesSchedulesBySchools, ...payload];
+  },
+  setClassSetUpStudents(state: TeacherState, payload: Array<StudentGroupModel>) {
+    state.classSetUpStudents = payload;
+  },
+  clearClassesSchedulesBySchools(state: TeacherState) {
+    state.classesSchedulesBySchools = [];
+  },
+  setClassGroup(state: TeacherState, payload: Array<ClassGroupModel>) {
+    state.classGroup = payload;
   },
 };
 

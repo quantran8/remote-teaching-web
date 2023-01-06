@@ -1,15 +1,13 @@
-import { VCPlatform } from "@/store/app/state";
+import { CaptureNotification, TeacherClassGallery } from "@/locales/localeid";
+import { InClassStatus, StudentState } from "@/store/room/interface";
+import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
+import { notification } from "ant-design-vue";
+import moment from "moment";
 import { computed, defineComponent, ref, watch } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { useStore } from "vuex";
 import StudentAll from "./student-all/student-all.vue";
 import StudentControls from "./student-controls/student-controls.vue";
-import { fmtMsg } from "vue-glcommonui";
-import { TeacherClassGallery } from "@/locales/localeid";
-import moment from "moment";
-import { InClassStatus, StudentState } from "@/store/room/interface";
-import { notification } from "ant-design-vue";
-import { CaptureNotification } from "@/locales/localeid";
-import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 
 const TIMESTAMP_ONEANDONE = "TIMESTAMP_ONEANDONE";
 
@@ -99,16 +97,7 @@ export default defineComponent({
       await dispatch("teacherRoom/setCaptureAll", true);
     };
 
-    const previousExposure = computed(() => getters["lesson/previousExposure"]);
-    const previousExposureMediaItem = computed(() => getters["lesson/previousExposureItemMedia"]);
-
     const backToClass = async () => {
-      if (previousExposure.value) {
-        await dispatch("teacherRoom/setCurrentExposure", { id: previousExposure.value.id });
-      }
-      if (previousExposureMediaItem.value) {
-        await dispatch("teacherRoom/setCurrentExposureMediaItem", { id: previousExposureMediaItem.value.id });
-      }
       await dispatch("teacherRoom/clearStudentOneId", { id: "" });
       await dispatch("teacherRoom/sendOneAndOne", {
         status: false,

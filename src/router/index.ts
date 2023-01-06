@@ -51,6 +51,15 @@ const routes: Array<RouteRecordRaw> = [
       requireTeacher: true,
     },
   },
+  {
+    path: "/class-setup/:role",
+    name: "ClassSetUp",
+    component: () => import("../components/common/class-setup/class-setup.vue"),
+    meta: {
+      layout: "main",
+      requiresAuth: true,
+    },
+  },
   //   {
   //     path: "/teacher/image-view/:schoolId?/:studentId?",
   //     name: "TeacherImageView",
@@ -62,7 +71,7 @@ const routes: Array<RouteRecordRaw> = [
   //     },
   //   },
   {
-    path: "/teacher-calendars/:schoolId",
+    path: "/teacher-calendars",
     name: "TeacherCalendar",
     component: () => import("../views/teacher-calendar/teacher-calendar.vue"),
     meta: {
@@ -77,6 +86,15 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/teacher-class/teacher-class.vue"),
     meta: {
       layout: "full",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/teacher-schedule-info",
+    name: "TeacherScheduleInfo",
+    component: () => import("../views/teacher-calendar/components/schedule-info/schedule-info.vue"),
+    meta: {
+      layout: "main",
       requiresAuth: true,
     },
   },

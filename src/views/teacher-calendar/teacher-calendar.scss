@@ -9,7 +9,7 @@
 
   .calendar-title {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: row;
   }
 
@@ -32,12 +32,38 @@
   .mt-20 {
     margin-top: 20px;
   }
-
-  .calendar {
-    border: 1px solid rgba(235, 234, 234, 0.719);
-    margin-top: 30px;
-    margin-bottom: 50px;
+  .calender__container{
+	overflow: hidden;
+	.calendar {
+		margin-top: 30px;
+		margin-bottom: 50px;
+		&__header{
+			display: flex;
+			justify-content: flex-start;
+		}
+		&__date{
+			color: $main-color;
+			font-size: 20px;
+			font-weight: 500;
+		}
+		&__hide_weekends{
+			margin-right: -40.5%;
+		}
+		&__date{
+			color: $main-color;
+			font-size: 20px;
+		}
+		&__cell{
+			border: 2px solid rgba(235, 234, 234, 0.719);
+			height: 300px;
+			overflow: hidden;
+			padding: 5px 10px;
+			cursor: pointer;
+		}
+	  }
   }
+
+
 
   .month-select {
     width: 100px;
@@ -141,16 +167,26 @@
   color: black;
 }
 
-.session-info {
-  font-weight: normal;
-  font-size: 13px;
 
-  &__class-name {
-    font-weight: 500;
-    display: block;
-  }
-
-  &__group {
-    margin-right: 5px;
-  }
+.session__container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 55px;
+	.session-info {
+		font-weight: normal;
+		font-size: 13px;
+		&__class-name {
+		  font-weight: 500;
+		  display: block;
+		}
+	  
+		&__group {
+		  margin-right: 5px;
+		  font-weight: 500;
+		}
+	  }
+}
+.ant-switch-checked {
+	background-color: $main-color;
 }

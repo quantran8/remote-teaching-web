@@ -28,12 +28,26 @@ export interface ClassModelSchedules {
   classId: string;
   className: string;
   campusName: string;
+  campusId: string;
   isTeacher: boolean;
   startDate: string;
   endDate: string;
   groups: GroupModelSchedules[];
   lessonNumber: number;
   unit: number;
+  schoolName: string;
+}
+export interface ClassGroupModel {
+  startDate: string;
+  endDate: string;
+  schoolId: string;
+  schoolName: string;
+  classId: string;
+  className: string;
+  groups: Array<{
+    groupId: string;
+    groupName: string;
+  }>;
 }
 
 export interface UnitAndLesson {
