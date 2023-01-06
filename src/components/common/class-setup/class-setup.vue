@@ -1,15 +1,15 @@
 <template>
 	<div class="class_setup">
 		<div class="class_setup_header">
-			<p class="title_text">{{ dateTime }}</p>
+			<p class="title_text title_text--lg">{{ dateTime }}</p>
 		</div>
 		<div class="class_setup_container">
 			<div class="class_info">
 			<div class="class_info_session">
-				<p class="title_text">{{schoolName}}</p>
-				<p class="title_text">{{campusName}}</p>
-				<p class="title_text">{{className}}</p>
-				<p v-if="groupName" class="title_text">{{groupText}} {{groupName}}</p>
+				<p class="title_text title_text--lg">{{schoolName}}</p>
+				<p class="title_text title_text--md ">{{campusName}}</p>
+				<p class="title_text title_text--md">{{className}}</p>
+				<p v-if="groupName" class="title_text title_text--md">{{groupText}} {{groupName}}</p>
 			</div>
 			<div v-if="isTeacherSetup" class="class_info_unit-lesson">
 				<Row align="start">
@@ -33,12 +33,12 @@
 			</div>
 			<div v-if="isTeacherSetup" class="class_info_member">
 				<div>
-					<p class="title_text">{{ classSetUpStudents.length }} {{ MembersText }}</p>
+					<p class="title_text title_text--md">{{ classSetUpStudents.length }} {{ MembersText }}</p>
 				</div>
 				<div class="class_info_member_active">
 					<P class="student_status">{{ ActiveStudentsText }} ({{ activeStudents.length }})</P>
 					<div class="list_student">
-						<p v-for="st in activeStudents" :key="st.studentId">
+						<p v-for="st in activeStudents" :key="st.studentId" class="list_student__name">
 						{{ st.studentName }}
 						</p>
 					</div>
@@ -46,7 +46,7 @@
 				<div class="class_info_member_inactive">
 					<P class="student_status">{{ InActiveStudentsText }} ({{ inActiveStudents.length }})</P>
 					<div v-if="inActiveStudents.length" class="list_student list_student_inactive">
-						<p v-for="st in inActiveStudents" :key="st.studentId" class="">
+						<p v-for="st in inActiveStudents" :key="st.studentId" class="list_student__name">
 						{{ st.studentName }}
 						</p>
 					</div>
@@ -56,9 +56,10 @@
 		<div class="device_setup">
 			<div class="device-tester">
 			<Row align="middle" class="device-tester__default">
-				<p class="title_text">{{ RemoteSetUpText }}</p>
+				<p class="title_text title_text--md">{{ RemoteSetUpText }}</p>
 			</Row>
-			<Row align="middle" class="device-tester__default">
+			<div class="flex__container">
+				<Row align="middle" class="device-tester__default">
 				<div class="device-tester__default--lt">
 				<img src="@/assets/icons/speaker.png" class="device-tester-icon"/>
 				<span> {{ CheckSpeaker }} </span>
@@ -83,10 +84,11 @@
 						{{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
 					</SelectOption>
 					</Select>
-					<img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />	
 				</Space>
 				</div>
-      		</Row>
+			</Row>
+			<img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />	
+		</div>
 			  <Row align="middle" class="alert-device-test">
 				<p v-show="!havePermissionMicrophone">
 				<span>{{ warningMsgMicrophone }}</span>
@@ -179,7 +181,7 @@
 					</div>
 				</div>
 			</Row>
-			<Row class="device-tester__default device-tester__mt">
+			<Row class="device-tester__default device-tester__mt device-tester__mb">
 				<div class="device-tester__default--lt" />
 				<div class="device-tester__default--rt">
 				<Space size="large" align="center">
