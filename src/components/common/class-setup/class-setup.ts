@@ -6,6 +6,7 @@ import { JoinSessionModel } from "@/models/join-session.model";
 import { RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { store } from "@/store";
 import { VCPlatform } from "@/store/app/state";
+import { InClassStatus, StudentState } from "@/store/room/interface";
 import { Logger } from "@/utils/logger";
 import { getListUnitByClassAndGroup } from "@/views/teacher-home/lesson-helper";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
@@ -74,6 +75,7 @@ export default defineComponent({
     const InActiveStudentsText = computed(() => fmtMsg(ClassSetUp.InActiveStudents));
     const RemoteSetUpText = computed(() => fmtMsg(ClassSetUp.RemoteClassSetUp));
     const StartSessionText = computed(() => fmtMsg(ClassSetUp.StartSession));
+    const messageErrorJoinSession = computed(() => fmtMsg(DeviceTesterLocale.MessageErrorJoinSession));
     const route = useRoute();
     const router = useRouter();
     const { role } = route.params;
@@ -96,7 +98,7 @@ export default defineComponent({
         }
       }
     };
-
+    const students = computed<Array<StudentState>>(() => getters["studentRoom/students"]);
     const classSetUpStudents = computed<Array<StudentGroupModel>>(() => getters["teacher/classSetUpStudents"]);
     const activeStudents = computed<Array<StudentGroupModel>>(() => classSetUpStudents.value.filter((st) => st.isActivated));
     const inActiveStudents = computed<Array<StudentGroupModel>>(() => classSetUpStudents.value.filter((st) => !st.isActivated));
@@ -842,14 +844,19 @@ export default defineComponent({
           await store.dispatch("studentRoom/setOnline");
           await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
           await dispatch("studentRoom/setRoomInfo", roomResponse.data);
-
           if (getRoomInfoTimeout.value) {
             clearTimeout(getRoomInfoTimeout.value);
             getRoomInfoTimeout.value = null;
           }
           classIsActive.value = true;
           isDisabledJoinBtn.value = false;
+          const studentIsJoined = students.value.find((item) => item.id === student);
+          if (studentIsJoined && studentIsJoined.status === InClassStatus.JOINED) {
+            messageStartClass.value = messageErrorJoinSession.value;
+            isDisabledJoinBtn.value = true;
+          }
         } catch (err) {
+          messageStartClass.value = err.message;
           isDisabledJoinBtn.value = true;
           if (classIsActive.value) {
             classIsActive.value = false;
