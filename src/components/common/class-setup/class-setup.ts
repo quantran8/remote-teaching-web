@@ -862,6 +862,7 @@ export default defineComponent({
             classIsActive.value = false;
           }
           if (err?.code === 0) {
+            messageStartClass.value = DefaultMessage1.value;
             getRoomInfoTimeout.value = setTimeout(() => {
               getRoomInfo();
             }, refreshTiming);
