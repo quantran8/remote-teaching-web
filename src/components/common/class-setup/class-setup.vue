@@ -182,7 +182,7 @@
             </div>
           </Row>
           <Row class="device-tester__default device-tester__mt device-tester__mb">
-            <span class="device-tester__default--lt device-tester__mess-teacher-error">{{ messageStartClass }}</span>
+            <div class="device-tester__default--lt" />
             <div class="device-tester__default--rt">
               <Space size="large" align="center">
                 <span @click="handleCancel" class="device-tester__cancel">{{ Cancel }}</span>
@@ -199,6 +199,9 @@
                 </button>
               </Space>
             </div>
+          </Row>
+          <Row type="flex" justify="left">
+            <span class="device-tester__mess-teacher-error">{{ messageStartClass }}</span>
           </Row>
         </div>
       </div>
