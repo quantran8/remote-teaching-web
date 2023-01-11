@@ -5,9 +5,9 @@ import { ScheduleParam } from "@/services";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
 import { Button, Calendar, Col, Modal, Row, Select, Spin, Switch, TimePicker, Tooltip } from "ant-design-vue";
 import moment, { Moment } from "moment";
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 moment.updateLocale("en-gb", {
   weekdaysMin: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -17,6 +17,7 @@ interface Group {
   groupName: string;
 }
 const MAX_SCHEDULE_IN_DAY = 4;
+const NUMBER_DAYS_OF_HAFT_MONTH = 15;
 export const All = "all";
 
 export default defineComponent({
@@ -36,8 +37,6 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const route = useRoute();
-    const { schoolId } = route.params;
     const value = ref<Moment>();
 
     const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
@@ -108,17 +107,13 @@ export default defineComponent({
       await getAllSchedules(month.value);
       await getListClassSelect();
     });
-
-    watch(month, () => {
-      const classId = selectedClassId.value == All ? null : selectedClassId.value;
-      const groupId = selectedGroupId.value == All ? null : selectedGroupId.value;
-      getSchedules(selectedShoolId.value, classId, groupId, month.value);
-    });
     const goToScheduleInfo = (date: Moment) => {
       router.push(`/teacher-schedule-info?classId=${selectedClassId.value}&date=${date.format("yyyy-MM-DD")}`);
     };
     const getAllSchedules = async (month: Moment) => {
-      await store.dispatch("teacher/loadAllSchedules", { startDate: month.startOf("month").format(formatDateTime) });
+      await store.dispatch("teacher/loadAllSchedules", {
+        startDate: moment(month.format(formatDateTime)).startOf("month").subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day").format(formatDateTime),
+      });
     };
     const getSchedules = async (schoolId: string | null, classId: string | null, groupId: string | null, month: Moment, isGetAll = false) => {
       loading.value = true;
@@ -135,8 +130,12 @@ export default defineComponent({
           schoolId,
           classId,
           groupId,
-          startDate: month.startOf("month").format(formatDateTime),
-          endDate: month.endOf("month").format(formatDateTime),
+          startDate: moment(month.format(formatDateTime)).startOf("month").subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day").format(formatDateTime),
+          endDate: moment(month.format(formatDateTime))
+            .add(1, "month")
+            .endOf("month")
+            .subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day")
+            .format(formatDateTime),
         });
       }
       loading.value = false;
@@ -466,7 +465,7 @@ export default defineComponent({
 
     const onPanelChange = async (value: any, _mode: any) => {
       month.value = value;
-      await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value, value);
+      await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value, month.value);
     };
 
     const setSelectedStartDateModal = () => {
