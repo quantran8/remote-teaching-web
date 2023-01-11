@@ -7,16 +7,40 @@
       <div class="select-container">
         <span class="title-select">{{ classText }}</span>
         <Select :value="selectedClassName" class="size-select ant-custom-calendar" show-search @change="handleChangeClass">
-          <Option class="ant-custom-calendar" :value="All">{{ allText }}</Option>
+          <Option class="ant-custom-calendar" :value="All">
+			<Tooltip placement="right">
+				<template #title>
+					{{ allText }}
+				</template>
+				{{ allText }}
+			</Tooltip>
+		  </Option>
           <Option class="ant-custom-calendar" v-for="val in listClassSelect" :key="val.classId" :value="val.className">
-            {{ val.className }} ({{ val.schoolName }})
+			<Tooltip placement="right">
+				<template #title>
+					{{ val.className }} ({{ val.schoolName }})
+				</template>
+				{{ val.className }} ({{ val.schoolName }})
+			</Tooltip>
           </Option>
         </Select>
         <span class="title-select ml-20">{{ groupText }}</span>
         <Select :value="selectedGroupName" class="size-select ant-custom-calendar" show-search @change="handleChangeGroup">
-          <Option class="ant-custom-calendar" :value="All">{{ allText }}</Option>
+          <Option class="ant-custom-calendar" :value="All">
+			<Tooltip placement="right">
+				<template #title>
+					{{ allText }}
+				</template>
+				{{ allText }}
+			</Tooltip>
+		  </Option>
           <Option class="ant-custom-calendar" v-for="val in listGroupSelect" :key="val.groupId" :value="val.groupName">
-            {{ val.groupName }}
+			<Tooltip placement="right">
+				<template #title>
+					 {{ val.groupName }}
+				</template>
+				 {{ val.groupName }}
+			</Tooltip>
           </Option>
         </Select>
       </div>

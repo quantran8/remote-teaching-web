@@ -143,7 +143,14 @@ const actions: ActionTree<TeacherState, any> = {
   },
   async setClassGroup({ commit }) {
     const response = await TeacherService.getClassGroup();
-    commit("setClassGroup", response);
+    if (response.length) {
+      response.forEach((item) => {
+        if (item.groups.length) {
+          item.groups.sort((a, b) => (a.groupName > b.groupName ? 1 : -1));
+        }
+      });
+      commit("setClassGroup", response);
+    }
   },
 };
 
