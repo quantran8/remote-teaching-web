@@ -10,7 +10,7 @@
 				<div v-for="(item,index) of selectItem" :key="index" class="session__info">
 					<div :class="['session__info__item', (item.customizedScheduleType === ScheduleType.Cancelled) && 'session__info__item--skipped', (item.customizedScheduleType === ScheduleType.Create) && 'text__main__color']">
 						<p class="class__title">{{item.className}}</p>
-						<p class="schedule__info__title"> {{groupText}} {{item.groupName}} *</p>
+						<p class="schedule__info__title"> {{groupText}} {{item.groupName}} {{ (!item.customizedScheduleType || item.customizedScheduleType === ScheduleType.Cancelled) && "*" }}</p>
 						<p class="schedule__info__title">{{`${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""}`}}</p>
 					</div>
 					<div class="action">
