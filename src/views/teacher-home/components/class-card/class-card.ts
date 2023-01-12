@@ -1,9 +1,11 @@
 import { ClassCard, TeacherHome } from "@/locales/localeid";
+import { UnitAndLesson } from "@/models";
 import { GroupModelSchedules } from "@/models/group.model";
-import { Spin } from "ant-design-vue";
+import { notification, Spin } from "ant-design-vue";
 import moment from "moment";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { fmtMsg } from "vue-glcommonui";
+import { getListUnitByClassAndGroup } from "../../lesson-helper";
 
 export default defineComponent({
   props: {
@@ -65,6 +67,10 @@ export default defineComponent({
     const unitText = computed(() => fmtMsg(ClassCard.Unit));
     const lessonText = computed(() => fmtMsg(ClassCard.Lesson));
     const membersText = computed(() => fmtMsg(ClassCard.Members));
+    const currentLesson = ref();
+    const listLessonByUnit = ref();
+    const unitInfo = ref<Array<UnitAndLesson>>([]);
+    const loading = ref(false);
 
     const validatedGroupHighlighted = () => {
       let min = 999999;
@@ -118,8 +124,29 @@ export default defineComponent({
       const date = moment(`${moment().format("YYYY")}/${subText}`);
       return `${moment().format("YYYY")}/${subText} (${moment.weekdays(date.isoWeekday())}) |${remainText}`;
     };
-
-    onMounted(() => {
+    const setupUnitAndLesson = () => {
+      const isUnitAvailable = unitInfo.value.find((item: UnitAndLesson) => item.unit === props.unit);
+      const unitDefault = isUnitAvailable ? props.unit : unitInfo.value.length ? unitInfo.value[unitInfo.value.length - 1].unit : 1;
+      const currentUnitIndex = unitInfo.value.findIndex((item: UnitAndLesson) => item.unit === unitDefault);
+      listLessonByUnit.value = unitInfo.value[currentUnitIndex].sequence;
+      currentLesson.value = listLessonByUnit.value[props.lesson];
+    };
+    const getListLessonByUnit = async (classId: string, groupId: string) => {
+      try {
+        unitInfo.value = await getListUnitByClassAndGroup(classId, groupId);
+        return true;
+      } catch (err) {
+        const message = err?.body?.message;
+        if (message) {
+          notification.error({
+            message: message,
+          });
+        }
+        return false;
+      }
+    };
+    onMounted(async () => {
+      loading.value = true;
       if (props.remoteClassGroups) {
         validatedGroupHighlighted();
         const newGroups = props.remoteClassGroups.map((group) => {
@@ -154,6 +181,13 @@ export default defineComponent({
       } else {
         groups.value = [];
       }
+      const isSucceed = await getListLessonByUnit(props.id as string, props.remoteClassGroups[0].groupId as string);
+      if (!isSucceed) {
+        loading.value = false;
+        return;
+      }
+      setupUnitAndLesson();
+      loading.value = false;
     });
 
     const clickToAccess = (groupId: string, schoolId: string) => {
@@ -161,6 +195,19 @@ export default defineComponent({
       emit("click-to-access", groupId, schoolId);
     };
 
-    return { groups, clickToAccess, clickedGroup, groupText, nextText, galleryText, unitText, lessonText, membersText, handleDateTime };
+    return {
+      groups,
+      clickToAccess,
+      clickedGroup,
+      groupText,
+      nextText,
+      galleryText,
+      unitText,
+      lessonText,
+      membersText,
+      handleDateTime,
+      currentLesson,
+      loading,
+    };
   },
 });

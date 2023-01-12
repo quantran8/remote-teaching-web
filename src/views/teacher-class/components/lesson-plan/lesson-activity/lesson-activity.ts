@@ -1,8 +1,8 @@
-import { ExposureStatus, ExposureType } from "@/store/lesson/state";
-import { defineComponent, computed } from "vue";
-import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
-import { fmtMsg } from "vue-glcommonui";
 import { TeacherClassLessonPlan } from "@/locales/localeid";
+import { ExposureStatus, ExposureType } from "@/store/lesson/state";
+import { getSeconds, secondsToTimeStr } from "@/utils/convertDuration";
+import { computed, defineComponent } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 
 const exposureIcon = (type: ExposureType) => {
   let icon = "icon-bigbook";
@@ -45,7 +45,7 @@ export default defineComponent({
   props: ["id", "title", "type", "duration", "status"],
   setup(props) {
     const activityIcon = exposureIcon(props.type);
-    const isCompleted = props.status === ExposureStatus.COMPLETED;
+    const isCompleted = computed(() => props.status === ExposureStatus.COMPLETED);
     const formattedDuration = computed(() => secondsToTimeStr(getSeconds(props.duration)));
     const exposureTitle = computed(() =>
       props.type === ExposureType.TRANSITION

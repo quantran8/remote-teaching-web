@@ -2,12 +2,14 @@ import IconWarning from "@/assets/calendar-warning.svg";
 import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 import { ClassGroupModel, ClassModelSchedules } from "@/models";
 import { ScheduleParam } from "@/services";
+import { CalendarFilter } from "@/store/teacher/state";
+import { ScheduleType } from "@/utils/utils";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
 import { Button, Calendar, Col, Modal, Row, Select, Spin, Switch, TimePicker, Tooltip } from "ant-design-vue";
 import moment, { Moment } from "moment";
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 moment.updateLocale("en-gb", {
   weekdaysMin: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -17,6 +19,7 @@ interface Group {
   groupName: string;
 }
 const MAX_SCHEDULE_IN_DAY = 4;
+const NUMBER_DAYS_OF_HAFT_MONTH = 15;
 export const All = "all";
 
 export default defineComponent({
@@ -36,23 +39,27 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const route = useRoute();
-    const { schoolId } = route.params;
-    const value = ref<Moment>();
 
     const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
     const visible = ref<boolean>(false);
     const recurringVisible = ref<boolean>(false);
     const classGroup = computed<Array<ClassGroupModel>>(() => store.getters["teacher/classGroup"]);
+    const calendarFilter = computed<CalendarFilter>(() => store.getters["teacher/calendarFilter"]);
     const listClassSelect = ref(classGroup.value);
     const listClassCreateNew = ref<any[]>([]);
     const listGroupModal = ref<any[]>([]);
-    const selectedShoolId = ref<string>(All);
-    const selectedClassId = ref<string>(All);
-    const selectedClassName = ref<string>(All);
+    const selectedShoolId = ref<string>(classGroup.value.find((c) => c.classId === calendarFilter.value.classId)?.schoolId ?? All);
+    const selectedClassId = ref<string>(classGroup.value.find((c) => c.classId === calendarFilter.value.classId)?.classId ?? All);
+    const selectedClassName = ref<string>(classGroup.value.find((c) => c.classId === calendarFilter.value.classId)?.className ?? All);
     const selectedClassIdModal = ref<string>("");
-    const selectedGroupId = ref<string>(All);
-    const selectedGroupName = ref<string>(All);
+    const selectedGroupId = ref<string>(
+      classGroup.value.find((c) => c.classId === selectedClassId.value)?.groups.find((group) => group.groupId === calendarFilter.value.groupId)
+        ?.groupId ?? All,
+    );
+    const selectedGroupName = ref<string>(
+      classGroup.value.find((c) => c.classId === selectedClassId.value)?.groups.find((group) => group.groupId === calendarFilter.value.groupId)
+        ?.groupName ?? All,
+    );
     const selectedGroupIdCache = ref<string>(All);
     const selectedGroupIdModal = ref<string>("");
     const selectedTimeIdModal = ref<string>("");
@@ -63,7 +70,7 @@ export default defineComponent({
     const isDisableGroup = ref<boolean>(true);
     const calendarSchedules = computed(() => store.getters["teacher/calendarSchedules"]);
     const color = ref();
-    const month = ref<Moment>(moment());
+    const month = ref<Moment>(calendarFilter.value.date ? moment(calendarFilter.value.date) : moment());
     const formatTime = "HH:mm";
     const formatDateTime = "YYYY-MM-DDTHH:mm:ss";
     const filterAll = All;
@@ -101,24 +108,29 @@ export default defineComponent({
       const data = listClassSelect.value.find((c) => c.classId === selectedClassId.value)?.groups ?? [];
       return data;
     });
-    const isShowWeekends = ref(false);
+    const isShowWeekends = ref(calendarFilter.value.isShowWeekends);
     const CurrentMonthText = ref(moment().format("MMMM yyy"));
+    const currentYear = ref(calendarFilter.value.date ? moment(calendarFilter.value.date).format("yyyy") : moment().format("yyyy"));
+    const currentMonth = ref(calendarFilter.value.date ? moment(calendarFilter.value.date).format("MMM") : moment().format("MMM"));
 
     onMounted(async () => {
-      await getAllSchedules(month.value);
+      if (calendarFilter.value.classId) {
+        await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value === All ? null : selectedGroupId.value, month.value);
+      } else {
+        await getAllSchedules(month.value);
+      }
       await getListClassSelect();
     });
-
-    watch(month, () => {
-      const classId = selectedClassId.value == All ? null : selectedClassId.value;
-      const groupId = selectedGroupId.value == All ? null : selectedGroupId.value;
-      getSchedules(selectedShoolId.value, classId, groupId, month.value);
+    watch(isShowWeekends, async (value) => {
+      await store.dispatch("teacher/setCalendarFilter", { ...calendarFilter.value, isShowWeekends: value });
     });
     const goToScheduleInfo = (date: Moment) => {
       router.push(`/teacher-schedule-info?classId=${selectedClassId.value}&date=${date.format("yyyy-MM-DD")}`);
     };
     const getAllSchedules = async (month: Moment) => {
-      await store.dispatch("teacher/loadAllSchedules", { startDate: month.startOf("month").format(formatDateTime) });
+      await store.dispatch("teacher/loadAllSchedules", {
+        startDate: moment(month.format(formatDateTime)).startOf("month").subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day").format(formatDateTime),
+      });
     };
     const getSchedules = async (schoolId: string | null, classId: string | null, groupId: string | null, month: Moment, isGetAll = false) => {
       loading.value = true;
@@ -135,8 +147,12 @@ export default defineComponent({
           schoolId,
           classId,
           groupId,
-          startDate: month.startOf("month").format(formatDateTime),
-          endDate: month.endOf("month").format(formatDateTime),
+          startDate: moment(month.format(formatDateTime)).startOf("month").subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day").format(formatDateTime),
+          endDate: moment(month.format(formatDateTime))
+            .add(1, "month")
+            .endOf("month")
+            .subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day")
+            .format(formatDateTime),
         });
       }
       loading.value = false;
@@ -169,6 +185,7 @@ export default defineComponent({
       }
       selectedGroupId.value = All;
       selectedGroupName.value = All;
+      await store.dispatch("teacher/setCalendarFilter", { ...calendarFilter.value, classId: selectedClassId.value });
     };
 
     const handleChangeGroup = async (vl: string) => {
@@ -179,6 +196,7 @@ export default defineComponent({
       } else {
         await getSchedules(selectedShoolId.value, selectedClassId.value, null, month.value);
       }
+      await store.dispatch("teacher/setCalendarFilter", { ...calendarFilter.value, groupId: selectedGroupId.value });
     };
 
     const handleChangeTimeModal = (groupId: string) => {
@@ -238,12 +256,7 @@ export default defineComponent({
         return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
       const dataReturn =
-        listData.length > 0
-          ? listData[0].schedules.map((schedule: any) => {
-              schedule.color = color.value && color.value[schedule.classId];
-              return schedule;
-            })
-          : [];
+        listData.length > 0 ? listData[0].schedules.filter((schedule: any) => schedule.customizedScheduleType !== ScheduleType.Cancelled) : [];
       return dataReturn.slice(0, 5);
     };
 
@@ -466,7 +479,8 @@ export default defineComponent({
 
     const onPanelChange = async (value: any, _mode: any) => {
       month.value = value;
-      await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value, value);
+      await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value, month.value);
+      await store.dispatch("teacher/setCalendarFilter", { ...calendarFilter.value, date: month.value.format("yyyy-MM-DD") });
     };
 
     const setSelectedStartDateModal = () => {
@@ -729,7 +743,7 @@ export default defineComponent({
       listGroupModal,
       visible,
       recurringVisible,
-      value,
+      month,
       getListData,
       getMonths,
       getYears,
@@ -791,6 +805,8 @@ export default defineComponent({
       MAX_SCHEDULE_IN_DAY,
       showWeekendsText,
       All,
+      currentYear,
+      currentMonth,
     };
   },
 });

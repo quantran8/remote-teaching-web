@@ -10,7 +10,7 @@
 				<div v-for="(item,index) of selectItem" :key="index" class="session__info">
 					<div :class="['session__info__item', (item.customizedScheduleType === ScheduleType.Cancelled) && 'session__info__item--skipped', (item.customizedScheduleType === ScheduleType.Create) && 'text__main__color']">
 						<p class="class__title">{{item.className}}</p>
-						<p class="schedule__info__title"> {{groupText}} {{item.groupName}} *</p>
+						<p class="schedule__info__title"> {{groupText}} {{item.groupName}} {{ (!item.customizedScheduleType || item.customizedScheduleType === ScheduleType.Cancelled) && "*" }}</p>
 						<p class="schedule__info__title">{{`${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""}`}}</p>
 					</div>
 					<div class="action">
@@ -64,7 +64,7 @@
 						</div>
 						<div class="select__time__item">
 							<Select :value="selectStartMinutes" :show-arrow="false" style="width:50px" @change="onChangeMinutesStart">
-							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutes(index)">
+							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutes(index)" :value="index">
 								{{index < 10 ? "0" + index : index}}
 							</Option>
 						</Select>
@@ -83,7 +83,7 @@
 					<div class="select__time">
 						<div class="select__time__item">
 						<Select :value="selectEndHour" :show-arrow="false" style="width:50px;" @change="onChangeHourEnd">
-							<Option v-for=" number in 12" :key="number" :disabled = "isDisableHourEnd(number)">
+							<Option v-for=" number in 12" :key="number" :disabled = "isDisableHourEnd(number)"> 
 								{{number < 10 ? "0" + number : number }}
 							</Option>
 						</Select>
@@ -91,7 +91,7 @@
 					</div>
 					<div class="select__time__item">
 						<Select :value="selectEndMinutes" :show-arrow="false" style="width:50px;" @change="onChangeMinutesEnd">
-							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutesEnd(index)">
+							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutesEnd(index)" :value="index">
 								{{index < 10 ? "0" + index : index}}
 							</Option>
 						</Select>

@@ -185,7 +185,9 @@
             <div class="device-tester__default--lt" />
             <div class="device-tester__default--rt">
               <Space size="large" align="center">
-                <span @click="handleCancel" class="device-tester__cancel">{{ Cancel }}</span>
+                <button @click="handleCancel" class="device-tester__cancel">
+					<span>{{ Cancel }}</span>
+				</button>
                 <button
                   @click="handleSubmit"
                   :loading="loading"
@@ -200,7 +202,7 @@
               </Space>
             </div>
           </Row>
-          <Row type="flex" justify="center">
+          <Row type="flex" justify="left">
             <span class="device-tester__mess-teacher-error">{{ messageStartClass }}</span>
           </Row>
         </div>

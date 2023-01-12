@@ -20,7 +20,6 @@
 			&_member{
 				margin-top: 50px;
 				.list_student{
-					height: 200px;
 					overflow-y: scroll;
 					&_inactive{
 						opacity: 0.6;
@@ -33,7 +32,7 @@
 					font-weight: 700;
 				}
 				&_active{
-					margin-bottom: 40px;
+					margin-bottom: 15px;
 				}
 			}
 			
@@ -161,8 +160,9 @@
 					}
 				}
 				&__cancel{
+					width: 80px;
+					height: 40px;
 					cursor: pointer;
-					text-decoration: underline;
 				}
 			  
 			  }

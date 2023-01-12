@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
+var PACKAGE = require("./package.json");
 
 module.exports = {
   css: {
@@ -35,5 +36,11 @@ module.exports = {
       localeDir: "locales",
       enableInSFC: false,
     },
+  },
+  chainWebpack: (config) => {
+    config.plugin("html").tap((args) => {
+      args[0].title = PACKAGE.title;
+      return args;
+    });
   },
 };

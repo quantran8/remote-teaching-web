@@ -4,7 +4,7 @@ import { store } from "@/store";
 import { Logger } from "@/utils/logger";
 import { All } from "@/views/teacher-calendar/teacher-calendar";
 import { ActionContext, ActionTree } from "vuex";
-import { StudentsGroup, TeacherState } from "./state";
+import { CalendarFilter, StudentsGroup, TeacherState } from "./state";
 
 const actions: ActionTree<TeacherState, any> = {
   async setInfo({ dispatch, commit }, payload: Parent) {
@@ -143,7 +143,17 @@ const actions: ActionTree<TeacherState, any> = {
   },
   async setClassGroup({ commit }) {
     const response = await TeacherService.getClassGroup();
-    commit("setClassGroup", response);
+    if (response.length) {
+      response.forEach((item) => {
+        if (item.groups.length) {
+          item.groups.sort((a, b) => (a.groupName > b.groupName ? 1 : -1));
+        }
+      });
+      commit("setClassGroup", response);
+    }
+  },
+  setCalendarFilter({ commit }, p: CalendarFilter) {
+    commit("setCalendarFilter", p);
   },
 };
 
