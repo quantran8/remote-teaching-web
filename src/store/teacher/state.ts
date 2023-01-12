@@ -10,6 +10,12 @@ export interface StudentsGroup {
   studentName: string;
   nativeName: string;
 }
+export interface CalendarFilter {
+  classId: string;
+  groupId: string;
+  date: string;
+  isShowWeekends: boolean;
+}
 export interface TeacherState {
   info?: UserModel;
   schools: Array<ResourceModel>;
@@ -25,6 +31,7 @@ export interface TeacherState {
   classesSchedulesBySchools: Array<TeacherClassModel>;
   classSetUpStudents: Array<StudentGroupModel>;
   classGroup: Array<ClassGroupModel>;
+  calendarFilter: CalendarFilter;
 }
 
 const state: TeacherState = {
@@ -42,6 +49,12 @@ const state: TeacherState = {
   classesSchedulesBySchools: [],
   classSetUpStudents: [],
   classGroup: [],
+  calendarFilter: {
+    classId: "",
+    groupId: "",
+    date: "",
+    isShowWeekends: false,
+  },
 };
 
 export default state;

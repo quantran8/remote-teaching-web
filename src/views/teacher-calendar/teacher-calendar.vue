@@ -53,7 +53,7 @@
       <Spin class="ant-custom-calendar"></Spin>
     </div>
     <div class="calender__container">
-	<Calendar :class="['calendar', !isShowWeekends && 'calendar__hide_weekends']" mode="month" v-model:value="value" @panelChange="onPanelChange" >
+	<Calendar :class="['calendar', !isShowWeekends && 'calendar__hide_weekends']" mode="month" v-model:value="month" @panelChange="onPanelChange">
       <template #headerRender="{ value, onChange }">
         <div :class="['calendar__header', !isShowWeekends && 'calendar__header--mr']">
           <Row type="flex">
@@ -61,7 +61,7 @@
               <Select
                 :dropdown-match-select-width="false"
                 class="year-select ant-custom-calendar"
-                :value="String(value.year())"
+                :value="currentYear"
                 @change="
                   (newYear) => {
                     onChange(value.clone().year(newYear));
@@ -77,7 +77,7 @@
               <Select
                 :dropdown-match-select-width="false"
                 class="month-select ant-custom-calendar"
-                :value="String(value.month())"
+                :value="currentMonth"
                 @change="
                   (selectedMonth) => {
                     onChange(value.clone().month(parseInt(selectedMonth, 10)));
