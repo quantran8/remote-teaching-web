@@ -9,7 +9,7 @@ import {
 } from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { GetterTree } from "vuex";
-import { StudentsGroup, TeacherState } from "./state";
+import { CalendarFilter, StudentsGroup, TeacherState } from "./state";
 
 const getters: GetterTree<TeacherState, any> = {
   classes(state: TeacherState): Array<TeacherClassCalendarModel> {
@@ -50,6 +50,9 @@ const getters: GetterTree<TeacherState, any> = {
   },
   classGroup(state: TeacherState): Array<ClassGroupModel> {
     return state.classGroup;
+  },
+  calendarFilter(state: TeacherState): CalendarFilter {
+    return state.calendarFilter;
   },
 };
 

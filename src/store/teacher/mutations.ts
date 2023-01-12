@@ -4,7 +4,7 @@ import { UserModel } from "@/models/user.model";
 import { ScheduleType } from "@/utils/utils";
 import moment from "moment";
 import { MutationTree } from "vuex";
-import { TeacherState } from "./state";
+import { CalendarFilter, TeacherState } from "./state";
 
 const mutations: MutationTree<TeacherState> = {
   setSchools(state: TeacherState, payload: Array<ResourceModel>) {
@@ -182,6 +182,9 @@ const mutations: MutationTree<TeacherState> = {
   },
   setClassGroup(state: TeacherState, payload: Array<ClassGroupModel>) {
     state.classGroup = payload;
+  },
+  setCalendarFilter(state: TeacherState, payload: CalendarFilter) {
+    state.calendarFilter = payload;
   },
 };
 

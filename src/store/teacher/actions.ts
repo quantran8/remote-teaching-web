@@ -4,7 +4,7 @@ import { store } from "@/store";
 import { Logger } from "@/utils/logger";
 import { All } from "@/views/teacher-calendar/teacher-calendar";
 import { ActionContext, ActionTree } from "vuex";
-import { StudentsGroup, TeacherState } from "./state";
+import { CalendarFilter, StudentsGroup, TeacherState } from "./state";
 
 const actions: ActionTree<TeacherState, any> = {
   async setInfo({ dispatch, commit }, payload: Parent) {
@@ -151,6 +151,9 @@ const actions: ActionTree<TeacherState, any> = {
       });
       commit("setClassGroup", response);
     }
+  },
+  setCalendarFilter({ commit }, p: CalendarFilter) {
+    commit("setCalendarFilter", p);
   },
 };
 
