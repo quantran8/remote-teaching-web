@@ -64,7 +64,7 @@
 						</div>
 						<div class="select__time__item">
 							<Select :value="selectStartMinutes" :show-arrow="false" style="width:50px" @change="onChangeMinutesStart">
-							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutes(index)">
+							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutes(index)" :value="index">
 								{{index < 10 ? "0" + index : index}}
 							</Option>
 						</Select>
@@ -83,7 +83,7 @@
 					<div class="select__time">
 						<div class="select__time__item">
 						<Select :value="selectEndHour" :show-arrow="false" style="width:50px;" @change="onChangeHourEnd">
-							<Option v-for=" number in 12" :key="number" :disabled = "isDisableHourEnd(number)">
+							<Option v-for=" number in 12" :key="number" :disabled = "isDisableHourEnd(number)"> 
 								{{number < 10 ? "0" + number : number }}
 							</Option>
 						</Select>
@@ -91,7 +91,7 @@
 					</div>
 					<div class="select__time__item">
 						<Select :value="selectEndMinutes" :show-arrow="false" style="width:50px;" @change="onChangeMinutesEnd">
-							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutesEnd(index)">
+							<Option v-for=" (number,index) in 60" :key="number" :disabled = "isDisableMinutesEnd(index)" :value="index">
 								{{index < 10 ? "0" + index : index}}
 							</Option>
 						</Select>
