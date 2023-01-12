@@ -185,7 +185,9 @@
             <div class="device-tester__default--lt" />
             <div class="device-tester__default--rt">
               <Space size="large" align="center">
-                <span @click="handleCancel" class="device-tester__cancel">{{ Cancel }}</span>
+                <button @click="handleCancel" class="device-tester__cancel">
+					<span>{{ Cancel }}</span>
+				</button>
                 <button
                   @click="handleSubmit"
                   :loading="loading"
