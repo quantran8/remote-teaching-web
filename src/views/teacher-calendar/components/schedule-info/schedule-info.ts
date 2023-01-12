@@ -16,7 +16,6 @@ enum HourType {
   PM = "PM",
 }
 const formatDateTimeStandard = "YYYY-MM-DD";
-
 export default defineComponent({
   components: {
     Button,
@@ -42,6 +41,7 @@ export default defineComponent({
     });
     const currentClass = ref(classGroup.value[0]?.classId ?? "");
     const currentGroup = ref(classGroup.value[0]?.groups[0]?.groupId ?? "");
+    const listClass = computed(() => (classId === All ? classGroup.value : classGroup.value.filter((cl) => cl.classId === classId)));
     const listGroupByClass = computed(() =>
       currentClass.value ? classGroup.value.find((cl) => cl.classId === currentClass.value)?.groups ?? [] : [],
     );
@@ -224,6 +224,9 @@ export default defineComponent({
         return deleteText.value;
       }
     };
+    const isRecurringSchedule = (item: SchedulesModel) => {
+      return !item.customizedScheduleType || item.customizedScheduleType === ScheduleType.Cancelled;
+    };
     onMounted(async () => {
       if (!classGroup.value.length) {
         await store.dispatch("teacher/setClassGroup");
@@ -283,7 +286,9 @@ export default defineComponent({
       onChangeEndHourType,
       disabledSkipOrDeleteBtn,
       disabledAddSessionBtn,
+      listClass,
       actionText,
+      isRecurringSchedule,
     };
   },
 });

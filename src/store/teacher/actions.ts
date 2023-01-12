@@ -70,8 +70,8 @@ const actions: ActionTree<TeacherState, any> = {
     );
     commit("setCalendarSchedule", response);
   },
-  async loadAllSchedules({ commit, state }: ActionContext<TeacherState, any>, payload: { startDate: string }) {
-    const response = await TeacherService.getAllScheduleCalendar(payload.startDate);
+  async loadAllSchedules({ commit }: ActionContext<TeacherState, any>, payload: { startDate: string; endDate?: string }) {
+    const response = await TeacherService.getAllScheduleCalendar(payload.startDate, payload.endDate ?? "");
     commit("setCalendarSchedule", response);
   },
   async skipSchedule({ commit, state }: ActionContext<TeacherState, any>, payload: { day: string; customId: string; data: ScheduleParam }) {
