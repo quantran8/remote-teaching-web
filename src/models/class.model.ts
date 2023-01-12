@@ -44,6 +44,8 @@ export interface ClassGroupModel {
   schoolName: string;
   classId: string;
   className: string;
+  unit: number;
+  lesson: number;
   groups: Array<{
     groupId: string;
     groupName: string;

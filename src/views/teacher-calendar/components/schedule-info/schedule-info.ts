@@ -1,4 +1,4 @@
-import { ScheduleInfo, TeacherCalendarLocale } from "@/locales/localeid";
+import { DeviceTesterLocale, ScheduleInfo, TeacherCalendarLocale } from "@/locales/localeid";
 import { CalendarSchedulesModel, ClassGroupModel, SchedulesModel } from "@/models";
 import { store } from "@/store";
 import { ScheduleType } from "@/utils/utils";
@@ -72,6 +72,8 @@ export default defineComponent({
     const AMText = computed(() => fmtMsg(ScheduleInfo.AM));
     const PMText = computed(() => fmtMsg(ScheduleInfo.PM));
     const CantCreateScheduleText = computed(() => fmtMsg(ScheduleInfo.CantCreateSchedule));
+    const LessonText = computed(() => fmtMsg(DeviceTesterLocale.Lesson));
+    const UnitText = computed(() => fmtMsg(DeviceTesterLocale.Unit));
     const dateTime = ref(moment(date).format("dddd, MMMM DD, yyyy"));
 
     const handleChangeClass = (value: string) => {
@@ -265,6 +267,10 @@ export default defineComponent({
     };
     const isRecurringSchedule = (item: SchedulesModel) => {
       return !item.customizedScheduleType || item.customizedScheduleType === ScheduleType.Cancelled;
+	}
+    const getScheduleUnitLesson = (item: SchedulesModel) => {
+      const classInfo = classGroup.value.find((cl) => cl.classId === item.classId) ?? classGroup.value[0];
+      return { unit: classInfo.unit, lesson: classInfo.lesson + 1 };
     };
     onMounted(async () => {
       if (!classGroup.value.length) {
@@ -295,6 +301,8 @@ export default defineComponent({
       RestoreText,
       AMText,
       PMText,
+      LessonText,
+      UnitText,
       listGroupByClass,
       currentClass,
       classGroup,
@@ -328,6 +336,7 @@ export default defineComponent({
       listClass,
       actionText,
       isRecurringSchedule,
+      getScheduleUnitLesson,
     };
   },
 });

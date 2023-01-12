@@ -12,6 +12,7 @@
 						<p class="class__title">{{item.className}}</p>
 						<p class="schedule__info__title"> {{groupText}} {{item.groupName}} {{ isRecurringSchedule(item) ? "*" : "" }}</p>
 						<p class="schedule__info__title">{{`${item.start ? `${item.start.split(":")[0]}:${item.start.split(":")[1]}` : ""}${item.end ? ` - ${item.end.split(":")[0]}:${item.end.split(":")[1]}` : ""}`}}</p>
+						<p class="schedule__info__title schedule__info__title--mt"> {{ UnitText }} {{ getScheduleUnitLesson(item).unit }}, {{ LessonText }} {{ getScheduleUnitLesson(item).lesson }}</p>
 					</div>
 					<div class="action">
 						<button :class="['btn__action', 'btn__action--md', disabledSkipOrDeleteBtn && 'btn__action--disable btn__action--not__allowed', (item.customizedScheduleType === ScheduleType.Cancelled) && 'btn__action--disable']" :disabled="disabledSkipOrDeleteBtn" @click="deleteOrSkipSchedule(item)">
