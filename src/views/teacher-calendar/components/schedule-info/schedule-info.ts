@@ -69,7 +69,7 @@ export default defineComponent({
     const RestoreText = computed(() => fmtMsg(ScheduleInfo.Restore));
     const AMText = computed(() => fmtMsg(ScheduleInfo.AM));
     const PMText = computed(() => fmtMsg(ScheduleInfo.PM));
-    const dateTime = ref(`${moment().format("dddd, MMMM DD, yyyy")}`);
+    const dateTime = ref(moment(date).format("dddd, MMMM DD, yyyy"));
 
     const handleChangeClass = (value: string) => {
       currentClass.value = value;
