@@ -1,5 +1,10 @@
 <template>
-  <div class="class-holder">
+  <div v-if="loading">
+    <span class="class-group__spin-icon">
+      <Spin tip="Loading..." class="ant-custom-home" />
+    </span>
+  </div>
+  <div class="class-holder" v-else>
     <div class="class">
       <BaseCard class="class__size class-block">
         <div class="h-100">
@@ -7,7 +12,7 @@
             <span class="class__title--name">{{ title }}</span>
             <div class="class__content">
               <span class="description mr-10">{{ unitText }} {{ unit }}</span>
-              <span class="description">{{ lessonText }} {{ lesson }}</span>
+              <span class="description">{{ lessonText }} {{ currentLesson }}</span>
             </div>
           </div>
         </div>
