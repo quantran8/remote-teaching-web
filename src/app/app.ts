@@ -5,7 +5,7 @@ import { Paths } from "@/utils/paths";
 import { Spin } from "ant-design-vue";
 import { computed, defineComponent, watch } from "vue";
 import { AuthService, fmtMsg, LoginInfo, MainLayout, RoleName } from "vue-glcommonui";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { AppFooter, AppHeader } from "../components/layout";
 import { LostNetwork } from "./../locales/localeid";
@@ -26,6 +26,7 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const router = useRouter();
+    const route = useRoute();
     useDisconnection();
     const isHeaderVisible = computed(() => getters.appLayout !== "full");
     const isFooterVisible = computed(() => getters.appLayout !== "full");
@@ -33,6 +34,7 @@ export default defineComponent({
     const isSignedIn = computed(() => getters["auth/isLoggedIn"]);
     const appView = computed(() => getters["appView"]);
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
+    const appPath = computed(() => route.path);
     const onTeacherSignedIn = async (loginInfo: LoginInfo) => {
       await dispatch("teacher/setInfo", {
         id: loginInfo.profile.sub,
@@ -92,6 +94,10 @@ export default defineComponent({
           location.pathname = pathname.replace(TEACHER_PATH_REGEX, "/parent");
         }
       }
+    });
+
+    watch(appPath, () => {
+      window.scrollTo(0, 0);
     });
 
     const messageText = computed(() => fmtMsg(LostNetwork.Message));
