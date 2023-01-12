@@ -2,6 +2,7 @@ import IconWarning from "@/assets/calendar-warning.svg";
 import { CommonLocale, TeacherCalendarLocale } from "@/locales/localeid";
 import { ClassGroupModel, ClassModelSchedules } from "@/models";
 import { ScheduleParam } from "@/services";
+import { ScheduleType } from "@/utils/utils";
 import { PlusCircleOutlined } from "@ant-design/icons-vue";
 import { Button, Calendar, Col, Modal, Row, Select, Spin, Switch, TimePicker, Tooltip } from "ant-design-vue";
 import moment, { Moment } from "moment";
@@ -237,12 +238,7 @@ export default defineComponent({
         return moment(daySchedule.day).date() == vl.date() && moment(daySchedule.day).month() == vl.month();
       });
       const dataReturn =
-        listData.length > 0
-          ? listData[0].schedules.map((schedule: any) => {
-              schedule.color = color.value && color.value[schedule.classId];
-              return schedule;
-            })
-          : [];
+        listData.length > 0 ? listData[0].schedules.filter((schedule: any) => schedule.customizedScheduleType !== ScheduleType.Cancelled) : [];
       return dataReturn.slice(0, 5);
     };
 
