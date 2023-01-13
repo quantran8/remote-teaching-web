@@ -3,7 +3,7 @@ import { CalendarSchedulesModel, ClassGroupModel, SchedulesModel } from "@/model
 import { store } from "@/store";
 import { ScheduleType } from "@/utils/utils";
 import { All } from "@/views/teacher-calendar/teacher-calendar";
-import { Button, Input, Radio, Select, TimePicker } from "ant-design-vue";
+import { Button, Input, notification, Radio, Select, TimePicker } from "ant-design-vue";
 import moment from "moment";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { fmtMsg } from "vue-glcommonui";
@@ -16,6 +16,8 @@ enum HourType {
   PM = "PM",
 }
 const formatDateTimeStandard = "YYYY-MM-DD";
+const totalDayOfYear = 500;
+const totalDayOfMonth = 31;
 export default defineComponent({
   components: {
     Button,
@@ -69,6 +71,7 @@ export default defineComponent({
     const RestoreText = computed(() => fmtMsg(ScheduleInfo.Restore));
     const AMText = computed(() => fmtMsg(ScheduleInfo.AM));
     const PMText = computed(() => fmtMsg(ScheduleInfo.PM));
+    const CantCreateScheduleText = computed(() => fmtMsg(ScheduleInfo.CantCreateSchedule));
     const dateTime = ref(moment(date).format("dddd, MMMM DD, yyyy"));
 
     const handleChangeClass = (value: string) => {
@@ -81,7 +84,43 @@ export default defineComponent({
     const convertTime = (time: string) => {
       return moment(time, "h:mm A").format("HH:mm:ss");
     };
+    const canCreateInCurrentDate = (vl: string) => {
+      let result = false;
+      const currentDate = moment(vl).year() * totalDayOfYear + (moment(vl).month() + 1) * totalDayOfMonth + moment(vl).date();
+      classGroup.value.map((cl) => {
+        if (currentClass.value == cl.classId) {
+          const start = cl.startDate;
+          const end = cl.endDate;
+          let startDate = 0;
+          let endDate = 0;
+          if (start) {
+            const startDateTotalValue = start.split("T")[0];
+            const startDateSingleValue = startDateTotalValue.split("-");
+            startDate =
+              parseInt(startDateSingleValue[0]) * totalDayOfYear +
+              parseInt(startDateSingleValue[1]) * totalDayOfMonth +
+              parseInt(startDateSingleValue[2]);
+          }
+          if (end) {
+            const endDateTotalValue = end.split("T")[0];
+            const endDateSingleValue = endDateTotalValue.split("-");
+            endDate =
+              parseInt(endDateSingleValue[0]) * totalDayOfYear + parseInt(endDateSingleValue[1]) * totalDayOfMonth + parseInt(endDateSingleValue[2]);
+          }
+          if (endDate == 0 || (currentDate >= startDate && currentDate <= endDate)) {
+            result = true;
+          }
+        }
+      });
+      return result;
+    };
     const createSchedule = async () => {
+      if (!canCreateInCurrentDate(date)) {
+        notification.error({
+          message: CantCreateScheduleText.value,
+        });
+        return;
+      }
       const startTime = `${selectStartHour.value}:${selectStartMinutes.value} ${
         selectEndHour.value === MAX_HOUR_AVAILABLE ? (startHourType.value === HourType.AM ? HourType.PM : HourType.AM) : startHourType.value
       }`;

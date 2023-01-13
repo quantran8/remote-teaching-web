@@ -342,4 +342,5 @@ export class ScheduleInfo {
   static Restore = "schedule_info.restore";
   static AM = "schedule_info.am";
   static PM = "schedule_info.pm";
+  static CantCreateSchedule = "schedule.cant_create_schedule";
 }
