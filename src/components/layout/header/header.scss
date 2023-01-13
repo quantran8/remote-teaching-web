@@ -8,6 +8,7 @@
   flex-direction: row;
   align-items: center;
   height: 60px;
+  position: relative;
   .logo {
     margin: 0 15px;
     @media (max-width: $md) {
@@ -31,6 +32,13 @@
         font-size: 14px;
       }
     }
+  }
+  .nav-menu{
+	position: absolute;
+	top: 60px;
+	right: 0;
+	color: #000;
+	z-index: 100;
   }
   .locale-switcher {
     select {

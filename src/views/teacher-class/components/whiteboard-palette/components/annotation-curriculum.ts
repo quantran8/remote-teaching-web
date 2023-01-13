@@ -1,13 +1,14 @@
+import { TargetsVisibleList } from "@/store/lesson/state";
 import { DefaultCanvasDimension, getRadius, ratioValue, setStrokeColor } from "@/utils/utils";
 import { fabric } from "fabric";
-import { computed } from "vue";
+import { computed, ComputedRef } from "vue";
 import { useStore } from "vuex";
 
 const DEFAULT_FILL = "rgba(255,255,255,0.01)";
 export const annotationCurriculum = () => {
   const { dispatch, getters } = useStore();
   const isTeacher = computed(() => getters["teacherRoom/teacher"]);
-  const targetsList = computed(() => getters["lesson/targetsAnnotationList"]);
+  const targetsList: ComputedRef<TargetsVisibleList[]> = computed(() => getters["lesson/targetsAnnotationList"]);
   const isImgProcessing = computed(() => getters["annotation/isImgProcessing"]);
   const zoomRatio = computed(() => getters["lesson/zoomRatio"]);
   const imgCoords = computed(() => getters["lesson/imgCoords"]);
@@ -84,7 +85,7 @@ export const annotationCurriculum = () => {
       realOpacity: item.opacity,
       color: item.color,
       stroke: "transparent",
-      strokeWidth: 5 * ratio,
+      strokeWidth: item.fill ? 0 : 5 * ratio,
       id: "annotation-lesson",
       perPixelTargetFind: true,
       selectable: false,
@@ -245,6 +246,11 @@ export const annotationCurriculum = () => {
           Group.addWithUpdate(item);
         });
       }
+    }
+    if (targetsList.value?.length > 0) {
+      targetsList.value.forEach((obj) => {
+        processAnnotationLesson(propImage.image, canvas, false, obj, Group);
+      });
     }
     if (!isImgProcessing.value) {
       if (top !== Group.top) {

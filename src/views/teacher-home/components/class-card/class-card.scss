@@ -3,15 +3,15 @@
 .class-holder {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
-  flex-direction: row;
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .class {
   display: flex;
-  justify-content: center;
   flex-direction: row;
   margin-right: 40px;
+  margin-left: 60px;
 
   .class__size {
     width: 200px;
@@ -19,6 +19,10 @@
     box-shadow: none;
     border: 1px solid #cccc;
     cursor: default;
+    &.class-block {
+      border: none;
+      height: 50px;
+    }
   }
 
   .class__live-dot {
@@ -34,16 +38,40 @@
       margin-bottom: 0;
     }
   }
-}
+  .class__content {
+    display: flex;
+  }
 
+  &__title {
+    background-color: #e8e8e8;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    &--name {
+      font-size: 18px;
+    }
+  }
+
+  .gallery {
+    width: 48px;
+    height: 48px;
+    margin-right: 4px;
+  }
+
+  .icon-container {
+    cursor: not-allowed;
+  }
+}
 .class-group {
-  margin-left: 20px;
+  margin-left: 52px;
   position: relative;
 
   &__size {
+    background-color: #e3d6f3;
     margin: 8px;
-    width: auto;
-    height: 100px;
+    min-width: 216px;
+    height: 110px;
     cursor: default;
     box-shadow: none !important;
     border: 1px solid #cccc !important;
@@ -56,13 +84,20 @@
     height: 30px;
     cursor: pointer;
   }
+  &__spin-icon {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .m-10 {
-	padding: 0px 5px 5px 8px;
-	min-width: 155px;
+  padding: 0px 5px 5px 8px;
+  min-width: 155px;
 }
 
+.mr-10 {
+  margin-right: 10px;
+}
 .card {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.7);
 }
@@ -72,15 +107,15 @@
 }
 
 .group-content {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .icon-view {
-	padding: 2px 4px;
-	display: flex;
-	align-items: flex-end;
+  padding: 2px 4px;
+  display: flex;
+  align-items: flex-end;
 }
 
 .title {
@@ -89,12 +124,11 @@
   white-space: nowrap;
   color: $main-color;
   font-size: 17px;
+  margin-bottom: 0px;
 }
-
 .description {
   overflow: hidden;
   text-overflow: ellipsis;
-  color: gray;
   font-size: 12px;
 }
 
@@ -106,4 +140,11 @@
     animation: loadingAnimation 2s ease-out;
     animation-iteration-count: infinite;
   }
+}
+.h-100 {
+  height: 100%;
+}
+
+.mb {
+  margin-bottom: 10px;
 }

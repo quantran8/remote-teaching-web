@@ -1,7 +1,7 @@
 import { DeviceTester } from "@/components/common";
 import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
 import { ClassRoomStatus } from "@/models";
-import { ChildModel, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import { ChildModel, NextSessionResponse, RemoteTeachingService } from "@/services";
 import { AppView } from "@/store/app/state";
 import { Logger } from "@/utils/logger";
 import { queryStringToObject } from "@/utils/utils";
@@ -29,7 +29,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const children = computed(() => store.getters["parent/children"]);
+    const children = computed<Array<ChildModel>>(() => store.getters["parent/children"]);
     const username = computed(() => store.getters["auth/username"]);
     const visible = ref<boolean>(true);
     const agreePolicy = ref<boolean>(false);
@@ -51,7 +51,7 @@ export default defineComponent({
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
     const studentVideoMirror = ref(false);
-    const listSessionInfo = ref([]);
+    const listSessionInfo = ref<Array<NextSessionResponse>>([]);
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const classIsActive = ref(false);
     const currentStudent = ref<ChildModel>();
@@ -66,39 +66,23 @@ export default defineComponent({
     const getRoomInfoTimeout = ref<null | ReturnType<typeof setTimeout>>(null);
 
     const onClickChild = async (student: ChildModel) => {
-      currentStudent.value = student;
-      deviceTesterRef.value?.showModal();
-      const fp = await fpPromise;
-      const result = await fp.get();
-      const visitorId = result.visitorId;
-      const getRoomInfo = async () => {
-        try {
-          const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student.id, visitorId);
-          studentVideoMirror.value = !!roomResponse?.data?.isStudentVideoMirror;
-          getRoomInfoError.value = "";
-          getRoomInfoErrorByMsg.value = "";
-          await store.dispatch("studentRoom/setOnline");
-          await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
-
-          if (getRoomInfoTimeout.value) {
-            clearTimeout(getRoomInfoTimeout.value);
-            getRoomInfoTimeout.value = null;
-          }
-          classIsActive.value = true;
-        } catch (err) {
-          getRoomInfoError.value = err?.code;
-          getRoomInfoErrorByMsg.value = err?.message;
-          if (classIsActive.value) {
-            classIsActive.value = false;
-          }
-          if (err?.code === 0) {
-            getRoomInfoTimeout.value = setTimeout(() => {
-              getRoomInfo();
-            }, refreshTiming);
-          }
-        }
-      };
-      await getRoomInfo();
+      const schoolName = children.value.find((child) => child.id === student.id)?.schoolName ?? "";
+      const campusName = children.value.find((child) => child.id === student.id)?.campusName ?? "";
+      const classId = children.value.find((child) => child.id === student.id)?.schoolClassId ?? "";
+      const className = children.value.find((child) => child.id === student.id)?.schoolClassName ?? "";
+      const groupName = children.value.find((child) => child.id === student.id)?.groupName ?? "";
+      router.push({
+        path: "/class-setup/parent",
+        query: {
+          schoolName,
+          campusName,
+          classId,
+          className,
+          groupId: "",
+          groupName,
+          studentId: student.id,
+        },
+      });
     };
 
     const getNextSessionInfo = async () => {
@@ -107,6 +91,16 @@ export default defineComponent({
           return child.id;
         });
         const response = await RemoteTeachingService.getStudentNextSession(listIds);
+        response.forEach((session) => {
+          children.value.some((child) => {
+            if (session.studentId === child.id) {
+              child.groupId = session.classInfo.groupId;
+              child.groupName = session.classInfo.groupName;
+              return true;
+            }
+            return false;
+          });
+        });
         if (response && response.length > 0) {
           listSessionInfo.value = response;
         }

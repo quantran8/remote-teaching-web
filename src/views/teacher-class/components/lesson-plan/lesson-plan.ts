@@ -121,7 +121,9 @@ export default defineComponent({
     };
 
     const onClickUnit = () => {
-      emit("open-changing-lesson-unit-modal");
+      if (showHideLesson.value || !isOneOneMode.value) {
+        emit("open-changing-lesson-unit-modal");
+      }
     };
 
     const onClickExposure = async (exposure: Exposure | null, force = false) => {

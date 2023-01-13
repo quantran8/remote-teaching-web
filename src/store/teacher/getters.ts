@@ -1,7 +1,15 @@
-import { CalendarSchedulesModel, ClassModelSchedules, ClassRoomModel, RoomModel, TeacherClassCalendarModel } from "@/models";
+import {
+  CalendarSchedulesModel,
+  ClassGroupModel,
+  ClassModelSchedules,
+  ClassRoomModel,
+  RoomModel,
+  StudentGroupModel,
+  TeacherClassCalendarModel,
+} from "@/models";
 import { ResourceModel } from "@/models/resource.model";
 import { GetterTree } from "vuex";
-import { StudentsGroup, TeacherState } from "./state";
+import { CalendarFilter, StudentsGroup, TeacherState } from "./state";
 
 const getters: GetterTree<TeacherState, any> = {
   classes(state: TeacherState): Array<TeacherClassCalendarModel> {
@@ -9,6 +17,9 @@ const getters: GetterTree<TeacherState, any> = {
   },
   classesSchedules(state: TeacherState): Array<ClassModelSchedules> {
     return state.classesSchedules;
+  },
+  classesSchedulesAllSchool(state: TeacherState): Array<ClassModelSchedules> {
+    return state.classesSchedulesAllSchool;
   },
   schools(state: TeacherState): Array<ResourceModel> {
     return state.schools;
@@ -33,6 +44,15 @@ const getters: GetterTree<TeacherState, any> = {
   },
   classesSchedulesBySchools(state: TeacherState): Array<ClassModelSchedules> {
     return state.classesSchedulesBySchools;
+  },
+  classSetUpStudents(state: TeacherState): Array<StudentGroupModel> {
+    return state.classSetUpStudents;
+  },
+  classGroup(state: TeacherState): Array<ClassGroupModel> {
+    return state.classGroup;
+  },
+  calendarFilter(state: TeacherState): CalendarFilter {
+    return state.calendarFilter;
   },
 };
 

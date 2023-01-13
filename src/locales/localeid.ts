@@ -136,6 +136,7 @@ export class DeviceTesterLocale {
   static MessageWarningCamera = "device_tester.message_warning_camera";
   static CheckSpeaker = "device_tester.check_speaker";
   static MessageWarningSpeaker = "device_tester.message_warning_speaker";
+  static MessageErrorJoinSession = "device_tester.error_join_session";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";
@@ -174,6 +175,7 @@ export class TeacherCalendarLocale {
   static All = "teacher_calendar.all";
   static Back = "teacher_calendar.back";
   static ScheduleNewRemoteSession = "teacher_calendar.schedule_new_remote_session";
+  static ShowWeekends = "teacher_calendar.show_weekends";
 }
 
 export class TeacherClassDesignate {
@@ -225,6 +227,8 @@ export class TeacherHome {
   static Submit = "teacher_home.submit";
   static Group = "teacher_home.group";
   static Next = "teacher_home.next";
+  static Home = "teacher_home.home";
+  static Gallery = "teacher_home.gallery";
 }
 
 export class TeacherClass {
@@ -313,4 +317,30 @@ export class CaptureNotification {
   static StudentsReachedMaximum = "capture_status.students_reached_maximum";
   static EnableStudentVideo = "capture_status.enable_student_video";
   static EnableAllStudentVideo = "capture_status.enable_all_student_video";
+}
+export class ClassSetUp {
+  static StartSession = "class_setup.start_session";
+  static Members = "class_setup.members";
+  static ActiveStudents = "class_setup.active_students";
+  static InActiveStudents = "class_setup.inactive_students";
+  static RemoteClassSetUp = "class_setup.remote_class_set_up";
+}
+
+export class ClassCard {
+  static Unit = "class_card.unit";
+  static Lesson = "class_card.lesson";
+  static Members = "class_card.members";
+}
+export class ScheduleInfo {
+  static EnterTime = "schedule_info.enter_time";
+  static BottomNote = "schedule_info.bottom_note";
+  static NonRecurringNote = "schedule_info.non_recurring_note";
+  static AddSession = "schedule_info.add_session";
+  static Hour = "schedule_info.hour";
+  static Minute = "schedule_info.minute";
+  static NewSession = "schedule_info.new_session";
+  static Restore = "schedule_info.restore";
+  static AM = "schedule_info.am";
+  static PM = "schedule_info.pm";
+  static CantCreateSchedule = "schedule.cant_create_schedule";
 }

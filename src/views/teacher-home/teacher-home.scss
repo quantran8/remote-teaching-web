@@ -2,6 +2,9 @@
   margin-top: 40px;
 }
 
+.m-20 {
+  margin: 20px;
+}
 .mr-10 {
   margin-right: 10px;
 }
@@ -19,22 +22,10 @@
   margin-left: auto;
 }
 
-.calendar-container {
-  display: flex;
-  width: 100px;
-  align-items: center;
-  cursor: pointer;
-}
-
-.calendar {
-  width: 30px;
-  height: 30px;
-}
-
 .teacher-title {
   display: flex;
-  justify-content: center;
-  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 
   &__indicator-out {
     cursor: pointer;
@@ -56,13 +47,18 @@
     border-radius: 50%;
     display: inline-block;
   }
+  &__wrapper{
+	margin: 20px
+  }
 }
 .teacher-page {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 890px;
-  margin: auto;
+  max-width: 100%;
+  position: relative;
+  //   margin: auto;
+  padding: 16px 60px 0;
 
   &__school-select {
     margin-bottom: 20px;
@@ -77,16 +73,25 @@
     text-align: left;
   }
 }
-.card-margin {
-  margin: 20px;
-}
 
 .group-class-container {
   display: flex;
   justify-content: center;
   flex-direction: column;
 }
-
+.group-class-wrapper{
+  width: 568px;
+  background-color: #e8e8e8;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  padding: 5px 0 10px;
+}
+.three-group{
+  width: 800px;
+}
+.date-time {
+  font-size: 20px;
+}
 .loading {
   display: flex;
   justify-content: center;
@@ -135,4 +140,14 @@
   100% {
     opacity: 0.5;
   }
+}
+
+.school-name {
+  margin-left: 20px;
+  font-size: 24px;
+}
+
+.campus {
+  margin-left: 40px;
+  font-size: 20px;
 }

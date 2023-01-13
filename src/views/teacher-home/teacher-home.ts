@@ -1,20 +1,19 @@
-import { TeacherHome } from "./../../locales/localeid";
-import { TeacherClassModel, UnitAndLesson } from "@/models";
+import { DeviceTester } from "@/components/common";
+import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
+import { ClassModelSchedules, ClassRoomStatus, TeacherClassModel, UnitAndLesson } from "@/models";
+import { JoinSessionModel } from "@/models/join-session.model";
+import { ResourceModel } from "@/models/resource.model";
 import { AccessibleSchoolQueryParam, RemoteTeachingService } from "@/services";
-import { computed, defineComponent, ref, onMounted, onUnmounted } from "vue";
+import { AppView, VCPlatform } from "@/store/app/state";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Button, Checkbox, Empty, Modal, notification, Row, Select, Spin } from "ant-design-vue";
+import moment from "moment";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { fmtMsg, LoginInfo, MatIcon } from "vue-glcommonui";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { TeacherHome } from "./../../locales/localeid";
 import ClassCard from "./components/class-card/class-card.vue";
-import { ResourceModel } from "@/models/resource.model";
-import { Select, Spin, Modal, Checkbox, Button, Row, Empty, notification } from "ant-design-vue";
-import { fmtMsg, LoginInfo } from "vue-glcommonui";
-import { CommonLocale, PrivacyPolicy } from "@/locales/localeid";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { AppView, VCPlatform } from "@/store/app/state";
-import { JoinSessionModel } from "@/models/join-session.model";
-import { DeviceTester } from "@/components/common";
-import { ClassRoomStatus } from "@/models";
-import { MatIcon } from "vue-glcommonui";
 import { getListUnitByClassAndGroup } from "./lesson-helper";
 
 const fpPromise = FingerprintJS.load();
@@ -41,7 +40,6 @@ export default defineComponent({
     const classesSchedules = computed(() => store.getters["teacher/classesSchedules"]);
     const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const username = computed(() => store.getters["auth/username"]);
-    const filteredSchools = ref<ResourceModel[]>(schools.value);
     const loading = ref<boolean>(false);
     const popUpLoading = ref<boolean>(false);
     const disabled = ref<boolean>(false);
@@ -64,7 +62,10 @@ export default defineComponent({
     const scheduleText = computed(() => fmtMsg(TeacherHome.Schedule));
     const cancelText = computed(() => fmtMsg(TeacherHome.Cancel));
     const submitText = computed(() => fmtMsg(TeacherHome.Submit));
+    const homeText = computed(() => fmtMsg(TeacherHome.Home));
+    const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
     const policy = computed(() => store.getters["teacher/acceptPolicy"]);
+    const classesSchedulesAllSchool = computed<ClassModelSchedules[]>(() => store.getters["teacher/classesSchedulesAllSchool"]);
     const currentSchoolId = ref("");
     const concurrent = ref<boolean>(false);
     const concurrentMess = ref("");
@@ -74,6 +75,42 @@ export default defineComponent({
     const deviceTesterRef = ref<InstanceType<typeof DeviceTester>>();
     const selectedGroupId = ref();
     const currentSchool = computed(() => store.getters["teacher/currentSchoolId"]);
+    // const moment = require("moment");
+    const now = ref(`${moment().format("dddd, MMMM DD, yyyy")}`);
+    const isThreeGroup = computed(() => {
+      const isThree = classesSchedulesAllSchool.value.find((item) => item.groups.length > 2);
+      return isThree;
+    });
+    const schoolIds = computed(() => {
+      const schools: string[] = [];
+      classesSchedulesAllSchool.value.forEach((item) => {
+        if (item.schoolId && !schools.includes(item.schoolId)) {
+          schools.push(item.schoolId);
+        }
+      });
+      return schools;
+    });
+    const getCampusBySchoolId = (id: string) => {
+      const data = classesSchedulesAllSchool.value.filter((item) => item.schoolId === id);
+      const campus: string[] = [];
+      data.forEach((item) => {
+        if (!campus.includes(item.campusId)) {
+          campus.push(item.campusId);
+        }
+      });
+      return campus;
+    };
+    const getDataByCampus = (id: string) => {
+      return classesSchedulesAllSchool.value.filter((item) => item.campusId === id);
+    };
+    const getSchoolNameBySchoolId = (id: string) => {
+      const data = classesSchedulesAllSchool.value.find((item) => item.schoolId === id);
+      return data?.schoolName;
+    };
+    const getCampusNameByCampusId = (id: string) => {
+      const data = classesSchedulesAllSchool.value.find((item) => item.campusId === id);
+      return data?.campusName;
+    };
 
     const startClass = async (
       teacherClass: TeacherClassModel,
@@ -117,15 +154,17 @@ export default defineComponent({
     };
 
     const onClickCalendar = async () => {
-      await router.push(`/teacher-calendars/${currentSchoolId.value}`);
+      await router.push("/teacher-calendars");
     };
 
+    const onClickHome = async () => {
+      await router.push("/");
+    };
     const getSchools = async () => {
       loading.value = true;
       await store.dispatch("teacher/loadAccessibleSchools", {
         disabled: false,
       } as AccessibleSchoolQueryParam);
-      filteredSchools.value = schools.value;
       loading.value = false;
     };
 
@@ -139,7 +178,6 @@ export default defineComponent({
           schoolId: schoolId,
           browserFingerPrinting: visitorId,
         });
-        filteredSchools.value = schools.value;
         currentSchoolId.value = schoolId;
         await store.dispatch("teacher/setCurrentSchool", schoolId);
       } catch (err) {
@@ -156,21 +194,54 @@ export default defineComponent({
 
     const joinTheCurrentSession = async (currentGroupId: string) => {
       if (classOnline.value && currentGroupId == classOnline.value.groupId) {
-        await router.push("/class/" + infoStart.value?.teacherClass.classId);
+        await router.push("/class/" + classOnline.value.classId);
         return true;
       }
       return false;
     };
 
-    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string) => {
-      infoStart.value = { teacherClass, groupId };
-      selectedGroupId.value = groupId;
-
+    const onClickClass = async (teacherClass: TeacherClassModel, groupId: string, schoolId: string) => {
+      await onSchoolChange(schoolId);
       messageStartClass.value = "";
       if (!(await joinTheCurrentSession(groupId))) {
-        await getListLessonByUnit(teacherClass, groupId);
-        // startPopupVisible.value = true;
-        deviceTesterRef.value?.showModal();
+        const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
+        const groupName = teacherClass.groups.find((group) => group.groupId === groupId)?.groupName;
+        if (schoolName && groupName) {
+          router.push({
+            path: "/class-setup/teacher",
+            query: {
+              schoolName,
+              campusName: teacherClass.campusName,
+              classId: teacherClass.classId,
+              className: teacherClass.className,
+              groupId: groupId,
+              groupName,
+              studentId: "",
+            },
+          });
+        }
+      }
+    };
+
+    const rejoinClass = async (teacherClass: TeacherClassModel, groupId: string) => {
+      messageStartClass.value = "";
+      if (!(await joinTheCurrentSession(groupId))) {
+        const schoolName = schools.value.find((school) => school.id === teacherClass.schoolId)?.name;
+        const groupName = teacherClass.groups.find((group) => group.groupId === groupId)?.groupName;
+        if (schoolName && groupName) {
+          router.push({
+            path: "/class-setup/teacher",
+            query: {
+              schoolName,
+              campusName: teacherClass.campusName,
+              classId: teacherClass.classId,
+              className: teacherClass.className,
+              groupId: groupId,
+              groupName,
+              studentId: "",
+            },
+          });
+        }
       }
     };
 
@@ -217,8 +288,6 @@ export default defineComponent({
       startPopupVisible.value = false;
     };
 
-    const filterSchools = (input: string, option: any) => option.children[0].children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-
     const onAgreePolicy = () => {
       agreePolicy.value = !agreePolicy.value;
     };
@@ -248,9 +317,7 @@ export default defineComponent({
         await getSchools();
         if (schools.value?.length) {
           await onSchoolChange(schools.value[0].id);
-          if (schools.value.length === 1) {
-            disabled.value = true;
-          }
+          await store.dispatch("teacher/loadAllClassesSchedulesAllSchool");
         }
       }
       await store.dispatch("teacher/clearSchedules");
@@ -258,12 +325,13 @@ export default defineComponent({
     });
 
     onUnmounted(async () => {
+      await store.dispatch("teacher/clearAllClassesSchedulesAllSchool");
       window.removeEventListener("keyup", escapeEvent);
     });
 
     const hasClassesShowUp = () => {
       if (loading.value == false) {
-        return classesSchedules.value.length != 0;
+        return classesSchedulesAllSchool.value.length != 0;
       } else {
         return true;
       }
@@ -271,7 +339,7 @@ export default defineComponent({
 
     const hasClassesShowUpSchedule = () => {
       if (loading.value == false) {
-        return classesSchedules.value.length != 0;
+        return classesSchedulesAllSchool.value.length != 0;
       } else return loading.value != true;
     };
 
@@ -281,11 +349,10 @@ export default defineComponent({
       classesSchedules,
       username,
       onClickClass,
-      filterSchools,
+      rejoinClass,
       onSchoolChange,
       loading,
       disabled,
-      filteredSchools,
       visible,
       submitPolicy,
       agreePolicy,
@@ -297,6 +364,7 @@ export default defineComponent({
       policy,
       cancelPolicy,
       onClickCalendar,
+      onClickHome,
       policyTitle,
       policySubtitle,
       acceptPolicyText,
@@ -320,9 +388,18 @@ export default defineComponent({
       deviceTesterRef,
       welcomeText,
       scheduleText,
+      homeText,
+      galleryText,
       cancelText,
       submitText,
       currentSchool,
+      now,
+      isThreeGroup,
+      schoolIds,
+      getCampusBySchoolId,
+      getDataByCampus,
+      getSchoolNameBySchoolId,
+      getCampusNameByCampusId,
     };
   },
 });

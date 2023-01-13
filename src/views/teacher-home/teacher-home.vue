@@ -1,51 +1,48 @@
 <template>
   <div class="teacher-page" v-if="policy">
-    <div class="teacher-title mt-40">
-      <h2>{{ welcomeText }} {{ username }}</h2>
-      <span class="teacher-title__indicator-out" v-if="classOnline" @click="onClickClass(classOnline, classOnline.groupId)">
-        <span class="teacher-title__indicator-in"></span>
-      </span>
-    </div>
-    <div class="teacher-page__school-select">
-      <Select
-        placeholder="School"
-        showSearch
-        optionLabelProp="children"
-        :disabled="disabled"
-        :loading="loading"
-        :value="schools[0]?.id"
-        :filterOption="filterSchools"
-        @change="onSchoolChange"
-      >
-        <Option :value="school.id" :key="school.id" v-for="school in schools.values()">{{ school.name }}</Option>
-      </Select>
-    </div>
-    <hr class="mr-10 ml-10" />
-    <div class="calendar-container align-right" v-show="hasClassesShowUpSchedule()" @click="onClickCalendar">
-      <span>{{ scheduleText }}</span>
-      <img class="calendar" src="@/assets/images/calendar.png" />
+    <div class="teacher-title__wrapper">
+      <div class="teacher-title">
+        <h1 class="teacher-title__welcome">{{ welcomeText }} {{ username }}</h1>
+        <span class="teacher-title__indicator-out" v-if="classOnline" @click="rejoinClass(classOnline, classOnline.groupId)">
+          <span class="teacher-title__indicator-in"></span>
+        </span>
+      </div>
+      <span class="date-time">{{ now }}</span>
     </div>
     <div class="group-class-container" v-show="hasClassesShowUp()">
       <div class="loading" v-show="loadingInfo">
         <Spin class="ant-custom-home"></Spin>
       </div>
-      <div class="loading" v-if="loading">
-        <Spin tip="Loading..." class="ant-custom-home"></Spin>
+      <div v-if="schoolIds.length > 0">
+        <div class="loading" v-if="loading">
+          <Spin tip="Loading..." class="ant-custom-home"></Spin>
+        </div>
+        <div v-for="schoolId in schoolIds" :key="schoolId">
+          <div :class="['group-class-wrapper', isThreeGroup && 'three-group']">
+            <h2 class="school-name">{{ getSchoolNameBySchoolId(schoolId) }}</h2>
+            <div v-for="campusId in getCampusBySchoolId(schoolId)" :key="campusId">
+              <h3 class="campus">{{ getCampusNameByCampusId(campusId) }}</h3>
+              <div v-for="cl in getDataByCampus(campusId)" :key="cl.classId">
+                <ClassCard
+                  class="card-margin"
+                  :key="cl.classId"
+                  :id="cl.classId"
+                  :title="cl.className"
+                  :description="cl.campusName"
+                  :remoteClassGroups="cl.groups"
+                  :isTeacher="cl.isTeacher"
+                  :schoolName="cl.schoolName"
+                  :schoolId="cl.schoolId"
+                  :loadingStart="loadingStartClass"
+                  :unit="cl.unit"
+                  :lesson="cl.lessonNumber"
+                  @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <ClassCard
-        v-else
-        class="card-margin"
-        v-for="cl in classesSchedules"
-        :key="cl.classId"
-        :id="cl.classId"
-        :title="cl.className"
-        :description="cl.campusName"
-        :remoteClassGroups="cl.groups"
-        :active="cl.isActive"
-        :isTeacher="cl.isTeacher"
-        :loadingStart="loadingStartClass"
-        @click-to-access="(groupId) => onClickClass(cl, groupId)"
-      />
     </div>
     <Empty v-show="!hasClassesShowUp()" />
     <DeviceTester

@@ -1,9 +1,11 @@
-import { TeacherHome } from "@/locales/localeid";
+import { ClassCard, TeacherHome } from "@/locales/localeid";
+import { UnitAndLesson } from "@/models";
 import { GroupModelSchedules } from "@/models/group.model";
-import { computed, defineComponent, onMounted, ref } from "vue";
-import { Spin } from "ant-design-vue";
+import { notification, Spin } from "ant-design-vue";
 import moment from "moment";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { fmtMsg } from "vue-glcommonui";
+import { getListUnitByClassAndGroup } from "../../lesson-helper";
 
 export default defineComponent({
   props: {
@@ -35,16 +37,40 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    schoolId: {
+      type: String,
+      required: true,
+    },
+    schoolName: {
+      type: String,
+      required: true,
+    },
+    unit: {
+      type: Number,
+      required: true,
+    },
+    lesson: {
+      type: Number,
+      required: true,
+    },
   },
   components: {
     Spin,
   },
   emits: ["click-to-access"],
   setup: function (props, { emit }) {
-    const groups = ref();
+    const groups = ref<GroupModelSchedules[]>();
     const clickedGroup = ref<string>("");
     const groupText = computed(() => fmtMsg(TeacherHome.Group));
     const nextText = computed(() => fmtMsg(TeacherHome.Next));
+    const galleryText = computed(() => fmtMsg(TeacherHome.Gallery));
+    const unitText = computed(() => fmtMsg(ClassCard.Unit));
+    const lessonText = computed(() => fmtMsg(ClassCard.Lesson));
+    const membersText = computed(() => fmtMsg(ClassCard.Members));
+    const currentLesson = ref();
+    const listLessonByUnit = ref();
+    const unitInfo = ref<Array<UnitAndLesson>>([]);
+    const loading = ref(false);
 
     const validatedGroupHighlighted = () => {
       let min = 999999;
@@ -91,7 +117,36 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    const handleDateTime = (e: string) => {
+      const index = e.search(" ");
+      const subText = e.slice(0, index);
+      const remainText = e.slice(index);
+      const date = moment(`${moment().format("YYYY")}/${subText}`);
+      return `${moment().format("YYYY")}/${subText} (${moment.weekdays(date.isoWeekday())}) |${remainText}`;
+    };
+    const setupUnitAndLesson = () => {
+      const isUnitAvailable = unitInfo.value.find((item: UnitAndLesson) => item.unit === props.unit);
+      const unitDefault = isUnitAvailable ? props.unit : unitInfo.value.length ? unitInfo.value[unitInfo.value.length - 1].unit : 1;
+      const currentUnitIndex = unitInfo.value.findIndex((item: UnitAndLesson) => item.unit === unitDefault);
+      listLessonByUnit.value = unitInfo.value[currentUnitIndex].sequence;
+      currentLesson.value = listLessonByUnit.value[props.lesson];
+    };
+    const getListLessonByUnit = async (classId: string, groupId: string) => {
+      try {
+        unitInfo.value = await getListUnitByClassAndGroup(classId, groupId);
+        return true;
+      } catch (err) {
+        const message = err?.body?.message;
+        if (message) {
+          notification.error({
+            message: message,
+          });
+        }
+        return false;
+      }
+    };
+    onMounted(async () => {
+      loading.value = true;
       if (props.remoteClassGroups) {
         validatedGroupHighlighted();
         const newGroups = props.remoteClassGroups.map((group) => {
@@ -126,13 +181,33 @@ export default defineComponent({
       } else {
         groups.value = [];
       }
+      const isSucceed = await getListLessonByUnit(props.id as string, props.remoteClassGroups[0].groupId as string);
+      if (!isSucceed) {
+        loading.value = false;
+        return;
+      }
+      setupUnitAndLesson();
+      loading.value = false;
     });
 
-    const clickToAccess = (groupId: string) => {
+    const clickToAccess = (groupId: string, schoolId: string) => {
       clickedGroup.value = groupId;
-      emit("click-to-access", groupId);
+      emit("click-to-access", groupId, schoolId);
     };
 
-    return { groups, clickToAccess, clickedGroup, groupText, nextText };
+    return {
+      groups,
+      clickToAccess,
+      clickedGroup,
+      groupText,
+      nextText,
+      galleryText,
+      unitText,
+      lessonText,
+      membersText,
+      handleDateTime,
+      currentLesson,
+      loading,
+    };
   },
 });
