@@ -83,7 +83,7 @@ export const annotationCurriculumStudent = () => {
       realFill: item.fill,
       realOpacity: item.opacity,
       stroke: "transparent",
-      strokeWidth: 5 * ratio,
+      strokeWidth: item.fill ? 0 : 5 * ratio,
       id: "annotation-lesson",
       perPixelTargetFind: true,
     };
