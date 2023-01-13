@@ -130,6 +130,11 @@ export default defineComponent({
     const getAllSchedules = async (month: Moment) => {
       await store.dispatch("teacher/loadAllSchedules", {
         startDate: moment(month.format(formatDateTime)).startOf("month").subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day").format(formatDateTime),
+        endDate: moment(month.format(formatDateTime))
+          .add(1, "month")
+          .endOf("month")
+          .subtract(NUMBER_DAYS_OF_HAFT_MONTH, "day")
+          .format(formatDateTime),
       });
     };
     const getSchedules = async (schoolId: string | null, classId: string | null, groupId: string | null, month: Moment, isGetAll = false) => {
@@ -479,7 +484,11 @@ export default defineComponent({
 
     const onPanelChange = async (value: any, _mode: any) => {
       month.value = value;
-      await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value, month.value);
+      if (selectedClassId.value === All) {
+        await getAllSchedules(month.value);
+      } else {
+        await getSchedules(selectedShoolId.value, selectedClassId.value, selectedGroupId.value, month.value);
+      }
       await store.dispatch("teacher/setCalendarFilter", { ...calendarFilter.value, date: month.value.format("yyyy-MM-DD") });
     };
 

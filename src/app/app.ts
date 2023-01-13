@@ -1,6 +1,7 @@
 import { useDisconnection } from "@/hooks/use-disconnection";
 import { CommonLocale } from "@/locales/localeid";
 import { AppView, UserRole } from "@/store/app/state";
+import { CalendarFilter } from "@/store/teacher/state";
 import { Paths } from "@/utils/paths";
 import { Spin } from "ant-design-vue";
 import { computed, defineComponent, watch } from "vue";
@@ -12,7 +13,8 @@ import { LostNetwork } from "./../locales/localeid";
 
 const PARENT_PATH_REGEX = /\/parent/;
 const TEACHER_PATH_REGEX = /\/teacher/;
-
+const TEACHER_CALENDAR_PATH_REGEX = /\/teacher-calendars/;
+const TEACHER_SCHEDULE_INFO_PATH_REGEX = /\/teacher-schedule-info/;
 export default defineComponent({
   components: {
     MainLayout,
@@ -35,6 +37,7 @@ export default defineComponent({
     const appView = computed(() => getters["appView"]);
     const siteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
     const appPath = computed(() => route.path);
+    const calendarFilter = computed<CalendarFilter>(() => getters["teacher/calendarFilter"]);
     const onTeacherSignedIn = async (loginInfo: LoginInfo) => {
       await dispatch("teacher/setInfo", {
         id: loginInfo.profile.sub,
@@ -96,8 +99,15 @@ export default defineComponent({
       }
     });
 
-    watch(appPath, () => {
+    watch(appPath, async () => {
       window.scrollTo(0, 0);
+      if (calendarFilter.value.classId || calendarFilter.value.groupId || calendarFilter.value.date || calendarFilter.value.isShowWeekends) {
+        const calenderPathMatchIndex = appPath.value.search(TEACHER_CALENDAR_PATH_REGEX);
+        const scheduleInfoPathMatchIndex = appPath.value.search(TEACHER_SCHEDULE_INFO_PATH_REGEX);
+        if (calenderPathMatchIndex < 0 && scheduleInfoPathMatchIndex < 0) {
+          await dispatch("teacher/setCalendarFilter", { classId: "", groupId: "", date: "", isShowWeekends: false });
+        }
+      }
     });
 
     const messageText = computed(() => fmtMsg(LostNetwork.Message));

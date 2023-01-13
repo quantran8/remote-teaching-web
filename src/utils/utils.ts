@@ -92,11 +92,9 @@ export function setStrokeColor(canvas: any, event: any, color: any, group?: any)
             if (color !== "transparent") {
               group.item(index).set("fill", obj.realFill);
               group.item(index).set("opacity", obj.realOpacity);
-              group.item(index).set("strokeWidth", 1);
             } else {
               group.item(index).set("fill", transparentColor);
               group.item(index).set("opacity", 1);
-              group.item(index).set("strokeWidth", 1);
             }
           }
         }
@@ -110,11 +108,9 @@ export function setStrokeColor(canvas: any, event: any, color: any, group?: any)
         if (color !== "transparent") {
           obj.set("fill", obj.realFill);
           obj.set("opacity", obj.realOpacity);
-          obj.set("strokeWidth", 1);
         } else {
           obj.set("fill", transparentColor);
           obj.set("opacity", 1);
-          obj.set("strokeWidth", 1);
         }
       }
     }
