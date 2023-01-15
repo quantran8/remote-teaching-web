@@ -181,7 +181,7 @@ export default defineComponent({
       } else {
         groups.value = [];
       }
-      if (!props.remoteClassGroups.length) {
+      if (!props.remoteClassGroups?.length) {
         loading.value = false;
         return;
       }
