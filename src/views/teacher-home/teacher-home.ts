@@ -84,7 +84,7 @@ export default defineComponent({
     const schoolIds = computed(() => {
       const schools: string[] = [];
       classesSchedulesAllSchool.value.forEach((item) => {
-        if (item.schoolId && !schools.includes(item.schoolId)) {
+        if (item.schoolId && !schools.includes(item.schoolId) && item.groups && item.groups.length) {
           schools.push(item.schoolId);
         }
       });
