@@ -181,6 +181,10 @@ export default defineComponent({
       } else {
         groups.value = [];
       }
+      if (!props.remoteClassGroups.length) {
+        loading.value = false;
+        return;
+      }
       const isSucceed = await getListLessonByUnit(props.id as string, props.remoteClassGroups[0].groupId as string);
       if (!isSucceed) {
         loading.value = false;
