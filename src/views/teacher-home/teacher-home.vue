@@ -36,6 +36,7 @@
                   :loadingStart="loadingStartClass"
                   :unit="cl.unit"
                   :lesson="cl.lessonNumber"
+                  v-if="cl.groups.length"
                   @click-to-access="(groupId: string, schoolId: string) => onClickClass(cl, groupId, schoolId)"
                 />
               </div>
