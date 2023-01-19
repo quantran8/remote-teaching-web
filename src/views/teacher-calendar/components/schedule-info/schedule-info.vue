@@ -32,7 +32,7 @@
 			<div class="select__container">
 			<span class="title__select schedule__info__title">{{ classText }}:</span>
 			<div class="select__item">
-				<Select :show-arrow="false" class="select__item__options" :value="currentClass" @change="handleChangeClass">
+				<Select :show-arrow="false" class="select__item__options" :value="currentClassName" @change="handleChangeClass">
 				<Option class="ant-custom-calendar" v-for="val in listClass" :key="val.classId">
 					{{ val.className }}
 				</Option>

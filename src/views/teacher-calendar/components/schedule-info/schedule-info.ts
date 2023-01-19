@@ -41,8 +41,11 @@ export default defineComponent({
         ?.schedules.filter((item) => (classId === All ? item : item.classId === classId));
       return data ?? [];
     });
-    const currentClass = ref(classGroup.value[0]?.classId ?? "");
-    const currentGroup = ref(classGroup.value[0]?.groups[0]?.groupId ?? "");
+    const currentClass = ref(classGroup.value.find((cl) => cl.classId === classId)?.classId ?? classGroup.value[0]?.classId ?? "");
+    const currentGroup = ref(
+      classGroup.value.find((cl) => cl.classId === classId)?.groups[0].groupId ?? classGroup.value[0]?.groups[0]?.groupId ?? "",
+    );
+    const currentClassName = ref(classGroup.value.find((cl) => cl.classId === classId)?.className ?? classGroup.value[0]?.className ?? "");
     const listClass = computed(() => (classId === All ? classGroup.value : classGroup.value.filter((cl) => cl.classId === classId)));
     const listGroupByClass = computed(() =>
       currentClass.value ? classGroup.value.find((cl) => cl.classId === currentClass.value)?.groups ?? [] : [],
@@ -267,7 +270,7 @@ export default defineComponent({
     };
     const isRecurringSchedule = (item: SchedulesModel) => {
       return !item.customizedScheduleType || item.customizedScheduleType === ScheduleType.Cancelled;
-	}
+    };
     const getScheduleUnitLesson = (item: SchedulesModel) => {
       const classInfo = classGroup.value.find((cl) => cl.classId === item.classId) ?? classGroup.value[0];
       return { unit: classInfo.unit, lesson: classInfo.lesson + 1 };
@@ -305,6 +308,7 @@ export default defineComponent({
       UnitText,
       listGroupByClass,
       currentClass,
+      currentClassName,
       classGroup,
       moment,
       currentMinutes,
