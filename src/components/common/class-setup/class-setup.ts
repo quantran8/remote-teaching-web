@@ -79,7 +79,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const { role } = route.params;
-    const { schoolName, campusName, className, groupName, classId, groupId, studentId } = route.query;
+    const { schoolName, campusName, className, groupName, classId, groupId, studentId, unit, lesson } = route.query;
     const { getters, dispatch } = useStore();
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
@@ -376,13 +376,31 @@ export default defineComponent({
         Logger.log(error.message);
       }
     };
-
     const setupUnitAndLesson = () => {
-      const unitDefault = unitInfo.value.length ? unitInfo.value[unitInfo.value.length - 1].unit : 1;
+      const unitDefault = +(unit as string);
+      const lessonNumber = +(lesson as string);
       const currentUnitIndex = unitInfo.value.findIndex((item: UnitAndLesson) => item.unit === unitDefault);
-      currentUnit.value = unitInfo.value[currentUnitIndex]?.unit;
-      listLessonByUnit.value = unitInfo.value[currentUnitIndex].sequence;
-      currentLesson.value = listLessonByUnit.value[listLessonByUnit.value.length - 1];
+      if (currentUnitIndex >= 0) {
+        listLessonByUnit.value = unitInfo.value[currentUnitIndex]?.sequence;
+        currentUnit.value = unitInfo.value[currentUnitIndex]?.unit;
+        const currentLessonIndex = listLessonByUnit.value?.findIndex((item: number) => item === lessonNumber);
+
+        // find next lesson by next number bigger than current lesson\
+        let nextLessonIndex = listLessonByUnit.value?.findIndex((item: number) => item > lessonNumber);
+
+        // find any lesson bigger then current lesson, leave it as max lesson
+        nextLessonIndex = nextLessonIndex < 0 ? Math.max(currentLessonIndex, listLessonByUnit.value.length - 1) : nextLessonIndex;
+
+        if (nextLessonIndex >= 0) {
+          currentLesson.value = listLessonByUnit.value[nextLessonIndex];
+        } else {
+          currentLesson.value = undefined;
+        }
+      } else {
+        listLessonByUnit.value = [];
+        currentUnit.value = undefined;
+        currentLesson.value = undefined;
+      }
     };
 
     const handleHotPluggingMicro = async (newMicroId?: string) => {

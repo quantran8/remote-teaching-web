@@ -217,6 +217,8 @@ export default defineComponent({
               groupId: groupId,
               groupName,
               studentId: "",
+              unit: teacherClass.unit,
+              lesson: teacherClass.lessonNumber,
             },
           });
         }
