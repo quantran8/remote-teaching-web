@@ -1,3 +1,5 @@
+import { RadioButton } from 'ant-design-vue';
+
 <template>
   <div class="palette">
     <ToolsCanvas
@@ -8,6 +10,39 @@
       @update-color="updateColorValue"
       @update-stroke="updateStrokeWidth"
     />
+  </div>
+  <div v-if="helperInfo" :class="['helper-displayed', (helperVideoStatus || isHelper) && 'active']">
+    <div v-if="!isHelper" class="toggle-bar">
+      <div>
+        <span style="font-style: italic; text-decoration: underline">{{ helperInfo.name }}</span>
+      </div>
+      <div>
+        <Button
+          :disabled="toggleHelperVideoLoading"
+          v-if="!helperVideoStatus"
+          type="link"
+          style="color: white; font-size: 15px; font-weight: 600"
+          @click="toggleHelperVideo(true)"
+        >
+          Show video
+          <DownOutlined style="font-size: 12px" />
+        </Button>
+        <Button
+          :disabled="toggleHelperVideoLoading"
+          v-else
+          type="link"
+          style="color: white; font-size: 15px; font-weight: 600"
+          @click="toggleHelperVideo(false)"
+        >
+          Hide video
+          <UpOutlined style="font-size: 12px" />
+        </Button>
+      </div>
+    </div>
+    <div v-show="helperVideoStatus || isHelper" class="video">
+      <HelperCard />
+      <custom-spinner />
+    </div>
   </div>
   <div class="whiteboard">
     <div class="whiteboard__wrap">

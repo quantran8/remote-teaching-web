@@ -43,7 +43,6 @@ export interface TeacherWSEventHandler {
   onTeacherMoveZoomedSlide(payload: any): void;
   onTeacherResetZoom(payload: any): void;
   onTeacherDrawPencil(payload: any): void;
-
   onTeacherUpdateSessionLessonAndUnit(payload: any): void;
   onTeacherSendRequestCaptureImage(payload: any): void;
   onStudentSendCapturedImageStatus(payload: any): void;
@@ -52,4 +51,10 @@ export interface TeacherWSEventHandler {
   onTeacherResetPaletteAllStudent(payload: any): void;
   onTeacherDeleteFabric(payload: any): void;
   onTeacherDeleteShape(payload: any): void;
+  onHelperRequestJoinClass(payload: any): void;
+  onHelperJoinedClass(payload: any): void;
+  onHelperExitClass(payload: any): void;
+  onHelperDisconnectClass(payload: any): void;
+  onTeacherHideHelperVideo(payload: any): void;
+  onTeacherShowHelperVideo(payload: any): void;
 } 

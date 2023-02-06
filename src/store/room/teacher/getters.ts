@@ -2,7 +2,7 @@ import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { ClassModel, RoomModel } from "@/models";
 import { BlobTagItem } from "@/services/storage/interface";
 import { GetterTree } from "vuex";
-import { ClassView, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "../interface";
+import { ClassView, HelperState, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "../interface";
 import { ClassAction } from "../student/state";
 import { TeacherRoomState } from "./state";
 
@@ -131,6 +131,15 @@ const getters: GetterTree<TeacherRoomState, any> = {
   },
   getCurrentTimeMedia(state: TeacherRoomState): number {
     return state.currentTimeMedia;
+  },
+  helperId(state: TeacherRoomState): string | undefined {
+    return state.helper?.id;
+  },
+  helperInfo(state: TeacherRoomState): HelperState | undefined {
+    return state.helper;
+  },
+  helperVideoStatus(state: TeacherRoomState): boolean {
+    return state.helper?.isVideoShownByTeacher ?? false;
   },
 };
 

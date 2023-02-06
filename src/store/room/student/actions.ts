@@ -22,7 +22,7 @@ import { UID } from "agora-rtc-sdk-ng";
 import { notification } from "ant-design-vue";
 import { ErrorCode, fmtMsg } from "vue-glcommonui";
 import { ActionTree } from "vuex";
-import { ClassViewFromValue, ClassViewPayload, InClassStatus } from "../interface";
+import { ClassViewFromValue, ClassViewPayload, HelperInClassStatus, InClassStatus } from "../interface";
 import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 
@@ -195,7 +195,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setUser", payload);
   },
   async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible } = state;
+    const { globalAudios, manager, students, teacher, idOne, student, videosFeedVisible, helper } = state;
     if (!manager) return;
     const cameras = students
       .filter((s) => {
@@ -213,6 +213,15 @@ const actions: ActionTree<StudentRoomState, any> = {
       }
       if (teacher.audioEnabled && teacher.status === InClassStatus.JOINED) {
         audios.push(teacher.id);
+      }
+    }
+    if (helper) {
+      // condition to subscribe helper's video
+      if (!helper.isMuteVideo && helper.connectionStatus !== HelperInClassStatus.Disconnected && helper.isVideoShownByTeacher) {
+        cameras.push(helper.id);
+      }
+      if (!helper.isMuteAudio) {
+        audios.push(helper.id);
       }
     }
     if (idOne) {

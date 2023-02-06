@@ -132,11 +132,21 @@ export class DeviceTesterLocale {
   static Unit = "device_tester.unit";
   static Cancel = "device_tester.cancel";
   static JoinSession = "device_tester.join_session";
+  static JoinSessionAsHelperText = "device_tester.join_session_as_helper";
   static MessageWarningMic = "device_tester.message_warning_mic";
   static MessageWarningCamera = "device_tester.message_warning_camera";
   static CheckSpeaker = "device_tester.check_speaker";
   static MessageWarningSpeaker = "device_tester.message_warning_speaker";
   static MessageErrorJoinSession = "device_tester.error_join_session";
+}
+
+export class HelperLocales {
+  static NotifyPart1 = "helper_joining.notify.part_1";
+  static NotifyPart2 = "helper_joining.notify.part_2";
+  static NotifyPart3 = "helper_joining.notify.part_3";
+  static NotifyPart4 = "helper_joining.notify.part_4";
+  static WaitingTeacherConfirm = "helper_joining.waiting_teacher_confirm";
+  static TeacherDeniedRequest = "helper_joining.teacher_denied";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";

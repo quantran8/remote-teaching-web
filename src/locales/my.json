@@ -100,6 +100,7 @@
 	"device_tester.unit": "Unit",
 	"device_tester.cancel": "Cancel",
 	"device_tester.join_session": "Join session",
+	"device_tester.join_session_as_helper" : "Join as helper",
 	"teacher_class_gallery.no_student_join_class": "No student has joined the class yet",
 	"lost_network.message": "You have lost network connectivity. Please reconnect.",
 	"layout.edit_profile": "Edit Profile",

@@ -1,11 +1,10 @@
-import { isDesktopBrowser } from "@/utils/utils";
 import { StudentRoomManager } from "@/manager/room/student.manager";
-import { ClassModel } from "@/models";
-import { RoomModel } from "@/models";
+import { ClassModel, RoomModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
-import { ClassView, StudentState, TeacherState } from "../interface";
 import { Pointer } from "@/store/annotation/state";
+import { isDesktopBrowser } from "@/utils/utils";
+import { ClassView, HelperState, StudentState, TeacherState } from "../interface";
 
 export enum ClassAction {
   DEFAULT = "default",
@@ -62,6 +61,7 @@ export interface StudentRoomState {
   teacher?: TeacherState;
   student?: StudentState;
   students: Array<StudentState>;
+  helper?: HelperState;
   manager?: StudentRoomManager;
   classes: Array<ClassModel>;
   classView: ClassView;

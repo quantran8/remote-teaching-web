@@ -3,6 +3,7 @@ import { VCPlatform } from "@/store/app/state";
 import { Target } from "@/store/interactive/state";
 import { TargetsVisibleList } from "@/store/lesson/state";
 import { FabricObject } from "@/ws";
+import { HelperModel } from "./helper.model";
 import { StudentModel } from "./student.model";
 import { TeacherModel } from "./teacher.model";
 
@@ -136,6 +137,7 @@ export interface RoomModel {
   id: string;
   status: number;
   teacher: TeacherModel;
+  helper: HelperModel;
   streamInfo: {
     token: string;
     chanelId: string;

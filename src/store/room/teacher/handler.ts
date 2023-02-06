@@ -1,15 +1,17 @@
-import { RoomModel, StudentModel, TeacherModel } from "@/models";
+import { HelperModel, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { UserShape } from "@/store/annotation/state";
 import { ExposureStatus } from "@/store/lesson/state";
+import { HelperState } from "@/store/room/interface";
 import { Logger } from "@/utils/logger";
+import { HelperJoiningNotify } from "@/views/teacher-class/components";
 import { WSEventHandler } from "@/ws";
 import { notification } from "ant-design-vue";
+import { h } from "vue";
 import { ActionContext } from "vuex";
-import { ClassViewFromValue, InClassStatus, StudentCaptureStatus } from "../interface";
+import { ClassViewFromValue, HelperInClassStatus, HelperRequestJoinClassPayload, InClassStatus, StudentCaptureStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
-
-export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
+export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onStudentJoinClass: async (payload: StudentModel) => {
       commit("studentJoinned", { id: payload.id });
@@ -356,6 +358,41 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
     },
     onTeacherDeleteShape: async (payload: any) => {
       //
+    },
+    onHelperRequestJoinClass: async (payload: HelperRequestJoinClassPayload) => {
+      const { name, id } = payload;
+      notification.info({
+        key: id,
+        message: "A helper would like to join class!",
+        description: h(HelperJoiningNotify, { helperName: name, helperId: id }),
+        duration: null,
+        class: "helper-joining-notify",
+        placement: "topLeft",
+      });
+    },
+    onHelperJoinedClass: async (payload: HelperModel) => {
+      commit("setHelperInfo", payload);
+      await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onHelperExitClass: async () => {
+      commit("setHelperInfo", undefined);
+      await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onHelperDisconnectClass: async () => {
+      commit("setHelperConnectionStatus", HelperInClassStatus.Disconnected);
+      await dispatch("updateAudioAndVideoFeed", {});
+      const helperInfo: HelperState = getters["helperInfo"];
+      notification.warn({
+        message: `Helper ${helperInfo?.name} has disconnected`,
+      });
+    },
+    onTeacherHideHelperVideo: async () => {
+      commit("setHelperVideoStatus", false);
+      await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onTeacherShowHelperVideo: async () => {
+      commit("setHelperVideoStatus", true);
+      await dispatch("updateAudioAndVideoFeed", {});
     },
   };
   return handler;

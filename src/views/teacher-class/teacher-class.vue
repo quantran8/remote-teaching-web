@@ -1,10 +1,13 @@
 <template>
   <div :class="['tc', isSidebarCollapsed ? 'no-sidebar' : 'has-sidebar', isOneOneMode !== '' ? 'mode-one-one' : '']">
     <Modal v-model:visible="modalVisible" :title="leavePageText" @ok="handleOk" @cancel="handleCancel">
-      {{ leaveNoticeText }}
-      <Checkbox :checked="cbMarkAsCompleteValue" @change="markAsCompleteChanged" class="tc__modal__notice">
-        {{ markAsCompleteText }}
-      </Checkbox>
+      <div v-if="!isHelper">
+        {{ leaveNoticeText }}
+        <Checkbox :checked="cbMarkAsCompleteValue" @change="markAsCompleteChanged" class="tc__modal__notice">
+          {{ markAsCompleteText }}
+        </Checkbox>
+      </div>
+      <div v-else>Do you want to exit the class ?</div>
     </Modal>
     <ChangeLessonUnit ref="changeLessonUnitRef" />
     <div v-show="isShowPreviewCanvas" class="tc__preview-wrapper">

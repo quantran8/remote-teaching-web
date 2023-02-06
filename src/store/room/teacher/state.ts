@@ -1,10 +1,9 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassModel } from "@/models";
-import { RoomModel } from "@/models";
+import { ClassModel, RoomModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { BlobTagItem } from "@/services/storage/interface";
-import { ClassView, StudentCaptureStatus, StudentState, TeacherState } from "../interface";
+import { ClassView, HelperState, StudentCaptureStatus, StudentState, TeacherState } from "../interface";
 import { ClassAction } from "../student/state";
 
 const DEFAULT_LESSON = 0;
@@ -15,6 +14,7 @@ export interface TeacherRoomState {
   user?: UserModel;
   teacher?: TeacherState;
   students: Array<StudentState>;
+  helper?: HelperState;
   manager?: TeacherRoomManager;
   classes: Array<ClassModel>;
   classView: ClassView;

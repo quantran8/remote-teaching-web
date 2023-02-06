@@ -1,3 +1,4 @@
+// Three kinds of users model
 export interface StudentState {
   id: string;
   index: number;
@@ -13,10 +14,6 @@ export interface StudentState {
   imageCapturedCount: number;
 }
 
-export interface LessonInfo {
-  unit: string;
-  lesson: string;
-}
 export interface TeacherState {
   id: string;
   name: string;
@@ -26,6 +23,23 @@ export interface TeacherState {
   status: InClassStatus;
   disconnectTime?: number | null;
 }
+
+export interface HelperState {
+  id: string;
+  name: string;
+  signalrConnectId: string | null;
+  isMuteAudio: boolean;
+  isMuteVideo: boolean;
+  browserFingerPrinting: string;
+  connectionStatus: HelperInClassStatus;
+  isVideoShownByTeacher: boolean;
+}
+
+export interface LessonInfo {
+  unit: string;
+  lesson: string;
+}
+
 export enum ClassView {
   GALLERY = "gallery",
   LESSON_PLAN = "lesson_plan",
@@ -79,6 +93,12 @@ export enum InClassStatus {
    */
   DISCONNECTED = 5,
 }
+
+export enum HelperInClassStatus {
+  Disconnected = 0, // disconnected
+  Joined = 2,
+}
+
 export enum StreamingStatus {
   WAITING = 0,
   CONNECTING = 1,
@@ -118,6 +138,8 @@ export interface InitClassRoomPayload {
   userName: string;
   role: string;
   browserFingerPrinting: string;
+  isHelper?: boolean;
+  groupId?: string;
 }
 
 export interface NetworkQualityPayload {
@@ -131,4 +153,9 @@ export interface StudentCaptureStatus {
   imageCapturedCount: number;
   isUploaded: boolean;
   error: string;
+}
+
+export interface HelperRequestJoinClassPayload {
+  name: string;
+  id: string;
 }

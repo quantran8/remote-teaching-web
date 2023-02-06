@@ -54,7 +54,7 @@ $scale-ratio: 0.66;
     &__whiteboard-content {
       display: grid;
       grid-template-columns: 550px 1fr;
-      grid-template-rows: 330px 490px;
+      grid-template-rows: 330px auto;
       grid-gap: 5px;
       width: 717px;
       height: 100%;

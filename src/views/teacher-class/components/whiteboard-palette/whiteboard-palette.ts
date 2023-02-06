@@ -2,22 +2,25 @@ import { brushstrokesRender } from "@/components/common/annotation-view/componen
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { useFabricObject } from "@/hooks/use-fabric-object";
 import { TeacherClass, WhiteBoard } from "@/locales/localeid";
+import { HelperService } from "@/services";
 import { Pointer } from "@/store/annotation/state";
-import { ClassView } from "@/store/room/interface";
+import { ClassView, HelperState } from "@/store/room/interface";
 import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
 import { DefaultCanvasDimension, FabricObjectType, Mode, Tools } from "@/utils/utils";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
 import { annotationCurriculum } from "@/views/teacher-class/components/whiteboard-palette/components/annotation-curriculum";
 import { FabricObject } from "@/ws";
+import { DownOutlined, UpOutlined } from "@ant-design/icons-vue";
 import { onClickOutside } from "@vueuse/core";
-import { Button, Space } from "ant-design-vue";
+import { Button, Radio, Space } from "ant-design-vue";
 import { fabric } from "fabric";
 import { gsap } from "gsap";
 import { computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { fmtMsg, LoginInfo } from "vue-glcommonui";
 import VuePdfEmbed from "vue-pdf-embed";
 import { useStore } from "vuex";
+import { HelperCard } from "..";
 
 const DEFAULT_COLOR = "black";
 const DEFAULT_STYLE = {
@@ -42,6 +45,11 @@ export default defineComponent({
     Space,
     Button,
     VuePdfEmbed,
+    RadioButton: Radio.Button,
+    RadioGroup: Radio.Group,
+    HelperCard,
+    DownOutlined,
+    UpOutlined,
   },
   setup(props) {
     const store = useStore();
@@ -62,8 +70,11 @@ export default defineComponent({
     const selfStrokes = computed(() => store.getters["annotation/shapes"]);
     const isShowWhiteBoard = computed(() => store.getters["teacherRoom/isShowWhiteBoard"]);
     const isTeacherUseOnly = computed(() => store.getters["teacherRoom/isTeacherUseOnly"]);
+    const helperInfo = computed<HelperState>(() => store.getters["teacherRoom/helperInfo"]);
+    const helperVideoStatus = computed<boolean>(() => store.getters["teacherRoom/helperVideoStatus"]);
+    const isHelper = computed<boolean>(() => helperInfo.value?.id === loginInfo.profile.sub);
     const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
-
+    const currentUserIsHelper = computed<boolean>(() => helperInfo.value?.id === loginInfo.profile.sub);
     let canvas: any;
     const tools = Tools;
     const wrapCanvasRef = ref<any>(null);
@@ -93,14 +104,23 @@ export default defineComponent({
     const isShowPreviewCanvas = computed(() => store.getters["lesson/isShowPreviewCanvas"]);
     const sessionZoomRatio = computed(() => store.getters["lesson/zoomRatio"]);
     const sessionImgCoords = computed(() => store.getters["lesson/imgCoords"]);
-
     const prevZoomRatio = ref(1);
     const prevCoords = ref({ x: 0, y: 0 });
     const zoomPercentage = ref(100);
     const prevLineId = ref("");
     const diff = ref(0);
     const pointsSkipped = ref<Array<Pointer>>([]);
-
+    const toggleHelperVideoLoading = ref(false);
+    const toggleHelperVideo = async (isShown = false) => {
+      if (helperVideoStatus.value === isShown || toggleHelperVideoLoading.value) return;
+      try {
+        toggleHelperVideoLoading.value = true;
+        await HelperService.teacherToggleHelperVideo(isShown);
+      } catch (error) {
+        console.log("toggleHelperVideo error => ", error);
+      }
+      toggleHelperVideoLoading.value = false;
+    };
     const {
       createTextBox,
       onTextBoxEdited,
@@ -1280,6 +1300,12 @@ export default defineComponent({
       video,
       audio,
       isValidUrl,
+      toggleHelperVideo,
+      helperInfo,
+      currentUserIsHelper,
+      helperVideoStatus,
+      isHelper,
+      toggleHelperVideoLoading,
     };
   },
 });

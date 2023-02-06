@@ -139,3 +139,11 @@ body {
 .cursor-move {
 	cursor: move;
 }
+
+.ant-notification-notice {
+	&.helper-joining-notify {
+		.ant-notification-notice-close {
+			display: none;
+		}
+	}
+}

@@ -1,5 +1,5 @@
 import { TeacherRoomManager } from "@/manager/room/teacher.manager";
-import { ClassModel, RoomModel, RoomUsersModel, StudentModel } from "@/models";
+import { ClassModel, HelperModel, RoomModel, RoomUsersModel, StudentModel } from "@/models";
 import { GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
@@ -9,6 +9,7 @@ import {
   ClassViewPayload,
   DefaultPayload,
   DeviceMediaPayload,
+  HelperInClassStatus,
   InClassStatus,
   StudentBadgePayload,
   StudentCaptureStatus,
@@ -100,6 +101,7 @@ const mutations: TeacherRoomMutation<State> = {
       videoEnabled: !p.teacher.isMuteVideo,
       status: p.teacher.connectionStatus,
     };
+    s.helper = p.helper;
     s.isTeacherVideoMirror = p.isTeacherVideoMirror;
     s.isStudentVideoMirror = p.isStudentVideoMirror;
 
@@ -364,6 +366,20 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setCaptureAll(s: TeacherRoomState, p: boolean) {
     s.isCaptureAll = p;
+  },
+  setHelperInfo(s: TeacherRoomState, p: HelperModel) {
+    s.helper = p;
+  },
+  setHelperConnectionStatus(s: TeacherRoomState, p: HelperInClassStatus) {
+    if (s.helper) {
+      s.helper.connectionStatus = p;
+    }
+  },
+  setHelperVideoStatus(s: TeacherRoomState, p: boolean) {
+    if (s.helper) {
+      console.log(1, p);
+      s.helper.isVideoShownByTeacher = p;
+    }
   },
 };
 

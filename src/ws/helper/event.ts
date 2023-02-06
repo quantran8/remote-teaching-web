@@ -1,0 +1,5 @@
+export enum HelperWSEvent {
+	JOIN_CLASS = "1501",
+	HELPER_DISCONNECT_CLASS = "1502",
+	EXIT_CLASS = "1503"
+}

@@ -1,36 +1,36 @@
-import { StudentClassLocale } from "./../../locales/localeid";
-import { RoleName, LoginInfo, fmtMsg, MatIcon } from "vue-glcommonui";
-import { ErrorCode, mobileDevice } from "@/utils/utils";
+import * as sandClock from "@/assets/lotties/sand-clock.json";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
+import noAvatar from "@/assets/student-class/no-avatar.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
+import { ClassRoomStatus } from "@/models";
 import { GLApiStatus, GLErrorCode } from "@/models/error.model";
+import { RemoteTeachingService } from "@/services";
+import { UserRole } from "@/store/app/state";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
+import { Logger } from "@/utils/logger";
 import { Paths } from "@/utils/paths";
+import { ErrorCode, mobileDevice } from "@/utils/utils";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted, onMounted } from "vue";
+import "animate.css";
+import { notification } from "ant-design-vue";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { fmtMsg, LoginInfo, MatIcon, RoleName } from "vue-glcommonui";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import * as clockData from "../../assets/lotties/clock.json";
+import JoinClassLoading from "../join-class-loading/join-class-loading.vue";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+import { StudentClassLocale } from "./../../locales/localeid";
+import { HelperVideo } from "./components/helper-video";
 import { StudentAction } from "./components/student-action";
 import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
-import { RemoteTeachingService } from "@/services";
-import JoinClassLoading from "../join-class-loading/join-class-loading.vue";
-import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
-import * as sandClock from "@/assets/lotties/sand-clock.json";
-import { ClassRoomStatus } from "@/models";
-import noAvatar from "@/assets/student-class/no-avatar.png";
-import { notification } from "ant-design-vue";
-import "animate.css";
-import { Logger } from "@/utils/logger";
-import { UserRole, VCPlatform } from "@/store/app/state";
-
 const fpPromise = FingerprintJS.load();
 
 //temporary hard code video
@@ -50,6 +50,7 @@ export default defineComponent({
     StudentHeader,
     UnitPlayer,
     StudentAction,
+    HelperVideo,
   },
 
   async created() {
@@ -129,7 +130,7 @@ export default defineComponent({
     const showMessage = ref(false);
     const studentOneName = computed<string>(() => students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name ?? "");
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
-
+    const helperVideoStatus = computed<boolean>(() => store.getters["studentRoom/helperVideoStatus"]);
     const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
@@ -139,7 +140,7 @@ export default defineComponent({
     const iconSand = reactive({ animationData: sandClock.default });
     const platform = computed(() => store.getters["platform"]);
     const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
-
+    const helperShown = ref(true);
     watch(lessonInfo, async () => {
       try {
         const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value?.unit, lessonInfo.value?.lesson);
@@ -407,6 +408,8 @@ export default defineComponent({
       goToHomePage,
       videosFeedVisible,
       isUsingAgora,
+      helperShown,
+      helperVideoStatus,
     };
   },
 });

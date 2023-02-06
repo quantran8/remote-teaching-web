@@ -1,21 +1,20 @@
-import AgoraRTC, {
-  ClientConfig,
-  IAgoraRTC,
-  IAgoraRTCClient,
-  IAgoraRTCRemoteUser,
-  ICameraVideoTrack,
-  ILocalTrack,
-  IMicrophoneAudioTrack,
-  IRemoteTrack,
-  UID,
-  VideoEncoderConfigurationPreset,
-} from "agora-rtc-sdk-ng";
-import { isEqual } from "lodash";
-import { notification } from "ant-design-vue";
+import { TeacherClassError } from "@/locales/localeid";
 import { store } from "@/store";
 import { Logger } from "@/utils/logger";
+import AgoraRTC, {
+	ClientConfig,
+	IAgoraRTC,
+	IAgoraRTCClient,
+	IAgoraRTCRemoteUser,
+	ICameraVideoTrack,
+	ILocalTrack,
+	IMicrophoneAudioTrack,
+	IRemoteTrack,
+	UID,
+	VideoEncoderConfigurationPreset
+} from "agora-rtc-sdk-ng";
+import { notification } from "ant-design-vue";
 import { fmtMsg } from "vue-glcommonui";
-import { TeacherClassError } from "@/locales/localeid";
 
 export interface AgoraClientSDK {
   client: IAgoraRTCClient;
@@ -57,7 +56,7 @@ export class AgoraClient implements AgoraClientSDK {
   _joinRoomOptions?: JoinRoomOptions;
   _cameraTrack?: ICameraVideoTrack;
   _microphoneTrack?: IMicrophoneAudioTrack;
-  _callbackWhenJoinFailed?:  ()=>Promise<any>;
+  _callbackWhenJoinFailed?: () => Promise<any>;
 
   get cameraTrack(): ICameraVideoTrack {
     return this._cameraTrack as ICameraVideoTrack;
@@ -82,7 +81,7 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   get joinRoomOptions(): JoinRoomOptions | undefined {
-	return this._joinRoomOptions;
+    return this._joinRoomOptions;
   }
 
   get agoraRTC(): IAgoraRTC {
@@ -91,7 +90,7 @@ export class AgoraClient implements AgoraClientSDK {
   constructor(options: AgoraClientOptions) {
     this._options = options;
   }
-  
+
   joined: boolean = false;
   isMirror: boolean = true;
   isRemoteMirror: boolean = true;
@@ -109,7 +108,7 @@ export class AgoraClient implements AgoraClientSDK {
     try {
       this._client = this.agoraRTC.createClient(this.clientConfig);
       this.isMirror = !!options?.isMirror;
-	  this.isRemoteMirror = !!options?.isRemoteMirror;
+      this.isRemoteMirror = !!options?.isRemoteMirror;
       this.client.on("user-published", (user, mediaType) => {
         Logger.log("user-published", user.uid, mediaType);
         if (mediaType === "video") {
@@ -226,7 +225,7 @@ export class AgoraClient implements AgoraClientSDK {
   }
 
   private async _afterJoin(options: JoinRoomOptions | undefined): Promise<any> {
-	if (options?.camera) {
+    if (options?.camera) {
       await this.openCamera(options?.videoEncoderConfigurationPreset);
     }
     if (options?.microphone) await this.openMicrophone();
@@ -241,10 +240,10 @@ export class AgoraClient implements AgoraClientSDK {
       Logger.log("connection state changed! => prevState", prevState);
       Logger.log("connection state changed! => reason", reason);
 
-	//   if(prevState == "RECONNECTING" && currentState == "CONNECTED") {
-	// 	Logger.log("AGORA: PULISH STREAMS AFTER RECOVERED TO CONNECTED STATE");
-	// 	await this._afterJoin(this._joinRoomOptions as JoinRoomOptions);
-	//   }
+      //   if(prevState == "RECONNECTING" && currentState == "CONNECTED") {
+      // 	Logger.log("AGORA: PULISH STREAMS AFTER RECOVERED TO CONNECTED STATE");
+      // 	await this._afterJoin(this._joinRoomOptions as JoinRoomOptions);
+      //   }
     });
   }
 
@@ -307,7 +306,7 @@ export class AgoraClient implements AgoraClientSDK {
       this.cameraError = null;
       this.setupHotPluggingDevice("camera");
     } catch (err) {
-	  Logger.info("AGORA_OPEN_CAMERA_ERROR", err);
+      Logger.info("AGORA_OPEN_CAMERA_ERROR", err);
       this.cameraError = err;
     }
   }
@@ -366,64 +365,61 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
-  private async _publishInternal():Promise<any>{
-	if (this.cameraTrack) {
-		const trackId = this.cameraTrack.getTrackId();
-		if (this._publishedTrackIds.indexOf(trackId) < 0) {
-			await this.client.publish([this.cameraTrack]);
-			this.publishedVideo = true;
-			this._publishedTrackIds.push(trackId);
-		}
-	}
-	if (this.microphoneTrack) {
-		const trackId = this.microphoneTrack.getTrackId();
-		if (this._publishedTrackIds.indexOf(trackId) < 0) {
-			await this.client.publish([this.microphoneTrack]);
-			this.publishedAudio = true;
-			this._publishedTrackIds.push(trackId);
-		}
-	}
+  private async _publishInternal(): Promise<any> {
+    if (this.cameraTrack) {
+      const trackId = this.cameraTrack.getTrackId();
+      if (this._publishedTrackIds.indexOf(trackId) < 0) {
+        await this.client.publish([this.cameraTrack]);
+        this.publishedVideo = true;
+        this._publishedTrackIds.push(trackId);
+      }
+    }
+    if (this.microphoneTrack) {
+      const trackId = this.microphoneTrack.getTrackId();
+      if (this._publishedTrackIds.indexOf(trackId) < 0) {
+        await this.client.publish([this.microphoneTrack]);
+        this.publishedAudio = true;
+        this._publishedTrackIds.push(trackId);
+      }
+    }
   }
 
   _publishedTrackIds: string[] = [];
   private async _publish(): Promise<any> {
     if (!this.joined || !this.client) return;
     Logger.log("AGORA CLIENT STATUS: " + this.client.connectionState);
-	if(this.client.connectionState == "CONNECTED") {
-		await this._publishInternal();
-		Logger.log("PUBLISH streams OK");
-	}
-	else {
-		const retryCount = 3;
-		let currentTry = 1;
-		Logger.log("Agora client joined but connectionState not Connected, retry publish streams 3 times");
-		// @ts-ignore: no overlap error
-		while(this.client.connectionState != "CONNECTED" && currentTry <= retryCount)
-		{
-			setTimeout(async ()=>{
-				Logger.log(`Agora client joined but connectionState not Connected, retry publish streams ${currentTry} time`);
-				if(this.client.connectionState == "CONNECTED") {
-					Logger.log("Retry publish streams successful");
-					await this._publishInternal();
-				}
-				else {
-					Logger.log("Retry publish streams NOT successful");
-				}
-			}, 1000);
-			currentTry = +1;
-		}
-		// @ts-ignore: no overlap error
-		if(this.client.connectionState != "CONNECTED" && currentTry > retryCount) {
-			notification.error({message: fmtMsg(TeacherClassError.PublishStreamAgoraServersError)});
-		}
-	}
+    if (this.client.connectionState == "CONNECTED") {
+      await this._publishInternal();
+      Logger.log("PUBLISH streams OK");
+    } else {
+      const retryCount = 3;
+      let currentTry = 1;
+      Logger.log("Agora client joined but connectionState not Connected, retry publish streams 3 times");
+      // @ts-ignore: no overlap error
+      while (this.client.connectionState != "CONNECTED" && currentTry <= retryCount) {
+        setTimeout(async () => {
+          Logger.log(`Agora client joined but connectionState not Connected, retry publish streams ${currentTry} time`);
+          if (this.client.connectionState == "CONNECTED") {
+            Logger.log("Retry publish streams successful");
+            await this._publishInternal();
+          } else {
+            Logger.log("Retry publish streams NOT successful");
+          }
+        }, 1000);
+        currentTry = +1;
+      }
+      // @ts-ignore: no overlap error
+      if (this.client.connectionState != "CONNECTED" && currentTry > retryCount) {
+        notification.error({ message: fmtMsg(TeacherClassError.PublishStreamAgoraServersError) });
+      }
+    }
   }
 
   async reset() {
     // try {
     //   if (this.cameraTrack) {
     //     await this.unpublishTrack(this.cameraTrack);
-	// 	Logger.log("Turn off camera")
+    // 	Logger.log("Turn off camera")
     //   }
     // } catch (error) {
     //   Logger.error(error);
@@ -431,14 +427,14 @@ export class AgoraClient implements AgoraClientSDK {
     // try {
     //   if (this.microphoneTrack) {
     //     await this.unpublishTrack(this.microphoneTrack);
-	// 	Logger.log("Turn off audio")
+    // 	Logger.log("Turn off audio")
     //   }
     // } catch (error) {
     //   Logger.error(error);
     // }
-	this._closeMediaTrack(this.cameraTrack);
+    this._closeMediaTrack(this.cameraTrack);
     this._closeMediaTrack(this.microphoneTrack);
-	
+
     this.client?.removeAllListeners();
 
     await this._client?.leave();
@@ -484,14 +480,15 @@ export class AgoraClient implements AgoraClientSDK {
     }
   }
 
+  // sometimes, this method return undefined (this.client.remoteUsers return undefined) which causes the bug lost audio and video of remote user.
+  // need to take into consider if this issue happening in dev
   private _getRemoteUser(userId: string): IAgoraRTCRemoteUser | undefined {
     if (!this.client) return undefined;
-    return this.client.remoteUsers.find((e) => isEqual(e.uid + "", userId));
+    return this.client.remoteUsers.find((e) => e.uid === userId);
   }
 
   async getBandwidth() {
-	if(!this.client)
-		return 0;
+    if (!this.client) return 0;
     const stats = this.client.getRTCStats();
     return stats.OutgoingAvailableBandwidth / 1024;
   }
@@ -581,12 +578,12 @@ export class AgoraClient implements AgoraClientSDK {
     if (!user || !user.hasVideo || !this.client) return;
     try {
       const remoteTrack = await this.client.subscribe(user, "video");
-	  if (this.options.user?.role !== "host") {
-	 	const isTeacher = store.getters["studentRoom/teacher"]?.id === user.uid;
-      	remoteTrack.play(userId, { mirror: isTeacher ? this.isRemoteMirror : this.isMirror });
-	  } else {
-      	remoteTrack.play(userId, { mirror: this.isRemoteMirror });
-	  }
+      if (this.options.user?.role !== "host") {
+        const isTeacher = store.getters["studentRoom/teacher"]?.id === user.uid;
+        remoteTrack.play(userId, { mirror: isTeacher ? this.isRemoteMirror : this.isMirror });
+      } else {
+        remoteTrack.play(userId, { mirror: this.isRemoteMirror });
+      }
       Logger.log(`video of ${userId} played`);
       for (const [index, subscribedVideo] of this.subscribedVideos.entries()) {
         if (subscribedVideo.userId === userId) {

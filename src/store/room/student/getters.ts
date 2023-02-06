@@ -3,7 +3,7 @@ import { ClassModel, ClassRoomModel, RoomModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
 import { UserModel } from "@/models/user.model";
 import { GetterTree } from "vuex";
-import { ClassView, StudentState, TeacherState } from "../interface";
+import { ClassView, HelperState, StudentState, TeacherState } from "../interface";
 import { ClassAction, StudentRoomState } from "./state";
 
 const getters: GetterTree<StudentRoomState, any> = {
@@ -113,6 +113,12 @@ const getters: GetterTree<StudentRoomState, any> = {
   },
   getCurrentTimeMedia(state: StudentRoomState): number {
     return state.currentTimeMedia;
+  },
+  helperInfo(state: StudentRoomState): HelperState | undefined {
+    return state.helper;
+  },
+  helperVideoStatus(state: StudentRoomState): boolean {
+    return state.helper?.isVideoShownByTeacher ?? false;
   },
 };
 

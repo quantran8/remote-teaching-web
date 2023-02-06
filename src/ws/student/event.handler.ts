@@ -16,4 +16,9 @@ export interface StudentWSEventHandler {
   onTeacherModifyFabricObject(payload: any): void;
   onToggleAllShapes(payload: any): void;
   onToggleShape(payload: any): void;
+  onHelperJoinedClass(payload: any): void;
+  onHelperExitClass(payload: any): void;
+  onHelperDisconnectClass(payload: any): void;
+  onTeacherHideHelperVideo(payload: any): void;
+  onTeacherShowHelperVideo(payload: any): void;
 }
