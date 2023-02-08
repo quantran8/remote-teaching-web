@@ -1,35 +1,35 @@
-import { StudentClassLocale } from "./../../locales/localeid";
-import { RoleName, LoginInfo, fmtMsg, MatIcon } from "vue-glcommonui";
-import { ErrorCode, mobileDevice } from "@/utils/utils";
+import * as sandClock from "@/assets/lotties/sand-clock.json";
 import IconHand from "@/assets/student-class/hand-jb.png";
 import IconHandRaised from "@/assets/student-class/hand-raised.png";
+import noAvatar from "@/assets/student-class/no-avatar.png";
 import UnityView from "@/components/common/unity-view/UnityView.vue";
 import { useTimer } from "@/hooks/use-timer";
+import { ClassRoomStatus } from "@/models";
 import { GLApiStatus, GLErrorCode } from "@/models/error.model";
+import { RemoteTeachingService } from "@/services";
+import { UserRole } from "@/store/app/state";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
+import { Logger } from "@/utils/logger";
 import { Paths } from "@/utils/paths";
+import { ErrorCode, mobileDevice } from "@/utils/utils";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { computed, ComputedRef, defineComponent, reactive, ref, watch, onUnmounted, onMounted } from "vue";
+import "animate.css";
+import { notification } from "ant-design-vue";
+import { computed, ComputedRef, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { fmtMsg, LoginInfo, MatIcon, RoleName } from "vue-glcommonui";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import * as clockData from "../../assets/lotties/clock.json";
+import JoinClassLoading from "../join-class-loading/join-class-loading.vue";
+import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
+import { StudentClassLocale } from "./../../locales/localeid";
 import { StudentAction } from "./components/student-action";
 import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
-import { RemoteTeachingService } from "@/services";
-import JoinClassLoading from "../join-class-loading/join-class-loading.vue";
-import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
-import * as sandClock from "@/assets/lotties/sand-clock.json";
-import { ClassRoomStatus } from "@/models";
-import noAvatar from "@/assets/student-class/no-avatar.png";
-import { notification } from "ant-design-vue";
-import "animate.css";
-import { Logger } from "@/utils/logger";
-import { UserRole, VCPlatform } from "@/store/app/state";
 
 const fpPromise = FingerprintJS.load();
 
@@ -173,21 +173,25 @@ export default defineComponent({
       await store.dispatch("studentRoom/setAvatarAllStudent", { studentIds });
     });
 
-    watch(studentOneAndOneId, async () => {
-      if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
-        await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
-      }
-      isOneToOne.value = !!studentOneAndOneId.value;
-      if (student.value) {
-        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-        // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-        //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
-        //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
-        // }
-      } else {
-        studentIsOneToOne.value = false;
-      }
-    });
+    watch(
+      studentOneAndOneId,
+      async () => {
+        if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+          await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
+        }
+        isOneToOne.value = !!studentOneAndOneId.value;
+        if (student.value) {
+          studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+          // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
+          //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
+          //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
+          // }
+        } else {
+          studentIsOneToOne.value = false;
+        }
+      },
+      { immediate: true },
+    );
 
     // Left section animation
     // const animate = () => {
@@ -206,14 +210,18 @@ export default defineComponent({
 
     // onMounted(animate);
 
-    watch(studentOneAndOneId, () => {
-      isOneToOne.value = !!studentOneAndOneId.value;
-      if (student.value) {
-        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-      } else {
-        studentIsOneToOne.value = false;
-      }
-    });
+    watch(
+      studentOneAndOneId,
+      () => {
+        isOneToOne.value = !!studentOneAndOneId.value;
+        if (student.value) {
+          studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+        } else {
+          studentIsOneToOne.value = false;
+        }
+      },
+      { immediate: true },
+    );
 
     watch(apiStatus, async () => {
       if (apiStatus.value) {
