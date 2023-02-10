@@ -1,4 +1,5 @@
 import { CaptureNotification, TeacherClassGallery } from "@/locales/localeid";
+import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 import { notification } from "ant-design-vue";
@@ -103,10 +104,10 @@ export default defineComponent({
         status: false,
         id: null,
       });
-      //   if(getters["platform"] === VCPlatform.Zoom){
-      //   	const roomManager = getters["teacherRoom/roomManager"];
-      // 	await roomManager?.zoomClient.teacherBackToMainRoom()
-      //   }
+      if (getters["platform"] === VCPlatform.Zoom) {
+        const roomManager = getters["teacherRoom/roomManager"];
+        await roomManager?.zoomClient.backToMainSession();
+      }
     };
 
     return {

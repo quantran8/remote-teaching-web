@@ -1,13 +1,13 @@
-import { Logger } from "@/utils/logger";
-import { VCPlatform } from "@/store/app/state";
-//import { ZoomClient, ZoomClientOptions, ZoomEventHandler } from "./../../zoom";
 import { AgoraClient, AgoraClientOptions, AgoraEventHandler } from "@/agora";
 import { store } from "@/store";
+import { VCPlatform } from "@/store/app/state";
+import { Logger } from "@/utils/logger";
 import { GLSocketClient, WSEventHandler } from "@/ws";
+import { ZoomClient, ZoomClientOptions } from "./../../zoom";
 
 export interface RoomOptions {
   agora: AgoraClientOptions;
-  //zoom: ZoomClientOptions;
+  zoom: ZoomClientOptions;
 }
 
 export enum MediaDeviceStatus {
@@ -29,7 +29,7 @@ export interface MediaStateInterface {
 
 export abstract class BaseRoomManager<T extends GLSocketClient> {
   agoraClient!: AgoraClient;
-  //zoomClient!: ZoomClient;
+  zoomClient!: ZoomClient;
   options!: RoomOptions;
   WSClient!: T;
   agoraEventHandler!: AgoraEventHandler;
@@ -48,70 +48,70 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
     return this.WSClient.registerEventHandler(eventHandler);
   }
   registerVideoCallSDKEventHandler(eventHandler: AgoraEventHandler) {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    if (eventHandler) {
-      this.agoraEventHandler = eventHandler as AgoraEventHandler;
-      return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
+    if (store.getters.platform === VCPlatform.Agora) {
+      if (eventHandler) {
+        this.agoraEventHandler = eventHandler as AgoraEventHandler;
+        return this.agoraClient.registerEventHandler(eventHandler as AgoraEventHandler);
+      }
     }
-    //}
   }
 
   reRegisterVideoCallSDKEventHandler() {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    if (this.agoraEventHandler) return this.agoraClient.registerEventHandler(this.agoraEventHandler);
-    //}
+    if (store.getters.platform === VCPlatform.Agora) {
+      if (this.agoraEventHandler) return this.agoraClient.registerEventHandler(this.agoraEventHandler);
+    }
   }
 
   isJoinedRoom() {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    this.agoraClient?.joined;
-    // } else {
-    //   this.zoomClient?.joined;
-    // }
+    if (store.getters.platform === VCPlatform.Agora) {
+      this.agoraClient?.joined;
+    } else {
+      this.zoomClient?.joined;
+    }
   }
 
   setCamera(options: { enable: boolean; videoEncoderConfigurationPreset?: string }) {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    return this.agoraClient.setCamera(options);
-    // } else {
-    //   return this.zoomClient.setCamera(options);
-    // }
+    if (store.getters.platform === VCPlatform.Agora) {
+      return this.agoraClient.setCamera(options);
+    } else {
+      return this.zoomClient.setCamera(options);
+    }
   }
 
   setMicrophone(options: { enable: boolean }) {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    return this.agoraClient.setMicrophone(options);
-    // } else {
-    //   return this.zoomClient.setMicrophone(options);
-    // }
+    if (store.getters.platform === VCPlatform.Agora) {
+      return this.agoraClient.setMicrophone(options);
+    } else {
+      return this.zoomClient.setMicrophone(options);
+    }
   }
 
   async updateAudioAndVideoFeed(cameras: Array<string>, audios: Array<string>) {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
-    // } else {
-    //   Logger.log("Update audio and video feed")
-    //   return this.zoomClient.rerenderParticipantsVideo()
-    // }
+    if (store.getters.platform === VCPlatform.Agora) {
+      return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+    } else {
+      Logger.log("Update audio and video feed");
+      //   return this.zoomClient.rerenderParticipantsVideo();
+    }
   }
 
   async studentOneAndOne(cameras: Array<string>, audios: Array<string>) {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
-    //}
+    if (store.getters.platform === VCPlatform.Agora) {
+      return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
+    }
   }
 
   getBandwidth() {
-    //if (store.getters.platform === VCPlatform.Agora) {
-    return this.agoraClient.getBandwidth();
-    //}
+    if (store.getters.platform === VCPlatform.Agora) {
+      return this.agoraClient.getBandwidth();
+    }
   }
 
   async close() {
-    //if (store.getters.platform === VCPlatform.Agora) {
+    if (store.getters.platform === VCPlatform.Agora) {
     return this.agoraClient.reset();
-    // } else {
-    //   return this.zoomClient.reset();
-    // }
+    } else {
+      return this.zoomClient.reset();
+    }
   }
 }

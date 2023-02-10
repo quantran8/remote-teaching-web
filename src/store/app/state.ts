@@ -62,7 +62,7 @@ const state: AppState = {
   microphoneDeviceId: microphoneDeviceId || "",
   userRole: UserRole.UnConfirm,
 
-  platform: VCPlatform.Agora,
+  platform: VCPlatform.Zoom,
   singalrInited: false,
   teacherMessageVersion: 0,
   checkMessageVersionTimer: -1,

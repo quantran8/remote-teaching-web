@@ -1,7 +1,6 @@
 import { JoinSessionModel } from "@/models/join-session.model";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
 import { RemoteTeachingServiceInterface } from "@/services";
-import { store } from "@/store";
 import { GLServiceBase } from "vue-glcommonui";
 import { GenerateTokenResponse, NextSessionResponse, StudentGetRoomResponse, TeacherGetRoomResponse, UnitAndLessonResponse } from "./model";
 class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteTeachingServiceInterface {
@@ -12,7 +11,7 @@ class GLRemoteTeachingService extends GLServiceBase<any, any> implements RemoteT
   }
 
   teacherStartClassRoom(startModel: JoinSessionModel): Promise<any> {
-    return this.create("teacher/join-session", { ...startModel, videoPlatformProvider: store.getters.platform });
+    return this.create("teacher/join-session", { ...startModel });
   }
 
   teacherEndClassRoom(roomId?: string, markAsComplete?: boolean): Promise<any> {

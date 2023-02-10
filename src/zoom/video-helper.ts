@@ -1,9 +1,10 @@
 export const getStudentPositionAndSize = (displayName: string, canvas: HTMLCanvasElement) => {
   const div = document.getElementById(`${displayName}__sub-wrapper`) as HTMLDivElement;
-  if (canvas && div) {
-    const w = div.offsetWidth;
+  const subDiv = document.getElementById(`${displayName}__wrapper`) as HTMLDivElement;
+  if (canvas && div && subDiv) {
+    const w = div.offsetWidth === subDiv.offsetWidth ? div.offsetWidth : subDiv.offsetWidth;
     const h = div.offsetHeight;
-    const x = div.offsetLeft;
+    const x = div.offsetWidth === subDiv.offsetWidth ? div.offsetLeft : subDiv.offsetLeft;
     const y = canvas.offsetHeight - (div.offsetTop + div.offsetHeight);
     return { w, h, x, y };
   }
@@ -14,9 +15,9 @@ export const getClassmatePositionAndSize = (displayName: string, canvas: HTMLCan
   const div = document.getElementById(`${displayName}__sub-wrapper`) as HTMLDivElement;
   if (canvas && div) {
     const w = div.offsetWidth;
-    const h = div.offsetWidth;
-    const x = div.offsetLeft;
-    const y = canvas.offsetHeight - (div.offsetTop + div.offsetWidth);
+    const h = div.offsetHeight;
+    const x = div.parentElement?.offsetLeft ?? 0;
+    const y = canvas.offsetHeight - (div.offsetHeight + (div.parentElement?.offsetTop ?? 0));
     return { w, h, x, y };
   }
   return null;

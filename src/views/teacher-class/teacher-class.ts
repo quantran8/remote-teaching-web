@@ -44,7 +44,7 @@ export default defineComponent({
   },
   async beforeUnmount() {
     const store = useStore();
-    await store.dispatch("teacherRoom/leaveRoom");
+    await store.dispatch("teacherRoom/leaveRoom", { leave: true });
   },
   async created() {
     const { getters, dispatch } = useStore();
@@ -376,6 +376,9 @@ export default defineComponent({
     onMounted(() => {
       previewSetup();
       updateUserRoleByView(UserRole.Teacher);
+      window.addEventListener("beforeunload", async () => {
+        await dispatch("teacherRoom/leaveRoom", { leave: true });
+      });
     });
     onUnmounted(() => {
       updateUserRoleByView(UserRole.UnConfirm);

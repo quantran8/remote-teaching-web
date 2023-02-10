@@ -7,7 +7,7 @@ import { useTimer } from "@/hooks/use-timer";
 import { ClassRoomStatus } from "@/models";
 import { GLApiStatus, GLErrorCode } from "@/models/error.model";
 import { RemoteTeachingService } from "@/services";
-import { UserRole } from "@/store/app/state";
+import { UserRole, VCPlatform } from "@/store/app/state";
 import { ClassView, LessonInfo, StudentState, TeacherState } from "@/store/room/interface";
 import * as audioSource from "@/utils/audioGenerator";
 import { breakpointChange } from "@/utils/breackpoint";
@@ -86,7 +86,7 @@ export default defineComponent({
   },
   async beforeUnmount() {
     const store = useStore();
-    await store.dispatch("studentRoom/leaveRoom");
+    await store.dispatch("studentRoom/leaveRoom", { leave: true });
   },
 
   setup() {
@@ -139,8 +139,9 @@ export default defineComponent({
       "https://devmediaservice-jpea.streaming.media.azure.net/a8c883fd-f01c-4c5b-933b-dc45a48d72f7/GSv4-U15-REP-Jonny and Jenny Bea.ism/manifest";
     const iconSand = reactive({ animationData: sandClock.default });
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
     const helperShown = ref(true);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+
     watch(lessonInfo, async () => {
       try {
         const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value?.unit, lessonInfo.value?.lesson);
@@ -363,6 +364,9 @@ export default defineComponent({
       updateUserRoleByView(UserRole.Student);
       deviceMobile();
       window.addEventListener("resize", deviceMobile);
+      window.addEventListener("beforeunload", async () => {
+        await store.dispatch("studentRoom/leaveRoom", { leave: true });
+      });
     });
     onUnmounted(() => {
       updateUserRoleByView(UserRole.UnConfirm);

@@ -4,6 +4,7 @@ import IconAudioOn from "@/assets/student-class/audio-on.svg";
 import IconVideoOff from "@/assets/student-class/video-off.svg";
 import IconVideoOn from "@/assets/student-class/video-on.svg";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { VCPlatform } from "@/store/app/state";
 import { HelperState, TeacherState } from "@/store/room/interface";
 import { computed, defineComponent, ref } from "vue";
 import { LoginInfo } from "vue-glcommonui";
@@ -20,8 +21,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const { getters, dispatch } = useStore();
     const platform = computed(() => getters["platform"]);
-    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
-
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
     const contextMenuVisibility = ref(false);
     const toggleContextMenu = () => {
       contextMenuVisibility.value = !contextMenuVisibility.value;

@@ -343,7 +343,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setSpeakingUsers", { userIds: validSpeakings });
   },
   async leaveRoom({ state, commit, rootGetters, dispatch }, payload: any) {
-    await state.manager?.close();
+	await state.manager?.close(payload?.leave);
     commit("leaveRoom", payload);
     commit({ type: "lesson/clearLessonData" }, { root: true });
     commit({ type: "lesson/clearCacheImage" }, { root: true });
@@ -437,16 +437,14 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async setStudentOneId({ state, commit, dispatch }, p: { id: string }) {
     commit("setStudentOneId", p);
-    if (p.id) {
-      //   if (store.getters["platform"] === VCPlatform.Zoom) {
-      //     await dispatch("generateOneToOneToken", {
-      //       classId: store.getters["studentRoom/info"]?.id,
-      //       studentId: p.id,
-      //     });
-      //   }
-    } else {
-      await state.manager?.studentBackToMainRoom();
-    }
+    // if (p.id) {
+    // 	if (store.getters["platform"] === VCPlatform.Zoom) {
+    // 		await dispatch("generateOneToOneToken", {
+    // 			classId: store.getters["studentRoom/info"]?.id,
+    // 			studentId: p.id,
+    // 		});
+    // 	}
+    // }
   },
   clearStudentOneId({ commit }, p: { id: string }) {
     commit("clearStudentOneId", p);
@@ -518,16 +516,14 @@ const actions: ActionTree<StudentRoomState, any> = {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
   async generateOneToOneToken({ state }, payload: { classId: string; studentId: string }) {
-    // try {
-    //   const response = await RemoteTeachingService.generateOneToOneToken(payload.classId, payload.studentId);
-    //   const zoom = state.manager?.zoomClient;
-    //   if (zoom) {
-    //     zoom.oneToOneToken = response.token;
-    //     await zoom.studentBreakoutRoom(payload.studentId);
-    //   }
-    // } catch (error) {
-    //   Logger.log(error);
-    // }
+	  try {
+      const zoom = state.manager?.zoomClient;
+      if (zoom) {
+        await zoom.studentJoinOneToOneSubSession();
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
   },
   setStudentImageCaptured({ commit }, p: { id: string; capture: boolean }) {
     commit("setStudentImageCaptured", p);

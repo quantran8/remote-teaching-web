@@ -1,5 +1,6 @@
 import noAvatar from "@/assets/images/user-default-gray.png";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { useElementBounding } from "@vueuse/core";
 import "animate.css";
@@ -34,9 +35,10 @@ export default defineComponent({
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
 
     const isMouseEntered = ref<boolean>(false);
+    const roomManager = computed(() => store.getters["teacherRoom/roomManager"]);
     const isShow = computed(() => {
       return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
     });
@@ -65,16 +67,13 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
-
+        if (store.getters["platform"] === VCPlatform.Zoom) {
+          await roomManager.value.zoomClient.teacherJoinOneToOneSubSession(props.student.id);
+        }
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.student.id,
         });
-        // if (store.getters["platform"] === VCPlatform.Zoom) {
-        //   await store.dispatch("teacherRoom/generateOneToOneToken", {
-        // 	 classId: store.getters["teacherRoom/info"]?.id
-        //   });
-        // }
       }
     };
 

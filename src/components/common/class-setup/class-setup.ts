@@ -11,7 +11,7 @@ import { Logger } from "@/utils/logger";
 import { getListUnitByClassAndGroup } from "@/views/teacher-home/lesson-helper";
 import { CheckOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import ZoomVideo, { LocalAudioTrack, LocalVideoTrack } from "@zoom/videosdk";
+import ZoomVideo, { LocalAudioTrack, LocalVideoTrack, TestMicrophoneReturn } from "@zoom/videosdk";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Button, Divider, notification, Progress, Row, Select, Skeleton, Space, Spin, Switch } from "ant-design-vue";
 import moment from "moment";
@@ -85,6 +85,7 @@ export default defineComponent({
     const RemoteSetUpText = computed(() => fmtMsg(ClassSetUp.RemoteClassSetUp));
     const StartSessionText = computed(() => fmtMsg(ClassSetUp.StartSession));
     const messageErrorJoinSession = computed(() => fmtMsg(DeviceTesterLocale.MessageErrorJoinSession));
+    const PlatformText = computed(() => fmtMsg(ClassSetUp.Platform));
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
     const isTeacherSetup = computed(() => (role as string).toLowerCase() === RoleName.teacher.toLowerCase() && isTeacher.value);
@@ -164,6 +165,7 @@ export default defineComponent({
     const isCheckSpeaker = ref(true);
     const isPlaySpeaker = ref(false);
     const speakerIcon = computed(() => (isPlaySpeaker.value ? IconSpeakerStop : IconSpeakerPlay));
+    const microphoneTesterRef = ref<TestMicrophoneReturn>();
     const toggleSpeaker = async () => {
       if (!listSpeakers.value.length || !currentSpeaker.value) {
         return;
@@ -282,6 +284,31 @@ export default defineComponent({
           preventCloseModal.value = false;
           zoomMicError.value = true;
         }
+        try {
+          const speakersOrigin = devices.value.filter(function (device) {
+            return device.kind === "audiooutput";
+          });
+          const speakers: DeviceType[] = speakersOrigin.map((speaker) => {
+            if (speaker.deviceId === "default") {
+              const defaultDevice = {
+                deviceId: speaker.deviceId,
+                groupId: speaker.groupId,
+                kind: speaker.kind,
+                label: "Default Device",
+              };
+              return defaultDevice;
+            }
+            return speaker;
+          });
+          if (speakers.length) {
+            listSpeakers.value = speakers;
+            listSpeakersId.value = speakers.map((speaker: any) => speaker.deviceId);
+            currentSpeaker.value = speakers[0];
+            currentSpeakerLabel.value = speakers[0].label;
+          }
+        } catch (error) {
+          Logger.log(error.message);
+        }
         Logger.log("Setup zoom media done");
         localTracks.value = {
           audioTrack,
@@ -300,9 +327,7 @@ export default defineComponent({
         if (havePermissionMicrophone.value && currentMic.value) {
           await localTracks.value?.audioTrack?.start();
           await localTracks.value?.audioTrack?.unmute();
-          if (!volumeAnimation.value) {
-            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-          }
+          setVolumeWave();
         }
 
         preventCloseModal.value = false;
@@ -516,6 +541,9 @@ export default defineComponent({
         if (!isConfigTrackingDone.value) return;
         if (!localTracks.value?.audioTrack) return;
         if (!havePermissionMicrophone.value) return;
+        if (microphoneTesterRef.value) {
+          microphoneTesterRef.value.stop();
+        }
         if (currentMicValue) {
           if (isUsingAgora.value) {
             await localTracks.value?.audioTrack.setEnabled(true);
@@ -528,8 +556,12 @@ export default defineComponent({
               await localTracks.value?.audioTrack.unmute();
             }
           }
-          if (!volumeAnimation.value) {
-            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+          if (isUsingAgora.value) {
+            if (!volumeAnimation.value) {
+              volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+            }
+          } else {
+            setVolumeWave();
           }
         }
       } catch (error) {
@@ -597,12 +629,17 @@ export default defineComponent({
           } else {
             await localTracks.value?.audioTrack?.unmute();
           }
-          if (!volumeAnimation.value) {
-            volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+          if (isUsingAgora.value) {
+            if (!volumeAnimation.value) {
+              volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+            }
+          } else {
+            setVolumeWave();
           }
         }
       }
       if (!currentIsOpenMic) {
+        microphoneTesterRef.value?.stop();
         dispatch("setMuteAudio", { status: MediaStatus.mediaLocked });
         if (volumeAnimation.value) {
           cancelVolumeAnimation();
@@ -629,13 +666,21 @@ export default defineComponent({
         isPlayingSound.value = !audio.value.paused;
       }
     });
-
     const setVolumeWave = () => {
       if (!localTracks.value) return;
-      volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
-      volumeByPercent.value = isUsingAgora.value
-        ? localTracks.value?.audioTrack.getVolumeLevel() * 100
-        : localTracks.value?.audioTrack.getCurrentVolume() * 100;
+      if (isUsingAgora.value) {
+        volumeAnimation.value = window.requestAnimationFrame(setVolumeWave);
+        volumeByPercent.value = localTracks.value?.audioTrack.getVolumeLevel() * 100;
+      } else {
+        microphoneTesterRef.value = localTracks.value?.audioTrack.testMicrophone({
+          microphoneId: currentMic.value?.deviceId,
+          speakerId: currentSpeaker.value?.deviceId,
+          recordAndPlay: true,
+          onAnalyseFrequency: (value: number) => {
+            volumeByPercent.value = Math.min(100, value);
+          },
+        });
+      }
     };
 
     const handleMicroChange = async (micId: string) => {
@@ -688,6 +733,9 @@ export default defineComponent({
 
       if (volumeAnimation.value) {
         cancelVolumeAnimation();
+      }
+      if (microphoneTesterRef.value) {
+        microphoneTesterRef.value.destroy();
       }
       try {
         if (isOpenMic.value) {
@@ -897,7 +945,7 @@ export default defineComponent({
           lesson: lesson,
           browserFingerprint: result.visitorId,
           unitId,
-          videoPlatformProvider: VCPlatform.Agora,
+          videoPlatformProvider: platform.value,
           isTeacherVideoMirror,
           isStudentVideoMirror,
         };
@@ -921,13 +969,11 @@ export default defineComponent({
       return false;
     };
 
-    watch(currentPlatform, async (currentValue) => {
-      isUsingAgora.value = currentValue === VCPlatform.Agora;
-
-      await destroySDK(!isUsingAgora.value);
+    watch(isUsingAgora, async (currentValue) => {
+      await destroySDK(currentValue);
 
       Logger.log("Platform changed");
-      dispatch("setVideoCallPlatform", currentValue);
+      dispatch("setVideoCallPlatform", currentValue ? VCPlatform.Agora : VCPlatform.Zoom);
       await initialSetup();
     });
 
@@ -944,6 +990,7 @@ export default defineComponent({
           const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(student, visitorId);
           await store.dispatch("studentRoom/setOnline");
           await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
+          isUsingAgora.value = roomResponse.data.videoPlatformProvider === VCPlatform.Agora;
           await dispatch("studentRoom/setRoomInfo", roomResponse.data);
           if (getRoomInfoTimeout.value) {
             clearTimeout(getRoomInfoTimeout.value);
@@ -995,6 +1042,9 @@ export default defineComponent({
       if (resendHelperJoinSessionInterval.value) {
         clearInterval(resendHelperJoinSessionInterval.value);
         resendHelperJoinSessionInterval.value = null;
+	  }
+      if (microphoneTesterRef.value) {
+        microphoneTesterRef.value.stop();
       }
       await destroy();
     });
@@ -1101,6 +1151,7 @@ export default defineComponent({
       isClassHappening,
       isClassIncludingHelper,
       isWaitingTeacherConfirm,
+      PlatformText,
     };
   },
 });

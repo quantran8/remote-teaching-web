@@ -130,13 +130,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     return manager?.updateAudioAndVideoFeed(cameras, audios);
   },
-  async leaveRoom({ state, dispatch, rootGetters }, _payload: any) {
+  async leaveRoom({ state, dispatch, rootGetters }, _payload: { leave: boolean }) {
     const checkMessageTimer = rootGetters["checkMessageVersionTimer"];
     if (checkMessageTimer) {
       clearInterval(checkMessageTimer);
     }
     dispatch("setCheckMessageVersionTimer", -1, { root: true });
-    return state.manager?.close();
+    return state.manager?.close(_payload.leave);
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager) return;
@@ -605,17 +605,19 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setTargetsVisibleListAction({ state }, payload: any) {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
-  async generateOneToOneToken({ state }, payload: { classId: string }) {
-    // try {
-    //   const response = await RemoteTeachingService.generateOneToOneToken(payload.classId);
-    //   const zoom = state.manager?.zoomClient
-    //   if (zoom) {
-    //     zoom.oneToOneToken = response.token;
-    // 	await zoom.teacherBreakoutRoom()
-    //   }
-    // } catch (error) {
-    //   Logger.log(error);
-    // }
+  async generateOneToOneToken({ state }, payload: { classId: string; userId: string }) {
+    try {
+      const zoom = state.manager?.zoomClient;
+      if (zoom) {
+        await zoom.teacherJoinOneToOneSubSession(payload.userId);
+        await store.dispatch("teacherRoom/sendOneAndOne", {
+          status: true,
+          id: payload.userId,
+        });
+      }
+    } catch (error) {
+      Logger.log(error);
+    }
   },
   async setLessonAndUnit({ commit, state, dispatch, rootState }, p: { unit: number; lesson: number; unitId: number; isCompleted: boolean }) {
     if (!state.info?.id) {

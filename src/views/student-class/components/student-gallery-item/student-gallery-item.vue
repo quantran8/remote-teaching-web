@@ -1,5 +1,6 @@
 <template>
-  <div class="item-container" :id="student.id + '__sub-wrapper'">
+  <div class="item-container">
+  <div :class="['item-container', !isCurrent && !isUsingAgora && 'classmate__video']" :id="student.id + '__sub-wrapper' ">
     <div
       :class="[
         'sc-gallery-item',
@@ -33,11 +34,12 @@
         </span>
       </div>
     </div>
-    <h3 :title="student.englishName" class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'">
-      {{ student.englishName }}
+	<div :class="['sc-gallery-item__overlay', !isUsingAgora && 'sc-gallery-item__overlay--zoom']" /> 
+   </div>
+	<h3 :title="student.englishName" class="sc-gallery-item__title" :class="isNotJoinned && 'sc-gallery-item--disabled-tittle'" :id="student.id + '__title__name' ">
+		{{ student.englishName }}
     </h3>
-    <div class="sc-gallery-item__overlay" />
-  </div>
+	</div>
 </template>
 <script lang="ts" src="./student-gallery-item.ts"></script>
 <style lang="scss" scoped src="./student-gallery-item.scss"></style>
