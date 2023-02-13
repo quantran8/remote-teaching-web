@@ -33,7 +33,11 @@
         >
           <img
             class="disable-icon"
-            :src="isAllPaletteHidden ? require(`@/assets/teacher-class/touch-on-small.svg`) : require(`@/assets/teacher-class/touch-off-small.svg`)"
+            :src="
+              isAllPaletteHidden
+                ? require(`@/assets/teacher-class/touch-on-small-blue.svg`)
+                : require(`@/assets/teacher-class/touch-off-small-blue.svg`)
+            "
           />
           <span>{{ disableAllText }}</span>
         </span>
