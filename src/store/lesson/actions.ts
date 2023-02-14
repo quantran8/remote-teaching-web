@@ -271,6 +271,9 @@ const actions: LessonActions<LessonState, any> = {
     const res = await LessonService.getMediaUrl(payload.token, payload.id);
     store.commit("setAlternateMediaUrl", { id: payload.id, url: res });
   },
+  endCurrentContent({ commit }) {
+    commit("endCurrentContent");
+  },
 };
 
 export default actions;
