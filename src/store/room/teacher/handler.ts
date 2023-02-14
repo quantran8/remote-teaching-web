@@ -260,10 +260,17 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state }: ActionConte
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setOneStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
       } else {
-        await commit("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
-        await commit("lesson/endCurrentContent", {}, { root: true });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected, skipToSetCurrentExposureItemMedia: true }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+        commit("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
+        commit("lesson/endCurrentContent", {}, { root: true });
+        commit(
+          "lesson/setCurrentExposure",
+          { id: payload.exposureSelected, skipToSetCurrentExposureItemMedia: payload.itemContentSelected ? true : false },
+          { root: true },
+        );
+        if (payload.itemContentSelected) {
+          commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+        }
+        commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await dispatch(
           "teacherRoom/toggleAnnotation",
           {
