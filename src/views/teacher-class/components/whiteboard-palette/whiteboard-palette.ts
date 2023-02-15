@@ -240,6 +240,8 @@ export default defineComponent({
       if (currentItem) {
         zoomRatio.value = 1;
         zoomPercentage.value = 100;
+      } else {
+        canvas.remove(group);
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {

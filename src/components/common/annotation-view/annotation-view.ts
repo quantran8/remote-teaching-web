@@ -220,6 +220,9 @@ export default defineComponent({
 
     const { displayFabricItems, displayCreatedItem, displayModifiedItem, onObjectCreated, FontLoader } = useFabricObject();
     watch(currentExposureItemMedia, async (currentItem, prevItem) => {
+      if (!currentItem || currentItem.teacherUseOnly) {
+        canvas.remove(group);
+      }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
           canvas.zoomToPoint(point, scaleRatio.value);
