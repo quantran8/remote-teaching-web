@@ -4,7 +4,7 @@ import { useFabricObject } from "@/hooks/use-fabric-object";
 import { TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { Pointer } from "@/store/annotation/state";
 import { ClassView } from "@/store/room/interface";
-import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO } from "@/utils/constant";
+import { MAX_ZOOM_RATIO, MIN_ZOOM_RATIO, ZOOM_STEP } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
 import { DefaultCanvasDimension, FabricObjectType, Mode, Tools } from "@/utils/utils";
 import { addShape } from "@/views/teacher-class/components/whiteboard-palette/components/add-shape";
@@ -130,7 +130,7 @@ export default defineComponent({
       if (canvas.getZoom() !== zoomRatio.value) {
         zoomRatio.value = canvas.getZoom();
       }
-      zoomRatio.value += 0.1;
+      zoomRatio.value = zoomRatio.value + ZOOM_STEP > MAX_ZOOM_RATIO ? MAX_ZOOM_RATIO : zoomRatio.value + ZOOM_STEP;
       canvas.zoomToPoint(point, zoomRatio.value);
       canvas.forEachObject(function (o: any) {
         o.setCoords();
