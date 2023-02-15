@@ -128,9 +128,6 @@ const mutations: LessonMutation<LessonState> = {
       if (p.status) {
         exposure.status = p.status;
       }
-      if (exposure === s.currentExposure) {
-        s.currentExposure = undefined;
-      }
     }
   },
   setTotalTime(s: LessonState, payload: { time: string }) {

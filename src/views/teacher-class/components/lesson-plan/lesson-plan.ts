@@ -160,6 +160,7 @@ export default defineComponent({
       await dispatch("teacherRoom/endExposure", {
         id: currentExposure.value.id,
       });
+      await dispatch("lesson/endCurrentContent");
       await dispatch("teacherRoom/setBlackOut", {
         isBlackOut: true,
       });
