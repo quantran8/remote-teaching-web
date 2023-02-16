@@ -90,6 +90,13 @@ export default defineComponent({
       });
       return schools;
     });
+    const hasClassesShowUp = computed(() => {
+      if (loading.value) {
+        return true;
+      } else {
+        return classesSchedulesAllSchool.value.length;
+      }
+    });
     const getCampusBySchoolId = (id: string) => {
       const data = classesSchedulesAllSchool.value.filter((item) => item.schoolId === id);
       const campus: string[] = [];
@@ -161,15 +168,12 @@ export default defineComponent({
       await router.push("/");
     };
     const getSchools = async () => {
-      loading.value = true;
       await store.dispatch("teacher/loadAccessibleSchools", {
         disabled: false,
       } as AccessibleSchoolQueryParam);
-      loading.value = false;
     };
 
     const onSchoolChange = async (schoolId: string) => {
-      loading.value = true;
       const fp = await fpPromise;
       const result = await fp.get();
       const visitorId = result.visitorId;
@@ -189,7 +193,6 @@ export default defineComponent({
           });
         }
       }
-      loading.value = false;
     };
 
     const joinTheCurrentSession = async (currentGroupId: string) => {
@@ -316,11 +319,13 @@ export default defineComponent({
     onMounted(async () => {
       const loginInfo: LoginInfo = store.getters["auth/getLoginInfo"];
       if (loginInfo && loginInfo.loggedin) {
+        loading.value = true;
         await getSchools();
         if (schools.value?.length) {
-          await onSchoolChange(schools.value[0].id);
           await store.dispatch("teacher/loadAllClassesSchedulesAllSchool");
+          await onSchoolChange(schools.value[0].id);
         }
+        loading.value = false;
       }
       await store.dispatch("teacher/clearSchedules");
       window.addEventListener("keyup", escapeEvent);
@@ -330,20 +335,6 @@ export default defineComponent({
       await store.dispatch("teacher/clearAllClassesSchedulesAllSchool");
       window.removeEventListener("keyup", escapeEvent);
     });
-
-    const hasClassesShowUp = () => {
-      if (loading.value == false) {
-        return classesSchedulesAllSchool.value.length != 0;
-      } else {
-        return true;
-      }
-    };
-
-    const hasClassesShowUpSchedule = () => {
-      if (loading.value == false) {
-        return classesSchedulesAllSchool.value.length != 0;
-      } else return loading.value != true;
-    };
 
     return {
       schools,
@@ -377,7 +368,6 @@ export default defineComponent({
       accessDenied,
       loadingStartClass,
       hasClassesShowUp,
-      hasClassesShowUpSchedule,
       startPopupVisible,
       onStartClass,
       onCancelStartClass,

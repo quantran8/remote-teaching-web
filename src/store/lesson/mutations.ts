@@ -108,6 +108,10 @@ const mutations: LessonMutation<LessonState> = {
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
     if (!s.currentExposure) return;
+    if (!p.id) {
+      s.currentExposureItemMedia = undefined;
+      return;
+    }
     const combinedItems = [
       ...s.currentExposure.items,
       ...s.currentExposure.contentBlockItems,
@@ -127,9 +131,6 @@ const mutations: LessonMutation<LessonState> = {
     if (exposure) {
       if (p.status) {
         exposure.status = p.status;
-      }
-      if (exposure === s.currentExposure) {
-        s.currentExposure = undefined;
       }
     }
   },

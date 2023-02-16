@@ -365,13 +365,19 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
-        await commit("lesson/setCurrentExposure", { id: payload.exposureSelected, skipToSetCurrentExposureItemMedia: true }, { root: true });
-        await commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
-        await commit("updateIsPalette", {
+        commit(
+          "lesson/setCurrentExposure",
+          { id: payload.exposureSelected, skipToSetCurrentExposureItemMedia: payload.itemContentSelected ? true : false },
+          { root: true },
+        );
+        if (payload.itemContentSelected) {
+          commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
+        }
+        commit("updateIsPalette", {
           id: payload.student.id,
           isPalette: payload.student.isPalette,
         });
-        await commit("setWhiteboard", payload.isShowWhiteBoard);
+        commit("setWhiteboard", payload.isShowWhiteBoard);
         await dispatch("annotation/setTeacherBrushes", payload.drawing.brushstrokes, { root: true });
         await dispatch("annotation/setTeacherAddShape", { teacherShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });

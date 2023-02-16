@@ -46,6 +46,9 @@ const actions: ActionTree<StudentRoomState, any> = {
       { user: "", visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false },
       { root: true },
     );
+    if (roomResponse.data.studentOneToOne) {
+      await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
+    }
   },
   async initClassRoom(
     { commit, dispatch, state, rootState },

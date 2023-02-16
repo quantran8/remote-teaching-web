@@ -174,21 +174,25 @@ export default defineComponent({
       await store.dispatch("studentRoom/setAvatarAllStudent", { studentIds });
     });
 
-    watch(studentOneAndOneId, async () => {
-      if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
-        await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
-      }
-      isOneToOne.value = !!studentOneAndOneId.value;
-      if (student.value) {
-        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-        // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-        //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
-        //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
-        // }
-      } else {
-        studentIsOneToOne.value = false;
-      }
-    });
+    watch(
+      studentOneAndOneId,
+      async () => {
+        if (studentOneAndOneId.value && studentOneAndOneId.value.length > 0) {
+          await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
+        }
+        isOneToOne.value = !!studentOneAndOneId.value;
+        if (student.value) {
+          studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+          // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
+          //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
+          //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
+          // }
+        } else {
+          studentIsOneToOne.value = false;
+        }
+      },
+      { immediate: true },
+    );
 
     // Left section animation
     // const animate = () => {
@@ -207,14 +211,18 @@ export default defineComponent({
 
     // onMounted(animate);
 
-    watch(studentOneAndOneId, () => {
-      isOneToOne.value = !!studentOneAndOneId.value;
-      if (student.value) {
-        studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-      } else {
-        studentIsOneToOne.value = false;
-      }
-    });
+    watch(
+      studentOneAndOneId,
+      () => {
+        isOneToOne.value = !!studentOneAndOneId.value;
+        if (student.value) {
+          studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
+        } else {
+          studentIsOneToOne.value = false;
+        }
+      },
+      { immediate: true },
+    );
 
     watch(apiStatus, async () => {
       if (apiStatus.value) {
