@@ -3,7 +3,7 @@ import * as cameraOn from "@/assets/icons/camera_on.png";
 import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
 import * as medal from "@/assets/lotties/medal.json";
-import { StoreLocale } from "@/locales/localeid";
+import { HelperLocales, StoreLocale } from "@/locales/localeid";
 import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { store as AppStore } from "@/store";
@@ -478,7 +478,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("annotation/setDeleteShape", {}, { root: true });
     },
     onHelperRequestJoinClass: async (payload: any) => {
-      console.log("payload", payload);
+      //   console.log("payload", payload);
     },
     onHelperJoinedClass: async (payload: any) => {
       commit("setHelperInfo", payload);
@@ -493,7 +493,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       await dispatch("updateAudioAndVideoFeed", {});
       const helperInfo: HelperState = getters["helperInfo"];
       notification.warn({
-        message: `Helper ${helperInfo?.name} has disconnected`,
+        message: fmtMsg(HelperLocales.Disconnected, { name: helperInfo?.name }),
       });
     },
     onTeacherHideHelperVideo: async () => {

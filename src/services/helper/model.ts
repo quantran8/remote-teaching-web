@@ -1,6 +1,5 @@
 import { RoomModel } from "@/models";
 import { BaseResponse } from "@/services";
-
 export interface SessionStatusModel {
   teacherId: string;
   helperId: string;
@@ -20,13 +19,3 @@ export enum JoinSessionAsHelperErrorCode {
   WaitingTeacherAccept = 12,
   TeacherDeniedHelper = 13,
 }
-
-export const joinSessionAsHelperTextBinding = new Map([
-  [JoinSessionAsHelperErrorCode.SessionIsNotStartedYet, "The session hasn't started yet"],
-  [JoinSessionAsHelperErrorCode.HelperIsAvailableInSession, "Another helper is in this session"],
-  [JoinSessionAsHelperErrorCode.TeacherDeniedHelper, "Teacher denied"],
-  [
-    JoinSessionAsHelperErrorCode.WaitingTeacherAccept,
-    "The teacher will grant access to the class. We’ll log you in as soon as the request is approved",
-  ],
-]);

@@ -1,4 +1,4 @@
-import { CaptureNotification, TeacherClass } from "@/locales/localeid";
+import { CaptureNotification, HelperLocales, TeacherClass } from "@/locales/localeid";
 import { ClassRoomStatus } from "@/models";
 import { UserRole } from "@/store/app/state";
 import { ClassView, HelperState, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
@@ -13,16 +13,16 @@ import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import {
-	ActivityContent,
-	ChangeLessonUnit,
-	DesignateTarget,
-	GlobalAudioBar,
-	HelperCard,
-	LessonPlan,
-	StudentGallery,
-	TeacherCard,
-	TeacherPageHeader,
-	WhiteboardPalette
+  ActivityContent,
+  ChangeLessonUnit,
+  DesignateTarget,
+  GlobalAudioBar,
+  HelperCard,
+  LessonPlan,
+  StudentGallery,
+  TeacherCard,
+  TeacherPageHeader,
+  WhiteboardPalette,
 } from "./components";
 
 const fpPromise = FingerprintJS.load();
@@ -123,13 +123,12 @@ export default defineComponent({
     watch(isGalleryView, (value) => {
       isSidebarCollapsed.value = value;
     });
-
     const modalVisible = ref(false);
     const previewObjects = computed(() => getters["lesson/previewObjects"]);
     const isShowPreviewCanvas = computed(() => getters["lesson/isShowPreviewCanvas"]);
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
-
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
+    const helperExitText = computed(() => fmtMsg(HelperLocales.ExitClass));
     const leaveNoticeText = computed(() => fmtMsg(TeacherClass.LeaveNotice));
     const markAsCompleteText = computed(() => {
       if (roomInfo.value === undefined) return null;
@@ -425,6 +424,7 @@ export default defineComponent({
       isShowPreviewCanvas,
       hidePreviewModal,
       isHelper,
+      helperExitText,
     };
   },
 });

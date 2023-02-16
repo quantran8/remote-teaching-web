@@ -3,13 +3,7 @@ import IconSpeakerPlay from "@/assets/icons/play-button.png";
 import { ClassSetUp, DeviceTesterLocale, HelperLocales, TeacherCalendarLocale } from "@/locales/localeid";
 import { ClassRoomStatus, MediaStatus, StudentGroupModel, UnitAndLesson } from "@/models";
 import { JoinSessionModel } from "@/models/join-session.model";
-import {
-  HelperService,
-  JoinSessionAsHelperErrorCode,
-  joinSessionAsHelperTextBinding,
-  RemoteTeachingService,
-  TeacherGetRoomResponse,
-} from "@/services";
+import { HelperService, JoinSessionAsHelperErrorCode, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { store } from "@/store";
 import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
@@ -99,10 +93,15 @@ export default defineComponent({
     const isClassHappening = ref(false);
     const isClassIncludingHelper = ref(false);
     const isWaitingTeacherConfirm = ref(false);
+    const helperJoinWarningTextBinding = new Map([
+      [JoinSessionAsHelperErrorCode.SessionIsNotStartedYet, fmtMsg(HelperLocales.ErrorClassNotHappening)],
+      [JoinSessionAsHelperErrorCode.HelperIsAvailableInSession, fmtMsg(HelperLocales.ErrorAnotherHelper)],
+      [JoinSessionAsHelperErrorCode.TeacherDeniedHelper, fmtMsg(HelperLocales.ErrorTeacherDeniedRequest)],
+      [JoinSessionAsHelperErrorCode.WaitingTeacherAccept, fmtMsg(HelperLocales.ErrorWaitingTeacherConfirm)],
+    ]);
+
     // save the interval value
     const resendHelperJoinSessionInterval = ref<any>(null);
-    const WaitingTeacherConfirmText = computed(() => fmtMsg(HelperLocales.WaitingTeacherConfirm));
-    const TeacherDeniedHelperText = computed(() => fmtMsg(HelperLocales.TeacherDeniedRequest));
     const getListLessonByUnit = async (classId: string, groupId: string) => {
       try {
         unitInfo.value = await getListUnitByClassAndGroup(classId, groupId);
@@ -816,7 +815,7 @@ export default defineComponent({
         const result = await HelperService.joinSessionAsHelper(groupId, browserFingerPrinting);
         const { success, code } = result;
         if (!success) {
-          const message = joinSessionAsHelperTextBinding.get(code ?? JoinSessionAsHelperErrorCode.WaitingTeacherAccept);
+          const message = helperJoinWarningTextBinding.get(code ?? JoinSessionAsHelperErrorCode.WaitingTeacherAccept);
           messageStartClass.value = message ?? "";
           // if teacher denied, stop interval which is request join session each upon 3 seconds
           if (code === JoinSessionAsHelperErrorCode.TeacherDeniedHelper) {

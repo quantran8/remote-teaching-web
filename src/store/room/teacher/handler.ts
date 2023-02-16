@@ -1,3 +1,4 @@
+import { HelperLocales } from "@/locales/localeid";
 import { HelperModel, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { UserShape } from "@/store/annotation/state";
 import { ExposureStatus } from "@/store/lesson/state";
@@ -7,10 +8,12 @@ import { HelperJoiningNotify } from "@/views/teacher-class/components";
 import { WSEventHandler } from "@/ws";
 import { notification } from "ant-design-vue";
 import { h } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { ActionContext } from "vuex";
 import { ClassViewFromValue, HelperInClassStatus, HelperRequestJoinClassPayload, InClassStatus, StudentCaptureStatus } from "../interface";
 import { ClassActionFromValue } from "../student/state";
 import { TeacherRoomState } from "./state";
+
 export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: ActionContext<TeacherRoomState, any>): WSEventHandler => {
   const handler = {
     onStudentJoinClass: async (payload: StudentModel) => {
@@ -370,7 +373,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
       const { name, id } = payload;
       notification.info({
         key: id,
-        message: "A helper would like to join class!",
+        message: fmtMsg(HelperLocales.NotifyTitle),
         description: h(HelperJoiningNotify, { helperName: name, helperId: id }),
         duration: null,
         class: "helper-joining-notify",
@@ -390,7 +393,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
       await dispatch("updateAudioAndVideoFeed", {});
       const helperInfo: HelperState = getters["helperInfo"];
       notification.warn({
-        message: `Helper ${helperInfo?.name} has disconnected`,
+        message: fmtMsg(HelperLocales.Disconnected, { name: helperInfo?.name }),
       });
     },
     onTeacherHideHelperVideo: async () => {

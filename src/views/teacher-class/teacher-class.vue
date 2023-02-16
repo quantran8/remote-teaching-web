@@ -7,7 +7,7 @@
           {{ markAsCompleteText }}
         </Checkbox>
       </div>
-      <div v-else>Do you want to exit the class ?</div>
+      <div v-else>{{ helperExitText }}</div>
     </Modal>
     <ChangeLessonUnit ref="changeLessonUnitRef" />
     <div v-show="isShowPreviewCanvas" class="tc__preview-wrapper">

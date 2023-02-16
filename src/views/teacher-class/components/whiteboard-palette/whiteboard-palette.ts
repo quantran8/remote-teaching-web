@@ -1,7 +1,7 @@
 import { brushstrokesRender } from "@/components/common/annotation-view/components/brush-strokes";
 import ToolsCanvas from "@/components/common/annotation/tools/tools-canvas.vue";
 import { useFabricObject } from "@/hooks/use-fabric-object";
-import { TeacherClass, WhiteBoard } from "@/locales/localeid";
+import { HelperLocales, TeacherClass, WhiteBoard } from "@/locales/localeid";
 import { HelperService } from "@/services";
 import { Pointer } from "@/store/annotation/state";
 import { ClassView, HelperState } from "@/store/room/interface";
@@ -117,7 +117,7 @@ export default defineComponent({
         toggleHelperVideoLoading.value = true;
         await HelperService.teacherToggleHelperVideo(isShown);
       } catch (error) {
-        console.log("toggleHelperVideo error => ", error);
+        Logger.error(error);
       }
       toggleHelperVideoLoading.value = false;
     };
@@ -318,6 +318,9 @@ export default defineComponent({
     });
     const targetTextLocalize = computed(() => fmtMsg(TeacherClass.TargetText));
     const targetsTextLocalize = computed(() => fmtMsg(TeacherClass.TargetsText));
+    const showHelperVideoText = computed(() => fmtMsg(HelperLocales.ShowVideoButton));
+    const hideHelperVideoText = computed(() => fmtMsg(HelperLocales.HideVideoButton));
+
     const targetText = computed(() => {
       if (props.image?.metaData?.annotations?.length == 1) {
         return targetTextLocalize.value;
@@ -1308,6 +1311,8 @@ export default defineComponent({
       helperVideoStatus,
       isHelper,
       toggleHelperVideoLoading,
+      hideHelperVideoText,
+      showHelperVideoText,
     };
   },
 });

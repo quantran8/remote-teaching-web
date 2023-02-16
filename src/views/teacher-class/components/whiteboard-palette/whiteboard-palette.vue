@@ -1,5 +1,3 @@
-import { RadioButton } from 'ant-design-vue';
-
 <template>
   <div class="palette">
     <ToolsCanvas
@@ -24,7 +22,7 @@ import { RadioButton } from 'ant-design-vue';
           style="color: white; font-size: 15px; font-weight: 600"
           @click="toggleHelperVideo(true)"
         >
-          Show video
+          {{ showHelperVideoText }}
           <DownOutlined style="font-size: 12px" />
         </Button>
         <Button
@@ -34,7 +32,7 @@ import { RadioButton } from 'ant-design-vue';
           style="color: white; font-size: 15px; font-weight: 600"
           @click="toggleHelperVideo(false)"
         >
-          Hide video
+          {{ hideHelperVideoText }}
           <UpOutlined style="font-size: 12px" />
         </Button>
       </div>

@@ -377,7 +377,6 @@ const mutations: TeacherRoomMutation<State> = {
   },
   setHelperVideoStatus(s: TeacherRoomState, p: boolean) {
     if (s.helper) {
-      console.log(1, p);
       s.helper.isVideoShownByTeacher = p;
     }
   },
