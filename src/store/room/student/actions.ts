@@ -27,31 +27,14 @@ import { useStudentRoomHandler } from "./handler";
 import { StudentRoomState } from "./state";
 
 const actions: ActionTree<StudentRoomState, any> = {
-  async getClassRoomInfo({ commit, dispatch, state, rootState }) {
+  async getClassRoomInfo({ dispatch, state }) {
     if (!state.info?.id) return;
     const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetSessionById(state.info?.id);
-    commit("setRoomInfo", roomResponse.data);
-    await dispatch("lesson/setInfo", roomResponse.data?.lessonPlan, { root: true });
-    await dispatch("annotation/setInfo", roomResponse.data.annotation, {
-      root: true,
-    });
-    commit("setClassView", {
-      classView: ClassViewFromValue(roomResponse.data.teachingMode),
-    });
-    commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
-    await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
-    await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
-    await dispatch(
-      "lesson/setTargetsVisibleAllAction",
-      { user: "", visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false },
-      { root: true },
-    );
-    if (roomResponse.data.studentOneToOne) {
-      await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
-    }
+    const roomInfo: RoomModel = roomResponse.data;
+    await dispatch("setClassData", roomInfo);
   },
   async initClassRoom(
-    { commit, dispatch, state, rootState },
+    { commit, dispatch, state },
     payload: {
       classId: string;
       userId: string;
@@ -80,59 +63,16 @@ const actions: ActionTree<StudentRoomState, any> = {
           message: "",
         });
       }
-      commit("setRoomInfo", roomResponse.data);
       commit("setBrowserFingerPrint", payload.browserFingerPrinting);
+      await dispatch("setClassData", roomInfo);
       await store.dispatch("setVideoCallPlatform", roomResponse.data.videoPlatformProvider);
       await dispatch("updateAudioAndVideoFeed", {});
-      await dispatch("annotation/setInfo", roomResponse.data.annotation, {
-        root: true,
-      });
-      await dispatch("lesson/setInfo", roomResponse.data.lessonPlan, { root: true });
       await dispatch("interactive/setInfo", roomResponse.data.lessonPlan.interactive, {
         root: true,
       });
-      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio, { root: true });
-      await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
-
       await dispatch("interactive/setCurrentUserId", state.user?.id, {
         root: true,
       });
-      commit("setClassView", {
-        classView: ClassViewFromValue(roomResponse.data.teachingMode),
-      });
-      commit("setWhiteboard", roomResponse.data.isShowWhiteBoard);
-      await dispatch(
-        "lesson/setTargetsVisibleAllAction",
-        { user: "", visible: roomResponse.data.annotation?.drawing?.isShowingAllShapes ?? false },
-        { root: true },
-      );
-      await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes ?? [], { root: true });
-      if (roomResponse.data.studentOneToOne) {
-        await dispatch("studentRoom/setStudentOneId", { id: roomResponse.data.studentOneToOne }, { root: true });
-        if (payload.studentId === roomResponse.data.studentOneToOne) {
-          await dispatch("setClassView", { classView: ClassViewFromValue(roomResponse.data.oneAndOneDto.teachingMode) });
-          await commit("lesson/setCurrentExposure", { id: roomResponse.data.oneAndOneDto.exposureSelected }, { root: true });
-          await commit("lesson/setCurrentExposureItemMedia", { id: roomResponse.data.oneAndOneDto.itemContentSelected }, { root: true });
-          await commit("updateIsPalette", {
-            id: roomResponse.data.oneAndOneDto.id,
-            isPalette: roomResponse.data.oneAndOneDto.isEnablePalette,
-          });
-          await commit("setWhiteboard", roomResponse.data.oneAndOneDto.isShowWhiteBoard);
-          await dispatch(
-            "lesson/setTargetsVisibleAllAction",
-            { user: "", visible: roomResponse.data.annotation.oneOneDrawing.isShowingAllShapes },
-            { root: true },
-          );
-          await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation.oneOneDrawing.visibleShapes, { root: true });
-          await dispatch("annotation/setOneTeacherStrokes", roomResponse.data.annotation.oneOneDrawing.brushstrokes, { root: true });
-          await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
-          await dispatch("annotation/setStudentAddShape", { studentShapes: roomResponse.data.annotation.oneOneDrawing.shapes }, { root: true });
-          await dispatch("annotation/setOneStudentStrokes", roomResponse.data.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
-          await dispatch("annotation/setFabricsInOneMode", roomResponse.data.annotation.oneOneDrawing.fabrics, { root: true });
-        }
-      } else {
-        await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
-      }
       await dispatch("setTeacherMessageVersion", roomResponse.data.teacher.messageVersion, { root: true });
       if (roomResponse.data.teacher.disconnectTime) {
         commit("setTeacherDisconnected", true);
@@ -608,6 +548,61 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async setRoomInfo({ commit }, p: TeacherGetRoomResponse) {
     commit("setRoomInfo", p);
+  },
+  async setClassData({ commit, dispatch, state }, roomInfo: RoomModel) {
+    commit("setRoomInfo", roomInfo);
+    await dispatch("lesson/setInfo", roomInfo?.lessonPlan, { root: true });
+    await dispatch("annotation/setInfo", roomInfo.annotation, {
+      root: true,
+    });
+    commit("setClassView", {
+      classView: ClassViewFromValue(roomInfo.teachingMode),
+    });
+    commit("setWhiteboard", roomInfo.isShowWhiteBoard);
+    await dispatch(
+      "lesson/setTargetsVisibleAllAction",
+      { user: "", visible: roomInfo.annotation?.drawing?.isShowingAllShapes ?? false },
+      { root: true },
+    );
+    if (roomInfo.studentOneToOne) {
+      await dispatch("studentRoom/setStudentOneId", { id: roomInfo.studentOneToOne }, { root: true });
+      if (state.student?.id === roomInfo.studentOneToOne) {
+        await dispatch("setClassView", { classView: ClassViewFromValue(roomInfo.oneAndOneDto.teachingMode) });
+        commit("lesson/setCurrentExposure", { id: roomInfo.oneAndOneDto.exposureSelected }, { root: true });
+        commit("lesson/setCurrentExposureItemMedia", { id: roomInfo.oneAndOneDto.itemContentSelected }, { root: true });
+        commit("updateIsPalette", {
+          id: roomInfo.oneAndOneDto.id,
+          isPalette: roomInfo.oneAndOneDto.isEnablePalette,
+        });
+        commit("setWhiteboard", roomInfo.oneAndOneDto.isShowWhiteBoard);
+        await dispatch(
+          "lesson/setTargetsVisibleAllAction",
+          { user: "", visible: roomInfo.annotation.oneOneDrawing.isShowingAllShapes },
+          { root: true },
+        );
+        await dispatch("lesson/setTargetsVisibleListJoinedAction", roomInfo.annotation.oneOneDrawing.visibleShapes, { root: true });
+        await dispatch("annotation/setOneTeacherStrokes", roomInfo.annotation.oneOneDrawing.brushstrokes, { root: true });
+        await dispatch("annotation/setTeacherAddShape", { teacherShapes: roomInfo.annotation.oneOneDrawing.shapes }, { root: true });
+        await dispatch("annotation/setStudentAddShape", { studentShapes: roomInfo.annotation.oneOneDrawing.shapes }, { root: true });
+        await dispatch("annotation/setOneStudentStrokes", roomInfo.annotation.oneOneDrawing.studentBrushstrokes, { root: true });
+        await dispatch("annotation/setFabricsInOneMode", roomInfo.annotation.oneOneDrawing.fabrics, { root: true });
+        await dispatch("lesson/setZoomRatio", roomInfo.oneAndOneDto.ratio, { root: true });
+        if (roomInfo.oneAndOneDto.position) {
+          await dispatch("lesson/setImgCoords", { x: roomInfo.oneAndOneDto.position.x, y: roomInfo.oneAndOneDto.position.y }, { root: true });
+        }
+      } else {
+        await dispatch("lesson/setZoomRatio", roomInfo.lessonPlan.ratio, { root: true });
+        if (roomInfo.lessonPlan.position) {
+          await dispatch("lesson/setImgCoords", { x: roomInfo.lessonPlan.position.x, y: roomInfo.lessonPlan.position.y }, { root: true });
+        }
+      }
+    } else {
+      await dispatch("lesson/setZoomRatio", roomInfo.lessonPlan.ratio, { root: true });
+      if (roomInfo.lessonPlan.position) {
+        await dispatch("lesson/setImgCoords", { x: roomInfo.lessonPlan.position.x, y: roomInfo.lessonPlan.position.y }, { root: true });
+      }
+      await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
+    }
   },
 };
 

@@ -107,11 +107,11 @@ const mutations: LessonMutation<LessonState> = {
     s.currentExposure?.contentBlockItems.map((item) => (item.id === p.id ? (item.isClicked = true) : item));
   },
   setCurrentExposureItemMedia(s: LessonState, p: { id: string }) {
-    if (!s.currentExposure) return;
     if (!p.id) {
       s.currentExposureItemMedia = undefined;
       return;
     }
+    if (!s.currentExposure) return;
     const combinedItems = [
       ...s.currentExposure.items,
       ...s.currentExposure.contentBlockItems,
