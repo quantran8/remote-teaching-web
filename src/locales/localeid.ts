@@ -362,3 +362,6 @@ export class ScheduleInfo {
   static PM = "schedule_info.pm";
   static CantCreateSchedule = "schedule.cant_create_schedule";
 }
+export class StudentCard {
+  static OneToOneNotification = "student_card.one_to_one_notification";
+}
