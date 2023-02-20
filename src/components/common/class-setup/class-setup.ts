@@ -675,7 +675,7 @@ export default defineComponent({
         microphoneTesterRef.value = localTracks.value?.audioTrack.testMicrophone({
           microphoneId: currentMic.value?.deviceId,
           speakerId: currentSpeaker.value?.deviceId,
-          recordAndPlay: true,
+          recordAndPlay: false,
           onAnalyseFrequency: (value: number) => {
             volumeByPercent.value = Math.min(100, value);
           },
