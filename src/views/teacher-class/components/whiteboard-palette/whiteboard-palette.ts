@@ -681,7 +681,7 @@ export default defineComponent({
               break;
             }
             if (!isEditing.value) {
-              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
+              createTextBox(canvas, { top: event.absolutePointer.y, left: event.absolutePointer.x });
             } else {
               isEditing.value = false;
             }
