@@ -329,16 +329,10 @@ export default defineComponent({
       // });
     };
     const objectTargetOnCanvas = () => {
-      if (!canvas) return;
-      const objShow = canvas
-        .getObjects()
-        .filter((obj: any) => obj.id === "annotation-lesson")
-        .filter((obj: any) => obj.stroke !== "transparent");
+      if (!group) return;
+      const objShow = group.getObjects().filter((obj: any) => obj.stroke !== "transparent");
       disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
-      const objHide = canvas
-        .getObjects()
-        .filter((obj: any) => obj.id === "annotation-lesson")
-        .filter((obj: any) => obj.stroke === "transparent");
+      const objHide = group.getObjects().filter((obj: any) => obj.stroke === "transparent");
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
