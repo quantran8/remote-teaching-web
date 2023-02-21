@@ -40,14 +40,12 @@ export enum TeacherWSCommand {
   TEACHER_DRAW_PENCIL_PEN = "TeacherDrawPencilPen",
   TEACHER_CREATE_FABRIC_OBJECT = "TeacherCreateFabricObject",
   TEACHER_MODIFY_FABRIC_OBJECT = "TeacherModifyFabricObject",
-
   TOGGLE_ALL_SHAPES = "ToggleAllShapes",
   TOGGLE_SHAPE = "ToggleShape",
   CHECK_MESSAGE_VERSION = "TeacherCheckMessageVersion",
   UPDATE_SESSION_LESSON_AND_UNIT = "TeacherUpdateSessionLessonAndUnit",
   TEACHER_UNDO_FABRIC = "TeacherUndoFabrics",
   TEACHER_UNDO_SHAPE = "TeacherUndoShapes",
-
   TEACHER_RESET_ZOOM = "TeacherResetZoom",
   TEACHER_ZOOM_SLIDE = "TeacherZoomSlide",
   TEACHER_MOVE_ZOOMED_SLIDE = "TeacherMoveZoomedSlide",

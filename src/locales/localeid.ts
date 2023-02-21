@@ -132,11 +132,28 @@ export class DeviceTesterLocale {
   static Unit = "device_tester.unit";
   static Cancel = "device_tester.cancel";
   static JoinSession = "device_tester.join_session";
+  static JoinSessionAsHelperText = "device_tester.join_session_as_helper";
   static MessageWarningMic = "device_tester.message_warning_mic";
   static MessageWarningCamera = "device_tester.message_warning_camera";
   static CheckSpeaker = "device_tester.check_speaker";
   static MessageWarningSpeaker = "device_tester.message_warning_speaker";
   static MessageErrorJoinSession = "device_tester.error_join_session";
+}
+
+export class HelperLocales {
+  static NotifyTitle = "helper_joining.notify.title";
+  static NotifyPart1 = "helper_joining.notify.part_1";
+  static NotifyPart2 = "helper_joining.notify.part_2";
+  static NotifyPart3 = "helper_joining.notify.part_3";
+  static NotifyPart4 = "helper_joining.notify.part_4";
+  static ErrorWaitingTeacherConfirm = "helper_joining.error.waiting_teacher_confirm";
+  static ErrorTeacherDeniedRequest = "helper_joining.error.teacher_denied";
+  static ErrorAnotherHelper = "helper_joining.error.class_has_another_helper";
+  static ErrorClassNotHappening = "helper_joining.error.class_not_happening";
+  static ShowVideoButton = "helper_joining.show_video_button";
+  static HideVideoButton = "helper_joining.hide_video_button";
+  static ExitClass = "helper_joining.warning.exit_class";
+  static Disconnected = "helper_joining.warning.disconnected";
 }
 export class HomeLocale {
   static Welcome = "home.welcome";

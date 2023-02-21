@@ -1,7 +1,7 @@
-import { CaptureNotification, TeacherClass } from "@/locales/localeid";
+import { CaptureNotification, HelperLocales, TeacherClass } from "@/locales/localeid";
 import { ClassRoomStatus } from "@/models";
 import { UserRole } from "@/store/app/state";
-import { ClassView, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
+import { ClassView, HelperState, InClassStatus, StudentCaptureStatus, StudentState, TeacherState } from "@/store/room/interface";
 import { SESSION_MAXIMUM_IMAGE } from "@/utils/constant";
 import { DefaultCanvasDimension, ErrorCode } from "@/utils/utils";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
@@ -17,6 +17,7 @@ import {
   ChangeLessonUnit,
   DesignateTarget,
   GlobalAudioBar,
+  HelperCard,
   LessonPlan,
   StudentGallery,
   TeacherCard,
@@ -39,6 +40,7 @@ export default defineComponent({
     TeacherPageHeader,
     WhiteboardPalette,
     ChangeLessonUnit,
+    HelperCard,
   },
   async beforeUnmount() {
     const store = useStore();
@@ -49,11 +51,15 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const { classId } = route.params;
+    const { groupId: groupIdQueryValue } = route.query;
+    const groupId = groupIdQueryValue as string;
     const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
     const classRoomState = computed(() => getters["classRoomStatus"]);
     const fp = await fpPromise;
     const result = await fp.get();
     const visitorId = result.visitorId;
+    const helperInfo = computed<HelperState>(() => getters["teacherRoom/helperInfo"]);
+    const isHelper = computed<boolean>(() => helperInfo.value.id === loginInfo.profile.sub);
     try {
       await dispatch("teacherRoom/initClassRoom", {
         classId: classId,
@@ -61,6 +67,8 @@ export default defineComponent({
         userName: loginInfo.profile.name,
         role: RoleName.teacher,
         browserFingerPrinting: visitorId,
+        isHelper,
+        groupId,
       });
       if (classRoomState.value === ClassRoomStatus.InDashBoard) {
         await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InClass });
@@ -76,7 +84,9 @@ export default defineComponent({
   setup() {
     const { getters, dispatch } = useStore();
     const router = useRouter();
+    const route = useRoute();
     const hasConfirmed = ref(false);
+    const { isHelper } = route.query;
     const isDesignatingTarget = computed(() => getters["interactive/isDesignatingTarget"]);
     const modalDesignateTarget = computed(() => getters["interactive/modalDesignateTarget"]);
     const allowDesignate = computed(() => getters["interactive/targets"].length === 0);
@@ -113,13 +123,12 @@ export default defineComponent({
     watch(isGalleryView, (value) => {
       isSidebarCollapsed.value = value;
     });
-
     const modalVisible = ref(false);
     const previewObjects = computed(() => getters["lesson/previewObjects"]);
     const isShowPreviewCanvas = computed(() => getters["lesson/isShowPreviewCanvas"]);
     const cbMarkAsCompleteValueRef = ref<boolean>(false);
-
     const leavePageText = computed(() => fmtMsg(TeacherClass.LeavePage));
+    const helperExitText = computed(() => fmtMsg(HelperLocales.ExitClass));
     const leaveNoticeText = computed(() => fmtMsg(TeacherClass.LeaveNotice));
     const markAsCompleteText = computed(() => {
       if (roomInfo.value === undefined) return null;
@@ -221,7 +230,11 @@ export default defineComponent({
     const handleOk = async () => {
       try {
         await dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard });
-        await dispatch("teacherRoom/endClass", { markAsComplete: cbMarkAsCompleteValueRef.value });
+        if (isHelper) {
+          await dispatch("teacherRoom/helperExitClass");
+        } else {
+          await dispatch("teacherRoom/endClass", { markAsComplete: cbMarkAsCompleteValueRef.value });
+        }
         await dispatch("lesson/clearLessonData");
         await dispatch("lesson/clearCacheImage");
         await dispatch("teacherRoom/setClearBrush", {});
@@ -367,6 +380,7 @@ export default defineComponent({
     onUnmounted(() => {
       updateUserRoleByView(UserRole.UnConfirm);
     });
+
     return {
       onClickHideAll,
       onClickShowAll,
@@ -409,6 +423,8 @@ export default defineComponent({
       showChangingLessonUnitModal,
       isShowPreviewCanvas,
       hidePreviewModal,
+      isHelper,
+      helperExitText,
     };
   },
 });

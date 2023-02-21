@@ -186,18 +186,42 @@
             <div class="device-tester__default--rt">
               <Space size="large" align="center">
                 <button @click="handleCancel" class="device-tester__cancel">
-					<span>{{ Cancel }}</span>
-				</button>
+                  <span>{{ Cancel }}</span>
+                </button>
+
+                <button
+                  v-if="isTeacherSetup"
+                  @click="onJoinAsHelper"
+                  :class="`device-tester__join_session_btn ${
+                    isClassIncludingHelper ? 'device-tester__join_session_btn_disable' : 'device-tester__join_session_btn_active'
+                  }`"
+                  :disabled="isClassIncludingHelper"
+                >
+                  <div v-if="isWaitingTeacherConfirm">
+                    <Spin :indicator="indicator" style="color: white" />
+                  </div>
+                  <div v-else>
+                    <CheckOutlined style="padding-inline: 3px; font-size: 18px" />
+                    <span>{{ JoinSessionAsHelperText }}</span>
+                  </div>
+                </button>
                 <button
                   @click="handleSubmit"
                   :loading="loading"
                   :class="`device-tester__join_session_btn ${
-                    isDisabledJoinBtn ? 'device-tester__join_session_btn_disable' : 'device-tester__join_session_btn_active'
+                    isDisabledJoinBtn || (isTeacherSetup && isClassHappening)
+                      ? 'device-tester__join_session_btn_disable'
+                      : 'device-tester__join_session_btn_active'
                   }`"
-                  :disabled="isDisabledJoinBtn"
+                  :disabled="loading || isDisabledJoinBtn || (isTeacherSetup && isClassHappening)"
                 >
-                  <img src="@/assets/icons/check.png" />
-                  <span>{{ isTeacherSetup ? StartSessionText : JoinSession }}</span>
+                  <div v-if="loading">
+                    <Spin :indicator="indicator" style="color: white" />
+                  </div>
+                  <div v-else>
+                    <CheckOutlined style="padding-inline: 3px; font-size: 18px" />
+                    <span>{{ isTeacherSetup ? StartSessionText : JoinSession }}</span>
+                  </div>
                 </button>
               </Space>
             </div>

@@ -111,6 +111,7 @@
       <p class="message">{{ apiStatus.message }}</p>
       <div @click="goToHomePage" class="btn-homepage">{{ goToHomePageText }}</div>
     </div>
+    <HelperVideo v-show="helperVideoStatus" />
   </div>
 </template>
 <style lang="scss" scoped src="./student-class.scss"></style>

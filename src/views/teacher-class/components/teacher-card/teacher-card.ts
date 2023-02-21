@@ -1,13 +1,13 @@
-import { computed, defineComponent, ref, watch } from "vue";
-import { useStore } from "vuex";
-import IconAudioOn from "@/assets/student-class/audio-on.svg";
-import IconAudioOff from "@/assets/student-class/audio-off.svg";
-import IconVideoOn from "@/assets/student-class/video-on.svg";
-import IconVideoOff from "@/assets/student-class/video-off.svg";
-import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
-import { TeacherState } from "@/store/room/interface";
 import noAvatar from "@/assets/images/user-default-gray.png";
-import { VCPlatform } from "@/store/app/state";
+import IconAudioOff from "@/assets/student-class/audio-off.svg";
+import IconAudioOn from "@/assets/student-class/audio-on.svg";
+import IconVideoOff from "@/assets/student-class/video-off.svg";
+import IconVideoOn from "@/assets/student-class/video-on.svg";
+import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { HelperState, TeacherState } from "@/store/room/interface";
+import { computed, defineComponent, ref } from "vue";
+import { LoginInfo } from "vue-glcommonui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -37,7 +37,8 @@ export default defineComponent({
         enable: !props.teacher?.audioEnabled,
       });
     };
-
+    const loginInfo: LoginInfo = getters["auth/getLoginInfo"];
+    const userId = loginInfo.profile.sub;
     const toggleVideo = () => {
       dispatch("teacherRoom/setTeacherVideo", {
         id: props.teacher?.id,
@@ -64,7 +65,8 @@ export default defineComponent({
     const isLowBandWidth = computed(() => getters["teacherRoom/isLowBandWidth"]);
     const avatarTeacher = computed(() => (props.teacher?.avatar ? props.teacher?.avatar : noAvatar));
     const isSupportedVideo = computed(() => !!(window as any).chrome && !(typeof SharedArrayBuffer === "function"));
-
+    const helperInfo = computed<HelperState>(() => getters["teacherRoom/helperInfo"]);
+    const currentUserIsHelper = computed<boolean>(() => helperInfo.value?.id === loginInfo.profile.sub);
     return {
       audioIcon,
       videoIcon,
@@ -82,6 +84,8 @@ export default defineComponent({
       avatarTeacher,
       isUsingAgora,
       isSupportedVideo,
+      userId,
+      currentUserIsHelper,
     };
   },
 });

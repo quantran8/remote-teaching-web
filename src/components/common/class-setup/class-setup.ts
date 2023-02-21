@@ -1,24 +1,24 @@
 import IconSpeakerStop from "@/assets/icons/pause-button.png";
 import IconSpeakerPlay from "@/assets/icons/play-button.png";
-import { ClassSetUp, DeviceTesterLocale, TeacherCalendarLocale } from "@/locales/localeid";
+import { ClassSetUp, DeviceTesterLocale, HelperLocales, TeacherCalendarLocale } from "@/locales/localeid";
 import { ClassRoomStatus, MediaStatus, StudentGroupModel, UnitAndLesson } from "@/models";
 import { JoinSessionModel } from "@/models/join-session.model";
-import { RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
+import { HelperService, JoinSessionAsHelperErrorCode, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
 import { store } from "@/store";
 import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { Logger } from "@/utils/logger";
 import { getListUnitByClassAndGroup } from "@/views/teacher-home/lesson-helper";
+import { CheckOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import ZoomVideo, { LocalAudioTrack, LocalVideoTrack } from "@zoom/videosdk";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Button, Divider, notification, Progress, Row, Select, Skeleton, Space, Spin, Switch } from "ant-design-vue";
 import moment from "moment";
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, defineComponent, h, onMounted, onUnmounted, ref, watch } from "vue";
 import { fmtMsg, RoleName } from "vue-glcommonui";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
-
 interface DeviceType {
   deviceId: string;
   groupId: string;
@@ -40,6 +40,8 @@ export default defineComponent({
     Space,
     Spin,
     Switch,
+    CheckOutlined,
+    LoadingOutlined,
   },
   async created() {
     const { dispatch } = useStore();
@@ -47,7 +49,13 @@ export default defineComponent({
     dispatch("setHideVideo", { status: MediaStatus.mediaNotLocked });
   },
   setup() {
+    const { getters, dispatch } = useStore();
+    const route = useRoute();
+    const router = useRouter();
+    const { role } = route.params;
     const dateTime = ref(`${moment().format("dddd, MMMM DD, yyyy")}`);
+    const { schoolName, campusName, className, groupName, classId, groupId: groupIdQueryValue, studentId, unit, lesson } = route.query;
+    const groupId = groupIdQueryValue as string;
     const SystemCheck = computed(() => fmtMsg(DeviceTesterLocale.SystemCheck));
     const CheckMic = computed(() => fmtMsg(DeviceTesterLocale.CheckMic));
     const SelectDevice = computed(() => fmtMsg(DeviceTesterLocale.SelectDevice));
@@ -67,6 +75,7 @@ export default defineComponent({
     const Unit = computed(() => fmtMsg(DeviceTesterLocale.Unit));
     const Cancel = computed(() => fmtMsg(DeviceTesterLocale.Cancel));
     const JoinSession = computed(() => fmtMsg(DeviceTesterLocale.JoinSession));
+    const JoinSessionAsHelperText = computed(() => fmtMsg(DeviceTesterLocale.JoinSessionAsHelperText));
     const warningMsgMicrophone = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningMic));
     const warningMsgCamera = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningCamera));
     const warningMsgSpeaker = computed(() => fmtMsg(DeviceTesterLocale.MessageWarningSpeaker));
@@ -76,16 +85,23 @@ export default defineComponent({
     const RemoteSetUpText = computed(() => fmtMsg(ClassSetUp.RemoteClassSetUp));
     const StartSessionText = computed(() => fmtMsg(ClassSetUp.StartSession));
     const messageErrorJoinSession = computed(() => fmtMsg(DeviceTesterLocale.MessageErrorJoinSession));
-    const route = useRoute();
-    const router = useRouter();
-    const { role } = route.params;
-    const { schoolName, campusName, className, groupName, classId, groupId, studentId, unit, lesson } = route.query;
-    const { getters, dispatch } = useStore();
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
     const isTeacherSetup = computed(() => (role as string).toLowerCase() === RoleName.teacher.toLowerCase() && isTeacher.value);
     const classOnline = computed(() => store.getters["teacher/getClassOnline"]);
     const unitInfo = ref<Array<UnitAndLesson>>([]);
+    const isClassHappening = ref(false);
+    const isClassIncludingHelper = ref(false);
+    const isWaitingTeacherConfirm = ref(false);
+    const helperJoinWarningTextBinding = new Map([
+      [JoinSessionAsHelperErrorCode.SessionIsNotStartedYet, fmtMsg(HelperLocales.ErrorClassNotHappening)],
+      [JoinSessionAsHelperErrorCode.HelperIsAvailableInSession, fmtMsg(HelperLocales.ErrorAnotherHelper)],
+      [JoinSessionAsHelperErrorCode.TeacherDeniedHelper, fmtMsg(HelperLocales.ErrorTeacherDeniedRequest)],
+      [JoinSessionAsHelperErrorCode.WaitingTeacherAccept, fmtMsg(HelperLocales.ErrorWaitingTeacherConfirm)],
+    ]);
+
+    // save the interval value
+    const resendHelperJoinSessionInterval = ref<any>(null);
     const getListLessonByUnit = async (classId: string, groupId: string) => {
       try {
         unitInfo.value = await getListUnitByClassAndGroup(classId, groupId);
@@ -102,7 +118,6 @@ export default defineComponent({
     const classSetUpStudents = computed<Array<StudentGroupModel>>(() => getters["teacher/classSetUpStudents"]);
     const activeStudents = computed<Array<StudentGroupModel>>(() => classSetUpStudents.value.filter((st) => st.isActivated));
     const inActiveStudents = computed<Array<StudentGroupModel>>(() => classSetUpStudents.value.filter((st) => !st.isActivated));
-
     const isTeacher = computed<boolean>(() => getters["auth/isTeacher"]);
     const isParent = computed(() => getters["auth/isParent"]);
     const visible = ref(false);
@@ -130,7 +145,6 @@ export default defineComponent({
     const isConfigTrackingDone = ref(false);
     const loading = ref(false);
     const messageStartClass = ref("");
-
     const zoomMicError = ref(false);
     const zoomCamError = ref(false);
     const firstTimeDefault = ref(true);
@@ -771,6 +785,7 @@ export default defineComponent({
     };
 
     const handleSubmit = async () => {
+      loading.value = true;
       if (audio.value) {
         audio.value.pause();
         audio.value.currentTime = 0;
@@ -778,12 +793,13 @@ export default defineComponent({
       if (isTeacherSetup.value) {
         const unitId = unitInfo.value?.find((unit: UnitAndLesson) => unit.unit === currentUnit.value)?.unitId ?? "";
         if (!unitId) return;
-        if (!(await joinTheCurrentSession(groupId as string))) {
-          await startClass(classId as string, groupId as string, currentUnit.value, currentLesson.value, unitId);
+        if (!(await joinTheCurrentSession(groupId))) {
+          await startClass(classId as string, groupId, currentUnit.value, currentLesson.value, unitId);
         }
       } else {
         goToClass();
       }
+      loading.value = false;
     };
     const handleCancel = () => {
       if (isTeacherSetup.value) {
@@ -792,6 +808,73 @@ export default defineComponent({
         router.push("/parent");
       }
     };
+    const onJoinAsHelper = async () => {
+      try {
+        // pass browserFingerPrinting to server later(when enter the class)
+        const browserFingerPrinting = "";
+        const result = await HelperService.joinSessionAsHelper(groupId, browserFingerPrinting);
+        const { success, code } = result;
+        if (!success) {
+          const message = helperJoinWarningTextBinding.get(code ?? JoinSessionAsHelperErrorCode.WaitingTeacherAccept);
+          messageStartClass.value = message ?? "";
+          // if teacher denied, stop interval which is request join session each upon 3 seconds
+          if (code === JoinSessionAsHelperErrorCode.TeacherDeniedHelper) {
+            if (isWaitingTeacherConfirm.value) {
+              isWaitingTeacherConfirm.value = false;
+            }
+            return;
+          }
+          // or request join session each upon 3 seconds
+          if (!isWaitingTeacherConfirm.value) {
+            isWaitingTeacherConfirm.value = true;
+          }
+          return;
+        }
+        isWaitingTeacherConfirm.value = false;
+        await router.push({
+          path: "/class/" + classId,
+          query: {
+            isHelper: "true",
+            groupId,
+          },
+        });
+      } catch (error) {
+        Logger.error(error);
+      }
+    };
+
+    watch(isWaitingTeacherConfirm, (currentValue: boolean) => {
+      if (currentValue) {
+        resendHelperJoinSessionInterval.value = setInterval(async () => {
+          await onJoinAsHelper();
+        }, 3000); // 3 seconds
+      } else {
+        clearInterval(resendHelperJoinSessionInterval.value);
+        resendHelperJoinSessionInterval.value = null;
+      }
+    });
+
+    // update status of two buttons: join as helper and start session
+    const checkSessionStatus = async () => {
+      try {
+        const result = await HelperService.getSessionStatus(groupId);
+        // teacher and helper is available to join
+        if (!result) return;
+        const { teacherId, helperId } = result;
+        if (teacherId) {
+          // disable the start session button
+          isClassHappening.value = true;
+        }
+        const userId = store.getters["auth/userId"];
+        if (helperId && userId !== helperId) {
+          // disable the join as helper button
+          isClassIncludingHelper.value = true;
+        }
+      } catch (error) {
+        Logger.error(error);
+      }
+    };
+
     const startClass = async (
       classId: string,
       groupId: string,
@@ -893,7 +976,8 @@ export default defineComponent({
     onMounted(async () => {
       initialSetup();
       if (isTeacherSetup.value) {
-        await getListLessonByUnit(classId as string, groupId as string);
+        await checkSessionStatus();
+        await getListLessonByUnit(classId as string, groupId);
         await dispatch("teacher/getGroupStudents", { classId, groupId });
         setupUnitAndLesson();
       } else {
@@ -908,7 +992,17 @@ export default defineComponent({
         clearTimeout(getRoomInfoTimeout.value);
         getRoomInfoTimeout.value = null;
       }
+      if (resendHelperJoinSessionInterval.value) {
+        clearInterval(resendHelperJoinSessionInterval.value);
+        resendHelperJoinSessionInterval.value = null;
+      }
       await destroy();
+    });
+    const indicator = h(LoadingOutlined, {
+      style: {
+        fontSize: "24px",
+      },
+      spin: true,
     });
 
     return {
@@ -1001,6 +1095,12 @@ export default defineComponent({
       isTeacherSetup,
       isDisabledJoinBtn,
       dateTime,
+      onJoinAsHelper,
+      JoinSessionAsHelperText,
+      indicator,
+      isClassHappening,
+      isClassIncludingHelper,
+      isWaitingTeacherConfirm,
     };
   },
 });

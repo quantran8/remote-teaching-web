@@ -3,7 +3,7 @@ import * as cameraOn from "@/assets/icons/camera_on.png";
 import * as soundOff from "@/assets/icons/sound_off.png";
 import * as soundOn from "@/assets/icons/sound_on.png";
 import * as medal from "@/assets/lotties/medal.json";
-import { StoreLocale } from "@/locales/localeid";
+import { HelperLocales, StoreLocale } from "@/locales/localeid";
 import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { GLErrorCode } from "@/models/error.model";
 import { store as AppStore } from "@/store";
@@ -17,7 +17,7 @@ import { notification } from "ant-design-vue";
 import { reactive } from "vue";
 import { fmtMsg } from "vue-glcommonui";
 import { ActionContext } from "vuex";
-import { ClassViewFromValue, InClassStatus } from "../interface";
+import { ClassViewFromValue, HelperInClassStatus, HelperState, InClassStatus } from "../interface";
 import { ClassActionFromValue, StudentRoomState } from "./state";
 
 export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any>): WSEventHandler => {
@@ -485,6 +485,33 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherDeleteShape: async (payload: any) => {
       await dispatch("annotation/setDeleteShape", {}, { root: true });
+    },
+    onHelperRequestJoinClass: async (payload: any) => {
+      //   console.log("payload", payload);
+    },
+    onHelperJoinedClass: async (payload: any) => {
+      commit("setHelperInfo", payload);
+      await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onHelperExitClass: async (payload: any) => {
+      commit("setHelperInfo", undefined);
+      await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onHelperDisconnectClass: async (payload: any) => {
+      commit("setHelperConnectionStatus", HelperInClassStatus.Disconnected);
+      await dispatch("updateAudioAndVideoFeed", {});
+      const helperInfo: HelperState = getters["helperInfo"];
+      notification.warn({
+        message: fmtMsg(HelperLocales.Disconnected, { name: helperInfo?.name }),
+      });
+    },
+    onTeacherHideHelperVideo: async () => {
+      commit("setHelperVideoStatus", false);
+      await dispatch("updateAudioAndVideoFeed", {});
+    },
+    onTeacherShowHelperVideo: async () => {
+      commit("setHelperVideoStatus", true);
+      await dispatch("updateAudioAndVideoFeed", {});
     },
   };
   return handler;

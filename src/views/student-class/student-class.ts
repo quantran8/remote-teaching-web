@@ -25,12 +25,12 @@ import * as clockData from "../../assets/lotties/clock.json";
 import JoinClassLoading from "../join-class-loading/join-class-loading.vue";
 import PreventEscFirefox from "../prevent-esc-firefox/prevent-esc-firefox.vue";
 import { StudentClassLocale } from "./../../locales/localeid";
+import { HelperVideo } from "./components/helper-video";
 import { StudentAction } from "./components/student-action";
 import { StudentGallery } from "./components/student-gallery";
 import { StudentGalleryItem } from "./components/student-gallery-item";
 import { StudentHeader } from "./components/student-header";
 import { UnitPlayer } from "./components/unit-player";
-
 const fpPromise = FingerprintJS.load();
 
 //temporary hard code video
@@ -50,6 +50,7 @@ export default defineComponent({
     StudentHeader,
     UnitPlayer,
     StudentAction,
+    HelperVideo,
   },
 
   async created() {
@@ -129,7 +130,7 @@ export default defineComponent({
     const showMessage = ref(false);
     const studentOneName = computed<string>(() => students.value.find((student: StudentState) => student.id == studentOneAndOneId.value)?.name ?? "");
     const raisedHand = computed(() => (student.value?.raisingHand ? student.value?.raisingHand : false));
-
+    const helperVideoStatus = computed<boolean>(() => store.getters["studentRoom/helperVideoStatus"]);
     const isBlackOutContent = computed(() => store.getters["lesson/isBlackOut"]);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const currentExposureItemMedia = computed(() => store.getters["lesson/currentExposureItemMedia"]);
@@ -139,7 +140,7 @@ export default defineComponent({
     const iconSand = reactive({ animationData: sandClock.default });
     const platform = computed(() => store.getters["platform"]);
     const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
-
+    const helperShown = ref(true);
     watch(lessonInfo, async () => {
       try {
         const response = await RemoteTeachingService.getLinkStoryDictionary(lessonInfo.value?.unit, lessonInfo.value?.lesson);
@@ -415,6 +416,8 @@ export default defineComponent({
       goToHomePage,
       videosFeedVisible,
       isUsingAgora,
+      helperShown,
+      helperVideoStatus,
     };
   },
 });

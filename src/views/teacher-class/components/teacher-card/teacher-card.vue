@@ -12,7 +12,7 @@
         <img class="teacher-avatar" alt="teacher-avatar" :src="avatarTeacher" />
       </div>
     </figure>
-    <div class="tc-action">
+    <div v-if="!currentUserIsHelper" class="tc-action">
       <a href="javascript:void(0)" class="tc-action__item" @click="toggleAudio">
         <img :src="audioIcon" class="tc-action__icon" />
       </a>

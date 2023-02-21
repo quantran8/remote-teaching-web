@@ -5,7 +5,7 @@ import { GLError, GLErrorCode } from "@/models/error.model";
 import { UpdateLessonAndUnitModel } from "@/models/update-lesson-and-unit.model";
 import { UserModel } from "@/models/user.model";
 import router from "@/router";
-import { InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
+import { HelperService, InfoService, RemoteTeachingService, StudentService, TeacherGetRoomResponse } from "@/services";
 import { BlobTagItem } from "@/services/storage/interface";
 import { store } from "@/store";
 import { Sticker } from "@/store/annotation/state";
@@ -22,18 +22,19 @@ import { fmtMsg } from "vue-glcommonui";
 import { ActionTree } from "vuex";
 import { StudentStorageService } from "../../../services/storage/service";
 import {
-  ClassViewPayload,
-  DefaultPayload,
-  DeviceMediaPayload,
-  InClassStatus,
-  InitClassRoomPayload,
-  NetworkQualityPayload,
-  StudentBadgePayload,
-  StudentCaptureStatus,
-  UserIdPayload,
-  UserMediaPayload,
-  ValueOfClassView,
-  WhiteboardPayload,
+	ClassViewPayload,
+	DefaultPayload,
+	DeviceMediaPayload,
+	HelperInClassStatus,
+	InClassStatus,
+	InitClassRoomPayload,
+	NetworkQualityPayload,
+	StudentBadgePayload,
+	StudentCaptureStatus,
+	UserIdPayload,
+	UserMediaPayload,
+	ValueOfClassView,
+	WhiteboardPayload
 } from "../interface";
 import { useTeacherRoomWSHandler } from "./handler";
 import { TeacherRoomState } from "./state";
@@ -59,6 +60,16 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     commit("endClass", payload);
   },
+  async helperExitClass({ commit, state }) {
+    if (state.info) {
+      try {
+        await HelperService.exitSession();
+      } catch (error) {
+        Logger.error(error);
+      }
+    }
+    commit("endClass");
+  },
   setClassView({ state }, payload: ClassViewPayload) {
     const teachingMode = ValueOfClassView(payload.classView);
     state.manager?.WSClient.sendRequestSetTeachingMode(teachingMode);
@@ -69,8 +80,9 @@ const actions: ActionTree<TeacherRoomState, any> = {
   setError(store, payload: GLError | null) {
     store.commit("setError", payload);
   },
-  async updateAudioAndVideoFeed({ state }) {
-    const { globalAudios, localAudios, manager, students, idOne, teacher } = state;
+  async updateAudioAndVideoFeed({ state, rootGetters }) {
+    const { globalAudios, localAudios, manager, students, idOne, teacher, helper } = state;
+    const userId: string | undefined = rootGetters["auth/userId"];
     if (!manager) return;
     const cameras = students.filter((s) => s.videoEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
     let audios = students.filter((s) => s.audioEnabled && s.status === InClassStatus.JOINED).map((s) => s.id);
@@ -79,6 +91,27 @@ const actions: ActionTree<TeacherRoomState, any> = {
     } else if (globalAudios.length > 0) {
       audios = [...globalAudios];
     }
+
+    // if currentUser is teacher => subscribe helper video/audio
+    if (helper && userId !== helper.id) {
+      // condition to subscribe helper's video
+      if (!helper.isMuteVideo && helper.connectionStatus !== HelperInClassStatus.Disconnected && helper.isVideoShownByTeacher) {
+        cameras.push(helper.id);
+      }
+      if (!helper.isMuteAudio) {
+        audios.push(helper.id);
+      }
+    }
+    // and vice versa
+    if (teacher && userId !== teacher?.id) {
+      if (teacher.videoEnabled) {
+        cameras.push(teacher.id);
+      }
+      if (teacher.audioEnabled) {
+        audios.push(teacher.id);
+      }
+    }
+
     if (idOne) {
       const otherStudentsCamId = cameras.filter((camId) => camId !== idOne && camId !== teacher?.id);
       const otherStudentsAudioId = audios.filter((audioId) => audioId !== idOne && audioId !== teacher?.id);
@@ -107,9 +140,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   },
   async joinWSRoom(store, _payload: any) {
     if (!store.state.info || !store.state.manager) return;
+    const { teacher } = store.state;
+    const userId: string | undefined = store.rootGetters["auth/userId"];
+    const isHelper = teacher && userId !== teacher?.id;
     const isMuteAudio = store.rootGetters["isMuteAudio"];
     const isHideVideo = store.rootGetters["isHideVideo"];
-    store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, _payload.browserFingerPrinting, isMuteAudio, isHideVideo);
+    store.state.manager?.WSClient.sendRequestJoinRoom(store.state.info.id, _payload.browserFingerPrinting, isMuteAudio, isHideVideo, isHelper);
     const eventHandler = useTeacherRoomWSHandler(store);
     store.state.manager?.registerEventHandler(eventHandler);
     store.dispatch("setMuteAudio", { status: MediaStatus.noStatus }, { root: true });
@@ -137,6 +173,8 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async joinRoom(store, _payload: any) {
     const { state, dispatch, rootState } = store;
     if (!state.info || !state.teacher || !state.manager) return;
+    const userId: string | undefined = store.rootGetters["auth/userId"];
+    const isHelper = state.teacher && userId !== state.teacher?.id;
     let cameraStatus = state.teacher?.videoEnabled;
     let microphoneStatus = state.teacher?.audioEnabled;
     const isMuteAudio = store.rootGetters["isMuteAudio"];
@@ -157,6 +195,13 @@ const actions: ActionTree<TeacherRoomState, any> = {
         cameraStatus = false;
       }
     }
+
+    // always open helper's cam/micro (will remove in next story)
+    if (isHelper) {
+      cameraStatus = true;
+      microphoneStatus = true;
+    }
+
     await state.manager?.join({
       camera: cameraStatus,
       microphone: microphoneStatus,
@@ -243,7 +288,12 @@ const actions: ActionTree<TeacherRoomState, any> = {
   async initClassRoom({ commit, dispatch, rootState }, payload: InitClassRoomPayload) {
     commit("setUser", { id: payload.userId, name: payload.userName });
     try {
-      const roomResponse: TeacherGetRoomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
+      let roomResponse: TeacherGetRoomResponse | null = null;
+      if (payload.isHelper && payload.groupId) {
+        roomResponse = await HelperService.getSessionAsHelper(payload.groupId, payload.browserFingerPrinting);
+      } else {
+        roomResponse = await RemoteTeachingService.getActiveClassRoom(payload.browserFingerPrinting);
+      }
       const roomInfo: RoomModel = roomResponse.data;
 
       if (!roomInfo || roomInfo.classInfo.classId !== payload.classId) {

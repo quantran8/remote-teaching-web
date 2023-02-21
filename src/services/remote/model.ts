@@ -4,6 +4,7 @@ export interface BaseResponse<T> {
   success: boolean;
   message?: string;
   data: T;
+  code?: number;
 }
 export interface NextSessionResponse {
   classInfo: {

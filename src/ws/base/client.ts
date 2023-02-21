@@ -3,7 +3,7 @@ import { store } from "@/store";
 import { Logger } from "@/utils/logger";
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { GLGlobal } from "vue-glcommonui";
-import { RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
+import { HelperWSEvent, RoomWSEvent, StudentWSEvent, TeacherWSEvent } from "..";
 import { WSEvent, WSEventHandler } from "./event";
 export interface GLSocketOptions {
   url: string;
@@ -162,7 +162,6 @@ export class GLSocketClient {
     //   StudentWSEvent.EVENT_STUDENT_SEND_UNITY,
     //   handler.onStudentSendUnity
     // );
-
     handlers.set(TeacherWSEvent.JOIN_CLASS, handler.onTeacherJoinClass);
     handlers.set(TeacherWSEvent.STREAM_CONNECT, handler.onTeacherStreamConnect);
     handlers.set(TeacherWSEvent.MUTE_AUDIO, handler.onTeacherMuteAudio);
@@ -205,7 +204,6 @@ export class GLSocketClient {
     // handlers.set(TeacherWSEvent.EVENT_TEACHER_ADD_SHAPE, handler.onTeacherAddShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_ANNOTATION_SET_BRUSHSTROKE, handler.onTeacherAddShape);
     handlers.set(TeacherWSEvent.EVENT_TEACHER_DRAW_PENCIL_PEN, handler.onTeacherDrawPencil);
-
     // handlers.set(
     //   TeacherWSEvent.EVENT_TEACHER_SEND_UNITY,
     //   handler.onTeacherSendUnity
@@ -219,10 +217,14 @@ export class GLSocketClient {
     handlers.set(TeacherWSEvent.TEACHER_MOVE_ZOOMED_SLIDE, handler.onTeacherMoveZoomedSlide);
     handlers.set(TeacherWSEvent.EVENT_UPDATE_SHAPE, handler.onToggleShape);
     handlers.set(RoomWSEvent.EVENT_ROOM_INFO, handler.onRoomInfo);
-
     handlers.set(TeacherWSEvent.TEACHER_UPDATE_SESSION_LESSON_AND_UNIT, handler.onTeacherUpdateSessionLessonAndUnit);
     handlers.set(TeacherWSEvent.CAPTURE_IMAGE, handler.onTeacherSendRequestCaptureImage);
-
+    handlers.set(TeacherWSEvent.HELPER_REQUEST_JOIN_CLASS, handler.onHelperRequestJoinClass);
+    handlers.set(HelperWSEvent.JOIN_CLASS, handler.onHelperJoinedClass);
+    handlers.set(HelperWSEvent.EXIT_CLASS, handler.onHelperExitClass);
+    handlers.set(HelperWSEvent.HELPER_DISCONNECT_CLASS, handler.onHelperDisconnectClass);
+    handlers.set(TeacherWSEvent.TEACHER_HIDE_HELPER_VIDEO, handler.onTeacherHideHelperVideo);
+    handlers.set(TeacherWSEvent.TEACHER_SHOW_HELPER_VIDEO, handler.onTeacherShowHelperVideo);
     handlers.forEach((func, key) => {
       this.hubConnection.on(key, (payload: any) => {
         func(payload);

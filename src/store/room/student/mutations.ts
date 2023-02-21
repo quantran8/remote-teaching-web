@@ -1,9 +1,10 @@
 import { StudentRoomManager } from "@/manager/room/student.manager";
 import { ClassModel, RoomModel, RoomUsersModel, StudentModel } from "@/models";
 import { GLApiStatus, GLError } from "@/models/error.model";
+import { HelperModel } from "@/models/helper.model";
 import { UserModel } from "@/models/user.model";
 import { MutationTree } from "vuex";
-import { ClassView, InClassStatus } from "../interface";
+import { ClassView, HelperInClassStatus, InClassStatus } from "../interface";
 import { ClassAction, ClassActionFromValue, StudentRoomState } from "./state";
 
 const mutations: MutationTree<StudentRoomState> = {
@@ -66,6 +67,7 @@ const mutations: MutationTree<StudentRoomState> = {
       status: room.teacher.connectionStatus,
       disconnectTime: room.teacher.disconnectTime ? Date.now() - room.teacher.disconnectTime : null,
     };
+    state.helper = room.helper;
     state.teacherIsDisconnected = room.teacher.connectionStatus === InClassStatus.DEFAULT;
     state.students = [];
     for (const st of room.students) {
@@ -332,6 +334,19 @@ const mutations: MutationTree<StudentRoomState> = {
   setStudentImageCapturedCount(s: StudentRoomState, p: number) {
     if (s.student) {
       s.student.imageCapturedCount = p;
+    }
+  },
+  setHelperInfo(s: StudentRoomState, p: HelperModel) {
+    s.helper = p;
+  },
+  setHelperConnectionStatus(s: StudentRoomState, p: HelperInClassStatus) {
+    if (s.helper) {
+      s.helper.connectionStatus = p;
+    }
+  },
+  setHelperVideoStatus(s: StudentRoomState, p: boolean) {
+    if (s.helper) {
+      s.helper.isVideoShownByTeacher = p;
     }
   },
 };

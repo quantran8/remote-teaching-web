@@ -1,4 +1,4 @@
-import { RoleName, LoginInfo } from "vue-glcommonui";
+import { LoginInfo, RoleName } from "vue-glcommonui";
 import { GetterTree } from "vuex";
 import { AuthState } from "./state";
 
@@ -59,6 +59,9 @@ const getters: GetterTree<AuthState, any> = {
   isParent: (state: AuthState): boolean => {
     const roles = state.loginInfo?.profile.roles;
     return roles?.includes(RoleName.parent) || false;
+  },
+  userId: (state: AuthState): string | undefined => {
+    return state.loginInfo?.profile.sub;
   },
 };
 
