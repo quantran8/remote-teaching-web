@@ -35,6 +35,7 @@ export default defineComponent({
     let canvas: any;
     const containerRef = ref<HTMLDivElement>();
     const scaleRatio = ref(1);
+    const oneToOneUserId = computed(() => store.getters["studentRoom/getStudentModeOneId"]);
     const currentExposure = computed(() => store.getters["lesson/currentExposure"]);
     const isPointerMode = computed(() => store.getters["annotation/isPointerMode"]);
     const isShowWhiteBoard = computed(() => store.getters["studentRoom/isShowWhiteboard"]);
@@ -97,7 +98,6 @@ export default defineComponent({
     let group: any;
     let point: any;
     let captureCanvas: any;
-    const defaultZoomRatio = ref(1);
     const prevZoomRatio = ref(1);
     const prevCoords = ref({ x: 0, y: 0 });
     const prevZoomRatioByTeacher = ref(1);
@@ -143,7 +143,6 @@ export default defineComponent({
           group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
           group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
         }
-        defaultZoomRatio.value += zoom;
         if (canvas && point) {
           canvas.zoomToPoint(point, canvas.getZoom() + zoom * scaleRatio.value);
         }
@@ -225,11 +224,6 @@ export default defineComponent({
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
-          canvas.zoomToPoint(point, scaleRatio.value);
-          canvas.remove(...canvas.getObjects());
-          await store.dispatch("lesson/setImgCoords", undefined, { root: true });
-          defaultZoomRatio.value = scaleRatio.value;
-          //   await store.dispatch("lesson/setZoomRatio", 1, { root: true });
           await store.dispatch("lesson/setTargetsVisibleAllAction", false, { root: true });
           if (prevTargetsList.value.length && !studentOneAndOneId.value) {
             await store.dispatch("lesson/setTargetsVisibleListJoinedAction", prevTargetsList.value, { root: true });
@@ -497,12 +491,6 @@ export default defineComponent({
             teacherSharingShapes(teacherShapes.value, null);
             studentSharingShapes();
             selfStudentShapes();
-            if (isLessonPlan.value && group) {
-              group.left = prevCoords.value.x;
-              group.top = prevCoords.value.y;
-            }
-            defaultZoomRatio.value = prevZoomRatio.value;
-            canvas.zoomToPoint(point, prevZoomRatio.value);
             oneOneIdNear.value = "";
           }, 800);
           await store.dispatch("lesson/setZoomRatio", prevZoomRatioByTeacher.value, { root: true });
@@ -636,7 +624,6 @@ export default defineComponent({
       const scale = containerWidth / canvas.getWidth();
       const zoom = canvas.getZoom() * scale;
       scaleRatio.value = zoom;
-      defaultZoomRatio.value = zoom;
       canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
       canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
       point = new fabric.Point(canvas.getWidth() / 2, canvas.getHeight() / 2);
@@ -709,8 +696,7 @@ export default defineComponent({
 
     //get fabric items from vuex and display to whiteboard
     const fabricItems = computed(() => {
-      const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
-      if (oneToOneUserId && oneToOneUserId === student.value.id) {
+      if (oneToOneUserId.value && oneToOneUserId.value === student.value.id) {
         return store.getters["annotation/fabricItemsOneToOne"];
       }
       return store.getters["annotation/fabricItems"];
@@ -720,8 +706,7 @@ export default defineComponent({
       fabricItems,
       async (value) => {
         if (!lastFabricUpdated.value) {
-          const oneToOneUserId = store.getters["studentRoom/getStudentModeOneId"];
-          if (!oneToOneUserId || oneToOneUserId === student.value.id) {
+          if (!oneToOneUserId.value || oneToOneUserId.value === student.value.id) {
             await canvas.remove(...canvas.getObjects().filter((obj: any) => obj.objectId && obj.id !== "lesson-img"));
           }
           displayFabricItems(canvas, value);

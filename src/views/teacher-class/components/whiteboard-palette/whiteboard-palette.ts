@@ -32,6 +32,7 @@ export enum Cursor {
   Text = "text",
 }
 const DIFF_BETWEEN_POINT = 6;
+const DEFAULT_ZOOM_PERCENT = 100;
 
 export default defineComponent({
   props: {
@@ -103,10 +104,9 @@ export default defineComponent({
     const imgRenderHeight = computed(() => store.getters["annotation/imgRenderHeight"]);
     const isShowPreviewCanvas = computed(() => store.getters["lesson/isShowPreviewCanvas"]);
     const sessionZoomRatio = computed(() => store.getters["lesson/zoomRatio"]);
-    const sessionImgCoords = computed(() => store.getters["lesson/imgCoords"]);
     const prevZoomRatio = ref(1);
     const prevCoords = ref({ x: 0, y: 0 });
-    const zoomPercentage = ref(100);
+    const zoomPercentage = ref(DEFAULT_ZOOM_PERCENT);
     const prevLineId = ref("");
     const diff = ref(0);
     const pointsSkipped = ref<Array<Pointer>>([]);
@@ -139,7 +139,7 @@ export default defineComponent({
     };
     const lineId: Ref<string> = ref(generateLineId());
 
-    const zoomRatio = ref(1);
+    const zoomRatio = ref(MIN_ZOOM_RATIO);
     let group: any;
     let point: any;
 
@@ -156,7 +156,7 @@ export default defineComponent({
         o.setCoords();
       });
       canvas.calcOffset();
-      zoomPercentage.value = Math.round(zoomRatio.value * 100);
+      zoomPercentage.value = Math.round(zoomRatio.value * DEFAULT_ZOOM_PERCENT);
       if (!isTeacherUseOnly.value) {
         await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
         await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
@@ -181,8 +181,10 @@ export default defineComponent({
           group.left = group?.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
           group.top = group?.realTop ?? Math.floor(imgRenderHeight.value / 2);
           group.setCoords();
+          await store.dispatch("teacherRoom/setMoveZoomedSlide", undefined);
+          await store.dispatch("lesson/setImgCoords", undefined, { root: true });
         }
-        zoomPercentage.value = Math.round(zoomRatio.value * 100);
+        zoomPercentage.value = Math.round(zoomRatio.value * DEFAULT_ZOOM_PERCENT);
         canvas.zoomToPoint(point, zoomRatio.value);
         if (!isTeacherUseOnly.value) {
           await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
@@ -235,21 +237,28 @@ export default defineComponent({
       await store.dispatch("lesson/setShowPreviewCanvas", isShowPreview, { root: true });
     };
 
-    watch(sessionZoomRatio, (value) => {
-      if (value == 1) {
-        canvas.zoomToPoint(point, 1);
+    watch(sessionZoomRatio, async (value) => {
+      if (value == MIN_ZOOM_RATIO) {
+        zoomRatio.value = MIN_ZOOM_RATIO;
+        zoomPercentage.value = DEFAULT_ZOOM_PERCENT;
+        canvas.zoomToPoint(point, MIN_ZOOM_RATIO);
         if (isLessonPlan.value && group) {
-          if ((group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2) && group.left && group.top) {
+          if (group.left && group.top && (group.left !== DefaultCanvasDimension.width / 2 || group.top !== imgRenderHeight.value / 2)) {
             group.left = group.realLeft ?? Math.floor(DefaultCanvasDimension.width / 2);
             group.top = group.realTop ?? Math.floor(imgRenderHeight.value / 2);
             group.setCoords();
+            await store.dispatch("teacherRoom/setMoveZoomedSlide", undefined);
+            await store.dispatch("lesson/setImgCoords", undefined, { root: true });
           }
         }
       }
-      if (canvas && point && sessionZoomRatio.value && canvas.getZoom() !== sessionZoomRatio.value) {
-        canvas.zoomToPoint(point, sessionZoomRatio.value);
+      if (sessionZoomRatio.value && canvas.getZoom() !== sessionZoomRatio.value) {
+        zoomRatio.value = sessionZoomRatio.value;
+        if (canvas && point) {
+          canvas.zoomToPoint(point, sessionZoomRatio.value);
+        }
       }
-      zoomPercentage.value = Math.floor(value.toFixed(2) * 100);
+      zoomPercentage.value = Math.floor(value.toFixed(2) * DEFAULT_ZOOM_PERCENT);
     });
 
     watch(isShowPreviewCanvas, (currentValue) => {
@@ -265,7 +274,7 @@ export default defineComponent({
       }
       if (currentItem && prevItem) {
         if (currentItem.id !== prevItem.id) {
-          canvas.zoomToPoint(point, 1);
+          canvas.zoomToPoint(point, MIN_ZOOM_RATIO);
           canvas.remove(...canvas.getObjects());
           await store.dispatch("lesson/setImgCoords", undefined, { root: true });
           showHidePreviewModal(false);
@@ -352,16 +361,10 @@ export default defineComponent({
       // });
     };
     const objectTargetOnCanvas = () => {
-      if (!canvas) return;
-      const objShow = canvas
-        .getObjects()
-        .filter((obj: any) => obj.id === "annotation-lesson")
-        .filter((obj: any) => obj.stroke !== "transparent");
+      if (!group) return;
+      const objShow = group.getObjects().filter((obj: any) => obj.stroke !== "transparent");
       disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
-      const objHide = canvas
-        .getObjects()
-        .filter((obj: any) => obj.id === "annotation-lesson")
-        .filter((obj: any) => obj.stroke === "transparent");
+      const objHide = group.getObjects().filter((obj: any) => obj.stroke === "transparent");
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
@@ -704,7 +707,7 @@ export default defineComponent({
               break;
             }
             if (!isEditing.value) {
-              createTextBox(canvas, { top: event.e.offsetY - 2, left: event.e.offsetX - 2 });
+              createTextBox(canvas, { top: event.absolutePointer.y, left: event.absolutePointer.x });
             } else {
               isEditing.value = false;
             }
@@ -738,7 +741,7 @@ export default defineComponent({
           await store.dispatch("teacherRoom/setZoomSlide", zoomRatio.value);
           await store.dispatch("lesson/setZoomRatio", zoomRatio.value, { root: true });
         } else {
-          zoomPercentage.value = Math.round(zoomRatio.value * 100);
+          zoomPercentage.value = Math.round(zoomRatio.value * DEFAULT_ZOOM_PERCENT);
         }
       });
     };
@@ -1158,13 +1161,6 @@ export default defineComponent({
           renderSelfStrokes();
           renderSelfShapes();
           processTargetsList();
-          if (isLessonPlan.value && group) {
-            group.left = prevCoords.value.x;
-            group.top = prevCoords.value.y;
-          }
-          canvas.zoomToPoint(point, prevZoomRatio.value);
-          zoomRatio.value = prevZoomRatio.value;
-          store.dispatch("lesson/setZoomRatio", prevZoomRatio.value);
         }, 800);
         await processCanvasWhiteboard();
         listenSelfTeacher();

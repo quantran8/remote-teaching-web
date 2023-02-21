@@ -157,6 +157,9 @@ export default defineComponent({
     };
 
     const onClickCloseExposure = async () => {
+      await dispatch("teacherRoom/setCurrentExposureMediaItem", {
+        id: "",
+      });
       await dispatch("teacherRoom/endExposure", {
         id: currentExposure.value.id,
       });

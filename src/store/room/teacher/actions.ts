@@ -10,7 +10,7 @@ import { BlobTagItem } from "@/services/storage/interface";
 import { store } from "@/store";
 import { Sticker } from "@/store/annotation/state";
 import { UserRole } from "@/store/app/state";
-import { MIN_SPEAKING_LEVEL } from "@/utils/constant";
+import { MIN_SPEAKING_LEVEL, MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
 import { Paths } from "@/utils/paths";
 import { FabricObject } from "@/ws";
@@ -310,8 +310,6 @@ const actions: ActionTree<TeacherRoomState, any> = {
         root: true,
       });
       await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
-      await dispatch("lesson/setZoomRatio", roomResponse.data.lessonPlan.ratio ? roomResponse.data.lessonPlan.ratio : 1, { root: true });
-      await dispatch("lesson/setImgCoords", roomResponse.data.lessonPlan.position, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
         root: true,
       });
@@ -342,7 +340,15 @@ const actions: ActionTree<TeacherRoomState, any> = {
             root: true,
           },
         );
+        await dispatch("lesson/setZoomRatio", roomInfo.oneAndOneDto.ratio ? roomInfo.oneAndOneDto.ratio : MIN_ZOOM_RATIO, { root: true });
+        if (roomInfo.oneAndOneDto.position) {
+          await dispatch("lesson/setImgCoords", { x: roomInfo.oneAndOneDto.position.x, y: roomInfo.oneAndOneDto.position.y }, { root: true });
+        }
       } else {
+        await dispatch("lesson/setZoomRatio", roomInfo.lessonPlan.ratio ? roomInfo.lessonPlan.ratio : MIN_ZOOM_RATIO, { root: true });
+        if (roomInfo.lessonPlan.position) {
+          await dispatch("lesson/setImgCoords", { x: roomInfo.lessonPlan.position.x, y: roomInfo.lessonPlan.position.y }, { root: true });
+        }
         await dispatch("teacherRoom/clearStudentOneId", { id: "" }, { root: true });
       }
     } catch (err) {
@@ -634,7 +640,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     commit({ type: "lesson/clearLessonData" }, { root: true });
     await commit("setRoomInfo", roomInfo);
     await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
-    await dispatch("lesson/setZoomRatio", 1, { root: true });
+    await dispatch("lesson/setZoomRatio", MIN_ZOOM_RATIO, { root: true });
     await dispatch("lesson/setImgCoords", undefined, { root: true });
 
     await state.manager?.WSClient.sendRequestUpdateSessionAndUnit({});

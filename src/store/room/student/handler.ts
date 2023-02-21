@@ -10,6 +10,7 @@ import { store as AppStore } from "@/store";
 import { Pointer, UserShape } from "@/store/annotation/state";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
+import { MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
 import { FabricObject, WSEventHandler } from "@/ws";
 import { notification } from "ant-design-vue";
@@ -214,9 +215,11 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       commit("lesson/setExposureStatus", { id: payload.ContentId, status: ExposureStatus.COMPLETED }, { root: true });
       if (payload.playedTime) commit("lesson/setPlayedTime", { time: payload.playedTime }, { root: true });
     },
-    onTeacherSetLessonPlanItemContent: (payload: any) => {
+    onTeacherSetLessonPlanItemContent: async (payload: any) => {
       commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
       commit("setWhiteboard", { isShowWhiteBoard: false });
+      await dispatch("lesson/setImgCoords", undefined, { root: true });
+      await dispatch("lesson/setZoomRatio", MIN_ZOOM_RATIO, { root: true });
     },
     onStudentRaisingHand: (payload: any) => {
       //   Logger.log(payload);
@@ -333,6 +336,8 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
       exposureSelected: string;
       itemContentSelected: string;
       messageVersion: number;
+      position: { x: number; y: number; viewPortX: number; viewPortY: number } | null;
+      ratio: number;
     }) => {
       const roomManager = AppStore.getters["studentRoom/roomManager"];
       if (payload) {
@@ -364,6 +369,10 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         await dispatch("annotation/setFabricsInOneMode", payload.drawing.fabrics, { root: true });
       } else {
+        await dispatch("lesson/setZoomRatio", payload.ratio, { root: true });
+        if (payload.position) {
+          await dispatch("lesson/setImgCoords", { x: payload.position.x, y: payload.position.y }, { root: true });
+        }
         await dispatch("setClassView", { classView: ClassViewFromValue(payload.teachingMode) });
         commit(
           "lesson/setCurrentExposure",
@@ -451,11 +460,11 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     onTeacherZoomSlide: async (p: number) => {
       await dispatch("lesson/setZoomRatio", p, { root: true });
     },
-    onTeacherMoveZoomedSlide: async (p: { x: number; y: number }) => {
-      await dispatch("lesson/setImgCoords", p, { root: true });
+    onTeacherMoveZoomedSlide: async (p: { x: number; y: number; viewPortX: number; viewPortY: number } | null) => {
+      await dispatch("lesson/setImgCoords", p ? { x: p.x, y: p.y } : undefined, { root: true });
     },
     onTeacherResetZoom: async (p: any) => {
-      await dispatch("lesson/setZoomRatio", undefined, { root: true });
+      await dispatch("lesson/setZoomRatio", MIN_ZOOM_RATIO, { root: true });
     },
     onTeacherSendRequestCaptureImage: (p: { isCaptureAll: boolean; studentId: string }) => {
       if (state.student?.id === p.studentId || p.isCaptureAll) {

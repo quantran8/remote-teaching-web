@@ -3,6 +3,7 @@ import { HelperModel, RoomModel, StudentModel, TeacherModel } from "@/models";
 import { UserShape } from "@/store/annotation/state";
 import { ExposureStatus } from "@/store/lesson/state";
 import { HelperState } from "@/store/room/interface";
+import { MIN_ZOOM_RATIO } from "@/utils/constant";
 import { Logger } from "@/utils/logger";
 import { HelperJoiningNotify } from "@/views/teacher-class/components";
 import { WSEventHandler } from "@/ws";
@@ -161,8 +162,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
         commit("lesson/setExposureStatus", { id: payload.contentId }, { root: true });
       }
     },
-    onTeacherSetLessonPlanItemContent: (payload: any) => {
+    onTeacherSetLessonPlanItemContent: async (payload: any) => {
       commit("lesson/setCurrentExposureItemMedia", { id: payload }, { root: true });
+      await dispatch("lesson/setZoomRatio", MIN_ZOOM_RATIO, { root: true });
+      await dispatch("lesson/setImgCoords", undefined, { root: true });
     },
     onStudentRaisingHand: async (student: StudentModel) => {
       const payload = { id: student.id, raisingHand: student.isRaisingHand };
@@ -275,7 +278,6 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
         if (payload.itemContentSelected) {
           commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         }
-        commit("lesson/setCurrentExposureItemMedia", { id: payload.itemContentSelected }, { root: true });
         await dispatch(
           "teacherRoom/toggleAnnotation",
           {
@@ -290,6 +292,10 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
         await dispatch("annotation/setStudentAddShape", { studentShapes: payload.drawing.shapes }, { root: true });
         await dispatch("annotation/setStudentStrokes", payload.drawing.studentBrushstrokes, { root: true });
         await dispatch("annotation/setFabricsInDrawing", payload.drawing.fabrics, { root: true });
+        await dispatch("lesson/setZoomRatio", payload.ratio, { root: true });
+        if (payload.position) {
+          await dispatch("lesson/setImgCoords", { x: payload.position.x, y: payload.position.y }, { root: true });
+        }
       }
     },
     onTeacherSetWhiteboard: async (payload: RoomModel) => {
@@ -345,8 +351,8 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
     onTeacherMoveZoomedSlide: (p: any) => {
       //
     },
-    onTeacherResetZoom: (p: any) => {
-      //
+    onTeacherResetZoom: async (p: any) => {
+      await dispatch("lesson/setZoomRatio", MIN_ZOOM_RATIO, { root: true });
     },
     onTeacherDrawPencil: (p: string) => {
       //
