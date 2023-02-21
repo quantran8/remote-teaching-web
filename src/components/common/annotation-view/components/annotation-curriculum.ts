@@ -1,4 +1,5 @@
 import { TargetsVisibleList } from "@/store/lesson/state";
+import { MIN_ZOOM_RATIO } from "@/utils/constant";
 import { DefaultCanvasDimension, getRadius, ratioValue, setStrokeColor } from "@/utils/utils";
 import { fabric } from "fabric";
 import { computed, ComputedRef } from "vue";
@@ -262,8 +263,8 @@ export const annotationCurriculumStudent = () => {
       }
       canvas.add(Group);
       canvas.sendToBack(Group);
-      if (zoomRatio.value > 1 && firstLoad) {
-        canvas.zoomToPoint(point, canvasZoomRatio + (zoomRatio.value - 1) * canvasZoomRatio);
+      if (zoomRatio.value > MIN_ZOOM_RATIO) {
+        canvas.zoomToPoint(point, canvasZoomRatio + (zoomRatio.value - MIN_ZOOM_RATIO) * canvasZoomRatio);
       }
       if (imgCoords.value) {
         if (imgCoords.value.x) {
