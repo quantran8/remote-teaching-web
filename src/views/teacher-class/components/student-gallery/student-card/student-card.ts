@@ -75,9 +75,11 @@ export default defineComponent({
           id: props.student.id,
         });
       } else {
-        notification.error({
-          message: fmtMsg(StudentCard.OneToOneNotification),
-        });
+        if (store.getters["platform"] === VCPlatform.Zoom) {
+          notification.error({
+            message: fmtMsg(StudentCard.OneToOneNotification),
+          });
+        }
       }
     };
 
