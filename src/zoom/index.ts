@@ -148,7 +148,7 @@ export class ZoomClient implements ZoomClientSDK {
       this._client = this.zoomRTC.createClient();
       await this._client.init("en-US", "Global", {
         webEndpoint: "zoom.us",
-        enforceMultipleVideos: window.crossOriginIsolated,
+        enforceMultipleVideos: !window.crossOriginIsolated,
       });
       const token = this.option.user.token;
       const channel = this.option.user.channel;
