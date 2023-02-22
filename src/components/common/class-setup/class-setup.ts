@@ -87,6 +87,7 @@ export default defineComponent({
     const messageErrorJoinSession = computed(() => fmtMsg(DeviceTesterLocale.MessageErrorJoinSession));
     const PlatformText = computed(() => fmtMsg(ClassSetUp.Platform));
     const OneToOneNotification = computed(() => fmtMsg(StudentCard.OneToOneNotification));
+    const selectUnitLesson = computed(() => fmtMsg(ClassSetUp.SelectUnitLesson));
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
     const isTeacherSetup = computed(() => (role as string).toLowerCase() === RoleName.teacher.toLowerCase() && isTeacher.value);
@@ -841,7 +842,11 @@ export default defineComponent({
       }
       if (isTeacherSetup.value) {
         const unitId = unitInfo.value?.find((unit: UnitAndLesson) => unit.unit === currentUnit.value)?.unitId ?? "";
-        if (!unitId) return;
+        if (!unitId) {
+          messageStartClass.value = selectUnitLesson.value;
+          loading.value = false;
+          return;
+        }
         if (!(await joinTheCurrentSession(groupId))) {
           await startClass(classId as string, groupId, currentUnit.value, currentLesson.value, unitId);
         }
