@@ -1,6 +1,6 @@
 import IconSpeakerStop from "@/assets/icons/pause-button.png";
 import IconSpeakerPlay from "@/assets/icons/play-button.png";
-import { ClassSetUp, DeviceTesterLocale, HelperLocales, TeacherCalendarLocale } from "@/locales/localeid";
+import { ClassSetUp, DeviceTesterLocale, HelperLocales, StudentCard, TeacherCalendarLocale } from "@/locales/localeid";
 import { ClassRoomStatus, MediaStatus, StudentGroupModel, UnitAndLesson } from "@/models";
 import { JoinSessionModel } from "@/models/join-session.model";
 import { HelperService, JoinSessionAsHelperErrorCode, RemoteTeachingService, TeacherGetRoomResponse } from "@/services";
@@ -86,6 +86,7 @@ export default defineComponent({
     const StartSessionText = computed(() => fmtMsg(ClassSetUp.StartSession));
     const messageErrorJoinSession = computed(() => fmtMsg(DeviceTesterLocale.MessageErrorJoinSession));
     const PlatformText = computed(() => fmtMsg(ClassSetUp.Platform));
+    const OneToOneNotification = computed(() => fmtMsg(StudentCard.OneToOneNotification));
     const havePermissionCamera = ref(true);
     const havePermissionMicrophone = ref(true);
     const isTeacherSetup = computed(() => (role as string).toLowerCase() === RoleName.teacher.toLowerCase() && isTeacher.value);
@@ -1152,6 +1153,7 @@ export default defineComponent({
       isClassIncludingHelper,
       isWaitingTeacherConfirm,
       PlatformText,
+      OneToOneNotification,
     };
   },
 });

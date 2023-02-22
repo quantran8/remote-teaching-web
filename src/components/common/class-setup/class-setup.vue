@@ -165,7 +165,11 @@
             <div class="device-tester__default--rt">
               <Space size="large" align="center" class="device-tester__check-mic-cam">
                 <Switch v-model:checked="isUsingAgora" />
-                <div style="width:330px" />
+                <div style="width: 330px">
+                  <span v-if="!isUsingAgora" class="device-tester__mess-teacher-error">
+                    {{ OneToOneNotification }}
+                  </span>
+                </div>
               </Space>
             </div>
           </Row>
