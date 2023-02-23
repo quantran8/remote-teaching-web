@@ -1,13 +1,13 @@
-import { LostNetwork } from "./../locales/localeid";
-import { useStore } from "vuex";
-import { fmtMsg, RoleName, LoginInfo } from "vue-glcommonui";
-import { Modal } from "ant-design-vue";
-import { computed, watch, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import * as audioSource from "@/utils/audioGenerator";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { ClassRoomStatus, SignalRStatus } from "@/models";
+import * as audioSource from "@/utils/audioGenerator";
 import { Logger } from "@/utils/logger";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { Modal } from "ant-design-vue";
+import { computed, ref, watch } from "vue";
+import { fmtMsg, LoginInfo, RoleName } from "vue-glcommonui";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { LostNetwork } from "./../locales/localeid";
 const fpPromise = FingerprintJS.load();
 
 //five minutes
@@ -73,7 +73,7 @@ export const useDisconnection = () => {
     if (matchIndex < 0) {
       if (prevIsDisconnected !== isDisconnected && isDisconnected) {
         //handle case lost internet
-        await dispatch("teacherRoom/leaveRoom");
+        await dispatch("teacherRoom/leaveRoom", { leave: false });
         timeoutId = setTimeout(() => {
           audioSource.teacherTryReconnectSound.stop();
           audioSource.reconnectFailedSound.play();
@@ -102,6 +102,9 @@ export const useDisconnection = () => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
+        if (reconnectIntervalId.value) {
+          clearInterval(reconnectIntervalId.value);
+        }
         audioSource.teacherTryReconnectSound.stop();
         audioSource.reconnectSuccessSound.play();
         await teacherInitClass();
@@ -113,7 +116,7 @@ export const useDisconnection = () => {
   //handle student disconnection
   watch(studentDisconnected, async (isDisconnected, prevIssDisconnected) => {
     if (isDisconnected !== prevIssDisconnected && isDisconnected) {
-      await dispatch("studentRoom/leaveRoom");
+      await dispatch("studentRoom/leaveRoom", { leave: false });
       timeoutId = setTimeout(async () => {
         audioSource.reconnectFailedSound.play();
         Modal.warning({
@@ -141,6 +144,9 @@ export const useDisconnection = () => {
     if (isDisconnected !== prevIssDisconnected && !isDisconnected) {
       clearTimeout(timeoutId);
       audioSource.reconnectSuccessSound.play();
+      if (reconnectIntervalId.value) {
+        clearInterval(reconnectIntervalId.value);
+      }
       //STUDENT::prevent call initClassRoom second time in the case just signalR destroyed
 
       await studentInitClass();

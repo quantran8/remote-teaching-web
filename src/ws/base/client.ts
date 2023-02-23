@@ -81,7 +81,7 @@ export class GLSocketClient {
     return this._hubConnection?.stop();
   }
   async connect(): Promise<any> {
-    if (this._isConnected) return Promise.resolve();
+	  if (this._isConnected && this.hubConnection.state !== HubConnectionState.Disconnected) return Promise.resolve();
     if ([HubConnectionState.Connecting, HubConnectionState.Connected].includes(this.hubConnection.state)) return Promise.resolve();
     if (this.hubConnection.state === HubConnectionState.Connected) {
       return Promise.resolve();

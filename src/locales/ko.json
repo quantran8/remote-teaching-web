@@ -233,5 +233,7 @@
 	"schedule_info.am": "AM",
 	"schedule_info.pm": "PM",
 	"device_tester.error_join_session": "This student is already logged into this class.",
-	"schedule.cant_create_schedule": "Classes cannot be scheduled after the end date of the class."
+	"schedule.cant_create_schedule": "Classes cannot be scheduled after the end date of the class.",
+	"class_setup.Platform": "Using Agora Platform",
+	"student_card.one_to_one_notification": "1:1 mode is not supported for zoom"
 }

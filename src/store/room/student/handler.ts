@@ -8,6 +8,7 @@ import { ClassRoomStatus, RoomModel, StudentModel, TeacherModel } from "@/models
 import { GLErrorCode } from "@/models/error.model";
 import { store as AppStore } from "@/store";
 import { Pointer, UserShape } from "@/store/annotation/state";
+import { VCPlatform } from "@/store/app/state";
 import { Target } from "@/store/interactive/state";
 import { ExposureStatus } from "@/store/lesson/state";
 import { MIN_ZOOM_RATIO } from "@/utils/constant";
@@ -161,7 +162,7 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
     },
     onTeacherEndClass: async (_payload: any) => {
       await store.dispatch("setClassRoomStatus", { status: ClassRoomStatus.InDashBoard }, { root: true });
-      await dispatch("leaveRoom", {});
+      await dispatch("leaveRoom", { leave: true });
       commit("setApiStatus", {
         code: GLErrorCode.CLASS_HAS_BEEN_ENDED,
         message: "Your class has been ended!",
@@ -348,13 +349,17 @@ export const useStudentRoomHandler = (store: ActionContext<StudentRoomState, any
             root: true,
           },
         );
-        // if (AppStore.getters["platform"] === VCPlatform.Zoom) {
-        //   if (payload.id) {
-        //     //
-        //   } else {
-        //     await roomManager?.zoomClient.studentBackToMainRoom();
-        //   }
-        // }
+        if (AppStore.getters["platform"] === VCPlatform.Zoom) {
+          if (payload.id) {
+            if (state.student?.id === payload.id) {
+              await roomManager?.zoomClient.studentJoinOneToOneSubSession();
+            }
+          } else {
+            if (state.student?.id === payload.student.id) {
+              await roomManager?.zoomClient.backToMainSession();
+            }
+          }
+        }
       } else {
         await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
       }

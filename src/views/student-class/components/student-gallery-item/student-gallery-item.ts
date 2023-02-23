@@ -1,4 +1,5 @@
 import noAvatar from "@/assets/student-class/no-avatar.png";
+import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { defineComponent } from "@vue/runtime-core";
 import { computed, ref, watch } from "vue";
@@ -17,7 +18,7 @@ export default defineComponent({
     const isRaisingHand = ref(false);
     const store = useStore();
     const avatarStudent = computed(() => (student.value.avatar ? student.value.avatar : noAvatar));
-    const isUsingAgora = true; // computed(() => store.getters["platform"] === VCPlatform.Agora);
+    const isUsingAgora = computed(() => store.getters["platform"] === VCPlatform.Agora);
     const firstTimeVisit = ref(true);
 
     watch(props, () => {

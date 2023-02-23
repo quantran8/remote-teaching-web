@@ -3,9 +3,9 @@ import { TeacherRoomManager } from "@/manager/room/teacher.manager";
 import { store } from "@/store";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { Logger } from "@/utils/logger";
-import { PARTICIPANT_CANVAS_ID, PARTICIPANT_GROUPS } from "@/zoom";
+import { PARTICIPANT_CANVAS_ID } from "@/zoom";
 import { useElementSize } from "@vueuse/core";
-import { computed, ComputedRef, defineComponent, provide, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, provide, ref } from "vue";
 import { fmtMsg } from "vue-glcommonui";
 import { useStore } from "vuex";
 import StudentCard from "../student-card/student-card.vue";
@@ -23,12 +23,10 @@ export default defineComponent({
     window.addEventListener("resize", this.onWindowResize);
     try {
       const studentListElement = document.getElementById("student-list") as HTMLDivElement;
-      for (const group of Object.values(PARTICIPANT_GROUPS)) {
-        const canvas = document.getElementById(PARTICIPANT_CANVAS_ID + "-" + group) as HTMLCanvasElement;
-        if (canvas) {
-          canvas.width = studentListElement.offsetWidth;
-          canvas.height = studentListElement.offsetHeight;
-        }
+      const canvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
+      if (canvas) {
+        canvas.width = studentListElement.offsetWidth;
+        canvas.height = studentListElement.offsetHeight;
       }
     } catch (error) {
       Logger.error("Set canvas error: ", error);
@@ -70,8 +68,6 @@ export default defineComponent({
     });
     const noStudentJoinText = computed(() => fmtMsg(TeacherClassGallery.NoStudentJoinClass));
 
-    const maximumGroup = ref<number>(2);
-
     const studentGallery = ref<HTMLElement>();
     const { width: studentGalleryWidth } = useElementSize(studentGallery);
     const breakpoints = 450;
@@ -91,16 +87,6 @@ export default defineComponent({
       return 2;
     });
 
-    watch(
-      students,
-      () => {
-        const roomManager: TeacherRoomManager | undefined = store.getters["teacherRoom/roomManager"];
-        roomManager?.rerenderParticipantsVideo();
-      },
-      {
-        deep: true,
-      },
-    );
     const focusedStudent = ref<string>("");
     const updateFocusStudent = (studentId?: string) => {
       if (studentId) {
@@ -118,7 +104,6 @@ export default defineComponent({
       totalOnlineStudents,
       scaleVideoOption,
       noStudentJoinText,
-      maximumGroup,
       studentLayout,
       studentGallery,
     };

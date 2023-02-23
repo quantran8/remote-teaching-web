@@ -14,7 +14,7 @@
       transform: focusedStudent && !isOneToOneStudent ? `scale(${actualScaleRatio}) translate(${translateX}px, ${translateY}px)` : '',
     }"
   >
-    <div class="student__wrapper" :style="{ width: wrapperWidth }">
+    <div class="student__wrapper" :style="{ width: wrapperWidth }" :id="student.id + '__wrapper'">
       <div class="student__figure" @mouseover="onMouseChange(true)">
         <div :class="student.raisingHand && 'student__is-question'">
           <div class="student__video" :class="[student.isPalette && 'student__is-palette']">

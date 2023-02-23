@@ -12,7 +12,7 @@
       :focusStudentId="focusedStudent"
     />
     <div class="participant-videos-wrapper" :id="'participant-videos-wrapper'" v-show="!oneAndOneStatus && totalOnlineStudents">
-      <canvas v-for="n in maximumGroup" :key="n" :id="`participant-videos-${n}`" />
+      <canvas id="participant-videos-zoom" />
     </div>
   </div>
 </template>

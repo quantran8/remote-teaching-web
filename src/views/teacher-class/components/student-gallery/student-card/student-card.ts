@@ -1,9 +1,13 @@
 import noAvatar from "@/assets/images/user-default-gray.png";
 import IconLowWifi from "@/assets/teacher-class/slow-wifi.svg";
+import { StudentCard } from "@/locales/localeid";
+import { VCPlatform } from "@/store/app/state";
 import { InClassStatus, StudentState } from "@/store/room/interface";
 import { useElementBounding } from "@vueuse/core";
 import "animate.css";
+import { notification } from "ant-design-vue";
 import { computed, defineComponent, ref } from "vue";
+import { fmtMsg } from "vue-glcommonui";
 import { useStore } from "vuex";
 import StudentBadge from "../student-badge/student-badge.vue";
 import { StudentCardActions } from "../student-card-actions";
@@ -34,9 +38,10 @@ export default defineComponent({
     const isNotJoinned = computed(() => props.student.status !== InClassStatus.JOINED);
     const interactive = computed(() => store.getters["interactive/interactiveStatus"](props.student.id));
     const platform = computed(() => store.getters["platform"]);
-    const isUsingAgora = true; // computed(() => platform.value === VCPlatform.Agora);
+    const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
 
     const isMouseEntered = ref<boolean>(false);
+    const roomManager = computed(() => store.getters["teacherRoom/roomManager"]);
     const isShow = computed(() => {
       return !store.getters["teacherRoom/getStudentModeOneId"] || store.getters["teacherRoom/getStudentModeOneId"] === props.student.id;
     });
@@ -57,7 +62,7 @@ export default defineComponent({
     });
     const oneAndOne = computed(() => store.getters["teacherRoom/getStudentModeOneId"]);
     const onOneAndOne = async () => {
-      if (props.setModeOne && !isNotJoinned.value && props.student?.id !== oneAndOne.value) {
+      if (props.setModeOne && !isNotJoinned.value && props.student?.id !== oneAndOne.value && store.getters["platform"] === VCPlatform.Agora) {
         if (currentExposure.value?.id) {
           await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value.id });
         }
@@ -65,16 +70,16 @@ export default defineComponent({
           await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value.id });
         }
         await store.dispatch("teacherRoom/setStudentOneId", { id: props.student.id });
-
         await store.dispatch("teacherRoom/sendOneAndOne", {
           status: true,
           id: props.student.id,
         });
-        // if (store.getters["platform"] === VCPlatform.Zoom) {
-        //   await store.dispatch("teacherRoom/generateOneToOneToken", {
-        // 	 classId: store.getters["teacherRoom/info"]?.id
-        //   });
-        // }
+      } else {
+        if (store.getters["platform"] === VCPlatform.Zoom) {
+          notification.error({
+            message: fmtMsg(StudentCard.OneToOneNotification),
+          });
+        }
       }
     };
 

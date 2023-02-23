@@ -341,6 +341,7 @@ export class ClassSetUp {
   static ActiveStudents = "class_setup.active_students";
   static InActiveStudents = "class_setup.inactive_students";
   static RemoteClassSetUp = "class_setup.remote_class_set_up";
+  static Platform = "class_setup.Platform";
 }
 
 export class ClassCard {
@@ -360,4 +361,7 @@ export class ScheduleInfo {
   static AM = "schedule_info.am";
   static PM = "schedule_info.pm";
   static CantCreateSchedule = "schedule.cant_create_schedule";
+}
+export class StudentCard {
+  static OneToOneNotification = "student_card.one_to_one_notification";
 }
