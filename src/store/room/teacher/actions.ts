@@ -309,7 +309,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await dispatch("annotation/setInfo", roomInfo.annotation, {
         root: true,
       });
-      await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+      await dispatch("lesson/setInfo", { lessonPlan: roomInfo.lessonPlan, isSetCurrentExposure: !roomInfo.studentOneToOne }, { root: true });
       await dispatch("interactive/setInfo", roomInfo.lessonPlan.interactive, {
         root: true,
       });
@@ -324,6 +324,10 @@ const actions: ActionTree<TeacherRoomState, any> = {
       await dispatch("lesson/setTargetsVisibleListJoinedAction", roomResponse.data.annotation?.drawing?.visibleShapes, { root: true });
 
       if (roomInfo.oneAndOneDto) {
+        store.commit("lesson/setCurrentExposure", {
+          id: roomInfo.oneAndOneDto.exposureSelected,
+          skipToSetCurrentExposureItemMedia: roomInfo.oneAndOneDto.itemContentSelected ? true : false,
+        });
         store.commit("lesson/setCurrentExposureItemMedia", {
           id: roomInfo.oneAndOneDto?.itemContentSelected,
         });
@@ -641,7 +645,7 @@ const actions: ActionTree<TeacherRoomState, any> = {
     }
     commit({ type: "lesson/clearLessonData" }, { root: true });
     await commit("setRoomInfo", roomInfo);
-    await dispatch("lesson/setInfo", roomInfo.lessonPlan, { root: true });
+	await dispatch("lesson/setInfo", { lessonPlan: roomInfo.lessonPlan, isSetCurrentExposure: !roomInfo.studentOneToOne }, { root: true });
     await dispatch("lesson/setZoomRatio", MIN_ZOOM_RATIO, { root: true });
     await dispatch("lesson/setImgCoords", undefined, { root: true });
 

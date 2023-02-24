@@ -122,8 +122,8 @@ export default defineComponent({
       return store.getters["studentRoom/isDisconnected"] || store.getters["studentRoom/teacherIsDisconnected"];
     });
     const isOneToOne = ref(false);
-    const studentIsOneToOne = ref(false);
-	const breakpoint = breakpointChange();
+    const studentIsOneToOne = computed(() => studentOneAndOneId.value === student.value.id);
+    const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => (teacher.value && teacher.value.avatar ? teacher.value.avatar : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const avatarStudentOneToOne = ref("");
@@ -183,15 +183,6 @@ export default defineComponent({
           await store.dispatch("studentRoom/setAvatarStudent", { studentId: studentOneAndOneId.value, oneToOne: true });
         }
         isOneToOne.value = !!studentOneAndOneId.value;
-        if (student.value) {
-          studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-          // if (!previousExposureItemMedia.value && student.value.id !== studentOneAndOneId.value) {
-          //   await store.dispatch("lesson/setPreviousExposure", { id: currentExposure.value?.id });
-          //   await store.dispatch("lesson/setPreviousExposureItemMedia", { id: currentExposureItemMedia.value?.id });
-          // }
-        } else {
-          studentIsOneToOne.value = false;
-        }
       },
       { immediate: true },
     );
@@ -213,18 +204,6 @@ export default defineComponent({
 
     // onMounted(animate);
 
-    watch(
-      studentOneAndOneId,
-      () => {
-        isOneToOne.value = !!studentOneAndOneId.value;
-        if (student.value) {
-          studentIsOneToOne.value = student.value.id === studentOneAndOneId.value;
-        } else {
-          studentIsOneToOne.value = false;
-        }
-      },
-      { immediate: true },
-    );
 
     watch(apiStatus, async () => {
       if (apiStatus.value) {
