@@ -107,27 +107,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         }, 1000);
       }
     } catch (error) {
-      if (error.code == null) {
-        commit("setApiStatus", {
-          code: GLErrorCode.DISCONNECT,
-          message: "",
-        });
-        return Logger.log(error);
-      }
-      if (error.code === ErrorCode.ConcurrentUserException) {
-        await router.push(Paths.Home);
-      } else if (error.code === ErrorCode.StudentNotInClass) {
-        commit("setApiStatus", {
-          code: GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT,
-          message: fmtMsg(ErrorLocale.ParentAccountNotHaveThisStudent),
-        });
-      } else {
-        commit("setApiStatus", {
-          code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-          message: fmtMsg(ErrorLocale.ClassNotStarted),
-        });
-        return;
-      }
+      await dispatch("setApiError",error);
     }
   },
   async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
@@ -609,6 +589,49 @@ const actions: ActionTree<StudentRoomState, any> = {
       await dispatch("studentRoom/clearStudentOneId", { id: "" }, { root: true });
     }
   },
+  async getClassRoomStatus({ commit, dispatch }, p: { id: string; bfp: string }) {
+    try {
+      const roomResponse: StudentGetRoomResponse = await RemoteTeachingService.studentGetRoomInfo(p.id, p.bfp);
+      const roomInfo: RoomModel = roomResponse.data;
+      if (!roomInfo) {
+        commit("setApiStatus", {
+          code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
+        });
+        return;
+      } else {
+        commit("setApiStatus", {
+          code: GLErrorCode.SUCCESS,
+          message: "",
+        });
+      }
+    } catch (error) {
+      await dispatch("setApiError",error);
+    }
+  },
+  async setApiError({commit}, payload: any){
+	if (payload.code == null) {
+        commit("setApiStatus", {
+          code: GLErrorCode.DISCONNECT,
+          message: "",
+        });
+        return Logger.log(payload);
+      }
+      if (payload.code === ErrorCode.ConcurrentUserException) {
+        await router.push(Paths.Home);
+      } else if (payload.code === ErrorCode.StudentNotInClass) {
+        commit("setApiStatus", {
+          code: GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT,
+          message: fmtMsg(ErrorLocale.ParentAccountNotHaveThisStudent),
+        });
+      } else {
+        commit("setApiStatus", {
+          code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+          message: fmtMsg(ErrorLocale.ClassNotStarted),
+        });
+		return
+      }
+  }
 };
 
 export default actions;
