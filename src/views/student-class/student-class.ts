@@ -92,7 +92,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const route = useRoute();
+	const route = useRoute();
     const joinLoading = ref(true);
     const exitText = computed(() => fmtMsg(StudentClassLocale.Exit));
     const goToHomePageText = computed(() => fmtMsg(StudentClassLocale.GoToHomePage));
@@ -123,7 +123,7 @@ export default defineComponent({
     });
     const isOneToOne = ref(false);
     const studentIsOneToOne = ref(false);
-    const breakpoint = breakpointChange();
+	const breakpoint = breakpointChange();
     const avatarTeacher = computed(() => (teacher.value && teacher.value.avatar ? teacher.value.avatar : noAvatar));
     const getAvatarStudentOne = computed(() => store.getters["studentRoom/getAvatarStudentOneToOne"]);
     const avatarStudentOneToOne = ref("");
@@ -141,6 +141,7 @@ export default defineComponent({
     const platform = computed(() => store.getters["platform"]);
     const helperShown = ref(true);
     const isUsingAgora = computed(() => platform.value === VCPlatform.Agora);
+	const firstTimeVisited = ref(true);
 
     watch(lessonInfo, async () => {
       try {
@@ -256,6 +257,10 @@ export default defineComponent({
       const visitorId = result.visitorId;
       try {
         await store.dispatch("studentRoom/joinWSRoom", { browserFingerPrinting: visitorId });
+        if (firstTimeVisited.value) {
+          await store.dispatch("studentRoom/getClassRoomStatus", { id: student.value.id, bfp: visitorId });
+          firstTimeVisited.value = false;
+        }
       } catch (err) {
         if (err?.code === ErrorCode.ConcurrentUserException) {
           notification.error({
