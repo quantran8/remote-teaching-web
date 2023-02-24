@@ -17,13 +17,26 @@
               <Space size="large" align="center">
                 <Space size="small" align="center">
                   <label>{{ Unit }}</label>
-                  <Select v-model:value="currentUnit" class="device-tester__unit-lesson" ref="select" @change="handleUnitChange">
+                  <Select
+                    style="min-width: 52px"
+                    v-model:value="currentUnit"
+                    class="device-tester__unit-lesson"
+                    ref="select"
+                    @change="handleUnitChange"
+                  >
                     <SelectOption v-for="item in unitInfo" :key="item.unit" :value="item.unit">{{ item.unit }}</SelectOption>
                   </Select>
                 </Space>
                 <Space size="small" align="center">
                   <label>{{ Lesson }}</label>
-                  <Select v-model:value="currentLesson" class="device-tester__unit-lesson" ref="select" @change="handleLessonChange">
+                  <Select
+                    style="min-width: 52px"
+                    v-model:value="currentLesson"
+                    class="device-tester__unit-lesson"
+                    ref="select"
+                    @change="handleLessonChange"
+                    notFoundContent="No Data"
+                  >
                     <SelectOption v-for="lesson in listLessonByUnit" :key="lesson" :value="lesson">{{ lesson }}</SelectOption>
                   </Select>
                 </Space>
@@ -44,7 +57,7 @@
             </div>
           </div>
           <div class="class_info_member_inactive">
-            <P class="student_status">{{ InActiveStudentsText }} ({{ inActiveStudents.length }})</P>
+            <P v-if="inActiveStudents.length" class="student_status">{{ InActiveStudentsText }} ({{ inActiveStudents.length }})</P>
             <div v-if="inActiveStudents.length" class="list_student list_student_inactive">
               <p v-for="st in inActiveStudents" :key="st.studentId" class="list_student__name">
                 {{ st.studentName }}

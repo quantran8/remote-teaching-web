@@ -342,6 +342,7 @@ export class ClassSetUp {
   static InActiveStudents = "class_setup.inactive_students";
   static RemoteClassSetUp = "class_setup.remote_class_set_up";
   static Platform = "class_setup.Platform";
+  static SelectUnitLesson = "class_setup.select_unit_lesson";
 }
 
 export class ClassCard {

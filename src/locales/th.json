@@ -235,5 +235,6 @@
 	"device_tester.error_join_session": "This student is already logged into this class.",
 	"schedule.cant_create_schedule": "Classes cannot be scheduled after the end date of the class.",
 	"class_setup.Platform": "Using Agora Platform",
-	"student_card.one_to_one_notification": "1:1 mode is not supported for zoom"
+	"student_card.one_to_one_notification": "1:1 mode is not supported for zoom",
+	"class_setup.select_unit_lesson": "Please select unit and lesson" 
 }
