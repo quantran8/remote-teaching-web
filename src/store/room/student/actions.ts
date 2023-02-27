@@ -536,7 +536,11 @@ const actions: ActionTree<StudentRoomState, any> = {
   },
   async setClassData({ commit, dispatch, state }, roomInfo: RoomModel) {
     commit("setRoomInfo", roomInfo);
-    await dispatch("lesson/setInfo", roomInfo?.lessonPlan, { root: true });
+    await dispatch(
+      "lesson/setInfo",
+      { lessonPlan: roomInfo?.lessonPlan, isSetCurrentExposure: !(state.student?.id === roomInfo.studentOneToOne) },
+      { root: true },
+    );
     await dispatch("annotation/setInfo", roomInfo.annotation, {
       root: true,
     });

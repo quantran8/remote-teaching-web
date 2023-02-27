@@ -35,7 +35,7 @@ const DEFAULT_ALTERNATE_MEDIA_BLOCK_ITEM_NAME = "Alternate Media";
 interface LessonActions<S, R> extends ActionTree<S, R>, LessonActionsInterface<S, R> {}
 
 const actions: LessonActions<LessonState, any> = {
-  async setInfo(store: ActionContext<LessonState, any>, payload: LessonPlanModel) {
+  async setInfo(store: ActionContext<LessonState, any>, payload: { lessonPlan: LessonPlanModel; isSetCurrentExposure: boolean }) {
     if (!payload) return;
     let signalture = store.rootGetters["contentSignature"];
     if (!signalture) {
@@ -43,13 +43,13 @@ const actions: LessonActions<LessonState, any> = {
       signalture = store.rootGetters["contentSignature"];
     }
     const exposures: Array<Exposure> = [];
-    for (const e of payload.contents) {
+    for (const e of payload.lessonPlan.contents) {
       const items: Array<ExposureItem> = e.contents.map((c: ExposureItemModel) => {
         const media: Array<ExposureItemMedia> = c.page.map((p: ExposureItemMediaModel) => {
           return {
             id: p.id,
             image: {
-              url: payload.contentStorageUrl + p.url + signalture,
+              url: payload.lessonPlan.contentStorageUrl + p.url + signalture,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
@@ -70,7 +70,7 @@ const actions: LessonActions<LessonState, any> = {
           return {
             id: p.id,
             image: {
-              url: payload.contentStorageUrl + p.url + signalture,
+              url: payload.lessonPlan.contentStorageUrl + p.url + signalture,
               width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
               height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
             },
@@ -114,7 +114,7 @@ const actions: LessonActions<LessonState, any> = {
             return {
               id: p.id,
               image: {
-                url: payload.contentStorageUrl + p.url + signalture,
+                url: payload.lessonPlan.contentStorageUrl + p.url + signalture,
                 width: p.resolution ? parseInt(p.resolution.split("X")[0]) : parseInt(DEFAULT_RESOLUTION.split("X")[0]),
                 height: p.resolution ? parseInt(p.resolution.split("X")[1]) : parseInt(DEFAULT_RESOLUTION.split("X")[1]),
               },
@@ -150,7 +150,7 @@ const actions: LessonActions<LessonState, any> = {
         : [];
       const teachingActivityBlockItems: Array<ExposureItem> = newContentExposureTeachingActivity?.map((c: any) => {
         const media: Array<ExposureItemMedia> = c.page.map((p: any) => {
-          const url = p.url ? payload.contentStorageUrl + p.url + signalture : "";
+          const url = p.url ? payload.lessonPlan.contentStorageUrl + p.url + signalture : "";
           return {
             id: p.id, // need to confirm is contentExposureId or teachingActivity.id
             image: {
@@ -177,7 +177,7 @@ const actions: LessonActions<LessonState, any> = {
         items: items,
         contentBlockItems: contentBlockItems,
         teachingActivityBlockItems: teachingActivityBlockItems,
-        thumbnailURL: e.thumbnailUrl ? payload.contentStorageUrl + e.thumbnailUrl + signalture : "",
+        thumbnailURL: e.thumbnailUrl ? payload.lessonPlan.contentStorageUrl + e.thumbnailUrl + signalture : "",
         contentRootType: ContentRootTypeFromValue(e.contentRootType),
         alternateMediaBlockItems: alternateMediaBlockItems,
       };
@@ -196,17 +196,19 @@ const actions: LessonActions<LessonState, any> = {
       })
       .flat(2);
     preloadImage(listUrl, 5000);
-    store.commit("setIsBlackOut", { IsBlackOut: payload.isBlackout });
+    store.commit("setIsBlackOut", { IsBlackOut: payload.lessonPlan.isBlackout });
     store.commit("setExposures", { exposures: exposures });
-    store.commit("setCurrentExposure", { id: payload.contentSelected });
-    const exposure = payload.contents.find((e: ExposureContentModel) => e.id === payload.contentSelected);
-    if (exposure && exposure.pageSelected) {
-      store.commit("setCurrentExposureItemMedia", {
-        id: exposure.pageSelected,
-      });
+    if (payload.isSetCurrentExposure) {
+      store.commit("setCurrentExposure", { id: payload.lessonPlan.contentSelected });
+      const exposure = payload.lessonPlan.contents.find((e: ExposureContentModel) => e.id === payload.lessonPlan.contentSelected);
+      if (exposure && exposure.pageSelected) {
+        store.commit("setCurrentExposureItemMedia", {
+          id: exposure.pageSelected,
+        });
+      }
     }
-    store.commit("setPlayedTime", { time: payload.playedTime });
-    store.commit("setTotalTime", { time: payload.totalTime });
+    store.commit("setPlayedTime", { time: payload.lessonPlan.playedTime });
+    store.commit("setTotalTime", { time: payload.lessonPlan.totalTime });
   },
   setExposures(
     store: ActionContext<LessonState, any>,
