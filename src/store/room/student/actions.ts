@@ -107,7 +107,7 @@ const actions: ActionTree<StudentRoomState, any> = {
         }, 1000);
       }
     } catch (error) {
-      await dispatch("setApiError",error);
+      await dispatch("setApiError", error);
     }
   },
   async setAvatarAllStudent({ commit }, payload: { studentIds: string[] }) {
@@ -323,7 +323,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     commit("setSpeakingUsers", { userIds: validSpeakings });
   },
   async leaveRoom({ state, commit, rootGetters, dispatch }, payload: any) {
-	await state.manager?.close(payload?.leave);
+    await state.manager?.close(payload?.leave);
     commit("leaveRoom", payload);
     commit({ type: "lesson/clearLessonData" }, { root: true });
     commit({ type: "lesson/clearCacheImage" }, { root: true });
@@ -496,7 +496,7 @@ const actions: ActionTree<StudentRoomState, any> = {
     state.manager?.WSClient.sendRequestToggleShape(payload);
   },
   async generateOneToOneToken({ state }, payload: { classId: string; studentId: string }) {
-	  try {
+    try {
       const zoom = state.manager?.zoomClient;
       if (zoom) {
         await zoom.studentJoinOneToOneSubSession();
@@ -553,6 +553,7 @@ const actions: ActionTree<StudentRoomState, any> = {
       { user: "", visible: roomInfo.annotation?.drawing?.isShowingAllShapes ?? false },
       { root: true },
     );
+    await dispatch("lesson/setTargetsVisibleListJoinedAction", roomInfo.annotation?.drawing?.visibleShapes ?? [], { root: true });
     if (roomInfo.studentOneToOne) {
       await dispatch("studentRoom/setStudentOneId", { id: roomInfo.studentOneToOne }, { root: true });
       if (state.student?.id === roomInfo.studentOneToOne) {
@@ -610,32 +611,32 @@ const actions: ActionTree<StudentRoomState, any> = {
         });
       }
     } catch (error) {
-      await dispatch("setApiError",error);
+      await dispatch("setApiError", error);
     }
   },
-  async setApiError({commit}, payload: any){
-	if (payload.code == null) {
-        commit("setApiStatus", {
-          code: GLErrorCode.DISCONNECT,
-          message: "",
-        });
-        return Logger.log(payload);
-      }
-      if (payload.code === ErrorCode.ConcurrentUserException) {
-        await router.push(Paths.Home);
-      } else if (payload.code === ErrorCode.StudentNotInClass) {
-        commit("setApiStatus", {
-          code: GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT,
-          message: fmtMsg(ErrorLocale.ParentAccountNotHaveThisStudent),
-        });
-      } else {
-        commit("setApiStatus", {
-          code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
-          message: fmtMsg(ErrorLocale.ClassNotStarted),
-        });
-		return
-      }
-  }
+  async setApiError({ commit }, payload: any) {
+    if (payload.code == null) {
+      commit("setApiStatus", {
+        code: GLErrorCode.DISCONNECT,
+        message: "",
+      });
+      return Logger.log(payload);
+    }
+    if (payload.code === ErrorCode.ConcurrentUserException) {
+      await router.push(Paths.Home);
+    } else if (payload.code === ErrorCode.StudentNotInClass) {
+      commit("setApiStatus", {
+        code: GLErrorCode.PARENT_NOT_HAVE_THIS_STUDENT,
+        message: fmtMsg(ErrorLocale.ParentAccountNotHaveThisStudent),
+      });
+    } else {
+      commit("setApiStatus", {
+        code: GLErrorCode.CLASS_IS_NOT_ACTIVE,
+        message: fmtMsg(ErrorLocale.ClassNotStarted),
+      });
+      return;
+    }
+  },
 };
 
 export default actions;
