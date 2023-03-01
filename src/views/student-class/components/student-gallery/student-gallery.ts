@@ -39,7 +39,7 @@ export default defineComponent({
         canvasWrapper.style.visibility = "hidden";
       }
       this.timer = setTimeout(async () => {
-        await roomManager?.rerenderParticipantsVideo();
+        await roomManager?.adjustRenderedVideoPosition();
         if (canvasWrapper) {
           canvasWrapper.style.visibility = "visible";
         }

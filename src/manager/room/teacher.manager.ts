@@ -98,10 +98,10 @@ export class TeacherRoomManager extends BaseRoomManager<TeacherWSClient> {
     }
   }
 
-  async rerenderParticipantsVideo() {
+  async adjustRenderedVideoPosition(userId?: string) {
     try {
       if (store.getters.platform === VCPlatform.Zoom) {
-        await this.zoomClient.rerenderParticipantsVideo();
+        await this.zoomClient.adjustRenderedVideoPosition(userId);
       }
     } catch (error) {
       Logger.log("Rerender: ", error);

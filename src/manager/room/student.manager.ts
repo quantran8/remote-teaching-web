@@ -12,7 +12,7 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     super();
     this.options = options;
     this.agoraClient = new AgoraClient(options.agora);
-      this.zoomClient = new ZoomClient(options.zoom);
+    this.zoomClient = new ZoomClient(options.zoom);
     this.WSClient = new StudentWSClient({
       url: `${process.env.VUE_APP_REMOTE_TEACHING_SERVICE}/teaching`,
       reConnectedCallback: async () => {
@@ -92,9 +92,9 @@ export class StudentRoomManager extends BaseRoomManager<StudentWSClient> {
     }
   }
 
-  rerenderParticipantsVideo() {
+  adjustRenderedVideoPosition() {
     if (store.getters.platform === VCPlatform.Zoom) {
-      return this.zoomClient.rerenderParticipantsVideo();
+      return this.zoomClient.adjustRenderedVideoPosition();
     }
   }
 
