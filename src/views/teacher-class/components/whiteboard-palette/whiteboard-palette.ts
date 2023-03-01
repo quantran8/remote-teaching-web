@@ -362,9 +362,15 @@ export default defineComponent({
     };
     const objectTargetOnCanvas = () => {
       if (!group) return;
-      const objShow = group.getObjects().filter((obj: any) => obj.stroke !== "transparent");
+      const objShow = group
+        .getObjects()
+        .filter((obj: any) => obj.id === "annotation-lesson")
+        .filter((obj: any) => obj.stroke !== "transparent");
       disableShowAllTargetsBtn.value = objShow.length === targetsNum.value;
-      const objHide = group.getObjects().filter((obj: any) => obj.stroke === "transparent");
+      const objHide = group
+        .getObjects()
+        .filter((obj: any) => obj.id === "annotation-lesson")
+        .filter((obj: any) => obj.stroke === "transparent");
       disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
     };
     const targetsList = computed(() => store.getters["lesson/targetsAnnotationList"]);
@@ -383,13 +389,29 @@ export default defineComponent({
           });
         }
         const objHide = targetsList.value.filter((obj: any) => obj.visible === false);
-        disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
-        if (objHide.length === targetsNum.value) {
-          await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
-            userId: isTeacher.value?.id,
-            visible: false,
-          });
+        if (targetsList.value.length === targetsNum.value) {
+          disableHideAllTargetsBtn.value = objHide.length === targetsNum.value;
+          if (disableHideAllTargetsBtn.value) {
+            await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+              userId: isTeacher.value?.id,
+              visible: false,
+            });
+          }
+        } else {
+          disableHideAllTargetsBtn.value = objHide.length === targetsList.value.length;
+          if (disableHideAllTargetsBtn.value) {
+            await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+              userId: isTeacher.value?.id,
+              visible: false,
+            });
+          }
         }
+      } else {
+        disableHideAllTargetsBtn.value = true;
+        await store.dispatch("teacherRoom/setTargetsVisibleAllAction", {
+          userId: isTeacher.value?.id,
+          visible: false,
+        });
       }
     };
     watch(targetsList, processTargetsList, { deep: true });
