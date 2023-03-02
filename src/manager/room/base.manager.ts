@@ -91,7 +91,7 @@ export abstract class BaseRoomManager<T extends GLSocketClient> {
       return this.agoraClient.updateAudioAndVideoFeed(cameras, audios);
     } else {
       Logger.log("Update audio and video feed");
-      //   return this.zoomClient.rerenderParticipantsVideo();
+      //   return this.zoomClient.adjustRenderedVideoPosition();
     }
   }
 

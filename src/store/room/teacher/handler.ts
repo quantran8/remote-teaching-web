@@ -75,7 +75,7 @@ export const useTeacherRoomWSHandler = ({ commit, dispatch, state, getters }: Ac
             message: `It seems ${student.englishName} had some connectivity issue due to which had to drop out from the class`,
           });
         }
-        await state.manager?.rerenderParticipantsVideo();
+        await state.manager?.adjustRenderedVideoPosition();
       }
     },
     onStudentSendUnity: async (payload: any) => {

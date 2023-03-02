@@ -194,7 +194,6 @@ export class ZoomClient implements ZoomClientSDK {
   };
 
   userAdded = async (payload: ParticipantPropertiesPayload[]) => {
-    await this.rerenderParticipantsVideo();
     this._shouldAdjustLayout = true;
     if (!this._isHost || !this._client?.getCurrentUserInfo()?.isHost) return;
     for (const element of payload) {
@@ -325,8 +324,6 @@ export class ZoomClient implements ZoomClientSDK {
     if (!shouldRemoveParticipant) return;
     await this.stopRenderParticipantVideo(shouldRemoveParticipant);
     this._renderedList = this._renderedList.filter(({ userId }) => userId !== shouldRemoveParticipant.userId);
-    await delay(200);
-    await this.rerenderParticipantsVideo();
   }
 
   stopRenderParticipantVideo = async (user: Participant) => {
@@ -341,6 +338,7 @@ export class ZoomClient implements ZoomClientSDK {
       const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
       if (participantsCanvas) {
         await this._stream?.stopRenderVideo(participantsCanvas, userId);
+        Logger.log("stop render user: ", user.displayName);
       }
     } catch (error) {
       Logger.log(error);
@@ -349,7 +347,6 @@ export class ZoomClient implements ZoomClientSDK {
 
   renderParticipantVideo = async (user: Participant) => {
     try {
-      await this.updateCanvasDimension();
       const { userId, displayName } = user;
       const participantElementId = `${displayName}__sub`;
       const specialParticipantCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
@@ -361,54 +358,71 @@ export class ZoomClient implements ZoomClientSDK {
           specialParticipantCanvas.height,
           0,
           0,
-          VideoQuality.Video_360P,
+          displayName === this._teacherId ? VideoQuality.Video_360P : VideoQuality.Video_180P,
         );
         return;
       }
+      const studentListElement = document.getElementById("student-list") as HTMLDivElement;
       const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
       const position = this._isHost
-        ? getStudentPositionAndSize(displayName, participantsCanvas)
+        ? getStudentPositionAndSize(displayName, studentListElement)
         : getClassmatePositionAndSize(displayName, participantsCanvas);
       if (position && participantsCanvas) {
-        const res = await this._stream?.renderVideo(
+        await this._stream?.renderVideo(
           participantsCanvas,
           userId,
           position.w,
           position.h,
           position.x,
           position.y,
-          VideoQuality.Video_360P,
+          displayName === this._teacherId ? VideoQuality.Video_360P : VideoQuality.Video_180P,
         );
+        Logger.log("render user: ", user.displayName);
       }
     } catch (error) {
       Logger.log("Render video error: ", error);
     }
   };
 
-  rerenderParticipantsVideo = async () => {
+  adjustRenderedVideoPosition = async (displayName?: string) => {
     try {
       await this.updateCanvasDimension();
-      for (const participant of this._renderedList) {
-        const { userId, displayName } = participant;
-        const participantElementId = `${displayName}__sub`;
-        const specialParticipantCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
-        if (specialParticipantCanvas) {
-          await this._stream?.adjustRenderedVideoPosition(
-            specialParticipantCanvas,
-            userId,
-            specialParticipantCanvas.width,
-            specialParticipantCanvas.height,
-            0,
-            0,
-          );
-          continue;
+      const studentListElement = document.getElementById("student-list") as HTMLDivElement;
+      const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
+      if (displayName) {
+        const user = this.getParticipantByDisplayName(displayName);
+        if (user) {
+          const position = this._isHost
+            ? getStudentPositionAndSize(displayName, studentListElement)
+            : getClassmatePositionAndSize(displayName, participantsCanvas);
+          if (position && participantsCanvas) {
+            await this._stream?.adjustRenderedVideoPosition(participantsCanvas, user.userId, position.w, position.h, position.x, position.y);
+            Logger.log("adjust render position: ", position);
+          }
         }
-        const participantsCanvas = document.getElementById(PARTICIPANT_CANVAS_ID) as HTMLCanvasElement;
-        const position = this._isHost
-          ? getStudentPositionAndSize(displayName, participantsCanvas)
-          : getClassmatePositionAndSize(displayName, participantsCanvas);
-        if (position && participantsCanvas) {
-          await this._stream?.adjustRenderedVideoPosition(participantsCanvas, userId, position.w, position.h, position.x, position.y);
+      } else {
+        for (const participant of this._renderedList) {
+          const { userId, displayName } = participant;
+          const participantElementId = `${displayName}__sub`;
+          const specialParticipantCanvas = document.getElementById(participantElementId) as HTMLCanvasElement;
+          if (specialParticipantCanvas) {
+            await this._stream?.adjustRenderedVideoPosition(
+              specialParticipantCanvas,
+              userId,
+              specialParticipantCanvas.width,
+              specialParticipantCanvas.height,
+              0,
+              0,
+            );
+            continue;
+          }
+          const position = this._isHost
+            ? getStudentPositionAndSize(displayName, studentListElement)
+            : getClassmatePositionAndSize(displayName, participantsCanvas);
+          if (position && participantsCanvas) {
+            await this._stream?.adjustRenderedVideoPosition(participantsCanvas, userId, position.w, position.h, position.x, position.y);
+            Logger.log("adjust render position: ", position);
+          }
         }
       }
     } catch (error) {
@@ -460,7 +474,7 @@ export class ZoomClient implements ZoomClientSDK {
 
     Logger.log("Total rendered: ", this._renderedList.length);
     if (this._shouldAdjustLayout && shouldAddedParticipants.length) {
-      await this.rerenderParticipantsVideo();
+      await this.updateCanvasDimension();
       this._shouldAdjustLayout = false;
     }
   };

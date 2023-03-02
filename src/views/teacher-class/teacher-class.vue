@@ -30,7 +30,7 @@
       @end="onClickEnd"
     ></teacher-page-header>
     <main class="tc__main">
-      <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']">
+      <div :class="['tc__sidebar', isSidebarCollapsed && 'tc__sidebar--collapsed', showHideLesson && isOneOneMode !== '' && 'tc__sidebar--one-one']" id="tc__sidebar">
         <LessonPlan
           @open-gallery-mode="toggleView"
           @toggle-lesson-mode="toggleLessonSidebar"
