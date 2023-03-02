@@ -71,120 +71,122 @@
           <Row align="middle" class="device-tester__default">
             <p class="title_text title_text--md">{{ RemoteSetUpText }}</p>
           </Row>
-          <div class="flex__container">
+          <Row gutter="[0,8]">
+            <div class="flex__container">
+              <Row align="middle" class="device-tester__default">
+                <div class="device-tester__default--lt">
+                  <img src="@/assets/icons/speaker.png" class="device-tester-icon" />
+                  <span> {{ CheckSpeaker }} </span>
+                </div>
+                <div class="device-tester__default--rt">
+                  <Space size="large" align="center" class="device-tester__check-mic-cam">
+                    <div class="device-tester__speaker--icon">
+                      <audio loop id="audio" style="display: none">
+                        <source src="@/assets/audio/ConnectTestSound.mp3" type="audio/mp3" />
+                      </audio>
+                      <img :src="speakerIcon" @click="toggleSpeaker" alt="" class="sound-img" />
+                    </div>
+                    <Select
+                      :placeholder="SelectDevice"
+                      style="width: 330px"
+                      :disabled="!isCheckSpeaker"
+                      v-model:value="currentSpeakerLabel"
+                      ref="select"
+                      @change="handleSpeakerChange"
+                    >
+                      <SelectOption v-for="deviceId in listSpeakersId" :key="deviceId" :value="deviceId">
+                        {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
+                      </SelectOption>
+                    </Select>
+                  </Space>
+                </div>
+              </Row>
+              <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />
+            </div>
+            <Row align="middle" class="alert-device-test">
+              <p v-show="!havePermissionMicrophone">
+                <span>{{ warningMsgMicrophone }}</span>
+              </p>
+            </Row>
             <Row align="middle" class="device-tester__default">
               <div class="device-tester__default--lt">
-                <img src="@/assets/icons/speaker.png" class="device-tester-icon" />
-                <span> {{ CheckSpeaker }} </span>
+                <img src="@/assets/icons/mic.png" class="device-tester-icon" />
+                <span>{{ CheckMic }}</span>
               </div>
               <div class="device-tester__default--rt">
                 <Space size="large" align="center" class="device-tester__check-mic-cam">
-                  <div class="device-tester__speaker--icon">
-                    <audio loop id="audio" style="display: none">
-                      <source src="@/assets/audio/ConnectTestSound.mp3" type="audio/mp3" />
-                    </audio>
-                    <img :src="speakerIcon" @click="toggleSpeaker" alt="" class="sound-img" />
-                  </div>
+                  <Switch v-model:checked="isOpenMic" />
                   <Select
                     :placeholder="SelectDevice"
+                    class=""
                     style="width: 330px"
-                    :disabled="!isCheckSpeaker"
-                    v-model:value="currentSpeakerLabel"
+                    :disabled="!isOpenMic"
+                    v-model:value="currentMicLabel"
                     ref="select"
-                    @change="handleSpeakerChange"
+                    @change="handleMicroChange"
                   >
-                    <SelectOption v-for="deviceId in listSpeakersId" :key="deviceId" :value="deviceId">
-                      {{ listSpeakers.find((speaker) => speaker.deviceId === deviceId)?.label }}
+                    <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">
+                      {{ listMics.find((mic) => mic.deviceId === deviceId)?.label }}
                     </SelectOption>
                   </Select>
                 </Space>
               </div>
             </Row>
-            <img v-if="isPlayingSound" src="@/assets/images/audio-wave.gif" class="sound-img" />
-          </div>
-          <Row align="middle" class="alert-device-test">
-            <p v-show="!havePermissionMicrophone">
-              <span>{{ warningMsgMicrophone }}</span>
-            </p>
-          </Row>
-          <Row align="middle" class="device-tester__default">
-            <div class="device-tester__default--lt">
-              <img src="@/assets/icons/mic.png" class="device-tester-icon" />
-              <span>{{ CheckMic }}</span>
-            </div>
-            <div class="device-tester__default--rt">
-              <Space size="large" align="center" class="device-tester__check-mic-cam">
-                <Switch v-model:checked="isOpenMic" />
-                <Select
-                  :placeholder="SelectDevice"
-                  class=""
-                  style="width: 330px"
-                  :disabled="!isOpenMic"
-                  v-model:value="currentMicLabel"
-                  ref="select"
-                  @change="handleMicroChange"
-                >
-                  <SelectOption v-for="deviceId in listMicsId" :key="deviceId" :value="deviceId">
-                    {{ listMics.find((mic) => mic.deviceId === deviceId)?.label }}
-                  </SelectOption>
-                </Select>
-              </Space>
-            </div>
-          </Row>
-          <Row align="middle" class="device-tester__default">
-            <div class="device-tester__default--lt" />
-            <div class="device-tester__default--rt" v-show="listMics.length > 0">
-              <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" strokeColor="#5c2d91" :show-info="false" class="progress" />
-            </div>
-          </Row>
-          <Row align="middle" class="alert-device-test">
-            <p v-show="!havePermissionMicrophone">
-              <span>{{ warningMsgMicrophone }}</span>
-            </p>
-          </Row>
-          <Row align="middle" class="device-tester__default">
-            <div class="device-tester__default--lt">
-              <img src="@/assets/icons/videocam.png" class="device-tester-icon" />
-              <span>{{ CheckCam }}</span>
-            </div>
-            <div class="device-tester__default--rt">
-              <Space size="large" align="center" class="device-tester__check-mic-cam">
-                <Switch v-model:checked="isOpenCam" />
-                <Select
-                  :placeholder="SelectDevice"
-                  style="width: 330px"
-                  :disabled="!isOpenCam"
-                  v-model:value="currentCamLabel"
-                  ref="select"
-                  @change="handleCameraChange"
-                >
-                  <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">
-                    {{ listCams.find((cam) => cam.deviceId === deviceId)?.label }}
-                  </SelectOption>
-                </Select>
-              </Space>
-            </div>
-          </Row>
-          <Row align="middle" class="alert-device-test">
-            <p v-show="!havePermissionCamera">
-              <span>{{ warningMsgCamera }}</span>
-            </p>
-          </Row>
-          <Row v-if="isTeacherSetup" align="middle" class="device-tester__default">
-            <div class="device-tester__default--lt">
-              <img src="@/assets/icons/video-call.png" class="device-tester-icon" />
-              <span>{{ PlatformText }}</span>
-            </div>
-            <div class="device-tester__default--rt">
-              <Space size="large" align="center" class="device-tester__check-mic-cam">
-                <Switch v-model:checked="isUsingAgora" />
-                <div style="width: 330px">
-                  <span v-if="!isUsingAgora" class="device-tester__mess-teacher-error">
-                    {{ OneToOneNotification }}
-                  </span>
-                </div>
-              </Space>
-            </div>
+            <Row align="middle" class="device-tester__default">
+              <div class="device-tester__default--lt" />
+              <div class="device-tester__default--rt" v-show="listMics.length > 0">
+                <Progress :strokeWidth="25" :percent="!isOpenMic ? 0 : volumeByPercent" strokeColor="#5c2d91" :show-info="false" class="progress" />
+              </div>
+            </Row>
+            <Row align="middle" class="alert-device-test">
+              <p v-show="!havePermissionMicrophone">
+                <span>{{ warningMsgMicrophone }}</span>
+              </p>
+            </Row>
+            <Row align="middle" class="device-tester__default">
+              <div class="device-tester__default--lt">
+                <img src="@/assets/icons/videocam.png" class="device-tester-icon" />
+                <span>{{ CheckCam }}</span>
+              </div>
+              <div class="device-tester__default--rt">
+                <Space size="large" align="center" class="device-tester__check-mic-cam">
+                  <Switch v-model:checked="isOpenCam" />
+                  <Select
+                    :placeholder="SelectDevice"
+                    style="width: 330px"
+                    :disabled="!isOpenCam"
+                    v-model:value="currentCamLabel"
+                    ref="select"
+                    @change="handleCameraChange"
+                  >
+                    <SelectOption v-for="deviceId in listCamsId" :key="deviceId" :value="deviceId">
+                      {{ listCams.find((cam) => cam.deviceId === deviceId)?.label }}
+                    </SelectOption>
+                  </Select>
+                </Space>
+              </div>
+            </Row>
+            <Row align="middle" class="alert-device-test">
+              <p v-show="!havePermissionCamera">
+                <span>{{ warningMsgCamera }}</span>
+              </p>
+            </Row>
+            <Row v-if="isTeacherSetup" align="middle" class="device-tester__default">
+              <div class="device-tester__default--lt">
+                <img src="@/assets/icons/video-call.png" class="device-tester-icon" />
+                <span>{{ PlatformText }}</span>
+              </div>
+              <div class="device-tester__default--rt">
+                <Space size="large" align="center" class="device-tester__check-mic-cam">
+                  <Switch v-model:checked="isUsingAgora" />
+                  <div style="width: 330px">
+                    <span v-if="!isUsingAgora" class="device-tester__mess-teacher-error">
+                      {{ OneToOneNotification }}
+                    </span>
+                  </div>
+                </Space>
+              </div>
+            </Row>
           </Row>
           <Row align="middle" class="device-tester__default">
             <video
