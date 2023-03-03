@@ -1,7 +1,9 @@
-import { defineComponent, computed } from "vue";
+import { AppFooter, AppHeader } from "@/components/layout";
 import { AccessInformationScreenLocale, CommonLocale } from "@/locales/localeid";
+import { ParentService } from "@/services";
+import { computed, defineComponent, onMounted } from "vue";
 import { fmtMsg, MainLayout } from "vue-glcommonui";
-import { AppHeader, AppFooter } from "@/components/layout";
+import { useRouter } from "vue-router";
 const GRAPE_SEED_CONTACT_PAGE_URL = "https://grapeseed.com/contact/";
 export default defineComponent({
   components: {
@@ -20,6 +22,13 @@ export default defineComponent({
     const Link = computed(() => fmtMsg(AccessInformationScreenLocale.ContactLink));
     const SiteTitle = computed(() => fmtMsg(CommonLocale.CommonSiteTitle));
     const contactURL = GRAPE_SEED_CONTACT_PAGE_URL;
+    const router = useRouter();
+    onMounted(async () => {
+      const canAccess = await ParentService.getGSConnectAccess();
+      if (canAccess) {
+        router.push("/parent");
+      }
+    });
     return { Line1, Line2, Line3, Line4, Line5Part1, Line5Part2, Line6, Link, SiteTitle, contactURL };
   },
 });
